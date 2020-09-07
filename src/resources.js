@@ -227,6 +227,7 @@ export function defineResources(){
         initMarket();
         initStorage();
         initEjector();
+        initAlchemy();
     }
     
     loadResource('Money',1000,1,false,false,'success');
@@ -622,6 +623,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
 
     if (atomic_mass[name]){
         loadEjector(name,color);
+    }
+
+    if (tradeRatio[name] && global.race.universe === 'magic'){
+        loadAlchemy(name,color,tradable);
     }
 }
 
@@ -1680,6 +1685,68 @@ function loadEjector(name,color){
                     }
                 },
             }
+        });
+    }
+}
+
+function initAlchemy(){
+    clearElement($('#resAlchemy'));
+}
+
+function loadAlchemy(name,color,basic){
+    if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){
+        let alchemy = $(`<div id="alchemy${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        $('#resAlchemy').append(alchemy);
+
+        let res = $(`<span class="trade"></span>`);
+        alchemy.append(res);
+
+        res.append($(`<span role="button" aria-label="transmute less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span class="current">{{ a.${name} }}</span>`));
+        res.append($(`<span role="button" aria-label="transmute more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
+
+        if (!global.race.alchemy.hasOwnProperty(name)){
+            global.race.alchemy[name] = 0;
+        }
+
+        vBind({
+            el: `#alchemy${name}`,
+            data: {
+                r: global.resource[name],
+                a: global.race.alchemy
+            },
+            methods: {
+                addSpell(spell){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.resource.Mana.diff >= 1){
+                            global.race.alchemy[spell]++;
+                            global.resource.Mana.diff--;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+                subSpell(spell){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.race.alchemy[spell] > 0){
+                            global.race.alchemy[spell]--;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+            }
+        });
+
+        popover(`alchemy${name}`,function(){
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
+        },
+        {
+            elm: `#alchemy${name} h3`
         });
     }
 }

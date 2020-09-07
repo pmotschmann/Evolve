@@ -97,7 +97,7 @@ const government_desc = {
     technocracy: loc('govern_technocracy_effect',[8,2,10]),
     federation: loc('govern_federation_effect',[3,10]),
     federation_alt: loc('govern_federation_effect_alt',[25,32,10]),
-    magocracy: loc('govern_magocracy_effect',[25,10]),
+    magocracy: loc('govern_magocracy_effect',[25,50]),
 };
 
 function government(govern){

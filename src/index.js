@@ -171,6 +171,11 @@ export function index(){
                     {{ 'tab_ejector' | label }}
                 </template>
             </b-tab-item>
+            <b-tab-item id="resAlchemy" :visible="s.showAlchemy">
+                <template slot="header">
+                    {{ 'tab_alchemy' | label }}
+                </template>
+            </b-tab-item>
         </b-tabs>
     </b-tab-item>`);
     tabs.append(resources);

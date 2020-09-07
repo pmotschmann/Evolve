@@ -863,6 +863,7 @@ function loadPylon(parent,bind){
                     if (global.resource.Mana.diff >= diff){
                         global.race.casting[spell]++;
                         global.race.casting.total++;
+                        global.resource.Mana.diff -= diff;
                     }
                     else {
                         break;

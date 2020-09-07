@@ -1000,6 +1000,32 @@ function fastLoop(){
             delete breakdown.p.consume.Money[loc('trade')];
         }
 
+        // alchemy
+        if (global.tech['alchemy']){
+            Object.keys(global.race.alchemy).forEach(function (res){
+                if (global.race.alchemy[res] > 0){
+                    let trasmute = Number(global.race.alchemy[res]);
+                    if (global.resource.Mana.amount < trasmute){
+                        trasmute = global.resource.Mana.amount;
+                    }
+                    if (global.resource.Crystal.amount < trasmute * 0.5){
+                        trasmute = global.resource.Crystal.amount * 2;
+                    }
+
+                    if (trasmute >= time_multiplier){
+                        let rate = tradeRatio[res];
+                        modRes(res,trasmute * time_multiplier * rate);
+                        modRes('Mana', -(trasmute * time_multiplier));
+                        modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
+                        breakdown.p.consume.Mana[loc('tab_alchemy')] = -(trasmute);
+                        breakdown.p.consume.Crystal[loc('tab_alchemy')] = -(trasmute * 0.5);
+                        breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
+                        console.log(breakdown.p.consume);
+                    }
+                }
+            });
+        }
+
         if (global.galaxy['trade'] && (gal_on.hasOwnProperty('freighter') || gal_on.hasOwnProperty('super_freighter'))){
             let cap = 0;
             if (global.galaxy['freighter']){
@@ -3541,7 +3567,6 @@ function fastLoop(){
         // Mana
         if (global.resource.Mana.display){
             let mana_bd = {};
-
             if (global.race['casting']){
                 ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
                     if (global.race.casting[spell] && global.race.casting[spell] > 0){
@@ -3621,8 +3646,8 @@ function fastLoop(){
             crystal_bd[loc('job_crystal_miner')] = crystal_base + 'v';
 
             if (global.civic.govern.type === 'magocracy'){
-                crystal_base *= 1.1;
-                crystal_bd[`ᄂ${loc('govern_magocracy')}`] = '10%';
+                crystal_base *= 1.5;
+                crystal_bd[`ᄂ${loc('govern_magocracy')}`] = '50%';
             }
 
             let delta = crystal_base * hunger * global_multiplier;

@@ -8192,8 +8192,8 @@ export const actions = {
         },
         expedition: {
             id: 'tech-expedition',
-            title: loc('tech_expedition'),
-            desc: loc('tech_expedition'),
+            title(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
+            desc(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
             category: 'science',
             era: 'intergalactic',
             reqs: { science: 15, xeno: 4 },
@@ -8201,7 +8201,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 5350000; }
             },
-            effect(){ return loc('tech_expedition_effect'); },
+            effect(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz_effect') : loc('tech_expedition_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -13922,7 +13922,80 @@ export const actions = {
                 }
                 return false;
             }
-        }
+        },
+        alchemy: {
+            id: 'tech-alchemy',
+            title: loc('tech_alchemy'),
+            desc: loc('tech_alchemy'),
+            category: 'magic',
+            era: 'civilized',
+            reqs: { magic: 3, high_tech: 1 },
+            grant: ['alchemy',1],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 100; },
+                Knowledge(){ return 10000; },
+                Crystal(){ return 250; }
+            },
+            effect(){ return loc('tech_alchemy_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.race['alchemy'] = {
+                        Food: 0, Lumber: 0,
+                        Stone: 0, Furs: 0,
+                        Copper: 0, Iron: 0,
+                        Aluminium: 0, Cement: 0,
+                        Coal: 0, Oil: 0,
+                        Uranium: 0, Steel: 0,
+                        Titanium: 0, Alloy: 0,
+                        Polymer: 0, Iridium: 0,
+                        Helium_3: 0, Deuterium: 0,
+                        Neutronium: 0, Adamantite: 0,
+                        Infernite: 0, Elerium: 0,
+                        Nano_Tube: 0, Graphene: 0,
+                        Stanene: 0, Bolognium: 0,
+                        Vitreloy: 0, Orichalcum: 0
+                    };
+                    global.settings.showAlchemy = true;
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                clearElement($('#resources'));
+                defineResources();
+            }
+        },
+        transmutation: {
+            id: 'tech-transmutation',
+            title: loc('tech_transmutation'),
+            desc: loc('tech_transmutation'),
+            category: 'magic',
+            era: 'civilized',
+            reqs: { alchemy: 1, high_tech: 16 },
+            grant: ['alchemy',2],
+            condition(){
+                return global.race['universe'] === 'magic' ? true : false;
+            },
+            cost: {
+                Mana(){ return 1250; },
+                Knowledge(){ return 5500000; },
+                Crystal(){ return 1000000; }
+            },
+            effect(){ return loc('tech_transmutation_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                clearElement($('#resources'));
+                defineResources();
+            }
+        },
     },
     genes: arpa('GeneTech'),
     space: spaceTech(),

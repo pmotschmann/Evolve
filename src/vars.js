@@ -487,7 +487,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 1;
+global['beta'] = 2;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -506,6 +506,7 @@ if (!global['settings']){
         showResources: false,
         showMarket: false,
         showStorage: false,
+        showAlchemy: false,
         showGenetics: false,
         showSpace: false,
         showAchieve: false,
@@ -537,6 +538,10 @@ if (!global.settings['showStorage']){
     else {
         global.settings['showStorage'] = false;
     }
+}
+
+if (!global.settings['showAlchemy']){
+    global.settings['showAlchemy'] = false;
 }
 
 if (!global.settings['space']){
