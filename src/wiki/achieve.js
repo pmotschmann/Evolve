@@ -48,7 +48,7 @@ function achievePage(){
             let emblems = format_emblem(achievement,16);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
-            achieveDesc(achievement);
+            achieveDesc(achievement, color === 'warning' ? true : false);
         });
     });
 }
@@ -73,8 +73,9 @@ function featPage(){
     });
 }
 
-function achieveDesc(achievement){
-    if (achievement === 'mass_extinction'){
+function achieveDesc(achievement,showFlair){
+    let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
+    if (achievement === 'mass_extinction' || achievement === 'vigilante'){
         let killed = `<div class="flexed">`;
         Object.keys(races).sort(function(a,b){
             if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
@@ -85,16 +86,24 @@ function achieveDesc(achievement){
             }            
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
-                if (global.stats.achieve[`extinct_${key}`] && global.stats.achieve[`extinct_${key}`].l >= 0){
-                    killed = killed + `<span class="has-text-success">${races[key].name}</span>`;
-                }
-                else {
-                    killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
+                if ((achievement === 'vigilante' && races[key].type !== 'demonic') || achievement === 'mass_extinction'){
+                    if (global.stats.achieve[`extinct_${key}`] 
+                        && (
+                            achievement === 'mass_extinction'
+                            ? global.stats.achieve[`extinct_${key}`].l >= 0
+                            : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
+                            )
+                        ){
+                        killed = killed + `<span class="has-text-success">${races[key].name}</span>`;
+                    }
+                    else {
+                        killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
+                    }
                 }
             }
         });
         killed = killed + `<div>`;
-        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${killed}`));
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${killed}${flair}`));
     }
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
@@ -107,7 +116,7 @@ function achieveDesc(achievement){
             }
         });
         biome_list = biome_list + `<div>`;
-        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${biome_list}`));
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${biome_list}${flair}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;    
@@ -122,10 +131,22 @@ function achieveDesc(achievement){
             }
         });
         genus = genus + `<div>`;
-        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${genus}`));
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>${genus}${flair}`));
+    }
+    else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
+        let race = achievement.substring(8);
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`));
+    }
+    else if (achievement.includes('genus_')){
+        let genus = achievement.substring(6);
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div><div>${loc('wiki_achieve_genus_type',[loc(`genelab_genus_${genus}`)])}</div>${flair}`));
+    }
+    else if (achievement.includes('biome_') || achievement.includes('atmo_')){
+        let planet = achievement.substring(achievement.indexOf('_') + 1);
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`));
     }
     else {
-        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div>`));
+        popover(`a-${achievement}`,$(`<div>${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${flair}`));
     }
 }
 
