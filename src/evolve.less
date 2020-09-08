@@ -204,6 +204,10 @@ a {
 .main {
     margin: 1rem 1rem 1.25rem;
 
+    #leftColumn {
+        padding-right: .25rem !important;
+    }
+
     .theme {
         margin-bottom: 1rem;
         i {
@@ -1695,6 +1699,8 @@ div.bigbang {
     }
 }
 
+
+
 .sticky {
     position: sticky;
     top: 1rem;
@@ -1702,6 +1708,12 @@ div.bigbang {
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#leftColumn {
+    @media only screen and (max-width: 48rem){
+        position: relative;
+    }
 }
 
 .darkTheme,
