@@ -1106,7 +1106,7 @@ function creativeAdjust(costs){
 
 function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
-    if (global.race['creative']){
+    if (global.race['creative'] && project !== 'syphon'){
         mutiplier -= traits.creative.vars[0];
     }
     if (offset){
