@@ -4191,9 +4191,11 @@ function fastLoop(){
             delta *= global_multiplier;
 
             money_bd[loc('morale_tax')] = (income_base) + 'v';
-            money_bd[loc('civics_spy_purchase_bd')] = -(upkeep) + 'v';
-            money_bd[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : loc('city_temple')] = ((temple_mult - 1) * 100) + '%';
-            money_bd[loc('city_shrine')] = ((shrine_mult - 1) * 100) + '%';
+            if (income_base > 0){
+                money_bd[`ᄂ${loc('civics_spy_purchase_bd')}`] = -(upkeep) + 'v';
+                money_bd[global.race['cataclysm'] ? `ᄂ${loc('space_red_ziggurat_title')}` : `ᄂ${loc('city_temple')}`] = ((temple_mult - 1) * 100) + '%';
+                money_bd[`ᄂ${loc('city_shrine')}`] = ((shrine_mult - 1) * 100) + '%';
+            }
             money_bd[loc('city_factory')] = FactoryMoney + 'v';
             if (global.race['discharge'] && global.race['discharge'] > 0 && FactoryMoney > 0){
                 money_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
@@ -4991,7 +4993,7 @@ function midLoop(){
             caps['Iron'] += gain;
             bd_Iron[loc('space_red_garage_title')] = gain+'v';
 
-            gain = (global.space.garage.count * (spatialReasoning(6000 * multiplier)));
+            gain = (global.space.garage.count * (spatialReasoning((global.race.cataclysm ? 10500 : 6000) * multiplier)));
             caps['Cement'] += gain;
             bd_Cement[loc('space_red_garage_title')] = gain+'v';
 
@@ -5043,10 +5045,6 @@ function midLoop(){
                 gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
                 caps['Stone'] += gain;
                 bd_Stone[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(4500 * multiplier)));
-                caps['Cement'] += gain;
-                bd_Cement[loc('space_red_garage_title')] = gain+'v';
 
                 gain = (global.space.garage.count * (spatialReasoning(2200 * multiplier)));
                 caps['Furs'] += gain;

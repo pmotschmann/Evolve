@@ -481,6 +481,13 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
+if (convertVersion(global['version']) < 9020){
+    global.stats['dark'] = 0;
+    if (global.race['Dark']){
+        global.stats['dark'] = global.race['Dark'].count;
+    }
+}
+
 global['version'] = '0.9.19';
 delete global['beta'];
 
@@ -756,6 +763,9 @@ if (!global.stats['blackhole']){
 }
 if (!global.stats['ascend']){
     global.stats['ascend'] = 0;
+}
+if (!global.stats['dark']){
+    global.stats['dark'] = 0;
 }
 if (!global.stats['harmony']){
     global.stats['harmony'] = 0;

@@ -438,6 +438,7 @@ export const traits = {
         desc: loc('trait_puny'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     dumb: { // Knowledge costs increased by 5%
         name: loc('trait_dumb_name'),

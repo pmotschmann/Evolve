@@ -13642,37 +13642,17 @@ export const actions = {
 
 export function templeEffect(){
     let desc;
-    if (global.race.universe === 'antimatter'){
-        let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.8 : 0.5;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            faith += global.civic.professor.workers * 0.02;
-        }
-        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
-            faith += priest_bonus * global.civic.priest.workers;
-        }
-        if (global.race['spiritual']){
-            faith *= 1 + (traits.spiritual.vars[0] / 100);
-        }
-        if (global.civic.govern.type === 'theocracy'){
-            faith *= 1.12;
-        }
-        faith = +(faith).toFixed(3);
-        let temple = 6;
-        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest = global.genes['ancients'] >= 4 ? 0.12 : 0.08;
-            temple += priest * global.civic.priest.workers;
-        }
-        desc = `<div>${loc('city_temple_effect1',[faith])}</div><div>${loc('city_temple_effect5',[temple])}</div>`;
-    }
-    else if (global.race['no_plasmid']){
+    if (global.race.universe === 'antimatter' || global.race['no_plasmid']){
         let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            faith += +(global.civic.professor.workers * 0.04).toFixed(2);
+            faith += +(global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.02 : 0.04)).toFixed(2);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             faith += priest_bonus * global.civic.priest.workers;
+        }
+        if (global.race.universe === 'antimatter'){
+            faith /= 2;
         }
         if (global.race['spiritual']){
             faith *= 1 + (traits.spiritual.vars[0] / 100);
@@ -13682,6 +13662,14 @@ export function templeEffect(){
         }
         faith = +(faith).toFixed(3);
         desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
+        if (global.race.universe === 'antimatter'){
+            let temple = 6;
+            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                let priest = global.genes['ancients'] >= 5 ? 0.12 : (global.genes['ancients'] >= 3 ? 0.1 : 0.08);
+                temple += priest * global.civic.priest.workers;
+            }
+            desc += `<div>${loc('city_temple_effect5',[temple.toFixed(2)])}</div>`;
+        }
     }
     else {
         let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
@@ -13689,7 +13677,7 @@ export function templeEffect(){
             plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
+            let priest_bonus = global.genes['ancients'] >= 5 ? 0.15 : (global.genes['ancients'] >= 3 ? 0.125 : 0.1);
             plasmid += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
@@ -14941,54 +14929,56 @@ function checkMaxCosts(costs){
 function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res === 'Structs'){
-            if (!checkStructs(costs[res]())){
-                test = false;
-                return;
-            }
-        }
-        else if (res === 'Plasmid' || res === 'Phage'){
-            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                if (global.race.Plasmid.anti < Number(costs[res]())){
+        if (costs[res]() !== 0){
+            if (res === 'Structs'){
+                if (!checkStructs(costs[res]())){
                     test = false;
                     return;
                 }
             }
-            else if (global.race[res].count < Number(costs[res]())){
-                test = false;
-                return;
+            else if (res === 'Plasmid' || res === 'Phage'){
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    if (global.race.Plasmid.anti < Number(costs[res]())){
+                        test = false;
+                        return;
+                    }
+                }
+                else if (global.race[res].count < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
             }
-        }
-        else if (res === 'Bool'){
-            if (!costs[res]()){
-                test = false;
-                return;
+            else if (res === 'Bool'){
+                if (!costs[res]()){
+                    test = false;
+                    return;
+                }
             }
-        }
-        else if (res === 'Morale'){
-            if (global.city.morale.current < Number(costs[res]())){
-                test = false;
-                return;
+            else if (res === 'Morale'){
+                if (global.city.morale.current < Number(costs[res]())){
+                    test = false;
+                    return;
+                }
             }
-        }
-        else if (res === 'Army'){
-            if (costs[res]() === false){
-                test = false;
-                return;
+            else if (res === 'Army'){
+                if (costs[res]() === false){
+                    test = false;
+                    return;
+                }
             }
-        }
-        else if (res === 'HellArmy'){
-            if (costs[res]() === false){
-                test = false;
-                return;
+            else if (res === 'HellArmy'){
+                if (costs[res]() === false){
+                    test = false;
+                    return;
+                }
             }
-        }
-        else {
-            var testCost = Number(costs[res]()) || 0;
-            let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
-            if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
-                test = false;
-                return;
+            else {
+                var testCost = Number(costs[res]()) || 0;
+                let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
+                if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
+                    test = false;
+                    return;
+                }
             }
         }
     });
@@ -16169,6 +16159,7 @@ function big_bang(){
         global.stats.plasmid += new_plasmid;
     }
     global.stats.phage += new_phage;
+    global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
     global.stats.universes++;
     global['race'] = {
         species : 'protoplasm',

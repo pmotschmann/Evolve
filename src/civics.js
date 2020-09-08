@@ -1608,7 +1608,7 @@ export function armyRating(val,type,wound){
     let army = global.tech['military'] ? (val - (wounded / 2)) * weapon_tech : (val - (wounded / 2));
     if (type === 'army' || type === 'hellArmy'){
         if (global.race['puny']){
-            army *= 0.9;
+            army *= 1 - (traits.puny.vars[0] / 100);
         }
         if (global.race['claws']){
             army *= 1 + (traits.claws.vars[0] / 100);

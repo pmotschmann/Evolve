@@ -214,7 +214,7 @@ window.importGame = function importGame(data,utf16){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        if (saveState.hasOwnProperty('tech')){
+        if (saveState.hasOwnProperty('tech') && utf16){
             if (saveState.tech.hasOwnProperty('whitehole') && saveState.tech.whitehole >= 4){
                 saveState.tech.whitehole = 3;
                 saveState.resource.Soul_Gem.amount += 10;
@@ -260,7 +260,7 @@ export function removeFromRQueue(tech_trees){
 
 export function buildQueue(){
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($('<h2 class="has-text-success is-sr-only">Building Queue</h2>'));
+    $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')}</h2>`));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);

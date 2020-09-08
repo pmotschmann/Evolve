@@ -565,6 +565,9 @@ const extraInformation = {
     rocketry: [
         loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_launch_facility_title`)])
     ],
+    quantum_computing: [
+        loc(`wiki_tech_quantum_computing`)
+    ],
     shields: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_neutron_name`)]),loc(`interstellar_neutron_name`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_blackhole_name`)]),loc(`interstellar_blackhole_name`)]),

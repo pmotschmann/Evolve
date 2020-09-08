@@ -23,7 +23,7 @@ const extraInfo = {
     volcanic: ['weather','genus'],
     tundra: ['weather','genus'],
     hellscape: ['weather','genus','universe'],
-    eden: ['genus','universe'],
+    eden: ['geology', 'genus','universe'],
     stormy: ['trait'],
     ozone: ['trait'],
     trashed: ['trait'],
