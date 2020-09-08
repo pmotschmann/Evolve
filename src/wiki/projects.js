@@ -4,7 +4,7 @@ import { sideMenu } from './functions.js';
 
 const extraInformation = {
     launch_facility: [loc('wiki_arpa_project_launch_facility')],
-    monument: [monumentExtra()]
+    monument: [monumentExtra(),loc('wiki_arpa_project_monument_random')]
 };
 
 export function projectsPage(content){
@@ -23,7 +23,13 @@ export function projectsPage(content){
 }
 
 function projectDesc(info,project){
-    let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
+    let title;
+    if (project === 'monument'){
+        title = loc('tech_monument');
+    }
+    else {
+        title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
+    }
     info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
 
     let stats = $(`<div class="stats"></div>`);
@@ -64,7 +70,10 @@ function monumentExtra(){
     ];
     let desc = `<div>${loc('wiki_arpa_project_monument',[monuments.length, monuments.join(", ")])}</div>`;
     for (let i=0; i<monuments.length; i++){
-        desc = desc + `<div>${loc('wiki_arpa_project_monument_type',[monuments[i],materials[i]])}</div>`;
+        desc = desc + `<div>${loc('wiki_arpa_project_monument_type',[
+            `<span class="has-text-warning">${monuments[i]}</span>`,
+            `<span class="has-text-warning">${materials[i]}</span>`
+        ])}</div>`;
     }
     return desc;
 }

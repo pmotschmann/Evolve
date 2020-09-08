@@ -4734,6 +4734,7 @@
   "wiki_arpa_project_launch_facility": "The launch facility is a special one time project with only one rank, it unlocks the space tab and then vanishes from the projects page.",
   "wiki_arpa_project_monument": "There are %0 different types of monuments: %1. Each monument type costs a different resource type but they all have the same end effect.",
   "wiki_arpa_project_monument_type": "The %0 is constructed from %1.",
+  "wiki_arpa_project_monument_random": "The monument type chosen is picked randomly.",
   "wiki_hell": "Surviving the Hell Dimension",
   "wiki_hell_threat": "Threat Level",
   "wiki_hell_threat_para1": "Unchecked threat will keep growing until it reaches %0.",
