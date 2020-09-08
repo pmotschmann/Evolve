@@ -1430,6 +1430,10 @@ export function calcGenomeScore(genome){
 export function vacuumCollapse(){
     if (global.tech.syphon >= 80 && global.race.universe === 'magic'){
         global.tech.syphon = 79;
+        global.arpa.syphon.rank = 79;
+        global.arpa.syphon.complete = 99;
+        global.queue.queue = [];
+        
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
 

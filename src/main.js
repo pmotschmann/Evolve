@@ -7419,7 +7419,6 @@ function setWeather(){
 }
 
 function resourceAlt(){
-
     ['#resources > .resource','.tab-item > .market-item','#galaxyTrade > .market-item'].forEach(function(id){
         let alt = false;
         $(`${id}:visible`).each(function(){
