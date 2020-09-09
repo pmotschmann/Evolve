@@ -27,7 +27,7 @@ export function index(){
     main.append(columns);
 
     // Left Column
-    columns.append(`<div id="leftColumn" class="column is-one-quarter sticky">
+    columns.append(`<div class="column is-one-quarter leftColumn">
         <div id="race" class="race columns is-mobile is-gapless">
             <h2 class="is-sr-only">Race Info</h2>
             <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
@@ -39,7 +39,7 @@ export function index(){
             <h2 class="is-sr-only">Message Queue</h2>
             <div id="msgQueue" class="msgQueue has-text-info" aria-live="polite"></div>
         </div>
-        <div id="resources" class="resources"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
+        <div id="resources" class="resources sticky"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);
 
     // Center Column

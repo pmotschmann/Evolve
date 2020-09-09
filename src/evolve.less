@@ -204,8 +204,8 @@ a {
 .main {
     margin: 1rem 1rem 1.25rem;
 
-    #leftColumn {
-        padding-right: .25rem !important;
+    .leftColumn {
+        height: ~"calc(100vh - 2.45rem)";
     }
 
     .theme {
@@ -313,8 +313,23 @@ a {
         }
     }
 
+    .resTabs > section {
+        .sticky();
+        height: ~"calc(100vh - 10rem)";
+    }
+
     .resources {
         margin-top: .25rem;
+        padding-right: .25rem;
+        height: ~"calc(100vh - 5rem)";
+
+        @media only screen and (max-width: 88.5rem){
+            height: ~"calc(100vh - 16.5rem)";
+        }
+        @media only screen and (max-width: 48rem){
+            display: relative;
+        }
+
         .resource {
             display: flex;
             cursor: default;
@@ -371,18 +386,21 @@ a {
             margin-left: 1rem;
         }
         .tab-content {
-            padding: 0 .25rem 1rem 0;
+            padding: 0 .25rem 0 0;
         }
         > .tab-content {
-            padding: 0 .25rem 1rem 1rem;
+            padding: 0 .25rem 0 1rem;
         }
         .tab-item {
-            padding: 0 0 3rem 1rem;
+            padding: 0 0 0 1rem;
         }
         .tabs {
             ul {
                 margin-top: .5rem;
             }
+        }
+        .mtab {
+            height: ~"calc(100vh - 10rem)";
         }
         .action {
             display: inline-block;
@@ -1708,6 +1726,11 @@ div.bigbang {
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.resTabs > section {
+    scrollbar-width: thin;
 }
 
 #leftColumn {
@@ -2061,18 +2084,26 @@ html.dark {
         }
     }
 
-    .sticky::-webkit-scrollbar-track {
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #1f2424;
     }
     
-    .sticky::-webkit-scrollbar {
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar {
         width: 6px;
         background-color: #1f2424;
     }
     
-    .sticky::-webkit-scrollbar-thumb {
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb {
         background-color: #F5F5F5;
+    }
+
+    .sticky,
+    .resTabs > section {        
+        scrollbar-color: #F5F5F5 #1f2424;
     }
 }
 
@@ -2408,18 +2439,26 @@ html.light {
         }
     }
 
-    .sticky::-webkit-scrollbar-track {
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #F5F5F5;
     }
     
-    .sticky::-webkit-scrollbar {
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar {
         width: 6px;
         background-color: #F5F5F5;
     }
     
-    .sticky::-webkit-scrollbar-thumb {
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb {
         background-color: #000000;
+    }
+
+    .sticky,
+    .resTabs > section {        
+        scrollbar-color: #000000 #F5F5F5;
     }
 }
 
@@ -2545,18 +2584,26 @@ html.night {
         }
     }
 
-    .sticky::-webkit-scrollbar-track {
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #000000;
     }
     
-    .sticky::-webkit-scrollbar {
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar {
         width: 6px;
         background-color: #000000;
     }
     
-    .sticky::-webkit-scrollbar-thumb {
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb {
         background-color: #727272;
+    }
+
+    .sticky,
+    .resTabs > section {        
+        scrollbar-color: #727272 #000000;
     }
 }
 
