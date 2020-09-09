@@ -1,5 +1,6 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
+import { races } from './races.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
 
@@ -40,12 +41,16 @@ const achieve_list = {
     challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history'],    
 };
 
+const flairData = {
+    colonist: [races[global.race.species].name]
+};
+
 export const achievements = {};
 Object.keys(achieve_list).forEach(function(type){
     achieve_list[type].forEach(achieve => achievements[achieve] = {
         name: loc(`achieve_${achieve}_name`),
         desc: loc(`achieve_${achieve}_desc`),
-        flair: loc(`achieve_${achieve}_flair`),
+        flair: flairData[achieve] ? loc(`achieve_${achieve}_flair`,flairData[achieve]) : loc(`achieve_${achieve}_flair`),
         type: type
     });
 });
