@@ -69,4 +69,5 @@ export const locales = {
     'zh-CN': '简体中文',
     'ko-KR': '한국어',
     'cs-CZ': 'Čeština',
+    'im-PL': 'Igpay-Atinlay'
 };

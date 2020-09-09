@@ -103,7 +103,10 @@ export const arpaProjects = {
         }
     },
     monument: {
-        title(){ 
+        title(wiki){ 
+            if (wiki){
+                return loc('arpa_project_monument_title');
+            }
             switch(global.arpa.m_type){
                 case 'Obelisk':
                     return loc('arpa_project_monument_obelisk');
@@ -1300,7 +1303,7 @@ function genetics(){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater'){
                 if ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2)){
                     let major = $(`<div class="traitRow"></div>`);
-                    let purge = $(`<b-tooltip :label="removeCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">Remove</span></b-tooltip>`);
+                    let purge = $(`<b-tooltip :label="removeCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span></b-tooltip>`);
                     
                     major.append(purge);
                     major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
@@ -1352,7 +1355,7 @@ function genetics(){
             for (let i=0; i<trait_list.length; i++){
                 let trait = trait_list[i];
                 let major = $(`<div class="traitRow"></div>`);
-                let add = $(`<b-tooltip :label="addCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">Gain</span></b-tooltip>`);
+                let add = $(`<b-tooltip :label="addCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span></b-tooltip>`);
                 
                 major.append(add);
                 major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
@@ -1544,7 +1547,7 @@ function bindTrait(breakdown,trait){
     let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
     m_trait.append(gene);
     if (global.race.Phage.count > 0){
-        let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">Phage (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+        let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
         m_trait.append(phage);
     }
 

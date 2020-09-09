@@ -18,18 +18,12 @@ export function projectsPage(content){
         let info = $(`<div id="${project}" class="infoBox"></div>`);
         projectContent.append(info);
         projectDesc(info,project);
-        sideMenu('add',`projects-arpa`,project,typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title());
+        sideMenu('add',`projects-arpa`,project,typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title(true));
     });
 }
 
 function projectDesc(info,project){
-    let title;
-    if (project === 'monument'){
-        title = loc('tech_monument');
-    }
-    else {
-        title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-    }
+    let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title(true);
     info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
 
     let stats = $(`<div class="stats"></div>`);
