@@ -1230,7 +1230,7 @@ function fastLoop(){
             let output = actions.interstellar.int_alpha.fusion.powered();
             let power = global.interstellar.fusion.on * output;
             let consume = global.interstellar.fusion.on * 1.25;
-            while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
+            while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
                 power -= output;
                 consume -= 1.25;
             }
@@ -2376,7 +2376,7 @@ function fastLoop(){
                     if (actions.galaxy[region][ship].ship.hasOwnProperty('helium')){
                         let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.helium).toFixed(2);
                         let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Helium_3.amount && consume > 0){
+                        while (consume * time_multiplier > global.resource.Helium_3.amount + (global.resource.Helium_3.diff > 0 ? global.resource.Helium_3.diff * time_multiplier : 0) && consume > 0){
                             consume -= increment;
                             operating--;
                         }
@@ -2387,7 +2387,7 @@ function fastLoop(){
                     if (actions.galaxy[region][ship].ship.hasOwnProperty('deuterium')){
                         let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.deuterium).toFixed(2);
                         let consume = (operating * increment);
-                        while (consume * time_multiplier > global.resource.Deuterium.amount && consume > 0){
+                        while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
                             consume -= increment;
                             operating--;
                         }
