@@ -4,7 +4,8 @@ import { sideMenu } from './functions.js';
 
 const extraInformation = {
     launch_facility: [loc('wiki_arpa_project_launch_facility')],
-    monument: [monumentExtra(),loc('wiki_arpa_project_monument_random')]
+    monument: [monumentExtra(),loc('wiki_arpa_project_monument_random'),loc('wiki_arpa_project_monument_exceptions')],
+    roid_eject: [loc('wiki_arpa_project_roid_eject')]
 };
 
 export function projectsPage(content){
@@ -54,13 +55,17 @@ function monumentExtra(){
         loc('arpa_project_monument_obelisk'),
         loc('arpa_project_monument_statue'),
         loc('arpa_project_monument_sculpture'),
-        loc('arpa_project_monument_monolith')
+        loc('arpa_project_monument_monolith'),
+        loc('arpa_project_monument_pillar'),
+        loc('arpa_project_monument_megalith')
     ];
     let materials = [
         loc('resource_Stone_name'),
         loc('resource_Aluminium_name'),
         loc('resource_Steel_name'),
         loc('resource_Cement_name'),
+        loc('resource_Bones_name'),
+        loc('resource_Crystal_name'),
     ];
     let desc = `<div>${loc('wiki_arpa_project_monument',[monuments.length, monuments.join(", ")])}</div>`;
     for (let i=0; i<monuments.length; i++){

@@ -203,9 +203,14 @@ a {
 
 .main {
     margin: 1rem 1rem 1.25rem;
+    overflow-y: hidden;
 
     .leftColumn {
         height: ~"calc(100vh - 2.45rem)";
+    }
+
+    > .columns {
+        margin-bottom: 0 !important;
     }
 
     .theme {
@@ -270,9 +275,6 @@ a {
 
     .msgQueue {
         font-size: .75rem;
-        &.right {
-            min-height: 30rem;
-        }
     }
 
     .bldQueue,
@@ -1717,8 +1719,6 @@ div.bigbang {
     }
 }
 
-
-
 .sticky {
     position: sticky;
     top: 1rem;
@@ -1731,12 +1731,6 @@ div.bigbang {
 
 .resTabs > section {
     scrollbar-width: thin;
-}
-
-#leftColumn {
-    @media only screen and (max-width: 48rem){
-        position: relative;
-    }
 }
 
 .darkTheme,

@@ -165,7 +165,13 @@ export const arpaProjects = {
         reqs: { blackhole: 6, gateway: 3 },
         grant: 'roid_eject',
         effect(){
-            return loc('arpa_projects_roid_eject_effect1');
+            let mass = 0;
+            let next = 0;
+            if (global.tech['roid_eject']){
+                mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
+                next = (0.35 * (global.tech['roid_eject'] + 1) * (1 + ((global.tech['roid_eject'] + 1) / 10))) - mass;
+            }
+            return `<div>${loc('arpa_projects_roid_eject_effect1')}</div><div>${loc('arpa_projects_roid_eject_effect2',[+(mass).toFixed(3),+(next).toFixed(3)])}</div>`;
         },
         cost: {
             Money(offset){ return costMultiplier('roid_eject', offset, 25000000, 1.1); },
