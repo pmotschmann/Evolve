@@ -2866,8 +2866,8 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '5000' : '2000') : '1000');
-                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 5000 : 2000) : 1000);
+                    return `<div>${loc('plus_max_citizens',[2])}</div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_citizens',[2]);
@@ -2901,8 +2901,8 @@ export const actions = {
             },
             effect(){
                 if (global.tech['home_safe']){
-                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '10000' : '5000') : '2000');
-                    return `<div>${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe}`,loc('resource_Money_name')])}</div>`;
+                    let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000);
+                    return `<div>${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
                     return `${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
@@ -3529,9 +3529,8 @@ export const actions = {
                 vault = spatialReasoning(vault);
                 vault = +(vault).toFixed(0);
 
-                vault = '$'+vault;
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('plus_max_resource',[vault,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
+                    return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[vault,loc('resource_Money_name')]);
@@ -8192,8 +8191,8 @@ export const actions = {
         },
         expedition: {
             id: 'tech-expedition',
-            title(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
-            desc(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
+            title(){ return global.race.universe === 'magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
+            desc(){ return global.race.universe === 'magic' ? loc('tech_expedition_wiz') : loc('tech_expedition'); },
             category: 'science',
             era: 'intergalactic',
             reqs: { science: 15, xeno: 4 },
@@ -8201,7 +8200,7 @@ export const actions = {
             cost: {
                 Knowledge(){ return 5350000; }
             },
-            effect(){ return global.race.universe === 'Magic' ? loc('tech_expedition_wiz_effect') : loc('tech_expedition_effect'); },
+            effect(){ return global.race.universe === 'magic' ? loc('tech_expedition_wiz_effect') : loc('tech_expedition_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8819,6 +8818,57 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     messageQueue(loc('tech_orichalcum_analysis_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        corrupt_gem_analysis: {
+            id: 'tech-corrupt_gem_analysis',
+            title: loc('tech_corrupt_gem_analysis'),
+            desc: loc('tech_corrupt_gem_analysis'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { high_tech: 16, corrupt: 1 },
+            grant: ['corrupt',2],
+            cost: {
+                [global.race.species](){ return 1; },
+                Knowledge(){ return 22000000; },
+                Corrupt_Gem(){ return 1; }
+            },
+            effect(){ return loc('tech_corrupt_gem_analysis_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_corrupt_gem_analysis_result'),'info');
+                    global.resource.Corrupt_Gem.display = false;
+                    return true;
+                }
+                return false;
+            }
+        },
+        hell_search: {
+            id: 'tech-hell_search',
+            title: loc('tech_hell_search'),
+            desc: loc('tech_hell_search'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { corrupt: 2 },
+            grant: ['hell_ruins',1],
+            cost: {
+                Structs(){
+                    return {
+                        portal: {
+                            sensor_drone: { s: 'prtl_badlands', count: 25, on: 25 },
+                        }
+                    };
+                },
+            },
+            effect(){ return loc('tech_hell_search_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_hell_search_result'),'info');
+                    global.settings.portal.ruins = true;
+                    global.portal['guard_post'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     return true;
                 }
                 return false;
@@ -14192,9 +14242,8 @@ export function casinoEffect(){
         money *= 1 + (global.tech['stock_exchange'] * 0.05);
     }
     money = Math.round(money);
-    money = '$'+money;
     let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
-    let desc = `<div>${loc('plus_max_resource',[money,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
+    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
     let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;

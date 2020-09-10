@@ -37,25 +37,10 @@ export function mainVue(){
                 }
                 window.location.reload();
             },
-            dark(){
-                global.settings.theme = 'dark';
+            setTheme(theme){
+                global.settings.theme = theme;
                 $('html').removeClass();
-                $('html').addClass('dark');
-            },
-            light(){
-                global.settings.theme = 'light';
-                $('html').removeClass();
-                $('html').addClass('light');
-            },
-            night(){
-                global.settings.theme = 'night';
-                $('html').removeClass();
-                $('html').addClass('night');
-            },
-            redgreen(){
-                global.settings.theme = 'redgreen';
-                $('html').removeClass();
-                $('html').addClass('redgreen');
+                $('html').addClass(theme);
             },
             si(){
                 global.settings.affix = 'si';

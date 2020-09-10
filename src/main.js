@@ -9,7 +9,7 @@ import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
@@ -1020,7 +1020,6 @@ function fastLoop(){
                         breakdown.p.consume.Mana[loc('tab_alchemy')] = -(trasmute);
                         breakdown.p.consume.Crystal[loc('tab_alchemy')] = -(trasmute * 0.5);
                         breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
-                        console.log(breakdown.p.consume);
                     }
                 }
             });
@@ -1604,6 +1603,26 @@ function fastLoop(){
                 }
             }
             global.galaxy.foothold.support = used_support;
+        }
+
+        // Guard Post
+        if (global.portal['guard_post']){
+            global.portal.guard_post.s_max = global.portal.guard_post.count * actions.portal.prtl_ruins.guard_post.support();
+
+            if (global.portal.guard_post.on > 0){
+                let army = global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
+                if (p_on['soul_forge']){
+                    let forge = soulForgeSoldiers();
+                    if (forge <= army){
+                        army -= forge;
+                    }
+                }
+                if (army < global.portal.guard_post.on){
+                    global.portal.guard_post.on = army;
+                }                
+            }
+
+            global.portal.guard_post.support = global.portal.guard_post.on;
         }
 
         // Space Station
@@ -4675,6 +4694,7 @@ function midLoop(){
             colonist: 0,
             space_miner: 0,
             hell_surveyor: 0,
+            archaeologist: 0,
             crew: 0
         };
 
@@ -5454,6 +5474,15 @@ function midLoop(){
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
+
+        if (global.portal['archaeology']){
+            let supress = armyRating(global.portal.guard_post.on,'hellArmy',0) / 5000;
+            supress = supress > 1 ? 1 : supress;
+            let gain = Math.round(250000 * supress);            
+            caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
+            bd_Knowledge[loc('portal_archaeology_bd')] = (global.civic.archaeologist.workers * gain)+'v';
+        }
+
         if (p_on['embassy'] && global.galaxy['symposium']){
             let dorm = 1750 * p_on['dormitory'];
             let gtrade = 650 * global.galaxy.trade.cur;
@@ -5605,6 +5634,9 @@ function midLoop(){
         }
         if (global.portal['carport']){
             lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;
+        }
+        if (global.portal['archaeology']){
+            lCaps['archaeologist'] += global.portal.archaeology.count * 2;
         }
         if (p_on['nexus']){
             let helium_gain = p_on['nexus'] * spatialReasoning(4000);

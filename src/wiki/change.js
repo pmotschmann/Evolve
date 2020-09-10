@@ -12,7 +12,8 @@ const changeList = [
             `The same monument type will no longer be chosen twice in a row.`,
             `Evil races can now construct a Pillar of Bones monument type.`,
             `Build queue resource highlighting.`,
-            `Igpay Atinlay`
+            `Low Contrast Dark Night Theme`,
+            `Igpay Atinlay`,
         ]
     },
     {

@@ -2,6 +2,7 @@ import { global, keyMultiplier } from './vars.js';
 import { clearElement, popover, darkEffect, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
+import { armyRating } from './civics.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -176,6 +177,12 @@ export const job_desc = {
     hell_surveyor(){
         return loc('job_hell_surveyor_desc');
     },
+    archaeologist(){
+        let supress = armyRating(global.portal.guard_post.on,'hellArmy',0) / 5000;
+        supress = supress > 1 ? 1 : supress;
+        let know = Math.round(250000 * supress);
+        return loc('job_archaeologist_desc',[know.toLocaleString()]);
+    },
     crew(){
         return loc('job_crew_desc');
     }
@@ -202,6 +209,7 @@ export function defineJobs(){
     loadJob('colonist',1,5,'advanced');
     loadJob('space_miner',1,5,'advanced');
     loadJob('hell_surveyor',1,1,'advanced');
+    loadJob('archaeologist',1,1,'advanced');
     loadJob('crew',1,4,'alert');
     loadFoundry();
 }

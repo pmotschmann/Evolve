@@ -492,7 +492,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 5;
+global['beta'] = 6;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1510,6 +1510,7 @@ export function clearStates(){
     global.settings.showGalactic = false;
     global.settings.showPortal = false;
     global.settings.showEjector = false;
+    global.settings.showAlchemy  = false;
     global.settings.space.home = true;
     global.settings.space.moon = false;
     global.settings.space.red = false;

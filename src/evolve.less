@@ -2613,7 +2613,7 @@ html.night {
 
 .redgreenTheme,
 html.redgreen {
-    .nightTheme();
+    .nightTheme();    
     .has-text-success {
         color: #00ff00 !important;
     }
@@ -2732,6 +2732,46 @@ html.redgreen {
                 }
             }
         }
+    }
+}
+
+.darkNightTheme,
+html.darkNight {
+    .nightTheme();
+    h2, h3,
+    .content h2,
+    .content h3,
+    body {
+        color: #b8b8b8;
+    }
+    .has-text-warning {
+        color: #d6b220 !important;
+    }
+    .main > div.popper,
+    body .modal > div.popper {
+        color: #b8b8b8 !important;
+        .has-text-dark {
+            color: #b8b8b8 !important;
+        }
+    }
+    .tabs a {
+        color: #b8b8b8;
+    }
+    .button {
+        color: #cccccc;
+    }
+    .b-tooltip:after {
+        color: #b8b8b8;
+    }
+    .has-numberinput {
+        input {
+            color: #b8b8b8;
+        }
+    }
+    input,
+    select,
+    textarea {
+        background: #b8b8b8;
     }
 }
 
