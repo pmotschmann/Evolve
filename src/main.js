@@ -5477,6 +5477,9 @@ function midLoop(){
             if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 gain *= 1 + (p_on['sensor_drone'] * 0.02);
             }
+            if (global.tech['science'] >= 20){
+                gain *= 3;
+            }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
@@ -6493,6 +6496,13 @@ function midLoop(){
             }
         });
     });
+
+    if ($(`#buildQueue.right`).length > 0){
+        $(`#msgQueue.right`).css('height',`calc(100vh - 6.5rem - ${$(`#buildQueue.right`).height()}px)`);
+    }
+    else {
+        $(`#msgQueue`).css('height',`5rem`);
+    }
 }
 
 let sythMap = {

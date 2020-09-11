@@ -37,7 +37,7 @@ export function index(){
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
             <h2 class="is-sr-only">Message Queue</h2>
-            <div id="msgQueue" class="msgQueue has-text-info" aria-live="polite"></div>
+            <div id="msgQueue" class="msgQueue sticky has-text-info" aria-live="polite"></div>
         </div>
         <div id="resources" class="resources sticky"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);

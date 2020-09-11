@@ -4576,8 +4576,11 @@ export const actions = {
                 let gain = 3000;
                 if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                     gain *= 1 + (p_on['sensor_drone'] * 0.02);
-                    gain = +(gain).toFixed(0);
                 }
+                if (global.tech['science'] >= 20){
+                    gain *= 3;
+                }
+                gain = +(gain).toFixed(0);
                 return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return powerCostMod(2); },
@@ -8311,6 +8314,25 @@ export const actions = {
                 return false;
             }
         },
+        advanced_biotech: {
+            id: 'tech-advanced_biotech',
+            title: loc('tech_advanced_biotech'),
+            desc: loc('tech_advanced_biotech'),
+            category: 'science',
+            era: 'interdimensional',
+            reqs: { science: 19, high_tech: 18 },
+            grant: ['science',20],
+            cost: {
+                Knowledge(){ return 25500000; }
+            },
+            effect(){ return loc('tech_advanced_biotech_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         bioscience: {
             id: 'tech-bioscience',
             title: loc('tech_bioscience'),
@@ -9566,6 +9588,31 @@ export const actions = {
                     global.city.factory['Nano'] = 0;
                     messageQueue(loc('tech_nano_tubes_msg'),'info');
                     defineIndustry();
+                    return true;
+                }
+                return false;
+            }
+        },
+        scarletite: {
+            id: 'tech-scarletite',
+            title: loc('tech_scarletite'),
+            desc: loc('tech_scarletite'),
+            category: 'crafting',
+            era: 'interdimensional',
+            reqs: { hell_ruins: 4 },
+            grant: ['scarletite',1],
+            cost: {
+                Knowledge(){ return 26750000; },
+                Iron(){ return 100000000; },
+                Adamantite(){ return 15000000; },
+                Orichalcum(){ return 8000000; }
+            },
+            effect: loc('tech_scarletite_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Scarletite.display = true;
+                    messageQueue(loc('tech_scarletite_avail'),'info');
+                    loadFoundry();
                     return true;
                 }
                 return false;

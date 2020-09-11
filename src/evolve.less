@@ -275,6 +275,9 @@ a {
 
     .msgQueue {
         font-size: .75rem;
+        &.right {
+            height: ~"calc(100vh - 9rem)";
+        }
     }
 
     .bldQueue,
@@ -1729,7 +1732,8 @@ div.bigbang {
     scrollbar-width: thin;
 }
 
-.resTabs > section {
+.resTabs > section,
+.bldQueue {
     scrollbar-width: thin;
 }
 
@@ -2082,24 +2086,28 @@ html.dark {
     }
 
     .sticky::-webkit-scrollbar-track,
-    .resTabs > section::webkit-scrollbar-track {
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #1f2424;
     }
     
     .sticky::-webkit-scrollbar,
-    .resTabs > section::-webkit-scrollbar {
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar {
         width: 6px;
         background-color: #1f2424;
     }
     
     .sticky::-webkit-scrollbar-thumb,
-    .resTabs > section::-webkit-scrollbar-thumb {
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
         background-color: #F5F5F5;
     }
 
     .sticky,
-    .resTabs > section {        
+    .resTabs > section,
+    .bldQueue {
         scrollbar-color: #F5F5F5 #1f2424;
     }
 }
@@ -2437,24 +2445,28 @@ html.light {
     }
 
     .sticky::-webkit-scrollbar-track,
-    .resTabs > section::-webkit-scrollbar-track {
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #F5F5F5;
     }
     
     .sticky::-webkit-scrollbar,
-    .resTabs > section::-webkit-scrollbar {
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar {
         width: 6px;
         background-color: #F5F5F5;
     }
     
     .sticky::-webkit-scrollbar-thumb,
-    .resTabs > section::-webkit-scrollbar-thumb {
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
         background-color: #000000;
     }
 
     .sticky,
-    .resTabs > section {        
+    .resTabs > section,
+    .bldQueue {
         scrollbar-color: #000000 #F5F5F5;
     }
 }
@@ -2585,24 +2597,28 @@ html.night {
     }
 
     .sticky::-webkit-scrollbar-track,
-    .resTabs > section::-webkit-scrollbar-track {
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #000000;
     }
     
     .sticky::-webkit-scrollbar,
-    .resTabs > section::-webkit-scrollbar {
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar-track {
         width: 6px;
         background-color: #000000;
     }
     
     .sticky::-webkit-scrollbar-thumb,
-    .resTabs > section::-webkit-scrollbar-thumb {
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
         background-color: #727272;
     }
 
     .sticky,
-    .resTabs > section {        
+    .resTabs > section,
+    .bldQueue {
         scrollbar-color: #727272 #000000;
     }
 }
