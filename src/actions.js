@@ -4917,6 +4917,29 @@ export const actions = {
                 return false;
             }
         },
+        arcology: {
+            id: 'tech-arcology',
+            title: loc('tech_arcology'),
+            desc: loc('tech_arcology'),
+            category: 'housing',
+            era: 'interdimensional',
+            reqs: { hell_ruins: 4, housing: 3, high_tech: 17 },
+            grant: ['housing',4],
+            cost: {
+                Knowledge(){ return 25000000; }
+            },
+            effect(){ return loc('tech_arcology_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['arcology'] = {
+                        count: 0,
+                        on: 0
+                    };
+                    return true;
+                }
+                return false;
+            }
+        },
         steel_beams: {
             id: 'tech-steel_beams',
             title: loc('tech_steel_beams'),
@@ -6254,6 +6277,28 @@ export const actions = {
                 Soul_Gem(){ return 2; }
             },
             effect: loc('tech_hellfire_furnace_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        infernium_fuel: {
+            id: 'tech-infernium_fuel',
+            title: loc('tech_infernium_fuel'),
+            desc: loc('tech_infernium_fuel'),
+            category: 'mining',
+            era: 'interdimensional',
+            reqs: { smelting: 7, hell_ruins: 4 },
+            grant: ['smelting',8],
+            cost: {
+                Knowledge(){ return 27500000; },
+                Coal(){ return 45000000; },
+                Oil(){ return 500000; },
+                Infernite(){ return 750000; }
+            },
+            effect: loc('tech_infernium_fuel_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -8823,6 +8868,28 @@ export const actions = {
                 return false;
             }
         },
+        cybernetics: {
+            id: 'tech-cybernetics',
+            title: loc('tech_cybernetics'),
+            desc: loc('tech_cybernetics'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { high_tech: 17, hell_ruins: 4 },
+            grant: ['high_tech',18],
+            cost: {
+                Knowledge(){ return 25000000; },
+                Adamantite(){ return 12500000; },
+                Stanene(){ return 50000000; },
+                Vitreloy(){ return 10000000; },
+            },
+            effect(){ return loc('tech_cybernetics_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         corrupt_gem_analysis: {
             id: 'tech-corrupt_gem_analysis',
             title: loc('tech_corrupt_gem_analysis'),
@@ -8868,7 +8935,29 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     messageQueue(loc('tech_hell_search_result'),'info');
                     global.settings.portal.ruins = true;
+                    global.settings.portal.gate = true;
                     global.portal['guard_post'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        codex_infernium: {
+            id: 'tech-codex_infernium',
+            title: loc('tech_codex_infernium'),
+            desc: loc('tech_codex_infernium'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { hell_ruins: 3 },
+            grant: ['hell_ruins',4],
+            cost: {
+                Knowledge(){ return 23500000; },
+                Codex(){ return 1; }
+            },
+            effect(){ return loc('tech_codex_infernium_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Codex.display = false;
                     return true;
                 }
                 return false;
@@ -10618,6 +10707,32 @@ export const actions = {
                     return true;
                 }
                 return false;
+            }
+        },
+        cyborg_soldiers: {
+            id: 'tech-cyborg_soldiers',
+            title: loc('tech_cyborg_soldiers'),
+            desc: loc('tech_cyborg_soldiers'),
+            category: 'military',
+            era: 'interdimensional',
+            reqs: { military: 10, high_tech: 18 },
+            grant: ['military',11],
+            cost: {
+                Knowledge(){ return 26000000; },
+                Adamantite(){ return 8000000; },
+                Bolognium(){ return 4000000; },
+                Orichalcum(){ return 6000000; }
+            },
+            effect: loc('tech_cyborg_soldiers_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                vBind({el: `#garrison`},'update');
+                vBind({el: `#c_garrison`},'update');
             }
         },
         space_marines: {
@@ -12642,7 +12757,8 @@ export const actions = {
                         Plywood: 0, Brick: 0,
                         Wrought_Iron: 0, Sheet_Metal: 0,
                         Mythril: 0, Aerogel: 0,
-                        Nanoweave: 0, Crystal: 0
+                        Nanoweave: 0, Scarletite: 0,
+                        Crystal: 0
                     };
                     return true;
                 }
@@ -16138,7 +16254,7 @@ function cataclysm(){
         global.city['powered'] = true;
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0 };
+        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
         global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Iron: 1, Steel: 1 };
         global.city['fission_power'] = { count: 0, on: 0 };
         global.city['oil_power'] = { count: 0, on: 0 };

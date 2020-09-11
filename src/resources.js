@@ -36,6 +36,7 @@ export const resource_values = {
     Genes: 0,
     Soul_Gem: 0,
     Corrupt_Gem: 0,
+    Codex: 0
 };
 
 export const tradeRatio = {
@@ -67,7 +68,7 @@ export const tradeRatio = {
     Stanene: 0.1,
     Bolognium: 0.12,
     Vitreloy: 0.12,
-    Orichalcum: 0.05,
+    Orichalcum: 0.05
 }
 
 export const atomic_mass = {
@@ -106,7 +107,8 @@ export const atomic_mass = {
     Sheet_Metal: 26.9815,
     Mythril: 94.239,
     Aerogel: 7.84,
-    Nanoweave: 23.71
+    Nanoweave: 23.71,
+    Scarletite: 188.6
 };
 
 export function craftCost(){
@@ -119,6 +121,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
+            Scarletite: [{ r: 'Iron', a: 3850 },{ r: 'Adamantite', a: 198 },{ r: 'Orichalcum', a: 22 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -128,6 +131,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
+            Scarletite: [{ r: 'Iron', a: 3500 },{ r: 'Adamantite', a: 180 },{ r: 'Orichalcum', a: 20 }],
         };
 }
 
@@ -270,6 +274,7 @@ export function defineResources(){
     loadResource('Genes',-2,0,false,false,'advanced');
     loadResource('Soul_Gem',-2,0,false,false,'advanced');
     loadResource('Corrupt_Gem',-2,0,false,false,'caution');
+    loadResource('Codex',-2,0,false,false,'caution');
     loadResource('Plywood',-1,0,false,false,'danger');
     loadResource('Brick',-1,0,false,false,'danger');
     loadResource('Wrought_Iron',-1,0,false,false,'danger');
@@ -277,6 +282,7 @@ export function defineResources(){
     loadResource('Mythril',-1,0,false,false,'danger');
     loadResource('Aerogel',-1,0,false,false,'danger');
     loadResource('Nanoweave',-1,0,false,false,'danger');
+    loadResource('Scarletite',-1,0,false,false,'danger');
 
     if (global.race.species !== 'protoplasm'){
         loadRouteCounter();

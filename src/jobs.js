@@ -1,4 +1,4 @@
-import { global, keyMultiplier } from './vars.js';
+import { global, keyMultiplier, p_on } from './vars.js';
 import { clearElement, popover, darkEffect, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
@@ -178,7 +178,8 @@ export const job_desc = {
         return loc('job_hell_surveyor_desc');
     },
     archaeologist(){
-        let supress = armyRating(global.portal.guard_post.on,'hellArmy',0) / 5000;
+        let arc = (p_on['arcology'] || 0) * 75;
+        let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
         supress = supress > 1 ? 1 : supress;
         let know = Math.round(250000 * supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
@@ -422,7 +423,7 @@ export function loadFoundry(){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){

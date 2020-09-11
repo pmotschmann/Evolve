@@ -492,7 +492,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 6;
+global['beta'] = 7;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -670,6 +670,9 @@ if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Or
 }
 if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Nanoweave']){
     global.interstellar.mass_ejector['Nanoweave'] = 0;
+}
+if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Scarletite']){
+    global.interstellar.mass_ejector['Scarletite'] = 0;
 }
 
 if (!global.settings.space['alpha']){
@@ -1057,6 +1060,10 @@ if (global.city['foundry'] && !global.city.foundry['Aerogel']){
 
 if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
     global.city.foundry['Nanoweave'] = 0;
+}
+
+if (global.city['foundry'] && !global.city.foundry['Scarletite']){
+    global.city.foundry['Scarletite'] = 0;
 }
 
 if (!global.settings['arpa']){

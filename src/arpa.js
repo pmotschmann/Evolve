@@ -160,8 +160,8 @@ export const arpaProjects = {
         }
     },
     roid_eject: {
-        title: loc('arpa_projects_roid_eject_title'),
-        desc: loc('arpa_projects_roid_eject_desc'),
+        title(){ return loc('arpa_projects_roid_eject_title',[roid_eject_type()]); },
+        desc(){ return loc(global.tech['roid_eject'] <= 10 ? 'arpa_projects_roid_eject_desc' : 'arpa_projects_roid_eject_desc2',[roid_eject_type()]); },
         reqs: { blackhole: 6, gateway: 3 },
         grant: 'roid_eject',
         effect(){
@@ -171,7 +171,7 @@ export const arpaProjects = {
                 mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
                 next = (0.35 * (global.tech['roid_eject'] + 1) * (1 + ((global.tech['roid_eject'] + 1) / 10))) - mass;
             }
-            return `<div>${loc('arpa_projects_roid_eject_effect1')}</div><div>${loc('arpa_projects_roid_eject_effect2',[+(mass).toFixed(3),+(next).toFixed(3)])}</div>`;
+            return `<div>${loc('arpa_projects_roid_eject_effect1')}</div><div>${loc('arpa_projects_roid_eject_effect2',[+(mass).toFixed(3),+(next).toFixed(3),roid_eject_type()])}</div>`;
         },
         cost: {
             Money(offset){ return costMultiplier('roid_eject', offset, 25000000, 1.1); },
@@ -230,6 +230,24 @@ export const arpaProjects = {
         }
     },
 };
+
+function roid_eject_type(){
+    if (global.tech['roid_eject'] <= 10){
+        return loc('arpa_projects_roid_eject_asteroid');;
+    }
+    else if (global.tech['roid_eject'] <= 25){
+        return loc('arpa_projects_roid_eject_moon');;
+    }
+    else if (global.tech['roid_eject'] <= 40){
+        return loc('arpa_projects_roid_eject_dwarf');;
+    }
+    else if (global.tech['roid_eject'] <= 60){
+        return loc('arpa_projects_roid_eject_planet');;
+    }
+    else {
+        return loc('arpa_projects_roid_eject_remnant');;
+    }
+}
 
 export const genePool = {
     genetic_memory: {

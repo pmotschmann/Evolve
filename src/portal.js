@@ -1,6 +1,6 @@
-import { global, keyMultiplier, p_on } from './vars.js';
+import { global, keyMultiplier, p_on, poppers } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
-import { traits } from './races.js';
+import { traits, races } from './races.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction, drawTech } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -424,11 +424,12 @@ const fortressModules = {
             },
             filter(val,type){
                 let army = Math.round(armyRating(val,'hellArmy',0));
+                let arc = (p_on['arcology'] || 0) * 75;
                 switch (type){
                     case 'army':
-                        return army;
+                        return army + arc;
                     case 'sup':
-                        let supress = +(army / 50).toFixed(2);
+                        let supress = +((army + arc) / 50).toFixed(2);
                         return `${supress > 100 ? 100 : supress}%`;
                 }
             }
@@ -494,7 +495,9 @@ const fortressModules = {
             },
             cost: {
                 Soul_Gem(){ return global.portal.vault.count === 0 ? 100 : 0; },
-                Orichalcum(){ return global.portal.vault.count === 1 ? 25000000 : 0; },
+                Money(){ return global.portal.vault.count === 1 ? 250000000 : 0; },
+                Adamantite(){ return global.portal.vault.count === 1 ? 12500000 : 0; },
+                Orichalcum(){ return global.portal.vault.count === 1 ? 30000000 : 0; },
             },
             effect(){ return global.portal.vault.count >= 1 ? loc('portal_vault_effect2') : loc('portal_vault_effect',[100]); },
             action(){
@@ -502,6 +505,8 @@ const fortressModules = {
                     incrementStruct('vault','portal');
                     if (global.portal.vault.count === 2){
                         global.tech.hell_ruins = 3;
+                        global.resource.Codex.display = true;
+                        global.resource.Codex.amount = 1;
                         messageQueue(loc('portal_vault_result'),'info');
                     }
                     return true;
@@ -511,20 +516,25 @@ const fortressModules = {
             post(){
                 if (global.portal.vault.count === 2){
                     drawTech();
+                    renderFortress();
+                    setTimeout(function(){
+                        let id = 'portal-vault';
+                        $(`#pop${id}`).hide();
+                        if (poppers[id]){
+                            poppers[id].destroy();
+                        }
+                        clearElement($(`#pop${id}`),true);
+                    },250);
                 }
             }
         },
         archaeology: {
             id: 'portal-archaeology',
             title: loc('portal_archaeology_title'),
-            desc: loc('portal_archaeology_title'),
             desc(){
                 return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div>`;
             },
             reqs: { hell_ruins: 2 },
-            condition(){
-                return global.portal.vault.count >= 2 ? false : true;
-            },
             cost: {
                 Money(offset){ return spaceCostMultiplier('archaeology', offset, 100000000, 1.25, 'portal'); },
                 Titanium(offset){ return spaceCostMultiplier('archaeology', offset, 3750000, 1.25, 'portal'); },
@@ -539,6 +549,56 @@ const fortressModules = {
                     global.civic.archaeologist.display = true;
                     return true;
                 }
+                return false;
+            }
+        },
+        arcology: {
+            id: 'portal-arcology',
+            title: loc('portal_arcology_title'),
+            desc(){
+                return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { housing: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('arcology', offset, 180000000, 1.22, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('arcology', offset, 7500000, 1.22, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('arcology', offset, 2800000, 1.22, 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('arcology', offset, 5500000, 1.22, 'portal'); },
+                Nanoweave(offset){ return spaceCostMultiplier('arcology', offset, 650000, 1.22, 'portal'); },
+            },
+            powered(){ return 25; },
+            effect(){
+                return `<div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('arcology','portal');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global['resource'][global.race.species].max += 8;
+                        global.portal.arcology.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                vBind({el: `#srprtl_ruins`},'update');
+            },
+            postPower(){
+                vBind({el: `#srprtl_ruins`},'update');
+            }
+        },
+        ancient_pillars: {
+            id: 'portal-ancient_pillars',
+            title: loc('portal_ancient_pillars_title'),
+            desc: loc('portal_ancient_pillars_desc'),
+            reqs: { hell_ruins: 2 },
+            cost: {},
+            no_queue(){ return true },
+            effect(){
+                return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length])}</div>`;
+            },
+            action(){
                 return false;
             }
         },

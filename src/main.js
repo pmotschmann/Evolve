@@ -747,6 +747,7 @@ function fastLoop(){
         Mythril: {},
         Aerogel: {},
         Nanoweave: {},
+        Scarletite: {},
     };
 
     var time_multiplier = 0.25;
@@ -1311,8 +1312,8 @@ function fastLoop(){
 
         // Power usage
         let p_structs = [
-            'city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock','int_neutron:stellar_forge',
-            'int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
+            'prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock',
+            'int_neutron:stellar_forge','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
             'int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy',
             'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver',
@@ -4950,6 +4951,11 @@ function midLoop(){
             caps[global.race.species] += p_on['dormitory'] * 3;
             bd_Citizen[loc('galaxy_dormitory')] = (p_on['dormitory'] * 3)+'v';
         }
+        if (p_on['arcology']){
+            caps[global.race.species] += p_on['arcology'] * 8;
+            bd_Citizen[loc('portal_arcology_title')] = (p_on['arcology'] * 8)+'v';
+            lCaps['garrison'] += p_on['arcology'] * 5;
+        }
         if (global.space['living_quarters']){
             let base = global.race['cataclysm'] ? 2 : 1;
             if (red_on['biodome']){
@@ -5476,7 +5482,8 @@ function midLoop(){
         }
 
         if (global.portal['archaeology']){
-            let supress = armyRating(global.portal.guard_post.on,'hellArmy',0) / 5000;
+            let arc = (p_on['arcology'] || 0) * 75;
+            let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
             supress = supress > 1 ? 1 : supress;
             let gain = Math.round(250000 * supress);            
             caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
@@ -5806,7 +5813,7 @@ function midLoop(){
             Stanene: bd_Stanene,
             Bolognium: bd_Bolognium,
             Vitreloy: bd_Vitreloy,
-            Orichalcum: bd_Orichalcum,
+            Orichalcum: bd_Orichalcum
         };
 
         let create_value = crateValue();

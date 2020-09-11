@@ -574,6 +574,11 @@ export function harmonyEffect(){
                     boost = global.stats.achieve.ascended.m * global.race.Harmony.count;
                 }
                 break;
+            case 'magic':
+                if (global.stats.achieve.ascended.hasOwnProperty('mg')){
+                    boost = global.stats.achieve.ascended.mg * global.race.Harmony.count;
+                }
+                break;
             default:
                 if (global.stats.achieve.ascended.hasOwnProperty('l')){
                     boost = global.stats.achieve.ascended.l * global.race.Harmony.count;
