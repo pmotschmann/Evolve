@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, poppers } from './vars.js';
+import { global, keyMultiplier, p_on, quantum_level, poppers } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
 import { traits, races } from './races.js';
 import { armyRating } from './civics.js';
@@ -462,7 +462,7 @@ const fortressModules = {
             id: 'portal-guard_post',
             title: loc('portal_guard_post_title'),
             desc(){
-                return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div>`;
+                return `<div>${loc('portal_guard_post_title')}</div><div class="has-text-special">${loc('requires_soldiers')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
             cost: {
@@ -470,11 +470,11 @@ const fortressModules = {
                 Lumber(offset){ return spaceCostMultiplier('guard_post', offset, 6500000, 1.06, 'portal'); },
                 Sheet_Metal(offset){ return spaceCostMultiplier('guard_post', offset, 300000, 1.06, 'portal'); },
             },
-            powered(){ return 1; },
+            powered(){ return powerCostMod(5); },
             support(){ return 1; },
             effect(){
                 let rating = Math.round(armyRating(1,'hellArmy',0));
-                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2')}</div>`;
+                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -532,7 +532,7 @@ const fortressModules = {
             id: 'portal-archaeology',
             title: loc('portal_archaeology_title'),
             desc(){
-                return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div>`;
+                return `<div>${loc('portal_archaeology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_ruins: 2 },
             cost: {
@@ -540,8 +540,9 @@ const fortressModules = {
                 Titanium(offset){ return spaceCostMultiplier('archaeology', offset, 3750000, 1.25, 'portal'); },
                 Mythril(offset){ return spaceCostMultiplier('archaeology', offset, 1250000, 1.25, 'portal'); },
             },
+            powered(){ return powerCostMod(8); },
             effect(){
-                return `<div>${loc('portal_archaeology_effect',[2])}</div>`;
+                return `<div>${loc('portal_archaeology_effect',[2])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -566,9 +567,11 @@ const fortressModules = {
                 Orichalcum(offset){ return spaceCostMultiplier('arcology', offset, 5500000, 1.22, 'portal'); },
                 Nanoweave(offset){ return spaceCostMultiplier('arcology', offset, 650000, 1.22, 'portal'); },
             },
-            powered(){ return 25; },
+            powered(){ return powerCostMod(25); },
             effect(){
-                return `<div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let containers = p_on['arcology'] * Math.round(quantum_level) * 8;
+                let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                return `<div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

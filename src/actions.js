@@ -5398,30 +5398,9 @@ export const actions = {
             desc: loc('tech_windmill'),
             category: 'agriculture',
             era: 'globalized',
-            reqs: { hunting: 2, high_tech: 4 },
-            grant: ['wind_plant',1],
-            not_trait: ['soul_eater'],
-            cost: {
-                Knowledge(){ return 66000; }
-            },
-            effect: loc('tech_wind_plant_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    global.city['windmill'] = { count: 0 };
-                    return true;
-                }
-                return false;
-            }
-        },
-        evil_wind_plant: {
-            id: 'tech-evil_wind_plant',
-            title: loc('tech_windmill'),
-            desc: loc('tech_windmill'),
-            category: 'power_generation',
-            era: 'globalized',
             reqs: { high_tech: 4 },
+            condition(){ return (global.tech['hunting'] && global.tech['hunting'] >= 2) || global.race['detritivore'] || global.race['soul_eater'] ? true : false; },
             grant: ['wind_plant',1],
-            trait: ['soul_eater'],
             cost: {
                 Knowledge(){ return 66000; }
             },
@@ -10285,6 +10264,25 @@ export const actions = {
                 Adamantite(){ return 1000; }
             },
             effect: loc('tech_adamantite_hoe_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        cyber_limbs: {
+            id: 'tech-cyber_limbs',
+            title: loc('tech_cyber_limbs'),
+            desc: loc('tech_cyber_limbs'),
+            category: 'mining',
+            era: 'interdimensional',
+            reqs: { high_tech: 18 },
+            grant: ['cyber_worker',1],
+            cost: {
+                Knowledge(){ return 27000000; },
+            },
+            effect: loc('tech_cyber_limbs_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;

@@ -1319,7 +1319,9 @@ function fastLoop(){
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver',
             'int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
-            'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_pit:gun_emplacement','prtl_pit:soul_attractor','int_sirius:ascension_trigger'];
+            'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
+            'prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_pit:soul_attractor','int_sirius:ascension_trigger'
+        ];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -3591,8 +3593,11 @@ function fastLoop(){
                 ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
                     if (global.race.casting[spell] && global.race.casting[spell] > 0){
                         let consume_mana = manaCost(global.race.casting[spell]);
-                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);    
-                        if (!modRes('Mana', -(consume_mana * time_multiplier))){
+                        breakdown.p.consume.Mana[loc(`modal_pylon_spell_${spell}`)] = -(consume_mana);
+
+                        let buffer = global.resource.Mana.diff > 0 ? global.resource.Mana.diff * time_multiplier : 0
+                        if (!modRes('Mana', -(consume_mana * time_multiplier), false, buffer)){
+                            if (global.resource.Mana.amount)
                             global.race.casting[spell]--;
                         }
                     }
@@ -4955,6 +4960,9 @@ function midLoop(){
             caps[global.race.species] += p_on['arcology'] * 8;
             bd_Citizen[loc('portal_arcology_title')] = (p_on['arcology'] * 8)+'v';
             lCaps['garrison'] += p_on['arcology'] * 5;
+
+            caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
+            caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
         }
         if (global.space['living_quarters']){
             let base = global.race['cataclysm'] ? 2 : 1;
@@ -5645,8 +5653,8 @@ function midLoop(){
         if (global.portal['carport']){
             lCaps['hell_surveyor'] += global.portal.carport.count - global.portal.carport.damaged;
         }
-        if (global.portal['archaeology']){
-            lCaps['archaeologist'] += global.portal.archaeology.count * 2;
+        if (p_on['archaeology']){
+            lCaps['archaeologist'] += p_on['archaeology'] * 2;
         }
         if (p_on['nexus']){
             let helium_gain = p_on['nexus'] * spatialReasoning(4000);

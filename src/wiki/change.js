@@ -11,9 +11,10 @@ const changeList = [
             `Fling asteroids into the blackhole with the Asteroid Redirect ARPA project.`,
             `The same monument type will no longer be chosen twice in a row.`,
             `Evil races can now construct a Pillar of Bones monument type.`,
+            `Races with Detritivore can now build Windmills.`,
             `Build queue resource highlighting.`,
-            `Low Contrast Dark Night Theme`,
-            `Igpay Atinlay`,
+            `Low Contrast Dark Night Theme.`,
+            `Ewnay igpay atinlay anguagelay.`
         ]
     },
     {

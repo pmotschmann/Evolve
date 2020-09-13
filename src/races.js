@@ -1969,6 +1969,9 @@ export function racialTrait(workers,type){
             modifier *= 1 + (global.race.casting[type === 'hellArmy' ? 'army' : type] / 50);
         }
     }
+    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
+        modifier *= 1.25;
+    }
     return modifier;
 }
 

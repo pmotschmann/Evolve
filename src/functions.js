@@ -393,15 +393,17 @@ export function cleanBuildPopOver(id){
     clearElement($(`#pop${id}`),true);
 }
 
-export function modRes(res,val,notrack){
+export function modRes(res,val,notrack,buffer){
     let count = global.resource[res].amount + val;
     let success = true;
     if (count > global.resource[res].max && global.resource[res].max != -1){
         count = global.resource[res].max;
     }
     else if (count < 0){
+        if (!buffer || (buffer && (count * -1) > buffer)){
+            success = false;
+        }
         count = 0;
-        success = false;
     }
     if (!Number.isNaN(count)){
         global.resource[res].amount = count;

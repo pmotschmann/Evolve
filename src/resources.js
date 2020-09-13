@@ -121,7 +121,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
-            Scarletite: [{ r: 'Iron', a: 3850 },{ r: 'Adamantite', a: 198 },{ r: 'Orichalcum', a: 22 }],
+            Scarletite: [{ r: 'Iron', a: 16500 },{ r: 'Adamantite', a: 385 },{ r: 'Orichalcum', a: 55 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -131,7 +131,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
-            Scarletite: [{ r: 'Iron', a: 3500 },{ r: 'Adamantite', a: 180 },{ r: 'Orichalcum', a: 20 }],
+            Scarletite: [{ r: 'Iron', a: 15000 },{ r: 'Adamantite', a: 350 },{ r: 'Orichalcum', a: 50 }],
         };
 }
 
