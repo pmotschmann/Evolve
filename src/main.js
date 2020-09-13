@@ -4963,6 +4963,10 @@ function midLoop(){
 
             caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
             caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
+
+            let money = (p_on['arcology'] * spatialReasoning(bank_vault() * 5));
+            caps['Money'] += money;
+            bd_Money[loc('portal_arcology_title')] = money+'v';
         }
         if (global.space['living_quarters']){
             let base = global.race['cataclysm'] ? 2 : 1;

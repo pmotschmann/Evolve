@@ -1,8 +1,9 @@
 import { global, keyMultiplier, p_on, quantum_level, poppers } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
 import { traits, races } from './races.js';
+import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
-import { payCosts, setAction, drawTech } from './actions.js';
+import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { loc } from './locale.js';
 
@@ -569,9 +570,11 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(25); },
             effect(){
+                let vault = spatialReasoning(bank_vault() * 5);
+                vault = +(vault).toFixed(0);
                 let containers = p_on['arcology'] * Math.round(quantum_level) * 8;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                return `<div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
