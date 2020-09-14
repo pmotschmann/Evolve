@@ -9590,8 +9590,32 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.resource.Scarletite.display = true;
+                    global.portal['hell_forge'] = { count: 0, on: 0 };
                     messageQueue(loc('tech_scarletite_avail'),'info');
                     loadFoundry();
+                    if (!global.pillars[global.race.species]){
+                        global.tech['fusable'] = 1;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        pillars: {
+            id: 'tech-pillars',
+            title: loc('tech_pillars'),
+            desc: loc('tech_pillars'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { scarletite: 1, fusable: 1 },
+            grant: ['pillars',1],
+            cost: {
+                Knowledge(){ return 30000000; }
+            },
+            effect: loc('tech_pillars_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    messageQueue(loc('tech_pillars_msg',[races[global.race.species].entity]),'info');
                     return true;
                 }
                 return false;
@@ -15748,6 +15772,9 @@ function drawModal(c_action,type){
             smelterModal(body);
             break;
         case 'stellar_forge':
+            smelterModal(body);
+            break;
+        case 'hell_forge':
             smelterModal(body);
             break;
         case 'geothermal':

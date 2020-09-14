@@ -432,7 +432,9 @@ export function loadFoundry(){
                 $('#foundry').append(resource);
 
                 let controls = $('<div class="controls"></div>');
-                let job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
+                let job_label = res === 'Scarletite' && global.portal.hasOwnProperty('hell_forge')
+                    ? $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ p.on | maxScar }}</span></div>`)
+                    : $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
@@ -446,15 +448,26 @@ export function loadFoundry(){
         }
         v_foundry = new Vue({
             el: `#foundry`,
-            data: {
+            data: global.portal.hasOwnProperty('hell_forge') ? {
+                f: global.city.foundry,
+                c: global.civic.craftsman,
+                p: global.portal.hell_forge
+            } : {
                 f: global.city.foundry,
                 c: global.civic.craftsman
             },
             methods: {
                 add(res){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.city.foundry.crafting < global.civic.craftsman.max && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))){
+                    let tMax = -1;
+                    if (res === 'Scarletite'){
+                        tMax = (p_on['hell_forge'] || 0);
+                    }
+                    for (let i=0; i<keyMult; i++){                        
+                        if (global.city.foundry.crafting < global.civic.craftsman.max 
+                            && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))
+                            && (tMax === -1 || tMax > global.city.foundry[res])
+                        ){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;
@@ -508,6 +521,11 @@ export function loadFoundry(){
                     else {
                         return 'count';
                     }
+                }
+            },
+            filters: {
+                maxScar(v){
+                    return (p_on['hell_forge'] || 0);
                 }
             }
         });

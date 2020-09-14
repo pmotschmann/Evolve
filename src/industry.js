@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, easterEgg } from './functions.js';
+import { vBind, popover, easterEgg } from './functions.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -67,12 +67,13 @@ function loadSmelter(parent,bind){
     }
 
     if (!global.race['forge']){
-        let fuelTypes = $('<div class="fuels"></div>');
+        let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+        let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
         parent.append(fuelTypes);
 
         if (!global.race['kindling_kindred'] || global.race['evil']){
             let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
-            let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ s.Wood }}</span></b-tooltip>`);
+            let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
             let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subWood);
@@ -81,7 +82,7 @@ function loadSmelter(parent,bind){
         }
 
         if (global.resource.Coal.display){
-            let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ s.Coal }}</span></b-tooltip>`);
+            let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} {{ s.Coal }}</span>`);
             let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
             let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subCoal);
@@ -90,7 +91,7 @@ function loadSmelter(parent,bind){
         }
 
         if (global.resource.Oil.display){
-            let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ s.Oil }}</span></b-tooltip>`);
+            let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
             let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
             let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subOil);
@@ -101,33 +102,35 @@ function loadSmelter(parent,bind){
         let available = $('<div class="avail"></div>');
         parent.append(available);
 
-        if (!global.race['kindling_kindred'] || global.race['evil']){
-            if (global.race['evil']){
-                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
-                    available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+        if (!bind){
+            if (!global.race['kindling_kindred'] || global.race['evil']){
+                if (global.race['evil']){
+                    if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+                        available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
+                    }
+                    else {
+                        available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                    }
                 }
                 else {
-                    available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
+                    available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
                 }
             }
-            else {
-                available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+
+            if (global.resource.Coal.display){
+                available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
             }
-        }
 
-        if (global.resource.Coal.display){
-            available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
-        }
-
-        if (global.resource.Oil.display){
-            available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+            if (global.resource.Oil.display){
+                available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+            }
         }
     }
 
     if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
-        let smelt = $('<div class="smelting"></div>');
-        let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ s.Steel }}</button></b-tooltip>`);
+        let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
+        let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
+        let steelSmelt = $(`<button class="button steel" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ s.Steel }}</button>`);
         parent.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -265,27 +268,10 @@ function loadSmelter(parent,bind){
                 }
             },
             ironLabel(){
-                let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
-                if (global.race['pyrophobia']){
-                    boost *= 0.9;
-                }
-                return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iron_name')]);
+                return matText('iron');
             },
             steelLabel(){
-                let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
-                if (global.tech['smelting'] >= 5){
-                    boost *= 1.2;
-                }
-                if (global.tech['smelting'] >= 6){
-                    boost *= 1.2;
-                }
-                if (global.tech['smelting'] >= 7){
-                    boost *= 1.25;
-                }
-                if (global.race['pyrophobia']){
-                    boost *= 0.9;
-                }
-                return loc('modal_smelter_steel',[+(boost).toFixed(3),loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
+                return matText('steel');
             },
             ironSmelting(){
                 let keyMult = keyMultiplier();
@@ -320,20 +306,7 @@ function loadSmelter(parent,bind){
                 }
             },
             buildLabel(type){
-                switch(type){
-                    case 'wood':
-                        return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
-                    case 'coal':
-                        let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
-                        if (global.tech['uranium'] && global.tech['uranium'] >= 3){
-                            return loc('modal_build_coal2',[coal_fuel,loc('resource_Coal_name'),loc('resource_Uranium_name')]);
-                        }
-                        else {
-                            return loc('modal_build_coal1',[coal_fuel,loc('resource_Coal_name')]);
-                        }
-                    case 'oil':
-                        return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
-                }
+                return tooptip(type);
             },
             ariaCount(fuel){
                 return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
@@ -358,13 +331,76 @@ function loadSmelter(parent,bind){
             }
         }
     });
+
+    function tooptip(type){
+        switch(type){
+            case 'wood':
+                return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
+            case 'coal':
+                let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
+                if (global.tech['uranium'] && global.tech['uranium'] >= 3){
+                    return loc('modal_build_coal2',[coal_fuel,loc('resource_Coal_name'),loc('resource_Uranium_name')]);
+                }
+                else {
+                    return loc('modal_build_coal1',[coal_fuel,loc('resource_Coal_name')]);
+                }
+            case 'oil':
+                return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
+        }
+    }
+
+    function matText(type){
+        if (type === 'steel'){
+            let boost = global.tech['smelting'] >= 4 ? 1.2 : 1;
+            if (global.tech['smelting'] >= 5){
+                boost *= 1.2;
+            }
+            if (global.tech['smelting'] >= 6){
+                boost *= 1.2;
+            }
+            if (global.tech['smelting'] >= 7){
+                boost *= 1.25;
+            }
+            if (global.race['pyrophobia']){
+                boost *= 0.9;
+            }
+            return loc('modal_smelter_steel',[+(boost).toFixed(3),loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
+        }
+        else {
+            let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
+            if (global.race['pyrophobia']){
+                boost *= 0.9;
+            }
+            return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iron_name')]);
+        }
+    }
+
+    if (!global.race['forge']){
+        let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+        ['wood','coal','oil'].forEach(function(fuel){
+            popover(`${id}${fuel}`,tooptip(fuel), {
+                elm: $(`#${id} > .${fuel}`),
+                attach: '#main',
+            });
+        });
+    }
+
+    if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
+        let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterMats`;
+        ['iron','steel'].forEach(function(mat){
+            popover(`${id}${mat}`,matText(mat), {
+                elm: $(`#${id} > .${mat}`),
+                attach: '#main',
+            });
+        });
+    }
 }
 
 function loadFactory(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
-    let lux = $(`<div class="factory"><b-tooltip :label="buildLabel('Lux')" :aria-label="buildLabel('Lux') + ariaProd('Lux')" position="is-left" size="is-small" multilined animated><span>${loc('modal_factory_lux')}</span></b-tooltip></div>`);
+    let lux = $(`<div class="factory"><span class="Lux" :aria-label="buildLabel('Lux') + ariaProd('Lux')">${loc('modal_factory_lux')}</span></div>`);
     parent.append(lux);
 
     let luxCount = $(`<span class="current">{{ Lux }}</span>`);
@@ -375,7 +411,7 @@ function loadFactory(parent,bind){
     lux.append(addLux);
 
     if (global.tech['synthetic_fur']){
-        let fur = $(`<div class="factory"><b-tooltip :label="buildLabel('Furs')" :aria-label="buildLabel('Furs') + ariaProd('Furs')" position="is-left" size="is-small" multilined animated><span>${global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')}</span></b-tooltip></div>`);
+        let fur = $(`<div class="factory"><span class="Furs" :aria-label="buildLabel('Furs') + ariaProd('Furs')">${global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')}</span></div>`);
         parent.append(fur);
 
         let furCount = $(`<span class="current">{{ Furs }}</span>`);
@@ -386,7 +422,7 @@ function loadFactory(parent,bind){
         fur.append(addFurs);
     }
 
-    let alloy = $(`<div class="factory"><b-tooltip :label="buildLabel('Alloy')" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Alloy_name')}</span></b-tooltip></div>`);
+    let alloy = $(`<div class="factory"><span class="Alloy" :aria-label="buildLabel('Alloy') + ariaProd('Alloy')">${loc('resource_Alloy_name')}</span></div>`);
     parent.append(alloy);
 
     let alloyCount = $(`<span class="current">{{ Alloy }}</span>`);
@@ -397,7 +433,7 @@ function loadFactory(parent,bind){
     alloy.append(addAlloy);
 
     if (global.tech['polymer']){
-        let polymer = $(`<div class="factory"><b-tooltip :label="buildLabel('Polymer')" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Polymer_name')}</span></b-tooltip></div>`);
+        let polymer = $(`<div class="factory"><span class="Polymer" :aria-label="buildLabel('Polymer') + ariaProd('Polymer')">${loc('resource_Polymer_name')}</span></div>`);
         parent.append(polymer);
 
         let polymerCount = $(`<span class="current">{{ Polymer }}</span>`);
@@ -409,7 +445,7 @@ function loadFactory(parent,bind){
     }
 
     if (global.tech['nano']){
-        let nano = $(`<div class="factory"><b-tooltip :label="buildLabel('Nano')" :aria-label="buildLabel('Nano') + ariaProd('Nano')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Nano_Tube_name')}</span></b-tooltip></div>`);
+        let nano = $(`<div class="factory"><span class="Nano" :aria-label="buildLabel('Nano') + ariaProd('Nano')">${loc('resource_Nano_Tube_name')}</span></div>`);
         parent.append(nano);
 
         let nanoCount = $(`<span class="current">{{ Nano }}</span>`);
@@ -421,7 +457,7 @@ function loadFactory(parent,bind){
     }
 
     if (global.tech['stanene']){
-        let stanene = $(`<div class="factory"><b-tooltip :label="buildLabel('Stanene')" :aria-label="buildLabel('Stanene') + ariaProd('Stanene')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Stanene_name')}</span></b-tooltip></div>`);
+        let stanene = $(`<div class="factory"><span class="Stanene" :aria-label="buildLabel('Stanene') + ariaProd('Stanene')">${loc('resource_Stanene_name')}</span></div>`);
         parent.append(stanene);
 
         let staneneCount = $(`<span class="current">{{ Stanene }}</span>`);
@@ -463,55 +499,7 @@ function loadFactory(parent,bind){
                 }
             },
             buildLabel: function(type){
-                let assembly = global.tech['factory'] ? true : false;
-                switch(type){
-                    case 'Lux':{
-                        let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]))
-                        if (global.race['toxic']){
-                            demand *= 1.20;
-                        }
-                        if (global.civic.govern.type === 'corpocracy'){
-                            demand *= 1.5;
-                        }
-                        if (global.civic.govern.type === 'socialist'){
-                            demand *= 0.8;
-                        }
-                        demand = demand.toFixed(2);
-                        let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
-                        return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);
-                    }
-                    case 'Furs':{
-                        let money = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
-                        let polymer = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
-                        return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')]);
-                    }
-                    case 'Alloy':{
-                        let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
-                        let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
-                        return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
-                    }
-                    case 'Polymer':{
-                        if (global.race['kindling_kindred']){
-                            let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
-                            return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
-                        }
-                        else {
-                            let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
-                            let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
-                            return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,global.resource.Lumber.name,loc('resource_Polymer_name')]);
-                        }
-                    }
-                    case 'Nano':{
-                        let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
-                        let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
-                        return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
-                    }
-                    case 'Stanene':{
-                        let aluminium = assembly ? f_rate.Stanene.aluminium[global.tech['factory']] : f_rate.Stanene.aluminium[0];
-                        let nano = assembly ? f_rate.Stanene.nano[global.tech['factory']] : f_rate.Stanene.nano[0];
-                        return loc('modal_factory_stanene_label',[aluminium,loc('resource_Aluminium_name'),nano,loc('resource_Nano_Tube_name'),loc('resource_Stanene_name')]);
-                    }
-                }
+                return tooltip(type);
             },
             ariaProd(prod){
                 return `. ${global.city.factory[prod]} factories producing ${prod}.`;
@@ -538,13 +526,73 @@ function loadFactory(parent,bind){
             }
         }
     });
+
+    function tooltip(type){
+        let assembly = global.tech['factory'] ? true : false;
+        switch(type){
+            case 'Lux':{
+                let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]))
+                if (global.race['toxic']){
+                    demand *= 1.20;
+                }
+                if (global.civic.govern.type === 'corpocracy'){
+                    demand *= 1.5;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    demand *= 0.8;
+                }
+                demand = demand.toFixed(2);
+                let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
+                return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);
+            }
+            case 'Furs':{
+                let money = assembly ? f_rate.Furs.money[global.tech['factory']] : f_rate.Furs.money[0];
+                let polymer = assembly ? f_rate.Furs.polymer[global.tech['factory']] : f_rate.Furs.polymer[0];
+                return loc('modal_factory_alloy_label',[money,loc('resource_Money_name'),polymer,loc('resource_Polymer_name'),global.race['evil'] ? loc('resource_Flesh_name') : loc('resource_Furs_name')]);
+            }
+            case 'Alloy':{
+                let copper = assembly ? f_rate.Alloy.copper[global.tech['factory']] : f_rate.Alloy.copper[0];
+                let aluminium = assembly ? f_rate.Alloy.aluminium[global.tech['factory']] : f_rate.Alloy.aluminium[0];
+                return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
+            }
+            case 'Polymer':{
+                if (global.race['kindling_kindred']){
+                    let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
+                    return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
+                }
+                else {
+                    let oil = assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0];
+                    let lumber = assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0];
+                    return loc('modal_factory_polymer_label1',[oil,loc('resource_Oil_name'),lumber,global.resource.Lumber.name,loc('resource_Polymer_name')]);
+                }
+            }
+            case 'Nano':{
+                let coal = assembly ? f_rate.Nano_Tube.coal[global.tech['factory']] : f_rate.Nano_Tube.coal[0];
+                let neutronium = assembly ? f_rate.Nano_Tube.neutronium[global.tech['factory']] : f_rate.Nano_Tube.neutronium[0];
+                return loc('modal_factory_nano_label',[coal,loc('resource_Coal_name'),neutronium,loc('resource_Neutronium_name'),loc('resource_Nano_Tube_name')]);
+            }
+            case 'Stanene':{
+                let aluminium = assembly ? f_rate.Stanene.aluminium[global.tech['factory']] : f_rate.Stanene.aluminium[0];
+                let nano = assembly ? f_rate.Stanene.nano[global.tech['factory']] : f_rate.Stanene.nano[0];
+                return loc('modal_factory_stanene_label',[aluminium,loc('resource_Aluminium_name'),nano,loc('resource_Nano_Tube_name'),loc('resource_Stanene_name')]);
+            }
+        }
+    }
+
+    ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(type){
+        let id = parent.hasClass('modalBody') ? `specialModal` : `iFactory`;
+        popover(`${id}${type}`,tooltip(type), {
+            elm: $(`#${id} .factory > .${type}`),
+            attach: '#main',
+        });
+    });
 }
 
 function loadDroid(parent,bind){
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
-    let adam = $(`<div class="factory"><b-tooltip :label="buildLabel('adam')" :aria-label="buildLabel('adam') + ariaProd('adam')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Adamantite_name')}</span></b-tooltip></div>`);
+    let adam = $(`<div class="factory"><span class="adam" :aria-label="buildLabel('adam') + ariaProd('adam')">${loc('resource_Adamantite_name')}</span></div>`);
     parent.append(adam);
     let adamCount = $(`<span class="current">{{ adam }}</span>`);
     let adamSub = $(`<span class="sub" @click="subItem('adam')" role="button" aria-label="Decrease Adamantite production">&laquo;</span>`);
@@ -553,7 +601,7 @@ function loadDroid(parent,bind){
     adam.append(adamCount);
     adam.append(adamAdd);
 
-    let uran = $(`<div class="factory"><b-tooltip :label="buildLabel('uran')" :aria-label="buildLabel('uran') + ariaProd('uran')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Uranium_name')}</span></b-tooltip></div>`);
+    let uran = $(`<div class="factory"><span class="uran" :aria-label="buildLabel('uran') + ariaProd('uran')">${loc('resource_Uranium_name')}</span></div>`);
     parent.append(uran);
     let uranCount = $(`<span class="current">{{ uran }}</span>`);
     let uranSub = $(`<span class="sub" @click="subItem('uran')" role="button" aria-label="Decrease Uranium production">&laquo;</span>`);
@@ -562,7 +610,7 @@ function loadDroid(parent,bind){
     uran.append(uranCount);
     uran.append(uranAdd);
 
-    let coal = $(`<div class="factory"><b-tooltip :label="buildLabel('coal')" :aria-label="buildLabel('coal') + ariaProd('coal')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Coal_name')}</span></b-tooltip></div>`);
+    let coal = $(`<div class="factory"><span class="coal" :aria-label="buildLabel('coal') + ariaProd('coal')">${loc('resource_Coal_name')}</span></div>`);
     parent.append(coal);
     let coalCount = $(`<span class="current">{{ coal }}</span>`);
     let coalSub = $(`<span class="sub" @click="subItem('coal')" role="button" aria-label="Decrease Coal production">&laquo;</span>`);
@@ -571,7 +619,7 @@ function loadDroid(parent,bind){
     coal.append(coalCount);
     coal.append(coalAdd);
 
-    let alum = $(`<div class="factory"><b-tooltip :label="buildLabel('alum')" :aria-label="buildLabel('alum') + ariaProd('alum')" position="is-left" size="is-small" multilined animated><span>${loc('resource_Aluminium_name')}</span></b-tooltip></div>`);
+    let alum = $(`<div class="factory"><span class="alum" :aria-label="buildLabel('alum') + ariaProd('alum')">${loc('resource_Aluminium_name')}</span></div>`);
     parent.append(alum);
     let alumCount = $(`<span class="current">{{ alum }}</span>`);
     let alumSub = $(`<span class="sub" @click="subItem('alum')" role="button" aria-label="Decrease Aluminium production">&laquo;</span>`);
@@ -607,16 +655,7 @@ function loadDroid(parent,bind){
                 }
             },
             buildLabel: function(type){
-                switch(type){
-                    case 'adam':
-                        return loc('modal_droid_res_label',[loc('resource_Adamantite_name')]);
-                    case 'uran':
-                        return loc('modal_droid_res_label',[loc('resource_Uranium_name')]);
-                    case 'coal':
-                        return loc('modal_droid_res_label',[loc('resource_Coal_name')]);
-                    case 'alum':
-                        return loc('modal_droid_res_label',[loc('resource_Aluminium_name')]);
-                }
+                return tooltip(type);
             },
             ariaProd(prod){
                 return `. ${global.interstellar.mining_droid[prod]} driod mining ${prod}.`;
@@ -636,6 +675,27 @@ function loadDroid(parent,bind){
             }
         }
     });
+
+    function tooltip(type){
+        switch(type){
+            case 'adam':
+                return loc('modal_droid_res_label',[loc('resource_Adamantite_name')]);
+            case 'uran':
+                return loc('modal_droid_res_label',[loc('resource_Uranium_name')]);
+            case 'coal':
+                return loc('modal_droid_res_label',[loc('resource_Coal_name')]);
+            case 'alum':
+                return loc('modal_droid_res_label',[loc('resource_Aluminium_name')]);
+        }
+    }
+
+    ['adam','uran','coal','alum'].forEach(function(type){
+        let id = parent.hasClass('modalBody') ? `specialModal` : `iDroid`;
+        popover(`${id}${type}`,tooltip(type), {
+            elm: $(`#${id} .factory > .${type}`),
+            attach: '#main',
+        });
+    });
 }
 
 function loadGraphene(parent,bind){
@@ -647,7 +707,7 @@ function loadGraphene(parent,bind){
 
     if (!global.race['kindling_kindred']){
         let f_label = global.resource.Lumber.name;
-        let wood = $(`<b-tooltip :label="buildLabel('wood')" position="is-bottom" animated><span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current">${f_label} {{ Lumber }}</span></b-tooltip>`);
+        let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ Lumber }}</span>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
         let addWood = $(`<span role="button" class="add" @click="addWood" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subWood);
@@ -656,7 +716,7 @@ function loadGraphene(parent,bind){
     }
 
     if (global.resource.Coal.display){
-        let coal = $(`<b-tooltip :label="buildLabel('coal')" position="is-bottom" animated><span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current">${global.resource.Coal.name} {{ Coal }}</span></b-tooltip>`);
+        let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} {{ Coal }}</span>`);
         let subCoal = $(`<span role="button" class="sub" @click="subCoal" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
         let addCoal = $(`<span role="button" class="add" @click="addCoal" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subCoal);
@@ -665,7 +725,7 @@ function loadGraphene(parent,bind){
     }
 
     if (global.resource.Oil.display){
-        let oil = $(`<b-tooltip :label="buildLabel('oil')" position="is-bottom" animated multilined><span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current">${global.resource.Oil.name} {{ Oil }}</span></b-tooltip>`);
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ Oil }}</span>`);
         let subOil = $(`<span role="button" class="sub" @click="subOil" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
         let addOil = $(`<span role="button" class="add" @click="addOil" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
         fuelTypes.append(subOil);
@@ -798,14 +858,7 @@ function loadGraphene(parent,bind){
                 }
             },
             buildLabel(type){
-                switch(type){
-                    case 'wood':
-                        return loc('modal_graphene_produce',[350,global.race['evil'] ? loc('resource_Bones_name') : loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
-                    case 'coal':
-                        return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
-                    case 'oil':
-                        return loc('modal_graphene_produce',[15,loc('resource_Oil_name'),loc('resource_Graphene_name')]);
-                }
+                return tooltip(type);
             },
             ariaCount(fuel){
                 return ` ${global.interstellar.g_factory[fuel]} ${fuel} fueled.`;
@@ -825,6 +878,25 @@ function loadGraphene(parent,bind){
             }
         }
     });
+
+    function tooltip(type){
+        switch(type){
+            case 'wood':
+                return loc('modal_graphene_produce',[350,global.race['evil'] ? loc('resource_Bones_name') : loc('resource_Lumber_name'),loc('resource_Graphene_name')]);
+            case 'coal':
+                return loc('modal_graphene_produce',[25,loc('resource_Coal_name'),loc('resource_Graphene_name')]);
+            case 'oil':
+                return loc('modal_graphene_produce',[15,loc('resource_Oil_name'),loc('resource_Graphene_name')]);
+        }
+    }
+
+    ['wood','coal','oil'].forEach(function(type){
+        let id = parent.hasClass('modalBody') ? `specialModal` : `iGraphene`;
+        popover(`${id}${type}`,tooltip(type), {
+            elm: $(`#${id} > div > .${type}`),
+            attach: '#main',
+        });
+    });
 }
 
 function loadPylon(parent,bind){
@@ -837,7 +909,7 @@ function loadPylon(parent,bind){
     if (global.tech['magic'] && global.tech.magic >= 3){
         ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
             if (spell !== 'crafting' || (spell === 'crafting' && global.tech.magic >= 4)){
-                let cast = $(`<b-tooltip :label="buildLabel('${spell}')" position="is-bottom" animated multilined><span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span></b-tooltip>`);
+                let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
                 let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
                 spellTypes.append(sub);
@@ -852,9 +924,7 @@ function loadPylon(parent,bind){
         data: global.race['casting'],
         methods: {
             buildLabel(spell){
-                let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
-                let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
-                return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff]);
+                return tooltip(spell);
             },
             addSpell(spell){
                 let keyMult = keyMultiplier();
@@ -900,6 +970,20 @@ function loadPylon(parent,bind){
                 return loc('modal_pylon_casting_cost',[+(total).toFixed(3)]);
             }
         }
+    });
+
+    function tooltip(spell){
+        let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
+        let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
+        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff]);
+    }
+
+    ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function(type){
+        let id = parent.hasClass('modalBody') ? `specialModal` : `iPylon`;
+        popover(`${id}${type}`,tooltip(type), {
+            elm: $(`#${id} > .pylon > .${type}`),
+            attach: '#main',
+        });
     });
 }
 

@@ -423,15 +423,14 @@ const fortressModules = {
                 desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
                 return desc;
             },
-            filter(val,type){
-                let army = Math.round(armyRating(val,'hellArmy',0));
-                let arc = (p_on['arcology'] || 0) * 75;
+            filter(v,type){
+                let sup = hellSupression('ruins');
                 switch (type){
                     case 'army':
-                        return army + arc;
+                        return sup.rating;
                     case 'sup':
-                        let supress = +((army + arc) / 50).toFixed(2);
-                        return `${supress > 100 ? 100 : supress}%`;
+                        let supress = +(sup.supress * 100).toFixed(2);
+                        return `${supress}%`;
                 }
             }
         },
@@ -549,6 +548,21 @@ const fortressModules = {
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.portal.archaeology.on++;
+                        if (global.civic.d_job === 'unemployed'){
+                            if (global.civic.free > 0){
+                                let hired = global.civic.free - 2 < 0 ? 1 : 2;
+                                global.civic.free -= hired;
+                                global.civic.archaeologist.workers += hired;
+                            }
+                        }
+                        else if (global.civic[global.civic.d_job].workers > 0){
+                            let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.archaeologist.workers += hired;
+                        }
+                    }  
                     return true;
                 }
                 return false;
@@ -558,7 +572,7 @@ const fortressModules = {
             id: 'portal-arcology',
             title: loc('portal_arcology_title'),
             desc(){
-                return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('portal_arcology_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { housing: 4 },
             cost: {
@@ -570,9 +584,10 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(25); },
             effect(){
-                let vault = spatialReasoning(bank_vault() * 5);
+                let sup = hellSupression('ruins');
+                let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
-                let containers = p_on['arcology'] * Math.round(quantum_level) * 8;
+                let containers = p_on['arcology'] * Math.round(quantum_level) * 6;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
                 return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -594,6 +609,39 @@ const fortressModules = {
                 vBind({el: `#srprtl_ruins`},'update');
             }
         },
+        hell_forge: {
+            id: 'portal-hell_forge',
+            title: loc('portal_hell_forge_title'),
+            desc(){
+                return `<div>${loc('portal_hell_forge_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { scarletite: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_forge', offset, 250000000, 1.15, 'portal'); },
+                Coal(offset){ return spaceCostMultiplier('hell_forge', offset, 1650000, 1.22, 'portal'); },
+                Steel(offset){ return spaceCostMultiplier('hell_forge', offset, 3800000, 1.22, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('hell_forge', offset, 1200000, 1.22, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('hell_forge', offset, 280000, 1.22, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('hell_forge', offset, 5, 1.22, 'portal'); },
+            },
+            powered(){ return powerCostMod(12); },
+            special: true,
+            effect(){
+                return `<div>${loc('portal_hell_forge_effect',[1])}</div><div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[25])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('hell_forge','portal');
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.portal.hell_forge.on++;
+                        global.city.smelter.cap += 3;
+                        global.city.smelter.Oil += 3;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         ancient_pillars: {
             id: 'portal-ancient_pillars',
             title: loc('portal_ancient_pillars_title'),
@@ -602,7 +650,12 @@ const fortressModules = {
             cost: {},
             no_queue(){ return true },
             effect(){
-                return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length])}</div>`;
+                if (Object.keys(global.pillars).length >= 1){
+                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length,Object.keys(global.pillars).length])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length])}</div>`;
+                }
             },
             action(){
                 return false;
@@ -1417,7 +1470,7 @@ export function bloodwar(){
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
             global.portal.soul_forge.kills = 0;
-            /*let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
+            let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
                 global.resource.Corrupt_Gem.amount++;                  
                 global.resource.Corrupt_Gem.display = true;
@@ -1427,8 +1480,23 @@ export function bloodwar(){
             }
             else {
                 global.resource.Soul_Gem.amount++;
-            }*/
-            global.resource.Soul_Gem.amount++;
+            }
         }
+    }
+}
+
+export function hellSupression(area, val){
+    switch (area){
+        case 'ruins':
+            let army = val || p_on['guard_post'];
+            let arc = (p_on['arcology'] || 0) * 75;
+            let aRating = armyRating(army,'hellArmy',0);
+            let supress = (aRating + arc) / 5000;
+            return {
+                supress: supress > 1 ? 1 : supress,
+                rating: aRating + arc
+            };
+        default:
+            return 0;
     }
 }

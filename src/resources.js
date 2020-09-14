@@ -1,6 +1,7 @@
 import { global, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
+import { hellSupression } from './portal.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -121,7 +122,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
-            Scarletite: [{ r: 'Iron', a: 16500 },{ r: 'Adamantite', a: 385 },{ r: 'Orichalcum', a: 55 }],
+            Scarletite: [{ r: 'Iron', a: 137500 },{ r: 'Adamantite', a: 5500 },{ r: 'Orichalcum', a: 550 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -131,7 +132,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
-            Scarletite: [{ r: 'Iron', a: 15000 },{ r: 'Adamantite', a: 350 },{ r: 'Orichalcum', a: 50 }],
+            Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
         };
 }
 
@@ -162,8 +163,13 @@ export function craftingRatio(res,auto){
     if (res === 'Mythril' && p_on['stellar_forge']){
         multiplier += p_on['stellar_forge'] * 0.05;
     }
-    if (auto && p_on['stellar_forge']){
-        multiplier += p_on['stellar_forge'] * 0.1;
+    if (auto){
+        if (p_on['stellar_forge']){
+            multiplier += p_on['stellar_forge'] * 0.1;
+        }
+        if (p_on['hell_forge']){
+            multiplier += p_on['hell_forge'] * 0.25;
+        }
     }
     if (global.race['crafty']){
         multiplier += 0.03;
@@ -209,6 +215,10 @@ export function craftingRatio(res,auto){
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         multiplier *= 1 + (achieve_level * 0.0025);
+    }
+    if (res === 'Scarletite'){
+        let sup = hellSupression('ruins');
+        multiplier *= sup.supress;
     }
     return multiplier;
 }
@@ -407,10 +417,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft'])){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite'){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
-    else if (max === -1 && !global.race['no_craft']){
+    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite'){
         let craft = $('<span class="craftable"></span>');
         res_container.append(craft);
 
@@ -1399,9 +1409,9 @@ function drawModal(name,color){
     
     crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
     
-    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated multilined><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
-    let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
-    let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
+    let buildCr = $(`<button class="button construct" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button>`);
+    let removeCr = $(`<button class="button unassign" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button>`);
+    let addCr = $(`<button class="button assign" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button>`);
     
     crates.append(buildCr);
     crates.append(removeCr);
@@ -1414,17 +1424,6 @@ function drawModal(name,color){
             res: global['resource'][name],
         },
         methods: {
-            buildCrateLabel(){
-                return buildCrateLabel();
-            },
-            removeCrateLabel(){
-                let cap = crateValue();
-                return loc('resource_modal_crate_unassign_desc',[cap]);
-            },
-            addCrateLabel(){
-                let cap = crateValue();
-                return loc('resource_modal_crate_assign_desc',[cap]);
-            },
             buildCrate(){
                 buildCrate();
             },
@@ -1442,12 +1441,10 @@ function drawModal(name,color){
         body.append(containers);
         
         containers.append($(`<div class="crateHead"><span>${loc('resource_modal_container_owned')} {{ containers.amount }}/{{ containers.max }}</span><span>${loc('resource_modal_container_assigned')} {{ res.containers }}</span></div>`));
-        
-        let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
 
-        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated multilined><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
-        let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
-        let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
+        let buildCon = $(`<button class="button construct" @click="buildContainer()">${loc('resource_modal_container_construct')}</button>`);
+        let removeCon = $(`<button class="button unassign" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button>`);
+        let addCon = $(`<button class="button assign" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button>`);
         
         containers.append(buildCon);
         containers.append(removeCon);
@@ -1460,17 +1457,6 @@ function drawModal(name,color){
                 res: global['resource'][name],
             },
             methods: {
-                buildContainerLabel(){
-                    return buildContainerLabel();
-                },
-                removeContainerLabel(){
-                    let cap = containerValue();
-                    return loc('resource_modal_container_unassign_desc',[cap]);
-                },
-                addContainerLabel(){
-                    let cap = containerValue();
-                    return loc('resource_modal_container_assign_desc',[cap]);
-                },
                 buildContainer(){
                     buildContainer();
                 },
@@ -1495,6 +1481,40 @@ function drawModal(name,color){
                 return sizeApproximation(value,2);
             }
         }
+    });
+
+    function tooltip(type,subtype){
+        if (type === 'modalContainers'){
+            let cap = containerValue();
+            switch (subtype){
+                case 'assign':
+                    return loc('resource_modal_container_assign_desc',[cap]);
+                case 'unassign':
+                    return loc('resource_modal_container_unassign_desc',[cap]);
+                case 'construct':
+                    return buildContainerLabel();
+            }
+        }
+        else {
+            let cap = crateValue();
+            switch (subtype){
+                case 'assign':
+                    return loc('resource_modal_crate_assign_desc',[cap]);
+                case 'unassign':
+                    return loc('resource_modal_crate_unassign_desc',[cap]);
+                case 'construct':
+                    return buildCrateLabel();
+            }
+        }
+    }
+
+    ['modalCrates','modalContainers'].forEach(function(type){
+        ['assign','unassign','construct'].forEach(function(subtype){
+            popover(`${type}${subtype}`,tooltip(type,subtype), {
+                elm: $(`#${type} > .${subtype}`),
+                attach: '#main',
+            });
+        });
     });
 }
 

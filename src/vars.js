@@ -675,6 +675,10 @@ if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Sc
     global.interstellar.mass_ejector['Scarletite'] = 0;
 }
 
+if (!global.hasOwnProperty('pillars')){
+    global['pillars'] = {};
+}
+
 if (!global.settings.space['alpha']){
     global.settings.space['alpha'] = false;
     global.settings.space['proxima'] = false;

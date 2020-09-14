@@ -9,7 +9,7 @@ import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
@@ -1313,7 +1313,7 @@ function fastLoop(){
         // Power usage
         let p_structs = [
             'prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase','gxy_gateway:ship_dock',
-            'int_neutron:stellar_forge','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
+            'prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon',
             'int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy',
             'gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller',
             'prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver',
@@ -3049,6 +3049,9 @@ function fastLoop(){
             if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech['star_forge'] >= 2){
                 capacity += p_on['stellar_forge'] * 2;
             }
+            if (p_on['hell_forge']){
+                capacity += p_on['hell_forge'] * 3;
+            }
             if (global.race['cataclysm']){
                 capacity += global.space.geothermal.on;
             }
@@ -4520,8 +4523,14 @@ function fastLoop(){
             });
         }
 
-        if (firstRun && global.tech['piracy']){
-            renderSpace();
+        if (firstRun){
+            if (global.tech['piracy']){
+                renderSpace();
+            }
+            if (global.settings.portal.ruins){
+                vBind({el: `#srprtl_ruins`},'update');
+                vBind({el: `#foundry`},'update');
+            }
         }
     }
 
@@ -4961,10 +4970,11 @@ function midLoop(){
             bd_Citizen[loc('portal_arcology_title')] = (p_on['arcology'] * 8)+'v';
             lCaps['garrison'] += p_on['arcology'] * 5;
 
-            caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
-            caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 8);
+            caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 6);
+            caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 6);
 
-            let money = (p_on['arcology'] * spatialReasoning(bank_vault() * 5));
+            let sup = hellSupression('ruins');
+            let money = (p_on['arcology'] * spatialReasoning(bank_vault() * 8 * sup.supress));
             caps['Money'] += money;
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
@@ -5497,10 +5507,8 @@ function midLoop(){
         }
 
         if (global.portal['archaeology']){
-            let arc = (p_on['arcology'] || 0) * 75;
-            let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
-            supress = supress > 1 ? 1 : supress;
-            let gain = Math.round(250000 * supress);            
+            let sup = hellSupression('ruins');
+            let gain = Math.round(250000 * sup.supress);            
             caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
             bd_Knowledge[loc('portal_archaeology_bd')] = (global.civic.archaeologist.workers * gain)+'v';
         }

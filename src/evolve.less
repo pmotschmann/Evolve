@@ -1294,6 +1294,7 @@ body .modal > div.popper.wide {
     }
     .factory {
         :first-child {
+            display: inline-block;
             width: 8rem;
             text-align: left;
         }
@@ -1852,7 +1853,7 @@ html.dark {
     .b-tooltip.is-bottom:before {
         border-bottom: 5px solid #f2f2f2;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #f2f2f2;
         color: #000;
     }
@@ -2206,16 +2207,16 @@ html.light {
     .promoBar {
         background-color: #c7c7c7;
     }
-    .b-tooltip.is-right:before {
+    .b-tooltip.is-right .tooltip-content:before {
         border-right: 5px solid #f2f2f2;
     }
-    .b-tooltip.is-left:before {
+    .b-tooltip.is-left .tooltip-content:before {
         border-left: 5px solid #f2f2f2;
     }
-    .b-tooltip.is-bottom:before {
+    .b-tooltip.is-bottom .tooltip-content:before {
         border-bottom: 5px solid #f2f2f2;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #f2f2f2;
         color: #000;
     }
@@ -2583,7 +2584,7 @@ html.night {
     .b-tooltip.is-bottom:before {
         border-bottom: 5px solid #999;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #0f0f0f;
         color: #fff;
         border: .0625rem solid #999;
@@ -2781,7 +2782,7 @@ html.darkNight {
     .button {
         color: #cccccc;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         color: #b8b8b8;
     }
     .has-numberinput {
