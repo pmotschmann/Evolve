@@ -6272,7 +6272,7 @@ export const actions = {
             desc: loc('tech_infernium_fuel'),
             category: 'mining',
             era: 'interdimensional',
-            reqs: { smelting: 7, hell_ruins: 4 },
+            reqs: { smelting: 7, hell_ruins: 4, locked: 1 },
             grant: ['smelting',8],
             cost: {
                 Knowledge(){ return 27500000; },
@@ -9607,7 +9607,7 @@ export const actions = {
             desc: loc('tech_pillars'),
             category: 'progress',
             era: 'interdimensional',
-            reqs: { scarletite: 1, fusable: 1 },
+            reqs: { scarletite: 1, fusable: 1, locked: 1 },
             grant: ['pillars',1],
             cost: {
                 Knowledge(){ return 30000000; }
