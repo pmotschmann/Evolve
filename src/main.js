@@ -1153,7 +1153,7 @@ function fastLoop(){
             let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
             let r_mass = global.interstellar.stellar_engine.mass;
             if (global.tech['roid_eject']){
-                r_mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
+                r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
             }
             let power = powerModifier(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10));
             max_power -= power;

@@ -168,15 +168,15 @@ export const arpaProjects = {
             let mass = 0;
             let next = 0;
             if (global.tech['roid_eject']){
-                mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
-                next = (0.35 * (global.tech['roid_eject'] + 1) * (1 + ((global.tech['roid_eject'] + 1) / 10))) - mass;
+                mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                next = (0.225 * (global.tech['roid_eject'] + 1) * (1 + ((global.tech['roid_eject'] + 1) / 12))) - mass;
             }
             return `<div>${loc('arpa_projects_roid_eject_effect1')}</div><div>${loc('arpa_projects_roid_eject_effect2',[+(mass).toFixed(3),+(next).toFixed(3),roid_eject_type()])}</div>`;
         },
         cost: {
-            Money(offset){ return costMultiplier('roid_eject', offset, 25000000, 1.1); },
-            Deuterium(offset){ return costMultiplier('roid_eject', offset, 500000, 1.1); },
-            Bolognium(offset){ return costMultiplier('roid_eject', offset, 20000, 1.1); }
+            Money(offset){ return costMultiplier('roid_eject', offset, 18750000, 1.075); },
+            Deuterium(offset){ return costMultiplier('roid_eject', offset, 375000, 1.075); },
+            Bolognium(offset){ return costMultiplier('roid_eject', offset, 15000, 1.075); }
         }
     },
     nexus: {
