@@ -1966,7 +1966,8 @@ export function racialTrait(workers,type){
             modifier *= 0.8;
         }
         if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
-            modifier *= 1 + (global.race.casting[type === 'hellArmy' ? 'army' : type] / 50);
+            let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
+            modifier *= 1 + (boost / (boost + 75));
         }
     }
     if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){

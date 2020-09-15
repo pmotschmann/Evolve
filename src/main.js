@@ -15,6 +15,8 @@ import { events } from './events.js';
 import { index } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
+global.race.universe = 'magic';
+
 var intervals = {};
 if (global.settings.expose){
     enableScript();

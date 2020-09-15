@@ -185,7 +185,7 @@ export function craftingRatio(res,auto){
     }
     if (global.race['casting'] && global.race.casting['crafting']){
         let boost = auto ? global.race.casting['crafting'] * 2 : global.race.casting['crafting'];
-        multiplier *= 1 + (boost / 200);
+        multiplier *= 1 + (boost / boost + 75);
     }
     if (global.race['universe'] === 'magic'){
         multiplier *= 0.8;
