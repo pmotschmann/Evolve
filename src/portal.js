@@ -587,7 +587,7 @@ const fortressModules = {
                 let sup = hellSupression('ruins');
                 let vault = spatialReasoning(bank_vault() * 8 * sup.supress);
                 vault = +(vault).toFixed(0);
-                let containers = p_on['arcology'] * Math.round(quantum_level) * 6;
+                let containers = Math.round(quantum_level) * 10;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
                 return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_arcology_effect',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -604,6 +604,7 @@ const fortressModules = {
             },
             post(){
                 vBind({el: `#srprtl_ruins`},'update');
+                drawTech();
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
@@ -640,7 +641,10 @@ const fortressModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            post(){
+                vBind({el: `#foundry`},'update');
+            },
         },
         ancient_pillars: {
             id: 'portal-ancient_pillars',

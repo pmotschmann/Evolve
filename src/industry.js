@@ -388,7 +388,7 @@ function loadSmelter(parent,bind){
     }
 
     if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
-        let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterMats`;
+        let id = parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`;
         ['iron','steel'].forEach(function(mat){
             popover(`${id}${mat}`,function(){
                 return matText(mat);

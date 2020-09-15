@@ -4970,8 +4970,8 @@ function midLoop(){
             bd_Citizen[loc('portal_arcology_title')] = (p_on['arcology'] * 8)+'v';
             lCaps['garrison'] += p_on['arcology'] * 5;
 
-            caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 6);
-            caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 6);
+            caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
+            caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
 
             let sup = hellSupression('ruins');
             let money = (p_on['arcology'] * spatialReasoning(bank_vault() * 8 * sup.supress));
