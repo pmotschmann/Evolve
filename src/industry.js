@@ -306,7 +306,7 @@ function loadSmelter(parent,bind){
                 }
             },
             buildLabel(type){
-                return tooptip(type);
+                return tooltip(type);
             },
             ariaCount(fuel){
                 return ` ${global.city.smelter[fuel]} ${fuel} fueled.`;
@@ -332,7 +332,7 @@ function loadSmelter(parent,bind){
         }
     });
 
-    function tooptip(type){
+    function tooltip(type){
         switch(type){
             case 'wood':
                 return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
@@ -378,7 +378,9 @@ function loadSmelter(parent,bind){
     if (!global.race['forge']){
         let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
         ['wood','coal','oil'].forEach(function(fuel){
-            popover(`${id}${fuel}`,tooptip(fuel), {
+            popover(`${id}${fuel}`,function(){
+                return tooltip(fuel);
+            }, {
                 elm: $(`#${id} > .${fuel}`),
                 attach: '#main',
             });
@@ -388,7 +390,9 @@ function loadSmelter(parent,bind){
     if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
         let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterMats`;
         ['iron','steel'].forEach(function(mat){
-            popover(`${id}${mat}`,matText(mat), {
+            popover(`${id}${mat}`,function(){
+                return matText(mat);
+            }, {
                 elm: $(`#${id} > .${mat}`),
                 attach: '#main',
             });
@@ -581,7 +585,9 @@ function loadFactory(parent,bind){
 
     ['Lux','Furs','Alloy','Polymer','Nano','Stanene'].forEach(function(type){
         let id = parent.hasClass('modalBody') ? `specialModal` : `iFactory`;
-        popover(`${id}${type}`,tooltip(type), {
+        popover(`${id}${type}`,function(){
+            return tooltip(type);
+        }, {
             elm: $(`#${id} .factory > .${type}`),
             attach: '#main',
         });
@@ -691,7 +697,9 @@ function loadDroid(parent,bind){
 
     ['adam','uran','coal','alum'].forEach(function(type){
         let id = parent.hasClass('modalBody') ? `specialModal` : `iDroid`;
-        popover(`${id}${type}`,tooltip(type), {
+        popover(`${id}${type}`,function(){
+            return tooltip(type);
+        }, {
             elm: $(`#${id} .factory > .${type}`),
             attach: '#main',
         });
@@ -892,7 +900,9 @@ function loadGraphene(parent,bind){
 
     ['wood','coal','oil'].forEach(function(type){
         let id = parent.hasClass('modalBody') ? `specialModal` : `iGraphene`;
-        popover(`${id}${type}`,tooltip(type), {
+        popover(`${id}${type}`,function(){
+            return tooltip(type);
+        }, {
             elm: $(`#${id} > div > .${type}`),
             attach: '#main',
         });
@@ -980,7 +990,9 @@ function loadPylon(parent,bind){
 
     ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function(type){
         let id = parent.hasClass('modalBody') ? `specialModal` : `iPylon`;
-        popover(`${id}${type}`,tooltip(type), {
+        popover(`${id}${type}`,function(){
+            return tooltip(type);
+        }, {
             elm: $(`#${id} > .pylon > .${type}`),
             attach: '#main',
         });
