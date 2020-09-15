@@ -427,7 +427,7 @@ const fortressModules = {
                 let sup = hellSupression('ruins');
                 switch (type){
                     case 'army':
-                        return sup.rating;
+                        return Math.round(sup.rating);
                     case 'sup':
                         let supress = +(sup.supress * 100).toFixed(2);
                         return `${supress}%`;
