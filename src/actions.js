@@ -8891,6 +8891,27 @@ export const actions = {
                 return false;
             }
         },
+        gate_key: {
+            id: 'tech-gate_key',
+            title: loc('tech_gate_key'),
+            desc: loc('tech_gate_key'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { hell_gate: 1 },
+            grant: ['hell_gate',2],
+            cost: {
+                Knowledge(){ return 30000000; },
+            },
+            effect(){ return loc('tech_gate_key_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['west_tower'] = { count: 0, on: 0 };
+                    global.portal['east_tower'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         corrupt_gem_analysis: {
             id: 'tech-corrupt_gem_analysis',
             title: loc('tech_corrupt_gem_analysis'),

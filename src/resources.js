@@ -168,7 +168,8 @@ export function craftingRatio(res,auto){
             multiplier += p_on['stellar_forge'] * 0.1;
         }
         if (p_on['hell_forge']){
-            multiplier += p_on['hell_forge'] * 0.25;
+            let sup = hellSupression('ruins');
+            multiplier += p_on['hell_forge'] * 0.75 * sup.supress;
         }
     }
     if (global.race['crafty']){

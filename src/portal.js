@@ -483,6 +483,10 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            postPower(){
+                vBind({el: `#srprtl_ruins`},'update');
+                vBind({el: `#srprtl_gate`},'update');
             }
         },
         vault: {
@@ -628,7 +632,9 @@ const fortressModules = {
             powered(){ return powerCostMod(12); },
             special: true,
             effect(){
-                return `<div>${loc('portal_hell_forge_effect',[1])}</div><div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[25])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let sup = hellSupression('ruins');
+                let craft = +(75 * sup.supress).toFixed(1);
+                return `<div>${loc('portal_hell_forge_effect',[1])}</div><div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -669,15 +675,16 @@ const fortressModules = {
     prtl_gate: {
         info: {
             name: loc('portal_gate_name'),
-            desc: loc('portal_gate_desc'),
+            desc(){
+                return `${loc('portal_gate_desc')} ${loc('portal_gate_closed')}`;
+            },
             support: 'guard_post',
+            hide_support: true,
             prop(){
-                let desc = ` - <span class="has-text-warning">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
-                desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
-                return desc;
+                return ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
             },
             filter(v,type){
-                let sup = hellSupression('ruins');
+                let sup = hellSupression('gate');
                 switch (type){
                     case 'army':
                         return Math.round(sup.rating);
@@ -689,18 +696,109 @@ const fortressModules = {
         },
         gate_mission: {
             id: 'portal-gate_mission',
-            title: loc('portal_pit_mission_title'),
-            desc: loc('portal_pit_mission_title'),
-            reqs: { hell_gate: 1 },
-            grant: ['hell_gate',2],
+            title: loc('portal_gate_mission_title'),
+            desc: loc('portal_gate_mission_title'),
+            reqs: { high_tech: 18 },
+            grant: ['hell_gate',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return 250000000; }
+                Money(){ return 250000000; },
+                Knowledge(){ return 27500000; }
             },
-            effect: loc('portal_pit_mission_effect'),
+            effect: loc('portal_gate_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    messageQueue(loc('portal_gate_mission_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        west_tower: {
+            id: 'portal-west_tower',
+            title: loc('portal_west_tower'),
+            desc(){
+                let size = towerSize();
+                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
+                    return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_west_tower')}</div>`;
+                }
+            },
+            reqs: { hell_gate: 2 },
+            no_queue(){ return global.portal.west_tower.count < towerSize() ? false : true },
+            queue_size: 25,
+            queue_complete(){ return towerSize() - global.portal.west_tower.count; },
+            cost: {
+                Money(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(10000000) : 0; },
+                Stone(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(100000) : 0; },
+                Uranium(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(1000) : 0; },
+                Adamantite(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(18000) : 0; },
+                Vitreloy(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(25000) : 0; },
+                Soul_Gem(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? 1 : 0; },
+                Scarletite(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(5000) : 0; },
+            },
+            effect(){
+                let size = towerSize();
+                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
+                    let remain = global.portal.hasOwnProperty('west_tower') ? size - global.portal.west_tower.count : size;
+                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('portal_tower_effect');
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.portal.west_tower.count < towerSize()){
+                        incrementStruct('west_tower','portal');
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        east_tower: {
+            id: 'portal-east_tower',
+            title: loc('portal_east_tower'),
+            desc(){
+                let size = towerSize();
+                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
+                    return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_east_tower')}</div>`;
+                }
+            },
+            reqs: { hell_gate: 2 },
+            no_queue(){ return global.portal.east_tower.count < towerSize() ? false : true },
+            queue_size: 25,
+            queue_complete(){ return towerSize() - global.portal.east_tower.count; },
+            cost: {
+                Money(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(10000000) : 0; },
+                Stone(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(100000) : 0; },
+                Uranium(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(1000) : 0; },
+                Adamantite(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(18000) : 0; },
+                Vitreloy(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(25000) : 0; },
+                Soul_Gem(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? 1 : 0; },
+                Scarletite(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(5000) : 0; },
+            },
+            effect(){
+                let size = towerSize();
+                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
+                    let remain = global.portal.hasOwnProperty('east_tower') ? size - global.portal.east_tower.count : size;
+                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('portal_tower_effect');
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    if (global.portal.east_tower.count < towerSize()){
+                        incrementStruct('east_tower','portal');
+                    }
                     return true;
                 }
                 return false;
@@ -761,6 +859,29 @@ const fortressModules = {
     }
 };
 
+const towerSize = (function (recalc){
+    var size;
+    return function(){
+        if (size && !recalc){
+            return size;
+        }
+        size = 1000;
+        if (global.hasOwnProperty('pillars')){
+            Object.keys(global.pillars).forEach(function(pillar){
+                if (global.pillars[pillar]){
+                    size -= 12;
+                }
+            });            
+        }
+        return size;
+    }
+})();
+
+function towerPrice(cost){
+    let sup = hellSupression('gate');
+    return Math.round(cost / (sup.supress > 0.01 ? sup.supress : 0.01));
+}
+
 export function soulForgeSoldiers(){
     let soldiers = Math.round(650 / armyRating(1,'hellArmy'));
     if (p_on['gun_emplacement']){
@@ -796,7 +917,12 @@ export function renderFortress(){
 
             if (fortressModules[region].info['support']){
                 let support = fortressModules[region].info['support'];
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span>${property}</div></div>`);
+                if (fortressModules[region].info['hide_support']){
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3>${property}</div></div>`);
+                }
+                else {
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span>${property}</div></div>`);
+                }
                 vBind({
                     el: `#sr${region}`,
                     data: global.portal[support],
@@ -1508,14 +1634,23 @@ export function bloodwar(){
 export function hellSupression(area, val){
     switch (area){
         case 'ruins':
-            let army = val || p_on['guard_post'];
-            let arc = (p_on['arcology'] || 0) * 75;
-            let aRating = armyRating(army,'hellArmy',0);
-            let supress = (aRating + arc) / 5000;
-            return {
-                supress: supress > 1 ? 1 : supress,
-                rating: aRating + arc
-            };
+            {
+                let army = val || p_on['guard_post'];
+                let arc = (p_on['arcology'] || 0) * 75;
+                let aRating = armyRating(army,'hellArmy',0);
+                if (global.race['holy']){
+                    aRating *= 1.25;
+                }
+                let supress = (aRating + arc) / 5000;
+                return {
+                    supress: supress > 1 ? 1 : supress,
+                    rating: aRating + arc
+                };
+            }
+        case 'gate':
+            {
+                return hellSupression('ruins',val);
+            }
         default:
             return 0;
     }
