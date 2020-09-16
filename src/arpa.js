@@ -232,7 +232,7 @@ export const arpaProjects = {
 };
 
 function roid_eject_type(){
-    if (global.tech['roid_eject'] <= 10){
+    if (!global.tech['roid_eject'] || global.tech['roid_eject'] <= 10){
         return loc('arpa_projects_roid_eject_asteroid');;
     }
     else if (global.tech['roid_eject'] <= 25){

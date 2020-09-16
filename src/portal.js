@@ -670,6 +670,22 @@ const fortressModules = {
         info: {
             name: loc('portal_gate_name'),
             desc: loc('portal_gate_desc'),
+            support: 'guard_post',
+            prop(){
+                let desc = ` - <span class="has-text-warning">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
+                desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                return desc;
+            },
+            filter(v,type){
+                let sup = hellSupression('ruins');
+                switch (type){
+                    case 'army':
+                        return Math.round(sup.rating);
+                    case 'sup':
+                        let supress = +(sup.supress * 100).toFixed(2);
+                        return `${supress}%`;
+                }
+            }
         },
         gate_mission: {
             id: 'portal-gate_mission',

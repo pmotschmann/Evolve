@@ -644,6 +644,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
 
     if (tradeRatio[name] && global.race.universe === 'magic'){
+        global['resource'][name]['basic'] = tradable;
         loadAlchemy(name,color,tradable);
     }
 }
@@ -1771,7 +1772,7 @@ function loadAlchemy(name,color,basic){
         });
 
         popover(`alchemy${name}`,function(){
-            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 5).toFixed(2) : tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
         },
         {
             elm: `#alchemy${name} h3`

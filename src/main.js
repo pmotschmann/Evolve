@@ -1014,7 +1014,7 @@ function fastLoop(){
                     }
 
                     if (trasmute >= time_multiplier){
-                        let rate = tradeRatio[res];
+                        let rate = global.resource[res].basic && global.tech.alchemy >= 2 ? tradeRatio[res] * 5 : tradeRatio[res];
                         modRes(res,trasmute * time_multiplier * rate);
                         modRes('Mana', -(trasmute * time_multiplier));
                         modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
@@ -4530,6 +4530,9 @@ function fastLoop(){
             if (global.settings.portal.ruins){
                 vBind({el: `#srprtl_ruins`},'update');
                 vBind({el: `#foundry`},'update');
+            }
+            if (global.settings.portal.gate){
+                vBind({el: `#srprtl_gate`},'update');
             }
         }
     }
