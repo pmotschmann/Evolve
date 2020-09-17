@@ -314,7 +314,7 @@ export const traits = {
         desc: loc('trait_holy'),
         type: 'genus',
         val: 1,
-        vars: [50]
+        vars: [50,25]
     },
     creative: { // A.R.P.A. Projects are cheaper
         name: loc('trait_creative_name'),

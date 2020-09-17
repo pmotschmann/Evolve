@@ -8895,7 +8895,7 @@ export const actions = {
             id: 'tech-gate_key',
             title: loc('tech_gate_key'),
             desc: loc('tech_gate_key'),
-            category: 'progress',
+            category: 'hell_dimension',
             era: 'interdimensional',
             reqs: { hell_gate: 1 },
             grant: ['hell_gate',2],
@@ -8912,11 +8912,31 @@ export const actions = {
                 return false;
             }
         },
+        gate_turret: {
+            id: 'tech-gate_turret',
+            title: loc('tech_gate_turret'),
+            desc: loc('tech_gate_turret'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_gate: 2 },
+            grant: ['hell_gate',3],
+            cost: {
+                Knowledge(){ return 32000000; },
+            },
+            effect(){ return loc('tech_gate_turret_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['gate_turret'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         corrupt_gem_analysis: {
             id: 'tech-corrupt_gem_analysis',
             title: loc('tech_corrupt_gem_analysis'),
             desc: loc('tech_corrupt_gem_analysis'),
-            category: 'progress',
+            category: 'hell_dimension',
             era: 'interdimensional',
             reqs: { high_tech: 16, corrupt: 1 },
             grant: ['corrupt',2],
@@ -8939,7 +8959,7 @@ export const actions = {
             id: 'tech-hell_search',
             title: loc('tech_hell_search'),
             desc: loc('tech_hell_search'),
-            category: 'progress',
+            category: 'hell_dimension',
             era: 'interdimensional',
             reqs: { corrupt: 2 },
             grant: ['hell_ruins',1],
@@ -9626,7 +9646,7 @@ export const actions = {
             id: 'tech-pillars',
             title: loc('tech_pillars'),
             desc: loc('tech_pillars'),
-            category: 'progress',
+            category: 'hell_dimension',
             era: 'interdimensional',
             reqs: { scarletite: 1, fusable: 1, locked: 1 },
             grant: ['pillars',1],

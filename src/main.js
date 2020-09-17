@@ -1320,7 +1320,7 @@ function fastLoop(){
             'int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
             'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-            'prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_pit:soul_attractor','int_sirius:ascension_trigger'
+            'prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor','int_sirius:ascension_trigger'
         ];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");

@@ -681,7 +681,9 @@ const fortressModules = {
             support: 'guard_post',
             hide_support: true,
             prop(){
-                return ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                let desc = ` - <span class="has-text-warning">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
+                desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                return desc;
             },
             filter(v,type){
                 let sup = hellSupression('gate');
@@ -802,6 +804,43 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            }
+        },
+        gate_turret: {
+            id: 'portal-gate_turret',
+            title: loc('portal_gate_turret_title'),
+            desc(){
+                return `<div>${loc('portal_gate_turret_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_gate: 3 },
+            powered(){ return powerCostMod(6); },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('gate_turret', offset, 3750000, 1.22, 'portal'); },
+                Iron(offset){ return spaceCostMultiplier('gate_turret', offset, 4250000, 1.22, 'portal'); },
+                Elerium(offset){ return spaceCostMultiplier('gate_turret', offset, 350, 1.22, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('gate_turret', offset, 850000, 1.22, 'portal'); },
+            },
+            effect(){
+                let security = 100;
+                if (global.race['holy']){
+                    security *= 1 + (traits.holy.vars[1] / 100);
+                }
+                let min = global.tech.hell_gun >= 2 ? 75 : 40;
+                let max = global.tech.hell_gun >= 2 ? 100 : 60;
+                return `<div>${loc('portal_gate_turret_effect',[security])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('gate_turret','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.gate_turret.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            postPower(){
+                vBind({el: `#srprtl_gate`},'update');
             }
         },
     },
@@ -1629,6 +1668,25 @@ export function bloodwar(){
             }
         }
     }
+
+    if (global.tech['gate_turret']){
+        if (forgeOperating && p_on['gate_turret']){
+            let gunKills = 0;
+            let min = global.tech.hell_gun >= 2 ? 75 : 40;
+            let max = global.tech.hell_gun >= 2 ? 100 : 60;
+            for (let i=0; i<p_on['gate_turret']; i++){
+                gunKills += Math.rand(min,max);
+            }
+            global.portal.soul_forge.kills += gunKills;
+            global.stats.dkills += gunKills;
+            let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
+            for (let i=0; i<p_on['gate_turret']; i++){
+                if (Math.rand(0,Math.round(gun_base)) === 0){
+                    global.resource.Soul_Gem.amount++;
+                }
+            }
+        }
+    }
 }
 
 export function hellSupression(area, val){
@@ -1639,7 +1697,7 @@ export function hellSupression(area, val){
                 let arc = (p_on['arcology'] || 0) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){
-                    aRating *= 1.25;
+                    aRating *= 1 + (traits.holy.vars[1] / 100);
                 }
                 let supress = (aRating + arc) / 5000;
                 return {
@@ -1649,7 +1707,16 @@ export function hellSupression(area, val){
             }
         case 'gate':
             {
-                return hellSupression('ruins',val);
+                let gSup = hellSupression('ruins',val);
+                let turret = (p_on['gate_turret'] || 0) * 100;
+                if (global.race['holy']){
+                    turret *= 1 + (traits.holy.vars[1] / 100);
+                }
+                let supress = (gSup.rating + turret) / 7500;
+                return {
+                    supress: supress > 1 ? 1 : supress,
+                    rating: gSup.rating + turret
+                };
             }
         default:
             return 0;
