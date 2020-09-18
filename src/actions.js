@@ -5675,6 +5675,9 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                defineIndustry();
             }
         },
         assembly_line: {
@@ -6109,6 +6112,9 @@ export const actions = {
                         Wood: 0,
                         Coal: 0,
                         Oil: 0,
+                        Star: 0,
+                        StarCap: 0,
+                        Inferno: 0,
                         Iron: 0,
                         Steel: 0
                     };
@@ -6272,7 +6278,7 @@ export const actions = {
             desc: loc('tech_infernium_fuel'),
             category: 'mining',
             era: 'interdimensional',
-            reqs: { smelting: 7, hell_ruins: 4, locked: 1 },
+            reqs: { smelting: 7, hell_ruins: 4 },
             grant: ['smelting',8],
             cost: {
                 Knowledge(){ return 27500000; },
@@ -6286,6 +6292,9 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                defineIndustry();
             }
         },
         rotary_kiln: {
@@ -16368,7 +16377,7 @@ function cataclysm(){
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
-        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Iron: 1, Steel: 1 };
+        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1 };
         global.city['fission_power'] = { count: 0, on: 0 };
         global.city['oil_power'] = { count: 0, on: 0 };
         global.city['coal_power'] = { count: 0, on: 0 };

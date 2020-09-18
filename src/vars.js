@@ -489,10 +489,22 @@ if (convertVersion(global['version']) < 10000){
     if (global.race['Dark']){
         global.stats['dark'] = global.race['Dark'].count;
     }
+
+    if (global.city.hasOwnProperty('smelter')){
+        if (!global.city.smelter.hasOwnProperty('Star')){
+            global.city.smelter['Star'] = 0;
+        }
+        if (!global.city.smelter.hasOwnProperty('StarCap')){
+            global.city.smelter['StarCap'] = 0;
+        }
+        if (!global.city.smelter.hasOwnProperty('Inferno')){
+            global.city.smelter['Inferno'] = 0;
+        }
+    }
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 10;
+global['beta'] = 11;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

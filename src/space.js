@@ -2768,7 +2768,8 @@ const interstellarProjects = {
                         global.interstellar['stellar_forge'].on++;
                         if (global.tech['star_forge'] >= 2){
                             global.city.smelter.cap += 2;
-                            global.city.smelter.Oil += 2;
+                            global.city.smelter.Star += 2;
+                            global.city.smelter.StarCap += 2;
                         }
                     }
                     return true;
