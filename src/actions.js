@@ -2192,6 +2192,7 @@ export const actions = {
                         global.race['weak_mastery'] = 1;
                         $(`#${$(this)[0].id}`).addClass('hl');
                     }
+                    calc_mastery(true);
                     drawAchieve();
                 }
                 return false;
@@ -5897,6 +5898,26 @@ export const actions = {
                 return false;
             }
         },
+        zoo: {
+            id: 'tech-zoo',
+            title: loc('tech_zoo'),
+            desc: loc('tech_zoo'),
+            category: 'entertainment',
+            era: 'interdimensional',
+            reqs: { hell_ruins: 2 },
+            grant: ['zoo',1],
+            cost: {
+                Knowledge(){ return 22500000; }
+            },
+            effect(){ return loc('tech_zoo_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.interstellar['zoo'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         casino: {
             id: 'tech-casino',
             title: loc('tech_casino'),
@@ -8936,6 +8957,26 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.portal['gate_turret'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        infernite_mine: {
+            id: 'tech-infernite_mine',
+            title: loc('tech_infernite_mine'),
+            desc: loc('tech_infernite_mine'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_gate: 3 },
+            grant: ['hell_gate',4],
+            cost: {
+                Knowledge(){ return 32500000; },
+            },
+            effect(){ return loc('tech_infernite_mine_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['infernite_mine'] = { count: 0, on: 0 };
                     return true;
                 }
                 return false;
@@ -16189,6 +16230,7 @@ function sentience(){
         window.location.reload();
     }
 
+    calc_mastery(true);
     drawCity();
     defineGarrison();
     buildGarrison($('#c_garrison'),false);

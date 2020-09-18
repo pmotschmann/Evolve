@@ -11,6 +11,7 @@ const changeList = [
             `Fling asteroids into the blackhole with the Asteroid Redirect ARPA project.`,
             `The same monument type will no longer be chosen twice in a row.`,
             `Evil races can now construct a Pillar of Bones monument type.`,
+            `Democracy now only affects Entertainers but has increased efficency.`,
             `Races with Detritivore can now build Windmills.`,
             `Build queue resource highlighting.`,
             `Low Contrast Dark Night Theme.`,

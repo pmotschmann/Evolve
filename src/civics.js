@@ -87,7 +87,7 @@ export function govTitle(id){
 const government_desc = {
     anarchy: loc('govern_anarchy_effect'),
     autocracy: loc('govern_autocracy_effect',[25,35]),
-    democracy: loc('govern_democracy_effect',[20,5]),
+    democracy: loc('govern_democracy_effect',[30,5]),
     oligarchy: loc('govern_oligarchy_effect',[5,20]),
     theocracy: loc('govern_theocracy_effect',[12,25,50]),
     theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,50]),

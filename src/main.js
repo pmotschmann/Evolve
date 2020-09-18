@@ -124,13 +124,13 @@ popover('morale',
 
                 let value = global.city.morale[morale];
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
-                    value /= 1.2;
+                    value /= 1.3;
                 }
 
                 obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
             
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
-                    obj.popper.append(`<p class="modal_bd"><span>ᄂ${loc('govern_democracy')}</span> <span class="has-text-success"> +20%</span></p>`);
+                    obj.popper.append(`<p class="modal_bd"><span>ᄂ${loc('govern_democracy')}</span> <span class="has-text-success"> +30%</span></p>`);
                 }
             }
         });
@@ -1320,7 +1320,7 @@ function fastLoop(){
             'int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
             'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-            'prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor','int_sirius:ascension_trigger'
+            'prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor','prtl_gate:infernite_mine','int_sirius:ascension_trigger'
         ];
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
@@ -1496,7 +1496,7 @@ function fastLoop(){
 
         if (global.interstellar['starport']){
             let used_support = 0;
-            let structs = ['fusion','mining_droid','processing','laboratory','g_factory','exchange'];
+            let structs = ['fusion','mining_droid','processing','laboratory','g_factory','exchange','zoo'];
             for (var i = 0; i < structs.length; i++){
                 if (global.interstellar[structs[i]]){
                     let operating = global.interstellar[structs[i]].on;
@@ -1938,18 +1938,26 @@ function fastLoop(){
             if (global.race['musical']){
                 entertainment += global.civic.entertainer.workers;
             }
-        }
-        if (global.tech['broadcast']){
-            entertainment += global.city.wardenclyffe.on * global.tech.broadcast;
-        }
-        if (red_on['vr_center']){
-            entertainment += red_on['vr_center'];
-        }
+        }        
         if (global.civic.govern.type === 'democracy'){
-            entertainment *= 1.2;
+            entertainment *= 1.3;
         }
         global.city.morale.entertain = entertainment;
         morale += entertainment;
+
+        if (global.tech['broadcast']){
+            global.city.morale.broadcast = global.city.wardenclyffe.on * global.tech.broadcast;
+            morale += global.city.wardenclyffe.on * global.tech.broadcast;
+        }
+        if (red_on['vr_center']){
+            global.city.morale.vr = red_on['vr_center'];
+            morale += red_on['vr_center'];
+        }
+        if (int_on['zoo']){
+            global.city.morale.zoo = int_on['zoo'] * 5;
+            morale += int_on['zoo'] * 5;
+        }
+
         if (global.civic.govern.type === 'anarchy'){
             stress /= 2;
         }
@@ -1996,6 +2004,9 @@ function fastLoop(){
 
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
+        }
+        if (int_on['zoo']){
+            mBaseCap += int_on['zoo'] * 2;
         }
         if (p_on['resort']){
             mBaseCap += p_on['resort'] * 2;
@@ -2275,7 +2286,13 @@ function fastLoop(){
                 breakdown.p.consume.Food[loc('galaxy_embassy')] = -(embassy);
             }
 
-            let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy;
+            let zoo = 0;
+            if (global.interstellar['zoo']){
+                zoo = int_on['zoo'] * 12000;
+                breakdown.p.consume.Food[loc('tech_zoo')] = -(zoo);
+            }
+
+            let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
 
             food_bd[loc('space_red_biodome_title')] = biodome + 'v';
             food_bd[loc('soldiers')] = hunting + 'v';
@@ -4281,21 +4298,36 @@ function fastLoop(){
 
         // Infernite
         let infernite_bd = {};
-        if (global.resource.Infernite.display && global.civic.hell_surveyor.workers > 0){
-            let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
-            let surveyor_base = global.civic.hell_surveyor.workers * rate;
+        if (global.resource.Infernite.display){
 
-            let sensors = 1;
-            if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
-                let drone_rate = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 0.5 : 0.2) : 0.1;
-                sensors = 1 + (p_on['sensor_drone'] * drone_rate);
+            if (global.civic.hell_surveyor.workers > 0){
+                let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
+                let surveyor_base = global.civic.hell_surveyor.workers * rate;
+    
+                let sensors = 1;
+                if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
+                    let drone_rate = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 0.5 : 0.2) : 0.1;
+                    sensors = 1 + (p_on['sensor_drone'] * drone_rate);
+                }
+    
+                let surveyor_delta = surveyor_base * sensors * global_multiplier;
+    
+                infernite_bd[loc('job_hell_surveyor')] = surveyor_base + 'v';
+                infernite_bd[`ᄂ${loc('portal_sensor_drone_title')}`] = ((sensors - 1) * 100) + '%';
+                modRes('Infernite', surveyor_delta * time_multiplier);
+            }
+    
+            if (p_on['infernite_mine']){
+                let sup = hellSupression('gate');
+                let rate = 0.5 * sup.supress;
+                let mine_base = p_on['infernite_mine'] * rate;
+    
+                let mine_delta = mine_base * global_multiplier;
+    
+                infernite_bd[loc('city_mine')] = mine_base + 'v';
+                modRes('Infernite', mine_delta * time_multiplier);
             }
 
-            let surveyor_delta = surveyor_base * sensors * global_multiplier;
-
-            infernite_bd[loc('job_hell_surveyor')] = surveyor_base + 'v';
-            infernite_bd[loc('portal_sensor_drone_title')] = ((sensors - 1) * 100) + '%';
-            modRes('Infernite', surveyor_delta * time_multiplier);
         }
         breakdown.p['Infernite'] = infernite_bd;
 

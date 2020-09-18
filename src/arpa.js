@@ -1,5 +1,5 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, darkEffect } from './functions.js';
+import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect } from './functions.js';
 import { actions, drawTech, drawCity, addAction, removeAction } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -764,6 +764,9 @@ export const genePool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calc_mastery(true);
         }
     },
     universal: {
@@ -782,6 +785,9 @@ export const genePool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calc_mastery(true);
         }
     },
     standard: {
@@ -800,6 +806,9 @@ export const genePool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calc_mastery(true);
         }
     },
     mastered: {
@@ -1419,6 +1428,9 @@ function genetics(){
                         curr_iteration++;
                     }
                     if (redraw){
+                        if (t === 'mastery'){
+                            calc_mastery(true);
+                        }
                         genetics();
                         if (t === 'persuasive'){
                             updateTrades();
@@ -1437,7 +1449,6 @@ function genetics(){
                             global.race.Phage.count -= cost;
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
-                            genetics();
                             redraw = true;
                         }
                         else {
@@ -1446,6 +1457,9 @@ function genetics(){
                         curr_iteration++;
                     }
                     if (redraw){
+                        if (t === 'mastery'){
+                            calc_mastery(true);
+                        }
                         genetics();
                         if (t === 'persuasive'){
                             updateTrades();

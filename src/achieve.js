@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
+import { clearElement, calc_mastery, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
 import { races } from './races.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
@@ -211,12 +211,6 @@ export const feats = {
             if (global.stats.achieve[achievement][affix]){
                 ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
             }
-            if (achievement === 'joyless'){
-                lvl += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
-                if (global.stats.achieve[achievement][affix]){
-                    ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
-                }
-            }
         }
     });
     set_alevel(lvl);
@@ -281,6 +275,7 @@ export function unlockAchieve(achievement,small,rank){
         }
     }
     if (redraw){
+        calc_mastery(true);
         drawPerks();
         drawAchieve();
     }

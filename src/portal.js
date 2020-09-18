@@ -745,7 +745,7 @@ const fortressModules = {
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
                     let remain = global.portal.hasOwnProperty('west_tower') ? size - global.portal.west_tower.count : size;
-                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
                     return loc('portal_tower_effect');
@@ -790,7 +790,7 @@ const fortressModules = {
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
                     let remain = global.portal.hasOwnProperty('east_tower') ? size - global.portal.east_tower.count : size;
-                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
                     return loc('portal_tower_effect');
@@ -825,7 +825,7 @@ const fortressModules = {
                 if (global.race['holy']){
                     security *= 1 + (traits.holy.vars[1] / 100);
                 }
-                let min = global.tech.hell_gun >= 2 ? 75 : 40;
+                let min = global.tech.hell_gun >= 2 ? 65 : 40;
                 let max = global.tech.hell_gun >= 2 ? 100 : 60;
                 return `<div>${loc('portal_gate_turret_effect',[security])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -841,6 +841,36 @@ const fortressModules = {
             },
             postPower(){
                 vBind({el: `#srprtl_gate`},'update');
+            }
+        },
+        infernite_mine: {
+            id: 'portal-infernite_mine',
+            title: loc('portal_infernite_mine_title'),
+            desc(){
+                return `<div>${loc('portal_infernite_mine_title')}</div><div class="has-text-special">${loc('requires_security')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_gate: 4 },
+            powered(){ return powerCostMod(5); },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('infernite_mine', offset, 75000000, 1.26, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('infernite_mine', offset, 2450000, 1.26, 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('infernite_mine', offset, 1650000, 1.26, 'portal'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('infernite_mine', offset, 680000, 1.26, 'portal'); },
+            },
+            effect(){                
+                let sup = hellSupression('gate');
+                let mining = 0.5 * sup.supress;
+                return `<div>${loc('portal_infernite_mine_effect',[+(mining).toFixed(3)])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('infernite_mine','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.infernite_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
             }
         },
     },
@@ -1672,7 +1702,7 @@ export function bloodwar(){
     if (global.tech['gate_turret']){
         if (forgeOperating && p_on['gate_turret']){
             let gunKills = 0;
-            let min = global.tech.hell_gun >= 2 ? 75 : 40;
+            let min = global.tech.hell_gun >= 2 ? 65 : 40;
             let max = global.tech.hell_gun >= 2 ? 100 : 60;
             for (let i=0; i<p_on['gate_turret']; i++){
                 gunKills += Math.rand(min,max);

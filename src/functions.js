@@ -864,29 +864,35 @@ export function darkEffect(universe, flag, info){
     return 0;
 }
 
-export function calc_mastery(){
-    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
-        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
-        if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
-            m_rate += 0.05;
-            u_rate -= 0.05;
+export const calc_mastery = (function (recalc){
+    var mastery;
+    return function(){
+        if (mastery && !recalc){
+            return mastery;
         }
-        if (global.race['weak_mastery']){
-            m_rate /= 10;
-            u_rate /= 10;
+        else if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+            let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
+            let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
+            if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
+                m_rate += 0.05;
+                u_rate -= 0.05;
+            }
+            if (global.race['weak_mastery']){
+                m_rate /= 10;
+                u_rate /= 10;
+            }
+            mastery = achieve_level * m_rate;
+            if (global.race.universe !== 'standard'){
+                mastery += universe_level * u_rate;
+            }
+            if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+                mastery *= 1 + (0.01 * global.race.mastery);
+            }
+            return mastery;
         }
-        let mastery = achieve_level * m_rate;
-        if (global.race.universe !== 'standard'){
-            mastery += universe_level * u_rate;
-        }
-        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
-            mastery *= 1 + (0.01 * global.race.mastery);
-        }
-        return mastery;
+        return 0;
     }
-    return 0;
-}
+})();
 
 function challenge_multiplier(value,type,decimals){
     decimals = decimals || 0;

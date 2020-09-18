@@ -2136,6 +2136,35 @@ const interstellarProjects = {
                 return false;
             }
         },
+        zoo: {
+            id: 'interstellar-zoo',
+            title: loc('tech_zoo'),
+            desc: `<div>${loc('tech_zoo')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            reqs: { zoo: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('zoo', offset, 50000000, 1.24, 'interstellar'); },
+                Polymer(offset){ return spaceCostMultiplier('zoo', offset, 6000000, 1.24, 'interstellar'); },
+                Infernite(offset){ return spaceCostMultiplier('zoo', offset, 75000, 1.24, 'interstellar'); },
+                Brick(offset){ return spaceCostMultiplier('zoo', offset, 2000000, 1.24, 'interstellar'); },
+            },
+            effect(){
+                let morale = 5;
+                let max = 2;
+                let food = 12000;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div><div>${loc('space_red_vr_center_effect1',[morale])}</div><div>${loc('space_red_vr_center_effect2',[max])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div>`;
+            },
+            powered(){ return powerCostMod(3); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('zoo','interstellar');
+                    if (global.interstellar.starport.support < global.interstellar.starport.s_max){
+                        global.interstellar.zoo.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         warehouse: {
             id: 'interstellar-warehouse',
             title(){ 

@@ -504,7 +504,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 11;
+global['beta'] = 12;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -998,25 +998,29 @@ if (!global.city['hot']){
 if (!global.city.morale['unemployed']){
     global.city.morale['unemployed'] = 0;
 }
-
 if (!global.city.morale['leadership']){
     global.city.morale['leadership'] = 0;
 }
-
 if (!global.city.morale['warmonger']){
     global.city.morale['warmonger'] = 0;
 }
-
 if (!global.city.morale['rev']){
     global.city.morale['rev'] = 0;
 }
-
 if (!global.city.morale['tax']){
     global.city.morale['tax'] = 0;
 }
-
 if (!global.city.morale['shrine']){
     global.city.morale['shrine'] = 0;
+}
+if (!global.city.morale['broadcast']){
+    global.city.morale['broadcast'] = 0;
+}
+if (!global.city.morale['vr']){
+    global.city.morale['vr'] = 0;
+}
+if (!global.city.morale['zoo']){
+    global.city.morale['zoo'] = 0;
 }
 
 if (!global.city['calendar']){
