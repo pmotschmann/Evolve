@@ -163,7 +163,7 @@ export const job_desc = {
             impact *= 1 + (global.space.satellite.count * 0.01);
         }
         if (global.civic.govern.type === 'theocracy'){
-            impact *= 0.5;
+            impact *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 0.75 : 0.6 ) : 0.5;
         }
         impact = +impact.toFixed(2);
         return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);

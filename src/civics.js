@@ -84,21 +84,25 @@ export function govTitle(id){
     return loc(`civics_gov${global.civic.foreign[`gov${id}`].name.s0}`,[global.civic.foreign[`gov${id}`].name.s1]);
 }
 
-const government_desc = {
-    anarchy: loc('govern_anarchy_effect'),
-    autocracy: loc('govern_autocracy_effect',[25,35]),
-    democracy: loc('govern_democracy_effect',[30,5]),
-    oligarchy: loc('govern_oligarchy_effect',[5,20]),
-    theocracy: loc('govern_theocracy_effect',[12,25,50]),
-    theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,50]),
-    republic: loc('govern_republic_effect',[25,20]),
-    socialist: loc('govern_socialist_effect',[35,10,10,20]),
-    corpocracy: loc('govern_corpocracy_effect',[200,150,100,10,30]),
-    technocracy: loc('govern_technocracy_effect',[8,2,10]),
-    federation: loc('govern_federation_effect',[3,10]),
-    federation_alt: loc('govern_federation_effect_alt',[25,32,10]),
-    magocracy: loc('govern_magocracy_effect',[25,50]),
-};
+const government_desc = (function(){
+    return {
+        anarchy: loc('govern_anarchy_effect'),
+        autocracy: loc('govern_autocracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 10 : 18 ) : 25, 35]),
+        democracy: loc('govern_democracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20, 5]),
+        oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? loc('govern_oligarchy_effect_alt',[20]) : loc('govern_oligarchy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 2 : 5, 20]),
+        theocracy: loc('govern_theocracy_effect',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
+        theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
+        republic: loc('govern_republic_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20]),
+        socialist: loc('govern_socialist_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 42 ) : 35, 10,10,20]),
+        corpocracy: loc('govern_corpocracy_effect',[200,150,100, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10, global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 40 : 30]),
+        technocracy: global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? loc('govern_technocracy_effect_alt',[8,10]) : loc('govern_technocracy_effect',[8, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 1 : 2, 10]),
+        federation: loc('govern_federation_effect',[3,10]),
+        federation_alt: loc('govern_federation_effect_alt',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32, 10]),
+        magocracy: loc('govern_magocracy_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 40 ) : 25]),
+    };
+});
+
+
 
 function government(govern){
     var gov = $('<div id="govType" class="govType" v-show="vis()"></div>');
@@ -163,7 +167,7 @@ function government(govern){
             if (effect_type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effect_type = 'theocracy_alt';
             }
-            return $(`<div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc[effect_type]}</div>`);
+            return $(`<div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
         },
         {
             classes: `has-background-light has-text-dark`
@@ -268,7 +272,7 @@ function drawGovModal(){
             if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effectType = 'theocracy_alt';
             }
-            return $(`<div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc[effectType]}</div>`);
+            return $(`<div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc()[effectType]}</div>`);
         },
         {
             elm: `#govModal button`,

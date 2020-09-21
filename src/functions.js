@@ -1063,6 +1063,7 @@ export function adjustCosts(costs){
 
 function technoAdjust(costs){
     if (global.civic.govern.type === 'technocracy'){
+        let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -1072,7 +1073,7 @@ function technoAdjust(costs){
                 newCosts[res] = function(){ return costs[res](); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]() * 1.02); }
+                newCosts[res] = function(){ return Math.round(costs[res]() * adjust); }
             }
         });
         return newCosts;
