@@ -1,6 +1,6 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
-import { races } from './races.js';
+import { races, genus_traits } from './races.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
 
@@ -18,7 +18,7 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun'
+        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -504,6 +504,23 @@ export function checkAchievements(){
 
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
+    }
+
+    if (global.tech['pillars']){        
+        let genus = {};
+        let rCnt = 0;
+        Object.keys(global.pillars).forEach(function(race){                
+            if (races[race]){
+                genus[races[race].type] = true;
+                rCnt++;
+            }
+        });
+        if (Object.keys(genus).length >= Object.keys(genus_traits).length){
+            unlockAchieve('enlightenment');
+        }
+        if (rCnt >= Object.keys(races).length - 1){
+            unlockAchieve('resonance');
+        }
     }
 
     const date = new Date();

@@ -1,5 +1,6 @@
 import { global, keyMultiplier, p_on, quantum_level, poppers } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
+import { unlockAchieve } from './achieve.js';
 import { traits, races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
@@ -676,6 +677,8 @@ const fortressModules = {
                         global.pillars[global.race.species] = true;
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
+                        calcPillar(true);
+                        unlockAchieve('resonance');
                         return true;
                     }
                 }
