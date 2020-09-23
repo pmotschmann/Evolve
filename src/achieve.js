@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, calc_mastery, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
+import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
 import { races } from './races.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
@@ -502,7 +502,7 @@ export function checkAchievements(){
         }
     }
 
-    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 800000000){
+    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
     }
 
@@ -741,6 +741,13 @@ export function drawPerks(){
     let perks = $('#perksPanel');
 
     let unlocked = 0;
+
+    let harmonic = calcPillar();
+    if (global['pillars'] && harmonic[0] > 1){        
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)])}</span></div>`);
+    }
+
     if (global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve.blackhole.l * 5;

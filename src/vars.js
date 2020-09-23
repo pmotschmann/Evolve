@@ -504,7 +504,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 12;
+global['beta'] = 13;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1326,31 +1326,31 @@ export function sizeApproximation(value,precision,fixed){
     if (value <= 9999){
         result = +value.toFixed(precision);
     }
-    else if (value <= 1000000){
+    else if (value < 1000000){
         affix = affix_list[global.settings.affix][0];
         result = fixed ? +(value / 1000).toFixed(1) : (Math.floor(value / 100) / 10);
     }
-    else if (value <= 1000000000){
+    else if (value < 1000000000){
         affix = affix_list[global.settings.affix][1];
         result = fixed ? +(value / 1000000).toFixed(1) : (Math.floor(value / 10000) / 100);
     }
-    else if (value <= 1000000000000){
+    else if (value < 1000000000000){
         affix = affix_list[global.settings.affix][2];
         result = fixed ? +(value / 1000000000).toFixed(1) : (Math.floor(value / 10000000) / 100);
     }
-    else if (value <= 1000000000000000){
+    else if (value < 1000000000000000){
         affix = affix_list[global.settings.affix][3];
         result = fixed ? +(value / 1000000000000).toFixed(1) : (Math.floor(value / 10000000000) / 100);
     }
-    else if (value <= 1000000000000000000){
+    else if (value < 1000000000000000000){
         affix = affix_list[global.settings.affix][4];
         result = fixed ? +(value / 1000000000000000).toFixed(1) : (Math.floor(value / 10000000000000) / 100);
     }
-    else if (value <= 1000000000000000000000){
+    else if (value < 1000000000000000000000){
         affix = affix_list[global.settings.affix][5];
         result = fixed ? +(value / 1000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000) / 100);
     }
-    else if (value <= 1000000000000000000000000){
+    else if (value < 1000000000000000000000000){
         affix = affix_list[global.settings.affix][6];
         result = fixed ? +(value / 1000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000) / 100);
     }

@@ -1,7 +1,7 @@
 import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
-import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind } from './functions.js';
+import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -625,6 +625,11 @@ function fastLoop(){
         let mastery = calc_mastery();
         breakdown.p['Global'][loc('mastery')] = mastery + '%';
         global_multiplier *= 1 + (mastery / 100);
+    }
+    if (global['pillars']){
+        let harmonic = calcPillar();
+        breakdown.p['Global'][loc('harmonic')] = `${(harmonic[0] - 1) * 100}%`;
+        global_multiplier *= harmonic[0];
     }
     if (global.race['suction_grip']){
         breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';

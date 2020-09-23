@@ -9698,7 +9698,7 @@ export const actions = {
             desc: loc('tech_pillars'),
             category: 'hell_dimension',
             era: 'interdimensional',
-            reqs: { scarletite: 1, fusable: 1, locked: 1 },
+            reqs: { scarletite: 1, fusable: 1 },
             grant: ['pillars',1],
             cost: {
                 Knowledge(){ return 30000000; }
@@ -15456,7 +15456,7 @@ function srDesc(c_action,old){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage'){
+            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -15546,7 +15546,7 @@ export function actionDesc(parent,c_action,obj,old){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage'){
+            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -15647,7 +15647,7 @@ export function payCosts(costs){
     costs = adjustCosts(costs);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plasmid' || res === 'Phage'){
+            if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let cost = costs[res]();
                 if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                     global.race.Plasmid.anti -= cost;
@@ -15690,7 +15690,7 @@ function checkMaxCosts(costs){
                 return;
             }
         }
-        else if (res === 'Plasmid' || res === 'Phage'){
+        else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 if (global.race.Plasmid.anti < Number(costs[res]())){
                     test = false;
@@ -15746,7 +15746,7 @@ function checkCosts(costs){
                 return;
             }
         }
-        else if (res === 'Plasmid' || res === 'Phage'){
+        else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 if (global.race.Plasmid.anti < Number(costs[res]())){
                     test = false;

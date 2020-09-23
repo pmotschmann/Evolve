@@ -1,5 +1,5 @@
 import { global, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { loc } from './locale.js';
@@ -1783,7 +1783,7 @@ function loadAlchemy(name,color,basic){
 
 export const spatialReasoning = (function(){
     var spatial = {};
-    return function (value,type){
+    return function (value,type,recalc){
         let tkey = type ? type : 'a';
         let key = [
             global.race.universe,
@@ -1804,7 +1804,7 @@ export const spatialReasoning = (function(){
         if (!spatial[tkey]){
             spatial[tkey] = {};
         }
-        if (!spatial[tkey][key]){            
+        if (!spatial[tkey][key] || recalc){            
             let modifier = 1;
             if (global.genes['store']){
                 let plasmids = 0;
@@ -1840,6 +1840,10 @@ export const spatialReasoning = (function(){
                     temple += priest * global.civic.priest.workers;
                 }
                 modifier *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
+            }
+            if (global['pillars']){
+                let harmonic = calcPillar();
+                modifier *= harmonic[1];
             }
             spatial[tkey] = {};
             spatial[tkey][key] = modifier;

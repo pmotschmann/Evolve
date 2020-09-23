@@ -601,7 +601,7 @@ export function timeCheck(c_action,track,detailed){
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
         Object.keys(costs).forEach(function (res){
-            if (res !== 'Morale' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Plasmid' && res !== 'Phage' && res !== 'AntiPlasmid'){
+            if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Drak','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let res_have = Number(global.resource[res].amount);
@@ -864,9 +864,9 @@ export function darkEffect(universe, flag, info){
     return 0;
 }
 
-export const calc_mastery = (function (recalc){
+export const calc_mastery = (function(){
     var mastery;
-    return function(){
+    return function(recalc){
         if (mastery && !recalc){
             return mastery;
         }
@@ -891,6 +891,28 @@ export const calc_mastery = (function (recalc){
             return mastery;
         }
         return 0;
+    }
+})();
+
+export const calcPillar = (function(){
+    var bonus;
+    return function(recalc){
+        if (!bonus || recalc){
+            let active = 0;
+            Object.keys(global.pillars).forEach(function(race){                
+                if (races[race] && global.race.species === race){
+                    active += 4;
+                }
+                else if (races[race]){
+                    active++;
+                }
+            });
+            bonus = [
+                1 + (active / 100), // Production
+                1 + (active * 2 / 100) // Storage
+            ];
+        }
+        return bonus;
     }
 })();
 

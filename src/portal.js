@@ -657,17 +657,28 @@ const fortressModules = {
             title: loc('portal_ancient_pillars_title'),
             desc: loc('portal_ancient_pillars_desc'),
             reqs: { hell_ruins: 2 },
-            cost: {},
+            cost: {
+                Harmony(){ return global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0; },
+                Scarletite(){ return global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0; },
+            },
             no_queue(){ return true },
             effect(){
                 if (Object.keys(global.pillars).length >= 1){
-                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length,Object.keys(global.pillars).length])}</div>`;
+                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length - 1,Object.keys(global.pillars).length])}</div>`;
                 }
                 else {
-                    return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length])}</div>`;
+                    return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length - 1])}</div>`;
                 }
             },
             action(){
+                if (global.tech['pillars'] && global.tech.pillars === 1){
+                    if (payCosts($(this)[0].cost)){
+                        global.pillars[global.race.species] = true;
+                        global.tech.pillars = 2;
+                        spatialReasoning(0,false,true);
+                        return true;
+                    }
+                }
                 return false;
             }
         },
