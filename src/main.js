@@ -1035,6 +1035,9 @@ function fastLoop(){
                         breakdown.p.consume.Mana[loc('tab_alchemy')] = -(trasmute);
                         breakdown.p.consume.Crystal[loc('tab_alchemy')] = -(trasmute * 0.5);
                         breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
+                        if (global.race.universe === 'magic' && !global.resource[res].basic && global.tech.alchemy >= 2){
+                            unlockAchieve('fullmetal');
+                        }
                     }
                 }
             });
@@ -6486,44 +6489,58 @@ function midLoop(){
                         }
                     }
                 }
-                else if (c_action.action()){
-                    if (c_action['queue_complete']){
-                        if (c_action.queue_complete() <= 0){
-                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                else {
+                    let attempts = global.queue.queue[idx].q;
+                    let struct = global.queue.queue[idx];
+                    let triggerd = false;
+                    for (var i=0; i<attempts; i++){
+                        if (c_action.action()){
+                            triggerd = true;
+                            if (c_action['queue_complete']){
+                                if (c_action.queue_complete() <= 0){
+                                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                                }
+                            }
+                            else {
+                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                            }
+                            if (global.queue.queue[idx].q > 1){
+                                global.queue.queue[idx].q--;
+                            }
+                            else {
+                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
+                                global.queue.queue.splice(idx,1);
+                                buildQueue();
+                            }
+                        }
+                        else {
+                            break;
                         }
                     }
-                    else {
-                        messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                    }
-                    if (global.queue.queue[idx].q > 1){
-                        global.queue.queue[idx].q--;
-                    }
-                    else {
-                        cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
-                        global.queue.queue.splice(idx,1);
-                        buildQueue();
-                    }
-                    if (c_action['grant']){
-                        let tech = c_action.grant[0];
-                        global.tech[tech] = c_action.grant[1];
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    else if (c_action['refresh']){
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    else {
-                        drawCity();
-                        renderSpace();
-                        renderFortress();
-                    }
+                    if (triggerd){
+                        if (c_action['grant']){
+                            let tech = c_action.grant[0];
+                            global.tech[tech] = c_action.grant[1];
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            renderSpace();
+                            renderFortress();
+                        }
+                        else if (c_action['refresh']){
+                            removeAction(c_action.id);
+                            drawCity();
+                            drawTech();
+                            renderSpace();
+                            renderFortress();
+                        }
+                        updateDesc(c_action,struct.action,struct.type);
+                        if (c_action['post']){
+                            setTimeout(function(){
+                                c_action.post();
+                            }, 250);
+                        }
+                    }                    
                 }
             }
 

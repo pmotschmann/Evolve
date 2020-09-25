@@ -9684,8 +9684,11 @@ export const actions = {
                     global.portal['hell_forge'] = { count: 0, on: 0 };
                     messageQueue(loc('tech_scarletite_avail'),'info');
                     loadFoundry();
-                    if (!global.pillars[global.race.species]){
+                    if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
                         global.tech['fusable'] = 1;
+                    }
+                    else {
+                        global.tech['pillars'] = 2;
                     }
                     return true;
                 }
@@ -15020,29 +15023,7 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         default:
-                            if (keyMap.d && 1 === 2){
-                                if (global[action][type]['count'] && global[action][type]['count'] > 0){
-                                    global[action][type]['count']--;
-                                    if (global[action][type]['on'] && global[action][type]['on'] > global[action][type]['count']){
-                                        global[action][type]['on']--;
-                                    }
-                                    if (global[action][type]['count'] === 0){
-                                        drawCity();
-                                        renderSpace();
-                                        var id = c_action.id;
-                                        $(`#pop${id}`).hide();
-                                        if (poppers[id]){
-                                            poppers[id].destroy();
-                                        }
-                                        clearElement($(`#pop${id}`),true);
-                                    }
-                                    else {
-                                        updateDesc(c_action,action,type);
-                                    }
-                                }
-                                break;
-                            }
-                            else {
+                            {
                                 let keyMult = keyMultiplier();
                                 if (c_action['grant']){
                                     keyMult = 1;

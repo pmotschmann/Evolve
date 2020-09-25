@@ -39,7 +39,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse'
+        'eviltwin','microbang','pw_apocalypse','fullmetal'
     ],
     challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history'],    
 };
@@ -506,7 +506,7 @@ export function checkAchievements(){
         unlockAchieve('scrooge');
     }
 
-    if (global.tech['pillars']){        
+    if (global.tech['pillars']){
         let genus = {};
         let rCnt = 0;
         Object.keys(global.pillars).forEach(function(race){                

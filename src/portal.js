@@ -659,8 +659,8 @@ const fortressModules = {
             desc: loc('portal_ancient_pillars_desc'),
             reqs: { hell_ruins: 2 },
             cost: {
-                Harmony(){ return global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0; },
-                Scarletite(){ return global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0; },
+                Harmony(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0; },
+                Scarletite(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0; },
             },
             no_queue(){ return true },
             effect(){
@@ -672,12 +672,13 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.tech['pillars'] && global.tech.pillars === 1){
+                if (global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro'){
                     if (payCosts($(this)[0].cost)){
                         global.pillars[global.race.species] = true;
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
                         calcPillar(true);
+                        towerSize(true);
                         unlockAchieve('resonance');
                         return true;
                     }
@@ -766,10 +767,8 @@ const fortressModules = {
                 }
             },
             action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.portal.west_tower.count < towerSize()){
-                        incrementStruct('west_tower','portal');
-                    }
+                if (global.portal.west_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                    incrementStruct('west_tower','portal');
                     return true;
                 }
                 return false;
@@ -811,10 +810,8 @@ const fortressModules = {
                 }
             },
             action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.portal.east_tower.count < towerSize()){
-                        incrementStruct('east_tower','portal');
-                    }
+                if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                    incrementStruct('east_tower','portal');
                     return true;
                 }
                 return false;
@@ -942,9 +939,9 @@ const fortressModules = {
     }
 };
 
-const towerSize = (function (recalc){
+const towerSize = (function(){
     var size;
-    return function(){
+    return function(recalc){
         if (size && !recalc){
             return size;
         }
