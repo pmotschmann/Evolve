@@ -546,7 +546,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         mutiplier = 1.005;
     }
     var count = global[sector][action] ? global[sector][action].count : 0;
-    if (offset){
+    if (offset && typeof offset === 'number'){
         count += offset;
     }
     return Math.round((mutiplier ** count) * base);
@@ -1066,7 +1066,7 @@ export function calcPrestige(type){
     return gains;
 }
 
-export function adjustCosts(costs){
+export function adjustCosts(costs, wiki){
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
@@ -1076,26 +1076,26 @@ export function adjustCosts(costs){
         });
         return newCosts;
     }
-    costs = technoAdjust(costs);
-    costs = kindlingAdjust(costs);
+    costs = technoAdjust(costs, wiki);
+    costs = kindlingAdjust(costs, wiki);
     costs = scienceAdjust(costs);
-    costs = rebarAdjust(costs);
-    return craftAdjust(costs);
+    costs = rebarAdjust(costs, wiki);
+    return craftAdjust(costs, wiki);
 }
 
-function technoAdjust(costs){
+function technoAdjust(costs, wiki){
     if (global.civic.govern.type === 'technocracy'){
         let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]() * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1128,16 +1128,16 @@ function scienceAdjust(costs){
     return costs;
 }
 
-function kindlingAdjust(costs){
+function kindlingAdjust(costs, wiki){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;
@@ -1145,15 +1145,15 @@ function kindlingAdjust(costs){
     return costs;
 }
 
-function craftAdjust(costs){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'])){
+function craftAdjust(costs, wiki){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * (1 - (traits.hollow_bones.vars[0] / 100))); }
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]()); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
             }
         });
         return newCosts;
@@ -1161,16 +1161,16 @@ function craftAdjust(costs){
     return costs;
 }
 
-function rebarAdjust(costs){
+function rebarAdjust(costs, wiki){
     if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
         let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]()); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
             }
         });
         return newCosts;

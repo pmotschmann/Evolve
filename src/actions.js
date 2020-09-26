@@ -14257,7 +14257,7 @@ export const actions = {
             title: loc('tech_alchemy'),
             desc: loc('tech_alchemy'),
             category: 'magic',
-            era: 'civilized',
+            era: 'discovery',
             reqs: { magic: 3, high_tech: 1 },
             grant: ['alchemy',1],
             condition(){
@@ -14302,7 +14302,7 @@ export const actions = {
             title: loc('tech_transmutation'),
             desc: loc('tech_transmutation'),
             category: 'magic',
-            era: 'civilized',
+            era: 'intergalactic',
             reqs: { alchemy: 1, high_tech: 16 },
             grant: ['alchemy',2],
             condition(){

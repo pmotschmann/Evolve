@@ -31,6 +31,9 @@ const extraInformation = {
     apartment: [
         loc(`wiki_tech_building_unlock`,[housingLabel('large')])
     ],
+    arcology: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_arcology_title`)])
+    ],
     steel_beams: [
         loc(`wiki_tech_steel_beams`,[housingLabel('small'),housingLabel('medium')])
     ],
@@ -135,7 +138,8 @@ const extraInformation = {
         loc(`wiki_tech_vocational_training`)
     ],
     stellar_forge: [
-        loc(`wiki_tech_building_unlock`,[loc(`interstellar_stellar_forge_title`)])
+        loc(`wiki_tech_building_unlock`,[loc(`interstellar_stellar_forge_title`)]),
+        loc(`wiki_tech_fuel_unlock`,[loc(`star`)])
     ],
     stellar_smelting: [
         loc(`wiki_tech_stellar_smelting`)
@@ -177,6 +181,9 @@ const extraInformation = {
     vr_center: [
         loc(`wiki_tech_building_unlock`,[loc(`space_red_vr_center_title`)]),
         loc(`wiki_tech_entertain3`,[3])
+    ],
+    zoo: [
+        loc(`wiki_tech_building_unlock`,[loc(`tech_zoo`)])
     ],
     casino: [
         loc(`wiki_tech_building_unlock`,[loc(`city_casino`)])
@@ -225,6 +232,9 @@ const extraInformation = {
     ],
     hellfire_furnace: [
         loc(`wiki_tech_smelt_boost2`)
+    ],
+    infernium_fuel: [
+        loc(`wiki_tech_fuel_unlock`,[loc(`modal_smelter_inferno`)])
     ],
     rotary_kiln: [
         loc(`wiki_tech_rotary_kiln`)
@@ -347,6 +357,9 @@ const extraInformation = {
     ],
     federation: [
         loc(`wiki_tech_gov_unlock`,[loc(`govern_federation`)])
+    ],
+    magocracy: [
+        loc(`wiki_tech_gov_unlock`,[loc(`govern_magocracy`)])
     ],
     spy: [
         loc(`wiki_tech_spy`)
@@ -520,6 +533,9 @@ const extraInformation = {
     orichalcum_capacitor: [
         loc(`wiki_tech_orichalcum_capacitor`)
     ],
+    advanced_biotech: [
+        loc(`wiki_tech_advanced_biotech`)
+    ],
     bioscience: [
         loc(`wiki_tech_building_unlock`,[loc(`city_biolab`)])
     ],
@@ -546,7 +562,8 @@ const extraInformation = {
         loc(`wiki_tech_gov_time`)
     ],
     electricity: [
-        loc(`wiki_tech_building_unlock`,[loc(`city_coal_power`)])
+        loc(`wiki_tech_building_unlock`,[loc(`city_coal_power`)]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_democracy')])
     ],
     industrialization: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Titanium_name`)]),
@@ -568,12 +585,53 @@ const extraInformation = {
     quantum_computing: [
         loc(`wiki_tech_quantum_computing`)
     ],
+    virtual_reality: [
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_autocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_democracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_oligarchy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_theocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_republic')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_socialist')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_corpocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_technocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_federation')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_magocracy')])
+    ],
     shields: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_neutron_name`)]),loc(`interstellar_neutron_name`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_blackhole_name`)]),loc(`interstellar_blackhole_name`)]),
     ],
     ai_core: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_citadel_title`)])
+    ],
+    metaphysics: [
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_autocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_oligarchy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_theocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_republic')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_socialist')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_corpocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_technocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_federation')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_magocracy')])
+    ],
+    cybernetics: [
+        loc(`wiki_tech_cybernetics`)
+    ],
+    gate_key: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_west_tower`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`portal_east_tower`)])
+    ],
+    gate_turret: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_gate_turret_title`)])
+    ],
+    infernite_mine: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_infernite_mine_title`)])
+    ],
+    hell_search: [
+        loc(`wiki_tech_destination_unlock`,[loc(`portal_ruins_mission_title`),loc(`portal_ruins_name`)]),
+        loc(`wiki_tech_hell_search`),
+        loc(`wiki_tech_building_unlock`,[loc(`portal_guard_post_title`)])
     ],
     tech_ascension: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_sirius_name`)]),loc(`interstellar_sirius_b_name`)]),
@@ -645,19 +703,32 @@ const extraInformation = {
         loc(`wiki_tech_orichalcum_driver2`)
     ],
     polymer: [
-        loc(`wiki_tech_resource_unlock`,[loc(`resource_Polymer_name`)])
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Polymer_name`)]),
+        loc(`wiki_tech_factory_unlock`,[loc(`resource_Polymer_name`)])
     ],
     fluidized_bed_reactor: [
         loc(`wiki_tech_fluidized_bed_reactor`)
+    ],
+    synthetic_fur: [
+        loc(`wiki_tech_factory_unlock`,[loc(`resource_Furs_name`)])
     ],
     nanoweave: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Nanoweave_name`)])
     ],
     stanene: [
-        loc(`wiki_tech_resource_unlock`,[loc(`resource_Stanene_name`)])
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Stanene_name`)]),
+        loc(`wiki_tech_factory_unlock`,[loc(`resource_Stanene_name`)])
     ],
     nano_tubes: [
-        loc(`wiki_tech_resource_unlock`,[loc(`resource_Nano_Tube_name`)])
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Nano_Tube_name`)]),
+        loc(`wiki_tech_factory_unlock`,[loc(`resource_Nano_Tube_name`)])
+    ],
+    scarletite: [
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Scarletite_name`)]),
+        loc(`wiki_tech_building_unlock`,[loc(`portal_hell_forge_title`)])
+    ],
+    pillars: [
+        loc(`wiki_tech_pillars`)
     ],
     reclaimer: [
         loc(`wiki_tech_job_unlock`,[loc(`job_reclaimer`)]),
@@ -759,6 +830,9 @@ const extraInformation = {
     adamantite_hoe: [
         loc(`wiki_tech_copper_hoe`,[166.67])
     ],
+    cyber_limbs: [
+        loc(`wiki_tech_cyber_limbs`)
+    ],
     slave_pens: [
         loc(`wiki_tech_building_unlock`,[loc(`city_slave_pen`)])
     ],
@@ -821,6 +895,9 @@ const extraInformation = {
     ],
     gauss_rifles: [
         loc(`wiki_tech_bows`,[800])
+    ],
+    cyborg_soldiers: [
+        loc(`wiki_tech_bows`,[900])
     ],
     space_marines: [
         loc(`wiki_tech_building_unlock`,[loc(`space_red_space_barracks_title`)])
@@ -1118,6 +1195,9 @@ const extraInformation = {
     mass_ejector: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_mass_ejector`)])
     ],
+    asteroid_redirect: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_roid_eject_title`,[loc(`arpa_projects_roid_eject_asteroid`)])])
+    ],
     infusion_confirm: [
         loc(`wiki_tech_infusion_confirm`)
     ],
@@ -1125,6 +1205,9 @@ const extraInformation = {
         loc(`wiki_tech_stabilize_blackhole1`),
         loc(`wiki_tech_stabilize_blackhole2`),
         loc(`wiki_tech_stabilize_blackhole3`)
+    ],
+    mana_syphon: [
+        loc(`wiki_tech_project_unlock`,[loc(`arpa_syphon_title`)])
     ],
     gravitational_waves: [
         loc(`wiki_tech_gravitational_waves`)
@@ -1259,6 +1342,40 @@ const extraInformation = {
     advanced_emplacement: [
         loc(`wiki_tech_advanced_emplacement1`),
         loc(`wiki_tech_advanced_emplacement2`)
+    ],
+    mana: [
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Mana_name`)]),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Crystal_name`)]),
+        loc(`wiki_tech_job_unlock`,[loc(`job_crystal_miner`)])
+    ],
+    ley_lines: [
+        loc(`wiki_tech_building_unlock`,[loc(`city_pylon`)])
+    ],
+    rituals: [
+        loc(`wiki_tech_rituals`)
+    ],
+    crafting_ritual: [
+        loc(`wiki_tech_crafting_ritual`)
+    ],
+    mana_nexus: [
+        loc(`wiki_tech_project_unlock`,[loc(`tech_mana_nexus`)])
+    ],
+    clerics: [
+        loc(`wiki_tech_clerics`)
+    ],
+    conjuring: [
+        loc(`wiki_tech_conjuring`,((new Date()).getMonth() === 9 && (new Date()).getDate() === 31) ? [loc(`city_trick`),loc(`city_trick_conjure`)] : [loc(`city_food`),loc(`city_food_conjure`)])
+    ],
+    res_conjuring: [
+        loc(`wiki_tech_conjuring`,((new Date()).getMonth() === 9 && (new Date()).getDate() === 31) ? [loc(`city_dig`),loc(`city_dig_conjour`)] : [loc(`city_lumber`),loc(`city_lumber_conjure`)]),
+        loc(`wiki_tech_conjuring`, global.race['sappy'] ? [loc(`city_amber`),loc(`city_amber_conjour`)] : [loc(`city_stone`),loc(`city_stone_conjour`)])
+    ],
+    alchemy: [
+        loc(`wiki_tech_subtab_unlock`,[loc(`tab_alchemy`),loc(`tab_resources`)])
+    ],
+    transmutation: [
+        loc(`wiki_tech_transmutation1`),
+        loc(`wiki_tech_transmutation2`)
     ]
 };
 
@@ -1306,7 +1423,18 @@ const extraRequirements = {
     chthonian2 : loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('galaxy_chthonian')])]),
     infernite1 : loc('wiki_tech_req_building',[loc('portal_carport_title')]),
     hell_pit3 : loc('wiki_tech_req_mission',[loc('portal_assault_forge_title')]),
+    corrupt1 : loc('wiki_tech_req_corrupt1'),
+    hell_ruins2 : loc('wiki_tech_req_mission',[loc('portal_ruins_mission_title')]),
+    hell_ruins3 : loc('wiki_tech_req_hell_ruins3'),
+    hell_gate1 : loc('wiki_tech_req_mission',[loc('portal_gate_mission_title')]),
     decay1 : loc('wiki_tech_req_decay1')
+};
+
+const extraTechPositions = {
+    unification2: 'unification',
+    conjuring: 'ley_lines',
+    res_conjuring: 'conjuring',
+    hell_search: 'corrupt_gem_analysis'
 };
 
 var techTrees = {};
@@ -1421,19 +1549,23 @@ export function renderTechPage(era){
     });
     if (otherTechs.length > 0) {
         for (let i=0; i<otherTechs.length; i++) {
-            if (otherTechs[i][0].id === 'tech-unification2') {
-                let insertPos = -1;
-                for (let i=0; i<techList.length; i++) {
-                    if (techList[i][0].id === 'tech-unification') {
-                        insertPos = i + 1;
-                        break;
+            let sorted = false;
+            Object.keys(extraTechPositions).forEach(function (extraTech){
+                if (!sorted && otherTechs[i][0].id === 'tech-' + extraTech) {
+                    let insertPos = -1;
+                    for (let i=0; i<techList.length; i++) {
+                        if (techList[i][0].id === 'tech-' + extraTechPositions[extraTech]) {
+                            insertPos = i + 1;
+                            break;
+                        }
                     }
+                    let tempArray = techList.slice(0, insertPos);
+                    tempArray.push(otherTechs[i]);
+                    techList = tempArray.concat(techList.slice(insertPos));
+                    sorted = true;
                 }
-                let tempArray = techList.slice(0, insertPos);
-                tempArray.push(otherTechs[i]);
-                techList = tempArray.concat(techList.slice(insertPos));
-            }
-            else {
+            });
+            if (!sorted){
                 techList.push(otherTechs[i]);
             }
         }

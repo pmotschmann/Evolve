@@ -80,7 +80,8 @@ function initPage(){
                 { key: 'early_space' },
                 { key: 'deep_space' },
                 { key: 'interstellar' },
-                { key: 'intergalactic' }
+                { key: 'intergalactic' },
+                { key: 'interdimensional' }
             ]
         },
         {
