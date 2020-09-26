@@ -94,7 +94,7 @@ function achieveDesc(achievement,showFlair){
                             : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
                             )
                         ){
-                        killed = killed + `<span class="has-text-success">${races[key].name}</span>`;
+                        killed = killed + `<span class="iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? 'l' : 'e']}">${races[key].name}</span>`;
                     }
                     else {
                         killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
@@ -109,7 +109,7 @@ function achieveDesc(achievement,showFlair){
         let biome_list = `<div class="flexed">`;
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
             if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`].l >= 0){
-                biome_list = biome_list + `<span class="has-text-success">${biomes[key].label}</span>`;
+                biome_list = biome_list + `<span class="iclr${global.stats.achieve[`biome_${key}`].l}">${biomes[key].label}</span>`;
             }
             else {
                 biome_list = biome_list + `<span class="has-text-danger">${biomes[key].label}</span>`;
@@ -119,10 +119,10 @@ function achieveDesc(achievement,showFlair){
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${biome_list}${flair}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
-        let genus = `<div class="flexed">`;    
+        let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
             if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].l >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide has-text-success">${loc(`genelab_genus_${key}`)}</span>`;
+                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`].l : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
                 if (key !== 'angelic' && achievement !== 'heavyweight') {
@@ -132,6 +132,27 @@ function achieveDesc(achievement,showFlair){
         });
         genus = genus + `<div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${genus}${flair}`));
+    }
+    else if (achievement === 'enlightenment'){
+        let genus = {};
+        Object.keys(global.pillars).forEach(function(race){
+            if (races[race]){
+                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                    genus[races[race].type] = global.pillars[race];
+                }
+            }
+        });
+        let checked = `<div class="flexed">`;    
+        Object.keys(genus_traits).sort().forEach(function (key){
+            if (genus[key] && genus[key] >= 1){
+                checked = checked + `<span class="wide iclr${genus[key]}">${loc(`genelab_genus_${key}`)}</span>`;
+            }
+            else {
+                checked = checked + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+            }
+        });
+        checked = checked + `<div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
     }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
         let race = achievement.substring(8);

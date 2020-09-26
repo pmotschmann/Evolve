@@ -1,6 +1,6 @@
 import { global, keyMultiplier, p_on, quantum_level, poppers } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
@@ -674,7 +674,7 @@ const fortressModules = {
             action(){
                 if (global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro'){
                     if (payCosts($(this)[0].cost)){
-                        global.pillars[global.race.species] = true;
+                        global.pillars[global.race.species] = alevel();
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
                         calcPillar(true);
@@ -771,6 +771,9 @@ const fortressModules = {
                     incrementStruct('west_tower','portal');
                     return true;
                 }
+                if (global.portal.west_tower.count >= towerSize()){
+                    global.tech['wtower'] = 1;
+                }
                 return false;
             }
         },
@@ -813,6 +816,9 @@ const fortressModules = {
                 if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0].cost)){
                     incrementStruct('east_tower','portal');
                     return true;
+                }
+                if (global.portal.east_tower.count >= towerSize()){
+                    global.tech['etower'] = 1;
                 }
                 return false;
             }

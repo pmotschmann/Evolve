@@ -1461,6 +1461,9 @@ export function vacuumCollapse(){
         unlockAchieve(`extinct_${global.race.species}`);
         unlockAchieve(`pw_apocalypse`);
 
+        if (!global.race['modified'] && global.race.species === 'balorg'){
+            unlockAchieve('pass');
+        }
         if (global.race.species === 'junker'){
             unlockFeat('the_misery');
         }

@@ -39,7 +39,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
     challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history'],    
 };
@@ -238,14 +238,9 @@ export function unlockAchieve(achievement,small,rank){
     if (global.race.universe !== 'micro' && small === true){
         return false;
     }
-    let a_level = 1;
+    let a_level = alevel();
     let unlock = false;
     let redraw = false;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
@@ -286,15 +281,7 @@ export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
-    let a_level = 1;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
-    if (a_level > 5){
-        a_level = 5;
-    }
+    let a_level = alevel();
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
@@ -389,15 +376,7 @@ export function drawAchieve(args){
         }
     });
 
-    let a_level = 1;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
-    if (a_level > 5){
-        a_level = 5;
-    }
+    let a_level = alevel();
 
     if ($('#topBar span.flair')){
         clearElement($('#topBar span.flair'),true);
@@ -447,7 +426,7 @@ export function drawAchieve(args){
     }
 }
 
-export function checkAchievements(){
+export function alevel(){
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
@@ -457,6 +436,11 @@ export function checkAchievements(){
     if (a_level > 5){
         a_level = 5;
     }
+    return a_level;
+}
+
+export function checkAchievements(){
+    let a_level = alevel();
 
     for (let t_level=a_level; t_level >= 0; t_level--){
         checkBigAchievement('extinct_', 'mass_extinction', 25, t_level);
@@ -511,12 +495,20 @@ export function checkAchievements(){
         let rCnt = 0;
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
-                genus[races[race].type] = true;
+                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                    genus[races[race].type] = global.pillars[race];
+                }
                 rCnt++;
             }
         });
         if (Object.keys(genus).length >= Object.keys(genus_traits).length){
-            unlockAchieve('enlightenment');
+            let rank = 5;
+            Object.keys(genus).forEach(function(g){
+                if (genus[g] < rank){
+                    rank = genus[g];
+                }
+            });
+            unlockAchieve('enlightenment',false,rank);
         }
         if (rCnt >= Object.keys(races).length - 1){
             unlockAchieve('resonance');
