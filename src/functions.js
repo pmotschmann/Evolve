@@ -1377,19 +1377,49 @@ export function easterEggBind(id){
     });
 }
 
-export function format_emblem(achieve,size,baseIcon,fool){
+function single_emblem(achieve,size,icon,iconName,fool,universeAffix){
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][universeAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+}
+    
+export function format_emblem(achieve,size,baseIcon,fool,universe){
     if (!size){
         size = 10;
     }
     if (!baseIcon){
         baseIcon = getBaseIcon(achieve,'achievement');
     }
-    let emblem = global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].l - 1 : global.stats.achieve[achieve].l) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].l)} ${loc(global.settings.icon)}"><svg class="star${fool ? global.stats.achieve[achieve].l - 1 : global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].a - 1 : global.stats.achieve[achieve].a) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].a)} ${loc('universe_antimatter')}"><svg class="star${fool ? global.stats.achieve[achieve].a - 1 : global.stats.achieve[achieve].a}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('atom')}" xml:space="preserve">${svgIcons('atom')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].e - 1 : global.stats.achieve[achieve].e) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].e)} ${loc('universe_evil')}"><svg class="star${fool ? global.stats.achieve[achieve].e - 1 : global.stats.achieve[achieve].e}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('evil')}" xml:space="preserve">${svgIcons('evil')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].h - 1 : global.stats.achieve[achieve].h) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].h)} ${loc('universe_heavy')}"><svg class="star${fool ? global.stats.achieve[achieve].h - 1 : global.stats.achieve[achieve].h}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('heavy')}" xml:space="preserve">${svgIcons('heavy')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].m - 1 : global.stats.achieve[achieve].m) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].m)} ${loc('universe_micro')}"><svg class="star${fool ? global.stats.achieve[achieve].m - 1 : global.stats.achieve[achieve].m}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('micro')}" xml:space="preserve">${svgIcons('micro')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].mg - 1 : global.stats.achieve[achieve].mg) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].mg)} ${loc('universe_magic')}"><svg class="star${fool ? global.stats.achieve[achieve].mg - 1 : global.stats.achieve[achieve].mg}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('magic')}" xml:space="preserve">${svgIcons('magic')}</svg></p>` : '');
+    let emblem = ``
+    if (!universe){
+        emblem = emblem + single_emblem(achieve,size,baseIcon,loc(global.settings.icon),fool,'l');
+        emblem = emblem + single_emblem(achieve,size,'atom',loc('universe_antimatter'),fool,'a');
+        emblem = emblem + single_emblem(achieve,size,'evil',loc('universe_evil'),fool,'e');
+        emblem = emblem + single_emblem(achieve,size,'heavy',loc('universe_heavy'),fool,'h');
+        emblem = emblem + single_emblem(achieve,size,'micro',loc('universe_micro'),fool,'m');
+        emblem = emblem + single_emblem(achieve,size,'magic',loc('universe_magic'),fool,'mg');
+    }
+    else {
+        switch (universe){
+            case 'standard':
+                emblem = emblem + single_emblem(achieve,size,baseIcon,loc(global.settings.icon),fool,'l');
+                break;
+            case 'antimatter':
+                emblem = emblem + single_emblem(achieve,size,'atom',loc('universe_antimatter'),fool,'a');
+                break;
+            case 'evil':
+                emblem = emblem + single_emblem(achieve,size,'evil',loc('universe_evil'),fool,'e');
+                break;
+            case 'heavy':
+                emblem = emblem + single_emblem(achieve,size,'heavy',loc('universe_heavy'),fool,'h');
+                break;
+            case 'micro':
+                emblem = emblem + single_emblem(achieve,size,'micro',loc('universe_micro'),fool,'m');
+                break;
+            case 'magic':
+                emblem = emblem + single_emblem(achieve,size,'magic',loc('universe_magic'),fool,'mg');
+                break;
+        }
+    }
+    
     return emblem;
 }
 

@@ -4231,6 +4231,7 @@
   "fortress_patrol_casualties_revive": "Your patrols suffered %0 casualties but %1 soldiers revived.",
   "fortress_killed": "A surveyor was killed by demonic creatures.",
   "fortress_eviscerated": "%0 surveyors were eviscerated by demonic creatures.",
+  "universe_all": "All",
   "universe_standard": "Standard",
   "universe_standard_desc": "A standard universe with normal laws of physics",
   "universe_standard_effect": "This is a vanilla universe, no special rules apply.",
