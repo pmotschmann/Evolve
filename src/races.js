@@ -389,8 +389,7 @@ export const traits = {
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
         type: 'major',
-        val: 3,
-        vars: [10]
+        val: 3
     },
     herbivore: { // No food is gained from hunting
         name: loc('trait_herbivore_name'),

@@ -9014,6 +9014,7 @@ export const actions = {
             reqs: { corrupt: 2 },
             grant: ['hell_ruins',1],
             cost: {
+                Knowledge(){ return 22100000; },
                 Structs(){
                     return {
                         portal: {

@@ -691,7 +691,7 @@ const fortressModules = {
         info: {
             name: loc('portal_gate_name'),
             desc(){
-                return `${loc('portal_gate_desc')} ${loc('portal_gate_closed')}`;
+                return `${loc('portal_gate_desc')} ${loc(global.tech['wtower'] && global.tech['etower'] ? 'portal_gate_open' : 'portal_gate_closed')}`;
             },
             support: 'guard_post',
             hide_support: true,
@@ -773,6 +773,11 @@ const fortressModules = {
                 }
                 if (global.portal.west_tower.count >= towerSize()){
                     global.tech['wtower'] = 1;
+                    if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
+                        global.tech['hell_lake'] = 1;
+                        messageQueue(loc('portal_gate_open'),'info');
+                        renderFortress();
+                    }
                 }
                 return false;
             }
@@ -819,6 +824,11 @@ const fortressModules = {
                 }
                 if (global.portal.east_tower.count >= towerSize()){
                     global.tech['etower'] = 1;
+                    if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
+                        global.tech['hell_lake'] = 1;
+                        messageQueue(loc('portal_gate_open'),'info');
+                        renderFortress();
+                    }
                 }
                 return false;
             }
@@ -898,19 +908,19 @@ const fortressModules = {
         },
         lake_mission: {
             id: 'portal-lake_mission',
-            title: loc('portal_pit_mission_title'),
-            desc: loc('portal_pit_mission_title'),
+            title: loc('portal_lake_mission_title'),
+            desc: loc('portal_lake_mission_title'),
             reqs: { hell_lake: 1 },
             grant: ['hell_lake',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return 350000000; },
-                Oil(){ return 1000000; }
+                Money(){ return 500000000; },
+                Oil(){ return 750000; }
             },
-            effect: loc('portal_pit_mission_effect'),
+            effect: loc('portal_lake_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    messageQueue(loc('portal_lake_mission_result'),'info');
                     return true;
                 }
                 return false;

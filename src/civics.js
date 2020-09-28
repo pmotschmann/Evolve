@@ -1085,24 +1085,24 @@ function war_campaign(gov){
 
     switch(global.civic.garrison.tactic){
         case 0:
-            enemy = Math.seededRandom(0,10);
-            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,2));
+            enemy = Math.seededRandom(0,10,true);
+            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,2,true));
             break;
         case 1:
-            enemy = Math.seededRandom(5,50);
-            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,3));
+            enemy = Math.seededRandom(5,50,true);
+            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(0,3,true));
             break;
         case 2:
-            enemy = Math.seededRandom(25,100);
-            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(1,5));
+            enemy = Math.seededRandom(25,100,true);
+            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(1,5,true));
             break;
         case 3:
-            enemy = Math.seededRandom(50,200);
-            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(4,12));
+            enemy = Math.seededRandom(50,200,true);
+            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(4,12,true));
             break;
         case 4:
-            enemy = Math.seededRandom(100,500);
-            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(10,25));
+            enemy = Math.seededRandom(100,500,true);
+            global.civic.foreign[`gov${gov}`].hstl += Math.floor(Math.seededRandom(10,25,true));
             break;
     }
     enemy = Math.floor(enemy * global.civic.foreign[`gov${gov}`].mil / 100);
@@ -1139,7 +1139,7 @@ function war_campaign(gov){
         if (deathCap > looters()){
             deathCap = looters();
         }
-        let death = Math.floor(Math.seededRandom(0,deathCap));
+        let death = Math.floor(Math.seededRandom(0,deathCap,true));
         if (global.race['frail']){
             death++;
         }
@@ -1176,221 +1176,146 @@ function war_campaign(gov){
             wounded -= death;
         }
 
-        global.civic.garrison.wounded += Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
+        global.civic.garrison.wounded += Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death,true));
 
-        let money = 0;
-        let food = 0;
-        let lumber = 0;
-        let stone = 0;
-        let copper = 0;
-        let iron = 0;
-        let aluminium = 0;
-        let cement = 0;
-        let steel = 0;
-        let titanium = 0;
+        let gains = {
+            Money: 0,
+            Food: 0,
+            Lumber: 0,
+            Stone: 0,
+            Copper: 0,
+            Iron: 0,
+            Aluminium: 0,
+            Coal: 0,
+            Cement: 0,
+            Steel: 0,
+            Titanium: 0,
+            Crystal: 0
+        };
+
+        let basic = ['Food','Lumber','Stone'];
+        let common = ['Copper','Iron','Aluminium','Coal'];
+        let rare = ['Cement','Steel'];
+        if (global.race['terrifying']){
+            rare.push('Titanium');
+        }
+        if (global.tech['magic']){
+            rare.push('Crystal');
+        }
+
+        let looted = ['Money'];
         switch(global.civic.garrison.tactic){
             case 0:
-                money = Math.floor(Math.seededRandom(50,250));
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    food = Math.floor(Math.seededRandom(50,250));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    lumber = Math.floor(Math.seededRandom(50,250));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    stone = Math.floor(Math.seededRandom(50,250));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    copper = Math.floor(Math.seededRandom(25,100));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    iron = Math.floor(Math.seededRandom(25,100));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    aluminium = Math.floor(Math.seededRandom(25,100));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 1){
-                    cement = Math.floor(Math.seededRandom(25,100));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) === 0){
-                    steel = Math.floor(Math.seededRandom(10,25));
+                {
+                    let extra = ['Money'].concat(basic,common);
+                    looted.push(basic[Math.floor(Math.seededRandom(0,basic.length))]);
+                    looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    if (global.race['beast_of_burden']){
+                        looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    }
                 }
                 break;
             case 1:
-                money = Math.floor(Math.seededRandom(500,1000));
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    food = Math.floor(Math.seededRandom(500,1000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    lumber = Math.floor(Math.seededRandom(500,2500));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    stone = Math.floor(Math.seededRandom(500,2500));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    copper = Math.floor(Math.seededRandom(250,1000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    iron = Math.floor(Math.seededRandom(250,1000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    aluminium = Math.floor(Math.seededRandom(250,1000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 3){
-                    cement = Math.floor(Math.seededRandom(250,1000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 1){
-                    steel = Math.floor(Math.seededRandom(100,250));
-                }
-                if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
-                    titanium = Math.floor(Math.seededRandom(50,158));
+                {
+                    let extra = ['Money'].concat(basic,common,rare);
+                    looted.push(basic[Math.floor(Math.seededRandom(0,basic.length))]);
+                    looted.push(common[Math.floor(Math.seededRandom(0,common.length))]);
+                    looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    if (global.race['beast_of_burden']){
+                        looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    }
                 }
                 break;
             case 2:
-                money = Math.floor(Math.seededRandom(5000,10000));
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    food = Math.floor(Math.seededRandom(2500,10000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    lumber = Math.floor(Math.seededRandom(5000,25000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    stone = Math.floor(Math.seededRandom(5000,25000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    copper = Math.floor(Math.seededRandom(2500,10000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    iron = Math.floor(Math.seededRandom(2500,10000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    aluminium = Math.floor(Math.seededRandom(2500,10000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 4){
-                    cement = Math.floor(Math.seededRandom(2500,10000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    steel = Math.floor(Math.seededRandom(1000,2500));
-                }
-                if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
-                    titanium = Math.floor(Math.seededRandom(500,1000));
+                {
+                    let extra = ['Money'].concat(basic,common,rare);
+                    let extraB = common.concat(rare);
+                    looted.push(basic[Math.floor(Math.seededRandom(0,basic.length))]);
+                    looted.push(common[Math.floor(Math.seededRandom(0,common.length))]);
+                    looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    looted.push(extraB[Math.floor(Math.seededRandom(0,extraB.length))]);
+                    if (global.race['beast_of_burden']){
+                        looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    }
                 }
                 break;
             case 3:
-                money = Math.floor(Math.seededRandom(25000,100000));
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    food = Math.floor(Math.seededRandom(5000,20000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    lumber = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    stone = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    copper = Math.floor(Math.seededRandom(5000,20000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    iron = Math.floor(Math.seededRandom(5000,20000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    aluminium = Math.floor(Math.seededRandom(5000,20000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 4){
-                    cement = Math.floor(Math.seededRandom(5000,20000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    steel = Math.floor(Math.seededRandom(2000,5000));
-                }
-                if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
-                    titanium = Math.floor(Math.seededRandom(1000,2500));
+                {
+                    let extra = ['Money'].concat(basic,common,rare);
+                    looted.push(basic[Math.floor(Math.seededRandom(0,basic.length))]);
+                    looted.push(common[Math.floor(Math.seededRandom(0,common.length))]);
+                    looted.push(rare[Math.floor(Math.seededRandom(0,rare.length))]);
+                    looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    if (global.race['beast_of_burden']){
+                        looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    }
                 }
                 break;
             case 4:
-                money = Math.floor(Math.seededRandom(50000,250000));
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    food = Math.floor(Math.seededRandom(10000,40000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    lumber = Math.floor(Math.seededRandom(20000,100000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    stone = Math.floor(Math.seededRandom(20000,100000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    copper = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    iron = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 5){
-                    aluminium = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 4){
-                    cement = Math.floor(Math.seededRandom(10000,50000));
-                }
-                if (Math.floor(Math.seededRandom(0,10)) <= 2){
-                    steel = Math.floor(Math.seededRandom(5000,25000));
-                }
-                if (global.race['terrifying'] && Math.floor(Math.seededRandom(0,10)) <= 1){
-                    titanium = Math.floor(Math.seededRandom(4000,7500));
+                {
+                    let extra = ['Money'].concat(basic,common,rare);
+                    looted.push(basic[Math.floor(Math.seededRandom(0,basic.length))]);
+                    looted.push(common[Math.floor(Math.seededRandom(0,common.length))]);
+                    looted.push(rare[Math.floor(Math.seededRandom(0,rare.length))]);
+                    looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    if (global.race['beast_of_burden']){
+                        looted.push(extra[Math.floor(Math.seededRandom(0,extra.length))]);
+                    }
                 }
                 break;
         }
 
+        looted.forEach(function(goods){
+            switch (goods){
+                case 'Money':
+                    gains[goods] += Math.floor(Math.seededRandom(100,375));
+                    break;
+                case 'Food':
+                    gains[goods] += Math.floor(Math.seededRandom(40,175));
+                    break;
+                case 'Lumber':
+                case 'Stone':
+                    gains[goods] += Math.floor(Math.seededRandom(50,250));
+                    break;
+                case 'Copper':
+                case 'Iron':
+                case 'Aluminium':
+                    gains[goods] += Math.floor(Math.seededRandom(35,125));
+                    break;
+                case 'Coal':
+                case 'Cement':
+                    gains[goods] += Math.floor(Math.seededRandom(25,100));
+                    break;
+                case 'Steel':
+                    gains[goods] += Math.floor(Math.seededRandom(20,65));
+                    break;
+                case 'Titanium':
+                    gains[goods] += Math.floor(Math.seededRandom(12,32));
+                    break;
+                case 'Crystal':
+                    gains[goods] += Math.floor(Math.seededRandom(1,5));
+                    break;
+            }
+        });
+
         let loot = loc('civics_garrison_gained');
-        if (global.resource.Money.display && money > 0){
-            money = lootModify(money,gov);
-            loot = loot + loc('civics_garrison_quant_money',[money]);
-            modRes('Money',money);
+        if (global.resource.Money.display && gains.Money > 0){
+            gains.Money = lootModify(gains.Money,gov);
+            loot = loot + loc('civics_garrison_quant_money',[gains.Money]);
+            modRes('Money',gains.Money);
         }
-        if (global.resource.Food.display && food > 0){
-            food = lootModify(food,gov);
-            loot = loot + loc('civics_garrison_quant_res',[food,global.resource.Food.name]);
-            modRes('Food',food);
-        }
-        if (global.resource.Lumber.display && lumber > 0){
-            lumber = lootModify(lumber,gov);
-            loot = loot + loc('civics_garrison_quant_res',[lumber,global.resource.Lumber.name]);
-            modRes('Lumber',lumber);
-        }
-        if (global.resource.Stone.display && stone > 0){
-            stone = lootModify(stone,gov);
-            loot = loot + loc('civics_garrison_quant_res',[stone,global.resource.Stone.name]);
-            modRes('Stone',stone,gov);
-        }
-        if (global.resource.Copper.display && copper > 0){
-            copper = lootModify(copper,gov);
-            loot = loot + loc('civics_garrison_quant_res',[copper,global.resource.Copper.name]);
-            modRes('Copper',copper);
-        }
-        if (global.resource.Iron.display && iron > 0){
-            iron = lootModify(iron,gov);
-            loot = loot + loc('civics_garrison_quant_res',[iron,global.resource.Iron.name]);
-            modRes('Iron',iron);
-        }
-        if (global.resource.Aluminium.display && aluminium > 0){
-            aluminium = lootModify(aluminium,gov);
-            loot = loot + loc('civics_garrison_quant_res',[aluminium,global.resource.Aluminium.name]);
-            modRes('Aluminium',aluminium);
-        }
-        if (global.resource.Cement.display && cement > 0){
-            cement = lootModify(cement,gov);
-            loot = loot + loc('civics_garrison_quant_res',[cement,global.resource.Cement.name]);
-            modRes('Cement',cement);
-        }
-        if (steel > 0){
-            steel = lootModify(steel,gov);
-            global.resource.Steel.display = true;
-            loot = loot + loc('civics_garrison_quant_res',[steel,global.resource.Steel.name]);
-            modRes('Steel',steel);
-        }
-        if (titanium > 0){
-            titanium = lootModify(titanium,gov);
-            global.resource.Titanium.display = true;
-            loot = loot + loc('civics_garrison_quant_res',[titanium,global.resource.Titanium.name]);
-            modRes('Titanium',titanium);
-        }
+
+        let payout = basic.concat(common,rare);
+        payout.forEach(function(res){
+            if (gains[res] > 0 && (global.resource[res].display || res === 'Steel' || res === 'Titanium')){
+                gains[res] = lootModify(gains[res],gov);
+                loot = loot + loc('civics_garrison_quant_res',[gains[res],global.resource[res].name]);
+                modRes(res,gains[res]);
+                if (res === 'Steel' || res === 'Titanium'){
+                    global.resource[res].display = true;
+                }
+            }
+        });
 
         loot = loot.slice(0,-2);
         loot = loot + '.';
@@ -1400,13 +1325,13 @@ function war_campaign(gov){
         if (global.race['revive']){
             switch (global.city.calendar.temp){
                 case 0:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 5)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 5),true));
                     break;
                 case 1:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 3)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 3),true));
                     break;
                 case 2:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 1.5)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 1.5),true));
                     break;
             }
             global.civic.garrison.workers += revive;
@@ -1422,7 +1347,7 @@ function war_campaign(gov){
         if (global.race['slaver'] && global.city['slave_pen']){
             let max = global.city.slave_pen.count * 4;
             if (max > global.city.slave_pen.slaves){
-                let slaves = Math.floor(Math.seededRandom(0,global.civic.garrison.tactic + 2));
+                let slaves = Math.floor(Math.seededRandom(0,global.civic.garrison.tactic + 2,true));
                 if (slaves + global.city.slave_pen.slaves > max){
                     slaves = max - global.city.slave_pen.slaves;
                 }
@@ -1437,19 +1362,19 @@ function war_campaign(gov){
             let infected = 0;
             switch(global.civic.garrison.tactic){
                 case 0:
-                    infected = Math.floor(Math.seededRandom(0,2));
+                    infected = Math.floor(Math.seededRandom(0,2,true));
                     break;
                 case 1:
-                    infected = Math.floor(Math.seededRandom(0,3));
+                    infected = Math.floor(Math.seededRandom(0,3,true));
                     break;
                 case 2:
-                    infected = Math.floor(Math.seededRandom(0,5));
+                    infected = Math.floor(Math.seededRandom(0,5,true));
                     break;
                 case 3:
-                    infected = Math.floor(Math.seededRandom(0,10));
+                    infected = Math.floor(Math.seededRandom(0,10,true));
                     break;
                 case 4:
-                    infected = Math.floor(Math.seededRandom(0,25));
+                    infected = Math.floor(Math.seededRandom(0,25,true));
                     break;
             }
             let zombies = global.resource[global.race.species].amount + infected;
@@ -1497,7 +1422,7 @@ function war_campaign(gov){
         if (deathCap > looters()){
             deathCap = looters();
         }
-        let death = Math.floor(Math.seededRandom(1,deathCap));
+        let death = Math.floor(Math.seededRandom(1,deathCap,true));
         if (global.race['frail']){
             death += global.civic.garrison.tactic + 1;
         }
@@ -1533,19 +1458,19 @@ function war_campaign(gov){
             global.civic.garrison.wounded -= death;
             wounded -= death;
         }
-        global.civic.garrison.wounded += 1 + Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death));
+        global.civic.garrison.wounded += 1 + Math.floor(Math.seededRandom(wounded,global.civic.garrison.raid - death,true));
 
         let revive = 0;
         if (global.race['revive']){
             switch (global.city.calendar.temp){
                 case 0:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 6)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 6),true));
                     break;
                 case 1:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 4)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 4),true));
                     break;
                 case 2:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 2)));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 2),true));
                     break;
             }
             global.civic.garrison.workers += revive;
@@ -1594,15 +1519,28 @@ function looters(){
 function lootModify(val,gov){
     let looting = looters();
     let loot = val * Math.log(looting + 1);
-    if (global.race['beast_of_burden']){
-        loot *= 1 + (traits.beast_of_burden.vars[0] / 100);
-    }
     if (global.race['invertebrate']){
         loot *= 1 - (traits.invertebrate.vars[0] / 100);
     }
     if (global.race.universe === 'evil'){
         loot *= darkEffect('evil');
     }
+
+    switch(global.civic.garrison.tactic){
+        case 1:
+            loot *= 4;
+            break;
+        case 2:
+            loot *= 30;
+            break;
+        case 3:
+            loot *= 100;
+            break;
+        case 4:
+            loot *= 400;
+            break;
+    }
+
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 

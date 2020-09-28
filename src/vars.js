@@ -1,6 +1,7 @@
 export var save = window.localStorage;
 export var global = {
     seed: 1,
+    warseed: 1,
     resource: {},
     evolution: {},
     tech: {},
@@ -48,13 +49,14 @@ Math.rand = function(min, max) {
 }
 
 Math.seed = 2;
-Math.seededRandom = function(min, max) {
+Math.war = 2;
+Math.seededRandom = function(min, max, alt) {
     max = max || 1;
     min = min || 0;
 
-    Math.seed = (Math.seed * 9301 + 49297) % 233280;
-    var rnd = Math.seed / 233280;
-    global.seed = Math.seed;
+    Math[alt ? 'war' : 'seed'] = (Math[alt ? 'war' : 'seed'] * 9301 + 49297) % 233280;
+    var rnd = Math[alt ? 'war' : 'seed']/ 233280;
+    global[alt ? 'warseed' : 'seed'] = Math[alt ? 'war' : 'seed'];
     return min + rnd * (max - min);
 }
 
@@ -66,6 +68,7 @@ if (global_data) {
     if (saveState){
         global = saveState;
         Math.seed = global.seed;
+        Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
     }
     else {
         newGameData();
@@ -500,6 +503,11 @@ if (convertVersion(global['version']) < 10000){
         if (!global.city.smelter.hasOwnProperty('Inferno')){
             global.city.smelter['Inferno'] = 0;
         }
+    }
+
+    if (!global.hasOwnProperty('warseed')){
+        global['warseed'] = global.seed + 1;
+        Math.war = global.hasOwnProperty('warseed') ? global.warseed : global.seed;
     }
 }
 
