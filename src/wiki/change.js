@@ -14,7 +14,7 @@ const changeList = [
             `Democracy now only affects Entertainers.`,
             `Some government bonuses now scale with tech era.`,
             `Races with Detritivore can now build Windmills.`,
-            `Beast of Burden now grants an extra loot roll instead of a 10% boost.`
+            `Beast of Burden now grants an extra loot roll instead of a 10% boost.`,
             `Revamped combat loot formulas.`,
             `Build queue resource highlighting.`,
             `Low Contrast Dark Night Theme.`,

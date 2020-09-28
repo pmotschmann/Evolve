@@ -9056,6 +9056,25 @@ export const actions = {
                 return false;
             }
         },
+        lake_analysis: {
+            id: 'tech-lake_analysis',
+            title: loc('tech_lake_analysis'),
+            desc: loc('tech_lake_analysis'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_lake: 2 },
+            grant: ['hell_lake',3],
+            cost: {
+                Knowledge(){ return 34000000; },
+            },
+            effect(){ return loc('tech_lake_analysis_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
         incorporeal: {
             id: 'tech-incorporeal',
             title: loc('tech_incorporeal'),

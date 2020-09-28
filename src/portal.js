@@ -771,15 +771,19 @@ const fortressModules = {
                     incrementStruct('west_tower','portal');
                     return true;
                 }
+                return false;
+            },
+            post(){
                 if (global.portal.west_tower.count >= towerSize()){
                     global.tech['wtower'] = 1;
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
+                        global.settings.portal.lake = true;
+                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info');
                         renderFortress();
                     }
                 }
-                return false;
             }
         },
         east_tower: {
@@ -822,15 +826,19 @@ const fortressModules = {
                     incrementStruct('east_tower','portal');
                     return true;
                 }
+                return false;
+            },
+            post(){
                 if (global.portal.east_tower.count >= towerSize()){
                     global.tech['etower'] = 1;
                     if (global.tech['wtower'] && global.tech['etower'] && !global.tech['hell_lake']){
                         global.tech['hell_lake'] = 1;
+                        global.settings.portal.lake = true;
+                        global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info');
                         renderFortress();
                     }
                 }
-                return false;
             }
         },
         gate_turret: {
@@ -926,6 +934,31 @@ const fortressModules = {
                 return false;
             }
         },
+        harbour: {
+            id: 'portal-harbour',
+            title: loc('portal_harbour_title'),
+            desc(){
+                return `<div>${loc('portal_harbour_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_lake: 3, locked: 1 },
+            powered(){ return powerCostMod(25); },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, 1.26, 'portal'); },
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('harbour','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.harbour.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     prtl_spire: {
         info: {
@@ -940,7 +973,7 @@ const fortressModules = {
             grant: ['hell_spire',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return 500000000; },
+                Money(){ return 750000000; },
                 Deuterium(){ return 1000000; }
             },
             effect: loc('portal_pit_mission_effect'),
