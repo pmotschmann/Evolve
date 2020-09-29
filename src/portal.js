@@ -913,6 +913,7 @@ const fortressModules = {
         info: {
             name: loc('portal_lake_name'),
             desc: loc('portal_lake_desc'),
+            support: 'harbour',
         },
         lake_mission: {
             id: 'portal-lake_mission',
@@ -940,19 +941,105 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_harbour_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { hell_lake: 3, locked: 1 },
-            powered(){ return powerCostMod(25); },
+            reqs: { hell_lake: 3 },
+            powered(){
+                let factor = p_on['cooling_tower'] || 0;
+                return powerCostMod(500 * (0.92 ** factor));
+            },
+            support(){ return 1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, 1.26, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, 1.18, 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('harbour', offset, 50000000, 1.18, 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('harbour', offset, 7500000, 1.18, 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('harbour', offset, 800000, 1.18, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, 1.18, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_harbour_effect',[1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('harbour','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.harbour.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        cooling_tower: {
+            id: 'portal-cooling_tower',
+            title: loc('portal_cooling_tower_title'),
+            desc(){
+                return `<div>${loc('portal_cooling_tower_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_lake: 6, locked: 1 },
+            powered(){ return powerCostMod(10); },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('cooling_tower', offset, 250000000, 1.2, 'portal'); },
+                Orichalcum(offset){ return spaceCostMultiplier('cooling_tower', offset, 8500000, 1.2, 'portal'); },
+            },
+            effect(){
+                return `<div>${loc('portal_cooling_tower_effect',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('cooling_tower','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.cooling_tower.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        bireme: {
+            id: 'portal-bireme',
+            title: loc('portal_bireme_title'),
+            desc(){
+                return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
+            },
+            reqs: { hell_lake: 4, locked: 1 },
+            powered(){ return powerCostMod(1); },
+            support(){ return -1; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('bireme', offset, 225000000, 1.26, 'portal'); },
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('bireme','portal');
+                    if (global.portal.harbour.support < global.space.harbour.s_max){
+                        global.portal.bireme.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        transport: {
+            id: 'portal-transport',
+            title: loc('portal_transport_title'),
+            desc(){
+                return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
+            },
+            reqs: { hell_lake: 5, locked: 1 },
+            powered(){ return powerCostMod(1); },
+            support(){ return -1; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('transport', offset, 225000000, 1.26, 'portal'); },
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('transport','portal');
+                    if (global.portal.harbour.support < global.space.harbour.s_max){
+                        global.portal.transport.on++;
                     }
                     return true;
                 }

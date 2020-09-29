@@ -9075,6 +9075,67 @@ export const actions = {
                 return false;
             }
         },
+        lake_threat: {
+            id: 'tech-lake_threat',
+            title: loc('tech_lake_threat'),
+            desc: loc('tech_lake_threat'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_lake: 3 },
+            grant: ['hell_lake',4],
+            cost: {
+                Knowledge(){ return 34500000; },
+            },
+            effect(){ return loc('tech_lake_threat_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['bireme'] = { count: 0, on: 0 };
+                    messageQueue(loc('tech_lake_threat_result'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        lake_transport: {
+            id: 'tech-lake_transport',
+            title: loc('tech_lake_transport'),
+            desc: loc('tech_lake_transport'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_lake: 4 },
+            grant: ['hell_lake',5],
+            cost: {
+                Knowledge(){ return 35000000; },
+            },
+            effect(){ return loc('tech_lake_transport_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['transport'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
+        cooling_tower: {
+            id: 'tech-cooling_tower',
+            title: loc('tech_cooling_tower'),
+            desc: loc('tech_cooling_tower'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_lake: 5 },
+            grant: ['hell_lake',6],
+            cost: {
+                Knowledge(){ return 37500000; },
+            },
+            effect(){ return loc('tech_cooling_tower_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['cooling_tower'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         incorporeal: {
             id: 'tech-incorporeal',
             title: loc('tech_incorporeal'),
