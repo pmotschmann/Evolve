@@ -777,7 +777,7 @@ export function buildGarrison(garrison,full){
         var tactics = $(`<div id="${full ? 'tactics' : 'c_tactics'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
-        var strategy = $('<b-tooltip :label="strategyLabel()" position="is-bottom" multilined animated><span class="current">{{ g.tactic | tactics }}</span></b-tooltip>');
+        var strategy = $('<span class="current tactic">{{ g.tactic | tactics }}</span>');
         var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
         var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
         tactics.append(last);
@@ -787,7 +787,7 @@ export function buildGarrison(garrison,full){
         var battalion = $(`<div id="${full ? 'battalion' : 'c_battalion'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_battalion')}</span></div>`);
         wrap.append(battalion);
             
-        var armysize = $('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ g.raid }}</span></b-tooltip>');
+        var armysize = $('<span class="current bat">{{ g.raid }}</span>');
         var alast = $('<span role="button" aria-label="remove soldiers from campaign" class="sub" @click="aLast">&laquo;</span>');
         var anext = $('<span role="button" aria-label="add soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
         battalion.append(alast);
@@ -860,20 +860,6 @@ export function buildGarrison(garrison,full){
             campaign(gov){
                 war_campaign(gov);
             },
-            strategyLabel(){
-                switch (global.civic.garrison.tactic){
-                    case 0:
-                        return loc('civics_garrison_tactic_ambush_desc');
-                    case 1:
-                        return loc('civics_garrison_tactic_raid_desc');
-                    case 2:
-                        return loc('civics_garrison_tactic_pillage_desc');
-                    case 3:
-                        return loc('civics_garrison_tactic_assault_desc');
-                    case 4:
-                        return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
-                }
-            },
             hireLabel(){
                 let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
                 if (cost > 25000){
@@ -890,9 +876,6 @@ export function buildGarrison(garrison,full){
             },
             battleAssessment(gov){
                 return battleAssessment(gov);
-            },
-            armyLabel(){
-                return loc('civics_garrison_army_label');
             },
             soldierDesc(){
                 return describeSoldier();
@@ -977,6 +960,33 @@ export function buildGarrison(garrison,full){
             }
         }
     });
+
+    popover(full ? 'garrisonTactics' : 'cGarrisonTactics',
+        function(){
+            switch (global.civic.garrison.tactic){
+                case 0:
+                    return loc('civics_garrison_tactic_ambush_desc');
+                case 1:
+                    return loc('civics_garrison_tactic_raid_desc');
+                case 2:
+                    return loc('civics_garrison_tactic_pillage_desc');
+                case 3:
+                    return loc('civics_garrison_tactic_assault_desc');
+                case 4:
+                    return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
+            }
+        },{
+            elm: `${full ? '#garrison' : '#c_garrison'} .tactic`
+        }
+    );
+
+    popover(full ? 'garrisonBat' : 'cGarrisonBat',
+        function(){
+            return loc('civics_garrison_army_label');
+        },{
+            elm: `${full ? '#garrison' : '#c_garrison'} .bat`
+        }
+    );
 }
 
 export function describeSoldier(){

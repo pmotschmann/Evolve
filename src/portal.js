@@ -974,11 +974,13 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_cooling_tower_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { hell_lake: 6, locked: 1 },
+            reqs: { hell_lake: 6 },
             powered(){ return powerCostMod(10); },
             cost: {
                 Money(offset){ return spaceCostMultiplier('cooling_tower', offset, 250000000, 1.2, 'portal'); },
+                Polymer(offset){ return spaceCostMultiplier('cooling_tower', offset, 12000000, 1.2, 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('cooling_tower', offset, 8500000, 1.2, 'portal'); },
+                Brick(offset){ return spaceCostMultiplier('cooling_tower', offset, 250000, 1.2, 'portal'); },
             },
             effect(){
                 return `<div>${loc('portal_cooling_tower_effect',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -1000,11 +1002,15 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
-            reqs: { hell_lake: 4, locked: 1 },
+            reqs: { hell_lake: 4 },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('bireme', offset, 225000000, 1.26, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('bireme', offset, 190000000, 1.24, 'portal'); },
+                Adamantite(offset){ return spaceCostMultiplier('bireme', offset, 15000000, 1.24, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('bireme', offset, 18000000, 1.24, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('bireme', offset, 10, 1.24, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 125000, 1.24, 'portal'); },
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
@@ -1026,11 +1032,15 @@ const fortressModules = {
             desc(){
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
-            reqs: { hell_lake: 5, locked: 1 },
+            reqs: { hell_lake: 5 },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('transport', offset, 225000000, 1.26, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('bireme', offset, 18000000, 1.24, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('bireme', offset, 12500000, 1.22, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('bireme', offset, 5, 1.22, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
             },
             effect(){
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
@@ -1054,23 +1064,23 @@ const fortressModules = {
         },
         spire_mission: {
             id: 'portal-spire_mission',
-            title: loc('portal_pit_mission_title'),
-            desc: loc('portal_pit_mission_title'),
+            title: loc('portal_spire_mission_title'),
+            desc: loc('portal_spire_mission_title'),
             reqs: { hell_spire: 1 },
             grant: ['hell_spire',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Money(){ return 750000000; },
-                Deuterium(){ return 1000000; }
+                [global.race.species](){ return 50; },
             },
-            effect: loc('portal_pit_mission_effect'),
+            effect: loc('portal_spire_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    messageQueue(loc('portal_spire_mission_result'),'info');
                     return true;
                 }
                 return false;
-            }
+            },
+            flair: loc('portal_spire_mission_flair'),
         },
     }
 };

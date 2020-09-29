@@ -88,9 +88,6 @@ new Vue({
     methods: {
         name(){
             return races[global.race.species].name;
-        },
-        desc(){
-            return races[global.race.species].desc;
         }
     },
     filters: {
@@ -102,6 +99,14 @@ new Vue({
         }
     }
 });
+
+popover('race',
+    function(){
+        return races[global.race.species].desc;
+    },{
+        elm: '#race > .name'
+    }
+);
 
 var moraleCap = 125;
 

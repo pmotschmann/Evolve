@@ -150,7 +150,7 @@ export function popover(id,content,opts){
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
-    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
+    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }    
     if (opts['bind']){
         $(opts.elm).on('mouseover',function(){
             let wide = opts['wide'] ? ' wide' : '';
@@ -166,7 +166,11 @@ export function popover(id,content,opts){
                 popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
             }
             popper.show();
-            poppers[id] = new Popper(opts['self'] ? this : $(opts.elm),popper);
+            poppers[id] = new Popper(
+                opts['self'] ? this : $(opts.elm),
+                popper, 
+                opts.hasOwnProperty('prop') ? opts['prop'] : {}
+            );
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper });
             }

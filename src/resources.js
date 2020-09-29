@@ -509,46 +509,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
                     costs = costs + `<div>${global.resource[craft_costs[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
-            },
-            hover(res,vol){
-                var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-
-                let bonus = (craftingRatio(res) * 100).toFixed(0);
-                popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus,global.resource[res].name])}</div>`));
-                
-                let craft_costs = craftCost();
-                let crafts = $(`<div><span class="has-text-success">${loc('manual_crafting_hover_craft')} </span></div>`);
-                let num_crafted = 0;
-                if (typeof vol !== 'number'){
-                    num_crafted = global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a;
-                    if (craft_costs[res].length > 1){
-                        for (let i=1; i<craft_costs[res].length; i++){
-                            let curr_max = global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a;
-                            if (curr_max < num_crafted){
-                                num_crafted = curr_max;
-                            }
-                        }
-                    }
-                    crafts.append($(`<span class="has-text-advanced">${sizeApproximation((bonus / 100) * num_crafted,1)} ${global.resource[res].name}</span>`));
-                }
-                else {
-                    num_crafted = keyMultiplier() * vol;
-                    let total_crafted = sizeApproximation((bonus / 100) * num_crafted,1);
-                    crafts.append($(`<span class="has-text-advanced"><span class="craft" data-val="${(sizeApproximation((bonus / 100) * vol))}">${total_crafted}</span> ${global.resource[res].name}</span>`));
-                }
-                let costs = $(`<div><span class="has-text-danger">${loc('manual_crafting_hover_use')} </span></div>`);
-                for (let i=0; i<craft_costs[res].length; i++){
-                    costs.append($(`<span class="craft-elm has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
-                    if (i + 1 < craft_costs[res].length){
-                        costs.append($(`<span>, </span>`));
-                    }
-                }
-                popper.append(crafts);
-                popper.append(costs);
-                
-                popper.show();
-                popover(`inc${res}${vol}`,popper);
             }
         }
     });
@@ -1311,7 +1271,13 @@ function breakdownPopover(id,name,type){
         out: function(){
             vBind({el: `#pop${id} > div`},'destroy');
         },
-        classes: `breakdown has-background-light has-text-dark`
+        classes: `breakdown has-background-light has-text-dark`,
+        prop: {
+            modifiers: {
+                preventOverflow: { enabled: false },
+                hide: { enabled: false }
+            }
+        }
     });
 }
 

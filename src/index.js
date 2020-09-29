@@ -30,7 +30,7 @@ export function index(){
     columns.append(`<div class="column is-one-quarter leftColumn">
         <div id="race" class="race columns is-mobile is-gapless">
             <h2 class="is-sr-only">Race Info</h2>
-            <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
+            <div class="column is-one-quarter name">{{ name() }}</div>
             <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
             <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
         </div>
