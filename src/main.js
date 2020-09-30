@@ -5400,6 +5400,65 @@ function midLoop(){
                 bd_Furs[loc('space_red_garage_title')] = gain+'v';
             }
         }
+
+        if (global.portal['harbour'] && p_on['harbour']){
+            let gain = (p_on['harbour'] * (spatialReasoning(30000)));
+            caps['Oil'] += gain;
+            bd_Oil[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(250000)));
+            caps['Alloy'] += gain;
+            bd_Alloy[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(250000)));
+            caps['Polymer'] += gain;
+            bd_Polymer[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(200000)));
+            caps['Iridium'] += gain;
+            bd_Iridium[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(18000)));
+            caps['Helium_3'] += gain;
+            bd_Helium[loc('portal_harbour_title')] = gain+'v';
+            
+            gain = (p_on['harbour'] * (spatialReasoning(12000)));
+            caps['Deuterium'] += gain;
+            bd_Deuterium[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(180000)));
+            caps['Neutronium'] += gain;
+            bd_Neutronium[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(150000)));
+            caps['Adamantite'] += gain;
+            bd_Adamantite[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(75000)));
+            caps['Infernite'] += gain;
+            bd_Infernite[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(750000)));
+            caps['Nano_Tube'] += gain;
+            bd_Nano_Tube[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(1200000)));
+            caps['Graphene'] += gain;
+            bd_Graphene[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(1200000)));
+            caps['Stanene'] += gain;
+            bd_Stanene[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(130000)));
+            caps['Bolognium'] += gain;
+            bd_Bolognium[loc('portal_harbour_title')] = gain+'v';
+
+            gain = (p_on['harbour'] * (spatialReasoning(130000)));
+            caps['Orichalcum'] += gain;
+            bd_Orichalcum[loc('portal_harbour_title')] = gain+'v';
+        }
+
         if (global.city['silo']){
             let gain = (global.city['silo'].count * spatialReasoning(500));
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
