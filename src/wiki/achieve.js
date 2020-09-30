@@ -50,7 +50,7 @@ function achievePage(universe){
     let content = $(`#content`);
     clearElement(content);
     
-    let filtering = `
+    /*let filtering = `
     <div id="filtering" class="b-tabs">
         <nav class="tabs">
             <ul>
@@ -65,7 +65,7 @@ function achievePage(universe){
         </nav>
     </div>
     `;
-    content.append(filtering);
+    content.append(filtering);*/
     
     let universeLevel = 'l';
     switch (universe){
