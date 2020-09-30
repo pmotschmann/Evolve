@@ -322,10 +322,10 @@ const fortressModules = {
                 vBind({el: `#fort`},'update');
             },
             cost: {
-                Money(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000000, 1.25, 'portal'); },
-                Graphene(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 1500000, 1.25, 'portal'); },
-                Infernite(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 25000, 1.25, 'portal'); },
-                Bolognium(offset){ return global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1 ? 0 : spaceCostMultiplier('soul_forge', offset, 100000, 1.25, 'portal'); },
+                Money(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000000 : 0; },
+                Graphene(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 1500000 : 0; },
+                Infernite(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000 : 0; },
+                Bolognium(wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 100000 : 0; },
             },
             effect(){
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
@@ -499,12 +499,12 @@ const fortressModules = {
                 return global.portal.vault.count >= 2 ? false : true;
             },
             cost: {
-                Soul_Gem(){ return global.portal.vault.count === 0 ? 100 : 0; },
-                Money(){ return global.portal.vault.count === 1 ? 250000000 : 0; },
-                Adamantite(){ return global.portal.vault.count === 1 ? 12500000 : 0; },
-                Orichalcum(){ return global.portal.vault.count === 1 ? 30000000 : 0; },
+                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 0 || wiki ? 100 : 0; },
+                Money(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 250000000 : 0; },
+                Adamantite(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 12500000 : 0; },
+                Orichalcum(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 30000000 : 0; },
             },
-            effect(){ return global.portal.vault.count >= 1 ? loc('portal_vault_effect2') : loc('portal_vault_effect',[100]); },
+            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 2 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('vault','portal');
@@ -734,9 +734,9 @@ const fortressModules = {
         west_tower: {
             id: 'portal-west_tower',
             title: loc('portal_west_tower'),
-            desc(){
+            desc(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
+                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size || wiki){
                     return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
                 }
                 else {
@@ -748,13 +748,13 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
             cost: {
-                Money(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(10000000) : 0; },
-                Stone(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(100000) : 0; },
-                Uranium(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(1000) : 0; },
-                Adamantite(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(18000) : 0; },
-                Vitreloy(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(25000) : 0; },
-                Soul_Gem(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? 1 : 0; },
-                Scarletite(){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() ? towerPrice(5000) : 0; },
+                Money(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
+                Stone(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
+                Uranium(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
+                Adamantite(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
+                Vitreloy(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
+                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? 1 : 0; },
+                Scarletite(wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
             },
             effect(){
                 let size = towerSize();
@@ -789,9 +789,9 @@ const fortressModules = {
         east_tower: {
             id: 'portal-east_tower',
             title: loc('portal_east_tower'),
-            desc(){
+            desc(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
+                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size || wiki){
                     return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
                 }
                 else {
@@ -803,13 +803,13 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
             cost: {
-                Money(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(10000000) : 0; },
-                Stone(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(100000) : 0; },
-                Uranium(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(1000) : 0; },
-                Adamantite(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(18000) : 0; },
-                Vitreloy(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(25000) : 0; },
-                Soul_Gem(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? 1 : 0; },
-                Scarletite(){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() ? towerPrice(5000) : 0; },
+                Money(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
+                Stone(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
+                Uranium(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
+                Adamantite(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
+                Vitreloy(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
+                Soul_Gem(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? 1 : 0; },
+                Scarletite(wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
             },
             effect(){
                 let size = towerSize();

@@ -1677,15 +1677,11 @@ const spaceProjects = {
         world_collider: {
             id: 'space-world_collider',
             title: loc('space_dwarf_collider_title'),
-            desc(){
-                if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859){
-                    return `<div>${loc('space_dwarf_collider_desc')}</div><div class="has-text-special">${loc('space_dwarf_collider_desc_req')}</div>`;
-                }
-                else {
-                    return `<div>${loc('space_dwarf_collider_desc_req')}</div>`;
+            desc(wiki){
+                if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki){
+                    return `<div>${loc('space_dwarf_collider_desc')}</div><div class="has-text-special">${loc('space_dwarf_collider_desc_req')}</div>` + (global.space.hasOwnProperty('world_collider') && global.space.world_collider.count >= 1859 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
             },
-            wiki: false,
             reqs: { science: 10 },
             condition(){
                 return global.space.world_collider.count < 1859 ? true : false;
@@ -1694,12 +1690,12 @@ const spaceProjects = {
             queue_size: 100,
             queue_complete(){ return 1859 - global.space.world_collider.count; },
             cost: {
-                Money(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 25000 : 0; },
-                Copper(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 750 : 0; },
-                Alloy(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 125 : 0; },
-                Neutronium(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 12 : 0; },
-                Elerium(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 1 : 0; },
-                Mythril(){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 ? 10 : 0; }
+                Money(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 25000 : 0; },
+                Copper(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 750 : 0; },
+                Alloy(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 125 : 0; },
+                Neutronium(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 12 : 0; },
+                Elerium(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 1 : 0; },
+                Mythril(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 10 : 0; }
             },
             effect(){
                 if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859){
@@ -1707,7 +1703,7 @@ const spaceProjects = {
                     return `<div>${loc('space_dwarf_collider_effect1')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    return loc('space_dwarf_collider_effect3');
+                    return spaceProjects.spc_dwarf.world_controller.effect();
                 }
             },
             action(){
@@ -1737,6 +1733,7 @@ const spaceProjects = {
             desc(){
                 return `<div>${loc('space_dwarf_collider_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
+            wiki: false,
             reqs: { science: 11 },
             condition(){
                 return global.space.world_collider.count < 1859 ? false : true;
@@ -2410,8 +2407,8 @@ const interstellarProjects = {
         dyson: {
             id: 'interstellar-dyson',
             title: loc('interstellar_dyson_title'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki){
                     return `<div>${loc('interstellar_dyson_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
                 }
                 else {
@@ -2426,10 +2423,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
             },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 ? 250000 : 0; },
-                Adamantite(){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 ? 10000 : 0; },
-                Infernite(){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 ? 25 : 0; },
-                Stanene(){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 ? 100000 : 0; }
+                Money(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 250000 : 0; },
+                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 10000 : 0; },
+                Infernite(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 25 : 0; },
+                Stanene(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 100000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
@@ -2457,8 +2454,13 @@ const interstellarProjects = {
         dyson_sphere: {
             id: 'interstellar-dyson_sphere',
             title: loc('interstellar_dyson_sphere_title'),
-            desc(){
-                return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki){
+                    return `<div>${loc('interstellar_dyson_sphere_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
+                }
             },
             reqs: { proxima: 3, dyson: 1 },
             no_queue(){ return global.interstellar.dyson_sphere.count < 100 ? false : true },
@@ -2468,10 +2470,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 ? 5000000 : 0; },
-                Bolognium(){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 ? 25000 : 0; },
-                Vitreloy(){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 ? 1250 : 0; },
-                Aerogel(){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 ? 75000 : 0; }
+                Money(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 5000000 : 0; },
+                Bolognium(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 25000 : 0; },
+                Vitreloy(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 1250 : 0; },
+                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 75000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100){
@@ -2499,8 +2501,13 @@ const interstellarProjects = {
         orichalcum_sphere: {
             id: 'interstellar-orichalcum_sphere',
             title: loc('interstellar_dyson_sphere_title'),
-            desc(){
-                return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div>`;
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki){
+                    return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div>`;
+                }
             },
             reqs: { proxima: 3, dyson: 2 },
             no_queue(){ return global.interstellar.orichalcum_sphere.count < 100 ? false : true },
@@ -2510,8 +2517,8 @@ const interstellarProjects = {
                 return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
             },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 ? 25000000 : 0; },
-                Orichalcum(){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 ? 75000 : 0; }
+                Money(wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 25000000 : 0; },
+                Orichalcum(wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 75000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100){
@@ -2891,8 +2898,8 @@ const interstellarProjects = {
         stellar_engine: {
             id: 'interstellar-stellar_engine',
             title: loc('interstellar_stellar_engine'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100){
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki){
                     return `<div>${loc('interstellar_stellar_engine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
                 }
                 else {
@@ -2904,13 +2911,13 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 500000 : 0; },
-                Neutronium(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 450 : 0; },
-                Adamantite(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 17500 : 0; },
-                Infernite(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 225 : 0; },
-                Graphene(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 45000 : 0; },
-                Mythril(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 250 : 0; },
-                Aerogel(){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 ? 75 : 0; },
+                Money(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 500000 : 0; },
+                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 450 : 0; },
+                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 17500 : 0; },
+                Infernite(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 225 : 0; },
+                Graphene(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 45000 : 0; },
+                Mythril(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 250 : 0; },
+                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 75 : 0; },
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100){
@@ -3034,15 +3041,14 @@ const interstellarProjects = {
         stargate: {
             id: 'interstellar-stargate',
             title: loc('interstellar_stargate'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200){
-                    return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segmemts',[200])}</div>`;
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki){
+                    return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segmemts',[200])}</div>` + (global.interstellar.hasOwnProperty('stargate') && global.interstellar.stargate.count >= 200 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('interstellar_stargate')}</div>`;
                 }
             },
-            wiki: false,
             reqs: { stargate: 3 },
             condition(){
                 return global.interstellar.stargate.count >= 200 ? false : true;
@@ -3051,19 +3057,21 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 200 - global.interstellar.stargate.count; },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 1000000 : 0; },
-                Neutronium(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 4800 : 0; },
-                Infernite(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 666 : 0; },
-                Elerium(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 75 : 0; },
-                Nano_Tube(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 12000 : 0; },
-                Stanene(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 60000 : 0; },
-                Mythril(){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 ? 3200 : 0; }
+                Money(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 1000000 : 0; },
+                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 4800 : 0; },
+                Infernite(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 666 : 0; },
+                Elerium(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 75 : 0; },
+                Nano_Tube(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 12000 : 0; },
+                Stanene(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 60000 : 0; },
+                Mythril(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 3200 : 0; }
             },
             effect(){
+                let effectText = `<div>${loc('interstellar_stargate_effect')}</div>`
                 if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200){
                     let remain = global.interstellar.hasOwnProperty('stargate') ? 200 - global.interstellar.stargate.count : 200;
-                    return `<div>${loc('interstellar_stargate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
+                return effectText;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3099,6 +3107,7 @@ const interstellarProjects = {
             condition(){
                 return global.interstellar.stargate.count >= 200 ? true : false;
             },
+            wiki: false,
             no_queue(){ return true },
             cost: {},
             powered(){
@@ -3158,8 +3167,8 @@ const interstellarProjects = {
         space_elevator: {
             id: 'interstellar-space_elevator',
             title: loc('interstellar_space_elevator'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100){
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki){
                     return `<div>${loc('interstellar_space_elevator')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
                 }
                 else {
@@ -3174,10 +3183,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.space_elevator.count; },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 20000000 : 0; },
-                Nano_Tube(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 500000 : 0; },
-                Bolognium(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 100000 : 0; },
-                Mythril(){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 ? 125000 : 0; },
+                Money(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 20000000 : 0; },
+                Nano_Tube(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 500000 : 0; },
+                Bolognium(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 100000 : 0; },
+                Mythril(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 125000 : 0; },
             },
             effect(){
                 let effectText = `<div>${loc('interstellar_space_elevator_effect')}</div>`;
@@ -3211,8 +3220,8 @@ const interstellarProjects = {
         gravity_dome: {
             id: 'interstellar-gravity_dome',
             title: loc('interstellar_gravity_dome'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100){
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki){
                     return `<div>${loc('interstellar_gravity_dome')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
                 }
                 else {
@@ -3227,10 +3236,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.gravity_dome.count; },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 35000000 : 0; },
-                Cement(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 1250000 : 0; },
-                Adamantite(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 650000 : 0; },
-                Aerogel(){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 ? 180000 : 0; },
+                Money(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 35000000 : 0; },
+                Cement(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 1250000 : 0; },
+                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 650000 : 0; },
+                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 180000 : 0; },
             },
             effect(){
                 let effectText = `<div>${loc('interstellar_gravity_dome_effect',[races[global.race.species].home])}</div>`;
@@ -3265,15 +3274,14 @@ const interstellarProjects = {
         ascension_machine: {
             id: 'interstellar-ascension_machine',
             title: loc('interstellar_ascension_machine'),
-            desc(){
-                if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100){
-                    return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki){
+                    return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.interstellar.hasOwnProperty('ascension_machine') && global.interstellar.ascension_machine.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('interstellar_ascension_machine')}</div>`;
                 }
             },
-            wiki: false,
             reqs: { ascension: 6 },
             condition(){
                 return global.interstellar.ascension_machine.count >= 100 ? false : true;
@@ -3282,17 +3290,20 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.ascension_machine.count; },
             cost: {
-                Money(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 75000000 : 0; },
-                Alloy(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 750000 : 0; },
-                Neutronium(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 125000 : 0; },
-                Elerium(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 1000 : 0; },
-                Orichalcum(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 250000 : 0; },
-                Nanoweave(){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 ? 75000 : 0; },
+                Money(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000000 : 0; },
+                Alloy(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 750000 : 0; },
+                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 125000 : 0; },
+                Elerium(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 1000 : 0; },
+                Orichalcum(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 250000 : 0; },
+                Nanoweave(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000 : 0; },
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100){
                     let remain = global.interstellar.hasOwnProperty('ascension_machine') ? 100 - global.interstellar.ascension_machine.count : 100;
                     return `<div>${loc('interstellar_ascension_machine_effect',[races[global.race.species].name])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return interstellarProjects.int_sirius.ascension_trigger.effect();
                 }
             },
             action(){
@@ -3320,6 +3331,7 @@ const interstellarProjects = {
             id: 'interstellar-ascension_trigger',
             title: loc('interstellar_ascension_machine'),
             desc(){ return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            wiki: false,
             reqs: { ascension: 7 },
             condition(){
                 return global.interstellar.ascension_machine.count >= 100 ? true : false;
@@ -4037,11 +4049,11 @@ const galaxyProjects = {
             reqs: { xeno: 4 },
             no_queue(){ return global.galaxy.embassy.count >= 1 ? true : false; },
             cost: {
-                Money(){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 ? 30000000 : 0; },
-                Lumber(){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 ? 38000000 : 0; },
-                Stone(){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 ? 32000000 : 0; },
-                Furs(){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 ? 18000000 : 0; },
-                Wrought_Iron(){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 ? 6000000 : 0; }
+                Money(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 30000000 : 0; },
+                Lumber(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 38000000 : 0; },
+                Stone(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 32000000 : 0; },
+                Furs(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 18000000 : 0; },
+                Wrought_Iron(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 6000000 : 0; }
             },
             effect(){
                 let food = 7500;
@@ -4192,10 +4204,10 @@ const galaxyProjects = {
             reqs: { xeno: 8 },
             no_queue(){ return global.galaxy.consulate.count >= 1 ? true : false; },
             cost: {
-                Money(){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 ? 90000000 : 0; },
-                Stone(){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 ? 75000000 : 0; },
-                Furs(){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 ? 30000000 : 0; },
-                Iron(){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 ? 45000000 : 0; }
+                Money(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
+                Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
+                Furs(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
+                Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);

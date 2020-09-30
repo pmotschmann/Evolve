@@ -11,28 +11,93 @@ export function renderAchievePage(zone){
 
     switch (zone){
         case 'list':
-            achievePage(content);
+            achievePage();
             break;
         case 'feats':
-            featPage(content);
+            featPage();
             break;
     }
 }
 
-function achievePage(){
+const universeExclusives = {
+    blood_war: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    extinct_balorg: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    extinct_imp: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    extinct_seraph: ['evil'],
+    extinct_unicorn: ['evil'],
+    genus_demonic: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    genus_angelic: ['evil'],
+    biome_hellscape: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    biome_eden: ['evil'],
+    cross: ['antimatter'],
+    vigilante: ['evil'],
+    squished: ['micro'],
+    macro: ['micro'],
+    marble: ['micro'],
+    double_density: ['heavy'],
+    heavyweight: ['heavy'],
+    whitehole: ['standard'],
+    heavy: ['heavy'],
+    canceled: ['antimatter'],
+    eviltwin: ['evil'],
+    microbang: ['micro'],
+    pw_apocalypse: ['magic'],
+    pass: ['magic'],
+    fullmetal: ['magic']
+};
+
+function achievePage(universe){
     let content = $(`#content`);
     clearElement(content);
+    
+    let filtering = `
+    <div id="filtering" class="b-tabs">
+        <nav class="tabs">
+            <ul>
+                <li><a onclick="achievePage()">${loc('universe_all')}</a></li>
+                <li><a onclick="achievePage('standard')">${loc('universe_standard')}</a></li>
+                <li><a onclick="achievePage('evil')">${loc('universe_evil')}</a></li>
+                <li><a onclick="achievePage('antimatter')">${loc('universe_antimatter')}</a></li>
+                <li><a onclick="achievePage('micro')">${loc('universe_micro')}</a></li>
+                <li><a onclick="achievePage('heavy')">${loc('universe_heavy')}</a></li>
+                <li><a onclick="achievePage('magic')">${loc('universe_magic')}</a></li>
+            </ul>
+        </nav>
+    </div>
+    `;
+    content.append(filtering);
+    
+    let universeLevel = 'l';
+    switch (universe){
+        case 'evil':
+            universeLevel = 'e';
+            break;
+        case 'antimatter':
+            universeLevel = 'a';
+            break;
+        case 'micro':
+            universeLevel = 'm';
+            break;
+        case 'heavy':
+            universeLevel = 'h';
+            break;
+        case 'magic':
+            universeLevel = 'mg';
+            break;
+    }
 
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
-        if (types.hasOwnProperty(achievements[achievement].type)){
-            types[achievements[achievement].type].push(achievement);
-        }
-        else {
-            types[achievements[achievement].type] = [achievement];
+        if (!universe || !universeExclusives[achievement] || universeExclusives[achievement].indexOf(universe) > -1){
+            if (types.hasOwnProperty(achievements[achievement].type)){
+                types[achievements[achievement].type].push(achievement);
+            }
+            else {
+                types[achievements[achievement].type] = [achievement];
+            }
         }
     });
-
+    
     Object.keys(types).forEach(function (type){
         content.append($(`<h2 class="header achievements has-text-caution">${loc(`wiki_achieve_${type}`)}</h2>`));
         let list = $(`<div class="achieveList"></div>`);
@@ -42,10 +107,10 @@ function achievePage(){
             let achieve = $(`<div class="achievement"></div>`);
             list.append(achieve);
 
-            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
+            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][universeLevel] && global.stats.achieve[achievement][universeLevel] > 0 ? 'warning' : 'fade';
             achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
 
-            let emblems = format_emblem(achievement,16);
+            let emblems = format_emblem(achievement,16,false,false,universe);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
             achieveDesc(achievement, color === 'warning' ? true : false);

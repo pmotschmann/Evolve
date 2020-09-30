@@ -550,7 +550,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
         mutiplier = 1.005;
     }
     var count = global[sector][action] ? global[sector][action].count : 0;
-    if (offset){
+    if (offset && typeof offset === 'number'){
         count += offset;
     }
     return Math.round((mutiplier ** count) * base);
@@ -1070,7 +1070,7 @@ export function calcPrestige(type){
     return gains;
 }
 
-export function adjustCosts(costs){
+export function adjustCosts(costs, wiki){
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
@@ -1080,26 +1080,26 @@ export function adjustCosts(costs){
         });
         return newCosts;
     }
-    costs = technoAdjust(costs);
-    costs = kindlingAdjust(costs);
+    costs = technoAdjust(costs, wiki);
+    costs = kindlingAdjust(costs, wiki);
     costs = scienceAdjust(costs);
-    costs = rebarAdjust(costs);
-    return craftAdjust(costs);
+    costs = rebarAdjust(costs, wiki);
+    return craftAdjust(costs, wiki);
 }
 
-function technoAdjust(costs){
+function technoAdjust(costs, wiki){
     if (global.civic.govern.type === 'technocracy'){
         let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]() * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1132,16 +1132,16 @@ function scienceAdjust(costs){
     return costs;
 }
 
-function kindlingAdjust(costs){
+function kindlingAdjust(costs, wiki){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;
@@ -1149,15 +1149,15 @@ function kindlingAdjust(costs){
     return costs;
 }
 
-function craftAdjust(costs){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'])){
+function craftAdjust(costs, wiki){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * (1 - (traits.hollow_bones.vars[0] / 100))); }
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]()); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
             }
         });
         return newCosts;
@@ -1165,16 +1165,16 @@ function craftAdjust(costs){
     return costs;
 }
 
-function rebarAdjust(costs){
+function rebarAdjust(costs, wiki){
     if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
         let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res]()); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
             }
         });
         return newCosts;
@@ -1381,19 +1381,49 @@ export function easterEggBind(id){
     });
 }
 
-export function format_emblem(achieve,size,baseIcon,fool){
+function single_emblem(achieve,size,icon,iconName,fool,universeAffix){
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][universeAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+}
+    
+export function format_emblem(achieve,size,baseIcon,fool,universe){
     if (!size){
         size = 10;
     }
     if (!baseIcon){
         baseIcon = getBaseIcon(achieve,'achievement');
     }
-    let emblem = global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].l - 1 : global.stats.achieve[achieve].l) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].l)} ${loc(global.settings.icon)}"><svg class="star${fool ? global.stats.achieve[achieve].l - 1 : global.stats.achieve[achieve].l}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].a - 1 : global.stats.achieve[achieve].a) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].a)} ${loc('universe_antimatter')}"><svg class="star${fool ? global.stats.achieve[achieve].a - 1 : global.stats.achieve[achieve].a}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('atom')}" xml:space="preserve">${svgIcons('atom')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].e - 1 : global.stats.achieve[achieve].e) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].e)} ${loc('universe_evil')}"><svg class="star${fool ? global.stats.achieve[achieve].e - 1 : global.stats.achieve[achieve].e}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('evil')}" xml:space="preserve">${svgIcons('evil')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].h - 1 : global.stats.achieve[achieve].h) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].h)} ${loc('universe_heavy')}"><svg class="star${fool ? global.stats.achieve[achieve].h - 1 : global.stats.achieve[achieve].h}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('heavy')}" xml:space="preserve">${svgIcons('heavy')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].m - 1 : global.stats.achieve[achieve].m) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].m)} ${loc('universe_micro')}"><svg class="star${fool ? global.stats.achieve[achieve].m - 1 : global.stats.achieve[achieve].m}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('micro')}" xml:space="preserve">${svgIcons('micro')}</svg></p>` : '');
-    emblem = emblem + (global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve].mg - 1 : global.stats.achieve[achieve].mg) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve].mg)} ${loc('universe_magic')}"><svg class="star${fool ? global.stats.achieve[achieve].mg - 1 : global.stats.achieve[achieve].mg}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox('magic')}" xml:space="preserve">${svgIcons('magic')}</svg></p>` : '');
+    let emblem = ``
+    if (!universe){
+        emblem = emblem + single_emblem(achieve,size,baseIcon,loc(global.settings.icon),fool,'l');
+        emblem = emblem + single_emblem(achieve,size,'atom',loc('universe_antimatter'),fool,'a');
+        emblem = emblem + single_emblem(achieve,size,'evil',loc('universe_evil'),fool,'e');
+        emblem = emblem + single_emblem(achieve,size,'heavy',loc('universe_heavy'),fool,'h');
+        emblem = emblem + single_emblem(achieve,size,'micro',loc('universe_micro'),fool,'m');
+        emblem = emblem + single_emblem(achieve,size,'magic',loc('universe_magic'),fool,'mg');
+    }
+    else {
+        switch (universe){
+            case 'standard':
+                emblem = emblem + single_emblem(achieve,size,baseIcon,loc(global.settings.icon),fool,'l');
+                break;
+            case 'antimatter':
+                emblem = emblem + single_emblem(achieve,size,'atom',loc('universe_antimatter'),fool,'a');
+                break;
+            case 'evil':
+                emblem = emblem + single_emblem(achieve,size,'evil',loc('universe_evil'),fool,'e');
+                break;
+            case 'heavy':
+                emblem = emblem + single_emblem(achieve,size,'heavy',loc('universe_heavy'),fool,'h');
+                break;
+            case 'micro':
+                emblem = emblem + single_emblem(achieve,size,'micro',loc('universe_micro'),fool,'m');
+                break;
+            case 'magic':
+                emblem = emblem + single_emblem(achieve,size,'magic',loc('universe_magic'),fool,'mg');
+                break;
+        }
+    }
+    
     return emblem;
 }
 

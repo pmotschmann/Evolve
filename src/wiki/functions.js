@@ -75,7 +75,7 @@ export function actionDesc(info, c_action, extended){
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
     }
 
-    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc(true);
     if (desc !== title){
         info.append(`<div class="desc">${desc}</div>`);
     }
@@ -84,7 +84,7 @@ export function actionDesc(info, c_action, extended){
     
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
-        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect(true);
         if (effect !== false){
             stats.append(`<div class="effect">${effect}</div>`);
             hasEffect = true;
@@ -93,7 +93,7 @@ export function actionDesc(info, c_action, extended){
     }
 
     if (c_action.hasOwnProperty('cost')){
-        let costs = adjustCosts(c_action.cost);
+        let costs = adjustCosts(c_action.cost, true);
         let cost = hasEffect ? $(`<div class="cost right"></div>`) : $(`<div class="cost"></div>`);
         let render = false;
 
@@ -130,7 +130,7 @@ export function actionDesc(info, c_action, extended){
                 }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
-                let res_cost = costs[res]();
+                let res_cost = costs[res](true);
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
