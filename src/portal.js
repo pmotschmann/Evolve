@@ -944,7 +944,7 @@ const fortressModules = {
             reqs: { hell_lake: 3 },
             powered(){
                 let factor = p_on['cooling_tower'] || 0;
-                return powerCostMod(500 * (0.92 ** factor));
+                return +(powerCostMod(500 * (0.92 ** factor))).toFixed(2);
             },
             support(){ return 1; },
             cost: {
