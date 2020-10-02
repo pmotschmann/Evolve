@@ -1828,28 +1828,39 @@ function fastLoop(){
 
         var galaxy_ship_types = [
             {
+                area: 'galaxy',
                 region: 'gxy_gateway',
                 ships: ['bolognium_ship','dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
             },
             {
+                area: 'galaxy',
                 region: 'gxy_gorddon',
                 ships: ['freighter'],
                 req: 'embassy'
             },
             {
+                area: 'galaxy',
                 region: 'gxy_alien1',
                 ships: ['super_freighter'],
                 req: 'embassy'
             },
             {
+                area: 'galaxy',
                 region: 'gxy_alien2',
                 ships: ['armed_miner','scavenger'],
                 req: 'foothold'
             },
             {
+                area: 'galaxy',
                 region: 'gxy_chthonian',
                 ships: ['minelayer','raider'],
                 req: 'starbase'
+            },
+            {
+                area: 'portal',
+                region: 'prtl_lake',
+                ships: ['bireme','transport'],
+                req: 'harbour'
             }
         ];
 
@@ -1857,68 +1868,69 @@ function fastLoop(){
         let crew_mil = 0;
         let total = 0;
         for (let j=0; j<galaxy_ship_types.length; j++){
+            let area = galaxy_ship_types[j].area;
             let region = galaxy_ship_types[j].region;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
                 let ship = galaxy_ship_types[j].ships[i];
 
-                if (global.galaxy[ship] && global.galaxy[ship].hasOwnProperty('on')){
-                    if (actions.galaxy[region][ship].ship['civ'] && global.galaxy[ship].hasOwnProperty('crew')){
-                        if (global.galaxy[ship].crew < 0){
-                            global.galaxy[ship].crew = 0;
+                if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
+                    if (actions[area][region][ship].ship['civ'] && global[area][ship].hasOwnProperty('crew')){
+                        if (global[area][ship].crew < 0){
+                            global[area][ship].crew = 0;
                         }
-                        if (global.galaxy[ship]['crew'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ){
+                        if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ){
                             if (total < global.resource[global.race.species].amount){
-                                if (global.civic.d_job === 'unemployed' || (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ)){
-                                    if (global.civic.free > 0 && global.civic.free > actions.galaxy[region][ship].ship.civ){
-                                        global.civic.free -= actions.galaxy[region][ship].ship.civ;
-                                        global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
-                                        global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                                if (global.civic.d_job === 'unemployed' || (global.civic.free > 0 && global.civic.free > actions[area][region][ship].ship.civ)){
+                                    if (global.civic.free > 0 && global.civic.free > actions[area][region][ship].ship.civ){
+                                        global.civic.free -= actions[area][region][ship].ship.civ;
+                                        global.civic.crew.workers += actions[area][region][ship].ship.civ;
+                                        global[area][ship]['crew'] += actions[area][region][ship].ship.civ;
                                     }
                                 }
                                 else {
-                                    if (global.civic[global.civic.d_job].workers > actions.galaxy[region][ship].ship.civ){
-                                        global.civic[global.civic.d_job].workers -= actions.galaxy[region][ship].ship.civ;
-                                        global.civic.crew.workers += actions.galaxy[region][ship].ship.civ;
-                                        global.galaxy[ship]['crew'] += actions.galaxy[region][ship].ship.civ;
+                                    if (global.civic[global.civic.d_job].workers > actions[area][region][ship].ship.civ){
+                                        global.civic[global.civic.d_job].workers -= actions[area][region][ship].ship.civ;
+                                        global.civic.crew.workers += actions[area][region][ship].ship.civ;
+                                        global[area][ship]['crew'] += actions[area][region][ship].ship.civ;
                                     }
                                 }
                             }
                         }
-                        if (global.galaxy[ship]['crew'] > global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ){
+                        if (global[area][ship]['crew'] > global[area][ship].on * actions[area][region][ship].ship.civ){
                             if (global.civic.d_job === 'unemployed'){
-                                global.civic.free += actions.galaxy[region][ship].ship.civ;
-                                global.civic.crew.workers -= actions.galaxy[region][ship].ship.civ;
-                                global.galaxy[ship]['crew'] -= actions.galaxy[region][ship].ship.civ;
+                                global.civic.free += actions[area][region][ship].ship.civ;
+                                global.civic.crew.workers -= actions[area][region][ship].ship.civ;
+                                global[area][ship]['crew'] -= actions[area][region][ship].ship.civ;
                             }
                             else {
-                                global.civic[global.civic.d_job].workers += actions.galaxy[region][ship].ship.civ;
-                                global.civic.crew.workers -= actions.galaxy[region][ship].ship.civ;
-                                global.galaxy[ship]['crew'] -= actions.galaxy[region][ship].ship.civ;
+                                global.civic[global.civic.d_job].workers += actions[area][region][ship].ship.civ;
+                                global.civic.crew.workers -= actions[area][region][ship].ship.civ;
+                                global[area][ship]['crew'] -= actions[area][region][ship].ship.civ;
                             }
                         }
                         global.civic.crew.assigned = global.civic.crew.workers;
-                        crew_civ += global.galaxy[ship]['crew'];
-                        total += global.galaxy[ship]['crew'];
+                        crew_civ += global[area][ship]['crew'];
+                        total += global[area][ship]['crew'];
                     }
 
-                    if (actions.galaxy[region][ship].ship['mil'] && global.galaxy[ship].hasOwnProperty('mil')){
-                        if (global.galaxy[ship]['mil'] !== global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil){
-                            global.galaxy[ship]['mil'] = global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil;
+                    if (actions[area][region][ship].ship['mil'] && global[area][ship].hasOwnProperty('mil')){
+                        if (global[area][ship]['mil'] !== global[area][ship].on * actions[area][region][ship].ship.mil){
+                            global[area][ship]['mil'] = global[area][ship].on * actions[area][region][ship].ship.mil;
                         }
                         if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
                             let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
-                            global.galaxy[ship]['mil'] -= underflow;
+                            global[area][ship]['mil'] -= underflow;
                         }
-                        if (crew_mil + global.galaxy[ship]['mil'] > global.civic.garrison.workers - global.portal.fortress.garrison){
-                            global.galaxy[ship]['mil'] = global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil;
+                        if (crew_mil + global[area][ship]['mil'] > global.civic.garrison.workers - global.portal.fortress.garrison){
+                            global[area][ship]['mil'] = global.civic.garrison.workers - global.portal.fortress.garrison - crew_mil;
                         }
-                        if (global.galaxy[ship]['mil'] < 0){
-                            global.galaxy[ship]['mil'] = 0;
+                        if (global[area][ship]['mil'] < 0){
+                            global[area][ship]['mil'] = 0;
                         }
-                        crew_mil += global.galaxy[ship]['mil'];
+                        crew_mil += global[area][ship]['mil'];
                     }
 
-                    if (global.galaxy[ship]['crew'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.civ || global.galaxy[ship]['mil'] < global.galaxy[ship].on * actions.galaxy[region][ship].ship.mil || gal_on[ship] < global.galaxy[ship].on){
+                    if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil || gal_on[ship] < global[area][ship].on){
                         $(`#galaxy-${ship} .on`).addClass('warn');
                     }
                     else {
@@ -2446,25 +2458,35 @@ function fastLoop(){
             }
         }
 
+        if (p_on['harbour']){
+            let ship_list = ['bireme','transport'];
+            for (let i=0; i<ship_list.length; i++){
+                if (p_on['harbour'] && global.portal.hasOwnProperty(ship_list[i])){
+                    gal_on[ship_list[i]] = global.portal[ship_list[i]].on;
+                }
+            }
+        }
+
         for (let j=0; j<galaxy_ship_types.length; j++){
+            let area = galaxy_ship_types[j].area;
             let region = galaxy_ship_types[j].region;
             for (let i=0; i<galaxy_ship_types[j].ships.length; i++){
                 let ship = galaxy_ship_types[j].ships[i];
                 let req = galaxy_ship_types[j].hasOwnProperty('req') ? (p_on[galaxy_ship_types[j].req] > 0 ? true : false) : true;
-                if (p_on['s_gate'] && req && global.galaxy[ship] && (global.galaxy[ship].crew > 0 || global.galaxy[ship].mil > 0)){
+                if (p_on['s_gate'] && req && global[area][ship] && (global[area][ship].crew > 0 || global[area][ship].mil > 0)){
                     let operating = 0;
-                    if (actions.galaxy[region][ship].ship.civ > 0){
-                        operating = Math.floor(global.galaxy[ship].crew / actions.galaxy[region][ship].ship.civ);
+                    if (actions[area][region][ship].ship.civ > 0){
+                        operating = Math.floor(global[area][ship].crew / actions[area][region][ship].ship.civ);
                     }
-                    if (actions.galaxy[region][ship].ship.mil > 0){
-                        let mil_operating = Math.floor(global.galaxy[ship].mil / actions.galaxy[region][ship].ship.mil);
-                        if (actions.galaxy[region][ship].ship.civ === 0 || mil_operating < operating){
+                    if (actions[area][region][ship].ship.mil > 0){
+                        let mil_operating = Math.floor(global[area][ship].mil / actions[area][region][ship].ship.mil);
+                        if (actions[area][region][ship].ship.civ === 0 || mil_operating < operating){
                             operating = mil_operating;
                         }
                     }
 
-                    if (actions.galaxy[region][ship].ship.hasOwnProperty('helium')){
-                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.helium).toFixed(2);
+                    if (actions[area][region][ship].ship.hasOwnProperty('helium')){
+                        let increment = +int_fuel_adjust(actions[area][region][ship].ship.helium).toFixed(2);
                         let consume = (operating * increment);
                         while (consume * time_multiplier > global.resource.Helium_3.amount + (global.resource.Helium_3.diff > 0 ? global.resource.Helium_3.diff * time_multiplier : 0) && consume > 0){
                             consume -= increment;
@@ -2474,8 +2496,8 @@ function fastLoop(){
                         andromeda_helium += consume;
                     }
 
-                    if (actions.galaxy[region][ship].ship.hasOwnProperty('deuterium')){
-                        let increment = +int_fuel_adjust(actions.galaxy[region][ship].ship.deuterium).toFixed(2);
+                    if (actions[area][region][ship].ship.hasOwnProperty('deuterium')){
+                        let increment = +int_fuel_adjust(actions[area][region][ship].ship.deuterium).toFixed(2);
                         let consume = (operating * increment);
                         while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
                             consume -= increment;
@@ -5971,6 +5993,9 @@ function midLoop(){
         }
         if (global.galaxy['scavenger']){
             lCaps['crew'] += global.galaxy.scavenger.on * actions.galaxy.gxy_alien2.scavenger.ship.civ;
+        }
+        if (global.portal['transport']){
+            lCaps['crew'] += global.portal.transport.on * actions.portal.prtl_lake.transport.ship.civ;
         }
 
         if (global.race['inspired']){

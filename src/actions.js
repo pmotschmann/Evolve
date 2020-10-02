@@ -9089,7 +9089,7 @@ export const actions = {
             effect(){ return loc('tech_lake_threat_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.portal['bireme'] = { count: 0, on: 0 };
+                    global.portal['bireme'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     messageQueue(loc('tech_lake_threat_result'),'info');
                     return true;
                 }
@@ -9110,7 +9110,7 @@ export const actions = {
             effect(){ return loc('tech_lake_transport_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.portal['transport'] = { count: 0, on: 0 };
+                    global.portal['transport'] = { count: 0, on: 0, crew: 0, mil: 0 };
                     return true;
                 }
                 return false;

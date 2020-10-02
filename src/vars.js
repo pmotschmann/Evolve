@@ -510,10 +510,20 @@ if (convertVersion(global['version']) < 10000){
         global['warseed'] = global.seed + 1;
         Math.war = global.hasOwnProperty('warseed') ? global.warseed : global.seed;
     }
+
+    if (global.portal.hasOwnProperty('bireme')){
+        global.portal.bireme['crew'] = 0;
+        global.portal.bireme['mil'] = 0;
+    }
+
+    if (global.portal.hasOwnProperty('transport')){
+        global.portal.transport['crew'] = 0;
+        global.portal.transport['mil'] = 0;
+    }
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 14;
+global['beta'] = 15;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

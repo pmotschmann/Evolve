@@ -1073,7 +1073,11 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 125000, 1.24, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[20])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
+            },
+            ship: {
+                civ: 0,
+                mil: 2
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1104,13 +1108,21 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
+            },
+            ship: {
+                civ: 2,
+                mil: 0
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('transport','portal');
                     if (global.portal.harbour.support < global.portal.harbour.s_max){
                         global.portal.transport.on++;
+                    }
+                    if (!global.settings.portal.spire){
+                        global.settings.portal.spire = true;
+                        renderFortress();
                     }
                     return true;
                 }
