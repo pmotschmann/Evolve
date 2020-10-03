@@ -1,5 +1,6 @@
 import { clearElement } from './../functions.js';
 import { basicsPage } from './basics.js';
+import { govPage } from './government.js';
 import { resetsPage } from './resets.js';
 import { planetsPage } from './planets.js';
 import { universePage } from './universes.js';
@@ -13,8 +14,8 @@ export function gamePlayPage(zone){
         case 'basics':
             basicsPage(content);
             break;
-        case 'mechanics':
-            mechanicsPage(content);
+        case 'government':
+            govPage(content);
             break;
         case 'resets':
             resetsPage(content);
@@ -29,8 +30,4 @@ export function gamePlayPage(zone){
             hellPage(content);
             break;        
     }
-}
-
-function mechanicsPage(content){
-    content.append(`<div>coming soon</div>`);
 }

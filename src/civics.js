@@ -87,9 +87,9 @@ export function govTitle(id){
 const government_desc = (function(){
     return {
         anarchy: loc('govern_anarchy_effect'),
-        autocracy: loc('govern_autocracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 10 : 18 ) : 25, 35]),
+        autocracy: loc('govern_autocracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 10 : 18 ) : 25, 35]),
         democracy: loc('govern_democracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20, 5]),
-        oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? loc('govern_oligarchy_effect_alt',[20]) : loc('govern_oligarchy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 2 : 5, 20]),
+        oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? loc('govern_oligarchy_effect_alt',[20]) : loc('govern_oligarchy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? 2 : 5, 20]),
         theocracy: loc('govern_theocracy_effect',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
         theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
         republic: loc('govern_republic_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20]),
@@ -101,8 +101,6 @@ const government_desc = (function(){
         magocracy: loc('govern_magocracy_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 40 ) : 25]),
     };
 });
-
-
 
 function government(govern){
     var gov = $('<div id="govType" class="govType" v-show="vis()"></div>');

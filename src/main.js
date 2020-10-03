@@ -2025,7 +2025,7 @@ function fastLoop(){
             stress /= 2;
         }
         if (global.civic.govern.type === 'autocracy'){
-            stress *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.1 : 1.18 ) : 1.25;
+            stress *= global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.1 : 1.18 ) : 1.25;
         }
         if (global.civic.govern.type === 'socialist'){
             stress *= 1.1;
@@ -4490,7 +4490,7 @@ function fastLoop(){
 
             income_base *= (global.civic.taxes.tax_rate / 20);
             if (global.civic.govern.type === 'oligarchy'){
-                income_base *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 0.98 ) : 0.95;
+                income_base *= global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1 : 0.98 ) : 0.95;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 income_base *= 0.5;

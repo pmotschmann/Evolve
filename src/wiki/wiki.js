@@ -36,7 +36,7 @@ function initPage(){
             key: 'gameplay',
             submenu: [
                 { key: 'basics' },
-                //{ key: 'mechanics' },
+                { key: 'government' },
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
