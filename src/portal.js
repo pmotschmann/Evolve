@@ -420,8 +420,8 @@ const fortressModules = {
             desc: loc('portal_ruins_desc'),
             support: 'guard_post',
             prop(){
-                let desc = ` - <span class="has-text-warning">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
-                desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
+                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
                 return desc;
             },
             filter(v,type){
@@ -696,8 +696,8 @@ const fortressModules = {
             support: 'guard_post',
             hide_support: true,
             prop(){
-                let desc = ` - <span class="has-text-warning">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
-                desc = desc + ` - <span class="has-text-warning">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_ruins_security')}:</span> <span class="has-text-caution">{{ on | filter('army') }}</span>`;
+                desc = desc + ` - <span class="has-text-advanced">${loc('portal_ruins_supressed')}:</span> <span class="has-text-caution">{{ on | filter('sup') }}</span>`;
                 return desc;
             },
             filter(v,type){
@@ -1122,6 +1122,10 @@ const fortressModules = {
                     }
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
+                        global.settings.showCargo = true;
+                        global.tech['hell_spire'] = 1;
+                        global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100 };
+                        global.portal['port'] = { count: 0 };
                         renderFortress();
                     }
                     return true;
@@ -1134,6 +1138,10 @@ const fortressModules = {
         info: {
             name: loc('portal_spire_name'),
             desc: loc('portal_spire_desc'),
+            support: 'purifier',
+            prop(){
+                return ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply }} / {{ sup_max }}</span>`;
+            }
         },
         spire_mission: {
             id: 'portal-spire_mission',
@@ -1154,6 +1162,33 @@ const fortressModules = {
                 return false;
             },
             flair: loc('portal_spire_mission_flair'),
+        },
+        purifier: {
+            id: 'portal-purifier',
+            title: loc('portal_purifier_title'),
+            desc(){
+                return `<div>${loc('portal_purifier_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { hell_spire: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 8000000, 1.2, 'portal'); },
+                //Supply(offset){ return spaceCostMultiplier('purifier', offset, 8000000, 1.2, 'portal'); },
+            },
+            powered(){ return powerCostMod(125); },
+            support(){ return 1; },
+            effect(){
+                return `<div>${loc('portal_purifier_effect',[$(this)[0].support()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('purifier','portal');
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.portal.purifier.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
         },
     }
 };

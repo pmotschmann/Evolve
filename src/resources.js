@@ -112,6 +112,45 @@ export const atomic_mass = {
     Scarletite: 188.6
 };
 
+export const supplyValue = {
+    Lumber: 0.5,
+    Stone: 0.5,
+    Crystal: 3,
+    Furs: 3,
+    Copper: 1.5,
+    Iron: 1.5,
+    Aluminium: 2.5,
+    Cement: 3,
+    Coal: 1.5,
+    Oil: 2.5,
+    Uranium: 5,
+    Steel: 3,
+    Titanium: 3,
+    Alloy: 6,
+    Polymer: 6,
+    Iridium: 8,
+    Helium_3: 4.5,
+    Deuterium: 7.5,
+    Neutronium: 15,
+    Adamantite: 12.5,
+    Infernite: 25,
+    Elerium: 30,
+    Nano_Tube: 6.5,
+    Graphene: 5,
+    Stanene: 4.5,
+    Bolognium: 18,
+    Vitreloy: 14,
+    Orichalcum: 10,
+    Plywood: 7.666,
+    Brick: 10,
+    Wrought_Iron: 10,
+    Sheet_Metal: 10,
+    Mythril: 12.5,
+    Aerogel: 16.5,
+    Nanoweave: 18,
+    Scarletite: 35
+};
+
 export function craftCost(){
     return global.race['wasteful'] 
         ? {
@@ -243,6 +282,7 @@ export function defineResources(){
         initMarket();
         initStorage();
         initEjector();
+        initSupply();
         initAlchemy();
     }
     
@@ -602,6 +642,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
 
     if (atomic_mass[name]){
         loadEjector(name,color);
+    }
+
+    if (supplyValue[name]){
+        loadSupply(name,color,global.resource[name].max === -1 ? 'crafted' : (tradable ? 'basic' : 'advanced'));
     }
 
     if (tradeRatio[name] && global.race.universe === 'magic'){
@@ -1657,6 +1701,76 @@ function loadEjector(name,color){
 
         vBind({
             el: `#eject${name}`,
+            data: {
+                r: global.resource[name],
+                e: global.interstellar.mass_ejector
+            },
+            methods: {
+                ejectMore(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler + global.interstellar.mass_ejector.total > global.interstellar.mass_ejector.on * 1000){
+                        keyMutipler = global.interstellar.mass_ejector.on * 1000 - global.interstellar.mass_ejector.total;
+                    }
+                    global.interstellar.mass_ejector[r] += keyMutipler;
+                    global.interstellar.mass_ejector.total += keyMutipler;
+                },
+                ejectLess(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler > global.interstellar.mass_ejector[r]){
+                        keyMutipler = global.interstellar.mass_ejector[r];
+                    }
+                    if (global.interstellar.mass_ejector[r] > 0){
+                        global.interstellar.mass_ejector[r] -= keyMutipler;
+                        global.interstellar.mass_ejector.total -= keyMutipler;
+                    }
+                },
+            }
+        });
+    }
+}
+
+function initSupply(){
+    clearElement($('#resCargo'));
+    if (global.portal['transport']){
+        let supply = $(`<div id="spireSupply"><h3 class="res has-text-warning">${loc('portal_transport_supply')}</h3></div>`);
+        $('#resCargo').append(supply);
+
+        let cargo = $(`<span class="trade"></span>`);
+        supply.append(cargo);
+
+        cargo.append($(`<span>{{ used }} / {{ max }}</span>`));
+
+        vBind({
+            el: `#spireSupply`,
+            data: global.portal.transport.cargo
+        });
+    }
+}
+
+function loadSupply(name,color){
+    return;
+    if (atomic_mass[name] && global.interstellar['mass_ejector']){
+        if (global.race.universe !== 'magic' && (name === 'Elerium' || name === 'Infernite')){
+            color = 'caution';
+        }
+        let ejector = $(`<div id="supply${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        $('#resEjector').append(ejector);
+
+        let res = $(`<span class="trade"></span>`);
+        ejector.append(res);
+
+        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="ejectLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span class="current">{{ e.${name} }}</span>`));
+        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
+
+        res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
+
+        if (!global.interstellar.mass_ejector.hasOwnProperty(name)){
+            global.interstellar.mass_ejector[name] = 0;
+        }
+
+        vBind({
+            el: `#supply${name}`,
             data: {
                 r: global.resource[name],
                 e: global.interstellar.mass_ejector

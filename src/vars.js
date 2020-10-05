@@ -519,6 +519,33 @@ if (convertVersion(global['version']) < 10000){
     if (global.portal.hasOwnProperty('transport')){
         global.portal.transport['crew'] = 0;
         global.portal.transport['mil'] = 0;
+        if (!global.portal.transport['cargo']){
+            global.portal.transport['cargo'] = {
+                used: 0, max: 0,
+                Crystal: 0, Lumber: 0,
+                Stone: 0, Furs: 0,
+                Copper: 0, Iron: 0,
+                Aluminium: 0, Cement: 0,
+                Coal: 0, Oil: 0,
+                Uranium: 0, Steel: 0,
+                Titanium: 0, Alloy: 0,
+                Polymer: 0, Iridium: 0,
+                Helium_3: 0, Deuterium: 0,
+                Neutronium: 0, Adamantite: 0,
+                Infernite: 0, Elerium: 0,
+                Nano_Tube: 0, Graphene: 0,
+                Stanene: 0, Bolognium: 0,
+                Vitreloy: 0, Orichalcum: 0,
+                Plywood: 0, Brick: 0,
+                Wrought_Iron: 0, Sheet_Metal: 0,
+                Mythril: 0, Aerogel: 0,
+                Nanoweave: 0, Scarletite: 0
+            };
+        }
+    }
+
+    if (global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
+        global.settings.portal.spire = false;
     }
 }
 
@@ -723,6 +750,9 @@ if (!global.settings['showAchieve']){
 }
 if (!global.settings['showEjector']){
     global.settings['showEjector'] = false;
+}
+if (!global.settings['showCargo']){
+    global.settings['showCargo'] = false;
 }
 if (!global.settings['resTabs']){
     global.settings['resTabs'] = 0;
@@ -1556,6 +1586,7 @@ export function clearStates(){
     global.settings.showGalactic = false;
     global.settings.showPortal = false;
     global.settings.showEjector = false;
+    global.settings.showCargo = false;
     global.settings.showAlchemy  = false;
     global.settings.space.home = true;
     global.settings.space.moon = false;
