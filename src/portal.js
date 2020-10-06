@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, quantum_level, poppers, sizeApproximation } from './vars.js';
+import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
@@ -1074,7 +1074,7 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 125000, 1.24, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[20])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[15])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
             },
             ship: {
                 civ: 0,
@@ -1109,7 +1109,8 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
+                let bireme = +((0.85 ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
             },
             ship: {
                 civ: 2,
@@ -1126,7 +1127,8 @@ const fortressModules = {
                         global.settings.showCargo = true;
                         global.tech['hell_spire'] = 1;
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
-                        global.portal['port'] = { count: 0 };
+                        global.portal['port'] = { count: 0, on: 0 };
+                        messageQueue(loc('portal_transport_unlocked'),'info');
                         renderFortress();
                     }
                     return true;
@@ -1141,10 +1143,11 @@ const fortressModules = {
             desc: loc('portal_spire_desc'),
             support: 'purifier',
             prop(){
-                return ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max }}</span>`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max }}</span>`;
+                return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s</span>)`;
             },
-            filter(v){
-                return Math.floor(v);
+            filter(v,fix){
+                return fix ? +(v).toFixed(fix) : Math.floor(v);
             }
         },
         spire_mission: {
@@ -1157,7 +1160,15 @@ const fortressModules = {
             cost: {
                 [global.race.species](){ return 50; },
                 Oil(){ return 900000; },
-                Helium_3(){ return 750000; }
+                Helium_3(){ return 750000; },
+                Structs(){
+                    return {
+                        portal: {
+                            bireme: { s: 'prtl_lake', count: 1, on: 1 },
+                            transport: { s: 'prtl_lake', count: 1, on: 1 },
+                        }
+                    };
+                }
             },
             effect: loc('portal_spire_mission_effect'),
             action(){
@@ -1177,7 +1188,7 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('purifier', offset, 95000000, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 95000000, 1.15, 'portal'); },
                 Supply(offset){ return global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
             },
             powered(){ return powerCostMod(125); },
@@ -1210,7 +1221,11 @@ const fortressModules = {
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
             effect(){
-                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[10000])}</div>`;
+                let port_value = 10000;
+                if (spire_on['base_camp']){
+                    port_value *= 1 + (spire_on['base_camp'] * 0.4);
+                }
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[port_value])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1218,6 +1233,82 @@ const fortressModules = {
                     if (global.portal.purifier.support < global.portal.purifier.s_max){
                         global.portal.port.on++;
                     }
+                    if (global.tech.hell_spire === 3){
+                        global.tech.hell_spire = 4;
+                        global.portal['base_camp'] = { count: 0, on: 0 };
+                        renderFortress();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        base_camp: {
+            id: 'portal-base_camp',
+            title: loc('portal_base_camp_title'),
+            desc(){
+                return `<div>${loc('portal_base_camp_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+            },
+            reqs: { hell_spire: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, 1.2, 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, 1.2, 'portal'); },
+            },
+            powered(){ return powerCostMod(1); },
+            support(){ return -1; },
+            effect(){
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('base_camp','portal');
+                    if (global.portal.purifier.support < global.portal.purifier.s_max){
+                        global.portal.base_camp.on++;
+                    }
+                    if (global.tech.hell_spire === 4){
+                        global.tech.hell_spire = 5;
+                        global.portal['bridge'] = { count: 0 };
+                        messageQueue(loc('portal_spire_bridge_collapse'),'info');
+                        renderFortress();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        bridge: {
+            id: 'portal-bridge',
+            title: loc('portal_bridge_title'),
+            desc(wiki){
+                if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki){
+                    return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_bridge_title')}</div>`;
+                }
+            },
+            reqs: { hell_spire: 5 },
+            no_queue(){ return global.portal.bridge.count < 10 ? false : true },
+            queue_size: 1,
+            queue_complete(){ return towerSize() - global.portal.bridge.count; },
+            cost: {
+                [global.race.species](){ return 10; },
+                Money(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
+                Supply(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 100000 : 0; },
+            },
+            effect(){
+                let size = 10;
+                if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < size){
+                    let remain = global.portal.hasOwnProperty('bridge') ? size - global.portal.bridge.count : size;
+                    return `<div>${loc('portal_bridge_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_bridge_effect2')}</div>`;
+                }
+                else {
+                    return loc('portal_bridge_complete');
+                }
+            },
+            action(){
+                if (global.portal.bridge.count < 10 && payCosts($(this)[0].cost)){
+                    incrementStruct('bridge','portal');
                     return true;
                 }
                 return false;

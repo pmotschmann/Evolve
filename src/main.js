@@ -1683,7 +1683,7 @@ function fastLoop(){
             global.portal.purifier.s_max = p_on['purifier'] * actions.portal.prtl_spire.purifier.support();
 
             let used_support = 0;
-            let purifier_structs = ['port'];
+            let purifier_structs = ['port','base_camp'];
             for (var i = 0; i < purifier_structs.length; i++){
                 if (global.portal[purifier_structs[i]]){
                     let operating = global.portal[purifier_structs[i]].on;
@@ -2215,8 +2215,10 @@ function fastLoop(){
                         volume = global.resource[res].amount / time_multiplier;
                     }
 
+                    let bireme = 1 - (0.85 ** (gal_on['bireme'] || 0));
+
                     modRes(res, -(time_multiplier * volume));
-                    supply += shipped * supplyValue[res].in * time_multiplier;
+                    supply += Number(shipped * supplyValue[res].in * time_multiplier * bireme);
                 }
             });
             global.portal.purifier.supply += supply;
@@ -6175,6 +6177,10 @@ function midLoop(){
 
         if (global.portal.hasOwnProperty('purifier')){
             let max = 100;
+            let port_value = 10000;
+            if (spire_on['base_camp']){
+                port_value *= 1 + (spire_on['base_camp'] * 0.4);
+            }
             if (spire_on['port']){
                 max += spire_on['port'] * 10000;
             }
