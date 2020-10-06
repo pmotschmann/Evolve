@@ -15574,6 +15574,16 @@ function srDesc(c_action,old){
                     }
                 }
             }
+            else if (res === 'Supply'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    desc = desc + `${label}: ${res_cost}. `;
+                    if (global.portal.purifier.supply < res_cost){
+                        desc = desc + `${loc('insufficient')} ${label}. `;
+                    }
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
@@ -15660,6 +15670,18 @@ export function actionDesc(parent,c_action,obj,old){
                     let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
                     if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
+                        color = 'has-text-danger';
+                    }
+                    empty = false;
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                }
+            }
+            else if (res === 'Supply'){
+                let res_cost = costs[res]();
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    let color = 'has-text-dark';
+                    if (global.portal.purifier.supply < res_cost){
                         color = 'has-text-danger';
                     }
                     empty = false;
@@ -15761,6 +15783,10 @@ export function payCosts(costs){
                     global.race[res].count -= cost;
                 }
             }
+            else if (res === 'Supply'){
+                let cost = costs[res]();
+                global.portal.purifier.supply -= cost;
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
@@ -15831,6 +15857,12 @@ function checkMaxCosts(costs){
                 return;
             }
         }
+        else if (res === 'Supply'){
+            if (global.portal.purifier.sup_max < Number(costs[res]())){
+                test = false;
+                return;
+            }
+        }
         else {
             var testCost = Number(costs[res]()) || 0;
             if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1){
@@ -15883,6 +15915,12 @@ function checkCosts(costs){
         }
         else if (res === 'HellArmy'){
             if (costs[res]() === false){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Supply'){
+            if (global.portal.purifier.supply < Number(costs[res]())){
                 test = false;
                 return;
             }

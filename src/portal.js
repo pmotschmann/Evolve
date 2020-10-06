@@ -924,7 +924,8 @@ const fortressModules = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return 500000000; },
-                Oil(){ return 750000; }
+                Oil(){ return 750000; },
+                Helium_3(){ return 600000; }
             },
             effect: loc('portal_lake_mission_effect'),
             action(){
@@ -1124,7 +1125,7 @@ const fortressModules = {
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
                         global.tech['hell_spire'] = 1;
-                        global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100 };
+                        global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0 };
                         renderFortress();
                     }
@@ -1140,7 +1141,10 @@ const fortressModules = {
             desc: loc('portal_spire_desc'),
             support: 'purifier',
             prop(){
-                return ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply }} / {{ sup_max }}</span>`;
+                return ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max }}</span>`;
+            },
+            filter(v){
+                return Math.floor(v);
             }
         },
         spire_mission: {
@@ -1152,6 +1156,8 @@ const fortressModules = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 [global.race.species](){ return 50; },
+                Oil(){ return 900000; },
+                Helium_3(){ return 750000; }
             },
             effect: loc('portal_spire_mission_effect'),
             action(){
@@ -1171,8 +1177,8 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('purifier', offset, 8000000, 1.2, 'portal'); },
-                //Supply(offset){ return spaceCostMultiplier('purifier', offset, 8000000, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 95000000, 1.2, 'portal'); },
+                Supply(offset){ return global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
             },
             powered(){ return powerCostMod(125); },
             support(){ return 1; },
@@ -1184,6 +1190,33 @@ const fortressModules = {
                     incrementStruct('purifier','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.purifier.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        port: {
+            id: 'portal-port',
+            title: loc('portal_port_title'),
+            desc(){
+                return `<div>${loc('portal_port_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+            },
+            reqs: { hell_spire: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('port', offset, 135000000, 1.2, 'portal'); },
+                Supply(offset){ return global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, 1.2, 'portal'); },
+            },
+            powered(){ return powerCostMod(1); },
+            support(){ return -1; },
+            effect(){
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[10000])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('port','portal');
+                    if (global.portal.purifier.support < global.portal.purifier.s_max){
+                        global.portal.port.on++;
                     }
                     return true;
                 }

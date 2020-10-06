@@ -608,9 +608,12 @@ export function timeCheck(c_action,track,detailed){
             if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Drak','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
-                    let res_have = Number(global.resource[res].amount);
+                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[res].amount);
+                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[res].max;
+                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[res].diff;
+
                     if (track){
-                        res_have += global.resource[res].diff * track.t;
+                        res_have += res_diff * track.t;
                         if (track.r[res]){
                             res_have -= Number(track.r[res]);
                             track.r[res] += testCost;
@@ -618,13 +621,13 @@ export function timeCheck(c_action,track,detailed){
                         else {
                             track.r[res] = testCost;
                         }
-                        if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                            res_have = global.resource[res].max;
+                        if (res_max >= 0 && res_have > res_max){
+                            res_have = res_max;
                         }
                     }
                     if (testCost > res_have){
-                        if (global.resource[res].diff > 0){
-                            let r_time = (testCost - res_have) / global.resource[res].diff;
+                        if (res_diff > 0){
+                            let r_time = (testCost - res_have) / res_diff;
                             if (r_time > time){
                                 bottleneck = res;
                                 time = r_time;

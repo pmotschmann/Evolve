@@ -1,9 +1,9 @@
-import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, lake_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, lake_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
 import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, galaxyOffers } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
@@ -1342,7 +1342,7 @@ function fastLoop(){
             'city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
             'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-            'prtl_lake:harbour','prtl_lake:cooling_tower','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
+            'prtl_lake:harbour','prtl_lake:cooling_tower','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
             'prtl_gate:infernite_mine','int_sirius:ascension_trigger'
         ];
         for (var i = 0; i < p_structs.length; i++){
@@ -1676,6 +1676,33 @@ function fastLoop(){
                 }
             }
             global.portal.harbour.support = used_support;
+        }
+
+        // Purifier
+        if (global.portal['purifier']){
+            global.portal.purifier.s_max = p_on['purifier'] * actions.portal.prtl_spire.purifier.support();
+
+            let used_support = 0;
+            let purifier_structs = ['port'];
+            for (var i = 0; i < purifier_structs.length; i++){
+                if (global.portal[purifier_structs[i]]){
+                    let operating = global.portal[purifier_structs[i]].on;
+                    let id = actions.portal.prtl_spire[purifier_structs[i]].id;
+                    if (used_support + operating > global.portal.harbour.s_max){
+                        operating -= (used_support + operating) - global.portal.harbour.s_max;
+                        $(`#${id} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${id} .on`).removeClass('warn');
+                    }
+                    used_support += operating * -(actions.portal.prtl_spire[purifier_structs[i]].support());
+                    spire_on[purifier_structs[i]] = operating;
+                }
+                else {
+                    spire_on[purifier_structs[i]] = 0;
+                }
+            }
+            global.portal.purifier.support = used_support;
         }
 
         // Space Station
@@ -2166,6 +2193,37 @@ function fastLoop(){
 
             global.interstellar.stellar_engine.mass += mass / 10000000000 * time_multiplier;
             global.interstellar.stellar_engine.exotic += exotic / 10000000000 * time_multiplier;
+        }
+
+        if (global.portal['transport']){
+            let total = 0;
+            let supply = 0;
+            Object.keys(global.portal.transport.cargo).forEach(function (res){
+                if (supplyValue[res]){
+                    let shipped = global.portal.transport.cargo[res];
+                    if (total + shipped > gal_on['transport'] * 5){
+                        shipped = gal_on['transport'] * 5 - total;
+                    }
+                    total += shipped;
+
+                    let volume = shipped * supplyValue[res].out;
+                    if (volume > 0){
+                        breakdown.p.consume[res][loc('portal_transport_title')] = -(volume);
+                    }
+
+                    if (volume * time_multiplier > global.resource[res].amount){
+                        volume = global.resource[res].amount / time_multiplier;
+                    }
+
+                    modRes(res, -(time_multiplier * volume));
+                    supply += shipped * supplyValue[res].in * time_multiplier;
+                }
+            });
+            global.portal.purifier.supply += supply;
+            global.portal.purifier.diff = supply / time_multiplier;
+            if (global.portal.purifier.supply > global.portal.purifier.sup_max){
+                global.portal.purifier.supply = global.portal.purifier.sup_max;
+            }
         }
 
         // Consumption
@@ -6105,6 +6163,22 @@ function midLoop(){
 
         if (global.civic.space_miner.display && global.space['space_station']){
             global.space.space_station.s_max = global.civic.space_miner.workers;
+        }
+
+        if (global.portal.hasOwnProperty('transport')){
+            let max = 0;
+            if (gal_on['transport']){
+                max = gal_on['transport'] * 5;
+            }
+            global.portal.transport.cargo.max = max;
+        }
+
+        if (global.portal.hasOwnProperty('purifier')){
+            let max = 100;
+            if (spire_on['port']){
+                max += spire_on['port'] * 10000;
+            }
+            global.portal.purifier.sup_max = max;
         }
 
         for (let i=0; i<3; i++){
