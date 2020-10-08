@@ -119,7 +119,7 @@ export function actionDesc(info, c_action, extended){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage'){
+            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -127,6 +127,14 @@ export function actionDesc(info, c_action, extended){
                     }
                     let label = loc(`resource_${res}_name`);
                     cost.append($(`<div data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    render = true;
+                }
+            }
+            else if (res === 'Supply'){
+                let res_cost = costs[res](true);
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                     render = true;
                 }
             }

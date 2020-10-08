@@ -1113,7 +1113,7 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
             },
             ship: {
-                civ: 2,
+                civ: 3,
                 mil: 0
             },
             action(){
@@ -1189,7 +1189,7 @@ const fortressModules = {
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('purifier', offset, 95000000, 1.15, 'portal'); },
-                Supply(offset){ return global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
+                Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
             },
             powered(){ return powerCostMod(125); },
             support(){ return 1; },
@@ -1292,7 +1292,7 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return towerSize() - global.portal.bridge.count; },
             cost: {
-                [global.race.species](){ return 10; },
+                [global.race.species](wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
                 Money(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
                 Supply(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 100000 : 0; },
             },
@@ -1309,7 +1309,77 @@ const fortressModules = {
             action(){
                 if (global.portal.bridge.count < 10 && payCosts($(this)[0].cost)){
                     incrementStruct('bridge','portal');
+                    if (global.portal.bridge.count >= 10){
+                        global.portal['sphinx'] = { count: 0 };
+                        global.tech.hell_spire = 6;
+                        renderFortress();
+                    }
                     return true;
+                }
+                return false;
+            }
+        },
+        sphinx: {
+            id: 'portal-sphinx',
+            title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
+            desc: loc('portal_sphinx_desc'),
+            reqs: { hell_spire: 6 },
+            cost: {
+                Knowledge(wiki){ return global.tech.hell_spire === 6 || global.tech.hell_spire === 7 || wiki ? (global.tech.hell_spire === 7 ? 50000000 : 40000000) : 0; }
+            },
+            effect(){
+                if (global.tech.hell_spire === 6){
+                    return loc('portal_sphinx_effect');
+                }
+                else if (global.tech.hell_spire === 7){
+                    return loc('portal_sphinx_effect2');
+                }
+                else if (global.tech.hell_spire >= 8){
+                    return loc('portal_sphinx_effect3');
+                }
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){                    
+                    if (global.tech.hell_spire === 6){
+                        global.tech.hell_spire = 7;
+                        messageQueue(loc('portal_sphinx_msg'),'info');
+                        renderFortress();
+                        return true;
+                    }
+                    else if (global.tech.hell_spire === 7){
+                        global.tech.hell_spire = 8;
+                        renderFortress();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        bribe_sphinx: {
+            id: 'portal-bribe_sphinx',
+            title: loc('portal_sphinx_bribe'),
+            desc: loc('portal_sphinx_desc'),
+            reqs: { hell_spire: 7 },
+            condition(){
+                return global.tech['hell_spire'] && global.tech.hell_spire === 7 && !global.tech['sphinx_bribe'] ? true : false;
+            },
+            cost: {
+                Soul_Gem(){ return 2500; },
+                Supply(){ return 500000; }
+            },
+            effect(){
+                return loc('portal_sphinx_bribe_effect');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){                    
+                    if (global.tech.hell_spire === 7 && !global.tech['sphinx_bribe']){
+                        global.tech['sphinx_bribe'] = 1;
+                        global.resource.Codex.display = true;
+                        global.resource.Codex.amount = 1;
+                        messageQueue(loc('portal_sphinx_bribe_msg'),'info');
+                        renderFortress();
+                        return true;
+                    }
                 }
                 return false;
             }

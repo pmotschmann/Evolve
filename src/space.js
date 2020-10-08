@@ -788,6 +788,9 @@ const spaceProjects = {
                 if (global.tech.mass >= 2 && p_on['mass_driver']){
                     sci += p_on['mass_driver'] * global.civic.scientist.workers;
                 }
+                if (global.tech['science'] >= 21){
+                    sci *= 1.3;
+                }
                 let elerium = spatialReasoning(10);
 
                 let scientist = '';
@@ -1967,6 +1970,9 @@ const interstellarProjects = {
                 }
                 if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
                     know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
+                }
+                if (global.tech['science'] >= 21){
+                    know *= 1.3;
                 }
                 know = Math.round(know);
                 let sci = '';

@@ -181,7 +181,7 @@ popover('morale',
 
 var power_generated = {};
 popover('powerStatus',function(obj){
-        let drain = global.city.power_total - global.city.power;
+        let drain = +(global.city.power_total - global.city.power).toFixed(2);
         Object.keys(power_generated).forEach(function (k){
             if (power_generated[k]){
                 let gen = +(power_generated[k]).toFixed(2);
@@ -1688,8 +1688,8 @@ function fastLoop(){
                 if (global.portal[purifier_structs[i]]){
                     let operating = global.portal[purifier_structs[i]].on;
                     let id = actions.portal.prtl_spire[purifier_structs[i]].id;
-                    if (used_support + operating > global.portal.harbour.s_max){
-                        operating -= (used_support + operating) - global.portal.harbour.s_max;
+                    if (used_support + operating > global.portal.purifier.s_max){
+                        operating -= (used_support + operating) - global.portal.purifier.s_max;
                         $(`#${id} .on`).addClass('warn');
                     }
                     else {
@@ -5768,6 +5768,9 @@ function midLoop(){
             if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
                 gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
             }
+            if (global.tech['science'] >= 21){
+                gain *= 1.3;
+            }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')] = gain+'v';
 
@@ -5784,6 +5787,9 @@ function midLoop(){
             }
             if (global.tech['science'] >= 20){
                 gain *= 3;
+            }
+            if (global.tech['science'] >= 21){
+                gain *= 1.3;
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
@@ -5919,6 +5925,9 @@ function midLoop(){
             }
             if (global.race['cataclysm'] && global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
+            }
+            if (global.tech['science'] >= 21){
+                sci *= 1.3;
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;
@@ -6182,7 +6191,7 @@ function midLoop(){
                 port_value *= 1 + (spire_on['base_camp'] * 0.4);
             }
             if (spire_on['port']){
-                max += spire_on['port'] * 10000;
+                max += spire_on['port'] * port_value;
             }
             global.portal.purifier.sup_max = max;
         }

@@ -4581,6 +4581,9 @@ export const actions = {
                 if (global.tech['science'] >= 20){
                     gain *= 3;
                 }
+                if (global.tech['science'] >= 21){
+                    gain *= 1.3;
+                }
                 gain = +(gain).toFixed(0);
                 return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
@@ -8337,6 +8340,27 @@ export const actions = {
             effect(){ return loc('tech_advanced_biotech_effect'); },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    return true;
+                }
+                return false;
+            }
+        },
+        codex_infinium: {
+            id: 'tech-codex_infinium',
+            title: loc('tech_codex_infinium'),
+            desc: loc('tech_codex_infinium'),
+            category: 'science',
+            era: 'interdimensional',
+            reqs: { science: 20, sphinx_bribe: 1 },
+            grant: ['science',21],
+            cost: {
+                Knowledge(){ return 40100000; },
+                Codex(){ return 1; }
+            },
+            effect(){ return loc('tech_codex_infinium_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Codex.display = false;
                     return true;
                 }
                 return false;
@@ -14447,6 +14471,31 @@ export const actions = {
             post(){
                 clearElement($('#resources'));
                 defineResources();
+            }
+        },
+        bribe_sphinx: {
+            id: 'tech-bribe_sphinx',
+            title: loc('portal_sphinx_bribe'),
+            desc: loc('portal_sphinx_bribe'),
+            category: 'hell_dimension',
+            era: 'interdimensional',
+            reqs: { hell_spire: 8 },
+            grant: ['sphinx_bribe',1],
+            cost: {
+                Soul_Gem(){ return 2500; },
+                Supply(){ return 500000; }
+            },
+            effect(){
+                return loc('tech_bribe_sphinx_effect');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.resource.Codex.display = true;
+                    global.resource.Codex.amount = 1;
+                    messageQueue(loc('tech_bribe_sphinx_msg'),'info');
+                    return true;
+                }
+                return false;
             }
         },
     },
