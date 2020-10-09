@@ -789,7 +789,7 @@ const spaceProjects = {
                     sci += p_on['mass_driver'] * global.civic.scientist.workers;
                 }
                 if (global.tech['science'] >= 21){
-                    sci *= 1.3;
+                    sci *= 1.45;
                 }
                 let elerium = spatialReasoning(10);
 
@@ -1972,7 +1972,7 @@ const interstellarProjects = {
                     know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
                 }
                 if (global.tech['science'] >= 21){
-                    know *= 1.3;
+                    know *= 1.45;
                 }
                 know = Math.round(know);
                 let sci = '';

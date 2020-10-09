@@ -4,7 +4,7 @@ import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
-import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
+import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { loc } from './locale.js';
 
@@ -1376,14 +1376,20 @@ const fortressModules = {
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_sphinx_bribe_msg'),'info');
-                        renderFortress();
+                        messageQueue(loc('portal_sphinx_bribe_msg'),'info');                        
                         return true;
                     }
                 }
                 return false;
+            },
+            post(){
+                if (global.tech['sphinx_bribe']){
+                    drawTech();
+                    renderFortress();
+                    cleanTechPopOver('portal-bribe_sphinx');
+                }
             }
-        },
+        }
     }
 };
 

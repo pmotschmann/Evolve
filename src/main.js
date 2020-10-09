@@ -5769,7 +5769,7 @@ function midLoop(){
                 gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
             }
             if (global.tech['science'] >= 21){
-                gain *= 1.3;
+                gain *= 1.45;
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc(global.race.universe === 'magic' ? 'tech_sanctum' : 'interstellar_laboratory_title')] = gain+'v';
@@ -5789,7 +5789,7 @@ function midLoop(){
                 gain *= 3;
             }
             if (global.tech['science'] >= 21){
-                gain *= 1.3;
+                gain *= 1.45;
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
@@ -5927,7 +5927,7 @@ function midLoop(){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             if (global.tech['science'] >= 21){
-                sci *= 1.3;
+                sci *= 1.45;
             }
             let gain = red_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

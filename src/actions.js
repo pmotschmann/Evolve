@@ -4582,7 +4582,7 @@ export const actions = {
                     gain *= 3;
                 }
                 if (global.tech['science'] >= 21){
-                    gain *= 1.3;
+                    gain *= 1.45;
                 }
                 gain = +(gain).toFixed(0);
                 return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
