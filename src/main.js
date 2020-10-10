@@ -1300,6 +1300,26 @@ function fastLoop(){
             power_generated[loc('space_dwarf_reactor_title')] = -(power);
         }
 
+        if (global.portal['inferno_power']){
+            let fuels = actions.portal.prtl_ruins.inferno_power.fuel;
+            let operating = global.portal.inferno_power.on;
+
+            Object.keys(fuels).forEach(function(fuel){
+                let consume = operating * fuels[fuel];
+                while (consume * time_multiplier > global.resource[fuel].amount + (global.resource[fuel].diff > 0 ? global.resource[fuel].diff * time_multiplier : 0) && consume > 0){
+                    operating--;
+                    consume -= fuels[fuel];
+                }
+                breakdown.p.consume[fuel][loc('portal_inferno_power_title')] = -(consume);
+                modRes(fuel, -(consume * time_multiplier));
+            });
+            let power = operating * actions.portal.prtl_ruins.inferno_power.powered();
+
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('portal_inferno_power_title')] = -(power);
+        }
+
         if (global.space['swarm_satellite'] && global.space['swarm_control']){
             let active = global.space.swarm_satellite.count;
             if (active > global.space.swarm_control.s_max){

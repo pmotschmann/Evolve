@@ -9321,6 +9321,26 @@ export const actions = {
                 return false;
             }
         },
+        infernium_power: {
+            id: 'tech-infernium_power',
+            title: loc('tech_infernium_power'),
+            desc: loc('tech_infernium_power'),
+            category: 'power_generation',
+            era: 'interdimensional',
+            reqs: { smelting: 8, hell_ruins: 4 },
+            grant: ['inferno_power',1],
+            cost: {
+                Knowledge(){ return 30000000; }
+            },
+            effect: loc('tech_infernium_power_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['inferno_power'] = { count: 0, on: 0 };
+                    return true;
+                }
+                return false;
+            }
+        },
         thermomechanics: {
             id: 'tech-thermomechanics',
             title: loc('tech_thermomechanics'),
@@ -9836,6 +9856,10 @@ export const actions = {
                         global.tech['fusable'] = 1;
                     }
                     else {
+                        let rank = alevel();
+                        if (rank > global.pillars[global.race.species]){
+                            global.pillars[global.race.species] = rank;
+                        }
                         global.tech['pillars'] = 2;
                     }
                     return true;

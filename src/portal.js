@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue } from './functions.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -645,6 +645,41 @@ const fortressModules = {
                         global.city.smelter.cap += 3;
                         global.city.smelter.Oil += 3;
                     }
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                vBind({el: `#foundry`},'update');
+            },
+        },
+        inferno_power: {
+            id: 'portal-inferno_power',
+            title: loc('portal_inferno_power_title'),
+            desc(){
+                return `<div>${loc('portal_inferno_power_title')}</div>`;
+            },
+            reqs: { inferno_power: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('inferno_power', offset, 275000000, 1.16, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('inferno_power', offset, 5000000, 1.18, 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('inferno_power', offset, 12000000, 1.18, 'portal'); },
+                Bolognium(offset){ return spaceCostMultiplier('inferno_power', offset, 8000000, 1.18, 'portal'); },
+            },
+            powered(){ return powerModifier(-50); },
+            fuel: {
+                Infernite: 5,
+                Coal: 100,
+                Oil: 80
+            },
+            effect(){
+                let fuel = $(this)[0].fuel;
+                return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('inferno_power','portal');
+                    global.portal.inferno_power.on++;
                     return true;
                 }
                 return false;
@@ -1339,7 +1374,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (payCosts($(this)[0].cost)){                    
+                if (payCosts($(this)[0].cost)){
                     if (global.tech.hell_spire === 6){
                         global.tech.hell_spire = 7;
                         messageQueue(loc('portal_sphinx_msg'),'info');
@@ -1349,6 +1384,7 @@ const fortressModules = {
                     else if (global.tech.hell_spire === 7){
                         global.tech.hell_spire = 8;
                         renderFortress();
+                        messageQueue(loc('portal_sphinx_answer_msg'),'info');  
                         return true;
                     }
                 }
@@ -1371,7 +1407,7 @@ const fortressModules = {
                 return loc('portal_sphinx_bribe_effect');
             },
             action(){
-                if (payCosts($(this)[0].cost)){                    
+                if (payCosts($(this)[0].cost)){
                     if (global.tech.hell_spire === 7 && !global.tech['sphinx_bribe']){
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
@@ -1388,6 +1424,25 @@ const fortressModules = {
                     renderFortress();
                     cleanTechPopOver('portal-bribe_sphinx');
                 }
+            }
+        },
+        mechbay: {
+            id: 'portal-mechbay',
+            title: loc('portal_mechbay_title'),
+            desc: loc('portal_mechbay_title'),
+            reqs: { hell_spire: 8, locked: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
+            },
+            effect(){
+                return loc('portal_mechbay_effect');
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){                      
+                    return true;
+                }
+                return false;
             }
         }
     }

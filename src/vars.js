@@ -545,13 +545,13 @@ if (convertVersion(global['version']) < 10000){
         }
     }
 
-    if (global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
+    if (global.hasOwnProperty('settings') && global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
         global.settings.portal.spire = false;
     }
 }
 
 global['version'] = '0.9.19';
-global['beta'] = 15;
+global['beta'] = 16;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
