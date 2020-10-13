@@ -123,6 +123,12 @@ export function index(){
                     <span aria-hidden="true">{{ 'tab_military' | label }}</span>
                 </template>
             </b-tab-item>
+            <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
+                <template slot="header">
+                    <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
+                    <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
+                </template>
+            </b-tab-item>
         </b-tabs>
     </b-tab-item>`);
     tabs.append(civic);

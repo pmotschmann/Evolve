@@ -2978,6 +2978,11 @@ const interstellarProjects = {
                 return `<div><span>${loc('interstellar_mass_ejector_effect')}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             powered(){ return powerCostMod(3); },
+            special: true,
+            sAction(){
+                global.settings.civTabs = 4;
+                global.settings.marketTabs = 2;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.interstellar.mass_ejector.count === 0){

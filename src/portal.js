@@ -1147,6 +1147,11 @@ const fortressModules = {
                 let bireme = +((0.85 ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
             },
+            special: true,
+            sAction(){
+                global.settings.civTabs = 4;
+                global.settings.marketTabs = 3;
+            },
             ship: {
                 civ: 3,
                 mil: 0
@@ -1468,6 +1473,11 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
+            special: true,
+            sAction(){
+                global.settings.civTabs = 2;
+                global.settings.govTabs = 3;
+            },
             effect(){
                 let bay = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.bay : 0;
                 let max = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.max : 0;
@@ -1479,6 +1489,10 @@ const fortressModules = {
                     if (global.portal.purifier.support < global.portal.purifier.s_max){
                         global.portal.mechbay.on++;
                         global.portal.mechbay.max += 25;
+                    }
+                    global.settings.showMechLab = true;
+                    if (global.portal.mechbay.count === 1){
+                        messageQueue(loc('portal_mechbay_unlocked'),'info');
                     }
                     return true;
                 }
@@ -2388,5 +2402,48 @@ function assignValidStatus(effect){
 }
 
 export function mechRating(mech){
-    return 0;
+    let rating = 0;
+    switch (mech.chassis){
+        case 'wheel':
+            break;
+        case 'tread':
+            break;
+        case 'biped':
+            break;
+        case 'quad':
+            break;
+        case 'spider':
+            break;
+        case 'hover':
+            break;
+    }
+    switch (mech.size){
+        case 'small':
+            break;
+        case 'medium':
+            break;
+        case 'large':
+            break;
+        case 'titan':
+            break;
+    }
+    for (let i=0; i<mech.equip.length; i++){
+        switch (mech.equip[i]){
+            case 'shields':
+                break;
+            case 'sonar':
+                break;
+            case 'grapple':
+                break;
+            case 'infrared':
+                break;
+            case 'flare':
+                break;
+            case 'radiator':
+                break;
+            case 'coolant':
+                break;
+        }
+    }
+    return rating;
 }

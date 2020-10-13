@@ -15295,17 +15295,22 @@ export function setAction(c_action,action,type,old){
                 srSpeak(srDesc(c_action,old));
             },
             trigModal(){
-                this.$buefy.modal.open({
-                    parent: this,
-                    component: modal
-                });
+                if (c_action['sAction'] && typeof c_action['sAction'] === 'function'){
+                    c_action.sAction()
+                }
+                else {
+                    this.$buefy.modal.open({
+                        parent: this,
+                        component: modal
+                    });
 
-                var checkExist = setInterval(function() {
-                   if ($('#modalBox').length > 0) {
-                      clearInterval(checkExist);
-                      drawModal(c_action,type);
-                   }
-                }, 50);
+                    var checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0) {
+                            clearInterval(checkExist);
+                            drawModal(c_action,type);
+                        }
+                    }, 50);
+                }
             },
             on_label(){
                 return `on: ${global[action][type].on}`;
