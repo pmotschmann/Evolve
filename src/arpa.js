@@ -206,7 +206,7 @@ export const arpaProjects = {
         reqs: { veil: 2 },
         grant: 'syphon',
         effect(){
-            let mana = +(0.5 * darkEffect('magic')).toFixed(3);
+            let mana = +(1/3 * darkEffect('magic')).toFixed(3);
             if (global.tech['syphon'] && global.tech.syphon >= 60){
                 let gains = calcPrestige('vacuum');
                 let plasmidType = loc('resource_Plasmid_plural_name');

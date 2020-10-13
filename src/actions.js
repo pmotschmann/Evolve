@@ -14506,7 +14506,7 @@ export const actions = {
             reqs: { hell_spire: 8 },
             grant: ['sphinx_bribe',1],
             cost: {
-                Soul_Gem(){ return 2500; },
+                Soul_Gem(){ return 1250; },
                 Supply(){ return 500000; }
             },
             effect(){

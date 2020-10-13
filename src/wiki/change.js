@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.0`,
-        date: `9/??/2020`,
+        date: `10/??/2020`,
         changes: [
             `Expanded Interdimensional content, delve deep into the hell dimension.`,
             `New Magic Universe.`,

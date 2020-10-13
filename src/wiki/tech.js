@@ -1376,6 +1376,18 @@ const extraInformation = {
     transmutation: [
         loc(`wiki_tech_transmutation1`),
         loc(`wiki_tech_transmutation2`)
+    ],
+    cooling_tower: [
+        loc(`tech_tech_cooling_tower`)
+    ],
+    lake_threat: [
+        loc(`tech_tech_lake_threat`)
+    ],
+    lake_transport: [
+        loc(`tech_tech_lake_transport`)
+    ],
+    codex_infinium: [
+        loc(`wiki_tech_codex_infinium`)
     ]
 };
 

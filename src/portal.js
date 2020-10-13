@@ -1223,7 +1223,7 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('purifier', offset, 95000000, 1.15, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, 1.15, 'portal'); },
                 Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
             },
             powered(){ return powerCostMod(125); },
@@ -1359,6 +1359,7 @@ const fortressModules = {
             title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 6 },
+            no_queue(){ return global.tech.hell_spire < 8 ? false : true; },
             cost: {
                 Knowledge(wiki){ return global.tech.hell_spire === 6 || global.tech.hell_spire === 7 || wiki ? (global.tech.hell_spire === 7 ? 50000000 : 40000000) : 0; }
             },
@@ -1400,7 +1401,7 @@ const fortressModules = {
                 return global.tech['hell_spire'] && global.tech.hell_spire === 7 && !global.tech['sphinx_bribe'] ? true : false;
             },
             cost: {
-                Soul_Gem(){ return 2500; },
+                Soul_Gem(){ return 1250; },
                 Supply(){ return 500000; }
             },
             effect(){
@@ -1426,22 +1427,82 @@ const fortressModules = {
                 }
             }
         },
+        spire_survey: {
+            id: 'portal-spire_survey',
+            title: loc('portal_spire_survey_title'),
+            desc: loc('portal_spire_survey_title'),
+            reqs: { hell_spire: 8 },
+            grant: ['hell_spire',9],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Oil(){ return 1200000; },
+                Helium_3(){ return 900000; },
+            },
+            effect: loc('portal_spire_survey_effect'),
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: {} };
+                    global.portal['spire'] = { count: 1, progress: 0, boss: 0, type: 'gravel', status: {} };
+                    messageQueue(loc('portal_spire_survey_msg'),'info');
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                if (global.tech['hell_spire'] && global.tech.hell_spire === 9){
+                    renderFortress();
+                    cleanTechPopOver('portal-spire_survey');
+                }
+            }
+        },
         mechbay: {
             id: 'portal-mechbay',
             title: loc('portal_mechbay_title'),
-            desc: loc('portal_mechbay_title'),
-            reqs: { hell_spire: 8, locked: 1 },
+            desc(){
+                return `<div>${loc('portal_mechbay_title')}</div><div class="has-text-special">${loc('portal_spire_support')}</div>`;
+            },
+            reqs: { hell_spire: 9 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
             },
+            powered(){ return powerCostMod(1); },
+            support(){ return -1; },
             effect(){
-                return loc('portal_mechbay_effect');
+                let bay = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.bay : 0;
+                let max = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.max : 0;
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_mechbay_effect')}</div><div>${loc('portal_mechbay_effect2',[bay,max])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){                      
+                if (payCosts($(this)[0].cost)){
+                    incrementStruct('mechbay','portal');
+                    if (global.portal.purifier.support < global.portal.purifier.s_max){
+                        global.portal.mechbay.on++;
+                        global.portal.mechbay.max += 25;
+                    }
                     return true;
                 }
+                return false;
+            }
+        },
+        spire: {
+            id: 'portal-spire',
+            title: loc('portal_spire_title'),
+            desc: loc('portal_spire_title'),
+            reqs: { hell_spire: 9 },
+            no_queue(){ return true; },
+            cost: {},
+            effect(){
+                let floor = global.portal.hasOwnProperty('spire') ? global.portal.spire.count : 0;
+                let terrain = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${loc(`portal_spire_type_${global.portal.spire.type}`)}</span>` : '?';
+                let status = ``;
+                if (global.portal.hasOwnProperty('spire') && Object.keys(global.portal.spire.status).length > 0){
+                    status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
+                }
+                let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${global.portal.spire.progress}%</span>` : '0%';
+                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+            },
+            action(){
                 return false;
             }
         }
@@ -2271,4 +2332,61 @@ export function hellSupression(area, val){
         default:
             return 0;
     }
+}
+
+export function genSpireFloor(){
+    let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush'];
+    global.portal.spire.type = types[Math.floor(Math.seededRandom(0,types.length))];
+    if (global.portal.spire.count >= 10){
+        global.portal.spire.status = {};
+        let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
+        assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+        
+        if (global.portal.spire.count >= 25 && global.portal.spire.count <= 100){
+            let odds = 105 - global.portal.spire.count;
+            if (Math.floor(Math.seededRandom(0,odds) <= 5)){
+                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            }
+        }
+        else if (global.portal.spire.count > 100 && global.portal.spire.count <= 250){
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            let odds = 260 - global.portal.spire.count;
+            if (Math.floor(Math.seededRandom(0,odds) <= 10)){
+                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            }
+        }
+        else if (global.portal.spire.count > 250 && global.portal.spire.count <= 1000){
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            let odds = 1025 - global.portal.spire.count;
+            if (Math.floor(Math.seededRandom(0,odds) <= 25)){
+                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            }
+        }
+        else if (global.portal.spire.count > 1000){
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+        }
+    }
+}
+
+function assignValidStatus(effect){
+    if (global.portal.spire.status['freeze'] || global.portal.spire.status['hot']){
+        if (effect !== 'freeze' && effect !== 'hot'){
+            global.portal.spire.status[effect] = true;
+        }
+    }
+    else if (global.portal.spire.status['rain'] || global.portal.spire.status['hail']){
+        if (effect !== 'rain' && effect !== 'hail'){
+            global.portal.spire.status[effect] = true;
+        }
+    }
+    else {
+        global.portal.spire.status[effect] = true;
+    }
+}
+
+export function mechRating(mech){
+    return 0;
 }

@@ -9,7 +9,7 @@ import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
@@ -1703,7 +1703,7 @@ function fastLoop(){
             global.portal.purifier.s_max = p_on['purifier'] * actions.portal.prtl_spire.purifier.support();
 
             let used_support = 0;
-            let purifier_structs = ['port','base_camp'];
+            let purifier_structs = ['port','base_camp','mechbay'];
             for (var i = 0; i < purifier_structs.length; i++){
                 if (global.portal[purifier_structs[i]]){
                     let operating = global.portal[purifier_structs[i]].on;
@@ -3873,7 +3873,7 @@ function fastLoop(){
             }
 
             if (global.race.universe === 'magic' && global.tech['syphon']){
-                let mana_base = global.tech.syphon / 2;
+                let mana_base = global.tech.syphon / 3;
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
@@ -6537,6 +6537,27 @@ function midLoop(){
                 global.tech['gas_moon'] = 2;
                 messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]),'info');
                 renderSpace();
+            }
+        }
+
+        if (global.portal.hasOwnProperty('mechbay')){
+            let bays = (spire_on['mechbay'] || 0);
+            global.portal.mechbay.max = bays * 25;
+
+            let space = 0;
+            let progress = 0;
+            Object.keys(global.portal.mechbay.mechs).forEach(function(mech){
+                if (space + mech.bay < global.portal.mechbay.max){
+                    space += mech.bay;
+                    progress += mechRating(mech);
+                }                
+            });
+            global.portal.mechbay.bay = space;
+            global.portal.spire.progress += progress;
+            if (progress >= 100){
+                global.portal.spire.progress = 0;
+                global.portal.spire.count++;
+                genSpireFloor();
             }
         }
 
