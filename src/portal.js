@@ -2403,28 +2403,191 @@ function assignValidStatus(effect){
 
 export function mechRating(mech){
     let rating = 0;
-    switch (mech.chassis){
-        case 'wheel':
-            break;
-        case 'tread':
-            break;
-        case 'biped':
-            break;
-        case 'quad':
-            break;
-        case 'spider':
-            break;
-        case 'hover':
-            break;
-    }
     switch (mech.size){
         case 'small':
+            rating = 2;
             break;
         case 'medium':
+            rating = 5;
             break;
         case 'large':
+            rating = 20;
             break;
         case 'titan':
+            rating = 50;
+            break;
+    }
+    switch (mech.chassis){
+        case 'wheel':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        rating *= 0.85;
+                        break;
+                    case 'swamp':
+                        rating *= 0.25;
+                        break;
+                    case 'jungle':
+                        rating *= 0.85;
+                        break;
+                    case 'rocky':
+                        rating *= 0.5;
+                        break;
+                    case 'gravel':
+                        rating *= 0.95;
+                        break;
+                    case 'muddy':
+                        rating *= 0.65;
+                        break;
+                    case 'grass':
+                        rating *= 1.2;
+                        break;
+                    case 'brush':
+                        rating *= 0.8;
+                        break;
+                }
+            }
+            break;
+        case 'tread':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        rating *= 1.1;
+                        break;
+                    case 'swamp':
+                        rating *= 0.45;
+                        break;
+                    case 'forest':
+                        rating *= 0.95;
+                        break;
+                    case 'jungle':
+                        rating *= 0.9;
+                        break;
+                    case 'rocky':
+                        rating *= 0.5;
+                        break;
+                    case 'gravel':
+                        rating *= 1.2;
+                        break;
+                    case 'muddy':
+                        rating *= 0.75;
+                        break;
+                }
+            }
+            break;
+        case 'biped':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        rating *= 0.65;
+                        break;
+                    case 'swamp':
+                        rating *= 0.55;
+                        break;
+                    case 'forest':
+                        rating *= 0.95;
+                        break;
+                    case 'jungle':
+                        rating *= 0.7;
+                        break;
+                    case 'rocky':
+                        rating *= 0.4;
+                        break;
+                    case 'muddy':
+                        rating *= 0.75;
+                        break;
+                    case 'grass':
+                        rating *= 1.2;
+                        break;
+                    case 'brush':
+                        rating *= 0.85;
+                        break;
+                }
+            }
+            break;
+        case 'quad':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        rating *= 0.75;
+                        break;
+                    case 'swamp':
+                        rating *= 0.45;
+                        break;
+                    case 'forest':
+                        rating *= 1.2;
+                        break;
+                    case 'rocky':
+                        rating *= 0.9;
+                        break;
+                    case 'gravel':
+                        rating *= 0.8;
+                        break;
+                    case 'muddy':
+                        rating *= 0.55;
+                        break;
+                    case 'grass':
+                        rating *= 0.95;
+                        break;
+                    case 'brush':
+                        rating *= 0.9;
+                        break;
+                }
+            }
+            break;
+        case 'spider':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        rating *= 0.65;
+                        break;
+                    case 'swamp':
+                        rating *= 0.8;
+                        break;
+                    case 'forest':
+                        rating *= 0.75;
+                        break;
+                    case 'jungle':
+                        rating *= 0.65;
+                        break;
+                    case 'rocky':
+                        rating *= 1.2;
+                        break;
+                    case 'gravel':
+                        rating *= 0.75;
+                        break;
+                    case 'muddy':
+                        rating *= 0.85;
+                        break;
+                    case 'brush':
+                        rating *= 0.95;
+                        break;
+                }
+            }
+            break;
+        case 'hover':
+            {
+                switch (global.portal.spire.type){
+                    case 'swamp':
+                        rating *= 1.2;
+                        break;
+                    case 'forest':
+                        rating *= 0.65;
+                        break;
+                    case 'jungle':
+                        rating *= 0.5;
+                        break;
+                    case 'rocky':
+                        rating *= 0.75;
+                        break;
+                    case 'muddy':
+                        rating *= 1.1;
+                        break;
+                    case 'brush':
+                        rating *= 0.7;
+                        break;
+                }
+            }
             break;
     }
     for (let i=0; i<mech.equip.length; i++){
@@ -2442,6 +2605,12 @@ export function mechRating(mech){
             case 'radiator':
                 break;
             case 'coolant':
+                break;
+            case 'ablative':
+                break;
+            case 'stabilizer':
+                break;
+            case 'seals':
                 break;
         }
     }
