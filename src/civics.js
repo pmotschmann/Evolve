@@ -1638,7 +1638,7 @@ export function armyRating(val,type,wound){
             army *= 1 + (global.city.temple.count * 0.01);
         }
         if (global.race['holy'] && type === 'hellArmy'){
-            army *= 1 - (traits.holy.vars[0] / 100);
+            army *= 1 + (traits.holy.vars[0] / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= planetTraits.rage.vars[0];

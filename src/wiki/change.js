@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `0.9.20`,
+        date: `10/16/2020`,
+        changes: [
+            `Fixed bug with the holy trait that improperly applied its bonus.`,
+        ]
+    },
+    {
         version: `0.9.19`,
         date: `9/1/2020`,
         changes: [
