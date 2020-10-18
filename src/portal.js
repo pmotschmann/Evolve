@@ -2566,6 +2566,370 @@ const monsters = {
         },
         nozone: {},
         amp: {}
+    },
+    mech_dragon: {
+        weapon: {
+            laser: 0.84,
+            flame: 0.1,
+            plasma: 0.68,
+            kinetic: 0.18,
+            missile: 0.75,
+            sonic: 0.22,
+            shotgun: 0.28,
+            tesla: 1
+        },
+        nozone: {},
+        amp: {}
+    },
+    construct: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.2,
+            plasma: 0.6,
+            kinetic: 0.34,
+            missile: 0.9,
+            sonic: 0.08,
+            shotgun: 0.28,
+            tesla: 1
+        },
+        nozone: {},
+        amp: {}
+    },
+    beholder: {
+        weapon: {
+            laser: 0.75,
+            flame: 0.15,
+            plasma: 1,
+            kinetic: 0.45,
+            missile: 0.05,
+            sonic: 0.01,
+            shotgun: 0.12,
+            tesla: 0.3
+        },
+        nozone: {},
+        amp: {}
+    },
+    worm: {
+        weapon: {
+            laser: 0.55,
+            flame: 0.38,
+            plasma: 0.45,
+            kinetic: 0.2,
+            missile: 0.05,
+            sonic: 1,
+            shotgun: 0.02,
+            tesla: 0.01
+        },
+        nozone: {},
+        amp: {}
+    },
+    hydra: {
+        weapon: {
+            laser: 0.85,
+            flame: 0.75,
+            plasma: 0.85,
+            kinetic: 0.25,
+            missile: 0.45,
+            sonic: 0.5,
+            shotgun: 0.6,
+            tesla: 0.65
+        },
+        nozone: {},
+        amp: {}
+    },
+    colossus: {
+        weapon: {
+            laser: 1,
+            flame: 0.05,
+            plasma: 0.75,
+            kinetic: 0.45,
+            missile: 1,
+            sonic: 0.35,
+            shotgun: 0.35,
+            tesla: 0.5
+        },
+        nozone: {},
+        amp: {}
+    },
+    lich: {
+        weapon: {
+            laser: 0.1,
+            flame: 0.1,
+            plasma: 0.1,
+            kinetic: 0.45,
+            missile: 0.75,
+            sonic: 0.35,
+            shotgun: 0.75,
+            tesla: 0.5
+        },
+        nozone: {},
+        amp: {}
+    },
+    ape: {
+        weapon: {
+            laser: 1,
+            flame: 0.95,
+            plasma: 0.85,
+            kinetic: 0.5,
+            missile: 0.5,
+            sonic: 0.05,
+            shotgun: 0.35,
+            tesla: 0.68
+        },
+        nozone: {},
+        amp: {}
+    },
+    bandit: {
+        weapon: {
+            laser: 0.65,
+            flame: 0.5,
+            plasma: 0.85,
+            kinetic: 1,
+            missile: 0.5,
+            sonic: 0.25,
+            shotgun: 0.75,
+            tesla: 0.25
+        },
+        nozone: {},
+        amp: {}
+    },
+    croc: {
+        weapon: {
+            laser: 0.65,
+            flame: 0.05,
+            plasma: 0.6,
+            kinetic: 0.5,
+            missile: 0.5,
+            sonic: 1,
+            shotgun: 0.2,
+            tesla: 0.75
+        },
+        nozone: {},
+        amp: {}
+    },
+    djinni: {
+        weapon: {
+            laser: 0,
+            flame: 0.35,
+            plasma: 1,
+            kinetic: 0.15,
+            missile: 0,
+            sonic: 0.65,
+            shotgun: 0.22,
+            tesla: 0.4
+        },
+        nozone: {},
+        amp: {}
+    },
+    snake: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.5,
+            plasma: 0.5,
+            kinetic: 0.5,
+            missile: 0.5,
+            sonic: 0.5,
+            shotgun: 0.5,
+            tesla: 0.5
+        },
+        nozone: {},
+        amp: {}
+    },
+    centipede: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.85,
+            plasma: 0.95,
+            kinetic: 0.65,
+            missile: 0.6,
+            sonic: 0,
+            shotgun: 0.5,
+            tesla: 0.01
+        },
+        nozone: {},
+        amp: {}
+    },
+    spider: {
+        weapon: {
+            laser: 0.65,
+            flame: 1,
+            plasma: 0.22,
+            kinetic: 0.75,
+            missile: 0.15,
+            sonic: 0.38,
+            shotgun: 0.9,
+            tesla: 0.18
+        },
+        nozone: {},
+        amp: {}
+    },
+    manticore: {
+        weapon: {
+            laser: 0.05,
+            flame: 0.25,
+            plasma: 0.95,
+            kinetic: 0.5,
+            missile: 0.15,
+            sonic: 0.48,
+            shotgun: 0.4,
+            tesla: 0.6
+        },
+        nozone: {},
+        amp: {}
+    },
+    fiend: {
+        weapon: {
+            laser: 0.75,
+            flame: 0.25,
+            plasma: 0.5,
+            kinetic: 0.25,
+            missile: 0.75,
+            sonic: 0.25,
+            shotgun: 0.5,
+            tesla: 0.5
+        },
+        nozone: {},
+        amp: {}
+    },
+    bat: {
+        weapon: {
+            laser: 0.16,
+            flame: 0.18,
+            plasma: 0.12,
+            kinetic: 0.25,
+            missile: 0.02,
+            sonic: 1,
+            shotgun: 0.9,
+            tesla: 0.58
+        },
+        nozone: {},
+        amp: {}
+    },
+    medusa: {
+        weapon: {
+            laser: 0.35,
+            flame: 0.1,
+            plasma: 0.3,
+            kinetic: 0.95,
+            missile: 1,
+            sonic: 0.15,
+            shotgun: 0.88,
+            tesla: 0.26
+        },
+        nozone: {},
+        amp: {}
+    },
+    ettin: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.35,
+            plasma: 0.8,
+            kinetic: 0.5,
+            missile: 0.25,
+            sonic: 0.3,
+            shotgun: 0.6,
+            tesla: 0.09
+        },
+        nozone: {},
+        amp: {}
+    },
+    faceless: {
+        weapon: {
+            laser: 0.6,
+            flame: 0.28,
+            plasma: 0.6,
+            kinetic: 0,
+            missile: 0.05,
+            sonic: 0.8,
+            shotgun: 0.15,
+            tesla: 1
+        },
+        nozone: {},
+        amp: {}
+    },
+    enchanted: {
+        weapon: {
+            laser: 1,
+            flame: 0.02,
+            plasma: 0.95,
+            kinetic: 0.2,
+            missile: 0.7,
+            sonic: 0.05,
+            shotgun: 0.65,
+            tesla: 0.01
+        },
+        nozone: {},
+        amp: {}
+    },
+    gargoyle: {
+        weapon: {
+            laser: 0.15,
+            flame: 0.4,
+            plasma: 0.3,
+            kinetic: 0.5,
+            missile: 0.5,
+            sonic: 0.85,
+            shotgun: 1,
+            tesla: 0.2
+        },
+        nozone: {},
+        amp: {}
+    },
+    chimera: {
+        weapon: {
+            laser: 0.38,
+            flame: 0.6,
+            plasma: 0.42,
+            kinetic: 0.85,
+            missile: 0.35,
+            sonic: 0.5,
+            shotgun: 0.65,
+            tesla: 0.8
+        },
+        nozone: {},
+        amp: {}
+    },
+    gorgon: {
+        weapon: {
+            laser: 0.65,
+            flame: 0.65,
+            plasma: 0.65,
+            kinetic: 0.65,
+            missile: 0.65,
+            sonic: 0.65,
+            shotgun: 0.65,
+            tesla: 0.65
+        },
+        nozone: {},
+        amp: {}
+    },
+    kraken: {
+        weapon: {
+            laser: 0.75,
+            flame: 0.35,
+            plasma: 0.75,
+            kinetic: 0.35,
+            missile: 0.5,
+            sonic: 0.18,
+            shotgun: 0.05,
+            tesla: 0.85
+        },
+        nozone: {},
+        amp: {}
+    },
+    homunculus: {
+        weapon: {
+            laser: 0.05,
+            flame: 1,
+            plasma: 0.1,
+            kinetic: 0.85,
+            missile: 0.65,
+            sonic: 0.5,
+            shotgun: 0.75,
+            tesla: 0.2
+        },
+        nozone: {},
+        amp: {}
     }
 };
 
@@ -2635,16 +2999,16 @@ export function mechRating(mech){
     let rating = 0;
     switch (mech.size){
         case 'small':
-            rating = 2;
+            rating = 0.002;
             break;
         case 'medium':
-            rating = 5;
+            rating = 0.005;
             break;
         case 'large':
-            rating = 20;
+            rating = 0.01;
             break;
         case 'titan':
-            rating = 50;
+            rating = 0.02;
             break;
     }
     switch (mech.chassis){
@@ -2820,29 +3184,165 @@ export function mechRating(mech){
             }
             break;
     }
-    for (let i=0; i<mech.equip.length; i++){
-        switch (mech.equip[i]){
-            case 'shields':
+
+    Object.keys(global.portal.spire.status).forEach(function(effect){
+        switch (effect){
+            case 'freeze':
+                {
+                    if (!mech.equip.includes('radiator')){
+                        rating *= 0.25;
+                    }
+                }
                 break;
-            case 'sonar':
+            case 'hot':
+                {
+                    if (!mech.equip.includes('coolant')){
+                        rating *= 0.25;
+                    }
+                }
                 break;
-            case 'grapple':
+            case 'corrosive':
+                {
+                    if (!mech.equip.includes('ablative')){
+                        rating *= mech.equip.includes('shields') ? 0.75 : 0.25;
+                    }
+                }
                 break;
-            case 'infrared':
+            case 'humid':
+                {
+                    if (!mech.equip.includes('seals')){
+                        rating *= 0.75;
+                    }
+                }
                 break;
-            case 'flare':
+            case 'windy':
+                {
+                    if (mech.chassis === 'hover'){
+                        rating *= 0.5;
+                    }
+                }
                 break;
-            case 'radiator':
+            case 'hilly':
+                {
+                    if (mech.chassis !== 'spider'){
+                        rating *= 0.75;
+                    }
+                }
                 break;
-            case 'coolant':
+            case 'mountain':
+                {
+                    if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
+                        rating *= mech.equip.includes('flare') ? 0.75 : 0.5;
+                    }
+                }
                 break;
-            case 'ablative':
+            case 'radioactive':
+                {
+                    if (!mech.equip.includes('shields')){
+                        rating *= 0.5;
+                    }
+                }
                 break;
-            case 'stabilizer':
+            case 'quake':
+                {
+                    if (!mech.equip.includes('stabilizer')){
+                        rating *= 0.25;
+                    }
+                }
                 break;
-            case 'seals':
+            case 'dust':
+                {
+                    if (!mech.equip.includes('seals')){
+                        rating *= 0.5;
+                    }
+                }
+                break;
+            case 'river':
+                {
+                    if (mech.chassis !== 'hover'){
+                        rating *= 0.65;
+                    }
+                }
+                break;
+            case 'tar':
+                {
+                    if (mech.chassis !== 'quad'){
+                        rating *= mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
+                    }
+                }
+                break;
+            case 'steam':
+                {
+                    if (!mech.equip.includes('shields')){
+                        rating *= 0.75;
+                    }
+                }
+                break;
+            case 'flooded':
+                {
+                    if (mech.chassis !== 'hover'){
+                        rating *= 0.35;
+                    }
+                }
+                break;
+            case 'fog':
+                {
+                    if (!mech.equip.includes('sonar')){
+                        rating *= 0.2;
+                    }
+                }
+                break;
+            case 'rain':
+                {
+                    if (!mech.equip.includes('seals')){
+                        rating *= 0.75;
+                    }
+                }
+                break;
+            case 'hail':
+                {
+                    if (!mech.equip.includes('ablative') && mech.equip.includes('shields')){
+                        rating *= 0.75;
+                    }
+                }
+                break;
+            case 'chasm':
+                {
+                    if (!mech.equip.includes('grapple')){
+                        rating *= 0.1;
+                    }
+                }
+                break;
+            case 'dark':
+                {
+                    if (!mech.equip.includes('infrared')){
+                        rating *= mech.equip.includes('flare') ? 0.25 : 0.1;
+                    }
+                }
+                break;
+            case 'gravity':
+                {
+                    switch (mech.size){
+                        case 'medium':
+                            rating *= 0.75;
+                            break;
+                        case 'large':
+                            rating *= 0.5;
+                            break;
+                        case 'titan':
+                            rating *= 0.25;
+                            break;
+                    }
+                }
                 break;
         }
+    });
+
+    rating /= global.portal.spire.count;
+
+    let damage = 0;
+    for (let i=0; i<mech.hardpoint.length; i++){
+        damage += rating * monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
     }
-    return rating;
+    return damage;
 }
