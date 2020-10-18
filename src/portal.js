@@ -1447,7 +1447,8 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: {} };
-                    global.portal['spire'] = { count: 1, progress: 0, boss: 0, type: 'gravel', status: {} };
+                    global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
+                    genSpireFloor();
                     messageQueue(loc('portal_spire_survey_msg'),'info');
                     return true;
                 }
@@ -1514,7 +1515,7 @@ const fortressModules = {
                     status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
                 }
                 let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${global.portal.spire.progress}%</span>` : '0%';
-                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${global.portal.spire.boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
             },
             action(){
                 return false;
@@ -2348,6 +2349,226 @@ export function hellSupression(area, val){
     }
 }
 
+const monsters = {
+    fire_elm: {
+        weapon: {
+            laser: 1.05,
+            flame: 0,
+            plasma: 0.25,
+            kinetic: 0.5,
+            missile: 0.5,
+            sonic: 1,
+            shotgun: 0.75,
+            tesla: 0.65
+        },
+        nozone: {
+            freeze: true,
+            flooded: true,
+        },
+        amp: {
+            hot: 1.75,
+            humid: 0.8,
+            steam: 0.9,
+        }
+    },
+    water_elm: {
+        weapon: {
+            laser: 0.65,
+            flame: 0.5,
+            plasma: 1,
+            kinetic: 0.2,
+            missile: 0.5,
+            sonic: 0.5,
+            shotgun: 0.25,
+            tesla: 0.75
+        },
+        nozone: {
+            hot: true,
+            freeze: true,
+        },
+        amp: {
+            steam: 1.5,
+            river: 1.1,
+            flooded: 2,
+            rain: 1.75,
+            humid: 1.25,
+        }
+    },
+    rock_golem: {
+        weapon: {
+            laser: 1,
+            flame: 0.5,
+            plasma: 1,
+            kinetic: 0.65,
+            missile: 0.95,
+            sonic: 0.75,
+            shotgun: 0.35,
+            tesla: 0
+        },
+        nozone: {},
+        amp: {}
+    },
+    bone_golem: {
+        weapon: {
+            laser: 0.45,
+            flame: 0.35,
+            plasma: 0.55,
+            kinetic: 1,
+            missile: 1,
+            sonic: 0.75,
+            shotgun: 0.75,
+            tesla: 0.15
+        },
+        nozone: {},
+        amp: {}
+    },
+    mech_dino: {
+        weapon: {
+            laser: 0.85,
+            flame: 0.05,
+            plasma: 0.55,
+            kinetic: 0.45,
+            missile: 0.5,
+            sonic: 0.35,
+            shotgun: 0.5,
+            tesla: 1
+        },
+        nozone: {},
+        amp: {}
+    },
+    plant: {
+        weapon: {
+            laser: 0.42,
+            flame: 1,
+            plasma: 0.65,
+            kinetic: 0.2,
+            missile: 0.25,
+            sonic: 0.75,
+            shotgun: 0.35,
+            tesla: 0.38
+        },
+        nozone: {},
+        amp: {}
+    },
+    crazed: {
+        weapon: {
+            laser: 0.5,
+            flame: 0.85,
+            plasma: 0.65,
+            kinetic: 1,
+            missile: 0.35,
+            sonic: 0.15,
+            shotgun: 0.95,
+            tesla: 0.6
+        },
+        nozone: {},
+        amp: {}
+    },
+    minotaur: {
+        weapon: {
+            laser: 0.32,
+            flame: 0.5,
+            plasma: 0.82,
+            kinetic: 0.44,
+            missile: 1,
+            sonic: 0.15,
+            shotgun: 0.2,
+            tesla: 0.35
+        },
+        nozone: {},
+        amp: {}
+    },
+    ooze: {
+        weapon: {
+            laser: 0.2,
+            flame: 0.65,
+            plasma: 1,
+            kinetic: 0,
+            missile: 0,
+            sonic: 0.85,
+            shotgun: 0,
+            tesla: 0.15
+        },
+        nozone: {},
+        amp: {}
+    },
+    zombie: {
+        weapon: {
+            laser: 0.35,
+            flame: 1,
+            plasma: 0.45,
+            kinetic: 0.08,
+            missile: 0.8,
+            sonic: 0.18,
+            shotgun: 0.95,
+            tesla: 0.05
+        },
+        nozone: {},
+        amp: {}
+    },
+    raptor: {
+        weapon: {
+            laser: 0.68,
+            flame: 0.55,
+            plasma: 0.85,
+            kinetic: 1,
+            missile: 0.44,
+            sonic: 0.22,
+            shotgun: 0.33,
+            tesla: 0.66
+        },
+        nozone: {},
+        amp: {}
+    },
+    frost_giant: {
+        weapon: {
+            laser: 0.9,
+            flame: 0.82,
+            plasma: 1,
+            kinetic: 0.25,
+            missile: 0.08,
+            sonic: 0.45,
+            shotgun: 0.28,
+            tesla: 0.5
+        },
+        nozone: {
+            hot: true
+        },
+        amp: {
+            freeze: 2.5,
+            hail: 1.65
+        }
+    },
+    swarm: {
+        weapon: {
+            laser: 0.02,
+            flame: 1,
+            plasma: 0.04,
+            kinetic: 0.01,
+            missile: 0.08,
+            sonic: 0.66,
+            shotgun: 0.38,
+            tesla: 0.45
+        },
+        nozone: {},
+        amp: {}
+    },
+    dragon: {
+        weapon: {
+            laser: 0.18,
+            flame: 0,
+            plasma: 0.12,
+            kinetic: 0.35,
+            missile: 1,
+            sonic: 0.22,
+            shotgun: 0.65,
+            tesla: 0.15
+        },
+        nozone: {},
+        amp: {}
+    }
+};
+
 export function genSpireFloor(){
     let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush'];
     global.portal.spire.type = types[Math.floor(Math.seededRandom(0,types.length))];
@@ -2383,6 +2604,15 @@ export function genSpireFloor(){
             assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
         }
     }
+
+    let mobs = Object.keys(monsters).filter(function (k){
+        let exclude = Object.keys(monsters[k].nozone);
+        if (exclude.some(i => Object.keys(global.portal.spire.status).includes(i)) || exclude.includes(global.portal.spire.type)){
+            return false;
+        }
+        return true;
+    });
+    global.portal.spire.boss = mobs[Math.floor(Math.seededRandom(0,mobs.length))];
 }
 
 function assignValidStatus(effect){
