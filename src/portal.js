@@ -1494,6 +1494,7 @@ const fortressModules = {
                     global.settings.showMechLab = true;
                     if (global.portal.mechbay.count === 1){
                         messageQueue(loc('portal_mechbay_unlocked'),'info');
+                        drawMechLab();
                     }
                     return true;
                 }
@@ -2932,6 +2933,211 @@ const monsters = {
         amp: {}
     }
 };
+
+export function drawMechLab(){    
+    clearElement($('#mechLab'));
+    if (global.portal.hasOwnProperty('mechbay') && global.settings.showMechLab){
+        let lab = $(`#mechLab`);
+
+        if (!global.portal.mechbay.hasOwnProperty('blueprint')){
+            global.portal.mechbay['blueprint'] = {
+                size: 'small',
+                hardpoint: ['laser'],
+                chassis: 'tread',
+                equip: []
+            };
+        }
+
+        let assemble = $(`<div id="mechAssembly"><div><span class="has-text-caution">${loc(`portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }}</span></div></div>`);
+        lab.append(assemble);
+
+        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span></div>`)
+        assemble.append(`<div>{{ b.size | desc }}</div>`);
+
+        let options = $(`<div class="bayOptions"></div>`);
+        assemble.append(options);
+
+        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+            <button class="button is-info" slot="trigger">
+                <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
+                <b-icon icon="menu-down"></b-icon>
+            </button>
+            <b-dropdown-item aria-role="listitem" v-on:click="setSize('small')">${loc(`portal_mech_size_small`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setSize('medium')">${loc(`portal_mech_size_medium`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setSize('large')">${loc(`portal_mech_size_large`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setSize('titan')">${loc(`portal_mech_size_titan`)}</b-dropdown-item>
+        </b-dropdown>`);
+
+        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+            <button class="button is-info" slot="trigger">
+                <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
+                <b-icon icon="menu-down"></b-icon>
+            </button>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('wheel')">${loc(`portal_mech_chassis_wheel`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('tread')">${loc(`portal_mech_chassis_tread`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('biped')">${loc(`portal_mech_chassis_biped`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('quad')">${loc(`portal_mech_chassis_quad`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('spider')">${loc(`portal_mech_chassis_spider`)}</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" v-on:click="setType('hover')">${loc(`portal_mech_chassis_hover`)}</b-dropdown-item>
+        </b-dropdown>`);
+
+        for (let i=0; i<2; i++){
+            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
+                <button class="button is-info" slot="trigger">
+                    <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
+                    <b-icon icon="menu-down"></b-icon>
+                </button>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('laser',${i})">${loc(`portal_mech_weapon_laser`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('kinetic',${i})">${loc(`portal_mech_weapon_kinetic`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('shotgun',${i})">${loc(`portal_mech_weapon_shotgun`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('missile',${i})">${loc(`portal_mech_weapon_missile`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('flame',${i})">${loc(`portal_mech_weapon_flame`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('plasma',${i})">${loc(`portal_mech_weapon_plasma`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('sonic',${i})">${loc(`portal_mech_weapon_sonic`)}</b-dropdown-item>                
+                <b-dropdown-item aria-role="listitem" v-on:click="setWep('tesla',${i})">${loc(`portal_mech_weapon_tesla`)}</b-dropdown-item>
+            </b-dropdown>`);
+        }
+
+        for (let i=0; i<3; i++){
+            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
+                <button class="button is-info" slot="trigger">
+                    <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | elabel }}</span>
+                    <b-icon icon="menu-down"></b-icon>
+                </button>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('shields',${i})">${loc(`portal_mech_equip_shields`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('sonar',${i})">${loc(`portal_mech_equip_sonar`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('grapple',${i})">${loc(`portal_mech_equip_grapple`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('infrared',${i})">${loc(`portal_mech_equip_infrared`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('flare',${i})">${loc(`portal_mech_equip_flare`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('radiator',${i})">${loc(`portal_mech_equip_radiator`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('coolant',${i})">${loc(`portal_mech_equip_coolant`)}</b-dropdown-item>                
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('ablative',${i})">${loc(`portal_mech_equip_ablative`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('stabilizer',${i})">${loc(`portal_mech_equip_stabilizer`)}</b-dropdown-item>
+                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('seals',${i})">${loc(`portal_mech_equip_seals`)}</b-dropdown-item>
+            </b-dropdown>`);
+        }
+
+        vBind({
+            el: '#mechAssembly',
+            data: {
+                m: global.portal.mechbay,
+                b: global.portal.mechbay.blueprint
+            },
+            methods: {
+                setSize(s){
+                    global.portal.mechbay.blueprint.size = s;
+                    if (s === 'small' || s === 'medium'){
+                        global.portal.mechbay.blueprint.hardpoint.length = 1;
+                    }
+                    else {
+                        if (global.portal.mechbay.blueprint.hardpoint.length === 1){
+                            global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint[0]);
+                        }
+                    }
+                    switch (s){
+                        case 'small':
+                            global.portal.mechbay.blueprint.equip.length = 0;
+                            break;
+                        case 'medium':
+                            if (global.portal.mechbay.blueprint.equip.length < 1){
+                                global.portal.mechbay.blueprint.equip.push('shields');
+                            }
+                            break;
+                        case 'large':
+                            if (global.portal.mechbay.blueprint.equip.length < 1){
+                                global.portal.mechbay.blueprint.equip.push('shields');
+                            }
+                            if (global.portal.mechbay.blueprint.equip.length < 2){
+                                global.portal.mechbay.blueprint.equip.push('sonar');
+                            }
+                            break;
+                        case 'titan':
+                            if (global.portal.mechbay.blueprint.equip.length < 1){
+                                global.portal.mechbay.blueprint.equip.push('shields');
+                            }
+                            if (global.portal.mechbay.blueprint.equip.length < 2){
+                                global.portal.mechbay.blueprint.equip.push('sonar');
+                            }
+                            if (global.portal.mechbay.blueprint.equip.length < 3){
+                                global.portal.mechbay.blueprint.equip.push('grapple');
+                            }
+                            break;
+                    }
+                },
+                setType(c){
+                    global.portal.mechbay.blueprint.chassis = c;
+                },
+                setWep(w,i){
+                    global.portal.mechbay.blueprint.hardpoint[i] = w;
+                    vBind({el: `#mechAssembly`},'update');
+                },
+                setEquip(e,i){
+                    global.portal.mechbay.blueprint.equip[i] = e;
+                    vBind({el: `#mechAssembly`},'update');
+                },
+                vis(hp){
+                    if (hp === 0 || global.portal.mechbay.blueprint.size === 'large' || global.portal.mechbay.blueprint.size === 'titan'){
+                        return true;
+                    }
+                    return false;
+                },
+                eVis(es){
+                    switch (global.portal.mechbay.blueprint.size){
+                        case 'small':
+                            return false;
+                        case 'medium':
+                            return es === 0 ? true : false;
+                        case 'large':
+                            return es <= 1 ? true : false;
+                        case 'titan':
+                            return true;
+                    }
+                }
+            },
+            filters: {
+                bay(s){
+                    switch (s){
+                        case 'small':
+                            return 2;
+                        case 'medium':
+                            return 5;
+                        case 'large':
+                            return 10;
+                        case 'titan':
+                            return 25;
+                    }
+                },
+                price(s){
+                    switch (s){
+                        case 'small':
+                            return 75000;
+                        case 'medium':
+                            return 225000;
+                        case 'large':
+                            return 400000;
+                        case 'titan':
+                            return 750000;
+                    }
+                },
+                slabel(s){
+                    return loc(`portal_mech_size_${s}`);
+                },
+                clabel(c){
+                    return loc(`portal_mech_chassis_${c}`);
+                },
+                wlabel(w){
+                    return loc(`portal_mech_weapon_${w}`);
+                },
+                elabel(e){
+                    return loc(`portal_mech_equip_${e}`);
+                },
+                desc(s){
+                    return loc(`portal_mech_size_${s}_desc`);
+                },
+            }
+        });
+    }
+}
 
 export function genSpireFloor(){
     let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush'];

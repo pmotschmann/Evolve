@@ -9,7 +9,7 @@ import { f_rate, manaCost } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, drawMechLab } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
@@ -68,6 +68,7 @@ if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
     defineGarrison();
     buildGarrison($('#c_garrison'),false);
     foreignGov();
+    drawMechLab();
 }
 defineIndustry();
 
