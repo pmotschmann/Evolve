@@ -548,6 +548,10 @@ if (convertVersion(global['version']) < 10000){
     if (global.hasOwnProperty('settings') && global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
         global.settings.portal.spire = false;
     }
+
+    if (global.portal.hasOwnProperty('mechbay') && !Array.isArray(global.portal.mechbay.mechs)){
+        global.portal.mechbay.mechs = [];
+    }
 }
 
 global['version'] = '0.9.20';

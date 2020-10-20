@@ -37,7 +37,8 @@ export const resource_values = {
     Genes: 0,
     Soul_Gem: 0,
     Corrupt_Gem: 0,
-    Codex: 0
+    Codex: 0,
+    Blood_Stone: 0
 };
 
 export const tradeRatio = {
@@ -326,6 +327,7 @@ export function defineResources(){
     loadResource('Soul_Gem',-2,0,false,false,'advanced');
     loadResource('Corrupt_Gem',-2,0,false,false,'caution');
     loadResource('Codex',-2,0,false,false,'caution');
+    loadResource('Blood_Stone',-2,0,false,false,'caution');
     loadResource('Plywood',-1,0,false,false,'danger');
     loadResource('Brick',-1,0,false,false,'danger');
     loadResource('Wrought_Iron',-1,0,false,false,'danger');

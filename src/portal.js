@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar } from './functions.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -1228,8 +1228,8 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, 1.15, 'portal'); },
-                Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, purifierCreep(1.15), 'portal'); },
+                Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, purifierCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(125); },
             support(){ return 1; },
@@ -1406,7 +1406,7 @@ const fortressModules = {
                 return global.tech['hell_spire'] && global.tech.hell_spire === 7 && !global.tech['sphinx_bribe'] ? true : false;
             },
             cost: {
-                Soul_Gem(){ return 1250; },
+                Soul_Gem(){ return 250; },
                 Supply(){ return 500000; }
             },
             effect(){
@@ -1446,7 +1446,7 @@ const fortressModules = {
             effect: loc('portal_spire_survey_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: {} };
+                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: [] };
                     global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
                     genSpireFloor();
                     messageQueue(loc('portal_spire_survey_msg'),'info');
@@ -1515,7 +1515,7 @@ const fortressModules = {
                 if (global.portal.hasOwnProperty('spire') && Object.keys(global.portal.spire.status).length > 0){
                     status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
                 }
-                let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${global.portal.spire.progress}%</span>` : '0%';
+                let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${+(global.portal.spire.progress).toFixed(3)}%</span>` : '0%';
                 return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${global.portal.spire.boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
             },
             action(){
@@ -1524,6 +1524,11 @@ const fortressModules = {
         }
     }
 };
+
+function purifierCreep(base){
+    let creep = global.portal.hasOwnProperty('spire') ? base - ((global.portal.spire.count - 1) / 2500) : base;
+    return creep >= 1.01 ? creep : 1.01;
+}
 
 const towerSize = (function(){
     var size;
@@ -2948,8 +2953,14 @@ export function drawMechLab(){
             };
         }
 
-        let assemble = $(`<div id="mechAssembly"><div><span class="has-text-caution">${loc(`portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }}</span></div></div>`);
+        let assemble = $(`<div id="mechAssembly" class="mechAssembly"></div>`);
         lab.append(assemble);
+
+        let title = $(`<div><span class="has-text-caution">${loc(`portal_mech_assembly`)}</span> - <span>{{ b.size | slabel }} {{ b.chassis | clabel }}</span></div>`);
+        assemble.append(title);
+
+        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
+        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
         assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span></div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
@@ -2957,73 +2968,99 @@ export function drawMechLab(){
         let options = $(`<div class="bayOptions"></div>`);
         assemble.append(options);
 
+        let sizes = ``;
+        ['small','medium','large','titan'].forEach(function(size){
+            sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
+        });
+
         options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
-            </button>
-            <b-dropdown-item aria-role="listitem" v-on:click="setSize('small')">${loc(`portal_mech_size_small`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setSize('medium')">${loc(`portal_mech_size_medium`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setSize('large')">${loc(`portal_mech_size_large`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setSize('titan')">${loc(`portal_mech_size_titan`)}</b-dropdown-item>
+            </button>${sizes}
         </b-dropdown>`);
+
+        let chassis = ``;
+        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val){
+            chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
+        });
 
         options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
-            </button>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('wheel')">${loc(`portal_mech_chassis_wheel`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('tread')">${loc(`portal_mech_chassis_tread`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('biped')">${loc(`portal_mech_chassis_biped`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('quad')">${loc(`portal_mech_chassis_quad`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('spider')">${loc(`portal_mech_chassis_spider`)}</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" v-on:click="setType('hover')">${loc(`portal_mech_chassis_hover`)}</b-dropdown-item>
+            </button>${chassis}
         </b-dropdown>`);
 
         for (let i=0; i<2; i++){
+            let weapons = ``;
+            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val){
+                weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
+            });
+
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
                     <b-icon icon="menu-down"></b-icon>
-                </button>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('laser',${i})">${loc(`portal_mech_weapon_laser`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('kinetic',${i})">${loc(`portal_mech_weapon_kinetic`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('shotgun',${i})">${loc(`portal_mech_weapon_shotgun`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('missile',${i})">${loc(`portal_mech_weapon_missile`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('flame',${i})">${loc(`portal_mech_weapon_flame`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('plasma',${i})">${loc(`portal_mech_weapon_plasma`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('sonic',${i})">${loc(`portal_mech_weapon_sonic`)}</b-dropdown-item>                
-                <b-dropdown-item aria-role="listitem" v-on:click="setWep('tesla',${i})">${loc(`portal_mech_weapon_tesla`)}</b-dropdown-item>
+                </button>${weapons}
             </b-dropdown>`);
         }
 
         for (let i=0; i<3; i++){
+            let equip = ``;
+            ['shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val){
+                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i}" data-val="${val}">${loc(`portal_mech_equip_${val}`)}</b-dropdown-item>`;
+            });
+
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | elabel }}</span>
                     <b-icon icon="menu-down"></b-icon>
-                </button>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('shields',${i})">${loc(`portal_mech_equip_shields`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('sonar',${i})">${loc(`portal_mech_equip_sonar`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('grapple',${i})">${loc(`portal_mech_equip_grapple`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('infrared',${i})">${loc(`portal_mech_equip_infrared`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('flare',${i})">${loc(`portal_mech_equip_flare`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('radiator',${i})">${loc(`portal_mech_equip_radiator`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('coolant',${i})">${loc(`portal_mech_equip_coolant`)}</b-dropdown-item>                
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('ablative',${i})">${loc(`portal_mech_equip_ablative`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('stabilizer',${i})">${loc(`portal_mech_equip_stabilizer`)}</b-dropdown-item>
-                <b-dropdown-item aria-role="listitem" v-on:click="setEquip('seals',${i})">${loc(`portal_mech_equip_seals`)}</b-dropdown-item>
+                </button>${equip}
             </b-dropdown>`);
         }
+
+        assemble.append(`<div class="mechAssemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('portal_mech_construct')}</span></button></div>`);
 
         vBind({
             el: '#mechAssembly',
             data: {
+                p: global.portal.purifier,
                 m: global.portal.mechbay,
                 b: global.portal.mechbay.blueprint
             },
             methods: {
+                build(){
+                    let cost = 10000000;
+                    let size = 25;
+                    switch (global.portal.mechbay.blueprint.size){
+                        case 'small':
+                            cost = 75000;
+                            size = 2;
+                            break;
+                        case 'medium':
+                            cost = 180000;
+                            size = 5;
+                            break;
+                        case 'large':
+                            cost = 375000;
+                            size = 10;
+                            break;
+                        case 'titan':
+                            cost = 750000;
+                            size = 25;
+                            break;
+                    }
+
+                    let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
+                    if (global.portal.purifier.supply >= cost && avail >= size){
+                        global.portal.purifier.supply -= cost;
+                        let mech = deepClone(global.portal.mechbay.blueprint);
+                        global.portal.mechbay.mechs.push(mech);
+                        global.portal.mechbay.bay += size;
+                        drawMechs();
+                    }
+                },
                 setSize(s){
                     global.portal.mechbay.blueprint.size = s;
                     if (s === 'small' || s === 'medium'){
@@ -3042,6 +3079,7 @@ export function drawMechLab(){
                             if (global.portal.mechbay.blueprint.equip.length < 1){
                                 global.portal.mechbay.blueprint.equip.push('shields');
                             }
+                            global.portal.mechbay.blueprint.equip.length = 1;
                             break;
                         case 'large':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
@@ -3050,6 +3088,7 @@ export function drawMechLab(){
                             if (global.portal.mechbay.blueprint.equip.length < 2){
                                 global.portal.mechbay.blueprint.equip.push('sonar');
                             }
+                            global.portal.mechbay.blueprint.equip.length = 2;
                             break;
                         case 'titan':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
@@ -3061,6 +3100,7 @@ export function drawMechLab(){
                             if (global.portal.mechbay.blueprint.equip.length < 3){
                                 global.portal.mechbay.blueprint.equip.push('grapple');
                             }
+                            global.portal.mechbay.blueprint.equip.length = 3;
                             break;
                     }
                 },
@@ -3112,9 +3152,9 @@ export function drawMechLab(){
                         case 'small':
                             return 75000;
                         case 'medium':
-                            return 225000;
+                            return 180000;
                         case 'large':
-                            return 400000;
+                            return 375000;
                         case 'titan':
                             return 750000;
                     }
@@ -3134,8 +3174,60 @@ export function drawMechLab(){
                 desc(s){
                     return loc(`portal_mech_size_${s}_desc`);
                 },
+                round(v){
+                    return Math.round(v);
+                }
             }
         });
+
+        ['size','chassis','weapon','equip'].forEach(function(type){
+            let range = 1;
+            if (type === 'weapon'){
+                range = 2
+            }
+            else if (type === 'equip'){
+                range = 3
+            }
+
+            for (let idx=0; idx<range; idx++){
+                popover(`mechAssembly${type}${idx}`, function(obj){
+                    return loc(`portal_mech_${type}_${$(obj.this).attr(`data-val`)}_desc`);
+                },
+                {
+                    elm: `#mechAssembly .${type}.r${idx}`,
+                    prop: {
+                        modifiers: {
+                            preventOverflow: { enabled: false },
+                            hide: { enabled: false },
+                            flip: {
+                                behavior: ['left','right']
+                            }
+                        },
+                        placement: 'right'
+                    }
+                });
+            }
+        });
+
+        let mechs = $(`<div id="mechList"></div>`);
+        lab.append(mechs);
+        drawMechs();
+    }
+}
+
+function drawMechs(){
+    clearElement($('#mechList'));
+    let list = $('#mechList');
+    for (let i=0; i<global.portal.mechbay.mechs.length; i++){
+        let mech = global.portal.mechbay.mechs[i];
+        let desc = $(`<div><span>${loc(`portal_mech`)} #${i}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        mech.hardpoint.forEach(function(hp){
+            desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+        });
+        mech.equip.forEach(function(eq){
+            desc.append(` | <span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
+        });
+        list.append(desc);
     }
 }
 

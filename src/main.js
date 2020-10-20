@@ -6547,18 +6547,36 @@ function midLoop(){
 
             let space = 0;
             let progress = 0;
-            Object.keys(global.portal.mechbay.mechs).forEach(function(mech){
-                if (space + mech.bay < global.portal.mechbay.max){
-                    space += mech.bay;
+            global.portal.mechbay.mechs.forEach(function(mech){
+                let size = 25;
+                switch (mech.size){
+                    case 'small':
+                        size = 2;
+                        break;
+                    case 'medium':
+                        size = 5;
+                        break;
+                    case 'large':
+                        size = 10;
+                        break;
+                    case 'titan':
+                        size = 25;
+                        break;
+                }
+                if (space + size < global.portal.mechbay.max){
+                    space += size;
                     progress += mechRating(mech);
                 }                
             });
             global.portal.mechbay.bay = space;
             global.portal.spire.progress += progress;
-            if (progress >= 100){
+            if (global.portal.spire.progress >= 100){
+                messageQueue(loc('portal_spire_conquest',[loc(`portal_mech_boss_${global.portal.spire.boss}`),global.portal.spire.count]),'info');
                 global.portal.spire.progress = 0;
                 global.portal.spire.count++;
                 genSpireFloor();
+                global.resource.Blood_Stone.display = true;
+                global.resource.Blood_Stone.amount++;
             }
         }
 
