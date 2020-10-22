@@ -21,6 +21,9 @@ export function arpa(type) {
         case 'Crispr':
             crispr();
             break;
+        case 'Blood':
+            blood();
+            break;
     }
 }
 
@@ -1004,23 +1007,94 @@ export const genePool = {
             return false;
         }
     },
+    blood_remembrance: {
+        id: 'genes-blood_remembrance',
+        title: loc('arpa_genepool_blood_remembrance_title'),
+        desc: loc('arpa_genepool_blood_remembrance_desc'),
+        reqs: {},
+        grant: ['blood',1],
+        condition(){
+            return global.resource.Blood_Stone.amount >= 1 ? true : false;
+        },
+        cost: 1000,
+        Phage: 10,
+        effect(){ return crispr_effect($(this)[0].cost,$(this)[0].phage); },
+        action(){
+            if (payPlasmids('blood_remembrance')){
+                return true;
+            }
+            return false;
+        }
+    },
+    blood_sacrifice: {
+        id: 'genes-blood_sacrifice',
+        title: loc('arpa_genepool_blood_sacrifice_title'),
+        desc: loc('arpa_genepool_blood_sacrifice_desc'),
+        reqs: { blood: 1 },
+        grant: ['blood',2],
+        cost: 5000,
+        Phage: 100,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('blood_sacrifice')){
+                return true;
+            }
+            return false;
+        }
+    },
+    essence_absorber: {
+        id: 'genes-essence_absorber',
+        title: loc('arpa_genepool_essence_absorber_title'),
+        desc: loc('arpa_genepool_essence_absorber_desc'),
+        reqs: { blood: 2 },
+        grant: ['blood',3],
+        cost: 10000,
+        Phage: 250,
+        effect(){ return crispr_effect($(this)[0].cost); },
+        action(){
+            if (payPlasmids('essence_absorber')){
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
-function crispr_effect(cost){
+function crispr_effect(cost,phage){
     let plasmid = global.race.universe === 'antimatter' ? loc('arpa_genepool_effect_antiplasmid') : loc('arpa_genepool_effect_plasmid');
-    return `<div class="cost"><span class="has-text-special">${plasmid}</span>: <span>${cost}</span></div>`;
+    let desc = `<div class="cost"><span class="has-text-special">${plasmid}</span>: <span>${cost}</span></div>`;
+    if (phage){
+        desc += `<div class="cost"><span class="has-text-special">${loc('resource_Phage_name')}</span>: <span>${phage}</span></div>`;
+    }
+    return desc;
 }
 
 function payPlasmids(gene){
+    let currency = { Phage: false, Dark: false, Harmony: false };
+    ['Phage','Dark','Harmony'].forEach(function(cur){
+        if (!genePool[gene].hasOwnProperty(cur) || (genePool[gene].hasOwnProperty(cur) && global.race[cur].count >= genePool[gene][cur])){
+            currency[cur] = true;
+        }
+    });
     if (global.race.universe === 'antimatter'){
-        if (global.race.Plasmid.anti >= genePool[gene].cost){
+        if (global.race.Plasmid.anti >= genePool[gene].cost && currency.Phage && currency.Dark && currency.Harmony){
             global.race.Plasmid.anti -= genePool[gene].cost;
+            ['Phage','Dark','Harmony'].forEach(function(cur){
+                if (genePool[gene].hasOwnProperty(cur)){
+                    global.race[cur].count -= genePool[gene][cur];
+                }
+            });
             return true;
         }
     }
     else {
-        if (global.race.Plasmid.count >= genePool[gene].cost){
+        if (global.race.Plasmid.count >= genePool[gene].cost && currency.Phage && currency.Dark && currency.Harmon){
             global.race.Plasmid.count -= genePool[gene].cost;
+            ['Phage','Dark','Harmony'].forEach(function(cur){
+                if (genePool[gene].hasOwnProperty(cur)){
+                    global.race[cur].count -= genePool[gene][cur];
+                }
+            });
             return true;
         }
     }
@@ -1603,11 +1677,19 @@ function fibonacci(num, memo){
 }
 
 function crispr(){
-    if (global.tech['genetics'] > 3){
+    if (global.tech['genetics'] && global.tech['genetics'] > 3){
         clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');
         drawGenes();
+    }
+}
+
+function blood(){
+    if (global.tech['b_stone'] && global.tech['b_stone'] >= 2){
+        clearElement($('#arpaBlood'));
+        $('#arpaBlood').append(`<div class="has-text-warning">${loc('arpa_blood_desc')}</div>`);
+        $('#arpaBlood').append('<div id="bloodTraits"></div>');
     }
 }
 

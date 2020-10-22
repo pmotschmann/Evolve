@@ -1,6 +1,6 @@
 import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, lake_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
-import { setupStats, unlockAchieve, checkAchievements, drawAchieve } from './achieve.js';
+import { setupStats, unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
 import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
@@ -77,6 +77,7 @@ buildQueue();
 arpa('Physics');
 arpa('Genetics');
 arpa('Crispr');
+arpa('Blood');
 
 resizeGame();
 
@@ -6571,12 +6572,37 @@ function midLoop(){
             global.portal.mechbay.bay = space;
             global.portal.spire.progress += progress;
             if (global.portal.spire.progress >= 100){
-                messageQueue(loc('portal_spire_conquest',[loc(`portal_mech_boss_${global.portal.spire.boss}`),global.portal.spire.count]),'info');
                 global.portal.spire.progress = 0;
                 global.portal.spire.count++;
-                genSpireFloor();
                 global.resource.Blood_Stone.display = true;
-                global.resource.Blood_Stone.amount++;
+                let rank = Number(alevel());
+                global.resource.Blood_Stone.amount += rank;
+                if (!global.tech.hasOwnProperty('b_stone')){
+                    global.tech['b_stone'] = 1;
+                }
+
+                let stones = rank;
+                if (global.genes['blood'] && global.genes['blood'] >= 2){
+                    stones *= 2;
+                }
+
+                messageQueue(
+                    `${loc('portal_spire_conquest',[loc(`portal_mech_boss_${global.portal.spire.boss}`),global.portal.spire.count])} ${loc(stones === 1 ? 'portal_spire_conquest_stone' : 'portal_spire_conquest_stones',[stones])}`
+                ,'info');
+                
+                let affix = universeAffix();
+                if (!global.stats.spire.hasOwnProperty(affix)){
+                    global.stats.spire[affix] = { s0: 0, s1: 0, s2: 0, s3: 0, s4: 0 };
+                }
+                if (global.portal.spire.count > global.stats.spire[affix][`s${rank-1}`]){
+                    global.stats.spire[affix][`s${rank-1}`] = global.portal.spire.count;
+                }
+                if (!global.stats.spire[affix].hasOwnProperty(global.portal.spire.boss) || rank > global.stats.spire[affix][global.portal.spire.boss]){
+                    global.stats.spire[affix][global.portal.spire.boss] = rank;
+                }
+
+                genSpireFloor();
+                renderFortress();
             }
         }
 

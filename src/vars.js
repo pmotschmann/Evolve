@@ -555,7 +555,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.20';
-global['beta'] = 18;
+global['beta'] = 19;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -862,6 +862,11 @@ if (!global.stats['dark']){
 if (!global.stats['harmony']){
     global.stats['harmony'] = 0;
 }
+
+if (!global.stats['spire']){
+    global.stats['spire'] = {};
+}
+
 if (!global['lastMsg']){
     global['lastMsg'] = false;
 }
@@ -1131,15 +1136,12 @@ if (!global.city['market']){
 if (global.city['foundry'] && !global.city.foundry['Mythril']){
     global.city.foundry['Mythril'] = 0;
 }
-
 if (global.city['foundry'] && !global.city.foundry['Aerogel']){
     global.city.foundry['Aerogel'] = 0;
 }
-
 if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
     global.city.foundry['Nanoweave'] = 0;
 }
-
 if (global.city['foundry'] && !global.city.foundry['Scarletite']){
     global.city.foundry['Scarletite'] = 0;
 }
@@ -1151,9 +1153,11 @@ if (!global.settings['arpa']){
         genetics: false
     };
 }
-
 if (!global.settings.arpa['crispr']){
     global.settings.arpa['crispr'] = false;
+}
+if (!global.settings.arpa['blood']){
+    global.settings.arpa['blood'] = false;
 }
 
 if (!global['arpa']){

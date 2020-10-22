@@ -8945,6 +8945,29 @@ export const actions = {
                 return false;
             }
         },
+        blood_pact: {
+            id: 'tech-blood_pact',
+            title: loc('tech_blood_pact'),
+            desc: loc('tech_blood_pact'),
+            category: 'progress',
+            era: 'interdimensional',
+            reqs: { high_tech: 18, b_stone: 1 },
+            grant: ['b_stone',2],
+            cost: {
+                Knowledge(){ return 52000000; },
+                Blood_Stone(){ return 5; }
+            },
+            effect(){ return loc('tech_blood_pact_effect'); },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.settings.arpa.blood = true;
+                    arpa('Crispr');
+                    arpa('Blood');
+                    return true;
+                }
+                return false;
+            }
+        },
         gate_key: {
             id: 'tech-gate_key',
             title: loc('tech_gate_key'),

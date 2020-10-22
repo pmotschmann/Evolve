@@ -217,7 +217,7 @@ export const feats = {
     set_ulevel(ulvl);
 }
 
-function universeAffix(){
+export function universeAffix(){
     switch (global.race.universe){
         case 'evil':
             return 'e';

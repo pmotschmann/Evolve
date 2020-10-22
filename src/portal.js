@@ -984,11 +984,11 @@ const fortressModules = {
             },
             support(){ return 1; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, 1.18, 'portal'); },
-                Cement(offset){ return spaceCostMultiplier('harbour', offset, 50000000, 1.18, 'portal'); },
-                Iridium(offset){ return spaceCostMultiplier('harbour', offset, 7500000, 1.18, 'portal'); },
-                Infernite(offset){ return spaceCostMultiplier('harbour', offset, 800000, 1.18, 'portal'); },
-                Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, 1.18, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('harbour', offset, 225000000, spireCreep(1.18), 'portal'); },
+                Cement(offset){ return spaceCostMultiplier('harbour', offset, 50000000, spireCreep(1.18), 'portal'); },
+                Iridium(offset){ return spaceCostMultiplier('harbour', offset, 7500000, spireCreep(1.18), 'portal'); },
+                Infernite(offset){ return spaceCostMultiplier('harbour', offset, 800000, spireCreep(1.18), 'portal'); },
+                Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
             effect(){
@@ -1228,8 +1228,8 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, purifierCreep(1.15), 'portal'); },
-                Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, purifierCreep(1.2), 'portal'); },
+                Money(offset){ return spaceCostMultiplier('purifier', offset, 85000000, spireCreep(1.15), 'portal'); },
+                Supply(offset){ return global.portal['purifier'] && global.portal.purifier.count === 0 ? 100 : spaceCostMultiplier('purifier', offset, 4200, spireCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(125); },
             support(){ return 1; },
@@ -1330,7 +1330,7 @@ const fortressModules = {
             reqs: { hell_spire: 5 },
             no_queue(){ return global.portal.bridge.count < 10 ? false : true },
             queue_size: 1,
-            queue_complete(){ return towerSize() - global.portal.bridge.count; },
+            queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
                 [global.race.species](wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
                 Money(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
@@ -1525,7 +1525,7 @@ const fortressModules = {
     }
 };
 
-function purifierCreep(base){
+function spireCreep(base){
     let creep = global.portal.hasOwnProperty('spire') ? base - ((global.portal.spire.count - 1) / 2500) : base;
     return creep >= 1.01 ? creep : 1.01;
 }
