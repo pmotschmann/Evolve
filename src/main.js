@@ -717,6 +717,35 @@ function fastLoop(){
         breakdown.p['Global'][loc('event_flare_bd')] = `-${20}%`;
         global_multiplier *= 0.8;
     }
+
+    if (
+        (
+            (global.blood['unbound'] && global.blood.unbound < 4) || !global.blood['unbound']
+        ) && (
+            (races[global.race.species].type === 'aquatic' && global.city.biome !== 'oceanic') ||
+            (races[global.race.species].type === 'fey' && global.city.biome !== 'forest') ||
+            (races[global.race.species].type === 'heat' && global.city.biome !== 'volcanic') ||
+            (races[global.race.species].type === 'polar' && global.city.biome !== 'tundra') ||
+            (races[global.race.species].type === 'sand' && global.city.biome !== 'desert') ||
+            (races[global.race.species].type === 'demonic' && global.city.biome !== 'hellscape') ||
+            (races[global.race.species].type === 'angelic' && global.city.biome !== 'eden')
+        )
+    ){
+        if (global.blood['unbound'] && global.blood.unbound >= 2){
+            breakdown.p['Global'][loc('event_protest')] = `-${10}%`;
+            global_multiplier *= 0.9;
+        }
+        else {
+            breakdown.p['Global'][loc('event_protest')] = `-${20}%`;
+            global_multiplier *= 0.8;
+        }
+    }
+
+    if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
+        breakdown.p['Global'][loc('event_protest')] = `-${30}%`;
+        global_multiplier *= 0.7;
+    }
+
     if (global.race['hibernator'] && global.city.calendar.season === 3){
         global_multiplier *= 1 - (traits.hibernator.vars[1] / 100);
         breakdown.p['Global'][loc('morale_winter')] = `-${traits.hibernator.vars[1]}%`;
@@ -1333,6 +1362,9 @@ function fastLoop(){
                 solar += 0.15 * (global.tech.swarm - 3);
             }
             if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 1){ solar += 0.15; }
+            if (global.blood['illuminate']){
+                solar += 0.01 * global.blood.illuminate;
+            }
             solar = +(solar).toFixed(2);
             let output = powerModifier(active * solar);
             max_power -= output;
@@ -2193,20 +2225,22 @@ function fastLoop(){
                         ejected = p_on['mass_ejector'] * 1000 - total;
                     }
                     total += ejected;
-
-                    let volume = ejected;
-                    if (volume > 0){
-                        breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(volume);
+                 
+                    if (ejected > 0){
+                        breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(ejected);
                     }
 
-                    if (volume * time_multiplier > global.resource[res].amount){
-                        volume = global.resource[res].amount / time_multiplier;
+                    if (ejected * time_multiplier > global.resource[res].amount){
+                        ejected = global.resource[res].amount / time_multiplier;
+                    }
+                    if (ejected < 0){
+                        ejected = 0;
                     }
 
-                    modRes(res, -(time_multiplier * volume));
-                    mass += volume * atomic_mass[res];
+                    modRes(res, -(time_multiplier * ejected));
+                    mass += ejected * atomic_mass[res];
                     if (global.race.universe !== 'magic' && (res === 'Elerium' || res === 'Infernite')){
-                        exotic += volume * atomic_mass[res];
+                        exotic += ejected * atomic_mass[res];
                     }
                 }
             });
@@ -2220,6 +2254,7 @@ function fastLoop(){
         if (global.portal['transport']){
             let total = 0;
             let supply = 0;
+            let bireme_rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
             Object.keys(global.portal.transport.cargo).forEach(function (res){
                 if (supplyValue[res]){
                     let shipped = global.portal.transport.cargo[res];
@@ -2237,7 +2272,7 @@ function fastLoop(){
                         volume = global.resource[res].amount / time_multiplier;
                     }
 
-                    let bireme = 1 - (0.85 ** (gal_on['bireme'] || 0));
+                    let bireme = 1 - (bireme_rating ** (gal_on['bireme'] || 0));
 
                     modRes(res, -(time_multiplier * volume));
                     supply += Number(shipped * supplyValue[res].in * time_multiplier * bireme);
@@ -2717,6 +2752,9 @@ function fastLoop(){
                 }
             }
             else {
+                if (global.arpa.sequence.time === null){
+                    global.arpa.sequence.time = global.arpa.sequence.max;
+                }
                 gene_sequence = false;
             }
 
@@ -4786,7 +4824,11 @@ function fastLoop(){
             rate /= 1 + (traits.diverse.vars[0] / 100);
         }
         if (global.city['boot_camp']){
-            rate *= 1 + (global.city['boot_camp'].count * (global.tech['boot_camp'] >= 2 ? 0.08 : 0.05));
+            let train = global.tech['boot_camp'] >= 2 ? 0.08 : 0.05;
+            if (global.blood['lust']){
+                train += global.blood.lust * 0.0025;
+            }
+            rate *= 1 + (global.city['boot_camp'].count * train);
         }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
@@ -6400,24 +6442,6 @@ function midLoop(){
             });
         }
 
-        let genePool = arpa('GeneTech');
-        Object.keys(genePool).forEach(function (action){
-            if (genePool[action] && genePool[action].cost){
-                let c_action = genePool[action];
-                let element = $('#'+c_action.id);
-                if (element.length > 0){
-                    if ( (global.race['universe'] !== 'antimatter' && c_action.cost > global.race.Plasmid.count) || (global.race['universe'] === 'antimatter' && c_action.cost > global.race.Plasmid.anti) ){
-                        if (!element.hasClass('cna')){
-                            element.addClass('cna');
-                        }
-                    }
-                    else if (element.hasClass('cna')){
-                        element.removeClass('cna');
-                    }
-                }
-            }
-        });
-
         if (global.space['swarm_control']){            
             global.space.swarm_control.s_max = global.space.swarm_control.count * actions.space.spc_sun.swarm_control.support();
         }
@@ -6564,7 +6588,7 @@ function midLoop(){
                         size = 25;
                         break;
                 }
-                if (space + size < global.portal.mechbay.max){
+                if (space + size <= global.portal.mechbay.max){
                     space += size;
                     progress += mechRating(mech);
                 }                

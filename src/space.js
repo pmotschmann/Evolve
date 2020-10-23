@@ -1121,6 +1121,9 @@ const spaceProjects = {
                     solar += 0.15 * (global.tech.swarm - 3);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 1){ solar += 0.15; }
+                if (global.blood['illuminate']){
+                    solar += 0.01 * global.blood.illuminate;
+                }
                 solar = +(solar).toFixed(2);
                 return `<span>${loc('space_dwarf_reactor_effect1',[powerModifier(solar)])}</span>, <span class="has-text-caution">${loc('space_sun_swarm_satellite_effect1',[1])}</span>`;
             },
@@ -3353,7 +3356,7 @@ const interstellarProjects = {
                 let heatsink = 100;
                 if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
                     heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-                    let universes = ['h','a','e','m'];
+                    let universes = ['h','a','e','m','mg'];
                     for (let i=0; i<universes.length; i++){
                         if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
                             heatsink += 5;
@@ -3421,7 +3424,7 @@ const interstellarProjects = {
                 let heatsink = 100;
                 if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
                     heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-                    let universes = ['h','a','e','m'];
+                    let universes = ['h','a','e','m','mg'];
                     for (let i=0; i<universes.length; i++){
                         if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
                             heatsink += 5;

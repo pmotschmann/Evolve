@@ -12,6 +12,7 @@ export var global = {
     civic: { free: 0 },
     race: {},
     genes: {},
+    blood: {},
     stats: {
         start: Date.now(),
         days: 0,
@@ -551,6 +552,18 @@ if (convertVersion(global['version']) < 10000){
 
     if (global.portal.hasOwnProperty('mechbay') && !Array.isArray(global.portal.mechbay.mechs)){
         global.portal.mechbay.mechs = [];
+    }
+
+    if (global.portal['transport'] && global.portal.transport.count >= 1 && !global.tech['hell_spire']){
+        global.tech['hell_spire'] = 1;
+        global.settings.portal.spire = true;
+        global.settings.showCargo = true;
+        global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
+        global.portal['port'] = { count: 0, on: 0 };
+    }
+
+    if (!global.hasOwnProperty('blood')){
+        global['blood'] = {};
     }
 }
 

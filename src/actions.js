@@ -9,7 +9,7 @@ import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
-import { arpa, gainGene } from './arpa.js';
+import { arpa, gainGene, gainBlood } from './arpa.js';
 
 export const actions = {
     evolution: {
@@ -330,23 +330,23 @@ export const actions = {
                     global.evolution['eggshell'] = { count: 0 };
                     addAction('evolution','eggshell');
 
-                    if (global.city.biome === 'oceanic'){
+                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
                         global.evolution['aquatic'] = { count: 0 };
                         addAction('evolution','aquatic');
                     }
-                    if (global.city.biome === 'forest'){
+                    if (global.city.biome === 'forest' || global.blood['unbound']){
                         global.evolution['fey'] = { count: 0 };
                         addAction('evolution','fey');
                     }
-                    if (global.city.biome === 'desert'){
+                    if (global.city.biome === 'desert' || global.blood['unbound']){
                         global.evolution['sand'] = { count: 0 };
                         addAction('evolution','sand');
                     }
-                    if (global.city.biome === 'volcanic'){
+                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
                         global.evolution['heat'] = { count: 0 };
                         addAction('evolution','heat');
                     }
-                    if (global.city.biome === 'tundra'){
+                    if (global.city.biome === 'tundra' || global.blood['unbound']){
                         global.evolution['polar'] = { count: 0 };
                         addAction('evolution','polar');
                     }
@@ -412,23 +412,23 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.mammals;
                     delete global.evolution.eggshell;
-                    if (global.city.biome === 'oceanic'){
+                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
-                    if (global.city.biome === 'forest'){
+                    if (global.city.biome === 'forest' || global.blood['unbound']){
                         removeAction(actions.evolution.fey.id);
                         delete global.evolution.fey;
                     }
-                    if (global.city.biome === 'desert'){
+                    if (global.city.biome === 'desert' || global.blood['unbound']){
                         removeAction(actions.evolution.sand.id);
                         delete global.evolution.sand;
                     }
-                    if (global.city.biome === 'volcanic'){
+                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
                         removeAction(actions.evolution.heat.id);
                         delete global.evolution.heat;
                     }
-                    if (global.city.biome === 'tundra'){
+                    if (global.city.biome === 'tundra' || global.blood['unbound']){
                         removeAction(actions.evolution.polar.id);
                         delete global.evolution.polar;
                     }
@@ -465,31 +465,31 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.eggshell;
-                    if (global.city.biome === 'oceanic'){
+                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
-                    if (global.city.biome === 'forest'){
+                    if (global.city.biome === 'forest' || global.blood['unbound']){
                         removeAction(actions.evolution.fey.id);
                         delete global.evolution.fey;
                     }
-                    if (global.city.biome === 'desert'){
+                    if (global.city.biome === 'desert' || global.blood['unbound']){
                         removeAction(actions.evolution.sand.id);
                         delete global.evolution.sand;
                     }
-                    if (global.city.biome === 'volcanic'){
+                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
                         removeAction(actions.evolution.heat.id);
                         delete global.evolution.heat;
                     }
-                    if (global.city.biome === 'tundra'){
+                    if (global.city.biome === 'tundra' || global.blood['unbound']){
                         removeAction(actions.evolution.polar.id);
                         delete global.evolution.polar;
                     }
-                    if (global.city.biome === 'hellscape'){
+                    if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         global.evolution['demonic'] = { count: 0 };
                         addAction('evolution','demonic');
                     }
-                    if (global.city.biome === 'eden'){
+                    if (global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3){
                         global.evolution['celestial'] = { count: 0 };
                         addAction('evolution','celestial');
                     }
@@ -525,11 +525,11 @@ export const actions = {
                     delete global.evolution.gigantism;
                     delete global.evolution.dwarfism;
                     delete global.evolution.animalism;
-                    if (global.city.biome === 'hellscape'){
+                    if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
-                    if (global.city.biome === 'eden'){
+                    if (global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.celestial.id);
                         delete global.evolution.celestial;
                     }
@@ -568,11 +568,11 @@ export const actions = {
                     delete global.evolution.humanoid;
                     delete global.evolution.dwarfism;
                     delete global.evolution.animalism;
-                    if (global.city.biome === 'hellscape'){
+                    if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
-                    if (global.city.biome === 'eden'){
+                    if (global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.celestial.id);
                         delete global.evolution.celestial;
                     }
@@ -611,11 +611,11 @@ export const actions = {
                     delete global.evolution.humanoid;
                     delete global.evolution.gigantism;
                     delete global.evolution.animalism;
-                    if (global.city.biome === 'hellscape'){
+                    if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
-                    if (global.city.biome === 'eden'){
+                    if (global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.celestial.id);
                         delete global.evolution.celestial;
                     }
@@ -654,11 +654,11 @@ export const actions = {
                     delete global.evolution.humanoid;
                     delete global.evolution.gigantism;
                     delete global.evolution.dwarfism;
-                    if (global.city.biome === 'hellscape'){
+                    if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
                     }
-                    if (global.city.biome === 'eden'){
+                    if (global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.celestial.id);
                         delete global.evolution.celestial;
                     }
@@ -944,23 +944,23 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.mammals;
-                    if (global.city.biome === 'oceanic'){
+                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
-                    if (global.city.biome === 'forest'){
+                    if (global.city.biome === 'forest' || global.blood['unbound']){
                         removeAction(actions.evolution.fey.id);
                         delete global.evolution.fey;
                     }
-                    if (global.city.biome === 'desert'){
+                    if (global.city.biome === 'desert' || global.blood['unbound']){
                         removeAction(actions.evolution.sand.id);
                         delete global.evolution.sand;
                     }
-                    if (global.city.biome === 'volcanic'){
+                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
                         removeAction(actions.evolution.heat.id);
                         delete global.evolution.heat;
                     }
-                    if (global.city.biome === 'tundra'){
+                    if (global.city.biome === 'tundra' || global.blood['unbound']){
                         removeAction(actions.evolution.polar.id);
                         delete global.evolution.polar;
                     }
@@ -3274,6 +3274,9 @@ export const actions = {
             },
             effect(){
                 let rate = global.tech['boot_camp'] >= 2 ? 8 : 5;
+                if (global.blood['lust']){
+                    rate += global.blood.lust * 0.25;
+                }
                 return global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : loc('city_boot_camp_effect',[rate]);
             },
             action(){
@@ -14547,6 +14550,7 @@ export const actions = {
         },
     },
     genes: arpa('GeneTech'),
+    blood: arpa('BloodTech'),
     space: spaceTech(),
     interstellar: interstellarTech(),
     galaxy: galaxyTech(),
@@ -15160,6 +15164,9 @@ export function setAction(c_action,action,type,old){
     if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count >= 0){
         element.append($('<span class="count">{{ act.count }}</span>'));
     }
+    if (action === 'blood' && global[action] && global[action][c_action.grant[0]] && global[action][c_action.grant[0]] > 0 && c_action.grant[1] === '*'){
+        element.append($(`<span class="count"> ${global[action][c_action.grant[0]]} </span>`));
+    }
     if (action !== 'tech' && global[action] && global[action][type] && typeof(global[action][type]['repair']) !== 'undefined'){
         element.append($(`<div class="repair"><progress class="progress" :value="repair()" :max="repairMax()"></progress></div>`));
     }
@@ -15233,8 +15240,14 @@ export function setAction(c_action,action,type,old){
                             }
                             break;
                         case 'genes':
+                        case 'blood':
                             if (c_action.action()){
-                                gainGene(type);
+                                if (action === 'genes'){
+                                    gainGene(type);
+                                }
+                                else {
+                                    gainBlood(type);
+                                }
                                 if (c_action['post']){
                                     setTimeout(function(){
                                         c_action.post();
@@ -15975,7 +15988,7 @@ function checkMaxCosts(costs){
     return test;
 }
 
-function checkCosts(costs){
+export function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         if (res === 'Structs'){
@@ -16452,7 +16465,7 @@ function sentience(){
         if (global.stats.achieve.technophobe.l >= 3){
             global.resource.Soul_Gem.display = true;
             let gems = 1;
-            let universes = ['h','a','e','m'];
+            let universes = ['h','a','e','m','mg'];
             for (let i=0; i<universes.length; i++){
                 if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
                     gems++;

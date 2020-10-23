@@ -1109,7 +1109,8 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 125000, 1.24, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[15])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
+                let rating = global.blood['spire'] && global.blood.spire >= 2 ? 20 : 15;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
             },
             ship: {
                 civ: 0,
@@ -1526,7 +1527,7 @@ const fortressModules = {
 };
 
 function spireCreep(base){
-    let creep = global.portal.hasOwnProperty('spire') ? base - ((global.portal.spire.count - 1) / 2500) : base;
+    let creep = global.portal.hasOwnProperty('spire') && global.blood['spire'] ? base - ((global.portal.spire.count - 1) / 2500) : base;
     return creep >= 1.01 ? creep : 1.01;
 }
 

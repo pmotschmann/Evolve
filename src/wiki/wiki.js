@@ -48,7 +48,8 @@ function initPage(){
             submenu: [
                 { key: 'resets' },
                 { key: 'resources' },
-                { key: 'crispr' }
+                { key: 'crispr' },
+                { key: 'blood' }
             ]
         },
         {
@@ -89,7 +90,8 @@ function initPage(){
             submenu: [
                 { key: 'projects' },
                 //{ key: 'genetics' },
-                { key: 'crispr' }
+                { key: 'crispr' },
+                { key: 'blood' }
             ]
         },
         {
