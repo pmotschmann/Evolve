@@ -15842,7 +15842,7 @@ export function actionDesc(parent,c_action,obj,old){
         parent.append($(`<div class="flair has-text-flair">${flair}</div>`));
         parent.addClass('flair');
     }
-    if (!old && !checkAffordable(c_action) && checkAffordable(c_action,true)){
+    if (!old && c_action.id.substring(0,5) !== 'blood' && !checkAffordable(c_action) && checkAffordable(c_action,true)){
         if (typeof obj === 'string' && obj === 'notimer'){
             return;
         }

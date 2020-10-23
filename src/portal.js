@@ -1145,7 +1145,8 @@ const fortressModules = {
                 Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
             },
             effect(){
-                let bireme = +((0.85 ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
+                let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
+                let bireme = +((rating ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
             },
             special: true,

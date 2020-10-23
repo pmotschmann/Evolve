@@ -568,7 +568,7 @@ if (convertVersion(global['version']) < 10000){
 }
 
 global['version'] = '0.9.20';
-global['beta'] = 19;
+global['beta'] = 20;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1586,7 +1586,15 @@ export function clearStates(){
             buy: false
         }
     };
-    global.resource = {};
+
+    if (global.genes['blood']){
+        let stones = global.resource.Blood_Stone;
+        global.resource = {};
+        global.resource['Blood_Stone'] = stones;
+    }
+    else {
+        global.resource = {};
+    }
     global.evolution = {};
     global.event = 100;
     global.stats.days = 0;
