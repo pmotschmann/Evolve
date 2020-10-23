@@ -2752,7 +2752,7 @@ function fastLoop(){
                 }
             }
             else {
-                if (global.arpa.sequence.time === null){
+                if (global.arpa.hasOwnProperty('sequence') && global.arpa.sequence.time === null){
                     global.arpa.sequence.time = global.arpa.sequence.max;
                 }
                 gene_sequence = false;
