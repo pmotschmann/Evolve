@@ -1272,15 +1272,27 @@ function checkRequirements(tech){
     return isMet;
 }
 
-function payCosts(costs){
+function payArpaCosts(costs){
     costs = arpaAdjustCosts(costs);
-    if (checkCosts(costs)){
+    if (checkArpaCosts(costs)){
         Object.keys(costs).forEach(function (res){
             global['resource'][res].amount -= costs[res]() / 100;
         });
         return true;
     }
     return false;
+}
+
+function checkArpaCosts(costs){
+    var test = true;
+    Object.keys(costs).forEach(function (res){
+        var testCost = Number(costs[res]()) / 100;
+        if (testCost > Number(global['resource'][res].amount)) {
+            test = false;
+            return false;
+        }
+    });
+    return test;
 }
 
 export function arpaAdjustCosts(costs){
@@ -1911,7 +1923,7 @@ export function buildArpa(pro,num,update){
         num = 100 - global.arpa[pro].complete;
     }
     for (let i=0; i<num; i++){
-        if (payCosts(arpaProjects[pro].cost)){
+        if (payArpaCosts(arpaProjects[pro].cost)){
             global.arpa[pro].complete++;
             if (global.arpa[pro].complete >= 100){
                 global.arpa[pro].rank++;
