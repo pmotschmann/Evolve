@@ -1013,6 +1013,9 @@ export const genePool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            blood();
         }
     },
 }
