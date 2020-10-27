@@ -39,15 +39,21 @@ function bloodDesc(info,trait){
         }
     });
 
-    if (Object.keys(bloodPool[trait].reqs).length > 0){        
+    if (Object.keys(bloodPool[trait].reqs).length > 0 || bloodPool[trait].hasOwnProperty('condition')){        
         let reqs = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_arpa_crispr_req')}</span></div>`);
         info.append(reqs);
 
         let comma = false;
-        Object.keys(bloodPool[trait].reqs).forEach(function (req){
-            let color = global.genes[req] && global.genes[req] >= bloodPool[trait].reqs[req] ? 'success' : 'danger';
-            reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_blood_${req}`)} ${bloodPool[trait].reqs[req]}</span>`);
-            comma = true;
-        });
+        if (Object.keys(bloodPool[trait].reqs).length > 0){
+            Object.keys(bloodPool[trait].reqs).forEach(function (req){
+                let color = global.blood[req] && global.blood[req] >= bloodPool[trait].reqs[req] ? 'success' : 'danger';
+                reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_blood_${req}`)} ${bloodPool[trait].reqs[req]}</span>`);
+                comma = true;
+            });
+        }
+        if (bloodPool[trait].hasOwnProperty('condition')){
+            let color = global.genes['blood'] && global.genes.blood >= 3 ? 'success' : 'danger';
+            reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_crispr_blood`)} 3</span>`);
+        }
     }
 }

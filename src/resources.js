@@ -241,6 +241,9 @@ export function craftingRatio(res,auto){
         if (global.race['ambidextrous']){
             multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
         }
+        if (global.blood['artisan']){
+            multiplier *= 1 + (global.blood.artisan / 100);
+        }
     }
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
@@ -325,9 +328,6 @@ export function defineResources(){
     loadResource('Orichalcum',0,1,false,true,'advanced');
     loadResource('Genes',-2,0,false,false,'advanced');
     loadResource('Soul_Gem',-2,0,false,false,'advanced');
-    loadResource('Corrupt_Gem',-2,0,false,false,'caution');
-    loadResource('Codex',-2,0,false,false,'caution');
-    loadResource('Blood_Stone',-2,0,false,false,'caution');
     loadResource('Plywood',-1,0,false,false,'danger');
     loadResource('Brick',-1,0,false,false,'danger');
     loadResource('Wrought_Iron',-1,0,false,false,'danger');
@@ -336,6 +336,9 @@ export function defineResources(){
     loadResource('Aerogel',-1,0,false,false,'danger');
     loadResource('Nanoweave',-1,0,false,false,'danger');
     loadResource('Scarletite',-1,0,false,false,'danger');
+    loadResource('Corrupt_Gem',-2,0,false,false,'caution');
+    loadResource('Codex',-2,0,false,false,'caution');
+    loadResource('Blood_Stone',-2,0,false,false,'caution');
 
     if (global.race.species !== 'protoplasm'){
         loadRouteCounter();

@@ -4826,7 +4826,7 @@ function fastLoop(){
         if (global.city['boot_camp']){
             let train = global.tech['boot_camp'] >= 2 ? 0.08 : 0.05;
             if (global.blood['lust']){
-                train += global.blood.lust * 0.0025;
+                train += global.blood.lust * 0.002;
             }
             rate *= 1 + (global.city['boot_camp'].count * train);
         }
@@ -6570,6 +6570,10 @@ function midLoop(){
             let bays = (spire_on['mechbay'] || 0);
             global.portal.mechbay.max = bays * 25;
 
+            if (!global.portal.spire['boss']){
+                genSpireFloor();
+            }
+
             let space = 0;
             let progress = 0;
             global.portal.mechbay.mechs.forEach(function(mech){
@@ -6579,13 +6583,13 @@ function midLoop(){
                         size = 2;
                         break;
                     case 'medium':
-                        size = 5;
+                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
                         break;
                     case 'large':
-                        size = 10;
+                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
                         break;
                     case 'titan':
-                        size = 25;
+                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
                         break;
                 }
                 if (space + size <= global.portal.mechbay.max){
