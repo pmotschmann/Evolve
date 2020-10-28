@@ -1534,6 +1534,9 @@ window.soft_reset = function reset(){
 
 export var webWorker = { w: false };
 export function clearStates(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
     global['queue'] = { display: false, queue: [] };
     global['r_queue'] = { display: false, queue: [] };
     global.space = {};
@@ -1661,9 +1664,6 @@ export function clearStates(){
     global.settings.statsTabs = 0
     global.settings.disableReset = false;
     global.arpa = {};
-    if (webWorker.w){
-        webWorker.w.terminate();
-    }
 }
 
 // executes a hard reset

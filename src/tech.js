@@ -4227,7 +4227,7 @@ const techs = {
         desc: loc('tech_purify'),
         category: 'hell_dimension',
         era: 'interdimensional',
-        reqs: { b_stone: 2 },
+        reqs: { hell_spire: 3, b_stone: 2 },
         grant: ['b_stone',3],
         cost: {
             Knowledge(){ return 52500000; },
@@ -4247,8 +4247,8 @@ const techs = {
         desc: loc('tech_waygate'),
         category: 'hell_dimension',
         era: 'interdimensional',
-        reqs: { b_stone: 3 },
-        grant: ['b_stone',4],
+        reqs: { hell_spire: 10, b_stone: 2 },
+        grant: ['waygate',1],
         cost: {
             Knowledge(){ return 55000000; },
             Blood_Stone(){ return 2; }

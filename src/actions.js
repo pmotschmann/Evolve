@@ -6691,6 +6691,11 @@ function sentience(){
         }
     }
 
+    if (global.blood['aware']){
+        global.settings.arpa['blood'] = true;
+        global.tech['b_stone'] = 2;
+    }
+
     if (global.race['cataclysm']){
         cataclysm();
     }

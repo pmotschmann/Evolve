@@ -6566,7 +6566,7 @@ function midLoop(){
             }
         }
 
-        if (global.portal.hasOwnProperty('mechbay')){
+        if (global.portal.hasOwnProperty('mechbay') && global.tech['hell_spire'] && global.tech.hell_spire >= 9){
             let bays = (spire_on['mechbay'] || 0);
             global.portal.mechbay.max = bays * 25;
 
@@ -6601,7 +6601,6 @@ function midLoop(){
             global.portal.spire.progress += progress;
             if (global.portal.spire.progress >= 100){
                 global.portal.spire.progress = 0;
-                global.portal.spire.count++;
                 global.resource.Blood_Stone.display = true;
                 let rank = Number(alevel());
                 global.resource.Blood_Stone.amount += rank;
@@ -6617,6 +6616,11 @@ function midLoop(){
                 messageQueue(
                     `${loc('portal_spire_conquest',[loc(`portal_mech_boss_${global.portal.spire.boss}`),global.portal.spire.count])} ${loc(stones === 1 ? 'portal_spire_conquest_stone' : 'portal_spire_conquest_stones',[stones])}`
                 ,'info');
+
+                global.portal.spire.count++;
+                if (global.portal.spire.count > 10){
+                    global.tech['hell_spire'] = 10;
+                }
                 
                 let affix = universeAffix();
                 if (!global.stats.spire.hasOwnProperty(affix)){

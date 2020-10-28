@@ -1241,6 +1241,22 @@ export const bloodPool = {
             return false;
         }
     },
+    blood_aware: {
+        id: 'blood-blood_aware',
+        title: loc('arpa_blood_blood_aware_title'),
+        desc: loc('arpa_blood_blood_aware_desc'),
+        grant: ['aware',1],
+        condition(){
+            return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
+        },
+        cost: { Blood_Stone(){ return 10; } },
+        action(){
+            if (payBloodPrice($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
 }
 
 function payCrispr(gene){

@@ -2662,6 +2662,8 @@
   "arpa_blood_unbound_resistance_desc": "Reduces the wrong genus type penalty.",
   "arpa_blood_unbound_immunity_title": "Unbound Immunity",
   "arpa_blood_unbound_immunity_desc": "Eliminates the wrong genus type penalty.",
+  "arpa_blood_blood_aware_title": "Blood Awareness",
+  "arpa_blood_blood_aware_desc": "Blood Infusion tab unlocks with A.R.P.A.",
   "arpa_blood_repeat": "Repeatable Upgrade",
   "arpa_blood_desc": "Permanently infuse your DNA. These upgrades carry over across resets.",
   "arpa_race_genetic_traids": "%0 Genetic Traits",
