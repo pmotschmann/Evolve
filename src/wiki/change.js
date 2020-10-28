@@ -22,6 +22,13 @@ const changeList = [
         ]
     },
     {
+        version: `0.9.21`,
+        date: `10/27/2020`,
+        changes: [
+            `Trick or Treat Event, runs from 10/28 - 11/4.`,
+        ]
+    },
+    {
         version: `0.9.20`,
         date: `10/16/2020`,
         changes: [

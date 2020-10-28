@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg } from './functions.js';
+import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { piracy } from './space.js';
 import { loc } from './locale.js'
@@ -184,6 +184,11 @@ export const feats = {
         desc: loc("feat_boo_desc"),
         flair: loc("feat_boo_flair")
     },
+    trickortreat: {
+        name: loc("feat_trickortreat_name"),
+        desc: loc("feat_trickortreat_desc"),
+        flair: loc("feat_trickortreat_flair")
+    },
     thanksgiving: {
         name: loc("feat_gobble_gobble_name"),
         desc: loc("feat_gobble_gobble_desc"),
@@ -362,7 +367,8 @@ export function drawAchieve(args){
         });
     }
 
-    achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}</div>`);
+    let trick = trickOrTreat(5,12);
+    achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}${trick}</div>`);
 
     vBind({
         el: '#achievePanel',
@@ -517,6 +523,7 @@ export function checkAchievements(){
 
     const date = new Date();
     let easter = getEaster();
+    let halloween = getHalloween();
     if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
@@ -566,6 +573,24 @@ export function checkAchievements(){
             }
             else {
                 unlockFeat('egghunt');
+            }
+
+        }
+    }
+    else if (halloween.active){
+        let checkAll = true;
+        for (let i=1; i<13; i++){
+            if (!global.special.trick[`trick${i}`]){
+                checkAll = false;
+            }
+        }
+
+        if (checkAll){
+            if (global.race.universe === 'micro'){
+                unlockFeat('trickortreat',true);
+            }
+            else {
+                unlockFeat('trickortreat');
             }
 
         }

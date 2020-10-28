@@ -1245,6 +1245,7 @@ export const bloodPool = {
         id: 'blood-blood_aware',
         title: loc('arpa_blood_blood_aware_title'),
         desc: loc('arpa_blood_blood_aware_desc'),
+        reqs: {},
         grant: ['aware',1],
         condition(){
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;

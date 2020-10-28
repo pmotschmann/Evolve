@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, easterEgg } from './functions.js';
+import { vBind, popover, easterEgg, trickOrTreat } from './functions.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -82,7 +82,7 @@ function loadSmelter(parent,bind){
         }
 
         if (global.resource.Coal.display){
-            let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} {{ s.Coal }}</span>`);
+            let coal = $(`<span :aria-label="buildLabel('coal') + ariaCount('Coal')" class="current coal">${global.resource.Coal.name} <span v-html="$options.filters.spook(s.Coal)"></span></span>`);
             let subCoal = $(`<span role="button" class="sub" @click="subFuel('Coal')" aria-label="Remove coal fuel"><span>&laquo;</span></span>`);
             let addCoal = $(`<span role="button" class="add" @click="addFuel('Coal')" aria-label="Add coal fuel"><span>&raquo;</span></span>`);
             fuelTypes.append(subCoal);
@@ -284,6 +284,15 @@ function loadSmelter(parent,bind){
             },
             diffSize(value){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
+            },
+            spook(v){
+                if (bind && global.city.smelter.Wood === 6 && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
+                    let trick = trickOrTreat(9,12);
+                    if (trick.length > 0){
+                        return trick;
+                    }
+                }
+                return v;
             }
         }
     });
@@ -374,7 +383,7 @@ function loadFactory(parent,bind){
     let lux = $(`<div class="factory"><span class="Lux" :aria-label="buildLabel('Lux') + ariaProd('Lux')">${loc('modal_factory_lux')}</span></div>`);
     parent.append(lux);
 
-    let luxCount = $(`<span class="current">{{ Lux }}</span>`);
+    let luxCount = $(`<span class="current" v-html="$options.filters.spook(Lux)"></span>`);
     let subLux = $(`<span class="sub" @click="subItem('Lux')" role="button" aria-label="Decrease Lux production">&laquo;</span>`);
     let addLux = $(`<span class="add" @click="addItem('Lux')" role="button" aria-label="Increase Lux production">&raquo;</span>`);
     lux.append(subLux);
@@ -494,6 +503,15 @@ function loadFactory(parent,bind){
                     max += p_on['int_factory'] * 2;
                 }
                 return max;
+            },
+            spook(v){
+                if (global.city.factory.Lux === 3 && bind){
+                    let trick = trickOrTreat(12,12);
+                    if (trick.length > 0){
+                        return trick;
+                    }
+                }
+                return v;
             }
         }
     });
