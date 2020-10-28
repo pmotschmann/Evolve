@@ -124,7 +124,7 @@ function loadSmelter(parent,bind){
     if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
         let smelt = $('<div class="smelting"></div>');
         let ironSmelt = $(`<b-tooltip :label="ironLabel()" position="is-left" size="is-small" animated multilined><button class="button" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button></b-tooltip>`);
-        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: {{ s.Steel }}</button></b-tooltip>`);
+        let steelSmelt = $(`<b-tooltip :label="steelLabel()" position="is-right" size="is-small" animated multilined><button class="button" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: <span v-html="$options.filters.altspook(s.Steel)"></span></button></b-tooltip>`);
         parent.append(smelt);
         smelt.append(ironSmelt);
         smelt.append(steelSmelt);
@@ -354,7 +354,16 @@ function loadSmelter(parent,bind){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
             },
             spook(v){
-                if (bind && global.city.smelter.Wood === 6 && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
+                if (bind && ((global.race['kindling_kindred'] && (global.city.smelter.Steel === 6 || global.city.smelter.Iron === 6)) || global.city.smelter.Wood === 6) && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
+                    let trick = trickOrTreat(9,12);
+                    if (trick.length > 0){
+                        return trick;
+                    }
+                }
+                return v;
+            },
+            altspook(v){
+                if (bind && global.race['forge'] && global.city.smelter.Steel === 6){
                     let trick = trickOrTreat(9,12);
                     if (trick.length > 0){
                         return trick;

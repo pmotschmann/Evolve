@@ -957,8 +957,9 @@ export function buildGarrison(garrison,full){
             },
             stationed(v){
                 let size = garrisonSize();
-                let trick = size === 31 && !full ? trickOrTreat(8,14) : false;
-                return size === 31 && trick.length > 0 ? trick : size;
+                let trickNum = global.race['cataclysm'] ? 13 : 31;
+                let trick = size === trickNum && !full ? trickOrTreat(8,14) : false;
+                return size === trickNum && trick.length > 0 ? trick : size;
             },
             s_max(v){
                 return garrisonSize(true);

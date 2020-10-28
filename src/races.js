@@ -1,10 +1,11 @@
 import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
-import { clearElement, removeFromQueue, removeFromRQueue, getEaster } from './functions.js';
+import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
 const easter = getEaster();
+const hallowed = getHalloween();
 
 export const genus_traits = {
     humanoid: {
@@ -1797,11 +1798,11 @@ export const races = {
         fanaticism: 'magnificent'
     },
     junker: {
-        name: loc('race_junker'),
-        desc: loc('race_junker_desc'),
+        name: hallowed.active ? loc('race_ghoul') : loc('race_junker'),
+        desc: hallowed.active ? loc('race_ghoul_desc') : loc('race_junker_desc'),
         type: 'humanoid',
-        home: loc('race_junker_home'),
-        entity: loc('race_junker_entity'),
+        home: hallowed.active ? loc('race_ghoul_home') : loc('race_junker_home'),
+        entity: hallowed.active ? loc('race_ghoul_entity') : loc('race_junker_entity'),
         traits: {
             diverse: 1,
             arrogant: 1,
@@ -1828,11 +1829,11 @@ export const races = {
             hibernator: 1
         },
         solar: {
-            red: loc('race_junker_solar_red'),
-            hell: loc('race_junker_solar_hell'),
-            gas: loc('race_junker_solar_gas'),
-            gas_moon: loc('race_junker_solar_gas_moon'),
-            dwarf: loc('race_junker_solar_dwarf'),
+            red: hallowed.active ? loc('race_ghoul_solar_red') : loc('race_junker_solar_red'),
+            hell: hallowed.active ? loc('race_ghoul_solar_hell') : loc('race_junker_solar_hell'),
+            gas: hallowed.active ? loc('race_ghoul_solar_gas') : loc('race_junker_solar_gas'),
+            gas_moon: hallowed.active ? loc('race_ghoul_solar_gas_moon') : loc('race_junker_solar_gas_moon'),
+            dwarf: hallowed.active ? loc('race_ghoul_solar_dwarf') : loc('race_junker_solar_dwarf'),
         },
         fanaticism: 'none'
     },

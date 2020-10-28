@@ -1264,18 +1264,18 @@ export function getBaseIcon(name,type){
     return global.settings.icon;
 }
 
-export function drawIcon(icon,size,shade,id){
+export function drawIcon(icon,size,shade,id,inject){
     let select = '';
     if (id){
         select = `id="${id}" `;
     }
-    return `<span ${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
+    return `<span ${inject}${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
 }
 
 export function easterEgg(num,size){
     let easter = getEaster();
     if (easter.active && !global.special.egg[`egg${num}`]){
-        return drawIcon('egg', size ? size : 16, 2, `egg${num}`);
+        return drawIcon('egg', size ? size : 16, 2, `egg${num}`, `role="button" aria-label="Egg" `);
     }
     return '';
 }
@@ -1310,7 +1310,8 @@ export function easterEggBind(id){
 export function trickOrTreat(num,size){
     let halloween = getHalloween();
     if (halloween.active && !global.special.trick[`trick${num}`]){
-        return drawIcon(num <= 6 ? 'candycorn' : 'ghost', size ? size : 16, 2, `trick${num}`);
+        let label = num > 6 ? `Ghost`: `Candy Corn`;
+        return drawIcon(num <= 6 ? 'candycorn' : 'ghost', size ? size : 16, 2, `trick${num}`, `role="button" aria-label="${label}" `);
     }
     return '';
 }

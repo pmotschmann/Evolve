@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
@@ -327,8 +327,8 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
-    const date = new Date();
-    if (date.getMonth() === 9 && date.getDate() === 31){
+    let hallowed = getHalloween();
+    if (hallowed.active){
         switch(name){
             case 'Food':
                 global['resource'][name].name = loc('resource_Candy_name');
