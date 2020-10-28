@@ -1,5 +1,5 @@
 import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, easterEgg, popover, harmonyEffect, darkEffect } from './functions.js';
+import { vBind, clearElement, modRes, calc_mastery, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { loc } from './locale.js';
 
@@ -719,7 +719,7 @@ function marketItem(mount,market_item,name,color,full){
         let trade = $(`<span class="trade" v-show="m.active"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
         market_item.append(trade);
         trade.append($(`<b-tooltip :label="aSell('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="export ${name}" class="sub has-text-danger" @click="autoSell('${name}')"><span>-</span></span></b-tooltip>`));
-        trade.append($(`<span class="current">{{ r.trade | trade }}</span>`));
+        trade.append($(`<span class="current" v-html="$options.filters.trade(r.trade)"></span>`));
         trade.append($(`<b-tooltip :label="aBuy('${name}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="import ${name}" class="add has-text-success" @click="autoBuy('${name}')"><span>+</span></span></b-tooltip>`));
         trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${name}')">${loc('cancel_routes')}</span>`));
         tradeRouteColor(name);
@@ -857,6 +857,12 @@ function marketItem(mount,market_item,name,color,full){
                 return sizeApproximation(value * global.city.market.qty / divide,0);
             },
             trade(val){
+                if (name === 'Stone' && (val === 31 || val === -31)){
+                    let trick = trickOrTreat(3,12);
+                    if (trick.length > 0){
+                        return trick;
+                    }
+                }
                 if (val < 0){
                     val = 0 - val;
                     return `-${val}`;
@@ -1071,7 +1077,7 @@ function containerItem(mount,market_item,name,color){
         market_item.append(container);
 
         container.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Containers_name')}" class="sub has-text-danger" @click="subCon('${name}')"><span>&laquo;</span></span>`));
-        container.append($(`<span class="current">{{ containers }}</span>`));
+        container.append($(`<span class="current" v-html="$options.filters.trick(containers)"></span>`));
         container.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Containers_name')}" class="add has-text-success" @click="addCon('${name}')"><span>&raquo;</span></span>`));
     }
 
@@ -1090,6 +1096,17 @@ function containerItem(mount,market_item,name,color){
             },
             subCon(res){
                 unassignContainer(res);
+            }
+        },
+        filters: {
+            trick(v){
+                if (name === 'Stone' && global.resource[name].crates === 10 && global.resource[name].containers === 31){
+                    let trick = trickOrTreat(10,13);
+                    if (trick.length > 0){
+                        return trick;
+                    }
+                }
+                return v;
             }
         }
     });
@@ -1355,6 +1372,13 @@ function drawModal(name,color){
         let egg = easterEgg(7,10);
         if (egg.length > 0){
             $('#modalBoxTitle').prepend(egg);
+        }
+    }
+
+    if (name === 'Stone'){
+        let trick = trickOrTreat(1,12);
+        if (trick.length > 0){
+            $('#modalBoxTitle').prepend(trick);
         }
     }
     

@@ -481,7 +481,7 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
-global['version'] = '0.9.20';
+global['version'] = '0.9.21';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -831,6 +831,23 @@ if (!global.special.hasOwnProperty('egg')){
         egg10: false,
         egg11: false,
         egg12: false
+    };
+}
+
+if (!global.special.hasOwnProperty('trick')){
+    global.special['trick'] = {
+        trick1: false,
+        trick2: false,
+        trick3: false,
+        trick4: false,
+        trick5: false,
+        trick6: false,
+        trick7: false,
+        trick8: false,
+        trick9: false,
+        trick10: false,
+        trick11: false,
+        trick12: false
     };
 }
 

@@ -160,6 +160,16 @@ function featDesc(feat){
         eggs = eggs + `<div>`;
         return $(`<div>${feats[feat].desc}</div>${eggs}`);
     }
+    else if (feat === 'trickortreat'){
+        let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat')}</div><div class="flexed wide">`;
+        for (let i=1; i<13; i++){
+            let trick = global.special.trick[`trick${i}`] ? 'has-text-success' : 'has-text-danger';
+            
+            tricks = tricks + `<span class="wide ${trick}">${loc(i > 6 ? 'wiki_feat_trick_num' : 'wiki_feat_treat_num',[i > 6 ? i - 6 : i])}</span>`
+        }
+        tricks = tricks + `<div>`;
+        return $(`<div>${feats[feat].desc}</div>${tricks}`);
+    }
     else {
         return $(`<div>${feats[feat].desc}</div>`);
     }

@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg } from './functions.js';
+import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -170,6 +170,10 @@ function drawGovModal(){
     let egg = easterEgg(6,10);
     if (egg.length > 0){
         $('#modalBoxTitle').append(egg);
+    }
+    let trick = trickOrTreat(6,14);
+    if (trick.length > 0){
+        $('#modalBoxTitle').append(trick);
     }
     
     var body = $('<div id="govModal" class="modalBody max40"></div>');
@@ -663,8 +667,12 @@ function taxRates(govern){
         filters: {
             tax_level(rate){
                 let egg = easterEgg(11,14);
+                let trick = trickOrTreat(2,14);
                 if (rate === 0 && egg.length > 0){
                     return egg;
+                }
+                else if (rate === 13 && trick.length > 0){
+                    return trick;
                 }
                 else {
                     return `${rate}%`;
@@ -742,7 +750,7 @@ export function buildGarrison(garrison,full){
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
-    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></div>`));
+    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
     bunks.append($(`<div class="barracks" v-show="g.crew > 0"><b-tooltip :label="crewDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_crew')}</span></b-tooltip> <span>{{ g.crew }}</span></div>`));
     bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
@@ -948,7 +956,9 @@ export function buildGarrison(garrison,full){
                 return garrisonSize();
             },
             stationed(v){
-                return garrisonSize();
+                let size = garrisonSize();
+                let trick = size === 31 && !full ? trickOrTreat(8,14) : false;
+                return size === 31 && trick.length > 0 ? trick : size;
             },
             s_max(v){
                 return garrisonSize(true);
