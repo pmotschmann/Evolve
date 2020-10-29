@@ -1,6 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
-import { easterEgg } from './functions.js';
+import { easterEgg, trickOrTreat } from './functions.js';
 
 export function index(){
     $('body').empty();
@@ -223,6 +223,7 @@ export function index(){
         {i: 'bunny',        f: 'easter'},
         {i: 'egg',          f: 'egghunt'},
         {i: 'ghost',        f: 'halloween'},
+        {i: 'candy',        f: 'trickortreat'},
         {i: 'turkey',       f: 'thanksgiving'},
         {i: 'present',      f: 'xmas'}
     ];
@@ -240,6 +241,12 @@ export function index(){
     let hideEgg = '';
     if (egg.length > 0){
         hideEgg = `<b-dropdown-item>${egg}</b-dropdown-item>`;
+    }
+
+    let trick = trickOrTreat(11,12);
+    let hideTreat = '';
+    if (trick.length > 0){
+        hideTreat = `<b-dropdown-item>${trick}</b-dropdown-item>`;
     }
 
     // Settings Tab
@@ -269,6 +276,7 @@ export function index(){
                 <b-dropdown-item v-on:click="si">{{ 'metric' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="sci">{{ 'scientific' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="sln">{{ 'sln' | label }}</b-dropdown-item>
+                ${hideTreat}
             </b-dropdown>
 
             <span>{{ 'icons' | label }} </span>

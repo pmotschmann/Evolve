@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -14058,6 +14058,11 @@ export function drawTech(){
             .appendTo('#oldTech')
             .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
 
+        let trick = trickOrTreat(4,12);
+        if (trick.length > 0 && category === 'science'){
+            $(`#tech-dist-old-science h3`).append(trick);
+        }
+
         old_techs[category].forEach(function(tech_name) {
             addAction('tech', tech_name, true);
         });
@@ -14385,7 +14390,7 @@ export function setAction(c_action,action,type,old){
         filters: {
             p_off(p,id){
                 let value = global[action][type].count - p;
-                if (id === 'city-casino'){
+                if (id === 'city-casino' || id === 'space-spc_casino'){
                     let egg = easterEgg(5,12);
                     if (value === 0 && egg.length > 0){
                         return egg;
@@ -14398,6 +14403,13 @@ export function setAction(c_action,action,type,old){
                     let egg = easterEgg(12,12);
                     if (p === 0 && egg.length > 0){
                         return egg;
+                    }
+                }
+                else if (id === 'city-garrison' || id === 'space-space_barracks'){
+                    let trick = trickOrTreat(7,14);
+                    let num = id === 'city-garrison' ? 13 : 0;
+                    if (p === num && trick.length > 0){
+                        return trick;
                     }
                 }
                 return p;
