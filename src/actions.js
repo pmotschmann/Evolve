@@ -2529,6 +2529,7 @@ export const actions = {
                 }
             },
             desc(){
+                let gain = $(this)[0].val(false);
                 let hallowed = getHalloween();
                 if (hallowed.active){
                     return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
@@ -2576,6 +2577,7 @@ export const actions = {
                 }
             },
             desc(){
+                let gain = $(this)[0].val(false);
                 let hallowed = getHalloween();
                 if (hallowed.active){
                     return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour_desc',[gain]) : loc('city_dig_desc',[gain]);
@@ -6996,7 +6998,7 @@ function cataclysm(){
     }
 }
 
-function fanaticism(god){
+export function fanaticism(god){
     switch (races[god].fanaticism){
         case 'carnivore':
             if (global.race['herbivore']){
@@ -7298,7 +7300,7 @@ function bioseed(){
     window.location.reload();
 }
 
-function cataclysm_end(){
+export function cataclysm_end(){
     if (global.city.ptrait === 'unstable' && global.tech['quaked']){
         if (webWorker.w){
             webWorker.w.terminate();
@@ -7405,7 +7407,7 @@ function cataclysm_end(){
     }
 }
 
-function big_bang(){
+export function big_bang(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     global.lastMsg = false;
 

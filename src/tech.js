@@ -2,7 +2,7 @@ import { global } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
