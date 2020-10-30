@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, loadMarket, galacticTrade, spatialReasoning, resource_values, atomic_mass } from './resources.js';
@@ -2518,8 +2518,8 @@ export const actions = {
         food: {
             id: 'city-food',
             title(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return loc('city_trick');
                 }
                 else {
@@ -2527,8 +2527,8 @@ export const actions = {
                 }
             },
             desc(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return loc('city_trick_desc');
                 }
                 else {
@@ -2553,8 +2553,8 @@ export const actions = {
         lumber: {
             id: 'city-lumber',
             title(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return loc('city_dig');
                 }
                 else {
@@ -2562,8 +2562,8 @@ export const actions = {
                 }
             },
             desc(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return loc('city_dig_desc');
                 }
                 else {
@@ -2587,8 +2587,8 @@ export const actions = {
         },
         stone: {
             id: 'city-stone',
-            title(){ return global.race['sappy'] ? loc('city_amber') : loc('city_stone'); },
-            desc(){ return global.race['sappy'] ? loc('city_amber_desc') : loc('city_stone_desc'); },
+            title(){ return loc(`city_gather`,[global.resource.Stone.name]); },
+            desc(){ return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[global.resource.Stone.name]); },
             category: 'outskirts',
             reqs: { primitive: 2 },
             not_trait: ['cataclysm'],

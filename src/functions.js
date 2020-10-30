@@ -97,6 +97,9 @@ export function mainVue(){
             expose(){
                 return loc('settings8');
             },
+            boring(){
+                return loc('settings10');
+            },
             restoreData(){
                 return loc('settings9');
             },
@@ -1476,6 +1479,10 @@ export function getEaster(){
         endDate: [month-1,day]
     };
 
+    if (global.settings.boring){
+        return easter;
+    }
+
     easter.endDate[1] += 10;
     if ((easter.endDate[0] === 2 && easter.endDate[1] > 31) || (easter.endDate[0] === 3 && easter.endDate[1] > 30)){
         easter.endDate[1] -= easter.endDate[0] === 2 ? 31 : 30;
@@ -1489,13 +1496,17 @@ export function getEaster(){
 }
 
 export function getHalloween(){
-    const date = new Date();
-
     let halloween = {
         date: [9,28],
         active: false,
         endDate: [10,4]
     };
+
+    if (global.settings.boring){
+        return halloween;
+    }
+
+    const date = new Date();
 
     if ((date.getMonth() === halloween.date[0] && date.getDate() >= halloween.date[1]) || (date.getMonth() === halloween.endDate[0] && date.getDate() <= halloween.endDate[1])){
         halloween.active = true;

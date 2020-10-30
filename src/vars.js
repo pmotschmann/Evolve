@@ -481,7 +481,7 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
-global['version'] = '0.9.22';
+global['version'] = '0.9.23';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
@@ -699,6 +699,9 @@ if (typeof global.settings.qAny === 'undefined'){
 }
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
+}
+if (typeof global.settings.boring === 'undefined'){
+    global.settings['boring'] = false;
 }
 if (!global.stats['reset']){
     global.stats['reset'] = 0;

@@ -571,7 +571,7 @@ export function checkAchievements(){
     const date = new Date();
     let easter = getEaster();
     let halloween = getHalloween();
-    if (date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
+    if (!global.settings.boring && date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
             murder = unlockFeat('friday',true);
@@ -583,7 +583,7 @@ export function checkAchievements(){
             global.resource[global.race.species].amount--;
         }
     }
-    else if (date.getMonth() === 1 && date.getDate() === 14){
+    else if (!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14){
         if (global.race.universe === 'micro'){
             unlockFeat('valentine',true);
         }
@@ -591,7 +591,7 @@ export function checkAchievements(){
             unlockFeat('valentine');
         }
     }
-    else if (date.getMonth() === 2 && date.getDate() === 17){
+    else if (!global.settings.boring && date.getMonth() === 2 && date.getDate() === 17){
         if (global.race.universe === 'micro'){
             unlockFeat('leprechaun',true);
         }
@@ -641,16 +641,17 @@ export function checkAchievements(){
             }
 
         }
-    }
-    else if (date.getMonth() === 9 && date.getDate() === 31){
-        if (global.race.universe === 'micro'){
-            unlockFeat('halloween',true);
+
+        if (date.getMonth() === 9 && date.getDate() === 31){
+            if (global.race.universe === 'micro'){
+                unlockFeat('halloween',true);
+            }
+            else {
+                unlockFeat('halloween');
+            }
         }
-        else {
-            unlockFeat('halloween');
-        }
     }
-    else if (date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28){
+    else if (!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28){
         if (global.race.universe === 'micro'){
             unlockFeat('thanksgiving',true);
         }
@@ -658,7 +659,7 @@ export function checkAchievements(){
             unlockFeat('thanksgiving');
         }
     }
-    else if (date.getMonth() === 11 && date.getDate() == 25){
+    else if (!global.settings.boring && date.getMonth() === 11 && date.getDate() == 25){
         if (global.race.universe === 'micro'){
             unlockFeat('xmas',true);
         }

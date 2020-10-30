@@ -345,6 +345,9 @@ function loadResource(name,max,rate,tradable,stackable,color){
             case 'Plywood':
                 global['resource'][name].name = loc('resource_Boneweave_name');
                 break;
+            case 'Brick':
+                global['resource'][name].name = loc('resource_Tombstone_name');
+                break;
             case 'Soul_Gem':
                 global['resource'][name].name = loc('resource_CandyCorn_name');
                 break;
