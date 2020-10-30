@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -2520,8 +2520,8 @@ export const actions = {
         food: {
             id: 'city-food',
             title(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return global.tech['conjuring'] ? loc('city_trick_conjure') : loc('city_trick');
                 }
                 else {
@@ -2529,9 +2529,8 @@ export const actions = {
                 }
             },
             desc(){
-                const date = new Date();
-                let gain = $(this)[0].val(false);
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return global.tech['conjuring'] ? loc('city_trick_conjure_desc',[gain]) : loc('city_trick_desc',[gain]);
                 }
                 else {
@@ -2568,8 +2567,8 @@ export const actions = {
         lumber: {
             id: 'city-lumber',
             title(){
-                const date = new Date();
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour') : loc('city_dig');
                 }
                 else {
@@ -2577,9 +2576,8 @@ export const actions = {
                 }
             },
             desc(){
-                const date = new Date();
-                let gain = $(this)[0].val(false);
-                if (date.getMonth() === 9 && date.getDate() === 31){
+                let hallowed = getHalloween();
+                if (hallowed.active){
                     return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? loc('city_dig_conjour_desc',[gain]) : loc('city_dig_desc',[gain]);
                 }
                 else {
@@ -2620,16 +2618,16 @@ export const actions = {
                     return global.race['sappy'] ? loc('city_amber_conjour') : loc('city_stone_conjour');
                 }
                 else {
-                    return global.race['sappy'] ? loc('city_amber') : loc('city_stone');
+                    return loc(`city_gather`,[global.resource.Stone.name]);
                 }                
             },
             desc(){
                 let gain = $(this)[0].val(false);
                 if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
-                    return global.race['sappy'] ? loc('city_amber_conjour_desc',[gain]) : loc('city_stone_conjour_desc',[gain]);
+                    return loc('city_stone_conjour_desc',[gain,global.resource.Stone.name]);
                 }
                 else {
-                    return global.race['sappy'] ? loc('city_amber_desc',[gain]) : loc('city_stone_desc',[gain]);
+                    return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
                 }                
             },
             category: 'outskirts',

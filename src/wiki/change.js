@@ -22,6 +22,14 @@ const changeList = [
         ]
     },
     {
+        version: `0.9.23`,
+        date: `10/30/2020`,
+        changes: [
+            `New settings option for people who hate fun.`,
+            `Added ability for an obscure combination of settings and racial traits to get Ghost #3`
+        ]
+    },
+    {
         version: `0.9.22`,
         date: `10/28/2020`,
         changes: [

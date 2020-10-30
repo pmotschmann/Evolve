@@ -7664,26 +7664,12 @@ function longLoop(){
     if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){
         global.special.gift = true;
         global.tech['santa'] = 1;
-        global.special.egg = {
-            egg1: false,
-            egg2: false,
-            egg3: false,
-            egg4: false,
-            egg5: false,
-            egg6: false,
-            egg7: false,
-            egg8: false,
-            egg9: false,
-            egg10: false,
-            egg11: false,
-            egg12: false
-        };
     }
     else {
         delete global.tech['santa'];
     }
 
-    if (date.getMonth() === 3 && date.getDate() === 1){
+    if (!global.settings.boring && date.getMonth() === 3 && date.getDate() === 1){
         if (!$(`body`).hasClass('fool')){
             $(`body`).addClass('fool');
             drawAchieve({fool: true});

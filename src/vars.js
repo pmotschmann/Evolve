@@ -567,8 +567,8 @@ if (convertVersion(global['version']) < 10000){
     }
 }
 
-global['version'] = '0.9.22';
-global['beta'] = 22;
+global['version'] = '0.9.23';
+global['beta'] = 23;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -811,6 +811,9 @@ if (typeof global.settings.qAny === 'undefined'){
 }
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
+}
+if (typeof global.settings.boring === 'undefined'){
+    global.settings['boring'] = false;
 }
 if (!global.stats['reset']){
     global.stats['reset'] = 0;

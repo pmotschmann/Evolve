@@ -66,6 +66,13 @@ function loadSmelter(parent,bind){
         }
     }
 
+    if (bind && global.race['forge'] && global.race['steelen']){
+        let trick = trickOrTreat(9,12);
+        if (trick.length > 0){
+            fuel.prepend(trick);
+        }
+    }
+
     if (!global.race['forge']){
         let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
         let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);

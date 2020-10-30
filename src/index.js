@@ -316,6 +316,7 @@ export function index(){
         <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="boring()" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
