@@ -1,6 +1,6 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
-import { easterEgg, trickOrTreat } from './functions.js';
+import { easterEgg, trickOrTreat, modRes } from './functions.js';
 
 export function index(){
     $('body').empty();
@@ -229,30 +229,30 @@ export function index(){
 
     let iconlist = '';
     let icons = [
-        {i: 'nuclear',      f: 'steelem'},
-        {i: 'zombie',       f: 'the_misery'},
-        {i: 'fire',         f: 'ill_advised'},
-        {i: 'mask',         f: 'friday'},
-        {i: 'skull',        f: 'demon_slayer'},
-        {i: 'martini',      f: 'utopia'},
-        {i: 'lightbulb',    f: 'energetic'},
-        {i: 'trash',        f: 'garbage_pie'},
-        {i: 'turtle',       f: 'finish_line'},
-        {i: 'heart',        f: 'valentine'},
-        {i: 'clover',       f: 'leprechaun'},
-        {i: 'bunny',        f: 'easter'},
-        {i: 'egg',          f: 'egghunt'},
-        {i: 'ghost',        f: 'halloween'},
-        {i: 'candy',        f: 'trickortreat'},
-        {i: 'turkey',       f: 'thanksgiving'},
-        {i: 'present',      f: 'xmas'}
+        {i: 'nuclear',      f: 'steelem',       r: 2 },
+        {i: 'zombie',       f: 'the_misery',    r: 2 },
+        {i: 'fire',         f: 'ill_advised',   r: 2 },
+        {i: 'mask',         f: 'friday',        r: 1 },
+        {i: 'skull',        f: 'demon_slayer',  r: 2 },
+        {i: 'martini',      f: 'utopia',        r: 2 },
+        {i: 'lightbulb',    f: 'energetic',     r: 2 },
+        {i: 'trash',        f: 'garbage_pie',   r: 2 },
+        {i: 'turtle',       f: 'finish_line',   r: 2 },
+        {i: 'heart',        f: 'valentine',     r: 1 },
+        {i: 'clover',       f: 'leprechaun',    r: 1 },
+        {i: 'bunny',        f: 'easter',        r: 1 },
+        {i: 'egg',          f: 'egghunt',       r: 1 },
+        {i: 'ghost',        f: 'halloween',     r: 1 },
+        {i: 'candy',        f: 'trickortreat',  r: 1 },
+        {i: 'turkey',       f: 'thanksgiving',  r: 1 },
+        {i: 'present',      f: 'xmas',          r: 1 }
     ];
 
     for (let i=0; i<icons.length; i++){
-        if (global.stats.feat[icons[i]['f']] && global.stats.feat[icons[i]['f']] >= 2){
-            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i]['i']}')">{{ '${icons[i]['i']}' | label }}</b-dropdown-item>`;
+        if (global.stats.feat[icons[i].f] && global.stats.feat[icons[i].f] >= icons[i].r){
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">{{ '${icons[i].i}' | label }}</b-dropdown-item>`;
         }
-        else if (global.settings.icon === icons[i]['i']){
+        else if (global.settings.icon === icons[i].i){
             global.settings.icon = 'star';
         }
     }

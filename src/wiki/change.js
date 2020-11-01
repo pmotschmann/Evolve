@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.0`,
-        date: `10/??/2020`,
+        date: `11/??/2020`,
         changes: [
             `Expanded Interdimensional content, delve deep into the hell dimension.`,
             `New Magic Universe.`,
@@ -19,6 +19,14 @@ const changeList = [
             `Build queue resource highlighting.`,
             `Low Contrast Dark Night Theme.`,
             `Ewnay igpay atinlay anguagelay.`
+        ]
+    },
+    {
+        version: `0.9.24`,
+        date: `11/1/2020`,
+        changes: [
+            `Holliday icons from feats earned with no stars can now be accessed.`,
+            `Challenge feat icons still require at least 1 star.`,
         ]
     },
     {
