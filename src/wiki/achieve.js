@@ -3,6 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
+import { monsters } from './../portal.js';
 import { popover } from './../functions.js';
 
 export function renderAchievePage(zone){
@@ -167,7 +168,7 @@ function achieveDesc(achievement,showFlair){
                 }
             }
         });
-        killed = killed + `<div>`;
+        killed = killed + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${killed}${flair}`));
     }
     else if (achievement === 'explorer'){
@@ -180,7 +181,7 @@ function achieveDesc(achievement,showFlair){
                 biome_list = biome_list + `<span class="has-text-danger">${biomes[key].label}</span>`;
             }
         });
-        biome_list = biome_list + `<div>`;
+        biome_list = biome_list + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${biome_list}${flair}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
@@ -195,7 +196,7 @@ function achieveDesc(achievement,showFlair){
                 }
             }
         });
-        genus = genus + `<div>`;
+        genus = genus + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${genus}${flair}`));
     }
     else if (achievement === 'enlightenment'){
@@ -216,8 +217,33 @@ function achieveDesc(achievement,showFlair){
                 checked = checked + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
             }
         });
-        checked = checked + `<div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
+        checked = checked + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
+    }
+    else if (achievement === 'gladiator'){
+        let defeated = `<div class="flexed wide">`;
+        let list = {};
+        Object.keys(global.stats.spire).forEach(function(universe){
+            Object.keys(global.stats.spire[universe]).forEach(function(boss){
+                if (monsters[boss]){
+                    if (!list.hasOwnProperty(boss) || list[boss] < global.stats.spire[universe][boss]){
+                        list[boss] = global.stats.spire[universe][boss];
+                    }
+                }
+            });
+        });
+        Object.keys(monsters).forEach(function (boss){
+            if (list[boss] && list[boss] > 0){
+                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;
+            }
+            else {
+                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`;
+            }
+        });
+        defeated = defeated + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${defeated}${flair}`),{
+            wide: true
+        });
     }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
         let race = achievement.substring(8);

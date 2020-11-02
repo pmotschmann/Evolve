@@ -2,7 +2,9 @@ import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { piracy } from './space.js';
+import { monsters } from './portal.js';
 import { loc } from './locale.js'
+
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
@@ -18,7 +20,7 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment'
+        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -239,7 +241,7 @@ export function universeAffix(){
     }
 }
 
-export function unlockAchieve(achievement,small,rank){
+export function unlockAchieve(achievement,small,rank,universe){
     if (global.race.universe !== 'micro' && small === true){
         return false;
     }
@@ -263,8 +265,8 @@ export function unlockAchieve(achievement,small,rank){
             unlock = true;
         }
     }
-    if (global.stats.achieve[achievement]){
-        let u_affix = universeAffix();
+    if (global.stats.achieve[achievement] && universe !== 'l'){
+        let u_affix = universe || universeAffix();
         if (!global.stats.achieve[achievement][u_affix] || (global.stats.achieve[achievement][u_affix] && global.stats.achieve[achievement][u_affix] < rank)){
             let i_upgrade = global.stats.achieve[achievement][u_affix] ? true : false;
             global.stats.achieve[achievement][u_affix] = rank;
@@ -518,6 +520,30 @@ export function checkAchievements(){
         }
         if (rCnt >= Object.keys(races).length - 1){
             unlockAchieve('resonance');
+        }
+    }
+
+    if (global.portal.hasOwnProperty('mechbay') && global.tech.hasOwnProperty('hell_spire') && global.tech.hell_spire >= 9){
+        let mobs = Object.keys(monsters).length;
+        let highest = {};
+        Object.keys(global.stats.spire).forEach(function(universe){
+            let current = {};
+            Object.keys(global.stats.spire[universe]).forEach(function(boss){
+                if (monsters[boss]){
+                    if (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss]){
+                        highest[boss] = global.stats.spire[universe][boss];
+                    }
+                    if (global.stats.spire[universe][boss] > 0){
+                        current[boss] = global.stats.spire[universe][boss];
+                    }
+                }
+            });
+            if (Object.keys(current).length === mobs){
+                unlockAchieve('gladiator',false,Math.min(...Object.values(current)),universe);
+            }
+        });
+        if (Object.keys(highest).length === mobs){
+            unlockAchieve('gladiator',false,Math.min(...Object.values(highest)),'l');
         }
     }
 

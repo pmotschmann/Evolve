@@ -2359,7 +2359,7 @@ export function hellSupression(area, val){
     }
 }
 
-const monsters = {
+export const monsters = {
     fire_elm: {
         weapon: {
             laser: 1.05,
