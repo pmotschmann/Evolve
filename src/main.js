@@ -1219,7 +1219,7 @@ function fastLoop(){
             let power = global.city.coal_power.on * actions.city.coal_power.powered();
             let consume = global.city.coal_power.on * (global.race['environmentalist'] ? 0 : 0.35);
 
-            if (global.race.universe === 'magic'){
+            if (global.race.universe === 'magic' && !global.race['environmentalist']){
                 consume = global.city.coal_power.on * 0.05;
                 while ((consume * time_multiplier) > global.resource.Mana.amount && consume > 0){
                     power -= actions.city.coal_power.powered();
@@ -1396,7 +1396,7 @@ function fastLoop(){
             'city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
             'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
             'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
-            'prtl_lake:harbour','prtl_lake:cooling_tower','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
+            'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
             'prtl_gate:infernite_mine','int_sirius:ascension_trigger'
         ];
         for (var i = 0; i < p_structs.length; i++){
@@ -6613,14 +6613,14 @@ function midLoop(){
                 global.portal.spire.progress = 0;
                 global.resource.Blood_Stone.display = true;
                 let rank = Number(alevel());
-                global.resource.Blood_Stone.amount += rank;
-                if (!global.tech.hasOwnProperty('b_stone')){
-                    global.tech['b_stone'] = 1;
-                }
-
                 let stones = rank;
                 if (global.genes['blood'] && global.genes['blood'] >= 2){
                     stones *= 2;
+                }
+                global.resource.Blood_Stone.amount += stones;
+                if (!global.tech.hasOwnProperty('b_stone')){
+                    global.tech['b_stone'] = 1;
+                    drawTech();
                 }
 
                 messageQueue(
@@ -6630,6 +6630,7 @@ function midLoop(){
                 global.portal.spire.count++;
                 if (global.portal.spire.count > 10){
                     global.tech['hell_spire'] = 10;
+                    drawTech();
                 }
                 
                 let affix = universeAffix();

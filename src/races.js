@@ -1,5 +1,6 @@
 import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
+import { defineIndustry } from './civics.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -2028,6 +2029,11 @@ export function cleanAddTrait(trait){
             if (global.civic.d_job === 'lumberjack') {
                 global.civic.d_job = 'unemployed';
             }
+            if (global.race['casting']){
+                global.race.casting.total -= global.race.casting.lumberjack;
+                global.race.casting.lumberjack = 0;
+                defineIndustry();
+            }
             if (global.tech['foundry']){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
@@ -2068,6 +2074,11 @@ export function cleanAddTrait(trait){
             global.civic.farmer.display = false;
             if (global.civic.d_job === 'farmer') {
                 global.civic.d_job = 'unemployed';
+            }
+            if (global.race['casting']){
+                global.race.casting.total -= global.race.casting.farmer;
+                global.race.casting.farmer = 0;
+                defineIndustry();
             }
             break;
         case 'apex_predator':
@@ -2168,6 +2179,9 @@ export function cleanRemoveTrait(trait){
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
             }
+            if (global.race['casting']){
+                defineIndustry();
+            }
             break;
         case 'carnivore':
             global.civic.farmer.display = true;
@@ -2190,6 +2204,9 @@ export function cleanRemoveTrait(trait){
             if (global.city['windmill']){
                 global.city['mill'] = { count: global.city.windmill.count };
                 delete global.city['windmill'];
+            }
+            if (global.race['casting']){
+                defineIndustry();
             }
             break;
         case 'terrifying':

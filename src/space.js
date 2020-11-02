@@ -3356,9 +3356,8 @@ const interstellarProjects = {
                 let heatsink = 100;
                 if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
                     heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-                    let universes = ['h','a','e','m','mg'];
-                    for (let i=0; i<universes.length; i++){
-                        if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    for (let i=1; i<universe_affixes.length; i++){
+                        if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                             heatsink += 5;
                         }
                     }
@@ -3424,9 +3423,8 @@ const interstellarProjects = {
                 let heatsink = 100;
                 if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2){
                     heatsink += global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-                    let universes = ['h','a','e','m','mg'];
-                    for (let i=0; i<universes.length; i++){
-                        if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+                    for (let i=1; i<universe_affixes.length; i++){
+                        if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                             heatsink += 5;
                         }
                     }
@@ -5432,6 +5430,8 @@ export function zigguratBonus(){
     }
     return bonus;
 }
+
+export const universe_affixes = ['l', 'h', 'a', 'e', 'm', 'mg'];
 
 export const universe_types = {
     standard: {

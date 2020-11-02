@@ -2,6 +2,7 @@ import { global, save, poppers, webWorker, achieve_level, universe_level, resize
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
+import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 
@@ -1507,10 +1508,9 @@ export function calcGenomeScore(genome){
     let genes = 0;
 
     if (global.stats.achieve[`ascended`]){
-        let types = ['l','a','h','e','m'];
-        for (let i=0; i<types.length; i++){
-            if (global.stats.achieve.ascended.hasOwnProperty(types[i])){
-                genes += global.stats.achieve.ascended[types[i]];
+        for (let i=0; i<universe_affixes.length; i++){
+            if (global.stats.achieve.ascended.hasOwnProperty(universe_affixes[i])){
+                genes += global.stats.achieve.ascended[universe_affixes[i]];
             }
         }
     }

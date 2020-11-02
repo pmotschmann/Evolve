@@ -267,11 +267,6 @@ export function craftingRatio(res,auto){
     return multiplier;
 }
 
-if (global.resource[races[global.race.species].name]){
-    global.resource[global.race.species] = global.resource[races[global.race.species].name];
-    delete global.resource[races[global.race.species].name];
-}
-
 // Sets up resource definitions
 export function defineResources(){
     if (global.race.species === 'protoplasm'){
@@ -1905,7 +1900,7 @@ export const spatialReasoning = (function(){
             global.space['ziggurat'] ? global.space.ziggurat.count : '0',
             global.race['cataclysm'] ? global.race.cataclysm : '0',
             global.genes['ancients'] || '0',
-            global.civic.priest.workers
+            global.civic['priest'] ? global.civic.priest.workers : '0'
         ].join('-');
 
         if (!spatial[tkey]){

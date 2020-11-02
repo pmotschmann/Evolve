@@ -7,7 +7,7 @@ import { defineResources, galacticTrade, spatialReasoning } from './resources.js
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, renderSpace, piracy } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { techList } from './tech.js';
@@ -6693,9 +6693,8 @@ function sentience(){
         if (global.stats.achieve.technophobe.l >= 3){
             global.resource.Soul_Gem.display = true;
             let gems = 1;
-            let universes = ['h','a','e','m','mg'];
-            for (let i=0; i<universes.length; i++){
-                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+            for (let i=1; i<universe_affixes.length; i++){
+                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                     gems++;
                 }
             }
