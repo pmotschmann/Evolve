@@ -221,6 +221,14 @@ if (convertVersion(global['version']) < 4031){
         global.tech['wind_plant'] = 1;
         global.tech['hunting'] = 2;
     }
+    let races = [ "Human", "Humano", "Elf", "Elfo", "Orc", "Cath", "Wolven", "Centaur", "Centauro", "Kobold", "Goblin", "Gnome", "Ogre", "Ogro", "Cyclops", "Ciclope", "Troll", "Tortoisan", "Gecko", "Slitheryn", "Arraak", "Pterodacti", "Dracnid", "Ent", "Cacti", "Sporgar", "Shroomi", "Mantis", "Scorpid", "Antid", "Sharkin", "Octigoran", "Balorg", "Imp" ]
+    for (let i=0; i<races.length; i++){
+        if (global.resource[races[i]]){
+            global.resource[global.race.species] = global.resource[races[i]];
+            delete global.resource[races[i]];
+            break;
+        }
+    }
 }
 
 if (convertVersion(global['version']) < 4032){
@@ -546,7 +554,7 @@ if (convertVersion(global['version']) < 10000){
         }
     }
 
-    if (global.hasOwnProperty('settings') && global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
+    if (global.hasOwnProperty('settings') && global.settings.portal && global.settings.portal.spire && !global.portal.hasOwnProperty('purifier')){
         global.settings.portal.spire = false;
     }
 

@@ -82,7 +82,7 @@ function initPage(){
                 { key: 'deep_space' },
                 { key: 'interstellar' },
                 { key: 'intergalactic' },
-                { key: 'interdimensional' }
+                { key: 'dimensional' }
             ]
         },
         {

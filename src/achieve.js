@@ -1,7 +1,7 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
 import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { races, genus_traits } from './races.js';
-import { piracy } from './space.js';
+import { universe_affixes, piracy } from './space.js';
 import { monsters } from './portal.js';
 import { loc } from './locale.js'
 
@@ -1049,9 +1049,8 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe1",[25])}</span></div>`);
         if (global.stats.achieve.technophobe.l >= 2){
             let bonus = global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-            let universes = ['h','a','e','m'];
-            for (let i=0; i<universes.length; i++){
-                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+            for (let i=1; i<universe_affixes.length; i++){
+                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                     bonus += 5;
                 }
             }
@@ -1059,9 +1058,8 @@ export function drawPerks(){
         }
         if (global.stats.achieve.technophobe.l >= 3){
             let gems = 1;
-            let universes = ['h','a','e','m'];
-            for (let i=0; i<universes.length; i++){
-                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+            for (let i=1; i<universe_affixes.length; i++){
+                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                     gems += 1;
                 }
             }

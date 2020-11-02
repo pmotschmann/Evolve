@@ -1,7 +1,7 @@
 import { global } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
-import { unlockAchieve } from './achieve.js';
+import { unlockAchieve, alevel } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
@@ -182,7 +182,7 @@ const techs = {
         title: loc('tech_arcology'),
         desc: loc('tech_arcology'),
         category: 'housing',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_ruins: 4, housing: 3, high_tech: 17 },
         grant: ['housing',4],
         cost: {
@@ -1159,7 +1159,7 @@ const techs = {
         title: loc('tech_zoo'),
         desc: loc('tech_zoo'),
         category: 'entertainment',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_ruins: 2 },
         grant: ['zoo',1],
         cost: {
@@ -1554,7 +1554,7 @@ const techs = {
         title: loc('tech_infernium_fuel'),
         desc: loc('tech_infernium_fuel'),
         category: 'mining',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { smelting: 7, hell_ruins: 4 },
         grant: ['smelting',8],
         cost: {
@@ -3584,7 +3584,7 @@ const techs = {
         title: loc('tech_advanced_biotech'),
         desc: loc('tech_advanced_biotech'),
         category: 'science',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { science: 19, high_tech: 18 },
         grant: ['science',20],
         cost: {
@@ -3603,7 +3603,7 @@ const techs = {
         title: loc('tech_codex_infinium'),
         desc: loc('tech_codex_infinium'),
         category: 'science',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { science: 20, sphinx_bribe: 1 },
         grant: ['science',21],
         cost: {
@@ -4181,7 +4181,7 @@ const techs = {
         title: loc('tech_cybernetics'),
         desc: loc('tech_cybernetics'),
         category: 'progress',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { high_tech: 17, hell_ruins: 4 },
         grant: ['high_tech',18],
         cost: {
@@ -4203,7 +4203,7 @@ const techs = {
         title: loc('tech_blood_pact'),
         desc: loc('tech_blood_pact'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { high_tech: 18, b_stone: 1 },
         grant: ['b_stone',2],
         cost: {
@@ -4215,10 +4215,12 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.settings.arpa.blood = true;
                 arpa('Crispr');
-                arpa('Blood');
                 return true;
             }
             return false;
+        },
+        post(){
+            arpa('Blood');
         }
     },
     purify: {
@@ -4226,7 +4228,7 @@ const techs = {
         title: loc('tech_purify'),
         desc: loc('tech_purify'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_spire: 3, b_stone: 2 },
         grant: ['b_stone',3],
         cost: {
@@ -4246,7 +4248,7 @@ const techs = {
         title: loc('tech_waygate'),
         desc: loc('tech_waygate'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2 },
         grant: ['waygate',1],
         cost: {
@@ -4266,7 +4268,7 @@ const techs = {
         title: loc('tech_gate_key'),
         desc: loc('tech_gate_key'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_gate: 1 },
         grant: ['hell_gate',2],
         cost: {
@@ -4287,7 +4289,7 @@ const techs = {
         title: loc('tech_gate_turret'),
         desc: loc('tech_gate_turret'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_gate: 2 },
         grant: ['hell_gate',3],
         cost: {
@@ -4307,7 +4309,7 @@ const techs = {
         title: loc('tech_infernite_mine'),
         desc: loc('tech_infernite_mine'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_gate: 3 },
         grant: ['hell_gate',4],
         cost: {
@@ -4327,7 +4329,7 @@ const techs = {
         title: loc('tech_corrupt_gem_analysis'),
         desc: loc('tech_corrupt_gem_analysis'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { high_tech: 16, corrupt: 1 },
         grant: ['corrupt',2],
         cost: {
@@ -4350,7 +4352,7 @@ const techs = {
         title: loc('tech_hell_search'),
         desc: loc('tech_hell_search'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { corrupt: 2 },
         grant: ['hell_ruins',1],
         cost: {
@@ -4380,7 +4382,7 @@ const techs = {
         title: loc('tech_codex_infernium'),
         desc: loc('tech_codex_infernium'),
         category: 'progress',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_ruins: 3 },
         grant: ['hell_ruins',4],
         cost: {
@@ -4401,7 +4403,7 @@ const techs = {
         title: loc('tech_lake_analysis'),
         desc: loc('tech_lake_analysis'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_lake: 2 },
         grant: ['hell_lake',3],
         cost: {
@@ -4420,7 +4422,7 @@ const techs = {
         title: loc('tech_lake_threat'),
         desc: loc('tech_lake_threat'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_lake: 3 },
         grant: ['hell_lake',4],
         cost: {
@@ -4441,7 +4443,7 @@ const techs = {
         title: loc('tech_lake_transport'),
         desc: loc('tech_lake_transport'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_lake: 4 },
         grant: ['hell_lake',5],
         cost: {
@@ -4484,7 +4486,7 @@ const techs = {
         title: loc('tech_cooling_tower'),
         desc: loc('tech_cooling_tower'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_lake: 5 },
         grant: ['hell_lake',6],
         cost: {
@@ -4504,7 +4506,7 @@ const techs = {
         title: loc('tech_miasma'),
         desc: loc('tech_miasma'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_spire: 2 },
         grant: ['hell_spire',3],
         cost: {
@@ -4642,7 +4644,7 @@ const techs = {
         title: loc('tech_infernium_power'),
         desc: loc('tech_infernium_power'),
         category: 'power_generation',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { smelting: 8, hell_ruins: 4 },
         grant: ['inferno_power',1],
         cost: {
@@ -5152,7 +5154,7 @@ const techs = {
         title: loc('tech_scarletite'),
         desc: loc('tech_scarletite'),
         category: 'crafting',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_ruins: 4 },
         grant: ['scarletite',1],
         cost: {
@@ -5188,7 +5190,7 @@ const techs = {
         title: loc('tech_pillars'),
         desc: loc('tech_pillars'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { scarletite: 1, fusable: 1 },
         grant: ['pillars',1],
         cost: {
@@ -5882,7 +5884,7 @@ const techs = {
         title: loc('tech_cyber_limbs'),
         desc: loc('tech_cyber_limbs'),
         category: 'mining',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { high_tech: 18 },
         grant: ['cyber_worker',1],
         cost: {
@@ -6249,7 +6251,7 @@ const techs = {
             Knowledge(){ return 200000; },
             Iridium(){ return 2500; }
         },
-        desc(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster_effect') : loc('tech_rail_guns_effect'); },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_lightning_caster_effect') : loc('tech_rail_guns_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
                 let tech = $(this)[0].grant[0];
@@ -6365,7 +6367,7 @@ const techs = {
         title: loc('tech_cyborg_soldiers'),
         desc: loc('tech_cyborg_soldiers'),
         category: 'military',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { military: 10, high_tech: 18 },
         grant: ['military',11],
         cost: {
@@ -9818,7 +9820,7 @@ const techs = {
         title: loc('portal_sphinx_bribe'),
         desc: loc('portal_sphinx_bribe'),
         category: 'hell_dimension',
-        era: 'interdimensional',
+        era: 'dimensional',
         reqs: { hell_spire: 8 },
         grant: ['sphinx_bribe',1],
         cost: {

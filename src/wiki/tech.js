@@ -1,7 +1,10 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { actions, housingLabel } from './../actions.js';
+import { getHalloween } from './../functions.js';
 import { actionDesc, sideMenu } from './functions.js';
+
+const isHalloween = getHalloween();
 
 const extraInformation = {
     club: global.race['soul_eater'] ? [
@@ -20,7 +23,8 @@ const extraInformation = {
         loc(`wiki_tech_sundial1`),
         loc(`wiki_tech_sundial2`),
         loc(`wiki_tech_sundial3`),
-        loc(`wiki_tech_sundial4`)
+        loc(`wiki_tech_sundial4`),
+        loc(`wiki_tech_sundial5`)
     ],
     housing: [
         loc(`wiki_tech_building_unlock`,[housingLabel('small')])
@@ -536,6 +540,9 @@ const extraInformation = {
     advanced_biotech: [
         loc(`wiki_tech_advanced_biotech`)
     ],
+    codex_infinium: [
+        loc(`wiki_tech_codex_infinium`)
+    ],
     bioscience: [
         loc(`wiki_tech_building_unlock`,[loc(`city_biolab`)])
     ],
@@ -563,7 +570,9 @@ const extraInformation = {
     ],
     electricity: [
         loc(`wiki_tech_building_unlock`,[loc(`city_coal_power`)]),
-        loc(`wiki_tech_gov_upgrade`,[loc('govern_democracy')])
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_autocracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_democracy')]),
+        loc(`wiki_tech_gov_upgrade`,[loc('govern_oligarchy')])
     ],
     industrialization: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Titanium_name`)]),
@@ -605,8 +614,6 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_citadel_title`)])
     ],
     metaphysics: [
-        loc(`wiki_tech_gov_upgrade`,[loc('govern_autocracy')]),
-        loc(`wiki_tech_gov_upgrade`,[loc('govern_oligarchy')]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_theocracy')]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_republic')]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_socialist')]),
@@ -617,6 +624,12 @@ const extraInformation = {
     ],
     cybernetics: [
         loc(`wiki_tech_cybernetics`)
+    ],
+    blood_pact: [
+        loc(`wiki_tech_subtab_unlock`,[loc('tab_arpa_blood'),loc(`tech_arpa`)])
+    ],
+    purify: [
+        loc(`wiki_tech_purify`)
     ],
     gate_key: [
         loc(`wiki_tech_building_unlock`,[loc(`portal_west_tower`)]),
@@ -633,6 +646,18 @@ const extraInformation = {
         loc(`wiki_tech_hell_search`),
         loc(`wiki_tech_building_unlock`,[loc(`portal_guard_post_title`)])
     ],
+    lake_threat: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_bireme_title`)])
+    ],
+    lake_transport: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_transport_title`)])
+    ],
+    cooling_tower: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_cooling_tower_title`)])
+    ],
+    miasma: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_port_title`)])
+    ],
     tech_ascension: [
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_sirius_name`)]),loc(`interstellar_sirius_b_name`)]),
     ],
@@ -647,6 +672,9 @@ const extraInformation = {
     ],
     fusion_power: [
         loc(`wiki_tech_building_unlock`,[loc(`interstellar_fusion_title`)])
+    ],
+    infernium_power: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_inferno_power_title`)])
     ],
     thermomechanics: [
         loc(`wiki_tech_thermomechanics`)
@@ -1364,10 +1392,10 @@ const extraInformation = {
         loc(`wiki_tech_clerics`)
     ],
     conjuring: [
-        loc(`wiki_tech_conjuring`,((new Date()).getMonth() === 9 && (new Date()).getDate() === 31) ? [loc(`city_trick`),loc(`city_trick_conjure`)] : [loc(`city_food`),loc(`city_food_conjure`)])
+        loc(`wiki_tech_conjuring`,isHalloween.active ? [loc(`city_trick`),loc(`city_trick_conjure`)] : [loc(`city_food`),loc(`city_food_conjure`)])
     ],
     res_conjuring: [
-        loc(`wiki_tech_conjuring`,((new Date()).getMonth() === 9 && (new Date()).getDate() === 31) ? [loc(`city_dig`),loc(`city_dig_conjour`)] : [loc(`city_lumber`),loc(`city_lumber_conjure`)]),
+        loc(`wiki_tech_conjuring`,isHalloween.active ? [loc(`city_dig`),loc(`city_dig_conjour`)] : [loc(`city_lumber`),loc(`city_lumber_conjure`)]),
         loc(`wiki_tech_conjuring`, global.race['sappy'] ? [loc(`city_amber`),loc(`city_amber_conjour`)] : [loc(`city_stone`),loc(`city_stone_conjour`)])
     ],
     alchemy: [
@@ -1377,17 +1405,8 @@ const extraInformation = {
         loc(`wiki_tech_transmutation1`),
         loc(`wiki_tech_transmutation2`)
     ],
-    cooling_tower: [
-        loc(`tech_tech_cooling_tower`)
-    ],
-    lake_threat: [
-        loc(`tech_tech_lake_threat`)
-    ],
-    lake_transport: [
-        loc(`tech_tech_lake_transport`)
-    ],
-    codex_infinium: [
-        loc(`wiki_tech_codex_infinium`)
+    bribe_sphinx: [
+        loc(`wiki_tech_bribe_sphinx`)
     ]
 };
 
@@ -1439,6 +1458,11 @@ const extraRequirements = {
     hell_ruins2 : loc('wiki_tech_req_mission',[loc('portal_ruins_mission_title')]),
     hell_ruins3 : loc('wiki_tech_req_hell_ruins3'),
     hell_gate1 : loc('wiki_tech_req_mission',[loc('portal_gate_mission_title')]),
+    hell_lake2 : loc('wiki_tech_req_mission',[loc('portal_lake_mission_title')]),
+    hell_spire2 : loc('wiki_tech_req_mission',[loc('portal_spire_mission_title')]),
+    hell_spire8 : loc('wiki_tech_req_hell_spire8'),
+    hell_spire10 : loc('wiki_tech_req_hell_spire10'),
+    b_stone1 : loc('wiki_tech_req_b_stone1'),
     decay1 : loc('wiki_tech_req_decay1')
 };
 
@@ -1446,7 +1470,7 @@ const extraTechPositions = {
     unification2: 'unification',
     conjuring: 'ley_lines',
     res_conjuring: 'conjuring',
-    hell_search: 'corrupt_gem_analysis'
+    bribe_sphinx: 'miasma'
 };
 
 var techTrees = {};

@@ -2,7 +2,7 @@ import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, 
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
 import { traits, races } from './races.js';
-import { spatialReasoning } from './resources.js';
+import { defineResources, spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -94,6 +94,7 @@ const fortressModules = {
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
+                        drawTech();
                     }
                     return true;
                 }
@@ -505,7 +506,7 @@ const fortressModules = {
                 Adamantite(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 12500000 : 0; },
                 Orichalcum(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 30000000 : 0; },
             },
-            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 2 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
+            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('vault','portal');
@@ -1168,6 +1169,8 @@ const fortressModules = {
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
+                        clearElement($('#resources'));
+                        defineResources();
                         global.tech['hell_spire'] = 1;
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0, on: 0 };
@@ -3236,7 +3239,7 @@ function drawMechs(){
     let list = $('#mechList');
     for (let i=0; i<global.portal.mechbay.mechs.length; i++){
         let mech = global.portal.mechbay.mechs[i];
-        let desc = $(`<div><span>${loc(`portal_mech`)} #${i}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        let desc = $(`<div><span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
         mech.hardpoint.forEach(function(hp){
             desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
         });

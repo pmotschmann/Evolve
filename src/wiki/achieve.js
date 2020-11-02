@@ -21,13 +21,6 @@ export function renderAchievePage(zone){
 }
 
 const universeExclusives = {
-    blood_war: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
-    extinct_balorg: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
-    extinct_imp: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
-    extinct_seraph: ['evil'],
-    extinct_unicorn: ['evil'],
-    genus_demonic: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
-    genus_angelic: ['evil'],
     biome_hellscape: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
     biome_eden: ['evil'],
     cross: ['antimatter'],
@@ -191,9 +184,7 @@ function achieveDesc(achievement,showFlair){
                 genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`].l : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
-                if (key !== 'angelic' && achievement !== 'heavyweight') {
                     genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
-                }
             }
         });
         genus = genus + `</div>`;
