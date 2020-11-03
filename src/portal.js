@@ -2969,7 +2969,7 @@ export function drawMechLab(){
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
-        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span></div>`)
+        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span></div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
@@ -3013,7 +3013,8 @@ export function drawMechLab(){
             </b-dropdown>`);
         }
 
-        for (let i=0; i<3; i++){
+        let e_cap = global.blood['prepared'] ? 4 : 3;
+        for (let i=0; i<e_cap; i++){
             let equip = ``;
             ['shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val){
                 equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i}" data-val="${val}">${loc(`portal_mech_equip_${val}`)}</b-dropdown-item>`;
@@ -3040,28 +3041,34 @@ export function drawMechLab(){
                 build(){
                     let cost = 10000000;
                     let size = 25;
+                    let soul = 10;
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
                             cost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
                             size = 2;
+                            soul = 1;
                             break;
                         case 'medium':
                             cost = 180000;
                             size = 5;
+                            soul = 2;
                             break;
                         case 'large':
                             cost = 375000;
                             size = 10;
+                            soul = 5;
                             break;
                         case 'titan':
                             cost = 750000;
                             size = 25;
+                            soul = 10;
                             break;
                     }
 
                     let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
-                    if (global.portal.purifier.supply >= cost && avail >= size){
+                    if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                         global.portal.purifier.supply -= cost;
+                        global.resource.Soul_Gem.amount -= soul;
                         let mech = deepClone(global.portal.mechbay.blueprint);
                         global.portal.mechbay.mechs.push(mech);
                         global.portal.mechbay.bay += size;
@@ -3141,13 +3148,14 @@ export function drawMechLab(){
                     return false;
                 },
                 eVis(es){
+                    let prep = global.blood['prepared'] ? 1 : 0;
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
-                            return false;
+                            return prep === 1 && es === 0 ? true : false;
                         case 'medium':
-                            return es === 0 ? true : false;
+                            return es <= (0 + prep) ? true : false;
                         case 'large':
-                            return es <= 1 ? true : false;
+                            return es <= (1 + prep) ? true : false;
                         case 'titan':
                             return true;
                     }
@@ -3178,6 +3186,18 @@ export function drawMechLab(){
                             return 750000;
                     }
                 },
+                soul(s){
+                    switch (s){
+                        case 'small':
+                            return 1
+                        case 'medium':
+                            return 2;
+                        case 'large':
+                            return 5;
+                        case 'titan':
+                            return 10;
+                    }
+                },
                 slabel(s){
                     return loc(`portal_mech_size_${s}`);
                 },
@@ -3202,10 +3222,10 @@ export function drawMechLab(){
         ['size','chassis','weapon','equip'].forEach(function(type){
             let range = 1;
             if (type === 'weapon'){
-                range = 2
+                range = 2;
             }
             else if (type === 'equip'){
-                range = 3
+                range = e_cap;
             }
 
             for (let idx=0; idx<range; idx++){
@@ -3239,7 +3259,7 @@ function drawMechs(){
     let list = $('#mechList');
     for (let i=0; i<global.portal.mechbay.mechs.length; i++){
         let mech = global.portal.mechbay.mechs[i];
-        let desc = $(`<div><span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        let desc = $(`<div><a @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
         mech.hardpoint.forEach(function(hp){
             desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
         });
@@ -3248,6 +3268,34 @@ function drawMechs(){
         });
         list.append(desc);
     }
+
+    vBind({
+        el: '#mechList',
+        data: global.portal.mechbay.mechs,
+        methods: {
+            scrap(id){
+                switch (global.portal.mechbay.mechs[id].size){
+                    case 'small':
+                        global.portal.purifier.supply += 25000;
+                        break;
+                    case 'medium':
+                        global.portal.purifier.supply += 60000;
+                        break;
+                    case 'large':
+                        global.portal.purifier.supply += 125000;
+                        break;
+                    case 'titan':
+                        global.portal.purifier.supply += 250000;
+                        break;
+                }
+                if (global.portal.purifier.supply > global.portal.purifier.sup_max){
+                    global.portal.purifier.supply = global.portal.purifier.sup_max;
+                }
+                global.portal.mechbay.mechs.splice(id,1);
+                drawMechs();
+            }
+        }
+    });
 }
 
 export function genSpireFloor(){
