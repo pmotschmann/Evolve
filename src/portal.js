@@ -3376,6 +3376,11 @@ export function mechRating(mech){
             rating = 0.02;
             break;
     }
+
+    if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
+        rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
+    }
+
     switch (mech.chassis){
         case 'wheel':
             {

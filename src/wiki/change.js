@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.0`,
-        date: `11/??/2020`,
+        date: `11/07/2020`,
         changes: [
             `Expanded Interdimensional content, delve deep into the hell dimension.`,
             `New Magic Universe.`,
@@ -14,6 +14,7 @@ const changeList = [
             `Democracy now only affects Entertainers.`,
             `Some government bonuses now scale with tech era.`,
             `Races with Detritivore can now build Windmills.`,
+            `Base Aluminium income for plant based species is now roughly 10% higher.`
             `Beast of Burden now grants an extra loot roll instead of a 10% boost.`,
             `Revamped combat loot formulas.`,
             `Build queue resource highlighting.`,

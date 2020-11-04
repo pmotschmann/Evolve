@@ -719,24 +719,24 @@ function fastLoop(){
     }
 
     if (
-        (
-            (global.blood['unbound'] && global.blood.unbound < 4) || !global.blood['unbound']
-        ) && (
-            (races[global.race.species].type === 'aquatic' && global.city.biome !== 'oceanic') ||
-            (races[global.race.species].type === 'fey' && global.city.biome !== 'forest') ||
-            (races[global.race.species].type === 'heat' && global.city.biome !== 'volcanic') ||
-            (races[global.race.species].type === 'polar' && global.city.biome !== 'tundra') ||
-            (races[global.race.species].type === 'sand' && global.city.biome !== 'desert') ||
-            (races[global.race.species].type === 'demonic' && global.city.biome !== 'hellscape') ||
-            (races[global.race.species].type === 'angelic' && global.city.biome !== 'eden')
-        )
+        (races[global.race.species].type === 'aquatic' && global.city.biome !== 'oceanic') ||
+        (races[global.race.species].type === 'fey' && global.city.biome !== 'forest') ||
+        (races[global.race.species].type === 'heat' && global.city.biome !== 'volcanic') ||
+        (races[global.race.species].type === 'polar' && global.city.biome !== 'tundra') ||
+        (races[global.race.species].type === 'sand' && global.city.biome !== 'desert') ||
+        (races[global.race.species].type === 'demonic' && global.city.biome !== 'hellscape') ||
+        (races[global.race.species].type === 'angelic' && global.city.biome !== 'eden')
     ){
-        if (global.blood['unbound'] && global.blood.unbound >= 2){
-            breakdown.p['Global'][loc('event_protest')] = `-${10}%`;
+        if (global.blood['unbound'] && global.blood.unbound >= 4){
+            breakdown.p['Global'][loc('unsuited')] = `-${5}%`;
+            global_multiplier *= 0.95;
+        }
+        else if (global.blood['unbound'] && global.blood.unbound >= 2){
+            breakdown.p['Global'][loc('unsuited')] = `-${10}%`;
             global_multiplier *= 0.9;
         }
         else {
-            breakdown.p['Global'][loc('event_protest')] = `-${20}%`;
+            breakdown.p['Global'][loc('unsuited')] = `-${20}%`;
             global_multiplier *= 0.8;
         }
     }
@@ -4095,7 +4095,7 @@ function fastLoop(){
                         power_mult = 1;
                     }
 
-                    let base = miner_base * power_mult * 0.08;
+                    let base = miner_base * power_mult * 0.088;
                     if (global.city.geology['Aluminium']){
                         base *= global.city.geology['Aluminium'] + 1;
                     }

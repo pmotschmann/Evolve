@@ -1093,6 +1093,12 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_failed_history",[2])}</span></div>`);
     }
 
+    if (global.stats.achieve['gladiator'] && global.stats.achieve['gladiator'].l >= 1){
+        unlocked++;
+        let mech = global.stats.achieve['gladiator'].l * 20;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_gladiator",[mech])}</span></div>`);
+    }
+
     if (unlocked > 0){
         perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
     }
