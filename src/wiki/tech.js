@@ -631,6 +631,12 @@ const extraInformation = {
     purify: [
         loc(`wiki_tech_purify`)
     ],
+    waygate: [
+        loc(`wiki_tech_building_unlock`,[loc(`portal_waygate_title`)])
+    ],
+    demonic_infusion: [
+        loc(`wiki_tech_demonic_infusion`)
+    ],
     gate_key: [
         loc(`wiki_tech_building_unlock`,[loc(`portal_west_tower`)]),
         loc(`wiki_tech_building_unlock`,[loc(`portal_east_tower`)])
@@ -1197,6 +1203,9 @@ const extraInformation = {
     genetic_decay: [
         loc(`wiki_tech_genetic_decay`)
     ],
+    stabilize_decay: [
+        loc(`wiki_tech_stabilize_decay`)
+    ],
     warp_drive: [
         loc(`wiki_tech_subtab_unlock`,[loc(`tab_interstellar`),loc(`tab_civil`)]),
         loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc(`interstellar_alpha_name`)]),loc(`interstellar_alpha_name`)])
@@ -1463,6 +1472,7 @@ const extraRequirements = {
     hell_spire8 : loc('wiki_tech_req_hell_spire8'),
     hell_spire10 : loc('wiki_tech_req_hell_spire10'),
     b_stone1 : loc('wiki_tech_req_b_stone1'),
+    waygate3 : loc('wiki_tech_req_waygate3'),
     decay1 : loc('wiki_tech_req_decay1')
 };
 

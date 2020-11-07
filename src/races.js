@@ -2005,7 +2005,9 @@ export function cleanAddTrait(trait){
     switch (trait){
         case 'kindling_kindred':
             global.resource.Lumber.display = false;
+            global.resource.Crates.amount += global.resource.Lumber.crates;
             global.resource.Lumber.crates = 0;
+            global.resource.Containers.amount += global.resource.Lumber.containers;
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;

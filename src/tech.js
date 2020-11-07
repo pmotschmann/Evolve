@@ -5100,10 +5100,12 @@ const techs = {
         effect(){ return global.race['evil'] ? loc('tech_faux_leather_effect') : loc('tech_synthetic_fur_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
-                defineIndustry();
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     nanoweave: {
@@ -8242,9 +8244,9 @@ const techs = {
         }
     },
     stabilize_decay: {
-        id: 'tech-genetic_decay',
-        title: loc('tech_genetic_decay'),
-        desc: loc('tech_genetic_decay'),
+        id: 'tech-stabilize_decay',
+        title: loc('tech_stabilize_decay'),
+        desc: loc('tech_stabilize_decay'),
         category: 'genes',
         era: 'dimensional',
         reqs: { decay: 2, high_tech: 18 },
@@ -8253,7 +8255,7 @@ const techs = {
             Knowledge(){ return 50000000; },
             Blood_Stone(){ return 1; }
         },
-        effect: loc('tech_genetic_decay_effect'),
+        effect: loc('tech_stabilize_decay_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
                 return true;

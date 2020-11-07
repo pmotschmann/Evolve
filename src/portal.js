@@ -3804,14 +3804,16 @@ export function descension(){
         unlockFeat('twisted');
     }
 
+    let artifacts = 0;
     switch (global.race.universe){
         case 'micro':
-            global.resource.Artifact.amount += 1;
+            artifacts = 1;
             break;
         default:
-            global.resource.Artifact.amount += alevel();
+            artifacts = alevel();
             break;
     }
+    global.resource.Artifact.amount += artifacts;
     global.resource.Artifact.display = true;
 
     let affix = universeAffix();
@@ -3835,8 +3837,9 @@ export function descension(){
     let phage = global.race.Phage.count;
     let harmony = global.race.Harmony.count;
 
+    global.stats.artifact += artifacts;
     global.stats.reset++;
-    global.stats.ascend++;
+    global.stats.descend++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.tknow += global.stats.know;

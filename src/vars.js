@@ -883,11 +883,20 @@ if (!global.stats['blackhole']){
 if (!global.stats['ascend']){
     global.stats['ascend'] = 0;
 }
+if (!global.stats['descend']){
+    global.stats['descend'] = 0;
+}
 if (!global.stats['dark']){
     global.stats['dark'] = 0;
 }
 if (!global.stats['harmony']){
     global.stats['harmony'] = 0;
+}
+if (!global.stats['blood']){
+    global.stats['blood'] = 0;
+}
+if (!global.stats['artifact']){
+    global.stats['artifact'] = 0;
 }
 
 if (!global.stats['spire']){

@@ -1162,7 +1162,7 @@ const spaceProjects = {
                 Helium_3(){ return +fuel_adjust(12500).toFixed(0); }
             },
             effect(){
-                return `<div>${loc('space_gas_mission_effect1')}</div><div>${loc('space_gas_mission_effect2',[races[global.race.species].solar.gas])}</div>`;
+                return loc('space_gas_mission_effect',[races[global.race.species].solar.gas]);
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2835,7 +2835,7 @@ const interstellarProjects = {
                     let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['roid_eject']){
-                        mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
+                        mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                     }
                     if (global.tech['whitehole']){
                         let gains = calcPrestige('bigbang');
@@ -2937,7 +2937,7 @@ const interstellarProjects = {
                     let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
                     let r_mass = global.interstellar.stellar_engine.mass;
                     if (global.tech['roid_eject']){
-                        r_mass += 0.35 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 10));
+                        r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                     }
                     let output = powerModifier(+(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2));
                     if (global.tech['blackhole'] >= 5){

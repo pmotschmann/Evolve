@@ -1127,6 +1127,12 @@ export function drawStats(){
     if (global.stats.harmony > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_harmony_earned")}</span> {{ harmony | format }}</div>`);
     }
+    if (global.stats.blood > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blood_earned")}</span> {{ blood | format }}</div>`);
+    }
+    if (global.stats.artifact > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_artifact_earned")}</span> {{ artifact | format }}</div>`);
+    }
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | t_know | format }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | t_starved | format }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died | format }}</div>`);
@@ -1146,6 +1152,9 @@ export function drawStats(){
     }
     if (global.stats.ascend > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_ascension_resets")}</span> {{ ascend | format }}</div>`);
+    }
+    if (global.stats.descend > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ descend | format }}</div>`);
     }
     if (global.stats.portals > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals | format }}</div>`);

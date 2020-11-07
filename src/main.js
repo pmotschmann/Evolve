@@ -1384,7 +1384,7 @@ function fastLoop(){
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
-        if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['carnivore'])){
+        if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['detritivore'] || global.race['carnivore'])){
             let power = powerModifier(global.race['environmentalist'] ? (global.city.windmill.count * 1.5) : global.city.windmill.count);
             max_power -= power;
             power_grid += power;
@@ -2269,12 +2269,12 @@ function fastLoop(){
                     total += shipped;
 
                     let volume = shipped * supplyValue[res].out;
+                    while (volume * time_multiplier > global.resource[res].amount && volume > 0){
+                        volume -= supplyValue[res].out;
+                        shipped--;
+                    }
                     if (volume > 0){
                         breakdown.p.consume[res][loc('portal_transport_title')] = -(volume);
-                    }
-
-                    if (volume * time_multiplier > global.resource[res].amount){
-                        volume = global.resource[res].amount / time_multiplier;
                     }
 
                     let bireme = 1 - (bireme_rating ** (gal_on['bireme'] || 0));
@@ -6621,6 +6621,7 @@ function midLoop(){
                 global.tech.waygate = 3;
                 global.resource.Demonic_Essence.display = true;
                 global.resource.Demonic_Essence.amount = 1;
+                drawTech();
             }
             if (global.portal.spire.progress >= 100){
                 global.portal.spire.progress = 0;
@@ -6631,6 +6632,8 @@ function midLoop(){
                     stones *= 2;
                 }
                 global.resource.Blood_Stone.amount += stones;
+                global.stats.blood += stones;
+                arpa('Blood');
                 if (!global.tech.hasOwnProperty('b_stone')){
                     global.tech['b_stone'] = 1;
                     drawTech();

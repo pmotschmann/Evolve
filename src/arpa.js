@@ -3,6 +3,7 @@ import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, re
 import { actions, drawTech, drawCity, addAction, removeAction, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
+import { drawMechLab } from './portal.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
 
@@ -1198,6 +1199,9 @@ export const bloodPool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawMechLab();
         }
     },
     compact: {
