@@ -1006,7 +1006,8 @@ export const genePool = {
         grant: ['blood',3],
         cost: {
             Plasmid(){ return 7500; },
-            Phage(){ return 250; }
+            Phage(){ return 250; },
+            Artifact(){ return 1; }
         },
         action(){
             if (payCrispr('essence_absorber')){
@@ -1055,7 +1056,10 @@ export const bloodPool = {
         desc: loc('arpa_blood_lust_desc'),
         reqs: {},
         grant: ['lust','*'],
-        cost: { Blood_Stone(){ return global.blood['lust'] ? (global.blood.lust * 15 + 15) : 15; } },
+        cost: {
+            Blood_Stone(){ return global.blood['lust'] ? (global.blood.lust * 15 + 15) : 15; },
+            Artifact(){ return (global.blood['lust'] || 0) % 5 === 0 ? 1 : 0; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1070,7 +1074,10 @@ export const bloodPool = {
         desc: loc('arpa_blood_illuminate_desc'),
         reqs: {},
         grant: ['illuminate','*'],
-        cost: { Blood_Stone(){ return global.blood['illuminate'] ? (global.blood.illuminate * 12 + 12) : 12; } },
+        cost: {
+            Blood_Stone(){ return global.blood['illuminate'] ? (global.blood.illuminate * 12 + 12) : 12; },
+            Artifact(){ return (global.blood['illuminate'] || 0) % 5 === 0 ? 1 : 0; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1085,7 +1092,10 @@ export const bloodPool = {
         desc: loc('arpa_blood_greed_desc'),
         reqs: {},
         grant: ['greed','*'],
-        cost: { Blood_Stone(){ return global.blood['greed'] ? (global.blood.greed * 16 + 16) : 16; } },
+        cost: {
+            Blood_Stone(){ return global.blood['greed'] ? (global.blood.greed * 16 + 16) : 16; },
+            Artifact(){ return (global.blood['greed'] || 0) % 5 === 0 ? 1 : 0; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1103,7 +1113,10 @@ export const bloodPool = {
         condition(){
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
         },
-        cost: { Blood_Stone(){ return global.blood['hoarder'] ? (global.blood.hoarder * 14 + 14) : 14; } },
+        cost: {
+            Blood_Stone(){ return global.blood['hoarder'] ? (global.blood.hoarder * 14 + 14) : 14; },
+            Artifact(){ return (global.blood['hoarder'] || 0) % 5 === 0 ? 1 : 0; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1118,7 +1131,10 @@ export const bloodPool = {
         desc: loc('arpa_blood_artisan_desc'),
         reqs: {},
         grant: ['artisan','*'],
-        cost: { Blood_Stone(){ return global.blood['artisan'] ? (global.blood.artisan * 8 + 8) : 8; } },
+        cost: {
+            Blood_Stone(){ return global.blood['artisan'] ? (global.blood.artisan * 8 + 8) : 8; },
+            Artifact(){ return (global.blood['artisan'] || 0) % 5 === 0 ? 1 : 0; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1136,7 +1152,28 @@ export const bloodPool = {
         condition(){
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
         },
-        cost: { Blood_Stone(){ return global.blood['attract'] ? (global.blood.attract * 4 + 4) : 4; } },
+        cost: {
+            Blood_Stone(){ return global.blood['attract'] ? (global.blood.attract * 4 + 4) : 4; },
+            Artifact(){ return (global.blood['attract'] || 0) % 5 === 0 ? 1 : 0; }
+        },
+        effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
+        action(){
+            if (payBloodPrice($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    wrath: {
+        id: 'blood-wrath',
+        title: loc('arpa_blood_wrath_title'),
+        desc: loc('arpa_blood_wrath_desc'),
+        reqs: {},
+        grant: ['wrath','*'],
+        cost: {
+            Blood_Stone(){ return global.blood['wrath'] ? (global.blood.wrath * 2 + 2) : 2; },
+            Artifact(){ return 1; }
+        },
         effect(){ return `<span class="has-text-caution">${loc('arpa_blood_repeat')}</span>`; },
         action(){
             if (payBloodPrice($(this)[0].cost)){
@@ -1185,7 +1222,7 @@ export const bloodPool = {
         desc: loc('arpa_blood_unbound_desc'),
         reqs: {},
         grant: ['unbound',1],
-        cost: { Blood_Stone(){ return 50; } },
+        cost: { Blood_Stone(){ return 50; }, },
         action(){
             if (payBloodPrice($(this)[0].cost)){
                 return true;
@@ -1216,7 +1253,10 @@ export const bloodPool = {
         condition(){
             return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
         },
-        cost: { Blood_Stone(){ return 250; } },
+        cost: {
+            Blood_Stone(){ return 250; },
+            Artifact(){ return 2; }
+        },
         action(){
             if (payBloodPrice($(this)[0].cost)){
                 return true;

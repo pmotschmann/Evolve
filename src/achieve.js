@@ -20,7 +20,7 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator'
+        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator','corrupted'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -155,6 +155,11 @@ export const feats = {
         name: loc("feat_nephilim_name"),
         desc: loc("feat_nephilim_desc"),
         flair: loc("feat_nephilim_flair")
+    },
+    twisted: {
+        name: loc("feat_twisted_name"),
+        desc: loc("feat_twisted_desc"),
+        flair: loc("feat_twisted_flair")
     },
     friday: {
         name: loc("feat_friday_name"),

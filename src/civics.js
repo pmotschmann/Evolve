@@ -1778,6 +1778,7 @@ function warhead(){
             unlockFeat('take_no_advice');
         }
         checkAchievements();
+        let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = { 
             species : 'protoplasm', 
             gods: god,
@@ -1792,6 +1793,9 @@ function warhead(){
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
         };
+        if (corruption > 0){
+            global.race['corruption'] = corruption;
+        }
         global.city = {
             calendar: {
                 day: 0,

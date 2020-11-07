@@ -32,7 +32,6 @@ export var moon_on = {};
 export var belt_on = {};
 export var int_on = {};
 export var gal_on = {};
-export var lake_on = {};
 export var spire_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
@@ -570,13 +569,17 @@ if (convertVersion(global['version']) < 10000){
         global.portal['port'] = { count: 0, on: 0 };
     }
 
+    if (global.tech.hasOwnProperty('waygate') && !global.portal.hasOwnProperty('waygate')){
+        delete global.tech['waygate'];
+    }
+
     if (!global.hasOwnProperty('blood')){
         global['blood'] = {};
     }
 }
 
 global['version'] = '0.9.24';
-global['beta'] = 24;
+global['beta'] = 25;
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1518,6 +1521,9 @@ window.soft_reset = function reset(){
     if (global.race['bigbang']){
         replace.universe = 'bigbang';
     }
+    if (global.race.hasOwnProperty('corruption')){
+        replace['corruption'] = global.race.corruption;
+    }
     global['race'] = replace;
 
     let orbit = global.city.calendar.orbit;
@@ -1618,6 +1624,7 @@ export function clearStates(){
         }
     };
 
+    let artifacts = global.resource.Artifact;
     if (global.genes['blood']){
         let stones = global.resource.Blood_Stone;
         global.resource = {};
@@ -1625,6 +1632,9 @@ export function clearStates(){
     }
     else {
         global.resource = {};
+    }
+    if (artifacts.amount > 0){
+        global.resource['Artifact'] = artifacts;
     }
     global.evolution = {};
     global.event = 100;

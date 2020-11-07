@@ -5786,9 +5786,9 @@ function ascend(){
     if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
         unlockAchieve(`dreaded`);
     }
-
     checkAchievements();
 
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
@@ -5802,6 +5802,9 @@ function ascend(){
         seed: Math.floor(Math.seededRandom(10000)),
         ascended: true,
     };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
 
     Object.keys(geo).forEach(function (g){
         geo[g] += 0.02;

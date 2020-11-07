@@ -1,6 +1,6 @@
-import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation } from './vars.js';
+import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation, clearStates } from './vars.js';
 import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone } from './functions.js';
-import { unlockAchieve, alevel } from './achieve.js';
+import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { armyRating } from './civics.js';
@@ -1261,8 +1261,8 @@ const fortressModules = {
             },
             reqs: { hell_spire: 3 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('port', offset, 135000000, 1.2, 'portal'); },
-                Supply(offset){ return global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
+                Supply(offset){ return global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
@@ -1297,8 +1297,8 @@ const fortressModules = {
             },
             reqs: { hell_spire: 4 },
             cost: {
-                Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, 1.2, 'portal'); },
-                Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, 1.2, 'portal'); },
+                Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
+                Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, spireCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
@@ -1527,7 +1527,57 @@ const fortressModules = {
             action(){
                 return false;
             }
-        }
+        },
+        waygate: {
+            id: 'portal-waygate',
+            title: loc('portal_waygate_title'),
+            desc(wiki){
+                if (!global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki){
+                    return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_waygate_title')}</div>`;
+                }
+            },
+            reqs: { waygate: 1 },
+            no_queue(){ return global.tech['waygate'] && global.tech.waygate < 2 ? false : true },
+            queue_size: 1,
+            queue_complete(){ return global.tech['waygate'] && global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
+            cost: {
+                [global.race.species](wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 25 : 0; },
+                Money(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 1000000000 : 0; },
+                Supply(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 500000 : 0; },
+                Blood_Stone(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 5 : 0; },
+            },
+            powered(){
+                return global.portal.hasOwnProperty('waygate') && global.portal.waygate.count >= 10 ? 1 : 0;
+            },
+            power_reqs: { waygate: 2 },
+            effect(){
+                if (global.tech['waygate'] && global.tech.waygate >= 2){
+                    let progress = global.portal.hasOwnProperty('waygate') ? `<span class="has-text-warning">${+(global.portal.waygate.progress).toFixed(3)}%</span>` : '0%';
+                    return `<div>${loc('portal_waygate_open')}</div><div>${loc('portal_waygate_progress',[progress])}</div>`;
+                }
+                else {
+                    let size = 10;
+                    let remain = global.portal.hasOwnProperty('waygate') ? size - global.portal.waygate.count : size;
+                    return `<div>${loc('portal_waygate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+            },
+            action(){
+                if (global.portal.waygate.count < 10 && global.tech['waygate'] && global.tech.waygate === 1 && payCosts($(this)[0].cost)){
+                    incrementStruct('waygate','portal');
+                    if (global.portal.waygate.count >= 10){
+                        global.tech.waygate = 2;
+                        global.portal.waygate.count = 1;
+                        renderFortress();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+
     }
 };
 
@@ -3360,7 +3410,7 @@ function assignValidStatus(effect){
     }
 }
 
-export function mechRating(mech){
+export function mechRating(mech,boss){
     let rating = 0;
     switch (mech.size){
         case 'small':
@@ -3377,342 +3427,460 @@ export function mechRating(mech){
             break;
     }
 
-    if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
-        rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
-    }
+    if (boss){
+        if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
+            rating *= 1 + global.stats.achieve.gladiator.l * 0.1;
+        }
+        if (global.blood['wrath']){
+            rating *= 1 + (global.blood.wrath / 20);
+        }
 
-    switch (mech.chassis){
-        case 'wheel':
-            {
-                switch (global.portal.spire.type){
-                    case 'sand':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
-                        break;
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.35 : 0.25;
-                        break;
-                    case 'jungle':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                        break;
-                    case 'gravel':
-                        rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.65;
-                        break;
-                    case 'grass':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                        break;
-                    case 'brush':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                        break;
-                }
-            }
-            break;
-        case 'tread':
-            {
-                switch (global.portal.spire.type){
-                    case 'sand':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
-                        break;
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.45;
-                        break;
-                    case 'forest':
-                        rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                        break;
-                    case 'jungle':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                        break;
-                    case 'gravel':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.88 : 0.75;
-                        break;
-                }
-            }
-            break;
-        case 'biped':
-            {
-                switch (global.portal.spire.type){
-                    case 'sand':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
-                        break;
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
-                        break;
-                    case 'forest':
-                        rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                        break;
-                    case 'jungle':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.75;
-                        break;
-                    case 'grass':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                        break;
-                    case 'brush':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                        break;
-                }
-            }
-            break;
-        case 'quad':
-            {
-                switch (global.portal.spire.type){
-                    case 'sand':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                        break;
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.58 : 0.45;
-                        break;
-                    case 'forest':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                        break;
-                    case 'gravel':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
-                        break;
-                    case 'grass':
-                        rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                        break;
-                    case 'brush':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                        break;
-                }
-            }
-            break;
-        case 'spider':
-            {
-                switch (global.portal.spire.type){
-                    case 'sand':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
-                        break;
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                        break;
-                    case 'forest':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
-                        break;
-                    case 'jungle':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                        break;
-                    case 'gravel':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                        break;
-                    case 'brush':
-                        rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                        break;
-                }
-            }
-            break;
-        case 'hover':
-            {
-                switch (global.portal.spire.type){
-                    case 'swamp':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                        break;
-                    case 'forest':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.74 : 0.65;
-                        break;
-                    case 'jungle':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.6 : 0.5;
-                        break;
-                    case 'rocky':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
-                        break;
-                    case 'muddy':
-                        rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
-                        break;
-                    case 'brush':
-                        rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
-                        break;
-                }
-            }
-            break;
-    }
+        let affix = universeAffix();
+        if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
+            global.stats.spire[affix].lord;
+            rating /= 100 + (global.stats.spire[affix].lord * 25);
+        }
+        else {
+            rating /= 100;
+        }
 
-    Object.keys(global.portal.spire.status).forEach(function(effect){
-        switch (effect){
-            case 'freeze':
+        let damage = 0;
+        for (let i=0; i<mech.hardpoint.length; i++){
+            damage += rating;
+        }
+        return damage;
+    }
+    else {
+        if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
+            rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
+        }
+
+        switch (mech.chassis){
+            case 'wheel':
                 {
-                    if (!mech.equip.includes('radiator')){
-                        rating *= 0.25;
-                    }
-                }
-                break;
-            case 'hot':
-                {
-                    if (!mech.equip.includes('coolant')){
-                        rating *= 0.25;
-                    }
-                }
-                break;
-            case 'corrosive':
-                {
-                    if (!mech.equip.includes('ablative')){
-                        rating *= mech.equip.includes('shields') ? 0.75 : 0.25;
-                    }
-                }
-                break;
-            case 'humid':
-                {
-                    if (!mech.equip.includes('seals')){
-                        rating *= 0.75;
-                    }
-                }
-                break;
-            case 'windy':
-                {
-                    if (mech.chassis === 'hover'){
-                        rating *= 0.5;
-                    }
-                }
-                break;
-            case 'hilly':
-                {
-                    if (mech.chassis !== 'spider'){
-                        rating *= 0.75;
-                    }
-                }
-                break;
-            case 'mountain':
-                {
-                    if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                        rating *= mech.equip.includes('flare') ? 0.75 : 0.5;
-                    }
-                }
-                break;
-            case 'radioactive':
-                {
-                    if (!mech.equip.includes('shields')){
-                        rating *= 0.5;
-                    }
-                }
-                break;
-            case 'quake':
-                {
-                    if (!mech.equip.includes('stabilizer')){
-                        rating *= 0.25;
-                    }
-                }
-                break;
-            case 'dust':
-                {
-                    if (!mech.equip.includes('seals')){
-                        rating *= 0.5;
-                    }
-                }
-                break;
-            case 'river':
-                {
-                    if (mech.chassis !== 'hover'){
-                        rating *= 0.65;
-                    }
-                }
-                break;
-            case 'tar':
-                {
-                    if (mech.chassis !== 'quad'){
-                        rating *= mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
-                    }
-                }
-                break;
-            case 'steam':
-                {
-                    if (!mech.equip.includes('shields')){
-                        rating *= 0.75;
-                    }
-                }
-                break;
-            case 'flooded':
-                {
-                    if (mech.chassis !== 'hover'){
-                        rating *= 0.35;
-                    }
-                }
-                break;
-            case 'fog':
-                {
-                    if (!mech.equip.includes('sonar')){
-                        rating *= 0.2;
-                    }
-                }
-                break;
-            case 'rain':
-                {
-                    if (!mech.equip.includes('seals')){
-                        rating *= 0.75;
-                    }
-                }
-                break;
-            case 'hail':
-                {
-                    if (!mech.equip.includes('ablative') && mech.equip.includes('shields')){
-                        rating *= 0.75;
-                    }
-                }
-                break;
-            case 'chasm':
-                {
-                    if (!mech.equip.includes('grapple')){
-                        rating *= 0.1;
-                    }
-                }
-                break;
-            case 'dark':
-                {
-                    if (!mech.equip.includes('infrared')){
-                        rating *= mech.equip.includes('flare') ? 0.25 : 0.1;
-                    }
-                }
-                break;
-            case 'gravity':
-                {
-                    switch (mech.size){
-                        case 'medium':
-                            rating *= 0.75;
+                    switch (global.portal.spire.type){
+                        case 'sand':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
                             break;
-                        case 'large':
-                            rating *= 0.5;
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.35 : 0.25;
                             break;
-                        case 'titan':
-                            rating *= 0.25;
+                        case 'jungle':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                            break;
+                        case 'gravel':
+                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.65;
+                            break;
+                        case 'grass':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                            break;
+                        case 'brush':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                            break;
+                    }
+                }
+                break;
+            case 'tread':
+                {
+                    switch (global.portal.spire.type){
+                        case 'sand':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                            break;
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.45;
+                            break;
+                        case 'forest':
+                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                            break;
+                        case 'jungle':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                            break;
+                        case 'gravel':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.88 : 0.75;
+                            break;
+                    }
+                }
+                break;
+            case 'biped':
+                {
+                    switch (global.portal.spire.type){
+                        case 'sand':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
+                            break;
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
+                            break;
+                        case 'forest':
+                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                            break;
+                        case 'jungle':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.75;
+                            break;
+                        case 'grass':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                            break;
+                        case 'brush':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                            break;
+                    }
+                }
+                break;
+            case 'quad':
+                {
+                    switch (global.portal.spire.type){
+                        case 'sand':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                            break;
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.58 : 0.45;
+                            break;
+                        case 'forest':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                            break;
+                        case 'gravel':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
+                            break;
+                        case 'grass':
+                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                            break;
+                        case 'brush':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                            break;
+                    }
+                }
+                break;
+            case 'spider':
+                {
+                    switch (global.portal.spire.type){
+                        case 'sand':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
+                            break;
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                            break;
+                        case 'forest':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                            break;
+                        case 'jungle':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                            break;
+                        case 'gravel':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                            break;
+                        case 'brush':
+                            rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                            break;
+                    }
+                }
+                break;
+            case 'hover':
+                {
+                    switch (global.portal.spire.type){
+                        case 'swamp':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                            break;
+                        case 'forest':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.74 : 0.65;
+                            break;
+                        case 'jungle':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.6 : 0.5;
+                            break;
+                        case 'rocky':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                            break;
+                        case 'muddy':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                            break;
+                        case 'brush':
+                            rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
                             break;
                     }
                 }
                 break;
         }
-    });
 
-    rating /= global.portal.spire.count;
+        Object.keys(global.portal.spire.status).forEach(function(effect){
+            switch (effect){
+                case 'freeze':
+                    {
+                        if (!mech.equip.includes('radiator')){
+                            rating *= 0.25;
+                        }
+                    }
+                    break;
+                case 'hot':
+                    {
+                        if (!mech.equip.includes('coolant')){
+                            rating *= 0.25;
+                        }
+                    }
+                    break;
+                case 'corrosive':
+                    {
+                        if (!mech.equip.includes('ablative')){
+                            rating *= mech.equip.includes('shields') ? 0.75 : 0.25;
+                        }
+                    }
+                    break;
+                case 'humid':
+                    {
+                        if (!mech.equip.includes('seals')){
+                            rating *= 0.75;
+                        }
+                    }
+                    break;
+                case 'windy':
+                    {
+                        if (mech.chassis === 'hover'){
+                            rating *= 0.5;
+                        }
+                    }
+                    break;
+                case 'hilly':
+                    {
+                        if (mech.chassis !== 'spider'){
+                            rating *= 0.75;
+                        }
+                    }
+                    break;
+                case 'mountain':
+                    {
+                        if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
+                            rating *= mech.equip.includes('flare') ? 0.75 : 0.5;
+                        }
+                    }
+                    break;
+                case 'radioactive':
+                    {
+                        if (!mech.equip.includes('shields')){
+                            rating *= 0.5;
+                        }
+                    }
+                    break;
+                case 'quake':
+                    {
+                        if (!mech.equip.includes('stabilizer')){
+                            rating *= 0.25;
+                        }
+                    }
+                    break;
+                case 'dust':
+                    {
+                        if (!mech.equip.includes('seals')){
+                            rating *= 0.5;
+                        }
+                    }
+                    break;
+                case 'river':
+                    {
+                        if (mech.chassis !== 'hover'){
+                            rating *= 0.65;
+                        }
+                    }
+                    break;
+                case 'tar':
+                    {
+                        if (mech.chassis !== 'quad'){
+                            rating *= mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
+                        }
+                    }
+                    break;
+                case 'steam':
+                    {
+                        if (!mech.equip.includes('shields')){
+                            rating *= 0.75;
+                        }
+                    }
+                    break;
+                case 'flooded':
+                    {
+                        if (mech.chassis !== 'hover'){
+                            rating *= 0.35;
+                        }
+                    }
+                    break;
+                case 'fog':
+                    {
+                        if (!mech.equip.includes('sonar')){
+                            rating *= 0.2;
+                        }
+                    }
+                    break;
+                case 'rain':
+                    {
+                        if (!mech.equip.includes('seals')){
+                            rating *= 0.75;
+                        }
+                    }
+                    break;
+                case 'hail':
+                    {
+                        if (!mech.equip.includes('ablative') && mech.equip.includes('shields')){
+                            rating *= 0.75;
+                        }
+                    }
+                    break;
+                case 'chasm':
+                    {
+                        if (!mech.equip.includes('grapple')){
+                            rating *= 0.1;
+                        }
+                    }
+                    break;
+                case 'dark':
+                    {
+                        if (!mech.equip.includes('infrared')){
+                            rating *= mech.equip.includes('flare') ? 0.25 : 0.1;
+                        }
+                    }
+                    break;
+                case 'gravity':
+                    {
+                        switch (mech.size){
+                            case 'medium':
+                                rating *= 0.75;
+                                break;
+                            case 'large':
+                                rating *= 0.5;
+                                break;
+                            case 'titan':
+                                rating *= 0.25;
+                                break;
+                        }
+                    }
+                    break;
+            }
+        });
 
-    let damage = 0;
-    for (let i=0; i<mech.hardpoint.length; i++){
-        damage += rating * monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+        rating /= global.portal.spire.count;
+        let damage = 0;
+        for (let i=0; i<mech.hardpoint.length; i++){
+            damage += rating * monsters[global.portal.spire.boss].weapon[mech.hardpoint[i]];
+        }
+        return damage;
     }
-    return damage;
+}
+
+export function descension(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    global.lastMsg = false;
+
+    unlockAchieve(`extinct_${global.race.species}`);
+    unlockAchieve(`corrupted`);
+    if (races[global.race.species].type === 'angelic'){
+        unlockFeat('twisted');
+    }
+
+    switch (global.race.universe){
+        case 'micro':
+            global.resource.Artifact.amount += 1;
+            break;
+        default:
+            global.resource.Artifact.amount += 4;
+            break;
+    }
+    global.resource.Artifact.display = true;
+
+    let affix = universeAffix();
+    if (global.stats.spire.hasOwnProperty(affix)){
+        if (global.stats.spire[affix].hasOwnProperty('lord')){
+            global.stats.spire[affix].lord++;
+        }
+        else {
+            global.stats.spire[affix]['lord'] = 1;
+        }
+    }
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+    let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
+    let phage = global.race.Phage.count;
+    let harmony = global.race.Harmony.count;
+
+    global.stats.reset++;
+    global.stats.ascend++;
+    global.stats.tdays += global.stats.days;
+    global.stats.days = 0;
+    global.stats.tknow += global.stats.know;
+    global.stats.know = 0;
+    global.stats.tstarved += global.stats.starved;
+    global.stats.starved = 0;
+    global.stats.tdied += global.stats.died;
+    global.stats.died = 0;
+
+    checkAchievements();
+
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        Plasmid: { count: plasmid, anti: antiplasmid },
+        Phage: { count: phage },
+        Dark: { count: global.race.Dark.count },
+        Harmony: { count: harmony },
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        corruption: 5,
+    };
+
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
+    };
+    global.tech = { theology: 1 };
+    clearStates();
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
 }

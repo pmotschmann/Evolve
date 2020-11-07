@@ -1,4 +1,4 @@
-import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, lake_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
 import { vBind, mainVue, popover, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
@@ -597,6 +597,11 @@ function fastLoop(){
     if (global.race['ascended']){
         breakdown.p['Global'][loc('achieve_ascended_name')] = `5%`;
         global_multiplier *= 1.05;
+    }
+    if (global.race['corruption']){
+        let corruption = global.race['corruption'] * 2;
+        breakdown.p['Global'][loc('achieve_corrupted_name')] = `${corruption}%`;
+        global_multiplier *= 1 + (corruption / 100);
     }
     if (global.race['untapped']){
         if (global.race['untapped'] > 0){
@@ -1723,10 +1728,10 @@ function fastLoop(){
                         $(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating * -(actions.portal.prtl_lake[harbour_structs[i]].support());
-                    lake_on[harbour_structs[i]] = operating;
+                    gal_on[harbour_structs[i]] = operating;
                 }
                 else {
-                    lake_on[harbour_structs[i]] = 0;
+                    gal_on[harbour_structs[i]] = 0;
                 }
             }
             global.portal.harbour.support = used_support;
@@ -2251,7 +2256,7 @@ function fastLoop(){
             global.interstellar.stellar_engine.exotic += exotic / 10000000000 * time_multiplier;
         }
 
-        if (global.portal['transport']){
+        if (global.portal['transport'] && global.portal['purifier']){
             let total = 0;
             let supply = 0;
             let bireme_rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
@@ -2571,15 +2576,6 @@ function fastLoop(){
             for (let i=0; i<ship_list.length; i++){
                 if (p_on['s_gate'] && global.galaxy.hasOwnProperty(ship_list[i])){
                     gal_on[ship_list[i]] = global.galaxy[ship_list[i]].on;
-                }
-            }
-        }
-
-        if (p_on['harbour']){
-            let ship_list = ['bireme','transport'];
-            for (let i=0; i<ship_list.length; i++){
-                if (p_on['harbour'] && global.portal.hasOwnProperty(ship_list[i])){
-                    gal_on[ship_list[i]] = global.portal[ship_list[i]].on;
                 }
             }
         }
@@ -6604,11 +6600,28 @@ function midLoop(){
                 }
                 if (space + size <= global.portal.mechbay.max){
                     space += size;
-                    progress += mechRating(mech);
+                    if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
+                        progress += mechRating(mech,true);
+                    }
+                    else {
+                        progress += mechRating(mech,false);
+                    }
                 }                
             });
             global.portal.mechbay.bay = space;
-            global.portal.spire.progress += progress;
+            if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
+                global.portal.waygate.progress += progress;
+            }
+            else {
+                global.portal.spire.progress += progress;
+            }
+            if (global.portal.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.portal.waygate.progress >= 100){
+                global.portal.waygate.progress = 100;
+                global.portal.waygate.on = 0;
+                global.tech.waygate = 3;
+                global.resource.Demonic_Essence.display = true;
+                global.resource.Demonic_Essence.amount = 1;
+            }
             if (global.portal.spire.progress >= 100){
                 global.portal.spire.progress = 0;
                 global.resource.Blood_Stone.display = true;
@@ -7355,6 +7368,9 @@ function longLoop(){
             }
             if (global.race.minor['fortify']){
                 fortify += global.race.minor['fortify'];
+            }
+            if (global.tech['decay'] >= 3){
+                fortify *= 100;
             }
             global.race.gene_fortify = fortify;
         }

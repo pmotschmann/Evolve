@@ -1,8 +1,9 @@
-import { global } from './vars.js';
+import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, fanaticism, big_bang, cataclysm_end } from './actions.js';
+import { descension } from './portal.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -4252,13 +4253,46 @@ const techs = {
         reqs: { hell_spire: 10, b_stone: 2 },
         grant: ['waygate',1],
         cost: {
-            Knowledge(){ return 55000000; },
-            Blood_Stone(){ return 2; }
+            Knowledge(){ return 55000000; }
         },
         effect(){ return loc('tech_waygate_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
+                global.portal['waygate'] = { count: 0, progress: 0, on: 0 };
                 return true;
+            }
+            return false;
+        }
+    },
+    demonic_infusion: {
+        id: 'tech-demonic_infusion',
+        title: loc('tech_demonic_infusion'),
+        desc: loc('tech_demonic_infusion'),
+        category: 'hell_dimension',
+        era: 'dimensional',
+        reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
+        grant: ['waygate',4],
+        cost: {
+            [global.race.species](){ return 1000; },
+            Knowledge(){ return 55000000; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){
+            let artifacts = 0;
+            switch (global.race.universe){
+                case 'micro':
+                    artifacts = 1;
+                    break;
+                default:
+                    artifacts = 4;
+                    break;
+            }
+            return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[artifacts])}</div>`;
+        },
+        action(){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            if (payCosts($(this)[0].cost)){
+                descension();
             }
             return false;
         }
@@ -8198,6 +8232,26 @@ const techs = {
         grant: ['decay',2],
         cost: {
             Knowledge(){ return 200000; }
+        },
+        effect: loc('tech_genetic_decay_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    stabilize_decay: {
+        id: 'tech-genetic_decay',
+        title: loc('tech_genetic_decay'),
+        desc: loc('tech_genetic_decay'),
+        category: 'genes',
+        era: 'dimensional',
+        reqs: { decay: 2, high_tech: 18 },
+        grant: ['decay',3],
+        cost: {
+            Knowledge(){ return 50000000; },
+            Blood_Stone(){ return 1; }
         },
         effect: loc('tech_genetic_decay_effect'),
         action(){

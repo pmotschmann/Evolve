@@ -7258,6 +7258,7 @@ function bioseed(){
 
     checkAchievements();
 
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
         probes += global.stats.achieve['explorer'].l;
@@ -7276,6 +7277,9 @@ function bioseed(){
         seed: Math.floor(Math.seededRandom(10000)),
         ascended: false,
     };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
     global.city = {
         calendar: {
             day: 0,
@@ -7353,6 +7357,7 @@ export function cataclysm_end(){
             unlockAchieve('failed_history');
         }
 
+        let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = {
             species : global.race.species,
             gods: global.race.gods,
@@ -7367,6 +7372,9 @@ export function cataclysm_end(){
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
         };
+        if (corruption > 0){
+            global.race['corruption'] = corruption;
+        }
         global.city = {
             calendar: {
                 day: 0,
@@ -7483,6 +7491,8 @@ export function big_bang(){
     global.stats.phage += new_phage;
     global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
     global.stats.universes++;
+
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
@@ -7496,8 +7506,11 @@ export function big_bang(){
         bigbang: true,
         probes: 4,
         seed: Math.floor(Math.seededRandom(10000)),
-        ascended: false,
+        ascended: false
     };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
     global.city = {
         calendar: {
             day: 0,
