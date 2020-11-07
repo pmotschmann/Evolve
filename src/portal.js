@@ -1262,7 +1262,7 @@ const fortressModules = {
             reqs: { hell_spire: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
-                Supply(offset){ return global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
+                Supply(offset){ return global.portal.hasOwnProperty('port') && global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
             powered(){ return powerCostMod(1); },
             support(){ return -1; },
@@ -1522,7 +1522,8 @@ const fortressModules = {
                     status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
                 }
                 let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${+(global.portal.spire.progress).toFixed(3)}%</span>` : '0%';
-                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${global.portal.spire.boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
+                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
             },
             action(){
                 return false;
