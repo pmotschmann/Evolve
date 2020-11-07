@@ -1271,7 +1271,7 @@ const fortressModules = {
                 if (spire_on['base_camp']){
                     port_value *= 1 + (spire_on['base_camp'] * 0.4);
                 }
-                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[port_value])}</div>`;
+                return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[Math.round(port_value)])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

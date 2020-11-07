@@ -6263,7 +6263,7 @@ function midLoop(){
             if (spire_on['port']){
                 max += spire_on['port'] * port_value;
             }
-            global.portal.purifier.sup_max = max;
+            global.portal.purifier.sup_max = Math.round(max);
         }
 
         for (let i=0; i<3; i++){

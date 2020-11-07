@@ -989,7 +989,8 @@ export const genePool = {
         grant: ['blood',2],
         cost: {
             Plasmid(){ return 3000; },
-            Phage(){ return 100; }
+            Phage(){ return 100; },
+            Artifact(){ return 1; }
         },
         action(){
             if (payCrispr('blood_sacrifice')){
