@@ -4284,7 +4284,7 @@ const techs = {
                     artifacts = 1;
                     break;
                 default:
-                    artifacts = 4;
+                    artifacts = alevel();
                     break;
             }
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[artifacts])}</div>`;

@@ -3808,7 +3808,7 @@ export function descension(){
             global.resource.Artifact.amount += 1;
             break;
         default:
-            global.resource.Artifact.amount += 4;
+            global.resource.Artifact.amount += alevel();
             break;
     }
     global.resource.Artifact.display = true;
