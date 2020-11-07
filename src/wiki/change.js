@@ -26,7 +26,7 @@ const changeList = [
         version: `0.9.24`,
         date: `11/1/2020`,
         changes: [
-            `Holliday icons from feats earned with no stars can now be accessed.`,
+            `Holiday icons from feats earned with no stars can now be accessed.`,
             `Challenge feat icons still require at least 1 star.`,
         ]
     },
