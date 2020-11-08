@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.1`,
+        date: `11/08/2020`,
+        changes: [
+            `Fixed display bug with CRISPR costs and Technocracy.`,
+            `Fixed issue with some Windmills not producing power.`,
+            `The Resort now properly formats its vault size.`
+        ]
+    },
+    {
         version: `1.0.0`,
         date: `11/07/2020`,
         changes: [

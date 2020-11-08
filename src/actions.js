@@ -5350,7 +5350,7 @@ export function setAction(c_action,action,type,old){
         let cst = '';
         let data = '';
         if (c_action['cost']){
-            var costs = adjustCosts(c_action.cost);
+            var costs = action !== 'genes' && action !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
             Object.keys(costs).forEach(function (res){
                 let cost = costs[res]();
                 if (cost > 0){
@@ -5875,7 +5875,8 @@ function srDesc(c_action,old){
             desc = desc + loc('not_affordable') + '. ';
         }
         desc = desc + 'Costs: ';
-        var costs = adjustCosts(c_action.cost);
+        let type = c_action.id.split('-')[0];
+        var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
             if (res === 'Structs'){
                 let structs = costs[res]();
@@ -5963,7 +5964,8 @@ export function actionDesc(parent,c_action,obj,old){
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     parent.append($(`<div>${desc}</div>`));
 
-    if (c_action['category'] && c_action.id.substring(0,4) === 'tech' && !old){
+    let type = c_action.id.split('-')[0];
+    if (c_action['category'] && type === 'tech' && !old){
         parent.append($(`<div class="has-text-flair">${loc('tech_dist_category')}: ${loc(`tech_dist_${c_action.category}`)}</div>`));
     }
 
@@ -5972,7 +5974,7 @@ export function actionDesc(parent,c_action,obj,old){
         let empty = true;
         var cost = $('<div></div>');
 
-        var costs = adjustCosts(c_action.cost);
+        var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
             if (res === 'Structs'){
                 let structs = costs[res]();
