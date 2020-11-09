@@ -77,7 +77,7 @@ const changeList = [
         changes: [
             `Swarm Control AI now provides a base increase of +2 before unlocking Quantum Computing.`,
             `Fixed bugs with manual crafting popover.`,
-            `Fixed bug that stopped DNA & RNA generation during evolution if the Cataclysm scenerio was toggled on.`
+            `Fixed bug that stopped DNA & RNA generation during evolution if the Cataclysm scenario was toggled on.`
         ]
     },
     {
@@ -181,7 +181,7 @@ const changeList = [
         date: `7/18/2020`,
         changes: [
             `Czech translation by Mousesama`,
-            `The slaves have staged a sucessful hunger strike to demand better living conditions, as a result slave pens can now only hold 4 slaves each.`,
+            `The slaves have staged a successful hunger strike to demand better living conditions, as a result slave pens can now only hold 4 slaves each.`,
             `Autocracy and Frenzy no longer block Immoral races from gaining a Warmonger bonus.`,
             `Geology traits now display under planet information.`,
             `Popovers added to building and research queues.`
@@ -194,7 +194,7 @@ const changeList = [
             `Seasons no longer exist in Cataclysm mode.`,
             `It is no longer Sunny in Cataclysm mode.`,
             `Parasites are no longer unable to grow population in Cataclysm mode, but they do take a growth penalty.`,
-            `Base Sawmill effect is now seperated from lumberjack in production breakdown.`
+            `Base Sawmill effect is now separated from lumberjack in production breakdown.`
         ]
     },
     {
@@ -209,7 +209,7 @@ const changeList = [
         version: `0.9.5`,
         date: `7/6/2020`,
         changes: [
-            `Fixed a bug that occured when combining the Terrifying trait with the gold star Iron Will perk.`
+            `Fixed a bug that occurred when combining the Terrifying trait with the gold star Iron Will perk.`
         ]
     },
     {
@@ -298,7 +298,7 @@ const changeList = [
             `Oceanic biome now applies a 5% penalty to Fur generation.`,
             `Tundra biome now applies a 25% bonus to Fur generation.`,
             `Tundra biome now applies a 10% penalty to Oil generation.`,
-            `New plantery modifiers: Elliptical, Flare, Dense, and Unstable.`,
+            `New planetary modifiers: Elliptical, Flare, Dense, and Unstable.`,
             `Oligarchy tax riot immunity raised from 35% to 45%.`,
         ]
     },
@@ -379,7 +379,7 @@ const changeList = [
         version: `0.8.10`,
         date: `4/13/2020`,
         changes: [
-            `Added EM (Electromagentic) Field Challenge.`,
+            `Added EM (Electromagnetic) Field Challenge.`,
         ]
     },
     {
@@ -495,7 +495,7 @@ const changeList = [
             `Genetics lab custom mutation costs rescaled to static values depending on the genetic trait.`,
             `Colonists will now be automatically assigned when a Living Quarter is completed if the default job has any available citizens.`,
             `Biodome redesigned, produces less food but increases living quarter capacity for Citizens.`,
-            `More robust research catagories.`,
+            `More robust research categories.`,
             `Various racial traits now apply to ARPA projects.`,
             `Human Creative trait rescaled.`,
             `Large cost creep penalty reduced to 0.005 from 0.01.`,
@@ -508,7 +508,7 @@ const changeList = [
         date: `3/16/2020`,
         changes: [
             `Antimatter Universe now gives a 10% prestige bonus post MAD.`,
-            `St. Patricks Day event.`,
+            `St. Patrick's Day event.`,
             `Blood War can no longer be earned by none demonic evil races.`,
             `Build Crate/Container buttons now update create/container values when upgraded by research.`,
         ]
@@ -541,7 +541,7 @@ const changeList = [
             `Evil Wendigo Smelters correctly display that they use 1 Flesh/s instead of 3 Souls/s. Also fixed the bug where they end up using 3 Flesh/s instead of 1.`,
             `Fixed bug where the Evil Wendigo Reclaimer description would show the Lumberjack description.`,
             `If Containers have not yet been unlocked as a resource, getting a Wharf will unlock it.`,
-            `Fixed bug where, if Frieght Trains was gotten after ARPA, the Railway project would need a refresh to appear.`,
+            `Fixed bug where, if Freight Trains was gotten after ARPA, the Railway project would need a refresh to appear.`,
         ]
     },
     {
@@ -635,7 +635,7 @@ const changeList = [
         date: `1/7/2020`,
         changes: [
             `Queueing the World Collider will no longer lag the game.`,
-            `Multi-segement projects will now have extra segments cleared from the queue on completion.`,
+            `Multi-segment projects will now have extra segments cleared from the queue on completion.`,
             `Spy and Government related popovers that would sometimes get stuck open will now clear.`,
             `Queued projects that will not complete due to lack of production will now display a green [Never] instead of -1 second timer.`,
             `Multi-segment projects no longer block queueing ARPA projects unless they consumed the entire queue space.`,
@@ -694,7 +694,7 @@ const changeList = [
         version: `0.7.8`,
         date: `12/6/2019`,
         changes: [
-            `The default job can now be set to: Unemployed, Farmer, Lumberjack, Quarry Worker, or Scavanger.`,
+            `The default job can now be set to: Unemployed, Farmer, Lumberjack, Quarry Worker, or Scavenger.`,
             `New line of feats for achievement hunting.`,
             `Novice Perk.`,
             `Journeyman Perk.`,
@@ -775,7 +775,7 @@ const changeList = [
             `New ARPA Project: Railway.`,
             `New CRISPR upgrades: Mitosis & Metaphase.`,
             `Construct advanced AI stations in deep space.`,
-            `Rapid Gene Squencing upgrade.`,
+            `Rapid Gene Sequencing upgrade.`,
             `Civics tab split into Government, Industry, and Military sections.`,
             `Inspiration no longer adds an upfront knowledge bonus.`,
             `Vigilante requirement lowered to 12.`,
@@ -945,7 +945,7 @@ const changeList = [
         changes: [
             `Added a hire merc option to fortress, mercs hired here go directly to the fortress.`,
             `Default patrol size is now 10 instead of 4.`,
-            `Adjuted margins in city tab/space tabs to slightly reduce vertical scrolling.`,
+            `Adjusted margins in city tab/space tabs to slightly reduce vertical scrolling.`,
             `New Tower of Babel flair.`,
         ]
     },
@@ -998,7 +998,7 @@ const changeList = [
         version: `0.6.6`,
         date: `9/23/2019`,
         changes: [
-            `Added special tech tree to sacrifical altar to boost its effectiveness per sacrifice.`,
+            `Added special tech tree to sacrificial altar to boost its effectiveness per sacrifice.`,
             `Restored windmills to cath.`,
             `Challenge Multiplier Dark Energy rounding calculation fixed.`,
             `Added extra information to blackhole description when it reaches destabilization point.`,
@@ -1067,7 +1067,7 @@ const changeList = [
         version: `0.5.17`,
         date: `9/5/2019`,
         changes: [
-            `Mantis Fraile trait replaced with new Cannibalize trait, eat your own citizens for buffs.`,
+            `Mantis Frail trait replaced with new Cannibalize trait, eat your own citizens for buffs.`,
             `The Fortress will now remember the number of troops assigned to it and attempt to keep it at that level.`,
         ]
     },
@@ -1100,7 +1100,7 @@ const changeList = [
         date: `8/30/2019`,
         changes: [
             `New layout for selecting challenge genes/modes during end of evolution stage.`,
-            `Fixed bug with low support elerium miners that caused them to miscalulate miner outputs.`,
+            `Fixed bug with low support elerium miners that caused them to miscalculate miner outputs.`,
             `Added a threat level warning to fortress.`,
         ]
     },
@@ -1116,7 +1116,7 @@ const changeList = [
         date: `8/28/2019`,
         changes: [
             `Fixed issue with nucleus DNA bonus not applying from correct cell stage evolutions.`,
-            `Building timers now count down without refreashing the popover.`,
+            `Building timers now count down without refreshing the popover.`,
             `Long action titles will now wrap instead of overflowing the button.`,
             `Fixed a bug that could cause the research queue to clear items from the building queue.`,
         ]
@@ -1147,7 +1147,7 @@ const changeList = [
         date: `8/27/2019`,
         changes: [
             `Construction timers added to build queue.`,
-            `Construction and research completed by queues are now logged to the messege list.`,
+            `Construction and research completed by queues are now logged to the message list.`,
             `Improved drag and drop support for queues.`,
         ]
     },
@@ -1156,7 +1156,7 @@ const changeList = [
         date: `8/25/2019`,
         changes: [
             `Drag support for queue sorting.`,
-            `Fixed resource display bug that occured when buying a mass ejector.`,
+            `Fixed resource display bug that occurred when buying a mass ejector.`,
             `Minor traits now show the number of ranks from phage or genes spent.`,
         ]
     },
@@ -1165,7 +1165,7 @@ const changeList = [
         date: `8/23/2019`,
         changes: [
             `Building queue now works in space.`,
-            `Added a seperate research queue.`,
+            `Added a separate research queue.`,
             `Fixed rock quarry awarding 4% stone bonus instead of the stated 2%.`,
             `Fixed rendering bugs with the blackhole and mass ejector.`,
         ]
@@ -1183,7 +1183,7 @@ const changeList = [
         changes: [
             `Building Queue system v1.0.`,
             `Urban Planning, Zoning Permits, and Urbanization queue related techs.`,
-            `New CRISPR upgrades for enchanced queueing.`,
+            `New CRISPR upgrades for enhanced queueing.`,
         ]
     },
     {
@@ -1191,7 +1191,7 @@ const changeList = [
         date: `8/20/2019`,
         changes: [
             `Stats and Achievements separated into separate sub tabs.`,
-            `Disrupter rifle upgrade for soldiers.`,
+            `Disruptor rifle upgrade for soldiers.`,
             `Mass Ejector can no longer be unlocked before completing the Stellar Engine.`,
         ]
     },
@@ -1216,7 +1216,7 @@ const changeList = [
         changes: [
             `Interstellar space is now unlockable.`,
             `Interdimensional travel is now unlockable.`,
-            `New mangement tab for Crates & Containers.`,
+            `New management tab for Crates & Containers.`,
             `Power generation breakdown.`,
             `Improved resource breakdown layout.`,
             `Leathery trait buffed.`,
@@ -1246,7 +1246,7 @@ const changeList = [
         version: `0.4.40`,
         date: `8/9/2019`,
         changes: [
-            `Changed No Cripser gene into the Weak Crisper gene.`,
+            `Changed No Crispr gene into the Weak Crispr gene.`,
         ]
     },
     {
@@ -1314,7 +1314,7 @@ const changeList = [
             `Geology Oil rich/poor no longer applies to oil extractor.`,
             `Added resource alternate row coloring.`,
             `Added an affordability hint for screen readers.`,
-            `Fixed some bugs with awarding a random minor trait from fanatiscm.`,
+            `Fixed some bugs with awarding a random minor trait from fanaticism.`,
             `Dimensional Compression now charges the correct cost.`,
         ]
     },
@@ -1356,7 +1356,7 @@ const changeList = [
             `Synthesis line of CRISPR upgrades.`,
             `Satellite and Observatory cost reductions.`,
             `Fibroblast minor trait.`,
-            `Iridium is now unlocked by constructing an irdium mine instead of the moon base.`,
+            `Iridium is now unlocked by constructing an iridium mine instead of the moon base.`,
             `Helium-3 is now unlocked by constructing a helium-3 mine instead of the moon base.`,
             `Genome sequencing now defaults to on when first unlocked.`,
         ]
@@ -1434,7 +1434,7 @@ const changeList = [
         date: `7/4/2019`,
         changes: [
             `Phage can now be earned from space resets, phage extends the plasmid diminishing return breakpoint.`,
-            `Dimensional Warping cripsr upgrade, applies phages to spatial reasoning.`,
+            `Dimensional Warping crispr upgrade, applies phages to spatial reasoning.`,
             `Added special windmill tech for carnivore path to equalize power grid.`,
             `Space Stations now give 5 Elerium storage instead of 4.`,
         ]
@@ -1519,7 +1519,7 @@ const changeList = [
         version: `0.4.12`,
         date: `6/24/2019`,
         changes: [
-            `Blackhole achievement now gives a permanent perk for completing it, the perk strength depends on the achievemnt level.`,
+            `Blackhole achievement now gives a permanent perk for completing it, the perk strength depends on the achievement level.`,
             `Fixed issue with event timer being frozen after changing planets.`,
             `Fixed the unlocking of upgraded versions of some achievements.`,
             `Cost descriptions now show approximations above 10,000.`,
@@ -1582,7 +1582,7 @@ const changeList = [
         version: `0.4.5`,
         date: `6/19/2019`,
         changes: [
-            `Mastery Bonus now unlockable in crispr.`,
+            `Mastery Bonus now unlockable in CRISPR.`,
             `Fixed bug with elerium mining that could cause negative mining when you lacked asteroid miners.`,
             `Fixed low power warning not clearing when you have no buildings active.`,
             `Fixed Sporgar label of Cottages in Steel & Mythril Beams research.`,
@@ -1602,8 +1602,8 @@ const changeList = [
         version: `0.4.4`,
         date: `6/18/2019`,
         changes: [
-            `Matter compression now applies to Wharfs.`,
-            `Xenophobia now applies to Wharfs.`,
+            `Matter compression now applies to Wharves.`,
+            `Xenophobia now applies to Wharves.`,
             `Plasmids earned by mutation now apply to no plasmid challenge run.`,
             `Reduced Nano Tube cost of Mining Drones.`,
         ]
@@ -1614,7 +1614,7 @@ const changeList = [
         changes: [
             `Challenge mode achievement tracking.`,
             `Vocational Training for craftsman.`,
-            `Spelling and grammer fixes.`,
+            `Spelling and grammar fixes.`,
             `Fixed incorrect reject unity reward text.`,
         ]
     },
@@ -1658,11 +1658,11 @@ const changeList = [
         changes: [
             `The Gas Moon and the Dwarf planets are now accessible.`,
             `New technologies based on new discoveries made in deep space.`,
-            `Wharfs can now be unlocked after discovering oil.`,
+            `Wharves can now be unlocked after discovering oil.`,
             `There is now an alternative method of unlocking steel.`,
             `Night Theme updated, popovers are no longer bright.`,
             `Trade route tooltips now include money being imported or exported.`,
-            `New crisper upgrades for crafting.`,
+            `New crispr upgrades for crafting.`,
             `Warmonger achievement requirement lowered from 10% to 8%.`,
         ]
     },
@@ -1677,7 +1677,7 @@ const changeList = [
         version: `0.3.9`,
         date: `6/8/2019`,
         changes: [
-            `New offical Evolve [Discord](https://discordapp.com/invite/dcwdQEr).`,
+            `New official Evolve [Discord](https://discordapp.com/invite/dcwdQEr).`,
         ]
     },
     {
@@ -1692,7 +1692,7 @@ const changeList = [
         date: `6/6/2019`,
         changes: [
             `Warmongering is now tracked and high casualties may impact morale.`,
-            `Deplating the mercenary pool will temporarily increase their cost.`,
+            `Depleting the mercenary pool will temporarily increase their cost.`,
             `Three new achievements related to war.`,
         ]
     },
@@ -1708,7 +1708,7 @@ const changeList = [
         version: `0.3.5`,
         date: `6/5/2019`,
         changes: [
-            `Mythril Craftman now unlock correctly.`,
+            `Mythril Craftsman now unlock correctly.`,
             `Fixed a bug that could pause the game if you ran out of Titanium.`,
         ]
     },
@@ -1826,7 +1826,7 @@ const changeList = [
         version: `0.2.63`,
         date: `5/20/2019`,
         changes: [
-            `Fixed an issue that accidently set the default tax rate to 2% instead of 20% for new games.`,
+            `Fixed an issue that accidentally set the default tax rate to 2% instead of 20% for new games.`,
         ]
     },
     {
@@ -1861,7 +1861,7 @@ const changeList = [
         date: `5/17/2019`,
         changes: [
             `Added additional validation to ensure save strings belong to evolve before importing.`,
-            `Fixed army rating display when rating doens't calculate to a whole number.`,
+            `Fixed army rating display when rating doesn't calculate to a whole number.`,
             `Fixed listing order of some resources.`,
             `Smelter Iron bonus breakdown fixed.`,
             `Added Selenophobia to breakdown lists.`,
@@ -1910,7 +1910,7 @@ const changeList = [
         version: `0.2.53`,
         date: `5/13/2019`,
         changes: [
-            `Breakdown Accuracy Enchancements.`,
+            `Breakdown Accuracy Enhancements.`,
             `Some Kindling Kindred costs reduced.`,
             `Fixed bug related to Fanaticism and Ent gods with foundry workers assigned to make plywood.`,
             `Plasmid bonus now applies to the sundial.`,
@@ -1921,7 +1921,7 @@ const changeList = [
         version: `0.2.52`,
         date: `5/11/2019`,
         changes: [
-            `Completed research can now be viewed on a seperate tab under research.`,
+            `Completed research can now be viewed on a separate tab under research.`,
             `Removed Plywood requirement from Stock Exchange for players with Kindling Kindred trait.`,
             `Fixed a CSS issue in the A.R.P.A. projects tab.`,
         ]
