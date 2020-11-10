@@ -1599,7 +1599,7 @@ function fastLoop(){
             }
             global.interstellar.starport.support = used_support;
 
-            if (int_on['mining_droid'] > 0){
+            if (global.interstellar.mining_droid.count > 0){
                 let max = int_on['mining_droid'];
                 let segments = ['adam','uran','coal','alum'];
                 for (let i=0; i<segments.length; i++){
@@ -1608,6 +1608,7 @@ function fastLoop(){
                         max -= miner_droids[segments[i]];
                     }
                     else {
+                        global.interstellar.mining_droid[segments[i]] = max;
                         miner_droids[segments[i]] = max;
                         max = 0;
                     }
@@ -3275,6 +3276,13 @@ function fastLoop(){
             }
             let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
 
+            let total_fuel = 0;
+            ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
+                if (total_fuel + global.city.smelter[fuel] > global.city.smelter.cap){
+                    global.city.smelter[fuel] = global.city.smelter.cap - total_fuel;
+                }
+                total_fuel += global.city.smelter[fuel]
+            });
             if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
                 let fueled = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
                 let overflow = global.city.smelter.Iron + global.city.smelter.Steel - fueled;
@@ -3504,14 +3512,10 @@ function fastLoop(){
         }
 
         // Graphene
-        if (global.interstellar['g_factory'] && int_on['g_factory'] > 0){
+        if (global.interstellar['g_factory'] && global.interstellar['g_factory'].count > 0){
             if (global.race['kindling_kindred']){
                 global.interstellar.g_factory.Lumber = 0;
             }
-
-            let consume_wood = global.interstellar.g_factory.Lumber * 350;
-            let consume_coal = global.interstellar.g_factory.Coal * 25;
-            let consume_oil = global.interstellar.g_factory.Oil * 15;
 
             while (int_on['g_factory'] < global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
                 if (global.interstellar.g_factory.Oil > 0){
@@ -3524,62 +3528,67 @@ function fastLoop(){
                     global.interstellar.g_factory.Lumber--;
                 }
             }
+            if (int_on['g_factory'] > 0){
+                let consume_wood = global.interstellar.g_factory.Lumber * 350;
+                let consume_coal = global.interstellar.g_factory.Coal * 25;
+                let consume_oil = global.interstellar.g_factory.Oil * 15;
 
-            let graphene_production = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
+                let graphene_production = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
 
-            while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
-                consume_wood -= 350;
-                graphene_production--;
+                while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
+                    consume_wood -= 350;
+                    graphene_production--;
+                }
+                while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
+                    consume_coal -= 25;
+                    graphene_production--;
+                }
+                while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
+                    consume_oil -= 15;
+                    graphene_production--;
+                }
+                graphene_production *= 0.6;
+
+                breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
+                breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
+                breakdown.p.consume.Oil[loc('interstellar_g_factory_bd')] = -(consume_oil);
+
+                modRes('Lumber', -(consume_wood * time_multiplier));
+                modRes('Coal', -(consume_coal * time_multiplier));
+                modRes('Oil', -(consume_oil * time_multiplier));
+
+                if (global.civic.govern.type === 'corpocracy'){
+                    graphene_production *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                }
+                if (global.civic.govern.type === 'socialist'){
+                    graphene_production *= 1.1;
+                }
+
+                let ai = 1;
+                if (global.tech['ai_core'] >= 3){
+                    let graph = +(quantum_level / 5).toFixed(1) / 100;
+                    ai += graph * p_on['citadel'];
+                }
+
+                let graphene_bd = {};
+                let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
+                graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
+
+                if (global.race['discharge'] && global.race['discharge'] > 0){
+                    delta *= 0.5;
+                    graphene_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                }
+
+                if (p_on['citadel'] > 0){
+                    graphene_bd[loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
+                }
+                graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Graphene'] = graphene_bd;
+                modRes('Graphene', delta * time_multiplier);
             }
-            while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
-                consume_coal -= 25;
-                graphene_production--;
+            else {
+                breakdown.p['Graphene'] = 0;
             }
-            while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
-                consume_oil -= 15;
-                graphene_production--;
-            }
-            graphene_production *= 0.6;
-
-            breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
-            breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
-            breakdown.p.consume.Oil[loc('interstellar_g_factory_bd')] = -(consume_oil);
-
-            modRes('Lumber', -(consume_wood * time_multiplier));
-            modRes('Coal', -(consume_coal * time_multiplier));
-            modRes('Oil', -(consume_oil * time_multiplier));
-
-            if (global.civic.govern.type === 'corpocracy'){
-                graphene_production *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
-            }
-            if (global.civic.govern.type === 'socialist'){
-                graphene_production *= 1.1;
-            }
-
-            let ai = 1;
-            if (global.tech['ai_core'] >= 3){
-                let graph = +(quantum_level / 5).toFixed(1) / 100;
-                ai += graph * p_on['citadel'];
-            }
-
-            let graphene_bd = {};
-            let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
-            graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
-
-            if (global.race['discharge'] && global.race['discharge'] > 0){
-                delta *= 0.5;
-                graphene_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-            }
-
-            if (p_on['citadel'] > 0){
-                graphene_bd[loc('interstellar_citadel_effect_bd')] = ((ai - 1) * 100) + '%';
-            }
-            graphene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Graphene'] = graphene_bd;
-            modRes('Graphene', delta * time_multiplier);
-        }
-        else {
-            breakdown.p['Graphene'] = 0;
         }
 
         // Vitreloy

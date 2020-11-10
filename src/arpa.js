@@ -1309,16 +1309,28 @@ function payCrispr(gene){
     let afford = true;
     let costs = genePool[gene].cost;
     Object.keys(costs).forEach(function(res){
-        let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-        if (!global.race.hasOwnProperty(res) || global.race[res][affix] < costs[res]()){
-            afford = false;
+        if (res === 'Artifact'){
+            if (!global.resource.Artifact || global.resource.Artifact.amount < costs[res]()){
+                afford = false;
+            }
+        }
+        else {
+            let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
+            if (!global.race.hasOwnProperty(res) || global.race[res][affix] < costs[res]()){
+                afford = false;
+            }
         }
     });
 
     if (afford){
         Object.keys(costs).forEach(function(res){
-            let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-            global.race[res][affix] -= costs[res]()
+            if (res === 'Artifact'){
+                global.resource.Artifact.amount -= costs[res]();
+            }
+            else {
+                let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
+                global.race[res][affix] -= costs[res]();
+            }
         });
         return true;
     }

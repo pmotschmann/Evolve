@@ -3,6 +3,7 @@ import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messag
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
+import { loadFoundry } from './jobs.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
@@ -652,8 +653,19 @@ const fortressModules = {
                 return false;
             },
             post(){
-                vBind({el: `#foundry`},'update');
+                loadFoundry();
             },
+            postPower(on){
+                if (!on){
+                    if (global.portal.hell_forge.on < global.city.foundry.Scarletite){
+                        let diff = global.city.foundry.Scarletite - global.portal.hell_forge.on;
+                        global.civic.craftsman.workers -= diff;
+                        global.city.foundry.crafting -= diff;
+                        global.city.foundry.Scarletite -= diff;
+                    }
+                }
+                loadFoundry();
+            }
         },
         inferno_power: {
             id: 'portal-inferno_power',

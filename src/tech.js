@@ -2,7 +2,7 @@ import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, fanaticism, big_bang, cataclysm_end } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
@@ -364,6 +364,7 @@ const techs = {
         id: 'tech-lodge',
         title: loc('tech_lodge'),
         desc: loc('tech_lodge'),
+        wiki: global.race['carnivore'] ? true : false,
         category: 'agriculture',
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
@@ -385,7 +386,7 @@ const techs = {
         id: 'tech-alt_lodge',
         title(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
         desc(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
-        wiki: false,
+        wiki: global.race['carnivore'] ? false : true,
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 1, currency: 1 },
