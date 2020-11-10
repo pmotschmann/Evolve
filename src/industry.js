@@ -708,7 +708,7 @@ function loadDroid(parent,bind){
 }
 
 function loadGraphene(parent,bind){
-    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ count }}</span></div>`);
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{count | on}}/{{ on | max }}</span></div>`);
     parent.append(fuel);
 
     let fuelTypes = $('<div></div>');
@@ -751,14 +751,6 @@ function loadGraphene(parent,bind){
                 for (let i=0; i<keyMult; i++){
                     if (global.interstellar.g_factory.Lumber > 0){
                         global.interstellar.g_factory.Lumber--;
-                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
-                            if (global.interstellar.g_factory.Steel > 0){
-                                global.interstellar.g_factory.Steel--;
-                            }
-                            else {
-                                global.interstellar.g_factory.Iron--;
-                            }
-                        }
                     }
                     else {
                         break;
@@ -768,9 +760,8 @@ function loadGraphene(parent,bind){
             addWood(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.on){
                         global.interstellar.g_factory.Lumber++;
-                        global.interstellar.g_factory.Iron++;
                     }
                     else if (global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil > 0){
                         if (global.interstellar.g_factory.Oil > global.interstellar.g_factory.Coal){
@@ -791,14 +782,6 @@ function loadGraphene(parent,bind){
                 for (let i=0; i<keyMult; i++){
                     if (global.interstellar.g_factory.Coal > 0){
                         global.interstellar.g_factory.Coal--;
-                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Wood + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
-                            if (global.interstellar.g_factory.Steel > 0){
-                                global.interstellar.g_factory.Steel--;
-                            }
-                            else {
-                                global.interstellar.g_factory.Iron--;
-                            }
-                        }
                     }
                     else {
                         break;
@@ -808,9 +791,8 @@ function loadGraphene(parent,bind){
             addCoal(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.on){
                         global.interstellar.g_factory.Coal++;
-                        global.interstellar.g_factory.Iron++;
                     }
                     else if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Oil > 0){
                         if (global.interstellar.g_factory.Lumber > 0){
@@ -831,14 +813,6 @@ function loadGraphene(parent,bind){
                 for (let i=0; i<keyMult; i++){
                     if (global.interstellar.g_factory.Oil > 0){
                         global.interstellar.g_factory.Oil--;
-                        if (global.interstellar.g_factory.Iron + global.interstellar.g_factory.Steel > global.interstellar.g_factory.Wood + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
-                            if (global.interstellar.g_factory.Steel > 0){
-                                global.interstellar.g_factory.Steel--;
-                            }
-                            else {
-                                global.interstellar.g_factory.Iron--;
-                            }
-                        }
                     }
                     else {
                         break;
@@ -848,9 +822,8 @@ function loadGraphene(parent,bind){
             addOil(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.count){
+                    if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil < global.interstellar.g_factory.on){
                         global.interstellar.g_factory.Oil++;
-                        global.interstellar.g_factory.Iron++;
                     }
                     else if (global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal > 0){
                         if (global.interstellar.g_factory.Lumber > 0){
@@ -877,7 +850,7 @@ function loadGraphene(parent,bind){
             },
             level(){
                 let on = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
-                let max = global.interstellar.g_factory.count;
+                let max = global.interstellar.g_factory.on;
                 return colorRange(on,max);
             }
         },
