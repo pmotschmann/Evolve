@@ -3455,6 +3455,9 @@ export function mechRating(mech,boss){
         if (global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l > 0){
             rating *= 1 + global.stats.achieve.gladiator.l * 0.2;
         }
+        if (global.blood['wrath']){
+            rating *= 1 + (global.blood.wrath / 20);
+        }
 
         switch (mech.chassis){
             case 'wheel':
