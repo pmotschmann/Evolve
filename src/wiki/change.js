@@ -7,7 +7,9 @@ const changeList = [
         date: `11/10/2020`,
         changes: [
             `Valdi now take your chosen Genus instead of humanoid.`,
-            `Wrath Blood Infusion now properly applies to all Mech fights.`
+            `Wrath Blood Infusion now properly applies to all Mech fights.`,
+            `Artifacts can now be spent properly on the CRISPR tab.`,
+            `Many minor bug fixes.`
         ]
     },
     {

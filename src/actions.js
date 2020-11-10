@@ -2514,7 +2514,7 @@ export const actions = {
         junker: {
             id: 'evo-junker',
             title: loc('evo_challenge_junker'),
-            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_start')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_start')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_start')}</div>`; },
             cost: {
                 DNA(){ return 50; }
             },
@@ -6650,6 +6650,10 @@ function sentience(){
     }
     if (global.resource.hasOwnProperty('DNA')){
         global.resource.DNA.display = false;
+    }
+
+    if (global.race.species !== 'junker'){
+        delete global.race['junker'];
     }
 
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
