@@ -1,6 +1,8 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { actions, housingLabel } from './../actions.js';
+import { checkControlling } from './../civics.js';
+import { races } from './../races.js';
 import { getHalloween } from './../functions.js';
 import { actionDesc, sideMenu } from './functions.js';
 
@@ -62,7 +64,7 @@ const extraInformation = {
     lodge: [
         loc(`wiki_tech_building_unlock`,[loc(`city_lodge`)])
     ],
-    soul_lodge: [
+    alt_lodge: [
         loc(`wiki_tech_building_unlock`,[loc(`city_lodge`)])
     ],
     soul_well: [
@@ -873,7 +875,7 @@ const extraInformation = {
     slave_market: [
         loc(`wiki_tech_slave_market`)
     ],
-    wiki_tech_ceremonial_dagger: [
+    ceremonial_dagger: [
         loc(`wiki_tech_ceremonial_dagger`,[600,1500])
     ],
     last_rites: [
@@ -1476,6 +1478,569 @@ const extraRequirements = {
     decay1 : loc('wiki_tech_req_decay1')
 };
 
+const specialRequirements = {
+    bone_tools: [
+        [
+            loc(`wiki_tech_special_species_not`,[loc(`race_wendigo`)]),
+            global.race.species !== 'wendigo'
+        ]
+    ],
+    wooden_tools: [
+        [
+            loc(`wiki_tech_special_species`,[loc(`race_wendigo`)]),
+            global.race.species === 'wendigo'
+        ]
+    ],
+    smokehouse: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_carnivore_name`)]),
+            global.race['carnivore'] ? true : false
+        ]
+    ],
+    lodge: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_carnivore_name`)]),
+            global.race['carnivore'] ? true : false
+        ]
+    ],
+    alt_lodge: [
+        [
+            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_species`,[loc(`race_wendigo`)]),loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)])]),
+            global.race.species === 'wendigo' || global.race['detritivore']
+        ]
+    ],
+    soul_well: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_soul_eater_name`)]),
+            global.race['soul_eater'] ? true : false
+        ]
+    ],
+    compost: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
+            global.race['detritivore'] ? true : false
+        ]
+    ],
+    hot_compost: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
+            global.race['detritivore'] ? true : false
+        ]
+    ],
+    mulching: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
+            global.race['detritivore'] ? true : false
+        ]
+    ],
+    adv_mulching: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
+            global.race['detritivore'] ? true : false
+        ]
+    ],
+    agriculture: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    farm_house: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    irrigation: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    silo: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    mill: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    windmill: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    windturbine: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    wind_plant: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore']
+        ]
+    ],
+    gmfood: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    federation: [
+        [
+            loc(`wiki_tech_special_occupy`),
+            checkControlling()
+        ]
+    ],
+    magocracy: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    market: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    tax_rates: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    large_trades: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    corruption: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_terrifying_name`),loc(`trait_noble_name`)])]),
+            !global.race['terrifying'] && !global.race['noble']
+        ]
+    ],
+    massive_trades: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    trade: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    diplomacy: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    freight: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    wharf: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_terrifying_name`),loc(`trait_thalassophobia_name`)])]),
+            !global.race['terrifying'] && !global.race['thalassophobia']
+        ]
+    ],
+    reclaimer: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    iron_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    steel_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    titanium_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    alloy_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    mythril_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    adamantite_shovel: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
+            global.race.universe === 'evil'
+        ],
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
+            !global.race['kindling_kindred']
+        ],
+        [
+            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
+            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
+        ]
+    ],
+    stone_axe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    copper_axes: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    iron_saw: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    steel_saw: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    iron_axes: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    steel_axes: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    titanium_axes: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    chainsaws: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['evil']
+        ]
+    ],
+    copper_sledgehammer: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
+            !global.race['sappy']
+        ]
+    ],
+    iron_sledgehammer: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
+            !global.race['sappy']
+        ]
+    ],
+    steel_sledgehammer: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
+            !global.race['sappy']
+        ]
+    ],
+    titanium_sledgehammer: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
+            !global.race['sappy']
+        ]
+    ],
+    copper_hoe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    iron_hoe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    steel_hoe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    titanium_hoe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    adamantite_hoe: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
+            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
+        ]
+    ],
+    slave_pens: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_slaver_name`)]),
+            global.race['slaver'] ? true : false
+        ]
+    ],
+    slave_market: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_slaver_name`)]),
+            global.race['slaver'] ? true : false
+        ]
+    ],
+    ceremonial_dagger: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
+            global.race['cannibalize'] ? true : false
+        ]
+    ],
+    last_rites: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
+            global.race['cannibalize'] ? true : false
+        ]
+    ],
+    ancient_infusion: [
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
+            global.race['cannibalize'] ? true : false
+        ]
+    ],
+    armor: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
+            !global.race['apex_predator']
+        ]
+    ],
+    plate_armor: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
+            !global.race['apex_predator']
+        ]
+    ],
+    kevlar: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
+            !global.race['apex_predator']
+        ]
+    ],
+    nanoweave_vest: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
+            !global.race['apex_predator']
+        ]
+    ],
+    ancient_theology: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 1
+        ]
+    ],
+    study: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 1
+        ]
+    ],
+    encoding: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 1
+        ]
+    ],
+    deify: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 1
+        ]
+    ],
+    infusion: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 1
+        ]
+    ],
+    gps: [
+        [
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
+            !global.race['terrifying']
+        ]
+    ],
+    veil: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    mana_syphon: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    mana: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    ley_lines: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    rituals: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    crafting_ritual: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    mana_nexus: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    clerics: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ],
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_faith_title`)]),
+            global.genes['ancients'] && global.genes['ancients'] >= 2
+        ]
+    ],
+    conjuring: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    res_conjuring: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    alchemy: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ],
+    transmutation: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
+            global.race.universe === 'magic'
+        ]
+    ]
+};
+
 const extraTechPositions = {
     unification2: 'unification',
     conjuring: 'ley_lines',
@@ -1523,7 +2088,7 @@ function addInformation(parent,key){
     }
 }
 
-function addRequirements(parent,key){
+function addRequirements(parent,key,keyName){
     if (Object.keys(key.reqs).length > 0){
         let techReqs = {};
         let otherReqs = {};
@@ -1558,6 +2123,16 @@ function addRequirements(parent,key){
             });
         }
     }
+    if (specialRequirements.hasOwnProperty(keyName)){
+        let comma = false;
+        let specialReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_special')}</span></div>`);
+        parent.append(specialReq);
+        Object.keys(specialRequirements[keyName]).forEach(function (req){
+            let color = specialRequirements[keyName][req][1] ? 'success' : 'danger';
+            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${specialRequirements[keyName][req][0]}</span>`);
+            comma = true;
+        });
+    }
 }
 
 export function renderTechPage(era){
@@ -1572,7 +2147,7 @@ export function renderTechPage(era){
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName);
-            addRequirements(info, action);
+            addRequirements(info, action, actionName);
             if (action.cost['Knowledge']){
                 if (techList.length === 0){
                     techList[0] = [action, info];
