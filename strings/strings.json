@@ -416,7 +416,7 @@
   "evo_bunker": "Challenge Gene",
   "evo_bunker_effect": "Evolve the Challenge Gene",
   "evo_bunker_flair": "Set down the path of Bunker",
-  "evo_no_toggle": "Select Sentience to Start",
+  "evo_start": "Select Sentience to Start",
   "evo_challenge": "Opens the challenge mode gene pool",
   "evo_challenge_genes": "Challenge Genes",
   "evo_challenge_genes_desc": "Each Challenge Gene activated increases the quality of achievements earned.",
