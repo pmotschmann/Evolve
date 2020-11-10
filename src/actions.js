@@ -1054,131 +1054,239 @@ export const actions = {
                     // Trigger Next Phase of game
                     let races = [];
                     if (global.evolution['humanoid']){
-                        races.push('elven');
-                        races.push('orc');
-                        races.push('human');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'humanoid'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'humanoid';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('elven');
+                            races.push('orc');
+                            races.push('human');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'humanoid'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['gigantism']){
-                        races.push('troll');
-                        races.push('ogre');
-                        races.push('cyclops');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'giant'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'giant';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('troll');
+                            races.push('ogre');
+                            races.push('cyclops');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'giant'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['dwarfism']){
-                        races.push('kobold');
-                        races.push('goblin');
-                        races.push('gnome');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'small'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'small';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('kobold');
+                            races.push('goblin');
+                            races.push('gnome');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'small'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['animalism']){
-                        races.push('cath');
-                        races.push('wolven');
-                        races.push('centaur');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'animal'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'animal';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('cath');
+                            races.push('wolven');
+                            races.push('centaur');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'animal'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['ectothermic']){
-                        races.push('tortoisan');
-                        races.push('gecko');
-                        races.push('slitheryn');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'reptilian'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'reptilian';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('tortoisan');
+                            races.push('gecko');
+                            races.push('slitheryn');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'reptilian'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['endothermic']){
-                        races.push('arraak');
-                        races.push('pterodacti');
-                        races.push('dracnid');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'avian'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'avian';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('arraak');
+                            races.push('pterodacti');
+                            races.push('dracnid');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'avian'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['chitin']){
-                        races.push('sporgar');
-                        races.push('shroomi');
-                        races.push('moldling');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'fungi';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('sporgar');
+                            races.push('shroomi');
+                            races.push('moldling');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['athropods']){
-                        races.push('mantis');
-                        races.push('scorpid');
-                        races.push('antid');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'insectoid'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'insectoid';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('mantis');
+                            races.push('scorpid');
+                            races.push('antid');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'insectoid'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['chloroplasts']){
-                        races.push('entish');
-                        races.push('cacti');
-                        races.push('pinguicula');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'plant';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('entish');
+                            races.push('cacti');
+                            races.push('pinguicula');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['aquatic']){
-                        races.push('sharkin');
-                        races.push('octigoran');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'aquatic'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'aquatic';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('sharkin');
+                            races.push('octigoran');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'aquatic'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['fey']){
-                        races.push('dryad');
-                        races.push('satyr');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fey'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'fey';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('dryad');
+                            races.push('satyr');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fey'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['heat']){
-                        races.push('phoenix');
-                        races.push('salamander');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'heat'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'heat';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('phoenix');
+                            races.push('salamander');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'heat'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['polar']){
-                        races.push('yeti');
-                        races.push('wendigo');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'polar'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'polar';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('yeti');
+                            races.push('wendigo');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'polar'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['sand']){
-                        races.push('tuskin');
-                        races.push('kamel');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'sand'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'sand';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('tuskin');
+                            races.push('kamel');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'sand'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['demonic']){
-                        races.push('balorg');
-                        races.push('imp');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'demonic'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'demonic';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('balorg');
+                            races.push('imp');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'demonic'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['celestial']){
-                        races.push('seraph');
-                        races.push('unicorn');
-                        if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic'){
-                            races.push('custom');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'angelic';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('seraph');
+                            races.push('unicorn');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic'){
+                                races.push('custom');
+                            }
                         }
                     }
                     else if (global.evolution['eggshell']){
-                        races.push('dracnid');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'avian';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('dracnid');
+                        }
                     }
                     else {
-                        races.push('human');
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'humanoid';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('human');
+                        }
                     }
 
                     global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
@@ -2160,8 +2268,10 @@ export const actions = {
                     if (global.race['no_plasmid']){
                         delete global.race['no_plasmid'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        delete global.race['cataclysm'];
-                        $(`#evo-cataclysm`).removeClass('hl');
+                        ['junker','cataclysm'].forEach(function(s){
+                            delete global.race[s];
+                            $(`#evo-${s}`).removeClass('hl');
+                        });
                     }
                     else {
                         global.race['no_plasmid'] = 1;
@@ -2186,8 +2296,10 @@ export const actions = {
                     if (global.race['weak_mastery']){
                         delete global.race['weak_mastery'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        delete global.race['cataclysm'];
-                        $(`#evo-cataclysm`).removeClass('hl');
+                        ['junker','cataclysm'].forEach(function(s){
+                            delete global.race[s];
+                            $(`#evo-${s}`).removeClass('hl');
+                        });
                     }
                     else {
                         global.race['weak_mastery'] = 1;
@@ -2213,8 +2325,10 @@ export const actions = {
                     if (global.race['no_trade']){
                         delete global.race['no_trade'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        delete global.race['cataclysm'];
-                        $(`#evo-cataclysm`).removeClass('hl');
+                        ['junker','cataclysm'].forEach(function(s){
+                            delete global.race[s];
+                            $(`#evo-${s}`).removeClass('hl');
+                        });
                     }
                     else {
                         global.race['no_trade'] = 1;
@@ -2239,8 +2353,10 @@ export const actions = {
                     if (global.race['no_craft']){
                         delete global.race['no_craft'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        delete global.race['cataclysm'];
-                        $(`#evo-cataclysm`).removeClass('hl');
+                        ['junker','cataclysm'].forEach(function(s){
+                            delete global.race[s];
+                            $(`#evo-${s}`).removeClass('hl');
+                        });
                     }
                     else {
                         global.race['no_craft'] = 1;
@@ -2266,8 +2382,10 @@ export const actions = {
                         if (global.race['no_crispr']){
                             delete global.race['no_crispr'];
                             $(`#${$(this)[0].id}`).removeClass('hl');
-                            delete global.race['cataclysm'];
-                            $(`#evo-cataclysm`).removeClass('hl');
+                            ['junker','cataclysm'].forEach(function(s){
+                                delete global.race[s];
+                                $(`#evo-${s}`).removeClass('hl');
+                            });
                         }
                         else {
                             global.race['no_crispr'] = 1;
@@ -2396,7 +2514,7 @@ export const actions = {
         junker: {
             id: 'evo-junker',
             title: loc('evo_challenge_junker'),
-            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_start')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_no_toggle')}</div>`; },
             cost: {
                 DNA(){ return 50; }
             },
@@ -2404,24 +2522,13 @@ export const actions = {
                 return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_challenge_junker_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_challenge_junker_effect'); },
             action(){
                 if (payCosts(actions.evolution.junker.cost)){
-                    global.race.species = 'junker';
-                    global.race['junker'] = 1;
-                    delete global.race['cataclysm'];
-                    if (global.race.universe === 'antimatter') {
-                        global.race['weak_mastery'] = 1;
-                    }
-                    else {
-                        global.race['no_plasmid'] = 1;
-                    }
-                    global.race['no_trade'] = 1;
-                    global.race['no_craft'] = 1;
-                    global.race['no_crispr'] = 1;
-                    sentience();
+                    setScenario('junker');
                 }
                 return false;
             },
             emblem(){ return format_emblem('extinct_junker'); },
-            flair: loc('evo_challenge_junker_flair')
+            flair: loc('evo_challenge_junker_flair'),
+            highlight(){ return global.race['junker'] ? true : false; }
         },
         cataclysm: {
             id: 'evo-cataclysm',
@@ -2440,36 +2547,7 @@ export const actions = {
             },
             action(){
                 if (payCosts(actions.evolution.cataclysm.cost)){
-                    if (global.race['cataclysm']){
-                        delete global.race['cataclysm'];
-                        $(`#${$(this)[0].id}`).removeClass('hl');
-                    }
-                    else {
-                        global.race['cataclysm'] = 1;
-                        $(`#${$(this)[0].id}`).addClass('hl');
-
-                        if (global.race.universe === 'antimatter') {
-                            global.race['weak_mastery'] = 1;
-                            if (!$(`#evo-mastery`).hasClass('hl')){
-                                $(`#evo-mastery`).addClass('hl');
-                            }
-                        }
-                        else {
-                            global.race['no_plasmid'] = 1;
-                            if (!$(`#evo-plasmid`).hasClass('hl')){
-                                $(`#evo-plasmid`).addClass('hl');
-                            }
-                        }
-
-                        let genes = ['crispr','trade','craft'];
-                        for (let i=0; i<genes.length; i++){
-                            global.race[`no_${genes[i]}`] = 1;
-                            if (!$(`#evo-${genes[i]}`).hasClass('hl')){
-                                $(`#evo-${genes[i]}`).addClass('hl');
-                            }
-                        }
-                    }
-                    drawAchieve();
+                    setScenario('cataclysm');
                 }
                 return false;
             },
@@ -4998,6 +5076,43 @@ function addRaces(races){
     }
 }
 
+function setScenario(scenario){
+    if (global.race[scenario]){
+        delete global.race[scenario];
+        $(`#evo-${scenario}`).removeClass('hl');
+    }
+    else {
+        ['junker','cataclysm'].forEach(function(s){
+            delete global.race[s];
+            $(`#evo-${s}`).removeClass('hl');
+        });
+        global.race[scenario] = 1;
+        $(`#evo-${scenario}`).addClass('hl');
+
+        if (global.race.universe === 'antimatter') {
+            global.race['weak_mastery'] = 1;
+            if (!$(`#evo-mastery`).hasClass('hl')){
+                $(`#evo-mastery`).addClass('hl');
+            }
+        }
+        else {
+            global.race['no_plasmid'] = 1;
+            if (!$(`#evo-plasmid`).hasClass('hl')){
+                $(`#evo-plasmid`).addClass('hl');
+            }
+        }
+
+        let genes = ['crispr','trade','craft'];
+        for (let i=0; i<genes.length; i++){
+            global.race[`no_${genes[i]}`] = 1;
+            if (!$(`#evo-${genes[i]}`).hasClass('hl')){
+                $(`#evo-${genes[i]}`).addClass('hl');
+            }
+        }
+    }
+    drawAchieve();
+}
+
 export function storageMultipler(){
     let multiplier = (global.tech['storage'] - 1) * 1.25 + 1;
     if (global.tech['storage'] >= 3){
@@ -6713,7 +6828,7 @@ function sentience(){
         cataclysm();
     }
 
-    if (global.race['slow'] || global.race['hyper']){
+    if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
             webWorker.w.terminate();

@@ -1801,7 +1801,7 @@ export const races = {
     junker: {
         name: hallowed.active ? loc('race_ghoul') : loc('race_junker'),
         desc: hallowed.active ? loc('race_ghoul_desc') : loc('race_junker_desc'),
-        type: 'humanoid',
+        type: (function(){ return global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid'; })(),
         home: hallowed.active ? loc('race_ghoul_home') : loc('race_junker_home'),
         entity: hallowed.active ? loc('race_ghoul_entity') : loc('race_junker_entity'),
         traits: {

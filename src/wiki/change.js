@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.2`,
+        date: `11/10/2020`,
+        changes: [
+            `Valdi now take your chosen Genus instead of humanoid.`
+        ]
+    },
+    {
         version: `1.0.1`,
         date: `11/08/2020`,
         changes: [
