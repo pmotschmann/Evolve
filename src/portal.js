@@ -3761,7 +3761,7 @@ export function mechRating(mech,boss){
                     break;
                 case 'hail':
                     {
-                        if (!mech.equip.includes('ablative') && mech.equip.includes('shields')){
+                        if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
                             rating *= 0.75;
                         }
                     }

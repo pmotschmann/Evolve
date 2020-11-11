@@ -1438,7 +1438,7 @@ function monument_costs(res,offset){
         case 'Pillar':
             return res === 'Lumber' ? costMultiplier('monument', offset, 1000000, 1.1) : 0;
         case 'Megalith':
-            return res === 'Crystal' ? costMultiplier('monument', offset, 100000, 1.1) : 0;
+            return res === 'Crystal' ? costMultiplier('monument', offset, 55000, 1.1) : 0;
     }
 }
 
