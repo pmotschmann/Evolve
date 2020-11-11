@@ -1599,7 +1599,7 @@ function fastLoop(){
             }
             global.interstellar.starport.support = used_support;
 
-            if (global.interstellar.mining_droid.count > 0){
+            if (global.interstellar.hasOwnProperty('mining_droid') && global.interstellar.mining_droid.count > 0){
                 let max = int_on['mining_droid'];
                 let segments = ['adam','uran','coal','alum'];
                 for (let i=0; i<segments.length; i++){
