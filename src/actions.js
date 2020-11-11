@@ -5077,6 +5077,11 @@ function addRaces(races){
 }
 
 function setScenario(scenario){
+    Object.keys(races).forEach(function(r){
+        if (r !== 'junker'){
+            $(`#evo-${r}`).removeClass('is-hidden');
+        }
+    });
     if (global.race[scenario]){
         delete global.race[scenario];
         $(`#evo-${scenario}`).removeClass('hl');
@@ -5088,6 +5093,14 @@ function setScenario(scenario){
         });
         global.race[scenario] = 1;
         $(`#evo-${scenario}`).addClass('hl');
+
+        if (scenario === 'junker'){
+            Object.keys(races).forEach(function(r){
+                if (r !== 'junker'){
+                    $(`#evo-${r}`).addClass('is-hidden');
+                }
+            });
+        }
 
         if (global.race.universe === 'antimatter') {
             global.race['weak_mastery'] = 1;
