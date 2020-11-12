@@ -1,6 +1,7 @@
 import { clearElement } from './../functions.js';
 import { projectsPage } from './projects.js';
 import { crisprPage } from './crispr.js';
+import { bloodPage } from './blood.js';
 
 export function arpaPage(zone){
     let content = $(`#content`);
@@ -15,6 +16,9 @@ export function arpaPage(zone){
             break;
         case 'crispr':
             crisprPage(content);
+            break;
+        case 'blood':
+            bloodPage(content);
             break;
     }
 }

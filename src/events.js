@@ -398,7 +398,6 @@ export const events = {
 };
 
 function tax_revolt(){
-    global.city.morale.current - 100;
     let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
     let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {

@@ -96,4 +96,12 @@ export function universePage(content){
             6: ['1.005']
         }
     });
+
+    infoBoxBuilder(content,{ name: 'magic', template: 'universe', paragraphs: 8, break: [4,7], h_level: 2,
+        para_data: {
+            6: [80],
+            7: [loc('wiki_p_res_dark')],
+            8: [loc('wiki_p_res_dark'),+((darkEffect('magic',false,true) - 1) * 100).toFixed(3) + '%'],
+        }
+    });
 }

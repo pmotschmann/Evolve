@@ -3,6 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
 import { achievements, feats } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
+import { monsters } from './../portal.js';
 import { popover } from './../functions.js';
 
 export function renderAchievePage(zone){
@@ -11,28 +12,86 @@ export function renderAchievePage(zone){
 
     switch (zone){
         case 'list':
-            achievePage(content);
+            achievePage();
             break;
         case 'feats':
-            featPage(content);
+            featPage();
             break;
     }
 }
 
-function achievePage(){
+const universeExclusives = {
+    biome_hellscape: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
+    biome_eden: ['evil'],
+    cross: ['antimatter'],
+    vigilante: ['evil'],
+    squished: ['micro'],
+    macro: ['micro'],
+    marble: ['micro'],
+    double_density: ['heavy'],
+    heavyweight: ['heavy'],
+    whitehole: ['standard'],
+    heavy: ['heavy'],
+    canceled: ['antimatter'],
+    eviltwin: ['evil'],
+    microbang: ['micro'],
+    pw_apocalypse: ['magic'],
+    pass: ['magic'],
+    fullmetal: ['magic']
+};
+
+function achievePage(universe){
     let content = $(`#content`);
     clearElement(content);
+    
+    /*let filtering = `
+    <div id="filtering" class="b-tabs">
+        <nav class="tabs">
+            <ul>
+                <li><a onclick="achievePage()">${loc('universe_all')}</a></li>
+                <li><a onclick="achievePage('standard')">${loc('universe_standard')}</a></li>
+                <li><a onclick="achievePage('evil')">${loc('universe_evil')}</a></li>
+                <li><a onclick="achievePage('antimatter')">${loc('universe_antimatter')}</a></li>
+                <li><a onclick="achievePage('micro')">${loc('universe_micro')}</a></li>
+                <li><a onclick="achievePage('heavy')">${loc('universe_heavy')}</a></li>
+                <li><a onclick="achievePage('magic')">${loc('universe_magic')}</a></li>
+            </ul>
+        </nav>
+    </div>
+    `;
+    content.append(filtering);*/
+    
+    let universeLevel = 'l';
+    switch (universe){
+        case 'evil':
+            universeLevel = 'e';
+            break;
+        case 'antimatter':
+            universeLevel = 'a';
+            break;
+        case 'micro':
+            universeLevel = 'm';
+            break;
+        case 'heavy':
+            universeLevel = 'h';
+            break;
+        case 'magic':
+            universeLevel = 'mg';
+            break;
+    }
 
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
-        if (types.hasOwnProperty(achievements[achievement].type)){
-            types[achievements[achievement].type].push(achievement);
-        }
-        else {
-            types[achievements[achievement].type] = [achievement];
+        if (!universe || !universeExclusives[achievement] || universeExclusives[achievement].indexOf(universe) > -1){
+            if (types.hasOwnProperty(achievements[achievement].type)){
+                types[achievements[achievement].type].push(achievement);
+            }
+            else {
+                types[achievements[achievement].type] = [achievement];
+            }
         }
     });
-
+    
     Object.keys(types).forEach(function (type){
         content.append($(`<h2 class="header achievements has-text-caution">${loc(`wiki_achieve_${type}`)}</h2>`));
         let list = $(`<div class="achieveList"></div>`);
@@ -42,10 +101,10 @@ function achievePage(){
             let achieve = $(`<div class="achievement"></div>`);
             list.append(achieve);
 
-            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement].l > 0 ? 'warning' : 'fade';
+            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][universeLevel] && global.stats.achieve[achievement][universeLevel] > 0 ? 'warning' : 'fade';
             achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
 
-            let emblems = format_emblem(achievement,16);
+            let emblems = format_emblem(achievement,16,false,false,universe);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
             achieveDesc(achievement, color === 'warning' ? true : false);
@@ -94,7 +153,7 @@ function achieveDesc(achievement,showFlair){
                             : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
                             )
                         ){
-                        killed = killed + `<span class="has-text-success">${races[key].name}</span>`;
+                        killed = killed + `<span class="iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? 'l' : 'e']}">${races[key].name}</span>`;
                     }
                     else {
                         killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
@@ -102,36 +161,80 @@ function achieveDesc(achievement,showFlair){
                 }
             }
         });
-        killed = killed + `<div>`;
+        killed = killed + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${killed}${flair}`));
     }
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
             if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`].l >= 0){
-                biome_list = biome_list + `<span class="has-text-success">${biomes[key].label}</span>`;
+                biome_list = biome_list + `<span class="iclr${global.stats.achieve[`biome_${key}`].l}">${biomes[key].label}</span>`;
             }
             else {
                 biome_list = biome_list + `<span class="has-text-danger">${biomes[key].label}</span>`;
             }
         });
-        biome_list = biome_list + `<div>`;
+        biome_list = biome_list + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${biome_list}${flair}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
-        let genus = `<div class="flexed">`;    
+        let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
             if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].l >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide has-text-success">${loc(`genelab_genus_${key}`)}</span>`;
+                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`].l : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
-                if (key !== 'angelic' && achievement !== 'heavyweight') {
                     genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+            }
+        });
+        genus = genus + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${genus}${flair}`));
+    }
+    else if (achievement === 'enlightenment'){
+        let genus = {};
+        Object.keys(global.pillars).forEach(function(race){
+            if (races[race]){
+                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                    genus[races[race].type] = global.pillars[race];
                 }
             }
         });
-        genus = genus + `<div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${genus}${flair}`));
+        let checked = `<div class="flexed">`;    
+        Object.keys(genus_traits).sort().forEach(function (key){
+            if (genus[key] && genus[key] >= 1){
+                checked = checked + `<span class="wide iclr${genus[key]}">${loc(`genelab_genus_${key}`)}</span>`;
+            }
+            else {
+                checked = checked + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+            }
+        });
+        checked = checked + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="wide has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checked}${flair}`));
+    }
+    else if (achievement === 'gladiator'){
+        let defeated = `<div class="flexed wide">`;
+        let list = {};
+        Object.keys(global.stats.spire).forEach(function(universe){
+            Object.keys(global.stats.spire[universe]).forEach(function(boss){
+                if (monsters[boss]){
+                    if (!list.hasOwnProperty(boss) || list[boss] < global.stats.spire[universe][boss]){
+                        list[boss] = global.stats.spire[universe][boss];
+                    }
+                }
+            });
+        });
+        Object.keys(monsters).forEach(function (boss){
+            if (list[boss] && list[boss] > 0){
+                defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;
+            }
+            else {
+                defeated = defeated + `<span class="swide has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`;
+            }
+        });
+        defeated = defeated + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${defeated}${flair}`),{
+            wide: true
+        });
     }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
         let race = achievement.substring(8);

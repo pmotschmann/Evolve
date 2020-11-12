@@ -1,12 +1,14 @@
-import { global, keyMultiplier, poppers, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
+import { global, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
+import { hellSupression } from './portal.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
     Food: 5,
     Lumber: 5,
     Stone: 5,
+    Crystal: 6,
     Furs: 8,
     Copper: 25,
     Iron: 40,
@@ -34,12 +36,18 @@ export const resource_values = {
     Orichalcum: 99000,
     Genes: 0,
     Soul_Gem: 0,
+    Corrupt_Gem: 0,
+    Codex: 0,
+    Demonic_Essence: 0,
+    Blood_Stone: 0,
+    Artifact: 0
 };
 
 export const tradeRatio = {
     Food: 2,
     Lumber: 2,
     Stone: 2,
+    Crystal: 0.4,
     Furs: 1,
     Copper: 1,
     Iron: 1,
@@ -64,13 +72,14 @@ export const tradeRatio = {
     Stanene: 0.1,
     Bolognium: 0.12,
     Vitreloy: 0.12,
-    Orichalcum: 0.05,
+    Orichalcum: 0.05
 }
 
 export const atomic_mass = {
     Food: 4.355,
     Lumber: 7.668,
     Stone: 20.017,
+    Crystal: 5.062,
     Furs: 13.009,
     Copper: 63.546,
     Iron: 55.845,
@@ -102,7 +111,47 @@ export const atomic_mass = {
     Sheet_Metal: 26.9815,
     Mythril: 94.239,
     Aerogel: 7.84,
-    Nanoweave: 23.71
+    Nanoweave: 23.71,
+    Scarletite: 188.6
+};
+
+export const supplyValue = {
+    Lumber: { in: 0.5, out: 25000 },
+    Stone: { in: 0.5, out: 25000 },
+    Crystal: { in: 3, out: 25000 },
+    Furs: { in: 3, out: 25000 },
+    Copper: { in: 1.5, out: 25000 },
+    Iron: { in: 1.5, out: 25000 },
+    Aluminium: { in: 2.5, out: 25000 },
+    Cement: { in: 3, out: 25000 },
+    Coal: { in: 1.5, out: 25000 },
+    Oil: { in: 2.5, out: 12000 },
+    Uranium: { in: 5, out: 300 },
+    Steel: { in: 3, out: 25000 },
+    Titanium: { in: 3, out: 25000 },
+    Alloy: { in: 6, out: 25000 },
+    Polymer: { in: 6, out: 25000 },
+    Iridium: { in: 8, out: 25000 },
+    Helium_3: { in: 4.5, out: 12000 },
+    Deuterium: { in: 4, out: 1000 },
+    Neutronium: { in: 15, out: 1000 },
+    Adamantite: { in: 12.5, out: 1000 },
+    Infernite: { in: 25, out: 250 },
+    Elerium: { in: 30, out: 250 },
+    Nano_Tube: { in: 6.5, out: 1000 },
+    Graphene: { in: 5, out: 1000 },
+    Stanene: { in: 4.5, out: 1000 },
+    Bolognium: { in: 18, out: 1000 },
+    Vitreloy: { in: 14, out: 1000 },
+    Orichalcum: { in: 10, out: 1000 },
+    Plywood: { in: 10, out: 250 },
+    Brick: { in: 10, out: 250 },
+    Wrought_Iron: { in: 10, out: 250 },
+    Sheet_Metal: { in: 10, out: 250 },
+    Mythril: { in: 12.5, out: 250 },
+    Aerogel: { in: 16.5, out: 250 },
+    Nanoweave: { in: 18, out: 250 },
+    Scarletite: { in: 35, out: 250 }
 };
 
 export function craftCost(){
@@ -115,6 +164,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
+            Scarletite: [{ r: 'Iron', a: 137500 },{ r: 'Adamantite', a: 5500 },{ r: 'Orichalcum', a: 550 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -124,6 +174,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
+            Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
         };
 }
 
@@ -154,8 +205,14 @@ export function craftingRatio(res,auto){
     if (res === 'Mythril' && p_on['stellar_forge']){
         multiplier += p_on['stellar_forge'] * 0.05;
     }
-    if (auto && p_on['stellar_forge']){
-        multiplier += p_on['stellar_forge'] * 0.1;
+    if (auto){
+        if (p_on['stellar_forge']){
+            multiplier += p_on['stellar_forge'] * 0.1;
+        }
+        if (p_on['hell_forge']){
+            let sup = hellSupression('ruins');
+            multiplier += p_on['hell_forge'] * 0.75 * sup.supress;
+        }
     }
     if (global.race['crafty']){
         multiplier += 0.03;
@@ -167,7 +224,14 @@ export function craftingRatio(res,auto){
         multiplier -= traits.rigid.vars[0] / 100;
     }
     if (global.civic.govern.type === 'socialist'){
-        multiplier *= 1.35;
+        multiplier *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35;
+    }
+    if (global.race['casting'] && global.race.casting['crafting']){
+        let boost = auto ? global.race.casting['crafting'] * 2 : global.race.casting['crafting'];
+        multiplier *= 1 + (boost / (boost + 75));
+    }
+    if (global.race['universe'] === 'magic'){
+        multiplier *= 0.8;
     }
     if (auto){
         if (global.tech['v_train']){
@@ -178,6 +242,9 @@ export function craftingRatio(res,auto){
         }
         if (global.race['ambidextrous']){
             multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
+        }
+        if (global.blood['artisan']){
+            multiplier *= 1 + (global.blood.artisan / 100);
         }
     }
     if (global.race.Plasmid.count > 0){
@@ -195,12 +262,11 @@ export function craftingRatio(res,auto){
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         multiplier *= 1 + (achieve_level * 0.0025);
     }
+    if (res === 'Scarletite'){
+        let sup = hellSupression('ruins');
+        multiplier *= sup.supress;
+    }
     return multiplier;
-}
-
-if (global.resource[races[global.race.species].name]){
-    global.resource[global.race.species] = global.resource[races[global.race.species].name];
-    delete global.resource[races[global.race.species].name];
 }
 
 // Sets up resource definitions
@@ -217,17 +283,21 @@ export function defineResources(){
         initMarket();
         initStorage();
         initEjector();
+        initSupply();
+        initAlchemy();
     }
     
     loadResource('Money',1000,1,false,false,'success');
     loadResource(global.race.species,0,0,false,false,'warning');
     loadResource('Slave',0,0,false,false,'warning');
+    loadResource('Mana',0,1,false,false,'warning');
     loadResource('Knowledge',100,1,false,false,'warning');
     loadResource('Crates',0,0,false,false,'warning');
     loadResource('Containers',0,0,false,false,'warning');
     loadResource('Food',250,1,true,true);
     loadResource('Lumber',200,1,true,true);
     loadResource('Stone',200,1,true,true);
+    loadResource('Crystal',200,1,true,true);
     loadResource('Furs',100,1,true,true);
     loadResource('Copper',100,1,true,true);
     loadResource('Iron',100,1,true,true);
@@ -262,6 +332,12 @@ export function defineResources(){
     loadResource('Mythril',-1,0,false,false,'danger');
     loadResource('Aerogel',-1,0,false,false,'danger');
     loadResource('Nanoweave',-1,0,false,false,'danger');
+    loadResource('Scarletite',-1,0,false,false,'danger');
+    loadResource('Corrupt_Gem',-2,0,false,false,'caution');
+    loadResource('Codex',-2,0,false,false,'caution');
+    loadResource('Demonic_Essence',-2,0,false,false,'caution');
+    loadResource('Blood_Stone',-2,0,false,false,'caution');
+    loadResource('Artifact',-2,0,false,false,'caution');
 
     if (global.race.species !== 'protoplasm'){
         loadRouteCounter();
@@ -295,6 +371,11 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
     else {
         global['resource'][name].name = name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
+    }
+
+    if (name === 'Mana'){
+        global['resource'][name]['gen'] = 0;
+        global['resource'][name]['gen_d'] = 0;
     }
 
     if (global.race['sappy']){
@@ -384,10 +465,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft'])){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite'){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
-    else if (max === -1 && !global.race['no_craft']){
+    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite'){
         let craft = $('<span class="craftable"></span>');
         res_container.append(craft);
 
@@ -475,46 +556,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
                     costs = costs + `<div>${global.resource[craft_costs[res][i].r].name} ${num}</div>`;
                 }
                 return costs;
-            },
-            hover(res,vol){
-                var popper = $(`<div id="popRes${res}${vol}" class="popper has-background-light has-text-dark"></div>`);
-                $('#main').append(popper);
-
-                let bonus = (craftingRatio(res) * 100).toFixed(0);
-                popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus,global.resource[res].name])}</div>`));
-                
-                let craft_costs = craftCost();
-                let crafts = $(`<div><span class="has-text-success">${loc('manual_crafting_hover_craft')} </span></div>`);
-                let num_crafted = 0;
-                if (typeof vol !== 'number'){
-                    num_crafted = global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a;
-                    if (craft_costs[res].length > 1){
-                        for (let i=1; i<craft_costs[res].length; i++){
-                            let curr_max = global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a;
-                            if (curr_max < num_crafted){
-                                num_crafted = curr_max;
-                            }
-                        }
-                    }
-                    crafts.append($(`<span class="has-text-advanced">${sizeApproximation((bonus / 100) * num_crafted,1)} ${global.resource[res].name}</span>`));
-                }
-                else {
-                    num_crafted = keyMultiplier() * vol;
-                    let total_crafted = sizeApproximation((bonus / 100) * num_crafted,1);
-                    crafts.append($(`<span class="has-text-advanced"><span class="craft" data-val="${(sizeApproximation((bonus / 100) * vol))}">${total_crafted}</span> ${global.resource[res].name}</span>`));
-                }
-                let costs = $(`<div><span class="has-text-danger">${loc('manual_crafting_hover_use')} </span></div>`);
-                for (let i=0; i<craft_costs[res].length; i++){
-                    costs.append($(`<span class="craft-elm has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
-                    if (i + 1 < craft_costs[res].length){
-                        costs.append($(`<span>, </span>`));
-                    }
-                }
-                popper.append(crafts);
-                popper.append(costs);
-                
-                popper.show();
-                popover(`inc${res}${vol}`,popper);
             }
         }
     });
@@ -609,6 +650,15 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (atomic_mass[name]){
         loadEjector(name,color);
     }
+
+    if (supplyValue[name]){
+        loadSupply(name,color);
+    }
+
+    if (tradeRatio[name] && global.race.universe === 'magic'){
+        global['resource'][name]['basic'] = tradable;
+        loadAlchemy(name,color,tradable);
+    }
 }
 
 function loadSpecialResource(name,color) {
@@ -693,6 +743,10 @@ function loadSpecialResource(name,color) {
     
                     case 'antimatter':
                         desc.append($(`<span>${loc(`resource_${name}_desc_a`,[+((darkEffect('antimatter') - 1) * 100).toFixed(2)])}</span>`));
+                        break;
+
+                    case 'magic':
+                        desc.append($(`<span>${loc(`resource_${name}_desc_mg`,[loc('resource_Mana_name'),+((darkEffect('magic') - 1) * 100).toFixed(2)])}</span>`));
                         break;
                 }
                 break;
@@ -1192,10 +1246,10 @@ function breakdownPopover(id,name,type){
         if (breakdown[type].consume && breakdown[type].consume[name]){
             let col2 = $(`<div class="col"></div>`);
             let count = 0;
-            Object.keys(breakdown[type].consume[name]).forEach(function (mod){
-                count++;
+            Object.keys(breakdown[type].consume[name]).forEach(function (mod){                
                 let val = breakdown[type].consume[name][mod];
                 if (val != 0 && !isNaN(val)){
+                    count++;
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
                     label = mod.replace(/\+.+$/,"");
@@ -1227,13 +1281,15 @@ function breakdownPopover(id,name,type){
                     translate(raw){
                         let type = raw[raw.length -1];
                         let val = parseFloat(raw.slice(0,-1));
-                        val = +(val).toFixed(2);
+                        let precision = (val > 0 && val < 1) || (val < 0 && val > -1) ? 4 
+                            : ((val > 0 && val < 10) || (val < 0 && val > -10) ? 3 : 2);
+                        val = +(val).toFixed(precision);
                         let suffix = type === '%' ? '%' : '';
                         if (val > 0){
-                            return '+' + sizeApproximation(val,2) + suffix;
+                            return '+' + sizeApproximation(val,precision) + suffix;
                         }
                         else if (val < 0){
-                            return sizeApproximation(val,2) + suffix;
+                            return sizeApproximation(val,precision) + suffix;
                         }
                     },
                     fix(val){
@@ -1283,7 +1339,13 @@ function breakdownPopover(id,name,type){
         out: function(){
             vBind({el: `#pop${id} > div`},'destroy');
         },
-        classes: `breakdown has-background-light has-text-dark`
+        classes: `breakdown has-background-light has-text-dark`,
+        prop: {
+            modifiers: {
+                preventOverflow: { enabled: false },
+                hide: { enabled: false }
+            }
+        }
     });
 }
 
@@ -1390,9 +1452,9 @@ function drawModal(name,color){
     
     crates.append($(`<div class="crateHead"><span>${loc('resource_modal_crate_owned')} {{ crates.amount }}/{{ crates.max }}</span><span>${loc('resource_modal_crate_assigned')} {{ res.crates }}</span></div>`));
     
-    let buildCr = $(`<b-tooltip :label="buildCrateLabel()" position="is-bottom" animated multilined><button class="button" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button></b-tooltip>`);
-    let removeCr = $(`<b-tooltip :label="removeCrateLabel()" position="is-bottom" animated><button class="button" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button></b-tooltip>`);
-    let addCr = $(`<b-tooltip :label="addCrateLabel()" position="is-bottom" animated><button class="button" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button></b-tooltip>`);
+    let buildCr = $(`<button class="button construct" @click="buildCrate()">${loc('resource_modal_crate_construct')}</button>`);
+    let removeCr = $(`<button class="button unassign" @click="subCrate('${name}')">${loc('resource_modal_crate_unassign')}</button>`);
+    let addCr = $(`<button class="button assign" @click="addCrate('${name}')">${loc('resource_modal_crate_assign')}</button>`);
     
     crates.append(buildCr);
     crates.append(removeCr);
@@ -1405,17 +1467,6 @@ function drawModal(name,color){
             res: global['resource'][name],
         },
         methods: {
-            buildCrateLabel(){
-                return buildCrateLabel();
-            },
-            removeCrateLabel(){
-                let cap = crateValue();
-                return loc('resource_modal_crate_unassign_desc',[cap]);
-            },
-            addCrateLabel(){
-                let cap = crateValue();
-                return loc('resource_modal_crate_assign_desc',[cap]);
-            },
             buildCrate(){
                 buildCrate();
             },
@@ -1433,12 +1484,10 @@ function drawModal(name,color){
         body.append(containers);
         
         containers.append($(`<div class="crateHead"><span>${loc('resource_modal_container_owned')} {{ containers.amount }}/{{ containers.max }}</span><span>${loc('resource_modal_container_assigned')} {{ res.containers }}</span></div>`));
-        
-        let position = global.race['terrifying'] ? 'is-top' : 'is-bottom';
 
-        let buildCon = $(`<b-tooltip :label="buildContainerLabel()" position="${position}" animated multilined><button class="button" @click="buildContainer()">${loc('resource_modal_container_construct')}</button></b-tooltip>`);
-        let removeCon = $(`<b-tooltip :label="removeContainerLabel()" position="${position}" animated><button class="button" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button></b-tooltip>`);
-        let addCon = $(`<b-tooltip :label="addContainerLabel()" position="${position}" animated><button class="button" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button></b-tooltip>`);
+        let buildCon = $(`<button class="button construct" @click="buildContainer()">${loc('resource_modal_container_construct')}</button>`);
+        let removeCon = $(`<button class="button unassign" @click="removeContainer('${name}')">${loc('resource_modal_container_unassign')}</button>`);
+        let addCon = $(`<button class="button assign" @click="addContainer('${name}')">${loc('resource_modal_container_assign')}</button>`);
         
         containers.append(buildCon);
         containers.append(removeCon);
@@ -1451,17 +1500,6 @@ function drawModal(name,color){
                 res: global['resource'][name],
             },
             methods: {
-                buildContainerLabel(){
-                    return buildContainerLabel();
-                },
-                removeContainerLabel(){
-                    let cap = containerValue();
-                    return loc('resource_modal_container_unassign_desc',[cap]);
-                },
-                addContainerLabel(){
-                    let cap = containerValue();
-                    return loc('resource_modal_container_assign_desc',[cap]);
-                },
                 buildContainer(){
                     buildContainer();
                 },
@@ -1486,6 +1524,40 @@ function drawModal(name,color){
                 return sizeApproximation(value,2);
             }
         }
+    });
+
+    function tooltip(type,subtype){
+        if (type === 'modalContainers'){
+            let cap = containerValue();
+            switch (subtype){
+                case 'assign':
+                    return loc('resource_modal_container_assign_desc',[cap]);
+                case 'unassign':
+                    return loc('resource_modal_container_unassign_desc',[cap]);
+                case 'construct':
+                    return buildContainerLabel();
+            }
+        }
+        else {
+            let cap = crateValue();
+            switch (subtype){
+                case 'assign':
+                    return loc('resource_modal_crate_assign_desc',[cap]);
+                case 'unassign':
+                    return loc('resource_modal_crate_unassign_desc',[cap]);
+                case 'construct':
+                    return buildCrateLabel();
+            }
+        }
+    }
+
+    ['modalCrates','modalContainers'].forEach(function(type){
+        ['assign','unassign','construct'].forEach(function(subtype){
+            popover(`${type}${subtype}`,tooltip(type,subtype), {
+                elm: $(`#${type} > .${subtype}`),
+                attach: '#main',
+            });
+        });
     });
 }
 
@@ -1639,7 +1711,7 @@ function initEjector(){
 
 function loadEjector(name,color){
     if (atomic_mass[name] && global.interstellar['mass_ejector']){
-        if (name === 'Elerium' || name === 'Infernite'){
+        if (global.race.universe !== 'magic' && (name === 'Elerium' || name === 'Infernite')){
             color = 'caution';
         }
         let ejector = $(`<div id="eject${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
@@ -1653,6 +1725,10 @@ function loadEjector(name,color){
         res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="ejectMore('${name}')"><span>&raquo;</span></span>`));
 
         res.append($(`<span class="mass">${loc('interstellar_mass_ejector_per')}: <span class="has-text-warning">${atomic_mass[name]}</span> kt</span>`));
+
+        if (!global.interstellar.mass_ejector.hasOwnProperty(name)){
+            global.interstellar.mass_ejector[name] = 0;
+        }
 
         vBind({
             el: `#eject${name}`,
@@ -1684,120 +1760,309 @@ function loadEjector(name,color){
     }
 }
 
-export function spatialReasoning(value,type){
-    let plasmids = 0;
-    if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
-        plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
-        if (global.race['no_plasmid']){
-            plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
-        }
+function initSupply(){
+    clearElement($('#resCargo'));
+    if (global.portal['transport']){
+        let supply = $(`<div id="spireSupply"><h3 class="res has-text-warning pad">${loc('portal_transport_supply')}</h3></div>`);
+        $('#resCargo').append(supply);
+
+        let cargo = $(`<span class="pad">{{ used }} / {{ max }}</span>`);
+        supply.append(cargo);
+
+        vBind({
+            el: `#spireSupply`,
+            data: global.portal.transport.cargo
+        });
     }
-    if (!type || (type && type === 'phage')){
-        if (global.genes['store'] && global.genes['store'] >= 4){
-            plasmids += global.race.Phage.count;
-        }
-    }
-    if (global.genes['store']){
-        let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
-        if (global.race.universe === 'antimatter'){
-            divisor *= 2;
-        }
-        if (global.genes['bleed'] && global.genes['bleed'] >= 3){
-            if (!type || (type && ((type === 'plasmid' && global.race.universe === 'antimatter') || (type === 'anti' && global.race.universe !== 'antimatter')))){
-                plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
-            }
-        }
-        value *= 1 + (plasmids / divisor);
-    }
-    if (global.race.universe === 'standard'){
-        value *= darkEffect('standard');
-    }
-    if (global.race.universe === 'antimatter' && ((!global.race['cataclysm'] && global.city['temple'] && global.city['temple'].count) || (global.race['cataclysm'] && global.space['ziggurat'] && global.space['ziggurat'].count))){
-        let temple = 0.06;
-        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
-            temple += priest * global.civic.priest.workers;
-        }
-        value *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
-    }
-    return type ? value : Math.round(value);
 }
 
-export function plasmidBonus(type){
-    let standard = 0;
-    let anti = 0;    
-    if (global.race.universe !== 'antimatter' || global.genes['bleed']){
-        let plasmids = global.race['no_plasmid'] ? global.race.p_mutation : global.race.Plasmid.count;
-        if (plasmids > global.race.Plasmid.count){
-            plasmids = global.race.Plasmid.count;
-        }
-        if (global.race.universe === 'antimatter' && global.genes['bleed']){
-            plasmids *= 0.025
-        }
-        if (global.race['decayed']){
-            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
-        }
-        let p_cap = 250 + global.race.Phage.count;
-        if (plasmids > p_cap){
-            standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
-        }
-        else if (plasmids < 0){
-            standard = 0;
-        }
-        else {
-            standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+function loadSupply(name,color){
+    if (supplyValue[name] && global.portal['transport']){
+        let ejector = $(`<div id="supply${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        $('#resCargo').append(ejector);
+
+        let res = $(`<span class="trade"></span>`);
+        ejector.append(res);
+
+        res.append($(`<span role="button" aria-label="eject less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="supplyLess('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span class="current">{{ e.${name} }}</span>`));
+        res.append($(`<span role="button" aria-label="eject more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="supplyMore('${name}')"><span>&raquo;</span></span>`));
+
+        let volume = sizeApproximation(supplyValue[name].out);
+        res.append($(`<span class="mass">${loc('portal_transport_item',[`<span class="has-text-caution">${volume}</span>`,`<span class="has-text-success">${supplyValue[name].in}</span>`])}</span>`));
+
+        if (!global.portal.transport.cargo.hasOwnProperty(name)){
+            global.portal.transport.cargo[name] = 0;
         }
 
-        if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
-            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
-            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                temple_bonus += global.civic.professor.workers * 0.002;
+        vBind({
+            el: `#supply${name}`,
+            data: {
+                r: global.resource[name],
+                e: global.portal.transport.cargo
+            },
+            methods: {
+                supplyMore(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler + global.portal.transport.cargo.used > global.portal.transport.cargo.max){
+                        keyMutipler = global.portal.transport.cargo.max - global.portal.transport.cargo.used;
+                    }
+                    global.portal.transport.cargo[r] += keyMutipler;
+                    global.portal.transport.cargo.used += keyMutipler;
+                },
+                supplyLess(r){
+                    let keyMutipler = keyMultiplier();
+                    if (keyMutipler > global.portal.transport.cargo[r]){
+                        keyMutipler = global.portal.transport.cargo[r];
+                    }
+                    if (global.portal.transport.cargo[r] > 0){
+                        global.portal.transport.cargo[r] -= keyMutipler;
+                        global.portal.transport.cargo.used -= keyMutipler;
+                    }
+                },
             }
-            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
-                temple_bonus += priest_bonus * global.civic.priest.workers;
-            }
-            if (global.race['spiritual']){
-                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
-            }
-            if (global.civic.govern.type === 'theocracy'){
-                temple_bonus *= 1.12;
-            }
-            standard *= 1 + (global.city.temple.count * temple_bonus);
-        }
+        });
     }
-
-    if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
-        let plasmids = global.race.Plasmid.anti;
-        if (plasmids > global.race.Plasmid.anti){
-            plasmids = global.race.Plasmid.anti;
-        }
-        if (global.race.universe !== 'antimatter' && global.genes['bleed'] && global.genes['bleed'] >= 2){
-            plasmids *= 0.25
-        }
-        if (global.race['decayed']){
-            plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
-        }
-        let p_cap = 250 + global.race.Phage.count;
-        if (plasmids > p_cap){
-            anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
-        }
-        else if (plasmids < 0){
-            anti = 0;
-        }
-        else {
-            anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
-        }
-        anti /= 3;
-    }
-
-    if (type && type === 'plasmid'){
-        return standard;
-    }
-    else if (type && type === 'antiplasmid'){
-        return anti;
-    }
-
-    let final = (1 + standard) * (1 + anti);
-    return final - 1;
 }
+
+function initAlchemy(){
+    clearElement($('#resAlchemy'));
+}
+
+function loadAlchemy(name,color,basic){
+    if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){
+        let alchemy = $(`<div id="alchemy${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
+        $('#resAlchemy').append(alchemy);
+
+        let res = $(`<span class="trade"></span>`);
+        alchemy.append(res);
+
+        res.append($(`<span role="button" aria-label="transmute less ${loc('resource_'+name+'_name')}" class="sub has-text-danger" @click="subSpell('${name}')"><span>&laquo;</span></span>`));
+        res.append($(`<span class="current">{{ a.${name} }}</span>`));
+        res.append($(`<span role="button" aria-label="transmute more ${loc('resource_'+name+'_name')}" class="add has-text-success" @click="addSpell('${name}')"><span>&raquo;</span></span>`));
+
+        if (!global.race.alchemy.hasOwnProperty(name)){
+            global.race.alchemy[name] = 0;
+        }
+
+        vBind({
+            el: `#alchemy${name}`,
+            data: {
+                r: global.resource[name],
+                a: global.race.alchemy
+            },
+            methods: {
+                addSpell(spell){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.resource.Mana.diff >= 1){
+                            global.race.alchemy[spell]++;
+                            global.resource.Mana.diff--;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+                subSpell(spell){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.race.alchemy[spell] > 0){
+                            global.race.alchemy[spell]--;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+            }
+        });
+
+        popover(`alchemy${name}`,function(){
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 5).toFixed(2) : tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
+        },
+        {
+            elm: `#alchemy${name} h3`
+        });
+    }
+}
+
+export const spatialReasoning = (function(){
+    var spatial = {};
+    return function (value,type,recalc){
+        let tkey = type ? type : 'a';
+        let key = [
+            global.race.universe,
+            global.race.Plasmid.count,
+            global.race.Plasmid.anti,
+            global.race.Phage.count,
+            global.race['no_plasmid'] || '0',
+            global.race['p_mutation'] || '0',
+            global.genes['store'] || '0',
+            global.genes['bleed'] || '0',
+            global.city['temple'] ? global.city.temple.count : '0',
+            global.space['ziggurat'] ? global.space.ziggurat.count : '0',
+            global.race['cataclysm'] ? global.race.cataclysm : '0',
+            global.genes['ancients'] || '0',
+            global.civic['priest'] ? global.civic.priest.workers : '0'
+        ].join('-');
+
+        if (!spatial[tkey]){
+            spatial[tkey] = {};
+        }
+        if (!spatial[tkey][key] || recalc){            
+            let modifier = 1;
+            if (global.genes['store']){
+                let plasmids = 0;
+                if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
+                    plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
+                    if (global.race['no_plasmid']){
+                        plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+                    }
+                }
+                if (!type || (type && type === 'phage')){
+                    if (global.genes['store'] >= 4){
+                        plasmids += global.race.Phage.count;
+                    }
+                }
+                let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
+                if (global.race.universe === 'antimatter'){
+                    divisor *= 2;
+                }
+                if (global.genes['bleed'] && global.genes['bleed'] >= 3){
+                    if (!type || (type && ((type === 'plasmid' && global.race.universe === 'antimatter') || (type === 'anti' && global.race.universe !== 'antimatter')))){
+                        plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+                    }
+                }
+                modifier *= 1 + (plasmids / divisor);
+            }
+            if (global.race.universe === 'standard'){
+                modifier *= darkEffect('standard');
+            }
+            if (global.race.universe === 'antimatter' && ((!global.race['cataclysm'] && global.city['temple'] && global.city['temple'].count) || (global.race['cataclysm'] && global.space['ziggurat'] && global.space['ziggurat'].count))){
+                let temple = 0.06;
+                if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                    let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
+                    temple += priest * global.civic.priest.workers;
+                }
+                modifier *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
+            }
+            if (global['pillars']){
+                let harmonic = calcPillar();
+                modifier *= harmonic[1];
+            }
+            spatial[tkey] = {};
+            spatial[tkey][key] = modifier;
+        }
+        return type ? (spatial[tkey][key] * value) : Math.round(spatial[tkey][key] * value);
+    }
+})();
+
+export const plasmidBonus = (function (){
+    var plasma = {};
+    return function(type){
+        let key = [
+            global.race.universe,
+            global.race.Plasmid.count,
+            global.race.Plasmid.anti,
+            global.race.Phage.count,
+            global.civic.govern.type,
+            global.genes['bleed'] || '0',
+            global.race['decayed'] || '0',
+            global.race['gene_fortify'] || '0',
+            global.tech['anthropology'] || '0',
+            global.tech['fanaticism'] || '0',
+            global.race['no_plasmid'] || '0',
+            global.genes['ancients'] || '0',
+            global.city['temple'] ? global.city.temple.count : '0',
+            global.civic.priest.workers,
+            global.race['spiritual'] || '0'
+        ].join('-');
+
+        if (!plasma[key]){
+            let standard = 0;
+            let anti = 0; 
+            if (global.race.universe !== 'antimatter' || global.genes['bleed']){
+                let plasmids = global.race['no_plasmid'] ? global.race.p_mutation : global.race.Plasmid.count;
+                if (plasmids > global.race.Plasmid.count){
+                    plasmids = global.race.Plasmid.count;
+                }
+                if (global.race.universe === 'antimatter' && global.genes['bleed']){
+                    plasmids *= 0.025
+                }
+                if (global.race['decayed']){
+                    plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
+                }
+                let p_cap = 250 + global.race.Phage.count;
+                if (plasmids > p_cap){
+                    standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+                }
+                else if (plasmids < 0){
+                    standard = 0;
+                }
+                else {
+                    standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+                }
+
+                if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+                    let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
+                    if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                        temple_bonus += global.civic.professor.workers * 0.002;
+                    }
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                        let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
+                        temple_bonus += priest_bonus * global.civic.priest.workers;
+                    }
+                    if (global.race['spiritual']){
+                        temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
+                    }
+                    if (global.civic.govern.type === 'theocracy'){
+                        temple_bonus *= 1.12;
+                    }
+                    standard *= 1 + (global.city.temple.count * temple_bonus);
+                }
+            }
+
+            if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
+                let plasmids = global.race.Plasmid.anti;
+                if (plasmids > global.race.Plasmid.anti){
+                    plasmids = global.race.Plasmid.anti;
+                }
+                if (global.race.universe !== 'antimatter' && global.genes['bleed'] && global.genes['bleed'] >= 2){
+                    plasmids *= 0.25
+                }
+                if (global.race['decayed']){
+                    plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
+                }
+                let p_cap = 250 + global.race.Phage.count;
+                if (plasmids > p_cap){
+                    anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
+                }
+                else if (plasmids < 0){
+                    anti = 0;
+                }
+                else {
+                    anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+                }
+                anti /= 3;
+            }
+
+            plasma = {};
+            let final = (1 + standard) * (1 + anti) - 1;            
+            plasma[key] = [final,standard,anti];
+        }
+
+        if (type && type === 'raw'){
+            return plasma[key];
+        }
+        else if (type && type === 'plasmid'){
+            return plasma[key][1];
+        }
+        else if (type && type === 'antiplasmid'){
+            return plasma[key][2];
+        }
+        else {
+            return plasma[key][0];
+        }
+    }
+})();

@@ -1,7 +1,8 @@
-import { global, keyMultiplier, poppers } from './vars.js';
-import { clearElement, popover, easterEgg } from './functions.js';
+import { global, keyMultiplier, p_on } from './vars.js';
+import { clearElement, popover, darkEffect, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
+import { armyRating } from './civics.js';
 import { craftingRatio, craftCost } from './resources.js';
 
 export const job_desc = {
@@ -55,6 +56,16 @@ export const job_desc = {
         let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
         if (global.civic.d_job === 'quarry_worker'){
             desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
+        }
+        return desc;
+    },
+    crystal_miner: function(){
+        let multiplier = 1;
+        multiplier *= racialTrait(global.civic.crystal_miner.workers,'miner');
+        let gain = +(global.civic.crystal_miner.impact * multiplier).toFixed(1);
+        let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
+        if (global.civic.d_job === 'crystal_miner'){
+            desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);
         }
         return desc;
     },
@@ -114,10 +125,17 @@ export const job_desc = {
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
     },
     priest: function(){
+        let desc = ``;
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            return loc('job_priest_desc2');
+            desc = loc('job_priest_desc2');
         }
-        return loc('job_priest_desc');
+        else {
+            desc = loc('job_priest_desc');
+        }
+        if (global.tech['cleric']){
+            desc = desc + ` ${loc('job_priest_desc3')}`;
+        }
+        return desc;
     },
     professor: function(){
         let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact).toFixed(2);
@@ -145,10 +163,10 @@ export const job_desc = {
             impact *= 1 + (global.space.satellite.count * 0.01);
         }
         if (global.civic.govern.type === 'theocracy'){
-            impact *= 0.5;
+            impact *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 0.75 : 0.6 ) : 0.5;
         }
         impact = +impact.toFixed(2);
-        return loc('job_scientist_desc',[impact]);
+        return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);
     },
     colonist(){
         return loc('job_colonist_desc',[races[global.race.species].solar.red]);
@@ -158,6 +176,13 @@ export const job_desc = {
     },
     hell_surveyor(){
         return loc('job_hell_surveyor_desc');
+    },
+    archaeologist(){
+        let arc = (p_on['arcology'] || 0) * 75;
+        let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
+        supress = supress > 1 ? 1 : supress;
+        let know = Math.round(250000 * supress);
+        return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
     crew(){
         return loc('job_crew_desc');
@@ -171,6 +196,7 @@ export function defineJobs(){
     loadJob('farmer',0.82,5);
     loadJob('lumberjack',1,5);
     loadJob('quarry_worker',1,5);
+    loadJob('crystal_miner',0.1,5);
     loadJob('scavenger',0.12,5);
     loadJob('miner',1,4,'advanced');
     loadJob('coal_miner',0.2,4,'advanced');
@@ -184,6 +210,7 @@ export function defineJobs(){
     loadJob('colonist',1,5,'advanced');
     loadJob('space_miner',1,5,'advanced');
     loadJob('hell_surveyor',1,1,'advanced');
+    loadJob('archaeologist',1,1,'advanced');
     loadJob('crew',1,4,'alert');
     loadFoundry();
 }
@@ -251,6 +278,9 @@ function loadJob(job, impact, stress, color){
     }
 
     let job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+    if (global.race.universe === 'magic' && job === 'scientist'){
+        job_name = loc('job_wizard');
+    }
     global['civic'][job].name = job_name;
 
     if (!global.civic[job]['assigned']){
@@ -268,7 +298,7 @@ function loadJob(job, impact, stress, color){
     
     var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
     var controls = $('<div class="controls"></div>');
-    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger'){
+    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger' || job === 'crystal_miner'){
         let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ workers }}</span></div>`);
         civ_container.append(job_label);
     }
@@ -393,7 +423,7 @@ export function loadFoundry(){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'];
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
@@ -402,7 +432,9 @@ export function loadFoundry(){
                 $('#foundry').append(resource);
 
                 let controls = $('<div class="controls"></div>');
-                let job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
+                let job_label = res === 'Scarletite' && global.portal.hasOwnProperty('hell_forge')
+                    ? $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ p.on | maxScar }}</span></div>`)
+                    : $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
@@ -416,15 +448,26 @@ export function loadFoundry(){
         }
         v_foundry = new Vue({
             el: `#foundry`,
-            data: {
+            data: global.portal.hasOwnProperty('hell_forge') ? {
+                f: global.city.foundry,
+                c: global.civic.craftsman,
+                p: global.portal.hell_forge
+            } : {
                 f: global.city.foundry,
                 c: global.civic.craftsman
             },
             methods: {
                 add(res){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.city.foundry.crafting < global.civic.craftsman.max && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))){
+                    let tMax = -1;
+                    if (res === 'Scarletite'){
+                        tMax = (p_on['hell_forge'] || 0);
+                    }
+                    for (let i=0; i<keyMult; i++){                        
+                        if (global.city.foundry.crafting < global.civic.craftsman.max 
+                            && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))
+                            && (tMax === -1 || tMax > global.city.foundry[res])
+                        ){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;
@@ -478,6 +521,11 @@ export function loadFoundry(){
                     else {
                         return 'count';
                     }
+                }
+            },
+            filters: {
+                maxScar(v){
+                    return (p_on['hell_forge'] || 0);
                 }
             }
         });

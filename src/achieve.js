@@ -1,8 +1,10 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
-import { races } from './races.js';
-import { piracy } from './space.js';
+import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { races, genus_traits } from './races.js';
+import { universe_affixes, piracy } from './space.js';
+import { monsters } from './portal.js';
 import { loc } from './locale.js'
+
 
 if (!global.stats['achieve']){
     global.stats['achieve'] = {};
@@ -18,7 +20,7 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun'
+        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator','corrupted'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -37,7 +39,10 @@ const achieve_list = {
         'atmo_toxic','atmo_mellow','atmo_rage','atmo_stormy','atmo_ozone','atmo_magnetic','atmo_trashed','atmo_elliptical','atmo_flare','atmo_dense',
         'atmo_unstable'
     ],
-    universe: ['squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled','eviltwin','microbang','vigilante'],
+    universe: [
+        'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
+    ],
     challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history'],    
 };
 
@@ -151,6 +156,11 @@ export const feats = {
         desc: loc("feat_nephilim_desc"),
         flair: loc("feat_nephilim_flair")
     },
+    twisted: {
+        name: loc("feat_twisted_name"),
+        desc: loc("feat_twisted_desc"),
+        flair: loc("feat_twisted_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),
@@ -204,26 +214,7 @@ export const feats = {
 }
 
 {
-    let affix = 'l';
-    if (global.race.universe !== 'standard'){
-        switch (global.race.universe){
-            case 'evil':
-                affix = 'e';
-                break;
-            case 'antimatter':
-                affix = 'a';
-                break;
-            case 'heavy':
-                affix = 'h';
-                break;
-            case 'micro':
-                affix = 'm';
-                break;
-            default:
-                break;
-        }
-    }
-
+    let affix = universeAffix();
     let lvl = 0;
     let ulvl = 0;
     Object.keys(achievements).forEach(function (achievement){
@@ -232,30 +223,36 @@ export const feats = {
             if (global.stats.achieve[achievement][affix]){
                 ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
             }
-            if (achievement === 'joyless'){
-                lvl += global.stats.achieve[achievement].l > 5 ? 5 : global.stats.achieve[achievement].l;
-                if (global.stats.achieve[achievement][affix]){
-                    ulvl += global.stats.achieve[achievement][affix] > 5 ? 5 : global.stats.achieve[achievement][affix];
-                }
-            }
         }
     });
     set_alevel(lvl);
     set_ulevel(ulvl);
 }
 
-export function unlockAchieve(achievement,small,rank){
+export function universeAffix(){
+    switch (global.race.universe){
+        case 'evil':
+            return 'e';
+        case 'antimatter':
+            return 'a';
+        case 'heavy':
+            return 'h';
+        case 'micro':
+            return 'm';
+        case 'magic':
+            return 'mg';
+        default: // Standard
+            return 'l';
+    }
+}
+
+export function unlockAchieve(achievement,small,rank,universe){
     if (global.race.universe !== 'micro' && small === true){
         return false;
     }
-    let a_level = 1;
+    let a_level = alevel();
     let unlock = false;
     let redraw = false;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
@@ -273,51 +270,19 @@ export function unlockAchieve(achievement,small,rank){
             unlock = true;
         }
     }
-    if (global.stats.achieve[achievement]){
-        switch (global.race.universe){
-            case 'antimatter':
-                if (!global.stats.achieve[achievement]['a'] || (global.stats.achieve[achievement]['a'] && global.stats.achieve[achievement].a < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['a'] ? true : false;
-                    global.stats.achieve[achievement]['a'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'heavy':
-                if (!global.stats.achieve[achievement]['h'] || (global.stats.achieve[achievement]['h'] && global.stats.achieve[achievement].h < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['h'] ? true : false;
-                    global.stats.achieve[achievement]['h'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'evil':
-                if (!global.stats.achieve[achievement]['e'] || (global.stats.achieve[achievement]['e'] && global.stats.achieve[achievement].e < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['e'] ? true : false;
-                    global.stats.achieve[achievement]['e'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
-            case 'micro':
-                if (!global.stats.achieve[achievement]['m'] || (global.stats.achieve[achievement]['m'] && global.stats.achieve[achievement].m < rank)){
-                    let i_upgrade = global.stats.achieve[achievement]['m'] ? true : false;
-                    global.stats.achieve[achievement]['m'] = rank;
-                    redraw = true;
-                    if (!unlock){
-                        messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
-                    }
-                }
-                break;
+    if (global.stats.achieve[achievement] && universe !== 'l'){
+        let u_affix = universe || universeAffix();
+        if (!global.stats.achieve[achievement][u_affix] || (global.stats.achieve[achievement][u_affix] && global.stats.achieve[achievement][u_affix] < rank)){
+            let i_upgrade = global.stats.achieve[achievement][u_affix] ? true : false;
+            global.stats.achieve[achievement][u_affix] = rank;
+            redraw = true;
+            if (!unlock){
+                messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+            }
         }
     }
     if (redraw){
+        calc_mastery(true);
         drawPerks();
         drawAchieve();
     }
@@ -328,15 +293,7 @@ export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
-    let a_level = 1;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
-    if (a_level > 5){
-        a_level = 5;
-    }
+    let a_level = alevel();
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
     }
@@ -373,26 +330,7 @@ export function drawAchieve(args){
     let level = 0;
     let ulevel = 0;
 
-    let affix = 'l';
-    if (global.race.universe !== 'standard'){
-        switch (global.race.universe){
-            case 'evil':
-                affix = 'e';
-                break;
-            case 'antimatter':
-                affix = 'a';
-                break;
-            case 'heavy':
-                affix = 'h';
-                break;
-            case 'micro':
-                affix = 'm';
-                break;
-            default:
-                break;
-        }
-    }
-
+    let affix = universeAffix();
     let fool = typeof args === 'object' && args['fool'] ? args.fool : false;
 
     Object.keys(achievements).forEach(function (achievement){
@@ -451,15 +389,7 @@ export function drawAchieve(args){
         }
     });
 
-    let a_level = 1;
-    if (global.race['no_plasmid']){ a_level++; }
-    if (global.race['no_trade']){ a_level++; }
-    if (global.race['no_craft']){ a_level++; }
-    if (global.race['no_crispr']){ a_level++; }
-    if (global.race['weak_mastery']){ a_level++; }
-    if (a_level > 5){
-        a_level = 5;
-    }
+    let a_level = alevel();
 
     if ($('#topBar span.flair')){
         clearElement($('#topBar span.flair'),true);
@@ -509,7 +439,7 @@ export function drawAchieve(args){
     }
 }
 
-export function checkAchievements(){
+export function alevel(){
     let a_level = 1;
     if (global.race['no_plasmid']){ a_level++; }
     if (global.race['no_trade']){ a_level++; }
@@ -519,6 +449,11 @@ export function checkAchievements(){
     if (a_level > 5){
         a_level = 5;
     }
+    return a_level;
+}
+
+export function checkAchievements(){
+    let a_level = alevel();
 
     for (let t_level=a_level; t_level >= 0; t_level--){
         checkBigAchievement('extinct_', 'mass_extinction', 25, t_level);
@@ -564,8 +499,57 @@ export function checkAchievements(){
         }
     }
 
-    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 800000000){
+    if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
+    }
+
+    if (global.tech['pillars']){
+        let genus = {};
+        let rCnt = 0;
+        Object.keys(global.pillars).forEach(function(race){                
+            if (races[race]){
+                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                    genus[races[race].type] = global.pillars[race];
+                }
+                rCnt++;
+            }
+        });
+        if (Object.keys(genus).length >= Object.keys(genus_traits).length){
+            let rank = 5;
+            Object.keys(genus).forEach(function(g){
+                if (genus[g] < rank){
+                    rank = genus[g];
+                }
+            });
+            unlockAchieve('enlightenment',false,rank);
+        }
+        if (rCnt >= Object.keys(races).length - 1){
+            unlockAchieve('resonance');
+        }
+    }
+
+    if (global.portal.hasOwnProperty('mechbay') && global.tech.hasOwnProperty('hell_spire') && global.tech.hell_spire >= 9){
+        let mobs = Object.keys(monsters).length;
+        let highest = {};
+        Object.keys(global.stats.spire).forEach(function(universe){
+            let current = {};
+            Object.keys(global.stats.spire[universe]).forEach(function(boss){
+                if (monsters[boss]){
+                    if (!highest.hasOwnProperty(boss) || highest[boss] < global.stats.spire[universe][boss]){
+                        highest[boss] = global.stats.spire[universe][boss];
+                    }
+                    if (global.stats.spire[universe][boss] > 0){
+                        current[boss] = global.stats.spire[universe][boss];
+                    }
+                }
+            });
+            if (Object.keys(current).length === mobs){
+                unlockAchieve('gladiator',false,Math.min(...Object.values(current)),universe);
+            }
+        });
+        if (Object.keys(highest).length === mobs){
+            unlockAchieve('gladiator',false,Math.min(...Object.values(highest)),'l');
+        }
     }
 
     const date = new Date();
@@ -731,6 +715,9 @@ function checkBigAchievement(frag, name, num, level){
                     case 'micro':
                         global.stats.achieve[name].m = undefined;
                         break;
+                    case 'magic':
+                        global.stats.achieve[name].mg = undefined;
+                        break;
                     default:
                         break;
                 }
@@ -765,6 +752,11 @@ function checkBigAchievementUniverse(frag, name, num, level){
                 proceed = true;
             }
             break;
+        case 'magic':
+            if (typeof global.stats.achieve[name] === "undefined" || typeof global.stats.achieve[name].mg === "undefined" || global.stats.achieve[name].mg < level){
+                proceed = true;
+            }
+            break;
         default:
             break;
     }
@@ -794,6 +786,11 @@ function checkBigAchievementUniverse(frag, name, num, level){
                             total++;
                         }
                         break;
+                    case 'magic':
+                        if (global.stats.achieve[key] && global.stats.achieve[key]['mg'] && global.stats.achieve[key].mg >= level){
+                            total++;
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -810,6 +807,13 @@ export function drawPerks(){
     let perks = $('#perksPanel');
 
     let unlocked = 0;
+
+    let harmonic = calcPillar();
+    if (global['pillars'] && harmonic[0] > 1){        
+        unlocked++;
+        perks.append(`<div><span class="has-text-warning">${loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)])}</span></div>`);
+    }
+
     if (global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1){
         unlocked++;
         let bonus = global.stats.achieve.blackhole.l * 5;
@@ -1050,9 +1054,8 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe1",[25])}</span></div>`);
         if (global.stats.achieve.technophobe.l >= 2){
             let bonus = global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-            let universes = ['h','a','e','m'];
-            for (let i=0; i<universes.length; i++){
-                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+            for (let i=1; i<universe_affixes.length; i++){
+                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                     bonus += 5;
                 }
             }
@@ -1060,9 +1063,8 @@ export function drawPerks(){
         }
         if (global.stats.achieve.technophobe.l >= 3){
             let gems = 1;
-            let universes = ['h','a','e','m'];
-            for (let i=0; i<universes.length; i++){
-                if (global.stats.achieve.technophobe[universes[i]] && global.stats.achieve.technophobe[universes[i]] >= 5){
+            for (let i=1; i<universe_affixes.length; i++){
+                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
                     gems += 1;
                 }
             }
@@ -1096,6 +1098,12 @@ export function drawPerks(){
         perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_failed_history",[2])}</span></div>`);
     }
 
+    if (global.stats.achieve['gladiator'] && global.stats.achieve['gladiator'].l >= 1){
+        unlocked++;
+        let mech = global.stats.achieve['gladiator'].l * 20;
+        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_gladiator",[mech])}</span></div>`);
+    }
+
     if (unlocked > 0){
         perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
     }
@@ -1106,50 +1114,59 @@ export function drawStats(){
     let stats = $('#statsPanel');
 
     stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid | format }}</div>`);
     if (global.stats.antiplasmid > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_antiplasmid_earned")}</span> {{ antiplasmid }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_antiplasmid_earned")}</span> {{ antiplasmid | format }}</div>`);
     }
     if (global.stats.phage > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_phage_earned")}</span> {{ phage }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_phage_earned")}</span> {{ phage | format }}</div>`);
     }
     if (global.stats.dark > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_dark_earned")}</span> {{ dark }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_dark_earned")}</span> {{ dark | format }}</div>`);
     }
     if (global.stats.harmony > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_harmony_earned")}</span> {{ harmony }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_harmony_earned")}</span> {{ harmony | format }}</div>`);
     }
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | t_know }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | t_starved }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | played }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ reset }}</div>`);
+    if (global.stats.blood > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blood_earned")}</span> {{ blood | format }}</div>`);
+    }
+    if (global.stats.artifact > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_artifact_earned")}</span> {{ artifact | format }}</div>`);
+    }
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | t_know | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | t_starved | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | played | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ reset | format }}</div>`);
     if (global.stats.mad > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ mad }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ mad | format }}</div>`);
     }
     if (global.stats.bioseed > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed | format }}</div>`);
     }
     if (global.stats.cataclysm > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_cataclysm_resets")}</span> {{ cataclysm }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_cataclysm_resets")}</span> {{ cataclysm | format }}</div>`);
     }
     if (global.stats.blackhole > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole | format }}</div>`);
     }
     if (global.stats.ascend > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_ascension_resets")}</span> {{ ascend }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_ascension_resets")}</span> {{ ascend | format }}</div>`);
+    }
+    if (global.stats.descend > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ descend | format }}</div>`);
     }
     if (global.stats.portals > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals | format }}</div>`);
     }
     stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | format }}</div>`);
     if (global.stats.dkills > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_demons_kills")}</span> {{ dkills }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_demons_kills")}</span> {{ dkills | format }}</div>`);
     }
 
     vBind({
@@ -1167,6 +1184,9 @@ export function drawStats(){
             },
             t_died(d){
                 return d + global.stats.tdied;
+            },
+            format(s){
+                return s.toLocaleString();
             }
         }
     });

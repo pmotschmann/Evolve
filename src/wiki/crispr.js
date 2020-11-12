@@ -28,7 +28,19 @@ function geneDesc(info,gene){
     info.append(stats);
 
     stats.append(`<div class="effect">${genePool[gene].desc}</div>`);
-    stats.append(`<div class="cost right"><div class="has-text-warning">${loc('wiki_arpa_crispr_plasmid',[genePool[gene].cost])}</div></div>`);
+
+    let costs = $(`<div class="cost right"></div>`);
+    stats.append(costs);
+    Object.keys(genePool[gene].cost).forEach(function(res){
+        let res_cost = genePool[gene].cost[res]();
+        if (res_cost > 0){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                res = 'AntiPlasmid';
+            }
+            let label = loc(`resource_${res}_name`);
+            costs.append(`<div><span class="has-text-warning">${label}</span>: <span data-${res}="${res_cost}">${res_cost}</span></div>`);
+        }
+    });
 
     if (Object.keys(genePool[gene].reqs).length > 0){        
         let reqs = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_arpa_crispr_req')}</span></div>`);

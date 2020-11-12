@@ -147,11 +147,12 @@ a {
 }
 
 .current {
-    width: 5rem;
+    min-width: 5rem;
     text-align: center;
     display: inline-block;
     font-size: .875rem;
     line-height: 1rem;
+    padding: 0 .125rem;
     cursor: default;
 }
 
@@ -207,6 +208,15 @@ a {
 
 .main {
     margin: 1rem 1rem 1.25rem;
+    overflow-y: hidden;
+
+    .leftColumn {
+        height: ~"calc(100vh - 2.45rem)";
+    }
+
+    > .columns {
+        margin-bottom: 0 !important;
+    }
 
     .theme {
         margin-bottom: 1rem;
@@ -271,7 +281,7 @@ a {
     .msgQueue {
         font-size: .75rem;
         &.right {
-            min-height: 30rem;
+            height: ~"calc(100vh - 9rem)";
         }
     }
 
@@ -313,8 +323,23 @@ a {
         }
     }
 
+    .resTabs > section {
+        .sticky();
+        height: ~"calc(100vh - 10rem)";
+    }
+
     .resources {
         margin-top: .25rem;
+        padding-right: .25rem;
+        height: ~"calc(100vh - 5rem)";
+
+        @media only screen and (max-width: 88.5rem){
+            height: ~"calc(100vh - 16.5rem)";
+        }
+        @media only screen and (max-width: 48rem){
+            display: relative;
+        }
+
         .resource {
             display: flex;
             cursor: default;
@@ -371,18 +396,21 @@ a {
             margin-left: 1rem;
         }
         .tab-content {
-            padding: 0 .25rem 1rem 0;
+            padding: 0 .25rem 0 0;
         }
         > .tab-content {
-            padding: 0 .25rem 1rem 1rem;
+            padding: 0 .25rem 0 1rem;
         }
         .tab-item {
-            padding: 0 0 3rem 1rem;
+            padding: 0 0 0 1rem;
         }
         .tabs {
             ul {
                 margin-top: .5rem;
             }
+        }
+        .mtab {
+            height: ~"calc(100vh - 10rem)";
         }
         .action {
             display: inline-block;
@@ -777,6 +805,7 @@ a {
             .ship {
                 text-align: center;
                 .current {
+                    min-width: 2.5rem;
                     width: 2.5rem;
                     font-size: 1rem;
                 }
@@ -800,6 +829,32 @@ a {
             .columns {
                 flex-wrap: wrap;
             }
+        }
+    }
+
+    .militaryTab,
+    .mechTab {
+        margin-left: 1rem;
+    }
+
+    .mechAssembly {
+        padding-bottom: .5rem;
+        margin-bottom: .5rem;
+        border-bottom: .0625rem solid;
+
+        .button {
+            height: 2rem;
+        }
+
+        .bayOptions {
+            margin-top: .5rem;
+            .dropdown {
+                margin: 0 .5rem .25rem 0;
+            }
+        }
+
+        .mechAssemble {
+            margin: 1rem 0 0 14rem;
         }
     }
 
@@ -852,6 +907,10 @@ a {
             #000000 10px,
             #000000 20px
         );
+    }
+
+    .pad {
+        margin-left: 1rem;
     }
 
     .market-header {
@@ -984,12 +1043,22 @@ a {
     }
 }
 
+.pylon {
+    .current {
+        width: 5.25rem;
+    }
+}
+
 .modalBody {
     .gap {
         margin: 0 .25rem .5rem;
     }
     &.max40 {
         max-width: 40rem;
+    }
+    .wrap {
+        max-width: 25.5rem;
+        margin: 0 auto;
     }
 }
 
@@ -1103,7 +1172,7 @@ a {
 body .modal > div.popper {
     margin-top: .125rem;
     text-align: center;
-    padding: 1rem;
+    padding: .5rem .75rem;
     max-width: 18rem;
     border-radius: .25rem;
     line-height: 1.3125rem;
@@ -1261,6 +1330,7 @@ body .modal > div.popper.wide {
     }
     .factory {
         :first-child {
+            display: inline-block;
             width: 8rem;
             text-align: left;
         }
@@ -1420,7 +1490,12 @@ body .modal > div.popper.wide {
 
         > span {
             display: inline-block;
-            width: 50%;
+            width: 40%;
+        }
+
+        > span:first-child {
+            display: inline-block;
+            width: 60%;
         }
 
         .rank {
@@ -1652,6 +1727,21 @@ div.bigbang {
     }
 }
 
+.sticky {
+    position: sticky;
+    top: 1rem;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.resTabs > section,
+.bldQueue {
+    scrollbar-width: thin;
+}
+
 .darkTheme,
 html.dark {
     background-color: #1f2424;
@@ -1762,7 +1852,7 @@ html.dark {
     .b-tooltip.is-bottom:before {
         border-bottom: 5px solid #f2f2f2;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #f2f2f2;
         color: #000;
     }
@@ -1795,6 +1885,14 @@ html.dark {
     .basic-button:hover {
         border: #eee solid .0625rem;
         background-color: #3a4344;
+    }
+    .buildList {
+        .hl-ca {
+            color: #00af0f !important;
+        }
+        .hl-cna {
+            color: #c20000 !important;
+        }
     }
     .main {
         .content {
@@ -1991,6 +2089,32 @@ html.dark {
             }
         }
     }
+
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar {
+        width: 6px;
+        background-color: #1f2424;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
+        background-color: #F5F5F5;
+    }
+
+    .sticky,
+    .resTabs > section,
+    .bldQueue {
+        scrollbar-color: #F5F5F5 #1f2424;
+    }
 }
 
 html.dark {
@@ -2082,16 +2206,16 @@ html.light {
     .promoBar {
         background-color: #c7c7c7;
     }
-    .b-tooltip.is-right:before {
+    .b-tooltip.is-right .tooltip-content:before {
         border-right: 5px solid #f2f2f2;
     }
-    .b-tooltip.is-left:before {
+    .b-tooltip.is-left .tooltip-content:before {
         border-left: 5px solid #f2f2f2;
     }
-    .b-tooltip.is-bottom:before {
+    .b-tooltip.is-bottom .tooltip-content:before {
         border-bottom: 5px solid #f2f2f2;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #f2f2f2;
         color: #000;
     }
@@ -2324,6 +2448,32 @@ html.light {
             }
         }
     }
+
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar {
+        width: 6px;
+        background-color: #F5F5F5;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+    .sticky,
+    .resTabs > section,
+    .bldQueue {
+        scrollbar-color: #000000 #F5F5F5;
+    }
 }
 
 .light .modal .action {
@@ -2433,7 +2583,7 @@ html.night {
     .b-tooltip.is-bottom:before {
         border-bottom: 5px solid #999;
     }
-    .b-tooltip:after {
+    .b-tooltip.is-primary .tooltip-content {
         background: #0f0f0f;
         color: #fff;
         border: .0625rem solid #999;
@@ -2450,6 +2600,32 @@ html.night {
             background: #000;
         }
     }
+
+    .sticky::-webkit-scrollbar-track,
+    .resTabs > section::-webkit-scrollbar-track,
+    .bldQueue {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar,
+    .resTabs > section::-webkit-scrollbar,
+    .bldQueue::-webkit-scrollbar-track {
+        width: 6px;
+        background-color: #000000;
+    }
+    
+    .sticky::-webkit-scrollbar-thumb,
+    .resTabs > section::-webkit-scrollbar-thumb,
+    .bldQueue::-webkit-scrollbar-thumb {
+        background-color: #727272;
+    }
+
+    .sticky,
+    .resTabs > section,
+    .bldQueue {
+        scrollbar-color: #727272 #000000;
+    }
 }
 
 .night .modal .action {
@@ -2458,7 +2634,7 @@ html.night {
 
 .redgreenTheme,
 html.redgreen {
-    .nightTheme();
+    .nightTheme();    
     .has-text-success {
         color: #00ff00 !important;
     }
@@ -2577,6 +2753,46 @@ html.redgreen {
                 }
             }
         }
+    }
+}
+
+.darkNightTheme,
+html.darkNight {
+    .nightTheme();
+    h2, h3,
+    .content h2,
+    .content h3,
+    body {
+        color: #b8b8b8;
+    }
+    .has-text-warning {
+        color: #d6b220 !important;
+    }
+    .main > div.popper,
+    body .modal > div.popper {
+        color: #b8b8b8 !important;
+        .has-text-dark {
+            color: #b8b8b8 !important;
+        }
+    }
+    .tabs a {
+        color: #b8b8b8;
+    }
+    .button {
+        color: #cccccc;
+    }
+    .b-tooltip.is-primary .tooltip-content {
+        color: #b8b8b8;
+    }
+    .has-numberinput {
+        input {
+            color: #b8b8b8;
+        }
+    }
+    input,
+    select,
+    textarea {
+        background: #b8b8b8;
     }
 }
 

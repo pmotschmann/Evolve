@@ -36,7 +36,7 @@ function initPage(){
             key: 'gameplay',
             submenu: [
                 { key: 'basics' },
-                //{ key: 'mechanics' },
+                { key: 'government' },
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
@@ -48,7 +48,8 @@ function initPage(){
             submenu: [
                 { key: 'resets' },
                 { key: 'resources' },
-                { key: 'crispr' }
+                { key: 'crispr' },
+                { key: 'blood' }
             ]
         },
         {
@@ -80,7 +81,8 @@ function initPage(){
                 { key: 'early_space' },
                 { key: 'deep_space' },
                 { key: 'interstellar' },
-                { key: 'intergalactic' }
+                { key: 'intergalactic' },
+                { key: 'dimensional' }
             ]
         },
         {
@@ -88,7 +90,8 @@ function initPage(){
             submenu: [
                 { key: 'projects' },
                 //{ key: 'genetics' },
-                { key: 'crispr' }
+                { key: 'crispr' },
+                { key: 'blood' }
             ]
         },
         {

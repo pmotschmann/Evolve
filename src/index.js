@@ -12,8 +12,8 @@ export function index(){
         <span class="calendar" >
             <span v-show="city.calendar.day">
             <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
-            <span class="year">Year <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
-            <span class="day">Day <span class="has-text-warning">{{ city.calendar.day }}</span></span>
+            <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
+            <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>
             <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
             <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
             </span>
@@ -27,19 +27,19 @@ export function index(){
     main.append(columns);
 
     // Left Column
-    columns.append(`<div class="column is-one-quarter">
+    columns.append(`<div class="column is-one-quarter leftColumn">
         <div id="race" class="race columns is-mobile is-gapless">
             <h2 class="is-sr-only">Race Info</h2>
-            <div class="column is-one-quarter"><b-tooltip :label="desc()" position="is-right" size="is-large" multilined animated>{{ name() }}</b-tooltip></div>
-            <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">Morale <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
+            <div class="column is-one-quarter name">{{ name() }}</div>
+            <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
             <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
             <h2 class="is-sr-only">Message Queue</h2>
-            <div id="msgQueue" class="msgQueue has-text-info" aria-live="polite"></div>
+            <div id="msgQueue" class="msgQueue sticky has-text-info" aria-live="polite"></div>
         </div>
-        <div id="resources" class="resources"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
+        <div id="resources" class="resources sticky"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);
 
     // Center Column
@@ -123,6 +123,12 @@ export function index(){
                     <span aria-hidden="true">{{ 'tab_military' | label }}</span>
                 </template>
             </b-tab-item>
+            <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
+                <template slot="header">
+                    <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
+                    <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
+                </template>
+            </b-tab-item>
         </b-tabs>
     </b-tab-item>`);
     tabs.append(civic);
@@ -171,17 +177,31 @@ export function index(){
                     {{ 'tab_ejector' | label }}
                 </template>
             </b-tab-item>
+            <b-tab-item id="resCargo" :visible="s.showCargo">
+                <template slot="header">
+                    {{ 'tab_cargo' | label }}
+                </template>
+            </b-tab-item>
+            <b-tab-item id="resAlchemy" :visible="s.showAlchemy">
+                <template slot="header">
+                    {{ 'tab_alchemy' | label }}
+                </template>
+            </b-tab-item>
         </b-tabs>
     </b-tab-item>`);
     tabs.append(resources);
 
     // ARPA Tab
-    let arpa = $(`<b-tab-item :visible="s.showGenetics" label="A.R.P.A.">
+    let arpa = $(`<b-tab-item :visible="s.showGenetics">
+        <template slot="header">
+            {{ 'tech_arpa' | label }}
+        </template>
         <div id="apra" class="arpa">
             <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
                 <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
                 <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc('tab_arpa_genetics')}"></b-tab-item>
                 <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
+                <b-tab-item id="arpaBlood" :visible="s.arpa.blood" label="${loc('tab_arpa_blood')}"></b-tab-item>
             </b-tabs>
         </div>
     </b-tab-item>`);
@@ -261,10 +281,11 @@ export function index(){
                     <span>{{ 'theme_' + s.theme | label }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
-                <b-dropdown-item v-on:click="dark">{{ 'theme_dark' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="light">{{ 'theme_light' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="night">{{ 'theme_night' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="redgreen">{{ 'theme_redgreen' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('dark')">{{ 'theme_dark' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('light')">{{ 'theme_light' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('night')">{{ 'theme_night' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('redgreen')">{{ 'theme_redgreen' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('darkNight')">{{ 'theme_darkNight' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>
@@ -297,14 +318,14 @@ export function index(){
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.boring"><b-tooltip :label="boring()" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
         <div>
-            <div>Key Mappings</div>
-            <div class="keyMap"><span>10X Multiplier</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
-            <div class="keyMap"><span>25X Multiplier</span> <b-input class="keyMap" v-model="s.keyMap.x25" id="x25Key"></b-input></div>
-            <div class="keyMap"><span>100X Multiplier</span> <b-input class="keyMap" v-model="s.keyMap.x100" id="x100Key"></b-input></div>
-            <div class="keyMap"><span>Queue Key</span> <b-input class="keyMap" v-model="s.keyMap.q" id="queueKey"></b-input></div>
+            <div>${loc('key_mappings')}</div>
+            <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
+            <div class="keyMap"><span>${loc('multiplier',[25])}</span> <b-input class="keyMap" v-model="s.keyMap.x25" id="x25Key"></b-input></div>
+            <div class="keyMap"><span>${loc('multiplier',[100])}</span> <b-input class="keyMap" v-model="s.keyMap.x100" id="x100Key"></b-input></div>
+            <div class="keyMap"><span>${loc('q_key')}</span> <b-input class="keyMap" v-model="s.keyMap.q" id="queueKey"></b-input></div>
         </div>
         <div class="importExport">
-            <b-field label="Import/Export Save">
+            <b-field label="${loc('import_export')}">
                 <b-input id="importExport" type="textarea"></b-input>
             </b-field>
             <button class="button" @click="saveImport">{{ 'import' | label }}</button>

@@ -15,6 +15,7 @@ export function infoBoxBuilder(parent,args){
     if (!args.hasOwnProperty('name')){ return; }
     if (!args.hasOwnProperty('template')){ return; }
     if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
+    if (!args.hasOwnProperty('text')){ args['text'] = {}; }
     if (!args.hasOwnProperty('para_data')){ args['para_data'] = {}; }
     if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
     if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
@@ -25,7 +26,7 @@ export function infoBoxBuilder(parent,args){
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
 
     let info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
-    info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+    info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
     let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];
     
     if (args.break){
@@ -38,7 +39,7 @@ export function infoBoxBuilder(parent,args){
     ranges.forEach(function(range){
         let para = $(`<div class="para"></div>`);
         for (let i=range.s; i<=range.e; i++){
-            if (args.para_data[i] && Array.isArray(args.para_data[i])){
+            if ((args.text[i] || args.para_data[i]) && Array.isArray(args.para_data[i])){
                 let inputs = args.para_data[i];
                 if (args.data_link[i] && Array.isArray(args.data_link[i])){
                     for (let j=0; j<args.data_link[i].length; j++){
@@ -53,10 +54,10 @@ export function infoBoxBuilder(parent,args){
                         inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
                     }
                 }
-                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
+                para.append(`<span>${loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
             }
             else {
-                para.append(`<span>${loc(`wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+                para.append(`<span>${loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`)}</span>`);
             }        
         }
         info.append(para);
@@ -75,7 +76,7 @@ export function actionDesc(info, c_action, extended){
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
     }
 
-    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc(true);
     if (desc !== title){
         info.append(`<div class="desc">${desc}</div>`);
     }
@@ -84,7 +85,7 @@ export function actionDesc(info, c_action, extended){
     
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
-        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect();
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect(true);
         if (effect !== false){
             stats.append(`<div class="effect">${effect}</div>`);
             hasEffect = true;
@@ -93,7 +94,7 @@ export function actionDesc(info, c_action, extended){
     }
 
     if (c_action.hasOwnProperty('cost')){
-        let costs = adjustCosts(c_action.cost);
+        let costs = adjustCosts(c_action.cost, true);
         let cost = hasEffect ? $(`<div class="cost right"></div>`) : $(`<div class="cost"></div>`);
         let render = false;
 
@@ -118,7 +119,7 @@ export function actionDesc(info, c_action, extended){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage'){
+            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -129,8 +130,16 @@ export function actionDesc(info, c_action, extended){
                     render = true;
                 }
             }
+            else if (res === 'Supply'){
+                let res_cost = costs[res](true);
+                if (res_cost > 0){
+                    let label = loc(`resource_${res}_name`);
+                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    render = true;
+                }
+            }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
-                let res_cost = costs[res]();
+                let res_cost = costs[res](true);
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));

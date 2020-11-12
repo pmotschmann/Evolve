@@ -1,5 +1,6 @@
 import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
+import { defineIndustry } from './civics.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -315,7 +316,7 @@ export const traits = {
         desc: loc('trait_holy'),
         type: 'genus',
         val: 1,
-        vars: [50]
+        vars: [50,25]
     },
     creative: { // A.R.P.A. Projects are cheaper
         name: loc('trait_creative_name'),
@@ -390,8 +391,7 @@ export const traits = {
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
         type: 'major',
-        val: 3,
-        vars: [10]
+        val: 3
     },
     herbivore: { // No food is gained from hunting
         name: loc('trait_herbivore_name'),
@@ -439,6 +439,7 @@ export const traits = {
         desc: loc('trait_puny'),
         type: 'major',
         val: -4,
+        vars: [10]
     },
     dumb: { // Knowledge costs increased by 5%
         name: loc('trait_dumb_name'),
@@ -1800,7 +1801,7 @@ export const races = {
     junker: {
         name: hallowed.active ? loc('race_ghoul') : loc('race_junker'),
         desc: hallowed.active ? loc('race_ghoul_desc') : loc('race_junker_desc'),
-        type: 'humanoid',
+        type: (function(){ return global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid'; })(),
         home: hallowed.active ? loc('race_ghoul_home') : loc('race_junker_home'),
         entity: hallowed.active ? loc('race_ghoul_entity') : loc('race_junker_entity'),
         traits: {
@@ -1889,11 +1890,11 @@ export function racialTrait(workers,type){
             modifier *= (workers * 0.05) + 0.5;
         }
         else {
-            let mod = type === 'army' ? 0.99 : 0.98;
+            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : 0.98;
             modifier *= 1 + (1 - (mod ** (workers - 10)));
         }
     }
-    if(global.race['cold_blooded'] && type !== 'army' && type !== 'factory' && type !== 'science'){
+    if(global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
         switch(global.city.calendar.temp){
             case 0:
                 modifier *= 1 - (traits.cold_blooded.vars[0] / 100);
@@ -1924,7 +1925,7 @@ export function racialTrait(workers,type){
         if (type === 'lumberjack' && global.city.s_alter.harvest > 0){
             modifier *= 1.15;
         }
-        if (type === 'army' && global.city.s_alter.rage > 0){
+        if ((type === 'army' || type === 'hellArmy') && global.city.s_alter.rage > 0){
             modifier *= 1.15;
         }
         if (type === 'science' && global.city.s_alter.mind > 0){
@@ -1954,6 +1955,24 @@ export function racialTrait(workers,type){
     }
     if (global.civic.govern.type === 'democracy'){
         modifier *= 0.95;
+    }
+    if (global.race.universe === 'magic'){
+        if (type === 'science'){
+            modifier *= 0.6;
+        }
+        else if (type === 'army' || type === 'hellArmy'){
+            modifier *= 0.75;
+        }
+        else {
+            modifier *= 0.8;
+        }
+        if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
+            let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
+            modifier *= 1 + (boost / (boost + 75));
+        }
+    }
+    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
+        modifier *= 1.25;
     }
     return modifier;
 }
@@ -1986,7 +2005,9 @@ export function cleanAddTrait(trait){
     switch (trait){
         case 'kindling_kindred':
             global.resource.Lumber.display = false;
+            global.resource.Crates.amount += global.resource.Lumber.crates;
             global.resource.Lumber.crates = 0;
+            global.resource.Containers.amount += global.resource.Lumber.containers;
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
@@ -2009,6 +2030,11 @@ export function cleanAddTrait(trait){
             global.civic.lumberjack.workers = 0;
             if (global.civic.d_job === 'lumberjack') {
                 global.civic.d_job = 'unemployed';
+            }
+            if (global.race['casting']){
+                global.race.casting.total -= global.race.casting.lumberjack;
+                global.race.casting.lumberjack = 0;
+                defineIndustry();
             }
             if (global.tech['foundry']){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
@@ -2050,6 +2076,11 @@ export function cleanAddTrait(trait){
             global.civic.farmer.display = false;
             if (global.civic.d_job === 'farmer') {
                 global.civic.d_job = 'unemployed';
+            }
+            if (global.race['casting']){
+                global.race.casting.total -= global.race.casting.farmer;
+                global.race.casting.farmer = 0;
+                defineIndustry();
             }
             break;
         case 'apex_predator':
@@ -2150,6 +2181,9 @@ export function cleanRemoveTrait(trait){
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
             }
+            if (global.race['casting']){
+                defineIndustry();
+            }
             break;
         case 'carnivore':
             global.civic.farmer.display = true;
@@ -2172,6 +2206,9 @@ export function cleanRemoveTrait(trait){
             if (global.city['windmill']){
                 global.city['mill'] = { count: global.city.windmill.count };
                 delete global.city['windmill'];
+            }
+            if (global.race['casting']){
+                defineIndustry();
             }
             break;
         case 'terrifying':

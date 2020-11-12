@@ -7,66 +7,13 @@ span, div {
     cursor: default;
 }
 
-.sticky {
-    position: sticky;
-    top: 1rem;
-    bottom: 0;
-    height: 100vh;
-    overflow-y: auto;
+.main {
+    overflow-y: initial;
 }
 
-.dark {
-    .sticky::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        background-color: #1f2424;
-    }
-    
-    .sticky::-webkit-scrollbar {
-        width: 6px;
-        background-color: #1f2424;
-    }
-    
-    .sticky::-webkit-scrollbar-thumb {
-        background-color: #F5F5F5;
-    }
+#sideContent.sticky {
+    height: 95vh;
 }
-
-.night {
-    .sticky::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        background-color: #000000;
-    }
-    
-    .sticky::-webkit-scrollbar {
-        width: 6px;
-        background-color: #000000;
-    }
-    
-    .sticky::-webkit-scrollbar-thumb {
-        background-color: #727272;
-    }
-}
-
-.redgreen {
-    .night();
-}
-
-.light {
-    .sticky::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        background-color: #F5F5F5;
-    }
-    
-    .sticky::-webkit-scrollbar {
-        width: 6px;
-        background-color: #F5F5F5;
-    }
-    
-    .sticky::-webkit-scrollbar-thumb {
-        background-color: #000000;
-    }
-}
-
 
 .wiki {
     display: flex;
@@ -295,6 +242,12 @@ span, div {
         .wide {
             width: 6.9375rem;
         }
+        .swide {
+            width: 12rem;
+        }
+        &.wide {
+            width: 40rem;
+        }
     }
 
     .flex {
@@ -313,10 +266,34 @@ html.redgreen {
     .menu-label {
         color: #ffa500 !important;
     }
+    .iclr2 {
+        color: #fff;
+    }
+    .iclr3 {
+        color: #cd7f32;
+    }
+    .iclr4 {
+        color: #c0c0c0;
+    }
+    .iclr5 {
+        color: #d4af37;
+    }
 }
 
 html.light {
     .menu-label {
         color: #966100 !important;
+    }
+    .iclr2 {
+        color: #000;
+    }
+    .iclr3 {
+        color: #cd7f32;
+    }
+    .iclr4 {
+        color: #c0c0c0;
+    }
+    .iclr5 {
+        color: #d4af37;
     }
 }

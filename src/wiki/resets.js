@@ -3,7 +3,7 @@ import { universe_types } from './../space.js';
 import { infoBoxBuilder } from './functions.js';
 
 export function resetsPage(content){
-    let resets = ['mad','bioseed','blackhole','ascension','cataclysm'];
+    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion'];
     let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(content,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
@@ -95,6 +95,36 @@ export function resetsPage(content){
         },
         data_color: {
             6: ['danger','danger']
+        }
+    });
+
+    infoBoxBuilder(content,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
+        para_data: {
+            4: [80],
+            6: [loc('arpa_syphon_damage')],
+            7: [80],
+            8: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark')],
+            9: [loc('wiki_p_res_dark')],
+            10: [loc('wiki_resets_vacuum')],
+        },
+        data_color: {
+            6: ['danger'],
+            8: ['danger','danger','danger'],
+            9: ['danger'],
+        }
+    });
+
+    infoBoxBuilder(content,{ name: 'infusion', template: 'resets', paragraphs: 8, break: [4,8], h_level: 2,
+        para_data: {
+            2: [loc('resource_Artifact_name')],
+            5: [loc('resource_Demonic_Essence_name')],
+            6: [loc('resource_Demonic_Essence_name')],
+            7: [loc('achieve_corrupted_name')],
+            8: [loc('wiki_resets_infusion')],
+        },
+        data_color: {
+            2: ['danger'],
+            7: ['caution']
         }
     });
 }
