@@ -1,3 +1,208 @@
+// Named colors
+@black: #000;
+@white: #fff;
+
+// Library containing all theme colors
+#lib {
+  .themes() {
+    // Default theme
+    .default() {
+
+    }
+    // Dark theme
+    .dark() {
+      @html-background: #1f2424;
+      @primary-border: #ccc;
+      @primary-color: @white;
+      @primary-background: #000000; //
+      @secondary-background: #000000; //
+      @headings: @primary-color;
+      @link: #1abc9c;
+      @link-hover: #f2f2f2;
+      @can-build: #00af0f; // rename
+      @cannot-build: #c20000; //rename
+
+      // .has-text-xxx
+      @has-text-fade: #5e5e5e;
+      @has-text-special-flair: #91006c;
+      @has-text-advanced: #00ac95;
+      @has-text-caution: #ffa500;
+      @has-text-alert: #af5d00;
+      @has-text-label: #ffff9e;
+
+      // .popper
+      @popper-has-text-success: #1c7e21;
+      @popper-has-text-warning: #776325;
+      @popper-has-text-label: #1100ff;
+      @modal-child-popper-border: @black;
+
+      // .fool
+      @fool-has-text-success: #ff3860;
+      @fool-has-text-danger: #23d160;
+      @fool-has-text-advanced: #ffa500;
+      @fool-has-text-caution: #00ac95;
+      @fool-popper-has-text-success: #ff3860;
+      @fool-popper-has-text-danger: #1c7e21;
+      @fool-span-on: @cannot-build;
+      @fool-span-off: @can-build;
+
+      // .tabs
+      @tabs-link: @primary-color;
+      @tabs-li-is-active-link-border: @link;
+      @tabs-li-is-active-link: @link;
+      @tabs-link-hover-border: @link-hover;
+      @tabs-link-hover: @link-hover;
+
+      // .button
+      @button-background: #282f2f;
+      @button: @primary-color;
+      @button-hover-background: #3a4344;
+      @button-hover: @link-hover;
+      @button-focus-border: #dbdbdb;
+
+      // .basic-button
+      @basic-button-border: @primary-border;
+      @basic-button-border-hover-background: #3a4344;
+      @basic-button-border-hover: #eee;
+
+      // .label
+      @label: #dbdee0;
+
+      // .checkbox
+      @checkbox-hover: @link;
+
+      // .radio
+      @radio-hover: @link;
+
+      // .dropdown
+      @dropdown-content-background: @html-background;
+
+      // .b-tooltip
+      @b-tooltip-is-right-before-border: @link-hover;
+      @b-tooltip-is-left-before-border: @link-hover;
+      @b-tooltip-is-bottom-before-border: @link-hover;
+      @b-tooltip-is-primary-background: @link-hover;
+      @b-tooltip-is-primary: @black;
+
+      // Trade
+      @trade-border: @primary-border;
+      @add-border: @trade-border;
+      @sub-border: @trade-border;
+      @current-border: @trade-border;
+
+      // UI
+      @bars-background: #3a4344;
+      @topBar-background: @bars-background;
+      @promoBar-background: @bars-background;
+
+      // .meter
+      @meter-low: #cc0000;
+      @meter-neutral: #c0ce00;
+      @meter-high: #00af0f;
+
+      // .buildList
+      @buildList-hl-ca: @can-build;
+      @buildList-hl-cna: @cannot-build;
+
+      // .main .content .action
+      @link-button-hl-ca: @can-build;
+      @link-button-hl-cna: @cannot-build;
+      @link-button-span-count-background: @html-background;
+      @div-special-background: @html-background;
+      @div-special-border: #282f2f;
+      @div-special-gear-fill: #ad5f12;
+      @div-special-hover-border: #3a4344;
+      @div-special-hover-gear-fill: #d4af37;
+      @span-on-background: @html-background;
+      @span-on-border: #282f2f;
+      @span-on: #00af0f;
+      @span-on-warn: #af5d00;
+      @span-off-background: @html-background;
+      @span-off-border: #282f2f;
+      @span-off: #c20000;
+      @span-on-off-hover-border: #3a4344;
+      @hl-button-border: #00af0f;
+
+      // .main .content .action.cna
+      @link-button-background: #181818;
+      @link-button-hl-ca: @can-build;
+      @link-button-hl-cna: @cannot-build;
+      @special-on-off-border: #181818;
+      @oldTech: @primary-color;
+
+      // .main .content .action-cnam
+      @cnam-aTitle: #975f5f;
+
+      @divider-h2-background: @html-background;
+
+      @government-header-border: @primary-border;
+      @garrison-header-border: @priamry-border;
+      @market-header-border: @primary-border;
+      @galaxyTrader-border: @primary-border;
+
+      @for-patrol-check-background: @black;
+
+      // .market-item
+      @market-item-background: #0f1414;
+      @market-item-order-border: #ccc;
+      @market-item-order-hover-background: #3a4344;
+      @market-item-order-hover-border: #eee;
+
+      // .modalBox
+      @modalBox-background: #282f2f;
+      @modalBox-p-border: #ccc;
+      @modalBox-market-item-border: #ccc;
+      @modalBox-divide-border: #ccc;
+      @modalBox-smelting-border: #ccc;
+
+      // .modal
+      @modal-actionSpace-background: @html-background;
+
+      // .industry
+      @industry-p-border: #ccc;
+      @industry-market-item-border: #ccc;
+      @industry-divide-border: #ccc;
+      @industry-header-border: #ccc;
+
+      // Stars
+      @star-2-fill: @white;
+      @star-3-fill: #cd7f32;
+      @star-4-fill: #c0c0c0;
+      @star-5-fill: #d4af37;
+
+      // -webkit-scrollbar
+      @webkit-scrollbar-track-shadow: rgba(0,0,0,0.3);
+      @webkit-scrollbar-track-background: #1f2424;
+      @webkit-scrollbar-background: #1f2424;
+      @webkit-scrollbar-thumb-background: #F5F5F5;
+      @scrollbar: #F5F5F5 #1f2424; // First is thumb, second is track
+
+      // .pop-desc
+      @pop-desc-has-text-caution: #a30500;
+    }
+    // Light theme
+    .light() {
+
+    }
+    // Night theme
+    .night() {
+
+    }
+    // Red Green CB theme
+    .redgreen() {
+
+    }
+    // Dark Night theme
+    .darkNight() {
+
+    }
+  }
+  // Main template
+  .main() {
+
+  }
+}
+
 html {
     box-sizing: border-box;
     font-size: 16px;
@@ -476,7 +681,7 @@ a {
                 bottom: 0;
                 right: .5rem;
                 border-radius: .4375rem 0 .25rem 0;
-                
+
                 .flair {
                     position: relative;
                     left: .25rem;
@@ -810,7 +1015,7 @@ a {
                     font-size: 1rem;
                 }
             }
-        } 
+        }
     }
 
     .pirate {
@@ -953,7 +1158,7 @@ a {
     }
 
     .tradeOffer();
-    
+
     .importExport {
         margin-top: 1rem;
     }
@@ -1661,17 +1866,17 @@ div.bigbang {
 .earthquake {
     animation: 3.8s shake infinite alternate;
 }
-  
+
 @keyframes shake {
     0% { transform: skewX(-1deg); }
     5% { transform: skewX(1deg); }
     10% { transform: skewX(-1deg); }
     15% { transform: skewX(1deg); }
     20% { transform: skewX(0deg); }
-    100% { transform: skewX(0deg); }  
-    10%, 90% { transform: translate3d(-1px, 0, 0); }      
-    20%, 80% { transform: translate3d(2px, 0, 0); }    
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }    
+    100% { transform: skewX(0deg); }
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
     40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
@@ -2096,14 +2301,14 @@ html.dark {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #1f2424;
     }
-    
+
     .sticky::-webkit-scrollbar,
     .resTabs > section::-webkit-scrollbar,
     .bldQueue::-webkit-scrollbar {
         width: 6px;
         background-color: #1f2424;
     }
-    
+
     .sticky::-webkit-scrollbar-thumb,
     .resTabs > section::-webkit-scrollbar-thumb,
     .bldQueue::-webkit-scrollbar-thumb {
@@ -2455,14 +2660,14 @@ html.light {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #F5F5F5;
     }
-    
+
     .sticky::-webkit-scrollbar,
     .resTabs > section::-webkit-scrollbar,
     .bldQueue::-webkit-scrollbar {
         width: 6px;
         background-color: #F5F5F5;
     }
-    
+
     .sticky::-webkit-scrollbar-thumb,
     .resTabs > section::-webkit-scrollbar-thumb,
     .bldQueue::-webkit-scrollbar-thumb {
@@ -2607,14 +2812,14 @@ html.night {
         -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
         background-color: #000000;
     }
-    
+
     .sticky::-webkit-scrollbar,
     .resTabs > section::-webkit-scrollbar,
     .bldQueue::-webkit-scrollbar-track {
         width: 6px;
         background-color: #000000;
     }
-    
+
     .sticky::-webkit-scrollbar-thumb,
     .resTabs > section::-webkit-scrollbar-thumb,
     .bldQueue::-webkit-scrollbar-thumb {
@@ -2634,7 +2839,7 @@ html.night {
 
 .redgreenTheme,
 html.redgreen {
-    .nightTheme();    
+    .nightTheme();
     .has-text-success {
         color: #00ff00 !important;
     }
