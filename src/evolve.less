@@ -116,6 +116,7 @@ Misc ---------> Main template
 
       // .b-tooltip
       @b-tooltip-accent: @link-hover;
+      @b-tooltip-is-primary-background: @b-tooltip-accent;
       @b-tooltip-is-primary: @black;
 
       // UI Bars
@@ -231,6 +232,7 @@ Misc ---------> Main template
 
       // .b-tooltip
       @b-tooltip-accent: #f2f2f2;
+      @b-tooltip-is-primary-background: @b-tooltip-accent;
       @b-tooltip-is-primary: @black;
 
       // UI Bars
@@ -297,9 +299,7 @@ Misc ---------> Main template
       @modal-child-popper-border: #999;
 
       // .b-tooltip
-      @b-tooltip-is-right-before-border: #999;
-      @b-tooltip-is-left-before-border: #999;
-      @b-tooltip-is-bottom-before-border: #999;
+      @b-tooltip-accent: #999;
       @b-tooltip-is-primary-background: #0f0f0f;
       @b-tooltip-is-primary: @white;
 
@@ -523,7 +523,7 @@ Misc ---------> Main template
         border-bottom: 5px solid @b-tooltip-accent;
     }
     .b-tooltip.is-primary .tooltip-content {
-        background: @b-tooltip-accent;
+        background: @b-tooltip-is-primary-background;
         color: @b-tooltip-is-primary;
     }
 
