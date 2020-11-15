@@ -9,7 +9,7 @@ const changeList = [
             `Fixed compost heap values.`,
             `Added combat section to the wiki under gameplay.`,
             `Added Equilibrium feat for pillaring every species.`,
-            `The Misery feat can not be earned from Demonic Infusion.`
+            `The Misery feat can now be earned from Demonic Infusion.`
         ]
     },
     {
