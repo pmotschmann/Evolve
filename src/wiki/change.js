@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.3`,
+        date: `11/15/2020`,
+        changes: [
+            `Fixed compost heap values.`,
+            `Added combat section to the wiki under gameplay.`,
+        ]
+    },
+    {
         version: `1.0.2`,
         date: `11/10/2020`,
         changes: [

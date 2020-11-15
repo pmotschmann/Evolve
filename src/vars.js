@@ -80,8 +80,8 @@ else {
     newGameData();
 }
 
-export function setGlobal(toWhat) {
-  global = toWhat;
+export function setGlobal(gameState) {
+    global = gameState;
 }
 
 if (!global['version']){
@@ -578,7 +578,7 @@ if (convertVersion(global['version']) < 10000){
     }
 }
 
-global['version'] = '1.0.2';
+global['version'] = '1.0.3';
 delete global['beta'];
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

@@ -1,6 +1,7 @@
 import { clearElement } from './../functions.js';
 import { basicsPage } from './basics.js';
 import { govPage } from './government.js';
+import { combatPage } from './combat.js';
 import { resetsPage } from './resets.js';
 import { planetsPage } from './planets.js';
 import { universePage } from './universes.js';
@@ -16,6 +17,9 @@ export function gamePlayPage(zone){
             break;
         case 'government':
             govPage(content);
+            break;
+        case 'combat':
+            combatPage(content);
             break;
         case 'resets':
             resetsPage(content);
