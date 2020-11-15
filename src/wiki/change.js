@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Fixed compost heap values.`,
             `Added combat section to the wiki under gameplay.`,
+            `Added Equilibrium feat for pillaring every species.`
         ]
     },
     {
