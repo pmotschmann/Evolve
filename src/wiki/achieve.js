@@ -274,6 +274,31 @@ function featDesc(feat,showFlair){
         tricks = tricks + `</div>`;
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`));
     }
+    else if (feat === 'equilibrium'){
+        let species = {};
+        if (global['pillars']){
+            Object.keys(global.pillars).forEach(function(race){
+                if (races[race]){
+                    species[race] = global.pillars[race];
+                }
+            });
+        }
+        let checked = `<div class="flexed wide">`;    
+        Object.keys(races).sort().forEach(function (key){
+            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
+                if (species[key] && species[key] >= 1){
+                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
+                }
+                else {
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                }
+            }
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
+    }
     else {
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));
     }
