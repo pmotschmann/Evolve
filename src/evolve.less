@@ -78,9 +78,11 @@ Misc ---------> Main template
       @has-text-warning: @bulma-warning;
 
       // .popper
+      @popper: #363636 !important;
       @popper-has-text-label: #1100ff !important;
       @popper-has-text-success: #1c7e21 !important;
       @popper-has-text-warning: #776425 !important;
+      @modal-child-popper-background: #f5f5f5 !important;
       @modal-child-popper-border: @black;
 
       // .fool
@@ -116,6 +118,8 @@ Misc ---------> Main template
 
       // .b-tooltip
       @b-tooltip-accent: @link-hover;
+      @b-tooltip-is-primary-background: @b-tooltip-accent;
+      @b-tooltip-is-primary-border: #f5f5f5;
       @b-tooltip-is-primary: @black;
 
       // UI Bars
@@ -193,9 +197,11 @@ Misc ---------> Main template
       @has-text-warning: #7a6304 !important;
 
       // .popper
+      @popper: #363636 !important;
       @popper-has-text-label: @has-text-label;
       @popper-has-text-success: #1c7e21 !important;
       @popper-has-text-warning: @has-text-warning;
+      @modal-child-popper-background: #f5f5f5 !important;
       @modal-child-popper-border: @black;
 
       // .fool
@@ -231,6 +237,8 @@ Misc ---------> Main template
 
       // .b-tooltip
       @b-tooltip-accent: #f2f2f2;
+      @b-tooltip-is-primary-background: @b-tooltip-accent;
+      @b-tooltip-is-primary-border: #f5f5f5;
       @b-tooltip-is-primary: @black;
 
       // UI Bars
@@ -291,16 +299,17 @@ Misc ---------> Main template
       @has-text-special: #e500b4 !important;
 
       // .popper
+      @popper: @white !important;
+      @popper-has-text-label: #ffff9e !important;
       @popper-has-text-success: #23d160 !important;
       @popper-has-text-warning: #ffdd57 !important;
-      @popper-has-text-label: #ffff9e !important;
+      @modal-child-popper-background: #0f0f0f !important;
       @modal-child-popper-border: #999;
 
       // .b-tooltip
-      @b-tooltip-is-right-before-border: #999;
-      @b-tooltip-is-left-before-border: #999;
-      @b-tooltip-is-bottom-before-border: #999;
+      @b-tooltip-accent: #999;
       @b-tooltip-is-primary-background: #0f0f0f;
+      @b-tooltip-is-primary-border: #999;
       @b-tooltip-is-primary: @white;
 
       // .market-item
@@ -342,6 +351,9 @@ Misc ---------> Main template
       // Theme colors {
       @primary-color: #b8b8b8;
       // }
+
+      // .popper
+      @popper: @primary-color !important;
 
       // .button
       @button: #ccc;
@@ -411,7 +423,9 @@ Misc ---------> Main template
     }
     .main > div.popper,
     body .modal > div.popper {
-        color: @primary-color !important;
+        background-color: @modal-child-popper-background;
+        border: .0625rem solid @modal-child-popper-border;
+        color: @popper;
 
         > div:nth-child(2),
         > div:nth-child(3),
@@ -420,7 +434,7 @@ Misc ---------> Main template
         }
 
         .has-text-dark {
-          color: @primary-color !important;
+          color: @popper;
         }
     }
 
@@ -523,7 +537,8 @@ Misc ---------> Main template
         border-bottom: 5px solid @b-tooltip-accent;
     }
     .b-tooltip.is-primary .tooltip-content {
-        background: @b-tooltip-accent;
+        background: @b-tooltip-is-primary-background;
+        border: .0625rem solid @b-tooltip-is-primary-border;
         color: @b-tooltip-is-primary;
     }
 
@@ -865,23 +880,6 @@ html.night {
   .modal .action {
     #lib.mainTemplate.main.content.action();
   }
-  .main > div.popper,
-  body .modal > div.popper {
-      background-color: #0f0f0f !important;
-      border: .0625rem solid @modal-child-popper-border;
-  }
-  .b-tooltip.is-primary .tooltip-content {
-      border: .0625rem solid #999;
-  }
-  .has-numberinput {
-      input {
-          color: @white;
-          background: @html-background;
-      }
-      .button {
-          background: @html-background;
-      }
-  }
 }
 
 // Red Green CB theme
@@ -959,7 +957,7 @@ html.darkNight {
   input,
   select,
   textarea {
-    color: @primary-color;
+    background: @primary-color;
   }
 }
 
