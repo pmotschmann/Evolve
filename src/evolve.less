@@ -78,6 +78,7 @@ Misc ---------> Main template
       @has-text-warning: @bulma-warning;
 
       // .popper
+      @popper: #363636 !important;
       @popper-has-text-label: #1100ff !important;
       @popper-has-text-success: #1c7e21 !important;
       @popper-has-text-warning: #776425 !important;
@@ -196,6 +197,7 @@ Misc ---------> Main template
       @has-text-warning: #7a6304 !important;
 
       // .popper
+      @popper: #363636 !important;
       @popper-has-text-label: @has-text-label;
       @popper-has-text-success: #1c7e21 !important;
       @popper-has-text-warning: @has-text-warning;
@@ -297,9 +299,10 @@ Misc ---------> Main template
       @has-text-special: #e500b4 !important;
 
       // .popper
+      @popper: @white !important;
+      @popper-has-text-label: #ffff9e !important;
       @popper-has-text-success: #23d160 !important;
       @popper-has-text-warning: #ffdd57 !important;
-      @popper-has-text-label: #ffff9e !important;
       @modal-child-popper-background: #0f0f0f !important;
       @modal-child-popper-border: #999;
 
@@ -348,6 +351,9 @@ Misc ---------> Main template
       // Theme colors {
       @primary-color: #b8b8b8;
       // }
+
+      // .popper
+      @popper: @primary-color !important;
 
       // .button
       @button: #ccc;
@@ -419,7 +425,7 @@ Misc ---------> Main template
     body .modal > div.popper {
         background-color: @modal-child-popper-background;
         border: .0625rem solid @modal-child-popper-border;
-        color: @primary-color !important;
+        color: @popper;
 
         > div:nth-child(2),
         > div:nth-child(3),
@@ -428,7 +434,7 @@ Misc ---------> Main template
         }
 
         .has-text-dark {
-          color: @primary-color !important;
+          color: @popper;
         }
     }
 
