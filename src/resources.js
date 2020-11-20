@@ -1879,7 +1879,7 @@ function loadAlchemy(name,color,basic){
         });
 
         popover(`alchemy${name}`,function(){
-            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 5).toFixed(2) : tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 8).toFixed(2) : +(tradeRatio[name] * 2).toFixed(2), loc(`resource_${name}_name`)])}</div>`);
         },
         {
             elm: `#alchemy${name} h3`
