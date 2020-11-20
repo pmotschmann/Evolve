@@ -4611,7 +4611,7 @@ const galaxyProjects = {
                         messageQueue(loc('galaxy_chthonian_mission_result'),'info');
 
                         if (total >= 2500){
-                            wreck = total >= 4500 ? 160 : 80;
+                            wreck = total >= 4500 ? 80 : 160;
                         }
 
                         Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
