@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.4`,
-        date: `11/??/2020`,
+        date: `11/21/2020`,
         changes: [
             `Gains from Alchemy are now higher.`,
             `Any mixed fleet can now invade the Alien 2 and Chthonian systems as long as the invasion force is strong enough.`,
