@@ -4363,13 +4363,19 @@ const galaxyProjects = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Custom(){
-                    let total = 0;
-                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
-                    });
+                    if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
+                        let total = 0;
+                        Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
+                            total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
+                        });
+                        return {
+                            label: loc(`galaxy_fleet_rating`,[`<span${total < 400 ? ` class="has-text-danger"` : ''}>400</span>`]),
+                            met: total < 400 ? false : true
+                        }
+                    }
                     return {
-                        label: loc(`galaxy_fleet_rating`,[`<span${total < 400 ? ` class="has-text-danger"` : ''}>400</span>`]),
-                        met: total < 400 ? false : true
+                        label: loc(`galaxy_fleet_rating`,[`<span class="has-text-danger">400</span>`]),
+                        met: false
                     }
                 }
             },
@@ -4581,13 +4587,19 @@ const galaxyProjects = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Custom(){
-                    let total = 0;
-                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
-                        total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
-                    });
+                    if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_chthonian')){
+                        let total = 0;
+                        Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
+                            total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
+                        });
+                        return {
+                            label: loc(`galaxy_fleet_rating`,[`<span${total < 1250 ? ` class="has-text-danger"` : ''}>1250</span>`]),
+                            met: total < 1250 ? false : true
+                        }
+                    }
                     return {
-                        label: loc(`galaxy_fleet_rating`,[`<span${total < 1250 ? ` class="has-text-danger"` : ''}>1250</span>`]),
-                        met: total < 1250 ? false : true
+                        label: loc(`galaxy_fleet_rating`,[`<span class="has-text-danger">1250</span>`]),
+                        met: false
                     }
                 }
             },
