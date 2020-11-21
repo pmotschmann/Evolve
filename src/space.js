@@ -4378,7 +4378,8 @@ const galaxyProjects = {
                 Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
                     total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
                 });
-                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])}</div>`;
+                let odds = total >= 650 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>`;
+                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4595,7 +4596,8 @@ const galaxyProjects = {
                 Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
                     total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
                 });
-                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`;
+                let odds = total >= 4500 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : (total >= 2500 ? `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>` : `<span class="has-text-danger">${loc(`galaxy_piracy_high`)}</span>`);
+                return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
