@@ -9,7 +9,7 @@ const changeList = [
             `Gains from Alchemy are now higher.`,
             `Any mixed fleet can now invade the Alien 2 and Chthonian systems as long as the invasion force is strong enough.`,
             `Alien 2 Invasion requires minimum of 400 fleet rating and at least 650 to take no losses.`,
-            `Chthonian Invasion requires a minium 1250 fleet rating, 2500 for average losses, and 4500 for minimum losses.`,
+            `Chthonian Invasion requires a minimum 1250 fleet rating, 2500 for average losses, and 4500 for minimum losses.`,
         ]
     },
     {
