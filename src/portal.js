@@ -3819,6 +3819,10 @@ export function descension(){
         unlockFeat('twisted');
     }
 
+    if (global.race.species === 'junker'){
+        unlockFeat('the_misery');
+    }
+
     let artifacts = 0;
     switch (global.race.universe){
         case 'micro':

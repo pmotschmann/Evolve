@@ -234,6 +234,7 @@ export function index(){
         {i: 'fire',         f: 'ill_advised',   r: 2 },
         {i: 'mask',         f: 'friday',        r: 1 },
         {i: 'skull',        f: 'demon_slayer',  r: 2 },
+        {i: 'taijitu',      f: 'equilibrium',   r: 2 },
         {i: 'martini',      f: 'utopia',        r: 2 },
         {i: 'lightbulb',    f: 'energetic',     r: 2 },
         {i: 'trash',        f: 'garbage_pie',   r: 2 },

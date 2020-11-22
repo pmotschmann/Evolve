@@ -4346,7 +4346,7 @@
   "wiki_trait_effect_emfield": "Přirozené EM pole generované tvým druhem narušují elektřinu.",
   "wiki_trait_effect_fortify": "Převrací rozklad genomu.",
   "wiki_trait_effect_mastery": "Mistrovství zvýšeno o 1%.",
-  "wiki_feat_egghunt": "Vajíček nalezeno",
+  "wiki_feat_egghunt_found": "Vajíček nalezeno",
   "wiki_feat_egghunt_num": "Vajíčko %0",
   "wiki_tech_empty": "Žádný efekt. Nezbytná technologie pro ostatní.",
   "wiki_tech_building_unlock": "Odemkne budovu %0.",

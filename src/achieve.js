@@ -126,6 +126,11 @@ export const feats = {
         desc: loc("feat_demon_slayer_desc"),
         flair: loc("feat_demon_slayer_flair")
     },
+    equilibrium: {
+        name: loc("feat_equilibrium_name"),
+        desc: loc("feat_equilibrium_desc"),
+        flair: loc("feat_equilibrium_flair")
+    },
     novice: {
         name: loc("feat_novice_name"),
         desc: loc("feat_achievement_hunter_desc",[10]),
@@ -506,10 +511,14 @@ export function checkAchievements(){
     if (global.tech['pillars']){
         let genus = {};
         let rCnt = 0;
+        let equilRank = 5;
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
                 if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
                     genus[races[race].type] = global.pillars[race];
+                }
+                if (global.pillars[race] < equilRank){
+                    equilRank = global.pillars[race];
                 }
                 rCnt++;
             }
@@ -525,6 +534,7 @@ export function checkAchievements(){
         }
         if (rCnt >= Object.keys(races).length - 1){
             unlockAchieve('resonance');
+            unlockFeat('equilibrium',false,equilRank);
         }
     }
 
