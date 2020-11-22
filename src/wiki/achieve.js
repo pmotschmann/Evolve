@@ -127,15 +127,15 @@ function featPage(){
         let baseIcon = getBaseIcon(feat,'feat');
         let star = global.stats.feat[feat] > 1 ? `<p class="flair" title="${sLevel(global.stats.feat[feat])} ${loc(baseIcon)}"><svg class="star${global.stats.feat[feat]}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(baseIcon)}" xml:space="preserve">${svgIcons(baseIcon)}</svg></p>` : '';
         achieve.append(`<span id="f-${feat}" class="achieve has-text-${color}">${feats[feat].name}</span>${star}`);
-        
-        popover(`f-${feat}`,featDesc(feat));
+
+        featDesc(feat, color === 'warning' ? true : false);
     });
 }
 
 function achieveDesc(achievement,showFlair){
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){
-        let killed = `<div class="flexed">`;
+        let killed = `<div class="flexed wide">`;
         Object.keys(races).sort(function(a,b){
             if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
                 return races[a].name.localeCompare(races[b].name);
@@ -145,37 +145,37 @@ function achieveDesc(achievement,showFlair){
             }            
         }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
-                if ((achievement === 'vigilante' && races[key].type !== 'demonic') || achievement === 'mass_extinction'){
-                    if (global.stats.achieve[`extinct_${key}`] 
-                        && (
-                            achievement === 'mass_extinction'
-                            ? global.stats.achieve[`extinct_${key}`].l >= 0
-                            : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
-                            )
-                        ){
-                        killed = killed + `<span class="iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? 'l' : 'e']}">${races[key].name}</span>`;
-                    }
-                    else {
-                        killed = killed + `<span class="has-text-danger">${races[key].name}</span>`;
-                    }
+                if (global.stats.achieve[`extinct_${key}`] 
+                    && (
+                        achievement === 'mass_extinction'
+                        ? global.stats.achieve[`extinct_${key}`].l >= 0
+                        : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
+                        )
+                    ){
+                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? 'l' : 'e']}">${races[key].name}</span>`;
+                }
+                else {
+                    killed = killed + `<span class="wide has-text-danger">${races[key].name}</span>`;
                 }
             }
         });
         killed = killed + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${killed}${flair}`));
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${killed}${flair}`),{
+            wide: true
+        });
     }
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
             if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`].l >= 0){
-                biome_list = biome_list + `<span class="iclr${global.stats.achieve[`biome_${key}`].l}">${biomes[key].label}</span>`;
+                biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`].l}">${biomes[key].label}</span>`;
             }
             else {
-                biome_list = biome_list + `<span class="has-text-danger">${biomes[key].label}</span>`;
+                biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}</span>`;
             }
         });
         biome_list = biome_list + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${biome_list}${flair}`));
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${biome_list}${flair}`));
     }
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
@@ -188,7 +188,7 @@ function achieveDesc(achievement,showFlair){
             }
         });
         genus = genus + `</div>`;
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div>${genus}${flair}`));
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${genus}${flair}`));
     }
     else if (achievement === 'enlightenment'){
         let genus = {};
@@ -253,27 +253,53 @@ function achieveDesc(achievement,showFlair){
     }
 }
 
-function featDesc(feat){
+function featDesc(feat,showFlair){
+    let flair = showFlair ? `<div class="has-text-flair">${feats[feat].flair}</div>` : ``;
     if (feat === 'egghunt'){
-        let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt')}</div><div class="flexed">`;
+        let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div><div class="flexed">`;
         for (let i=1; i<13; i++){
             let egg = global.special.egg[`egg${i}`] ? 'has-text-success' : 'has-text-danger';
             eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
         }
-        eggs = eggs + `<div>`;
-        return $(`<div>${feats[feat].desc}</div>${eggs}`);
+        eggs = eggs + `</div>`;
+        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`));
     }
     else if (feat === 'trickortreat'){
-        let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat')}</div><div class="flexed wide">`;
+        let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat_found')}</div><div class="flexed">`;
         for (let i=1; i<13; i++){
             let trick = global.special.trick[`trick${i}`] ? 'has-text-success' : 'has-text-danger';
             
             tricks = tricks + `<span class="wide ${trick}">${loc(i > 6 ? 'wiki_feat_trick_num' : 'wiki_feat_treat_num',[i > 6 ? i - 6 : i])}</span>`
         }
-        tricks = tricks + `<div>`;
-        return $(`<div>${feats[feat].desc}</div>${tricks}`);
+        tricks = tricks + `</div>`;
+        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`));
+    }
+    else if (feat === 'equilibrium'){
+        let species = {};
+        if (global['pillars']){
+            Object.keys(global.pillars).forEach(function(race){
+                if (races[race]){
+                    species[race] = global.pillars[race];
+                }
+            });
+        }
+        let checked = `<div class="flexed wide">`;    
+        Object.keys(races).sort().forEach(function (key){
+            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
+                if (species[key] && species[key] >= 1){
+                    checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
+                }
+                else {
+                    checked = checked + `<span class="wide has-text-danger">${races[key].name}</span>`;
+                }
+            }
+        });
+        checked = checked + `</div>`;
+        popover(`f-${feat}`,$(`<div class="wide has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${checked}${flair}`),{
+            wide: true
+        });
     }
     else {
-        return $(`<div>${feats[feat].desc}</div>`);
+        popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${flair}`));
     }
 }

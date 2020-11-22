@@ -1,4 +1,4 @@
-import { global } from './../vars.js';
+import { global, setGlobal, save } from './../vars.js';
 import { loc } from './../locale.js';
 import {} from './../achieve.js';
 import { vBind, clearElement } from './../functions.js';
@@ -37,6 +37,7 @@ function initPage(){
             submenu: [
                 { key: 'basics' },
                 { key: 'government' },
+                { key: 'combat' },
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },
@@ -142,6 +143,11 @@ function initPage(){
 function menuDispatch(main,sub,frag){
     $(`#content`).removeClass('flex');
 
+    var global_data = save.getItem('evolved') || false;
+    if (global_data){
+        setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
+    }
+
     switch (main){
         case 'intro':
             mainPage();
@@ -207,7 +213,7 @@ function menuDispatch(main,sub,frag){
 
         case 'changelog':
             changeLog();
-            setWindowHash(main,sub,frag);
+            window.location.hash = `#${main}`;
             break;
     }
 }

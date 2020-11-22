@@ -6006,7 +6006,11 @@ function srDesc(c_action,old){
         let type = c_action.id.split('-')[0];
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
-            if (res === 'Structs'){
+            if (res === 'Custom'){
+                let custom = costs[res]();
+                desc = desc + custom.label;
+            }
+            else if (res === 'Structs'){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
@@ -6104,7 +6108,12 @@ export function actionDesc(parent,c_action,obj,old){
 
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
-            if (res === 'Structs'){
+            if (res === 'Custom'){
+                let custom = costs[res]();
+                cost.append($(`<div>${custom.label}</div>`));
+                empty = false;
+            }
+            else if (res === 'Structs'){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
@@ -6259,7 +6268,7 @@ export function payCosts(costs){
                 let cost = costs[res]();
                 global.portal.purifier.supply -= cost;
             }
-            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -6287,7 +6296,10 @@ export function checkAffordable(c_action,max){
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res === 'Structs'){
+        if (res === 'Custom'){
+            // Do Nothing
+        }
+        else if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
                 test = false;
                 return;
@@ -6349,7 +6361,14 @@ function checkMaxCosts(costs){
 export function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res === 'Structs'){
+        if (res === 'Custom'){
+            let custom = costs[res]();
+            if (!custom.met){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
                 test = false;
                 return;
