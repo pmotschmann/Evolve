@@ -1,6 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, popover, clearElement, easterEgg, trickOrTreat } from './functions.js';
+import { actions } from './actions.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -997,4 +998,57 @@ function colorRange(num,max,invert){
     else {
         return '';
     }
+}
+
+export function setPowerGrid(){
+    clearElement($('#powerGrid'));
+    let grid = $(`<div class="powerGrid"></div>`);
+    $('#powerGrid').append(grid);
+
+    let idx = 0;
+    for (let i=0; i<global.power.length; i++){
+        let struct = global.power[i];
+
+        let parts = struct.split(":");
+        let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+        let region = parts[0] === 'city' ? parts[0] : space;
+        let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+        
+        let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
+        let extra = ``;
+        switch (parts[1]){
+            case 'factory':
+                extra = ` (${loc(`tab_city5`)})`;
+                break;
+            case 'red_factory':
+                extra = ` (${loc(`tab_space`)})`;
+                break;
+        }
+
+        if (global[region][parts[1]]){
+            idx++;
+            let circuit = $(`<div id="pg${c_action.id}" class="circuit"></div>`);
+            circuit.append(`<span>${idx}</span> <span class="has-text-warning">${title}${extra}</span>`);
+            grid.append(circuit);
+        }
+        else {
+            let circuit = $(`<div id="pg${c_action.id}" class="circuit inactive"></div>`);
+            circuit.append(`<span class="has-text-warning">${title}${extra}</span>`);
+            grid.append(circuit);
+        }
+    };
+
+    dragPowerGrid();
+}
+
+function dragPowerGrid(){
+    let el = $('#powerGrid .powerGrid')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.power;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            global.power = order;
+            setPowerGrid();
+        }
+    });
 }

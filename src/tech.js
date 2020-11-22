@@ -10,6 +10,7 @@ import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling } from './civics.js';
 import { renderSpace } from './space.js';
 import { arpa } from './arpa.js';
+import { setPowerGrid } from './industry.js';
 
 const techs = {
     club: {
@@ -3832,6 +3833,8 @@ const techs = {
                     count: 0,
                     on: 0
                 };
+                global.settings.showPowerGrid = true;
+                setPowerGrid();
                 return true;
             }
             return false;

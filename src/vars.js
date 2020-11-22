@@ -578,8 +578,12 @@ if (convertVersion(global['version']) < 10000){
     }
 }
 
-global['version'] = '1.0.4';
+global['version'] = '1.0.5';
 delete global['beta'];
+
+if (!global.hasOwnProperty('power')){
+    global['power'] = [];       
+}
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -592,6 +596,7 @@ if (!global['settings']){
         showCiv: false,
         showCity: false,
         showIndustry: false,
+        showPowerGrid: false,
         showResearch: false,
         showCivic: false,
         showMil: false,
@@ -950,6 +955,10 @@ if (!global.race['minor']){
 if (!global.settings.hasOwnProperty('showMil')){
     global.settings['showMil'] = true;
 }
+if (!global.settings.hasOwnProperty('showPowerGrid')){
+    global.settings['showPowerGrid'] = global.hasOwnProperty('tech') && global.tech.hasOwnProperty('high_tech') && global.tech.high_tech >= 2 ? true : false;
+}
+
 if (!global.settings['affix']){
     global.settings['affix'] = 'si';
 }
@@ -1658,6 +1667,7 @@ export function clearStates(){
     global.settings.showCiv = false;
     global.settings.showCity = false;
     global.settings.showIndustry = false;
+    global.settings.showPowerGrid = false;
     global.settings.showMechLab = false;
     global.settings.showResearch = false;
     global.settings.showCivic = false;
