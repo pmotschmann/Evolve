@@ -1002,6 +1002,9 @@ function colorRange(num,max,invert){
 
 export function setPowerGrid(){
     clearElement($('#powerGrid'));
+
+    $('#powerGrid').append(`<div class="powerGridHeader has-text-caution">${loc('power_grid_header')}</div>`);
+
     let grid = $(`<div class="powerGrid"></div>`);
     $('#powerGrid').append(grid);
 
@@ -1021,6 +1024,12 @@ export function setPowerGrid(){
                 extra = ` (${loc(`tab_city5`)})`;
                 break;
             case 'red_factory':
+                extra = ` (${loc(`tab_space`)})`;
+                break;
+            case 'casino':
+                extra = ` (${loc(`tab_city5`)})`;
+                break;
+            case 'spc_casino':
                 extra = ` (${loc(`tab_space`)})`;
                 break;
         }
