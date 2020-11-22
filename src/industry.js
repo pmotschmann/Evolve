@@ -1,6 +1,6 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, clearElement, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions } from './actions.js';
 
 export function loadIndustry(industry,parent,bind){
@@ -1027,18 +1027,59 @@ export function setPowerGrid(){
 
         if (global[region][parts[1]]){
             idx++;
-            let circuit = $(`<div id="pg${c_action.id}" class="circuit"></div>`);
-            circuit.append(`<span>${idx}</span> <span class="has-text-warning">${title}${extra}</span>`);
+            let circuit = $(`<div id="pg${c_action.id}" class="circuit" data-idx="${i}"></div>`);
+            circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span> <span role="button" class="sub" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
             grid.append(circuit);
+
+            vBind({
+                el: `#pg${c_action.id}`,
+                data: {},
+                methods: {
+                    higher(){
+                        let oIdx = $(`#pg${c_action.id}`).attr(`data-idx`);
+                        let nIdx = $(`#pg${c_action.id}`).prevAll(`.circuit:not(".inactive")`).attr(`data-idx`);
+                        if (nIdx >= 0){
+                            let order = global.power;
+                            order.splice(nIdx, 0, order.splice(oIdx, 1)[0]);
+                            global.power = order;
+                            setPowerGrid();
+                        }
+                    },
+                    lower(){
+                        let oIdx = $(`#pg${c_action.id}`).attr(`data-idx`);
+                        let nIdx = $(`#pg${c_action.id}`).nextAll(`.circuit:not(".inactive")`).attr(`data-idx`);
+                        if (nIdx < global.power.length){
+                            let order = global.power;
+                            order.splice(nIdx, 0, order.splice(oIdx, 1)[0]);
+                            global.power = order;
+                            setPowerGrid();
+                        }
+                    }
+                }
+            });
         }
         else {
-            let circuit = $(`<div id="pg${c_action.id}" class="circuit inactive"></div>`);
+            let circuit = $(`<div id="pg${c_action.id}" class="circuit inactive" data-idx="${i}"></div>`);
             circuit.append(`<span class="has-text-warning">${title}${extra}</span>`);
             grid.append(circuit);
         }
     };
 
     dragPowerGrid();
+
+    let reset = $(`<div id="powerGridReset" class="resetPowerGrid"><button class="button" @click="resetGrid">${loc('power_grid_reset')}</button></div>`);
+    $('#powerGrid').append(reset);
+
+    vBind({
+        el: `#powerGridReset`,
+        data: {},
+        methods: {
+            resetGrid(){
+                powerGrid(true);
+                setPowerGrid();
+            }
+        }
+    });
 }
 
 function dragPowerGrid(){

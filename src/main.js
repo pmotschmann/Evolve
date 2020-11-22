@@ -7009,7 +7009,21 @@ function longLoop(){
     const date = new Date();
     if (global.race.species !== 'protoplasm'){
         powerGrid();
-        setPowerGrid();
+
+        let updatePowerGrid = false;
+        global.power.forEach(function(struct){
+            let parts = struct.split(":");
+            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+            let region = parts[0] === 'city' ? parts[0] : space;
+            let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+            let breaker = $(`#pg${c_action.id}`);
+            if (breaker.length === 0 || (global[region][parts[1]] && breaker.hasClass('inactive'))){
+                updatePowerGrid = true;
+            }
+        });
+        if (updatePowerGrid){
+            setPowerGrid();
+        }
         
         if (global.tech['syphon'] && global.tech.syphon >= 80){
             if (webWorker.w){
