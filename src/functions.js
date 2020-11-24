@@ -1762,3 +1762,36 @@ export function getHalloween(){
 
     return halloween;
 }
+
+export function shrineBonusActive() {
+	return (global.race['magnificent'] && global.city.hasOwnProperty('shrine') &&  global.city.shrine.count > 0);
+}
+
+export function getShrineBonus(type) {
+	let shrine_bonus = {
+		mult: 1,
+		add: 0
+	};
+	
+	if (shrineBonusActive()){
+		switch(type){
+			case 'metal':
+				shrine_bonus.mult += +(global.city.shrine.metal / 100) * global.race['magnificent'];
+				break;
+			case 'tax':
+				shrine_bonus.mult += +(global.city.shrine.tax / 100) * global.race['magnificent'];
+				break;
+			case 'know':
+                shrine_bonus.add += +(global.city.shrine.know * 400) * global.race['magnificent'];
+                shrine_bonus.mult += +(global.city.shrine.know * 3 / 100) * global.race['magnificent'];
+				break;
+			case 'morale':
+				shrine_bonus.add += global.city.shrine.morale * global.race['magnificent'];
+				break;
+			default:
+				break;
+		}
+	}
+	
+	return shrine_bonus;
+}

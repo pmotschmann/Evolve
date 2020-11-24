@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -4377,20 +4377,21 @@ export const actions = {
             effect(){
                 let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
                 if (global.city['shrine'] && global.city.shrine.morale > 0){
-                    let morale = global.city.shrine.morale;
-                    desc = desc + `<div>${loc('city_shrine_morale',[morale])}</div>`;
+                    let morale = getShrineBonus('morale');
+                    desc = desc + `<div>${loc('city_shrine_morale',[+(morale.add).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.metal > 0){
-                    let metal = global.city.shrine.metal;
-                    desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
+                    let metal = getShrineBonus('metal');
+                    desc = desc + `<div>${loc('city_shrine_metal',[+((metal.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.know > 0){
-                    desc = desc + `<div>${loc('city_shrine_know',[global.city.shrine.know * 400])}</div>`;
-                    desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
+                    let know = getShrineBonus('know');
+                    desc = desc + `<div>${loc('city_shrine_know',[+(know.add).toFixed(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.tax > 0){
-                    let tax = global.city.shrine.tax;
-                    desc = desc + `<div>${loc('city_shrine_tax',[tax])}</div>`;
+                    let tax = getShrineBonus('tax');
+                    desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 return desc;
             },
@@ -4472,8 +4473,8 @@ export const actions = {
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-                    let shrine = 1 + (global.city.shrine.know * 0.03);
-                    gain *= shrine;
+                    let shrineBonus = getShrineBonus('know');
+                    gain *= shrineBonus.mult;
                 }
                 gain = gain.toFixed(0);
                 return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
