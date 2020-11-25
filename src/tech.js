@@ -717,6 +717,7 @@ const techs = {
                     Mythril: 0,
                     Aerogel: 0,
                     Nanoweave: 0,
+                    Scarletite: 0,
                 };
                 return true;
             }
