@@ -4268,7 +4268,7 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65 * zigguratBonus();
             let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * iridium_shrine;
+            let delta = base * global_multiplier * pirate * foothold * hunger * getShrineResult.mult;
 
             iridium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
             iridium_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
@@ -5704,15 +5704,15 @@ function midLoop(){
                 let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
                 multiplier *= 1 + uni;
             }
+            if (shrineBonusActive()){
+                let shrineBonus = getShrineBonus('know');
+                multiplier *= shrineBonus.mult;
+            }
             let gain = (global.city['university'].count * base * multiplier);
             lCaps['professor'] += global.city['university'].count;
             if (global.tech['supercollider']){
                 let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
-            }
-            if (shrineBonusActive()){
-                let shrineBonus = getShrineBonus('know');
-                gain *= shrineBonus.mult;
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
