@@ -7,6 +7,7 @@ const changeList = [
         date: `11/24/2020`,
         changes: [
             `Fixed Mechlab quick switch button.`,
+            `Titan class mech power increased by 12.5%.`
         ]
     },
     {

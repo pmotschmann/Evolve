@@ -3436,7 +3436,7 @@ export function mechRating(mech,boss){
             rating = 0.01;
             break;
         case 'titan':
-            rating = 0.02;
+            rating = 0.0225;
             break;
     }
 
