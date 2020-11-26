@@ -1128,7 +1128,7 @@ function technoAdjust(costs, wiki){
             if (res === 'Knowledge'){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
             }
-            else if (res === 'Money' || res === 'Structs'){
+            else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {

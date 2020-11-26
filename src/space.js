@@ -4371,12 +4371,12 @@ const galaxyProjects = {
                         return {
                             label: loc(`galaxy_fleet_rating`,[`<span${total < 400 ? ` class="has-text-danger"` : ''}>400</span>`]),
                             met: total < 400 ? false : true
-                        }
+                        };
                     }
                     return {
                         label: loc(`galaxy_fleet_rating`,[`<span class="has-text-danger">400</span>`]),
                         met: false
-                    }
+                    };
                 }
             },
             effect(){
@@ -4593,14 +4593,14 @@ const galaxyProjects = {
                             total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
                         });
                         return {
-                            label: loc(`galaxy_fleet_rating`,[`<span${total < 1250 ? ` class="has-text-danger"` : ''}>1250</span>`]),
+                            label: loc(`galaxy_fleet_rating`,[`<span${total < 1250 ? ` class="has-text-danger"` : ``}>1250</span>`]),
                             met: total < 1250 ? false : true
-                        }
+                        };
                     }
                     return {
                         label: loc(`galaxy_fleet_rating`,[`<span class="has-text-danger">1250</span>`]),
                         met: false
-                    }
+                    };
                 }
             },
             effect(){

@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.7`,
+        date: `11/25/2020`,
+        changes: [
+            `Fixed a bug where Technocracy prevented Alien 2 & Chthonian invasions from working.`
+        ]
+    },
+    {
         version: `1.0.6`,
         date: `11/24/2020`,
         changes: [

@@ -6110,7 +6110,10 @@ export function actionDesc(parent,c_action,obj,old){
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
             if (res === 'Custom'){
+                console.log(costs);
                 let custom = costs[res]();
+                //console.log(custom);
+                //console.log(c_action);
                 cost.append($(`<div>${custom.label}</div>`));
                 empty = false;
             }
