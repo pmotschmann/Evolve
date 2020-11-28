@@ -2,7 +2,7 @@ import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, s
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
-import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
+import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -6690,6 +6690,9 @@ function sentience(){
 
     if (global.race.species !== 'junker'){
         delete global.race['junker'];
+    }
+    else {
+        setJType();
     }
 
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
