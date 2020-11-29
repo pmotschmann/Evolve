@@ -260,7 +260,7 @@ export function craftingRatio(res,auto){
         }
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        multiplier *= 1 + (achieve_level * 0.0025);
+        multiplier *= 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100));
     }
     if (res === 'Scarletite'){
         let sup = hellSupression('ruins');

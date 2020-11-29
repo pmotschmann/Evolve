@@ -812,50 +812,109 @@ function checkBigAchievementUniverse(frag, name, num, level){
     }
 }
 
+export const perkList = {
+    harmonic: {
+        name: loc(`harmonic`),
+        desc(){
+            let harmonic = calcPillar();
+            return loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)]);
+        },
+        active(){
+            let harmonic = calcPillar();
+            return global['pillars'] && harmonic[0] > 1 ? true : false;
+        },
+        notes: []
+    },
+    blackhole: {
+        name: loc(`achieve_blackhole_name`),
+        desc(){
+            let bonus = global.stats.achieve.blackhole.l * 5;
+            return loc("achieve_perks_blackhole",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1 ? true : false;
+        },
+        notes: []
+    },
+    creator: {
+        name: loc(`achieve_creator_name`),
+        desc(){
+            let bonus = 1 + (global.stats.achieve['creator'].l * 0.5);
+            return loc("achieve_perks_creator",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1 ? true : false;
+        },
+        notes: []
+    },
+    mass_extinction: {
+        name: loc(`achieve_mass_extinction_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_mass_extinction");
+                },
+                active(){
+                    return global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = (global.stats.achieve['mass_extinction'].l - 1) * 50;
+                    return loc("achieve_perks_mass_extinction2",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1 ? true : false;
+                }
+            }
+        ],
+        notes: []
+    },
+    explorer: {
+        name: loc(`achieve_explorer_name`),
+        desc(){
+            let bonus = global.stats.achieve['explorer'].l;
+            return loc("achieve_perks_explorer",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['explorer'] && global.stats.achieve['explorer'].l >= 1 ? true : false;
+        },
+        notes: []
+    },
+    miners_dream: {
+        name: loc(`achieve_miners_dream_name`),
+        desc(){
+            let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
+            return loc("achieve_perks_miners_dream",[numGeo]);
+        },
+        active(){
+            return global.stats.achieve['miners_dream'] && global.stats.achieve['miners_dream'].l >= 1 ? true : false;
+        },
+        notes: []
+    },
+};
+
 export function drawPerks(){
     clearElement($('#perksPanel'));
     let perks = $('#perksPanel');
 
     let unlocked = 0;
-
-    let harmonic = calcPillar();
-    if (global['pillars'] && harmonic[0] > 1){        
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)])}</span></div>`);
-    }
-
-    if (global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve.blackhole.l * 5;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1){
-        unlocked++;
-        let bonus = 1 + (global.stats.achieve['creator'].l * 0.5);
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction")}</span></div>`);
-        if (global.stats.achieve['mass_extinction'].l > 1){
-            let bonus = (global.stats.achieve['mass_extinction'].l - 1) * 50;
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction2",[bonus])}</span></div>`);
+    Object.keys(perkList).forEach(function(perk){
+        if (perkList[perk].hasOwnProperty('group')){
+            perkList[perk].group.forEach(function(subperk){
+                if (subperk.active()){
+                    unlocked++;
+                    perks.append(`<div><span class="has-text-warning">${subperk.desc()}</span></div>`);
+                }
+            });
         }
-    }
-
-    if (global.stats.achieve['explorer'] && global.stats.achieve['explorer'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve['explorer'].l;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['miners_dream'] && global.stats.achieve['miners_dream'].l >= 1){
-        unlocked++;
-        let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream",[numGeo])}</span></div>`);
-    }
+        else {
+            if (perkList[perk].active()){
+                unlocked++;
+                perks.append(`<div><span class="has-text-warning">${perkList[perk].desc()}</span></div>`);
+            }
+        }
+    });
 
     if (global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1){
         unlocked++;

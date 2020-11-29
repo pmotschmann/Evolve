@@ -130,11 +130,16 @@ export const events = {
                 return loc('event_raid1',[killed,wounded]);
             }
             else {
-                var loss = Math.rand(1,Math.round(global.resource.Money.amount / 4));
-                var res = global.resource.Money.amount - loss;
-                if (res < 0){ res = 0; }
-                global.resource.Money.amount = res;
-                return loc('event_raid2',[loss,killed,wounded]);
+                let loss = Math.rand(1,Math.round(global.resource.Money.amount / 4));
+                if (loss <= 0){
+                    return loc('event_raid1',[killed,wounded]);
+                }
+                else {
+                    let res = global.resource.Money.amount - loss;
+                    if (res < 0){ res = 0; }
+                    global.resource.Money.amount = res;
+                    return loc('event_raid2',[loss,killed,wounded]);
+                }
             }
         }
     },

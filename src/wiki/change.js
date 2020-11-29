@@ -3,6 +3,17 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.8`,
+        date: `11/28/2020`,
+        changes: [
+            `Base Neutronium cost of Inferno Reactor lowered to 3,750,000.`,
+            `Fixed Valdi genus traits after evolution.`,
+            `Prepared rank 2 now correctly applies when building mechs.`,
+            `Power Grid is now more strict in checking what is available.`,
+            `Fixed bug that sometimes caused crafting to use a wrong Mastery value.`
+        ]
+    },
+    {
         version: `1.0.7`,
         date: `11/25/2020`,
         changes: [

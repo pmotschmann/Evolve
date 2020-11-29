@@ -538,10 +538,10 @@ export function loadFoundry(){
                         let multiplier = craftingRatio(res,true);
                         let speed = global.genes['crafty'] ? 2 : 1;
                         let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
-                        let bonus = (multiplier * speed * 100).toFixed(0);
-                        
-                        obj.popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus, name])}</div>`));
-                        obj.popper.append($(`<div>${loc('craftsman_hover_prod', [final, name])}</div>`));
+                        let bonus = +(multiplier * speed * 100).toFixed(0);
+
+                        obj.popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus.toLocaleString(), name])}</div>`));
+                        obj.popper.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
                         let craft_cost = craftCost();
                         for (let i=0; i<craft_cost[res].length; i++){
                             let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);

@@ -21,5 +21,8 @@ export function prestigePage(zone){
         case 'blood':
             bloodPage(content);
             break;
+        case 'perks':
+            //perksPage(content);
+            break;
     }
 }
