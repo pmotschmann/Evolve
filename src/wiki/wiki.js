@@ -51,7 +51,7 @@ function initPage(){
                 { key: 'resources' },
                 { key: 'crispr' },
                 { key: 'blood' },
-                //{ key: 'perks' }
+                { key: 'perks' }
             ]
         },
         {

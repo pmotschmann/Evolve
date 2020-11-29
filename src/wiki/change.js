@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.9`,
+        date: `11/29/2020`,
+        changes: [
+            `Perks seperated on to a seperate tab under Stats.`,
+            `Added Perks section to Wiki.`
+        ]
+    },
+    {
         version: `1.0.8`,
         date: `11/28/2020`,
         changes: [

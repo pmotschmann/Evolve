@@ -229,6 +229,11 @@ export function index(){
                     {{ 'tab_achieve' | label }}
                 </template>
             </b-tab-item>
+            <b-tab-item id="perks">
+                <template slot="header">
+                    {{ 'tab_perks' | label }}
+                </template>
+            </b-tab-item>
         </b-tabs>
     </b-tab-item>`);
     tabs.append(stats);
