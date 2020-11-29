@@ -8,7 +8,9 @@ const changeList = [
         changes: [
             `Base Neutronium cost of Inferno Reactor lowered to 3,750,000.`,
             `Fixed Valdi genus traits after evolution.`,
-            `Prepared rank 2 now correctly applies when building mechs.`
+            `Prepared rank 2 now correctly applies when building mechs.`,
+            `Power Grid is now more strict in checking what is available.`,
+            `Fixed bug that sometimes caused crafting to use a wrong Mastery value.`
         ]
     },
     {

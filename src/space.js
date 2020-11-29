@@ -5004,6 +5004,17 @@ export function galaxyTech(){
     return galaxyProjects;
 }
 
+export function checkSpaceRequirements(era,region,action){
+    switch (era){
+        case 'space':
+            return checkRequirements(spaceProjects,region,action);
+        case 'interstellar':
+            return checkRequirements(interstellarProjects,region,action);
+        case 'galaxy':
+            return checkRequirements(galaxyProjects,region,action);
+    }
+}
+
 export function checkRequirements(action_set,region,action){
     var isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){

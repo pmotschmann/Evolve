@@ -1,7 +1,9 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
-import { actions } from './actions.js';
+import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
+import { checkRequirements, checkSpaceRequirements } from './space.js';
+import { fortressTech } from './portal.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -1034,7 +1036,20 @@ export function setPowerGrid(){
                 break;
         }
 
-        if (global[region][parts[1]]){
+        let isOk = false;
+        switch (region){
+            case 'city':
+                isOk = checkCityRequirements(parts[1]);
+                break;
+            case 'portal':
+                isOk = checkRequirements(fortressTech(),parts[0],parts[1]);
+                break;
+            default:
+                isOk = checkSpaceRequirements(region,parts[0],parts[1]);
+                break;
+        }
+
+        if (global[region][parts[1]] && isOk && checkPowerRequirements(c_action)){
             idx++;
             let circuit = $(`<div id="pg${c_action.id}" class="circuit" data-idx="${i}"></div>`);
             circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span> <span role="button" class="sub" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);

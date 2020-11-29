@@ -4246,20 +4246,19 @@ function fastLoop(){
 
         // Iridium
         let iridium_bd = {};
-        var getShrineResult = getShrineBonus('metal');
         if (moon_on['iridium_mine']){
             let iridium_base = moon_on['iridium_mine'] * 0.035 * zigguratBonus();
             if (global.city.geology['Iridium']){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
-            let delta = iridium_base * hunger * getShrineResult.mult * global_multiplier;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier;
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
 
         if (belt_on['iridium_ship']){
             let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus();
-            let delta = iridium_base * hunger * getShrineResult.mult * global_multiplier;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier;
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
         }
@@ -4268,7 +4267,7 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65 * zigguratBonus();
             let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * getShrineResult.mult;
+            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult;
 
             iridium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
             iridium_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
@@ -4277,7 +4276,7 @@ function fastLoop(){
         }
 
         if (shrineBonusActive()){
-            iridium_bd[loc('city_shrine')] = (getShrineResult.mult * 100).toFixed(1) + '%';
+            iridium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
         }
         iridium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Iridium'] = iridium_bd;

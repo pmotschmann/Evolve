@@ -5250,7 +5250,7 @@ function checkOldTech(tech){
     return false;
 }
 
-function checkPowerRequirements(c_action){
+export function checkPowerRequirements(c_action){
     let isMet = true;
     if (c_action['power_reqs']){
         Object.keys(c_action.power_reqs).forEach(function (req){
