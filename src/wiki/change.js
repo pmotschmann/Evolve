@@ -6,7 +6,7 @@ const changeList = [
         version: `1.0.9`,
         date: `11/29/2020`,
         changes: [
-            `Perks seperated on to a seperate tab under Stats.`,
+            `Perks separated on to a separate tab under Stats.`,
             `Added Perks section to Wiki.`
         ]
     },
