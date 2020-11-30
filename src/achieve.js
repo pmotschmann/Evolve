@@ -816,7 +816,7 @@ export const perkList = {
     blackhole: {
         name: loc(`achieve_blackhole_name`),
         desc(){
-            let bonus = global.stats.achieve.blackhole.l * 5;
+            let bonus = global.stats.achieve['blackhole'] ? global.stats.achieve.blackhole.l * 5 : 5;
             return loc("achieve_perks_blackhole",[bonus]);
         },
         active(){
@@ -830,7 +830,7 @@ export const perkList = {
     creator: {
         name: loc(`achieve_creator_name`),
         desc(){
-            let bonus = 1 + (global.stats.achieve['creator'].l * 0.5);
+            let bonus = 1 + (global.stats.achieve['creator'] ? global.stats.achieve['creator'].l * 0.5 : 0.5);
             return loc("achieve_perks_creator",[bonus]);
         },
         active(){
