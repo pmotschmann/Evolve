@@ -12,7 +12,7 @@ export function index(){
         <span class="calendar" >
             <span v-show="city.calendar.day">
             <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
-            <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span> 
+            <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
             <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>
             <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
             <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
@@ -47,7 +47,7 @@ export function index(){
     columns.append(mainColumn);
     let content = $(`<div class="content"></div>`);
     mainColumn.append(content);
-    
+
     content.append(`<h2 class="is-sr-only">Tab Navigation</h2>`);
     let tabs = $(`<b-tabs v-model="s.civTabs" :animated="s.animated"></b-tabs>`);
     content.append(tabs);
@@ -298,6 +298,7 @@ export function index(){
                 <b-dropdown-item v-on:click="setTheme('night')">{{ 'theme_night' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('redgreen')">{{ 'theme_redgreen' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('darkNight')">{{ 'theme_darkNight' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ 'theme_orangeSoda' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>
@@ -363,7 +364,7 @@ export function index(){
     </b-tab-item>`);
 
     tabs.append(settings);
-    
+
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 

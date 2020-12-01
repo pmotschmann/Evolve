@@ -346,6 +346,7 @@ Misc ---------> Main template
       @span-on: @has-text-success;
       @span-off: @has-text-danger;
     }
+
     // Dark Night theme
     .darkNight() {
       // Theme colors {
@@ -360,6 +361,125 @@ Misc ---------> Main template
 
       // .b-tooltip
       @b-tooltip-is-primary: @primary-color;
+    }
+
+    // Orange Soda theme
+    .orangeSoda() {
+      // Theme colors {
+      @html-background: #131516;
+      @primary-border: #313638;
+      @secondary-border: @primary-border;
+      @primary-color: #FAD1C6;
+      @secondary-color: #313638;
+
+      @link: #F06543;
+      @link-hover: #D09376;
+      @enabled: #35A7FF;
+      @disabled: #C21E83;
+      // }
+
+      // .has-text-xxx
+      @has-text-advanced: #00ac95 !important;
+      @has-text-alert: #af5d00 !important;
+      @has-text-caution: #F09D51 !important;
+      @has-text-danger: @disabled !important;
+      @has-text-fade: #898B87 !important;
+      @has-text-flair: @has-text-special;
+      @has-text-label: #35A7FF !important;
+      @has-text-special: #91006c !important;
+      @has-text-success: @enabled !important;
+      @has-text-warning: @link !important;
+
+      // .popper
+      @popper: @primary-color !important;
+      @popper-has-text-label: @has-text-label !important;
+      @popper-has-text-success: @has-text-success !important;
+      @popper-has-text-warning: @has-text-warning !important;
+      @modal-child-popper-background: #292929 !important;
+      @modal-child-popper-border: @secondary-border;
+
+      // .fool
+      @fool-has-text-danger: @has-text-success;
+      @fool-has-text-success: @has-text-danger;
+      @fool-popper-has-text-danger: @popper-has-text-success;
+      @fool-span-on: @disabled;
+      @fool-span-off: @enabled;
+
+      // .tabs
+      @tabs-li-is-active-link-border: @link;
+      @tabs-li-is-active-link: @link;
+
+      // .button
+      @button-background: #1C2021;
+      @button: @primary-color;
+      @button-hover-background: @secondary-color;
+      @button-hover: @link-hover;
+      @button-focus-border: @secondary-border;
+
+      // .basic-button
+      @basic-button-border-hover-background: #292929;
+      @basic-button-border-hover: @link;
+
+      // .label
+      @label: @primary-color;
+
+      // .checkbox
+      @checkbox-hover: @link;
+
+      // .dropdown
+      @dropdown-content-background: @button-background;
+
+      // .b-tooltip
+      @b-tooltip-accent: @link-hover;
+      @b-tooltip-is-primary-background: @b-tooltip-accent;
+      @b-tooltip-is-primary-border: @primary-border;
+      @b-tooltip-is-primary: @black;
+
+      // UI Bars
+      @bars-background: @secondary-color;
+
+      // .meter
+      @meter-low: @disabled;
+      @meter-neutral: #38618C;
+      @meter-high: #35A7FF;
+
+      // .main
+      @div-special-border: @primary-border;
+      @div-special-gear-fill: @link;
+      @div-special-hover-border: @secondary-color;
+      @div-special-hover-gear-fill: #F09D51;
+      @span-on-border: @primary-border;
+      @span-on: @enabled;
+      @span-on-warn: #af5d00;
+      @span-off-border: @primary-border;
+      @span-off: @disabled;
+      @span-on-off-hover-border: @secondary-color;
+      @hl-button-border: @enabled;
+      @link-button-background: #181818;
+      @special-on-off-border: @primary-border;
+      @oldTech: @primary-color;
+      @cnam-aTitle: @disabled;
+
+      // .fort
+      @fort-patrol-check-background: @black !important;
+
+      // .market-item
+      @market-item-background: #292929;
+      @market-item-order-hover-background: @secondary-color;
+      @market-item-order-hover-border: @link-hover;
+
+      // .modalBox
+      @modalBox-background: @html-background;
+
+      // Stars
+      @star-2-fill: @white;
+      @star-3-fill: #cd7f32;
+      @star-4-fill: #c0c0c0;
+      @star-5-fill: #d4af37;
+
+      // -webkit-scrollbar
+      @webkit-scrollbar-background: @html-background;
+      @webkit-scrollbar-thumb-background: @primary-border;
     }
   }
   // Main template
@@ -696,7 +816,7 @@ Misc ---------> Main template
             .struct {
                 width: 12rem;
             }
-            
+
         }
     }
 
@@ -986,6 +1106,30 @@ html.darkNight {
   // Theme specific
   .has-text-warning {
     color: #d6b220 !important;
+  }
+  input,
+  select,
+  textarea {
+    background: @primary-color;
+  }
+}
+
+// Orange Soda theme
+html.orangeSoda {
+  #lib.themes.orangeSoda(); // Highest priority
+  #lib.mainTemplate();
+
+  // Theme specific
+  .modal .action {
+    #lib.mainTemplate.main.content.action();
+  }
+  .has-text-info {
+    color: #F09D51 !important;
+  }
+  .pop-desc {
+    .has-text-caution {
+      color: @has-text-danger;
+    }
   }
   input,
   select,
