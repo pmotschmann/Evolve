@@ -871,7 +871,7 @@ export const perkList = {
     explorer: {
         name: loc(`achieve_explorer_name`),
         desc(){
-            let bonus = global.stats.achieve['explorer'].l;
+            let bonus = global.stats.achieve['explorer'] ? global.stats.achieve['explorer'].l : 1;
             return loc("achieve_perks_explorer",[bonus]);
         },
         active(){
@@ -911,7 +911,7 @@ export const perkList = {
     joyless: {
         name: loc(`achieve_joyless_name`),
         desc(){
-            let bonus = global.stats.achieve['joyless'].l * 2;
+            let bonus = global.stats.achieve['joyless'] ? global.stats.achieve['joyless'].l * 2 : 2;
             return loc("achieve_perks_joyless",[bonus]);
         },
         active(){
@@ -925,7 +925,7 @@ export const perkList = {
     steelen: {
         name: loc(`achieve_steelen_name`),
         desc(){
-            let bonus = global.stats.achieve['steelen'].l * 2;
+            let bonus = global.stats.achieve['steelen'] ? global.stats.achieve['steelen'].l * 2 : 2;
             return loc("achieve_perks_steelen",[bonus]);
         },
         active(){
@@ -949,7 +949,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    let bonus = global.stats.achieve['whitehole'].l * 5;
+                    let bonus = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l * 5 : 5;
                     return loc("achieve_perks_whitehole2",[bonus]);
                 },
                 active(){
@@ -965,7 +965,7 @@ export const perkList = {
     heavyweight: {
         name: loc(`achieve_heavyweight_name`),
         desc(){
-            let bonus = global.stats.achieve['heavyweight'].l * 4;
+            let bonus = global.stats.achieve['heavyweight'] ? global.stats.achieve['heavyweight'].l * 4 : 4;
             return loc("achieve_perks_heavyweight",[bonus]);
         },
         active(){
@@ -989,7 +989,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    let bonus = global.stats.achieve['dissipated'].l >= 5 ? 2 : 1;
+                    let bonus = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 5 ? 2 : 1;
                     return loc("achieve_perks_dissipated2",[bonus]);
                 },
                 active(){
@@ -1021,7 +1021,7 @@ export const perkList = {
     anarchist: {
         name: loc(`achieve_anarchist_name`),
         desc(){
-            let bonus = global.stats.achieve['anarchist'].l * 10;
+            let bonus = global.stats.achieve['anarchist'] ? global.stats.achieve['anarchist'].l * 10 : 10;
             return loc("achieve_perks_anarchist",[bonus]);
         },
         active(){
