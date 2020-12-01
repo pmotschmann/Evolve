@@ -1,5 +1,5 @@
 import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
-import { loc, locales } from './locale.js';
+import { loc } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
 import { vBind, mainVue, popover, powerGrid, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
@@ -30,14 +30,6 @@ else {
 
 if (global.lastMsg){
     messageQueue(global.lastMsg.m, global.lastMsg.c);
-}
-
-if (Object.keys(locales).length > 1){
-    $('#localization').append($(`<span>${loc('locale')}: <select @change="lChange()" :v-model="s.locale"></select></span>`));
-    Object.keys(locales).forEach(function (locale){
-        let selected = global.settings.locale === locale ? ' selected=selected' : '';
-        $('#localization select').append($(`<option value="${locale}"${selected}>${locales[locale]}</option>`));
-    });
 }
 
 mainVue();
@@ -138,7 +130,7 @@ popover('morale',
                 }
 
                 obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
-            
+
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
                     let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20;
                     obj.popper.append(`<p class="modal_bd"><span>ᄂ${loc('govern_democracy')}</span> <span class="has-text-success"> +${democracy}%</span></p>`);
@@ -167,7 +159,7 @@ popover('morale',
             total += 10;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +10%</span></p>`);
         }
-    
+
         total = +(total).toFixed(1);
         if (total > moraleCap || total < 50){
             obj.popper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}% (${total}%)</span></div>`);
@@ -1395,7 +1387,7 @@ function fastLoop(){
         }
 
         // Power usage
-        let p_structs = global.power;        
+        let p_structs = global.power;
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
@@ -1697,7 +1689,7 @@ function fastLoop(){
                 }
                 if (army < global.portal.guard_post.on){
                     global.portal.guard_post.on = army;
-                }                
+                }
             }
 
             global.portal.guard_post.support = global.portal.guard_post.on;
@@ -2079,7 +2071,7 @@ function fastLoop(){
             if (global.race['musical']){
                 entertainment += global.civic.entertainer.workers;
             }
-        }        
+        }
         if (global.civic.govern.type === 'democracy'){
             let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.3 : 1.25 ) : 1.2;
             entertainment *= democracy;
@@ -2223,7 +2215,7 @@ function fastLoop(){
                         ejected = p_on['mass_ejector'] * 1000 - total;
                     }
                     total += ejected;
-                 
+
                     if (ejected > 0){
                         breakdown.p.consume[res][loc('interstellar_blackhole_name')] = -(ejected);
                     }
@@ -3239,7 +3231,7 @@ function fastLoop(){
             breakdown.p['Cement'] = cement_bd;
             modRes('Cement', delta * time_multiplier);
         }
-        
+
         let shrineMetal = getShrineBonus('metal');
 
         // Smelters
@@ -3364,7 +3356,7 @@ function fastLoop(){
                     Oil: 35,
                     Coal: 50,
                     Infernite: 0.5
-                };    
+                };
                 Object.keys(inferno_rate).forEach(function(fuel){
                     while (inferno_rate[fuel] * inferno_bonus * time_multiplier > global.resource[fuel].amount && inferno_bonus > 0){
                         inferno_bonus--;
@@ -4458,27 +4450,27 @@ function fastLoop(){
             if (global.civic.hell_surveyor.workers > 0){
                 let rate = global.tech.infernite >= 3 ? 0.015 : 0.01;
                 let surveyor_base = global.civic.hell_surveyor.workers * rate;
-    
+
                 let sensors = 1;
                 if (global.tech['infernite'] >= 2 && p_on['sensor_drone']){
                     let drone_rate = global.tech.infernite >= 4 ? (global.tech.infernite >= 6 ? 0.5 : 0.2) : 0.1;
                     sensors = 1 + (p_on['sensor_drone'] * drone_rate);
                 }
-    
+
                 let surveyor_delta = surveyor_base * sensors * global_multiplier;
-    
+
                 infernite_bd[loc('job_hell_surveyor')] = surveyor_base + 'v';
                 infernite_bd[`ᄂ${loc('portal_sensor_drone_title')}`] = ((sensors - 1) * 100) + '%';
                 modRes('Infernite', surveyor_delta * time_multiplier);
             }
-    
+
             if (p_on['infernite_mine']){
                 let sup = hellSupression('gate');
                 let rate = 0.5 * sup.supress;
                 let mine_base = p_on['infernite_mine'] * rate;
-    
+
                 let mine_delta = mine_base * global_multiplier;
-    
+
                 infernite_bd[loc('city_mine')] = mine_base + 'v';
                 modRes('Infernite', mine_delta * time_multiplier);
             }
@@ -5027,7 +5019,7 @@ function midLoop(){
 
         if (global.city['pylon']){
             let gain = global.city.pylon.count * spatialReasoning(5);
-            caps['Mana'] += gain;            
+            caps['Mana'] += gain;
             bd_Mana[loc('city_pylon')] = gain+'v';
         }
         if (global.city['farm']){
@@ -5535,7 +5527,7 @@ function midLoop(){
             gain = (p_on['harbour'] * (spatialReasoning(18000)));
             caps['Helium_3'] += gain;
             bd_Helium[loc('portal_harbour_title')] = gain+'v';
-            
+
             gain = (p_on['harbour'] * (spatialReasoning(12000)));
             caps['Deuterium'] += gain;
             bd_Deuterium[loc('portal_harbour_title')] = gain+'v';
@@ -5829,7 +5821,7 @@ function midLoop(){
 
         if (global.portal['archaeology']){
             let sup = hellSupression('ruins');
-            let gain = Math.round(250000 * sup.supress);            
+            let gain = Math.round(250000 * sup.supress);
             caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
             bd_Knowledge[loc('portal_archaeology_bd')] = (global.civic.archaeologist.workers * gain)+'v';
         }
@@ -5866,7 +5858,7 @@ function midLoop(){
             }
             else {
                 bd_Money[loc('city_bank')] = gain+'v';
-            }            
+            }
 
             if (global.interstellar['exchange']){
                 let g_vault = spatialReasoning(int_on['exchange'] * (vault * banks / 18));
@@ -6410,12 +6402,12 @@ function midLoop(){
             });
         }
 
-        if (global.space['swarm_control']){            
+        if (global.space['swarm_control']){
             global.space.swarm_control.s_max = global.space.swarm_control.count * actions.space.spc_sun.swarm_control.support();
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];            
+            let labs = global.race['cataclysm'] ? red_on['exotic_lab'] : p_on['biolab'];
             if (labs > 0 && global.city.ptrait === 'toxic'){
                 labs += planetTraits.toxic.vars[0];
             }
@@ -6568,7 +6560,7 @@ function midLoop(){
                     else {
                         progress += mechRating(mech,false);
                     }
-                }                
+                }
             });
             global.portal.mechbay.bay = space;
             if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
@@ -6610,7 +6602,7 @@ function midLoop(){
                     global.tech['hell_spire'] = 10;
                     drawTech();
                 }
-                
+
                 let affix = universeAffix();
                 if (!global.stats.spire.hasOwnProperty(affix)){
                     global.stats.spire[affix] = { s0: 0, s1: 0, s2: 0, s3: 0, s4: 0 };
@@ -6853,7 +6845,7 @@ function midLoop(){
                                 c_action.post();
                             }, 250);
                         }
-                    }                    
+                    }
                 }
             }
 
@@ -6986,7 +6978,7 @@ function longLoop(){
         if (updatePowerGrid){
             setPowerGrid();
         }
-        
+
         if (global.tech['syphon'] && global.tech.syphon >= 80){
             if (webWorker.w){
                 webWorker.w.terminate();
