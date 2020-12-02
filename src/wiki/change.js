@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.10`,
+        date: `12/1/2020`,
+        changes: [
+            `Ascended buff now persists after Demonic Infusion.`
+            `New Themes: GruvBox Light, GruvBox Dark, and Orange Soda.`,
+        ]
+    },
+    {
         version: `1.0.9`,
         date: `11/29/2020`,
         changes: [

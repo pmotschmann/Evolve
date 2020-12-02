@@ -3882,6 +3882,7 @@ export function descension(){
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
         corruption: 5,
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
 
     global.city = {
