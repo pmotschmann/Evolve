@@ -744,6 +744,10 @@ export function clearElement(elm,remove){
         catch(e){}
     });
     if (remove){
+        try {
+            elm[0].__vue__.$destroy();
+        }
+        catch(e){}
         elm.remove();
     }
     else {

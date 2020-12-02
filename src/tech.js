@@ -2860,8 +2860,8 @@ const techs = {
     },
     swiss_banking: {
         id: 'tech-swiss_banking',
-        title: loc('tech_swiss_banking'),
-        desc: loc('tech_swiss_banking'),
+        title: swissKnife(),
+        desc: swissKnife(),
         category: 'banking',
         era: 'industrialized',
         reqs: { banking: 6 },
@@ -9902,6 +9902,21 @@ const techs = {
         }
     },
 };
+
+function swissKnife(){
+    let cheeses = [
+        'swiss','gouda','cheddar','brie','feta','ricotta','goat','mascarpone','bleu','colby_jack','camembert','gorgonzola',
+        'mozzarella','roquefort','provolone','monterey_jack','muenster','cambozola','jarlsberg','bocconcini','cantal',
+        'emmental','havarti','burrata','cottage','asiago','wensleydale','pepper_jack','queso_blanco','pecorino','raclette',
+        'fontina','reblochon','port_salut','brillat_savarin','cream','stilton','taleggio','manchego','edam','gruyeye',
+        'parmigiano_reggiano','epoisses','comte','caciocavallo','teleme','grana_padano','chaumes','morbier','halloumi',
+        'lancashire','bleu_de_gex','fourme_d_ambert','fromage_blanc','red_leicester','bleu_d_auvergne','pont_l_eveque',
+        'jl_grubb','castello_blue'
+    ];
+
+    let type = (global.stats.hasOwnProperty('reset') ? global.stats.reset : 0) % cheeses.length;
+    return loc(`tech_swiss_bank`,[loc(`cheese_${cheeses[type]}`)]);
+}
 
 export function techList(){
     return techs;

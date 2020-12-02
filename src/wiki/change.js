@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.11`,
+        date: `12/2/2020`,
+        changes: [
+            `Fixed a memory leak.`,
+            `Minor adjustments to GruvBox Dark theme.`,
+            `Cheesy Goodness.`
+        ]
+    },
+    {
         version: `1.0.10`,
         date: `12/1/2020`,
         changes: [

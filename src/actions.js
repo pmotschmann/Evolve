@@ -5462,24 +5462,24 @@ export function setAction(c_action,action,type,old){
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }
-    var id = c_action.id;
+    let id = c_action.id;
     removeAction(id);
-    var parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
+    let parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
     if (!checkAffordable(c_action)){
         parent.addClass('cna');
     }
     if (!checkAffordable(c_action,true)){
         parent.addClass('cnam');
     }
+    let element;
     if (old){
-        var element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
-        parent.append(element);
+        element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
     }
     else {
         let cst = '';
         let data = '';
         if (c_action['cost']){
-            var costs = action !== 'genes' && action !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
+            let costs = action !== 'genes' && action !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
             Object.keys(costs).forEach(function (res){
                 let cost = costs[res]();
                 if (cost > 0){
@@ -5488,13 +5488,12 @@ export function setAction(c_action,action,type,old){
                 }
             });
         }
-
-        var element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
-        parent.append(element);
+        element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
+    parent.append(element);
 
     if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
-        var special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+        let special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
                 L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
@@ -5506,8 +5505,8 @@ export function setAction(c_action,action,type,old){
         parent.append(special);
     }
     if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
-        var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
-        var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
+        let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
+        let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);
         parent.append(powerOff);
     }
@@ -5538,7 +5537,7 @@ export function setAction(c_action,action,type,old){
         parent.append($(emblem));
     }
 
-    var modal = {
+    let modal = {
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
@@ -5614,7 +5613,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let add_queue = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
-                                for (var i=0; i<keyMult; i++){
+                                for (let i=0; i<keyMult; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
@@ -5625,7 +5624,7 @@ export function setAction(c_action,action,type,old){
                                                 max_queue *= 2;
                                             }
                                             let used = 0;
-                                            for (var j=0; j<global.queue.queue.length; j++){
+                                            for (let j=0; j<global.queue.queue.length; j++){
                                                 used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                             }
                                             if (used < max_queue){
@@ -5690,7 +5689,7 @@ export function setAction(c_action,action,type,old){
                         component: modal
                     });
 
-                    var checkExist = setInterval(function(){
+                    let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
                             clearInterval(checkExist);
                             drawModal(c_action,type);

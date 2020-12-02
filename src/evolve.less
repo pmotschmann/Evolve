@@ -492,7 +492,7 @@ Misc ---------> Main template
             // Theme colors {
             @html-background: #282828;
             @primary-border: #3c3836;
-            @secondary-border: @primary-border;
+            @secondary-border: #665c54;
             @primary-color: #ebdbb2;
             @secondary-color: #504945;
 
@@ -570,9 +570,9 @@ Misc ---------> Main template
 
             // .main
             @div-special-border: @primary-border;
-            @div-special-gear-fill: @link;
+            @div-special-gear-fill: #f09d51;
             @div-special-hover-border: @secondary-color;
-            @div-special-hover-gear-fill: #F09D51;
+            @div-special-hover-gear-fill: @link;
             @span-on-border: @primary-border;
             @span-on: @enabled;
             @span-on-warn: #af5d00;
@@ -1491,6 +1491,16 @@ html.gruvboxDark {
     .notification {
         background: @primary-color;
     }
+
+    .add,
+        .sub {
+            border: @secondary-border solid .0625rem;
+        }
+
+        .current {
+            border-top: @secondary-border solid .0625rem;
+            border-bottom: @secondary-border solid .0625rem;
+        }
 }
 
 // Orange Soda theme
