@@ -30,8 +30,8 @@ export function mainVue(){
                     importGame(restore_data,true);
                 }
             },
-            lChange(){
-                global.settings.locale = $('#localization select').children("option:selected").val();
+            lChange(locale){
+                global.settings.locale = locale;
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                 if (webWorker.w){
                     webWorker.w.terminate();
@@ -154,7 +154,7 @@ export function popover(id,content,opts){
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
-    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }    
+    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (opts['bind']){
         $(opts.elm).on('mouseover',function(){
             $('.popper').hide();
@@ -172,7 +172,7 @@ export function popover(id,content,opts){
             }
             poppers[id] = new Popper(
                 opts['self'] ? this : $(opts.elm),
-                popper, 
+                popper,
                 opts.hasOwnProperty('prop') ? opts['prop'] : {}
             );
             popper.show();
@@ -222,7 +222,7 @@ window.importGame = function importGame(data,utf16){
                 saveState.stats.know -= 500000;
             }
         }
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));        
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
         window.location.reload();
     }
 }
@@ -247,7 +247,7 @@ export function powerGrid(reset){
 
     power_structs.forEach(function(struct){
         if (!global.power.includes(struct)){
-            global.power.push(struct); 
+            global.power.push(struct);
         }
     });
 }
@@ -446,7 +446,7 @@ export function modRes(res,val,notrack,buffer){
             if (res === 'Mana' && val > 0){
                 global.resource[res].gen_d += val;
             }
-        }        
+        }
     }
     return success;
 }
@@ -936,7 +936,7 @@ export const calcPillar = (function(){
     return function(recalc){
         if (!bonus || recalc){
             let active = 0;
-            Object.keys(global.pillars).forEach(function(race){                
+            Object.keys(global.pillars).forEach(function(race){
                 if (races[race] && global.race.species === race){
                     active += 4;
                 }
@@ -1511,7 +1511,7 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
                 break;
         }
     }
-    
+
     return emblem;
 }
 
@@ -1575,7 +1575,7 @@ export function vacuumCollapse(){
         global.arpa.syphon.rank = 79;
         global.arpa.syphon.complete = 99;
         global.queue.queue = [];
-        
+
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
 
@@ -1698,7 +1698,7 @@ export function deepClone(obj){
         if(obj.hasOwnProperty(prop)){
             clonedObj[prop] = deepClone(obj[prop]);
         }
-    } 
+    }
     return clonedObj;
 }
 
@@ -1772,7 +1772,7 @@ export function getShrineBonus(type) {
 		mult: 1,
 		add: 0
 	};
-	
+
 	if (shrineBonusActive()){
 		switch(type){
 			case 'metal':
@@ -1792,6 +1792,6 @@ export function getShrineBonus(type) {
 				break;
 		}
 	}
-	
+
 	return shrine_bonus;
 }

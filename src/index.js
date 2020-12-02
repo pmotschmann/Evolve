@@ -1,5 +1,5 @@
 import { global } from './vars.js';
-import { loc } from './locale.js';
+import { loc, locales } from './locale.js';
 import { easterEgg, trickOrTreat, modRes } from './functions.js';
 
 export function index(){
@@ -281,6 +281,18 @@ export function index(){
         hideTreat = `<b-dropdown-item>${trick}</b-dropdown-item>`;
     }
 
+    let localelist = '';
+    let current_locale = '';
+    if (Object.keys(locales).length > 1){
+        Object.keys(locales).forEach(function (locale){
+          let selected = global.settings.locale;
+            if (selected === locale) {
+              current_locale = locales[locale];
+            }
+            localelist = localelist + `<b-dropdown-item v-on:click="lChange('${locale}')">${locales[locale]}</b-dropdown-item>`;
+        });
+    }
+
     // Settings Tab
     let settings = $(`<b-tab-item class="settings">
         <template slot="header">
@@ -325,7 +337,16 @@ export function index(){
                 ${iconlist}
             </b-dropdown>
         </div>
-        <div id="localization" class="localization"></div>
+        <div id="localization" class="localization">
+          <span>{{ 'locale' | label }} </span>
+          <b-dropdown hoverable>
+              <button class="button is-primary" slot="trigger">
+                  <span>${current_locale}</span>
+                  <i class="fas fa-sort-down"></i>
+              </button>
+              ${localelist}
+          </b-dropdown>
+        </div>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
