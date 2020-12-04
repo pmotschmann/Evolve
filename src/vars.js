@@ -592,6 +592,9 @@ if (!global.hasOwnProperty('support')){
         belt: [],
         alpha: [],
         nebula: [],
+        gateway: [],
+        alien2: [],
+        lake: [],
         spire: [],
     };
 }
@@ -1712,7 +1715,6 @@ export function clearStates(){
     global.settings.space.stargate = false;
     global.settings.space.gateway = false;
     global.settings.space.gorddon = false;
-    global.settings.space.alien1 = false;
     global.settings.space.alien1 = false;
     global.settings.space.alien2 = false;
     global.settings.space.chthonian = false;

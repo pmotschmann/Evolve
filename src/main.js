@@ -1628,7 +1628,7 @@ function fastLoop(){
 
         if (global.galaxy['starbase']){
             let used_support = 0;
-            let gateway_structs = ['bolognium_ship','dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship'];
+            let gateway_structs = global.support.gateway.map(x => x.split(':')[1]);
             for (var i = 0; i < gateway_structs.length; i++){
                 if (global.galaxy[gateway_structs[i]]){
                     let operating = global.galaxy[gateway_structs[i]].on;
@@ -1655,7 +1655,7 @@ function fastLoop(){
             global.galaxy.foothold.s_max = p_on['foothold'] * actions.galaxy.gxy_alien2.foothold.support();
 
             let used_support = 0;
-            let foothold_structs = ['armed_miner','ore_processor','scavenger'];
+            let foothold_structs = global.support.alien2.map(x => x.split(':')[1]);
             for (var i = 0; i < foothold_structs.length; i++){
                 if (global.galaxy[foothold_structs[i]]){
                     let operating = global.galaxy[foothold_structs[i]].on;
@@ -1702,7 +1702,7 @@ function fastLoop(){
             global.portal.harbour.s_max = p_on['harbour'] * actions.portal.prtl_lake.harbour.support();
 
             let used_support = 0;
-            let harbour_structs = ['bireme','transport'];
+            let harbour_structs = global.support.lake.map(x => x.split(':')[1]);
             for (var i = 0; i < harbour_structs.length; i++){
                 if (global.portal[harbour_structs[i]]){
                     let operating = global.portal[harbour_structs[i]].on;
@@ -1903,7 +1903,7 @@ function fastLoop(){
             {
                 area: 'galaxy',
                 region: 'gxy_gateway',
-                ships: ['bolognium_ship','dreadnought','cruiser_ship','frigate_ship','corvette_ship','scout_ship']
+                ships: global.support.gateway.map(x => x.split(':')[1])
             },
             {
                 area: 'galaxy',

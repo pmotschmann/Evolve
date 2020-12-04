@@ -262,6 +262,15 @@ export function powerGrid(type,reset){
         case 'nebula':
             power_structs = ['int_nebula:harvester','int_nebula:elerium_prospector'];
             break;
+        case 'gateway':
+            power_structs = ['gxy_gateway:bolognium_ship','gxy_gateway:dreadnought','gxy_gateway:cruiser_ship','gxy_gateway:frigate_ship','gxy_gateway:corvette_ship','gxy_gateway:scout_ship'];
+            break;
+        case 'alien2':
+            power_structs = ['gxy_alien2:armed_miner','gxy_alien2:ore_processor','gxy_alien2:scavenger'];
+            break;
+        case 'lake':
+            power_structs = ['prtl_lake:bireme','prtl_lake:transport'];
+            break;
         case 'spire':
             power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
             break;
