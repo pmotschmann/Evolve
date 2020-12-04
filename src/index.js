@@ -1,9 +1,9 @@
 import { global } from './vars.js';
 import { loc, locales } from './locale.js';
-import { easterEgg, trickOrTreat, modRes } from './functions.js';
+import { clearElement, easterEgg, trickOrTreat } from './functions.js';
 
 export function index(){
-    $('body').empty();
+    clearElement($('body'));
 
     // Top Bar
     $('body').append(`<div id="topBar" class="topBar">

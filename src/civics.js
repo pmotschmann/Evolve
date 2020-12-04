@@ -531,12 +531,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -550,12 +550,12 @@ function drawEspModal(gov){
                     $('#popGov').hide();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -568,12 +568,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -587,12 +587,12 @@ function drawEspModal(gov){
                         $('.modal-background').click();
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
 
                         setTimeout(function(){
                             $('#popGovLabel').hide();
                             poppers['GovLabel'].destroy();
-                            $('#popGovLabel').remove();
+                            clearElement($('#popGovLabel'),true);
                         },250);
                     }
                 }
@@ -609,12 +609,12 @@ function drawEspModal(gov){
                         $('.modal-background').click();
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
 
                         setTimeout(function(){
                             $('#popGovLabel').hide();
                             poppers['GovLabel'].destroy();
-                            $('#popGovLabel').remove();
+                            clearElement($('#popGovLabel'),true);
                         },250);
                     }
                 }
@@ -748,7 +748,7 @@ function taxRates(govern){
 }
 
 export function buildGarrison(garrison,full){
-    garrison.empty();
+    clearElement(garrison);
     if (global.tech['world_control']){
         garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip></div>`));
     }

@@ -985,7 +985,7 @@ export const galaxyOffers = [
 export function galacticTrade(modal){
     let galaxyTrade = modal ? modal : $(`#galaxyTrade`);
     if (!modal){
-        $(`#galaxyTrade`).empty();
+        clearElement($(`#galaxyTrade`));
     }
 
     if (global.galaxy['trade']){
