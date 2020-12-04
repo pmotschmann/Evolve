@@ -9,7 +9,7 @@ import { f_rate, manaCost, setPowerGrid } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, drawMechLab } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, drawMechLab, mechSize } from './portal.js';
 import { arpa, arpaProjects, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
@@ -6537,21 +6537,7 @@ function midLoop(){
             let space = 0;
             let progress = 0;
             global.portal.mechbay.mechs.forEach(function(mech){
-                let size = 25;
-                switch (mech.size){
-                    case 'small':
-                        size = 2;
-                        break;
-                    case 'medium':
-                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
-                        break;
-                    case 'large':
-                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
-                        break;
-                    case 'titan':
-                        size = global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
-                        break;
-                }
+                let size = mechSize(mech.size);
                 if (space + size <= global.portal.mechbay.max){
                     space += size;
                     if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
@@ -6950,6 +6936,10 @@ function midLoop(){
     }
     else {
         $(`#msgQueue`).css('height',`5rem`);
+    }
+
+    if ($(`#mechList`).length > 0){
+        $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
     }
 }
 

@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.12`,
+        date: `12/4/2020`,
+        changes: [
+            `MechBay tab improvements.`,
+            `Mechlist can now be reordered by dragging.`
+        ]
+    },
+    {
         version: `1.0.11`,
         date: `12/2/2020`,
         changes: [
