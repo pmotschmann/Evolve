@@ -5061,6 +5061,8 @@
   "wiki_trait_effect_nyctophilia": "-%0% Morale when Sunny. +%1% Morale when Cloudy.",
   "wiki_trait_effect_hibernator": "Food consumption is lowered by %0% during winter but production is also lowered by %1%.",
   "wiki_trait_effect_infiltrator": "Spies are cheaper and you occasionally steal tech advancements.",
+  "wiki_trait_effect_infiltrator_ex1": "Stolen techs are not random and are generally stolen easlier then can be normally aquired.",
+  "wiki_trait_effect_infiltrator_ex2": "Stolen Tech List: %0.",
   "wiki_trait_effect_cannibalize": "Gain Sacrificial Altar. Sacrifice population for boons.",
   "wiki_trait_effect_frail": "More soldiers die in combat.",
   "wiki_trait_effect_malnutrition": "-%0% starvation penalty.",

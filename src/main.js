@@ -7479,6 +7479,12 @@ function longLoop(){
             drawTech();
             drawCity();
         }
+        if (global.resource.Knowledge.max >= 24750000 && global.tech['smelting'] && global.tech.smelting === 7 && global.tech['hell_ruins'] && global.tech['hell_ruins'] >= 4){
+            messageQueue(loc(tech_source,[loc('tech_infernium_fuel')]),'info');
+            global.tech.smelting = 8;
+            defineIndustry();
+            drawTech();
+        }
     }
 
     // Event triggered

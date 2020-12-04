@@ -81,6 +81,20 @@ export function traitsPage(){
     }
 }
 
+const traitExtra = {
+    infiltrator: [
+        loc(`wiki_trait_effect_infiltrator_ex1`),
+        loc(`wiki_trait_effect_infiltrator_ex2`,[
+            [
+                `<span class="has-text-warning">${loc('tech_steel')}</span>`, `<span class="has-text-warning">${loc('tech_electricity')}</span>`, `<span class="has-text-warning">${loc('tech_electronics')}</span>`, `<span class="has-text-warning">${loc('tech_fission')}</span>`, 
+                `<span class="has-text-warning">${loc('tech_rocketry')}</span>`, `<span class="has-text-warning">${loc('tech_artificial_intelligence')}</span>`, `<span class="has-text-warning">${loc('tech_quantum_computing')}</span>`,
+                `<span class="has-text-warning">${loc('tech_virtual_reality')}</span>`, `<span class="has-text-warning">${loc('tech_shields')}</span>`, `<span class="has-text-warning">${loc('tech_ai_core')}</span>`, `<span class="has-text-warning">${loc('tech_graphene_processing')}</span>`,
+                `<span class="has-text-warning">${loc('tech_nanoweave')}</span>`, `<span class="has-text-warning">${loc('tech_orichalcum_analysis')}</span>`, `<span class="has-text-warning">${loc('tech_infernium_fuel')}</span>`
+            ].join(', ')
+        ])
+    ]
+};
+
 export function traitDesc(info,trait,fanatic){
     info.append(`<h2 class="has-text-warning">${traits[trait].name}</h2>`);
     info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
@@ -95,4 +109,9 @@ export function traitDesc(info,trait,fanatic){
         color = traits[trait].val >= 0 ? 'success' : 'danger';
     }
     info.append(`<div class="has-text-${color} effect">${traits[trait].type === 'minor' ? loc(`trait_${trait}_effect`) : loc(`wiki_trait_effect_${trait}`,vals)}</div>`);
+    if (traitExtra[trait]){
+        traitExtra[trait].forEach(function(te){
+            info.append(`<div class="effect">${te}</div>`);
+        });
+    }
 }
