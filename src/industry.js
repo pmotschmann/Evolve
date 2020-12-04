@@ -1052,13 +1052,47 @@ export function setPowerGrid(){
         if (global[region][parts[1]] && isOk && checkPowerRequirements(c_action)){
             idx++;
             let circuit = $(`<div id="pg${c_action.id}" class="circuit" data-idx="${i}"></div>`);
-            circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span> <span role="button" class="sub" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
+            circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span>`);
+            circuit.append(`<span role="button" class="sub off" @click="power_off" aria-label="Powered Off"><span>{{ on | off }}</span></span> <span role="button" class="add on" @click="power_on" aria-label="Powered On"><span>{{ on }}</span></span>`);
+            circuit.append(`<span role="button" class="sub is-sr-only" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add is-sr-only" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
             grid.append(circuit);
 
             vBind({
                 el: `#pg${c_action.id}`,
-                data: {},
+                data: global[region][parts[1]],
                 methods: {
+                    power_on(){
+                        let keyMult = keyMultiplier();
+                        for (let i=0; i<keyMult; i++){
+                            if (global[region][parts[1]].on < global[region][parts[1]].count){
+                                global[region][parts[1]].on++;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        if (c_action['postPower']){
+                            setTimeout(function(){
+                                c_action.postPower(true);
+                            }, 250);
+                        }
+                    },
+                    power_off(){
+                        let keyMult = keyMultiplier();
+                        for (let i=0; i<keyMult; i++){
+                            if (global[region][parts[1]].on > 0){
+                                global[region][parts[1]].on--;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        if (c_action['postPower']){
+                            setTimeout(function(){
+                                c_action.postPower(false);
+                            }, 250);
+                        }
+                    },
                     higher(){
                         let oIdx = $(`#pg${c_action.id}`).attr(`data-idx`);
                         let nIdx = $(`#pg${c_action.id}`).prevAll(`.circuit:not(".inactive")`).attr(`data-idx`);
@@ -1078,6 +1112,11 @@ export function setPowerGrid(){
                             global.power = order;
                             setPowerGrid();
                         }
+                    }
+                },
+                filters: {
+                    off(c){
+                        return global[region][parts[1]].count - c;
                     }
                 }
             });

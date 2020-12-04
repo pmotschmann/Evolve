@@ -1112,7 +1112,7 @@ Misc ---------> Main template
             margin-left: 1rem;
 
             .circuit {
-                width: 18rem;
+                width: 18.5rem;
                 cursor: pointer;
 
                 &.inactive {
@@ -1131,6 +1131,18 @@ Misc ---------> Main template
                     width: 12rem;
                 }
 
+                .off,
+                .on {
+                    min-width: 2rem;
+                    text-align: center;
+                }
+
+                .off {
+                    color: @has-text-danger;
+                }
+                .on {
+                    color: @has-text-success;
+                }
             }
         }
 
@@ -1141,7 +1153,7 @@ Misc ---------> Main template
 
         .resetPowerGrid {
             margin-left: 1rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
 
         // .fort

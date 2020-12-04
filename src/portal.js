@@ -3330,7 +3330,6 @@ function drawMechs(){
         });
         list.append(desc);
     }
-    console.log(used);
 
     vBind({
         el: '#mechList',

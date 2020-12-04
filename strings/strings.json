@@ -3742,7 +3742,7 @@
   "civics_mad_missiles_world_control_desc": "Enable or Disable the launch button. Scour the world clean with nuclear fire. Why? Because you can.",
   "civics_mad_missiles_desc": "Enable or Disable the launch button. Launching a nuclear strike will trigger a retaliatory strike which will result in the end of all life as we know it.",
   "civics_mad_missiles_warning": "This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain %0 %1.",
-  "power_grid_header": "Sets the order of priority for powering structures",
+  "power_grid_header": "Click and drag to reorder the priority for powering structures.",
   "power_grid_reset": "Reset Power Grid",
   "govern_anarchy": "Anarchy",
   "govern_anarchy_desc": "Anarchy is no government. Personal freedom is high but it is unsustainable with large populations. Chaos will spiral out of control as your population grows.",
