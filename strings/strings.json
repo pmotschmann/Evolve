@@ -3743,7 +3743,7 @@
   "civics_mad_missiles_desc": "Enable or Disable the launch button. Launching a nuclear strike will trigger a retaliatory strike which will result in the end of all life as we know it.",
   "civics_mad_missiles_warning": "This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain %0 %1.",
   "power_grid_header": "Click and drag to reorder the priority for powering structures.",
-  "power_grid_reset": "Reset Power Grid",
+  "power_grid_reset": "Reset %0 Grid",
   "govern_anarchy": "Anarchy",
   "govern_anarchy_desc": "Anarchy is no government. Personal freedom is high but it is unsustainable with large populations. Chaos will spiral out of control as your population grows.",
   "govern_anarchy_effect": "As your population grows, production is decreased. Job stress is halved.",

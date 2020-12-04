@@ -7,7 +7,9 @@ const changeList = [
         date: `12/4/2020`,
         changes: [
             `MechBay tab improvements.`,
-            `Mechlist can now be reordered by dragging.`
+            `Mechlist can now be reordered by dragging.`,
+            `Power Grid can now control On/Off state.`,
+            `Support type structures can now be controlled by the power grid.`
         ]
     },
     {

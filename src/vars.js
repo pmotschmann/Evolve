@@ -585,6 +585,17 @@ if (!global.hasOwnProperty('power')){
     global['power'] = [];       
 }
 
+if (!global.hasOwnProperty('support')){
+    global['support'] = {
+        moon: [],
+        red: [],
+        belt: [],
+        alpha: [],
+        nebula: [],
+        spire: [],
+    };
+}
+
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
 }
