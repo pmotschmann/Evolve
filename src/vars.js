@@ -580,7 +580,13 @@ if (convertVersion(global['version']) < 10000){
     }
 }
 
-global['version'] = '1.0.12';
+if (convertVersion(global['version']) < 100013){
+    if (global.hasOwnProperty('settings') && global.settings.hasOwnProperty('showPowerGrid') && global.hasOwnProperty('race') && global.race['infiltrator'] && global.hasOwnProperty('tech') && global.tech.hasOwnProperty('high_tech') && global.tech.high_tech >= 2){
+        global.settings.showPowerGrid = true;
+    }
+}
+
+global['version'] = '1.0.13';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

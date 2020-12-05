@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.13`,
+        date: `12/4/2020`,
+        changes: [
+            `Power Grid now correctly unlocks when gaining Electricity from Infiltrator trait.`
+        ]
+    },
+    {
         version: `1.0.12`,
         date: `12/4/2020`,
         changes: [
