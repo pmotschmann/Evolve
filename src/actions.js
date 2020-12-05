@@ -7204,6 +7204,7 @@ function fanaticTrait(trait){
 }
 
 export function resQueue(){
+    clearResDrag();
     clearElement($('#resQueue'));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -7238,12 +7239,18 @@ export function resQueue(){
     }
 }
 
-export function resDragQueue(){
+function clearResDrag(){
     let el = $('#resQueue .buildList')[0];
-    let sort = Sortable.get(el);
-    if (sort){
-        sort.destroy();
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
     }
+}
+
+function resDragQueue(){
+    let el = $('#resQueue .buildList')[0];
     Sortable.create(el,{
         onEnd(e){
             let order = global.r_queue.queue;

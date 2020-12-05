@@ -1020,11 +1020,12 @@ export function gridEnabled(c_action,region,p0,p1){
 }
 
 export function setPowerGrid(){
-    clearElement($('#powerGrid'));
-
-    $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
-
     let grids = gridDefs();
+    clearGrids(grids);
+
+    clearElement($('#powerGrid'));
+    $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
+    
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
             return;
@@ -1041,7 +1042,7 @@ export function setPowerGrid(){
             $('#powerGrid').append(`<div class="gridHeader has-text-caution">${grids[grid_type].n}</div>`);
         }
 
-        let grid = $(`<div class="powerGrid ${grid_type}"></div>`);
+        let grid = $(`<div id="grid${grid_type}" class="powerGrid"></div>`);
         $('#powerGrid').append(grid);
 
         let idx = 0;
@@ -1067,19 +1068,6 @@ export function setPowerGrid(){
                     break;
                 case 'spc_casino':
                     extra = ` (${loc(`tab_space`)})`;
-                    break;
-            }
-
-            let isOk = false;
-            switch (region){
-                case 'city':
-                    isOk = checkCityRequirements(parts[1]);
-                    break;
-                case 'portal':
-                    isOk = checkRequirements(fortressTech(),parts[0],parts[1]);
-                    break;
-                default:
-                    isOk = checkSpaceRequirements(region,parts[0],parts[1]);
                     break;
             }
 
@@ -1195,13 +1183,21 @@ export function gridDefs(){
     };
 }
 
+function clearGrids(grids){
+    Object.keys(grids).forEach(function(grid_type){
+        let el = $(`#grid${grid_type}`)[0];
+        if (el){
+            let sort = Sortable.get(el);
+            if (sort){
+                sort.destroy();
+            }
+        }
+    });
+}
+
 function dragPowerGrid(grid_type){
-    let el = $(`#powerGrid .${grid_type}`)[0];
+    let el = $(`#grid${grid_type}`)[0];
     let grids = gridDefs();
-    let sort = Sortable.get(el);
-    if (sort){
-        sort.destroy();
-    }
     Sortable.create(el,{
         onEnd(e){
             let order = grids[grid_type].l;

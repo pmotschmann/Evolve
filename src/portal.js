@@ -3314,6 +3314,7 @@ export function drawMechLab(){
 }
 
 function drawMechs(){
+    clearMechDrag();
     clearElement($('#mechList'));
     let list = $('#mechList');
     let used = 0;
@@ -3379,12 +3380,18 @@ export function mechSize(s){
     }
 }
 
+function clearMechDrag(){
+    let el = $('#mechList')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
 function dragMechList(){
     let el = $('#mechList')[0];
-    let sort = Sortable.get(el);
-    if (sort){
-        sort.destroy();
-    }
     Sortable.create(el,{
         onEnd(e){
             let order = global.portal.mechbay.mechs;
