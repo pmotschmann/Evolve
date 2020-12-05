@@ -1,4 +1,4 @@
-import { global, save, webWorker, resizeGame, breakdown, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { setupStats, unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
 import { vBind, mainVue, popover, clearElement, powerGrid, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
@@ -77,7 +77,7 @@ arpa('Blood');
 
 resizeGame();
 
-new Vue({
+vBind({
     el: '#race',
     data: {
         race: global.race,
@@ -200,7 +200,7 @@ popover('powerStatus',function(obj){
     }
 );
 
-new Vue({
+vBind({
     el: '#topBar',
     data: {
         city: global.city,
@@ -497,8 +497,6 @@ q_check(true);
 
 $('#lbl_city').html('Village');
 
-var fed = true;
-
 var main_timer = global.race['slow'] ? 275 : 250;
 var mid_timer = global.race['slow'] ? 1100 : 1000;
 var long_timer = global.race['slow'] ? 5500 : 5000;
@@ -547,7 +545,13 @@ resourceAlt();
 var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
-    keyMultiplier();
+    if (!global.race['no_craft']){
+        $('.craft').each(function(e){
+            if (typeof $(this).data('val') === 'number'){
+                $(this).html(sizeApproximation($(this).data('val') * keyMultiplier(),1));
+            }
+        });
+    }
     const date = new Date();
 
     breakdown.p['Global'] = {};
@@ -2278,7 +2282,7 @@ function fastLoop(){
         }
 
         // Consumption
-        fed = true;
+        var fed = true;
         if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;

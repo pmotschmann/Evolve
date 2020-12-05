@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on } from './vars.js';
-import { clearElement, popover, darkEffect, easterEgg } from './functions.js';
+import { vBind, clearElement, popover, darkEffect, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { armyRating } from './civics.js';
@@ -224,7 +224,7 @@ function loadUnemployed(){
     civ_container.append(job_label);
     $('#jobs').append(civ_container);
     
-    new Vue({
+    vBind({
         el: `#${id}`,
         data: global.civic,
         methods: {
@@ -316,7 +316,7 @@ function loadJob(job, impact, stress, color){
         controls.append(add);
     }
     
-    new Vue({
+    vBind({
         el: `#${id}`,
         data: global.civic[job],
         methods: {
@@ -413,11 +413,7 @@ export function farmerValue(farm){
     return farming;
 }
 
-var v_foundry;
 export function loadFoundry(){
-    if (v_foundry){
-        v_foundry.$destroy();
-    }
     clearElement($('#foundry'));
     if (global.city['foundry']){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
@@ -446,7 +442,7 @@ export function loadFoundry(){
                 controls.append(add);
             }
         }
-        v_foundry = new Vue({
+        vBind({
             el: `#foundry`,
             data: global.portal.hasOwnProperty('hell_forge') ? {
                 f: global.city.foundry,

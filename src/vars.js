@@ -57,27 +57,29 @@ Math.seededRandom = function(min, max, alt) {
     min = min || 0;
 
     Math[alt ? 'war' : 'seed'] = (Math[alt ? 'war' : 'seed'] * 9301 + 49297) % 233280;
-    var rnd = Math[alt ? 'war' : 'seed']/ 233280;
+    let rnd = Math[alt ? 'war' : 'seed']/ 233280;
     global[alt ? 'warseed' : 'seed'] = Math[alt ? 'war' : 'seed'];
     return min + rnd * (max - min);
 }
 
-var global_data = save.getItem('evolved') || false;
-if (global_data) {
-    // Load pre-existing game data
-    let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+{
+    let global_data = save.getItem('evolved') || false;
+    if (global_data) {
+        // Load pre-existing game data
+        let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
 
-    if (saveState){
-        global = saveState;
-        Math.seed = global.seed;
-        Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
+        if (saveState){
+            global = saveState;
+            Math.seed = global.seed;
+            Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
+        }
+        else {
+            newGameData();
+        }
     }
     else {
         newGameData();
     }
-}
-else {
-    newGameData();
 }
 
 export function setGlobal(gameState) {
@@ -1103,9 +1105,11 @@ if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }
 
-const date = new Date();
-if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
-    global.race['slaver'] = 1;
+{
+    const date = new Date();
+    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+        global.race['slaver'] = 1;
+    }
 }
 
 $('html').addClass(global.settings.theme);
@@ -1388,7 +1392,6 @@ $(document).mousemove(function(e){
     });
 });
 
-export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
     if (global.settings['mKeys']){
@@ -1402,12 +1405,6 @@ export function keyMultiplier(){
             number *= 100;
         }
     }
-    keyMultiplierNumber = number;
-    $('.craft').each(function(e){
-        if (typeof $(this).data('val') === 'number'){
-            $(this).html(sizeApproximation($(this).data('val') * number,1));
-        }
-    });
     return number;
 }
 
