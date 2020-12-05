@@ -6,7 +6,8 @@ const changeList = [
         version: `1.0.13`,
         date: `12/4/2020`,
         changes: [
-            `Power Grid now correctly unlocks when gaining Electricity from Infiltrator trait.`
+            `Power Grid now correctly unlocks when gaining Electricity from Infiltrator trait.`,
+            `Feats Garbage Pie and Finish Line can now be unlocked by Demonic Infusion.`
         ]
     },
     {

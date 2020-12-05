@@ -3852,6 +3852,12 @@ export function descension(){
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
+    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
+        unlockFeat(`garbage_pie`);
+    }
+    if (global.race['cataclysm']){
+        unlockFeat(`finish_line`);
+    }
 
     let artifacts = 0;
     switch (global.race.universe){
