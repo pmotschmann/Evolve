@@ -5,7 +5,7 @@ import { vBind, mainVue, popover, clearElement, powerGrid, deepClone, timeCheck,
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
-import { f_rate, manaCost, setPowerGrid, gridDefs } from './industry.js';
+import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
@@ -6961,14 +6961,14 @@ function longLoop(){
         let grids = gridDefs();
         let updatePowerGrid = false;
         Object.keys(grids).forEach(function(grid){
-            powerGrid(grid);
             grids[grid].l.forEach(function(struct){
                 let parts = struct.split(":");
                 let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
                 let region = parts[0] === 'city' ? parts[0] : space;
                 let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-                let breaker = $(`#pg${c_action.id}`);
-                if (breaker.length === 0 || (global[region][parts[1]] && breaker.hasClass('inactive'))){
+                let breaker = $(`#pg${c_action.id}${grid}`);
+
+                if (grids[grid].s && (breaker.length === 0 || (gridEnabled(c_action,region,parts[0],parts[1]) && breaker.hasClass('inactive')))){
                     updatePowerGrid = true;
                 }
             });

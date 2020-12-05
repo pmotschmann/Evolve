@@ -7240,6 +7240,10 @@ export function resQueue(){
 
 export function resDragQueue(){
     let el = $('#resQueue .buildList')[0];
+    let sort = Sortable.get(el);
+    if (sort){
+        sort.destroy();
+    }
     Sortable.create(el,{
         onEnd(e){
             let order = global.r_queue.queue;

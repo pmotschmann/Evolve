@@ -393,6 +393,10 @@ export function buildQueue(){
 
 export function dragQueue(){
     let el = $('#buildQueue .buildList')[0];
+    let sort = Sortable.get(el);
+    if (sort){
+        sort.destroy();
+    }
     Sortable.create(el,{
         onEnd(e){
             let order = global.queue.queue;
