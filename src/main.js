@@ -7400,6 +7400,8 @@ function longLoop(){
                 count: 0,
                 on: 0
             };
+            global.settings.showPowerGrid = true;
+            setPowerGrid();
             drawTech();
             drawCity();
         }
