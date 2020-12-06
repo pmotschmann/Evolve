@@ -3974,19 +3974,19 @@ export const actions = {
             powered(){ return powerCostMod(2); },
             power_reqs: { alumina: 2 },
             effect() {
+                let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                 if (global.tech['alumina'] >= 2){
-                    let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                     return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
-                    return loc('city_metal_refinery_effect',[6]);
+                    return loc(label,[6]);
                 }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['metal_refinery'].count++;
                     global.resource.Aluminium.display = true;
-                    if (global.tech['foundry']){
+                    if (global.city['foundry'].count > 0){
                         global.resource.Sheet_Metal.display = true;
                     }
                     if (global.tech['alumina'] >= 2 && global.city.power >= $(this)[0].powered()){
@@ -4841,6 +4841,7 @@ export const actions = {
         }
     },
     tech: techList(),
+    arpa: arpa('PhysicsTech'),
     genes: arpa('GeneTech'),
     blood: arpa('BloodTech'),
     space: spaceTech(),
@@ -6673,6 +6674,42 @@ export function housingLabel(type){
             return mediumHousingLabel();
         case 'large':
             return largeHousingLabel();
+    }
+}
+
+export function updateQueueNames(both, items){
+    if (global.tech['queue'] && global.queue.display){
+        let deepScan = ['space','interstellar','galaxy','portal'];
+        for (let i=0; i<global.queue.queue.length; i++){
+            let currItem = global.queue.queue[i];
+            if (!items || items.indexOf(currItem.id) > -1){
+                if (deepScan.includes(currItem.action)){
+                    let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
+                        if (actions[currItem.action][region][currItem.type] && scan){
+                            global.queue.queue[i].label = 
+                                typeof actions[currItem.action][region][currItem.type].title === 'string' ? 
+                                actions[currItem.action][region][currItem.type].title : 
+                                actions[currItem.action][region][currItem.type].title();
+                            scan = false;
+                        }
+                    });
+                }
+                else {
+                    global.queue.queue[i].label = 
+                        typeof actions[currItem.action][currItem.type].title === 'string' ? 
+                        actions[currItem.action][currItem.type].title : 
+                        actions[currItem.action][currItem.type].title();
+                }
+            }
+        }
+    }
+    if (both && global.tech['r_queue'] && global.r_queue.display){
+        for (let i=0; i<global.r_queue.queue.length; i++){
+            global.r_queue.queue[i].label = 
+                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ? 
+                actions.tech[global.r_queue.queue[i].type].title : 
+                actions.tech[global.r_queue.queue[i].type].title();
+        }
     }
 }
 

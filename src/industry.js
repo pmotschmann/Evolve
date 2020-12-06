@@ -896,7 +896,7 @@ function loadPylon(parent,bind){
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred']) || (spell === 'crafting' && global.tech.magic >= 4)){
+            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['evil']) || (spell === 'crafting' && global.tech.magic >= 4)){
                 let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
                 let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
@@ -963,7 +963,8 @@ function loadPylon(parent,bind){
     function tooltip(spell){
         let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
         let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
-        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff]);
+        let boost = +(100 * (global.race.casting[spell] / (global.race.casting[spell] + 75))).toFixed(2);
+        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff,boost]);
     }
 
     ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function(type){

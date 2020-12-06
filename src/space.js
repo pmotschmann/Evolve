@@ -2106,6 +2106,7 @@ const interstellarProjects = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar.int_factory.on++;
                         global.city.factory.Alloy += 2;
+                        defineIndustry();
                     }
                     return true;
                 }

@@ -572,6 +572,7 @@ const extraInformation = {
     ],
     electricity: [
         loc(`wiki_tech_building_unlock`,[loc(`city_coal_power`)]),
+        loc(`wiki_tech_subtab_unlock`,[loc(`tab_power_grid`),loc(`tab_civics`)]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_autocracy')]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_democracy')]),
         loc(`wiki_tech_gov_upgrade`,[loc('govern_oligarchy')])
@@ -1380,7 +1381,8 @@ const extraInformation = {
     ],
     advanced_emplacement: [
         loc(`wiki_tech_advanced_emplacement1`),
-        loc(`wiki_tech_advanced_emplacement2`)
+        loc(`wiki_tech_advanced_emplacement2`),
+        loc(`wiki_tech_advanced_emplacement3`)
     ],
     mana: [
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Mana_name`)]),

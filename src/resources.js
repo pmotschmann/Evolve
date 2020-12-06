@@ -1479,7 +1479,7 @@ function drawModal(name,color){
         }
     });
     
-    if ((global.city['warehouse'] && global.city['warehouse'].count > 0) || global.race['cataclysm']){
+    if (global.resource.Containers.display){
         let containers = $('<div id="modalContainers" class="crates divide"></div>');
         body.append(containers);
         
@@ -1947,9 +1947,11 @@ export const spatialReasoning = (function(){
                 }
                 modifier *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
             }
-            if (global['pillars']){
-                let harmonic = calcPillar();
-                modifier *= harmonic[1];
+            if (!type){
+                if (global['pillars']){
+                    let harmonic = calcPillar();
+                    modifier *= harmonic[1];
+                }
             }
             spatial[tkey] = {};
             spatial[tkey][key] = modifier;

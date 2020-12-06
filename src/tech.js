@@ -2,7 +2,7 @@ import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
@@ -1730,6 +1730,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            updateQueueNames(false, ['city-shed']);
         }
     },
     warehouse: {
@@ -1750,6 +1753,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            updateQueueNames(false, ['city-shed']);
         }
     },
     cameras: {
@@ -2151,6 +2157,7 @@ const techs = {
         desc: loc('tech_urban_planning'),
         category: 'queues',
         era: 'civilized',
+        wiki: global.race['terrifying'] ? true : false,
         reqs: { banking: 2 },
         grant: ['queue',1],
         trait: ['terrifying'],
@@ -2172,6 +2179,7 @@ const techs = {
         desc: loc('tech_urban_planning'),
         category: 'queues',
         era: 'civilized',
+        wiki: global.race['terrifying'] ? false : true,
         reqs: { banking: 2, currency: 2 },
         grant: ['queue',1],
         not_trait: ['terrifying'],
@@ -6590,6 +6598,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 vBind({el: `#fort`},'update');
+                updateQueueNames(false, ['portal-turret']);
                 return true;
             }
             return false;
@@ -6613,6 +6622,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 vBind({el: `#fort`},'update');
+                updateQueueNames(false, ['portal-turret']);
                 return true;
             }
             return false;

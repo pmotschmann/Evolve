@@ -496,7 +496,7 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
-if (convertVersion(global['version']) < 10000){
+if (convertVersion(global['version']) < 100000){
     delete global.city['lumber'];
     delete global.city['stone'];
     
@@ -583,6 +583,24 @@ if (convertVersion(global['version']) < 10000){
 if (convertVersion(global['version']) < 100013){
     if (global.hasOwnProperty('settings') && global.settings.hasOwnProperty('showPowerGrid') && global.hasOwnProperty('race') && global.race['infiltrator'] && global.hasOwnProperty('tech') && global.tech.hasOwnProperty('high_tech') && global.tech.high_tech >= 2){
         global.settings.showPowerGrid = true;
+    }
+}
+
+if (convertVersion(global['version']) < 100014){
+    if (global.race['Dark']){
+        global.stats['dark'] = global.race['Dark'].count;
+    }
+    if (global.race['casting'] && global.race['evil']){
+        global.race.casting.total -= global.race.casting.lumberjack;
+        global.race.casting.lumberjack = 0;
+    }
+    if (global['queue'] && global['queue']['queue']){
+        for (let i=0; i<global.queue.queue.length; i++){
+            if (global.queue.queue[i].type === 'arpa'){
+                global.queue.queue[i].type = global.queue.queue[i].action;
+                global.queue.queue[i].action = 'arpa';
+            }
+        }
     }
 }
 
@@ -759,6 +777,10 @@ if (!global['r_queue']){
         display: false,
         queue: [],
     };
+}
+
+if (!global['queue']['rename']){
+    global.queue['rename'] = false;
 }
 
 if (!global['space']){

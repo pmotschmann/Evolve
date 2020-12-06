@@ -1,6 +1,6 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect } from './functions.js';
-import { actions, drawTech, drawCity, addAction, removeAction, checkCosts } from './actions.js';
+import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
@@ -17,6 +17,8 @@ export function arpa(type) {
             break;
         case 'Monument':
             return pick_monument();
+        case 'PhysicsTech':
+            return arpaProjects;
         case 'GeneTech':
             return genePool;
         case 'BloodTech':
@@ -2028,7 +2030,7 @@ function addProject(parent,project){
                                     global.queue.queue[global.queue.queue.length-1].q++;
                                 }
                                 else {
-                                    global.queue.queue.push({ id: arpaId, action: pro, type: 'arpa', label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                                    global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
                                 }
                                 buildQueue();
                             }
@@ -2116,11 +2118,7 @@ export function buildArpa(pro,num,update){
                 if (pro === 'monument'){
                     global.arpa['m_type'] = pick_monument();
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
-                    for (let i=0; i<global.queue.queue.length; i++){
-                        if (global.queue.queue[i].action === 'monument') {
-                            global.queue.queue[i].label = arpaProjects['monument'].title();
-                        }
-                    }
+                    updateQueueNames(false, ['arpamonument']);
                 }
                 if (pro === 'launch_facility'){
                     removeFromQueue(['arpalaunch_facility']);
