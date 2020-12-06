@@ -1913,24 +1913,32 @@ function buildFortress(parent,full){
                 }
             },
             hire(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost = cost / 2;
-                }
-                cost = Math.round(cost);
-                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
-                    global.resource.Money.amount -= cost;
-                    global.civic['garrison'].workers++;
-                    global.civic.garrison.m_use++;
-                    global.portal.fortress.garrison++;
-                    global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    vBind({el: `#garrison`},'update');
+                let repeats = keyMultiplier();
+                let canBuy = true;
+                while (canBuy && repeats > 0){
+                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                    if (cost > 25000){
+                        cost = 25000;
+                    }
+                    if (global.civic.garrison.m_use > 0){
+                        cost *= 1.1 ** global.civic.garrison.m_use;
+                    }
+                    if (global.race['brute']){
+                        cost = cost / 2;
+                    }
+                    cost = Math.round(cost);
+                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                        global.resource.Money.amount -= cost;
+                        global.civic['garrison'].workers++;
+                        global.civic.garrison.m_use++;
+                        global.portal.fortress.garrison++;
+                        global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+                        vBind({el: `#garrison`},'update');
+                    }
+                    else {
+                        canBuy = false;
+                    }
+                    repeats--;
                 }
             },
             hireLabel(){
