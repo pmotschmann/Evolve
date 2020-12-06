@@ -5071,9 +5071,6 @@ function midLoop(){
                 size *= 2;
             }
             caps['Crates'] += (global.city['storage_yard'].count * size);
-            Object.keys(caps).forEach(function (res){
-                caps['Crates'] -= global.resource[res].crates;
-            });
         }
         if (global.space['garage']){
             let g_vol = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
@@ -5094,9 +5091,6 @@ function midLoop(){
                 volume *= 2;
             }
             caps['Containers'] += (global.city['warehouse'].count * volume);
-            Object.keys(caps).forEach(function (res){
-                caps['Containers'] -= global.resource[res].containers;
-            });
         }
         if (global.city['rock_quarry']){
             let gain = (global.city['rock_quarry'].count * spatialReasoning(100));
@@ -6167,6 +6161,41 @@ function midLoop(){
             Orichalcum: bd_Orichalcum
         };
 
+        Object.keys(caps).forEach(function (res){
+            caps['Crates'] -= global.resource[res].crates;
+        });
+        Object.keys(caps).forEach(function (res){
+            caps['Containers'] -= global.resource[res].containers;
+        });
+        if (caps['Crates'] < 0){
+            let diff = 0 - caps['Crates'];
+            Object.keys(caps).forEach(function (res){
+                if (diff > 0){
+                    let subAmount = global.resource[res].crates;
+                    if (subAmount > diff){
+                        subAmount = diff;
+                    }
+                    caps['Crates'] += subAmount;
+                    global.resource[res].crates -= subAmount;
+                    diff -= subAmount;
+                }
+            });
+        }
+        if (caps['Containers'] < 0){
+            let diff = 0 - caps['Containers'];
+            Object.keys(caps).forEach(function (res){
+                if (diff > 0){
+                    let subAmount = global.resource[res].containers;
+                    if (subAmount > diff){
+                        subAmount = diff;
+                    }
+                    caps['Containers'] += subAmount;
+                    global.resource[res].containers -= subAmount;
+                    diff -= subAmount;
+                }
+            });
+        }
+        
         let create_value = crateValue();
         let container_value = containerValue();
         Object.keys(caps).forEach(function (res){
