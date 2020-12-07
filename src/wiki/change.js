@@ -3,6 +3,16 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.14`,
+        date: `12/7/2020`,
+        changes: [
+            `Vacuum Collapse no longer removes all charges of Corrupted bonus.`,
+            `Vacuum Collapse now correctly increases Dark Energy earned on the stats page.`,
+            `Lumber Ritual is no longer displayed to Evil races.`,
+            `Multiplier keys now work with hiring mercenaries.`
+        ]
+    },
+    {
         version: `1.0.13`,
         date: `12/4/2020`,
         changes: [

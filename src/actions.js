@@ -3986,7 +3986,7 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     global.city['metal_refinery'].count++;
                     global.resource.Aluminium.display = true;
-                    if (global.city['foundry'].count > 0){
+                    if (global.city['foundry'] && global.city.foundry.count > 0){
                         global.resource.Sheet_Metal.display = true;
                     }
                     if (global.tech['alumina'] >= 2 && global.city.power >= $(this)[0].powered()){
