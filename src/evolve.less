@@ -1288,6 +1288,40 @@ Misc ---------> Main template
     }
 }
 
+.hgift {
+    background-color: initial !important;
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            firebrick,
+            firebrick 10px,
+            beige 0,
+            beige 12px,
+            forestgreen 0,
+            forestgreen 18px,
+            gold 0,
+            gold 20px,
+            crimson 0,
+            crimson 30px
+        ),
+        repeating-linear-gradient(
+            firebrick,
+            firebrick 10px,
+            beige 0,
+            beige 12px,
+            forestgreen 0,
+            forestgreen 18px,
+            gold 0,
+            gold 20px,
+            crimson 0,
+            crimson 30px
+	);
+    background-blend-mode: multiply;
+    > span {
+        color: #fff !important;
+    }
+}
+
 // Dark theme
 html.dark {
     #lib.themes.dark(); // Highest priority

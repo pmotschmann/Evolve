@@ -2567,6 +2567,7 @@ export const actions = {
             no_queue(){ return true },
             not_tech: ['santa'],
             not_trait: ['cataclysm'],
+            class: ['hgift'],
             condition(){
                 const date = new Date();
                 if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
@@ -5489,7 +5490,8 @@ export function setAction(c_action,action,type,old){
                 }
             });
         }
-        element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 

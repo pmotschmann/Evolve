@@ -10,7 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreig
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, drawMechLab, mechSize } from './portal.js';
-import { arpa, arpaProjects, buildArpa } from './arpa.js';
+import { arpa, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index } from './index.js';
 import { getTopChange } from './wiki/change.js';
