@@ -1,8 +1,8 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
-import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits } from './races.js';
+import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -3974,19 +3974,19 @@ export const actions = {
             powered(){ return powerCostMod(2); },
             power_reqs: { alumina: 2 },
             effect() {
+                let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                 if (global.tech['alumina'] >= 2){
-                    let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                     return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
                 }
                 else {
-                    return loc('city_metal_refinery_effect',[6]);
+                    return loc(label,[6]);
                 }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['metal_refinery'].count++;
                     global.resource.Aluminium.display = true;
-                    if (global.tech['foundry']){
+                    if (global.city['foundry'] && global.city.foundry.count > 0){
                         global.resource.Sheet_Metal.display = true;
                     }
                     if (global.tech['alumina'] >= 2 && global.city.power >= $(this)[0].powered()){
@@ -4377,20 +4377,21 @@ export const actions = {
             effect(){
                 let desc = `<div class="has-text-special">${loc('city_shrine_effect')}</div>`;
                 if (global.city['shrine'] && global.city.shrine.morale > 0){
-                    let morale = global.city.shrine.morale;
-                    desc = desc + `<div>${loc('city_shrine_morale',[morale])}</div>`;
+                    let morale = getShrineBonus('morale');
+                    desc = desc + `<div>${loc('city_shrine_morale',[+(morale.add).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.metal > 0){
-                    let metal = global.city.shrine.metal;
-                    desc = desc + `<div>${loc('city_shrine_metal',[metal])}</div>`;
+                    let metal = getShrineBonus('metal');
+                    desc = desc + `<div>${loc('city_shrine_metal',[+((metal.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.know > 0){
-                    desc = desc + `<div>${loc('city_shrine_know',[global.city.shrine.know * 400])}</div>`;
-                    desc = desc + `<div>${loc('city_shrine_know2',[global.city.shrine.know * 3])}</div>`;
+                    let know = getShrineBonus('know');
+                    desc = desc + `<div>${loc('city_shrine_know',[+(know.add).toFixed(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.tax > 0){
-                    let tax = global.city.shrine.tax;
-                    desc = desc + `<div>${loc('city_shrine_tax',[tax])}</div>`;
+                    let tax = getShrineBonus('tax');
+                    desc = desc + `<div>${loc('city_shrine_tax',[+((tax.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 return desc;
             },
@@ -4472,8 +4473,8 @@ export const actions = {
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
                 if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-                    let shrine = 1 + (global.city.shrine.know * 0.03);
-                    gain *= shrine;
+                    let shrineBonus = getShrineBonus('know');
+                    gain *= shrineBonus.mult;
                 }
                 gain = gain.toFixed(0);
                 return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
@@ -4840,6 +4841,7 @@ export const actions = {
         }
     },
     tech: techList(),
+    arpa: arpa('PhysicsTech'),
     genes: arpa('GeneTech'),
     blood: arpa('BloodTech'),
     space: spaceTech(),
@@ -5249,7 +5251,7 @@ function checkOldTech(tech){
     return false;
 }
 
-function checkPowerRequirements(c_action){
+export function checkPowerRequirements(c_action){
     let isMet = true;
     if (c_action['power_reqs']){
         Object.keys(c_action.power_reqs).forEach(function (req){
@@ -5461,24 +5463,24 @@ export function setAction(c_action,action,type,old){
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }
-    var id = c_action.id;
+    let id = c_action.id;
     removeAction(id);
-    var parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
+    let parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
     if (!checkAffordable(c_action)){
         parent.addClass('cna');
     }
     if (!checkAffordable(c_action,true)){
         parent.addClass('cnam');
     }
+    let element;
     if (old){
-        var element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
-        parent.append(element);
+        element = $('<span class="oldTech is-dark"><span class="aTitle">{{ title }}</span></span>');
     }
     else {
         let cst = '';
         let data = '';
         if (c_action['cost']){
-            var costs = action !== 'genes' && action !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
+            let costs = action !== 'genes' && action !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
             Object.keys(costs).forEach(function (res){
                 let cost = costs[res]();
                 if (cost > 0){
@@ -5487,13 +5489,12 @@ export function setAction(c_action,action,type,old){
                 }
             });
         }
-
-        var element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
-        parent.append(element);
+        element = $(`<a class="button is-dark${cst}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
+    parent.append(element);
 
     if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
-        var special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+        let special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
                 L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
@@ -5505,8 +5506,8 @@ export function setAction(c_action,action,type,old){
         parent.append(special);
     }
     if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
-        var powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
-        var powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
+        let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
+        let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
         parent.append(powerOn);
         parent.append(powerOff);
     }
@@ -5537,7 +5538,7 @@ export function setAction(c_action,action,type,old){
         parent.append($(emblem));
     }
 
-    var modal = {
+    let modal = {
         template: '<div id="modalBox" class="modalBox"></div>'
     };
 
@@ -5613,7 +5614,7 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let add_queue = false;
                                 let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
-                                for (var i=0; i<keyMult; i++){
+                                for (let i=0; i<keyMult; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
@@ -5624,7 +5625,7 @@ export function setAction(c_action,action,type,old){
                                                 max_queue *= 2;
                                             }
                                             let used = 0;
-                                            for (var j=0; j<global.queue.queue.length; j++){
+                                            for (let j=0; j<global.queue.queue.length; j++){
                                                 used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                             }
                                             if (used < max_queue){
@@ -5689,7 +5690,7 @@ export function setAction(c_action,action,type,old){
                         component: modal
                     });
 
-                    var checkExist = setInterval(function(){
+                    let checkExist = setInterval(function(){
                         if ($('#modalBox').length > 0) {
                             clearInterval(checkExist);
                             drawModal(c_action,type);
@@ -6006,7 +6007,11 @@ function srDesc(c_action,old){
         let type = c_action.id.split('-')[0];
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
-            if (res === 'Structs'){
+            if (res === 'Custom'){
+                let custom = costs[res]();
+                desc = desc + custom.label;
+            }
+            else if (res === 'Structs'){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
@@ -6104,7 +6109,12 @@ export function actionDesc(parent,c_action,obj,old){
 
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
-            if (res === 'Structs'){
+            if (res === 'Custom'){
+                let custom = costs[res]();
+                cost.append($(`<div>${custom.label}</div>`));
+                empty = false;
+            }
+            else if (res === 'Structs'){
                 let structs = costs[res]();
                 Object.keys(structs).forEach(function (region){
                     Object.keys(structs[region]).forEach(function (struct){
@@ -6259,7 +6269,7 @@ export function payCosts(costs){
                 let cost = costs[res]();
                 global.portal.purifier.supply -= cost;
             }
-            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool'){
+            else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
                 global['resource'][res].amount -= cost;
                 if (res === 'Knowledge'){
@@ -6287,7 +6297,10 @@ export function checkAffordable(c_action,max){
 function checkMaxCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res === 'Structs'){
+        if (res === 'Custom'){
+            // Do Nothing
+        }
+        else if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
                 test = false;
                 return;
@@ -6349,7 +6362,14 @@ function checkMaxCosts(costs){
 export function checkCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
-        if (res === 'Structs'){
+        if (res === 'Custom'){
+            let custom = costs[res]();
+            if (!custom.met){
+                test = false;
+                return;
+            }
+        }
+        else if (res === 'Structs'){
             if (!checkStructs(costs[res]())){
                 test = false;
                 return;
@@ -6657,6 +6677,42 @@ export function housingLabel(type){
     }
 }
 
+export function updateQueueNames(both, items){
+    if (global.tech['queue'] && global.queue.display){
+        let deepScan = ['space','interstellar','galaxy','portal'];
+        for (let i=0; i<global.queue.queue.length; i++){
+            let currItem = global.queue.queue[i];
+            if (!items || items.indexOf(currItem.id) > -1){
+                if (deepScan.includes(currItem.action)){
+                    let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
+                        if (actions[currItem.action][region][currItem.type] && scan){
+                            global.queue.queue[i].label = 
+                                typeof actions[currItem.action][region][currItem.type].title === 'string' ? 
+                                actions[currItem.action][region][currItem.type].title : 
+                                actions[currItem.action][region][currItem.type].title();
+                            scan = false;
+                        }
+                    });
+                }
+                else {
+                    global.queue.queue[i].label = 
+                        typeof actions[currItem.action][currItem.type].title === 'string' ? 
+                        actions[currItem.action][currItem.type].title : 
+                        actions[currItem.action][currItem.type].title();
+                }
+            }
+        }
+    }
+    if (both && global.tech['r_queue'] && global.r_queue.display){
+        for (let i=0; i<global.r_queue.queue.length; i++){
+            global.r_queue.queue[i].label = 
+                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ? 
+                actions.tech[global.r_queue.queue[i].type].title : 
+                actions.tech[global.r_queue.queue[i].type].title();
+        }
+    }
+}
+
 function sentience(){
     if (global.resource.hasOwnProperty('RNA')){
         global.resource.RNA.display = false;
@@ -6667,6 +6723,9 @@ function sentience(){
 
     if (global.race.species !== 'junker'){
         delete global.race['junker'];
+    }
+    else {
+        setJType();
     }
 
     var evolve_actions = ['rna','dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
@@ -7182,6 +7241,7 @@ function fanaticTrait(trait){
 }
 
 export function resQueue(){
+    clearResDrag();
     clearElement($('#resQueue'));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -7216,7 +7276,17 @@ export function resQueue(){
     }
 }
 
-export function resDragQueue(){
+function clearResDrag(){
+    let el = $('#resQueue .buildList')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
+function resDragQueue(){
     let el = $('#resQueue .buildList')[0];
     Sortable.create(el,{
         onEnd(e){

@@ -2,7 +2,7 @@ import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve, alevel } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
@@ -10,6 +10,7 @@ import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling } from './civics.js';
 import { renderSpace } from './space.js';
 import { arpa } from './arpa.js';
+import { setPowerGrid } from './industry.js';
 
 const techs = {
     club: {
@@ -716,6 +717,7 @@ const techs = {
                     Mythril: 0,
                     Aerogel: 0,
                     Nanoweave: 0,
+                    Scarletite: 0,
                 };
                 return true;
             }
@@ -1728,6 +1730,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            updateQueueNames(false, ['city-shed']);
         }
     },
     warehouse: {
@@ -1748,6 +1753,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            updateQueueNames(false, ['city-shed']);
         }
     },
     cameras: {
@@ -2149,6 +2157,7 @@ const techs = {
         desc: loc('tech_urban_planning'),
         category: 'queues',
         era: 'civilized',
+        wiki: global.race['terrifying'] ? true : false,
         reqs: { banking: 2 },
         grant: ['queue',1],
         trait: ['terrifying'],
@@ -2170,6 +2179,7 @@ const techs = {
         desc: loc('tech_urban_planning'),
         category: 'queues',
         era: 'civilized',
+        wiki: global.race['terrifying'] ? false : true,
         reqs: { banking: 2, currency: 2 },
         grant: ['queue',1],
         not_trait: ['terrifying'],
@@ -2858,8 +2868,8 @@ const techs = {
     },
     swiss_banking: {
         id: 'tech-swiss_banking',
-        title: loc('tech_swiss_banking'),
-        desc: loc('tech_swiss_banking'),
+        title: swissKnife(),
+        desc: swissKnife(),
         category: 'banking',
         era: 'industrialized',
         reqs: { banking: 6 },
@@ -3832,6 +3842,8 @@ const techs = {
                     count: 0,
                     on: 0
                 };
+                global.settings.showPowerGrid = true;
+                setPowerGrid();
                 return true;
             }
             return false;
@@ -6586,6 +6598,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 vBind({el: `#fort`},'update');
+                updateQueueNames(false, ['portal-turret']);
                 return true;
             }
             return false;
@@ -6609,6 +6622,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 vBind({el: `#fort`},'update');
+                updateQueueNames(false, ['portal-turret']);
                 return true;
             }
             return false;
@@ -9898,6 +9912,25 @@ const techs = {
         }
     },
 };
+
+function swissKnife(){
+    let cheeses = [
+        'swiss','gouda','cheddar','brie','feta','ricotta','goat','mascarpone','bleu','colby_jack','camembert','gorgonzola',
+        'mozzarella','roquefort','provolone','monterey_jack','muenster','cambozola','jarlsberg','bocconcini','cantal',
+        'emmental','havarti','burrata','cottage','asiago','wensleydale','pepper_jack','queso_blanco','pecorino','raclette',
+        'fontina','reblochon','port_salut','brillat_savarin','cream','stilton','taleggio','manchego','edam','gruyeye',
+        'parmigiano_reggiano','epoisses','comte','caciocavallo','teleme','grana_padano','chaumes','morbier','halloumi',
+        'lancashire','bleu_de_gex','fourme_d_ambert','fromage_blanc','red_leicester','bleu_d_auvergne','pont_l_eveque',
+        'jl_grubb','castello_blue','wagasi','ayibe','caravane','limburger','herve','kashkaval','sirene','paski_sir','akkawi',
+        'olomoucke_syrecky','anari','danbo','hermelín','trappista','stinking_bishop','banbury','sulguni','hofoingi',
+        'urda','golka','rokpol','telemea','bryndza','parenica','kackavalj','liptauer','greve','korbaciky','herrgardsost',
+        'vasterbottensost','mish','anejo','quesillo','nacho','reggianito','catupiry','queso_paipa','canastra','port_wine',
+        'cados','brie_de_meaux'
+    ];
+
+    let type = (global.stats.hasOwnProperty('reset') ? global.stats.reset : 0) % cheeses.length;
+    return loc(`tech_swiss_bank`,[loc(`cheese_${cheeses[type]}`)]);
+}
 
 export function techList(){
     return techs;

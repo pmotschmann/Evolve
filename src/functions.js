@@ -1,9 +1,10 @@
 import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
-import { actions, actionDesc } from './actions.js';
+import { actions, actionDesc, updateQueueNames } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
+import { gridDefs } from './industry.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 
 export function mainVue(){
@@ -30,8 +31,9 @@ export function mainVue(){
                     importGame(restore_data,true);
                 }
             },
-            lChange(){
-                global.settings.locale = $('#localization select').children("option:selected").val();
+            lChange(locale){
+                global.settings.locale = locale;
+                global.queue.rename = true;
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
                 if (webWorker.w){
                     webWorker.w.terminate();
@@ -154,7 +156,7 @@ export function popover(id,content,opts){
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
-    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }    
+    if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (opts['bind']){
         $(opts.elm).on('mouseover',function(){
             $('.popper').hide();
@@ -170,12 +172,12 @@ export function popover(id,content,opts){
             if (content){
                 popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
             }
-            popper.show();
             poppers[id] = new Popper(
                 opts['self'] ? this : $(opts.elm),
-                popper, 
+                popper,
                 opts.hasOwnProperty('prop') ? opts['prop'] : {}
             );
+            popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper });
             }
@@ -222,9 +224,68 @@ window.importGame = function importGame(data,utf16){
                 saveState.stats.know -= 500000;
             }
         }
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));        
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
         window.location.reload();
     }
+}
+
+export function powerGrid(type,reset){
+    let grids = gridDefs();
+
+    let power_structs = [];
+    switch (type){
+        case 'power':
+            power_structs = [
+                'prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','int_alpha:starport','int_blackhole:s_gate','gxy_gateway:starbase',
+                'gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon',
+                'int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
+                'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',
+                'spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine','city:rock_quarry','city:cement_plant','city:sawmill',
+                'city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator','int_blackhole:far_reach','prtl_badlands:sensor_drone',
+                'prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold','gxy_gorddon:symposium',
+                'int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
+                'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
+                'prtl_gate:infernite_mine','int_sirius:ascension_trigger'
+            ];
+            break;
+        case 'moon':
+            power_structs = ['spc_moon:helium_mine','spc_moon:iridium_mine','spc_moon:observatory'];
+            break;
+        case 'red':
+            power_structs = ['spc_red:living_quarters','spc_red:exotic_lab','spc_red:red_mine','spc_red:fabrication','spc_red:biodome','spc_red:vr_center'];
+            break;
+        case 'belt':
+            power_structs = ['spc_belt:elerium_ship','spc_belt:iridium_ship','spc_belt:iron_ship'];
+            break;
+        case 'alpha':
+            power_structs = ['int_alpha:fusion','int_alpha:mining_droid','int_alpha:processing','int_alpha:laboratory','int_alpha:g_factory','int_alpha:exchange','int_alpha:zoo'];
+            break;
+        case 'nebula':
+            power_structs = ['int_nebula:harvester','int_nebula:elerium_prospector'];
+            break;
+        case 'gateway':
+            power_structs = ['gxy_gateway:bolognium_ship','gxy_gateway:dreadnought','gxy_gateway:cruiser_ship','gxy_gateway:frigate_ship','gxy_gateway:corvette_ship','gxy_gateway:scout_ship'];
+            break;
+        case 'alien2':
+            power_structs = ['gxy_alien2:armed_miner','gxy_alien2:ore_processor','gxy_alien2:scavenger'];
+            break;
+        case 'lake':
+            power_structs = ['prtl_lake:bireme','prtl_lake:transport'];
+            break;
+        case 'spire':
+            power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
+            break;
+    }
+
+    if (reset){
+        grids[type].l.length = 0;
+    }
+
+    power_structs.forEach(function(struct){
+        if (!grids[type].l.includes(struct)){
+            grids[type].l.push(struct);
+        }
+    });
 }
 
 export function messageQueue(msg,color){
@@ -254,6 +315,7 @@ export function removeFromRQueue(tech_trees){
 }
 
 export function buildQueue(){
+    clearDragQueue();
     clearElement($('#buildQueue'));
     $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')}</h2>`));
 
@@ -331,7 +393,17 @@ export function buildQueue(){
     }
 }
 
-export function dragQueue(){
+function clearDragQueue(){
+    let el = $('#buildQueue .buildList')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
+function dragQueue(){
     let el = $('#buildQueue .buildList')[0];
     Sortable.create(el,{
         onEnd(e){
@@ -421,7 +493,7 @@ export function modRes(res,val,notrack,buffer){
             if (res === 'Mana' && val > 0){
                 global.resource[res].gen_d += val;
             }
-        }        
+        }
     }
     return success;
 }
@@ -719,6 +791,10 @@ export function clearElement(elm,remove){
         catch(e){}
     });
     if (remove){
+        try {
+            elm[0].__vue__.$destroy();
+        }
+        catch(e){}
         elm.remove();
     }
     else {
@@ -911,7 +987,7 @@ export const calcPillar = (function(){
     return function(recalc){
         if (!bonus || recalc){
             let active = 0;
-            Object.keys(global.pillars).forEach(function(race){                
+            Object.keys(global.pillars).forEach(function(race){
                 if (races[race] && global.race.species === race){
                     active += 4;
                 }
@@ -1103,7 +1179,7 @@ function technoAdjust(costs, wiki){
             if (res === 'Knowledge'){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
             }
-            else if (res === 'Money' || res === 'Structs'){
+            else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {
@@ -1486,7 +1562,7 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
                 break;
         }
     }
-    
+
     return emblem;
 }
 
@@ -1550,7 +1626,7 @@ export function vacuumCollapse(){
         global.arpa.syphon.rank = 79;
         global.arpa.syphon.complete = 99;
         global.queue.queue = [];
-        
+
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
 
@@ -1607,7 +1683,10 @@ export function vacuumCollapse(){
             global.stats.plasmid += new_plasmid;
         }
         global.stats.phage += new_phage;
+        global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
         global.stats.universes++;
+
+        let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = {
             species : 'protoplasm',
             gods: god,
@@ -1623,6 +1702,9 @@ export function vacuumCollapse(){
             seed: Math.floor(Math.seededRandom(10000)),
             ascended: false,
         };
+        if (corruption > 0){
+            global.race['corruption'] = corruption;
+        }
         global.city = {
             calendar: {
                 day: 0,
@@ -1673,7 +1755,7 @@ export function deepClone(obj){
         if(obj.hasOwnProperty(prop)){
             clonedObj[prop] = deepClone(obj[prop]);
         }
-    } 
+    }
     return clonedObj;
 }
 
@@ -1736,4 +1818,37 @@ export function getHalloween(){
     }
 
     return halloween;
+}
+
+export function shrineBonusActive() {
+	return (global.race['magnificent'] && global.city.hasOwnProperty('shrine') && global.city.shrine.count > 0);
+}
+
+export function getShrineBonus(type) {
+	let shrine_bonus = {
+		mult: 1,
+		add: 0
+	};
+
+	if (shrineBonusActive()){
+		switch(type){
+			case 'metal':
+				shrine_bonus.mult += +(global.city.shrine.metal / 100);
+				break;
+			case 'tax':
+				shrine_bonus.mult += +(global.city.shrine.tax / 100);
+				break;
+			case 'know':
+                shrine_bonus.add += +(global.city.shrine.know * 400);
+                shrine_bonus.mult += +(global.city.shrine.know * 3 / 100);
+				break;
+			case 'morale':
+				shrine_bonus.add += global.city.shrine.morale;
+				break;
+			default:
+				break;
+		}
+	}
+
+	return shrine_bonus;
 }

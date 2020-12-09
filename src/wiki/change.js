@@ -3,6 +3,103 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.14`,
+        date: `12/8/2020`,
+        changes: [
+            `Vacuum Collapse no longer removes all charges of Corrupted bonus.`,
+            `Vacuum Collapse now correctly increases Dark Energy earned on the stats page.`,
+            `Lumber Ritual is no longer displayed to Evil races.`,
+            `Multiplier keys now work when hiring mercenaries.`
+        ]
+    },
+    {
+        version: `1.0.13`,
+        date: `12/4/2020`,
+        changes: [
+            `Power Grid now correctly unlocks when gaining Electricity from Infiltrator trait.`,
+            `Feats Garbage Pie and Finish Line can now be unlocked by Demonic Infusion.`
+        ]
+    },
+    {
+        version: `1.0.12`,
+        date: `12/4/2020`,
+        changes: [
+            `MechBay tab improvements.`,
+            `Mechlist can now be reordered by dragging.`,
+            `Power Grid can now control On/Off state.`,
+            `Support type structures can now be controlled by the power grid.`
+        ]
+    },
+    {
+        version: `1.0.11`,
+        date: `12/2/2020`,
+        changes: [
+            `Fixed a memory leak.`,
+            `Minor adjustments to GruvBox Dark theme.`,
+            `Cheesy Goodness.`
+        ]
+    },
+    {
+        version: `1.0.10`,
+        date: `12/1/2020`,
+        changes: [
+            `Ascended buff now persists after Demonic Infusion.`,
+            `New Themes: GruvBox Light, GruvBox Dark, and Orange Soda.`
+        ]
+    },
+    {
+        version: `1.0.9`,
+        date: `11/29/2020`,
+        changes: [
+            `Perks separated on to a separate tab under Stats.`,
+            `Added Perks section to Wiki.`
+        ]
+    },
+    {
+        version: `1.0.8`,
+        date: `11/28/2020`,
+        changes: [
+            `Base Neutronium cost of Inferno Reactor lowered to 3,750,000.`,
+            `Fixed Valdi genus traits after evolution.`,
+            `Prepared rank 2 now correctly applies when building mechs.`,
+            `Power Grid is now more strict in checking what is available.`,
+            `Fixed bug that sometimes caused crafting to use a wrong Mastery value.`
+        ]
+    },
+    {
+        version: `1.0.7`,
+        date: `11/25/2020`,
+        changes: [
+            `Fixed a bug where Technocracy prevented Alien 2 & Chthonian invasions from working.`
+        ]
+    },
+    {
+        version: `1.0.6`,
+        date: `11/24/2020`,
+        changes: [
+            `Fixed Mechlab quick switch button.`,
+            `Titan class mech power increased by 12.5%.`
+        ]
+    },
+    {
+        version: `1.0.5`,
+        date: `11/22/2020`,
+        changes: [
+            `Adjustable Power Grid`,
+            `Light Theme bug fixes.`
+        ]
+    },
+    {
+        version: `1.0.4`,
+        date: `11/21/2020`,
+        changes: [
+            `Gains from Alchemy are now higher.`,
+            `Any mixed fleet can now invade the Alien 2 and Chthonian systems as long as the invasion force is strong enough.`,
+            `Alien 2 Invasion requires minimum of 400 fleet rating and at least 650 to take no losses.`,
+            `Chthonian Invasion requires a minimum 1250 fleet rating, 2500 for average losses, and 4500 for minimum losses.`
+        ]
+    },
+    {
         version: `1.0.3`,
         date: `11/15/2020`,
         changes: [

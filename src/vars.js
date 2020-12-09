@@ -57,27 +57,29 @@ Math.seededRandom = function(min, max, alt) {
     min = min || 0;
 
     Math[alt ? 'war' : 'seed'] = (Math[alt ? 'war' : 'seed'] * 9301 + 49297) % 233280;
-    var rnd = Math[alt ? 'war' : 'seed']/ 233280;
+    let rnd = Math[alt ? 'war' : 'seed']/ 233280;
     global[alt ? 'warseed' : 'seed'] = Math[alt ? 'war' : 'seed'];
     return min + rnd * (max - min);
 }
 
-var global_data = save.getItem('evolved') || false;
-if (global_data) {
-    // Load pre-existing game data
-    let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+{
+    let global_data = save.getItem('evolved') || false;
+    if (global_data) {
+        // Load pre-existing game data
+        let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
 
-    if (saveState){
-        global = saveState;
-        Math.seed = global.seed;
-        Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
+        if (saveState){
+            global = saveState;
+            Math.seed = global.seed;
+            Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
+        }
+        else {
+            newGameData();
+        }
     }
     else {
         newGameData();
     }
-}
-else {
-    newGameData();
 }
 
 export function setGlobal(gameState) {
@@ -494,7 +496,7 @@ if (convertVersion(global['version']) < 9014){
     }
 }
 
-if (convertVersion(global['version']) < 10000){
+if (convertVersion(global['version']) < 100000){
     delete global.city['lumber'];
     delete global.city['stone'];
     
@@ -578,8 +580,50 @@ if (convertVersion(global['version']) < 10000){
     }
 }
 
-global['version'] = '1.0.3';
+if (convertVersion(global['version']) < 100013){
+    if (global.hasOwnProperty('settings') && global.settings.hasOwnProperty('showPowerGrid') && global.hasOwnProperty('race') && global.race['infiltrator'] && global.hasOwnProperty('tech') && global.tech.hasOwnProperty('high_tech') && global.tech.high_tech >= 2){
+        global.settings.showPowerGrid = true;
+    }
+}
+
+if (convertVersion(global['version']) < 100014){
+    if (global.race['Dark']){
+        global.stats['dark'] = global.race['Dark'].count;
+    }
+    if (global.race['casting'] && global.race['evil']){
+        global.race.casting.total -= global.race.casting.lumberjack;
+        global.race.casting.lumberjack = 0;
+    }
+    if (global['queue'] && global['queue']['queue']){
+        for (let i=0; i<global.queue.queue.length; i++){
+            if (global.queue.queue[i].type === 'arpa'){
+                global.queue.queue[i].type = global.queue.queue[i].action;
+                global.queue.queue[i].action = 'arpa';
+            }
+        }
+    }
+}
+
+global['version'] = '1.0.14';
 delete global['beta'];
+
+if (!global.hasOwnProperty('power')){
+    global['power'] = [];       
+}
+
+if (!global.hasOwnProperty('support')){
+    global['support'] = {
+        moon: [],
+        red: [],
+        belt: [],
+        alpha: [],
+        nebula: [],
+        gateway: [],
+        alien2: [],
+        lake: [],
+        spire: [],
+    };
+}
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -592,6 +636,7 @@ if (!global['settings']){
         showCiv: false,
         showCity: false,
         showIndustry: false,
+        showPowerGrid: false,
         showResearch: false,
         showCivic: false,
         showMil: false,
@@ -732,6 +777,10 @@ if (!global['r_queue']){
         display: false,
         queue: [],
     };
+}
+
+if (!global['queue']['rename']){
+    global.queue['rename'] = false;
 }
 
 if (!global['space']){
@@ -950,6 +999,10 @@ if (!global.race['minor']){
 if (!global.settings.hasOwnProperty('showMil')){
     global.settings['showMil'] = true;
 }
+if (!global.settings.hasOwnProperty('showPowerGrid')){
+    global.settings['showPowerGrid'] = global.hasOwnProperty('tech') && global.tech.hasOwnProperty('high_tech') && global.tech.high_tech >= 2 ? true : false;
+}
+
 if (!global.settings['affix']){
     global.settings['affix'] = 'si';
 }
@@ -1080,9 +1133,11 @@ if (!global.race['evil'] && global.race['immoral']){
     delete global.race['immoral'];
 }
 
-const date = new Date();
-if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
-    global.race['slaver'] = 1;
+{
+    const date = new Date();
+    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+        global.race['slaver'] = 1;
+    }
 }
 
 $('html').addClass(global.settings.theme);
@@ -1365,7 +1420,6 @@ $(document).mousemove(function(e){
     });
 });
 
-export var keyMultiplierNumber = 1;
 export function keyMultiplier(){
     let number = 1;
     if (global.settings['mKeys']){
@@ -1379,12 +1433,6 @@ export function keyMultiplier(){
             number *= 100;
         }
     }
-    keyMultiplierNumber = number;
-    $('.craft').each(function(e){
-        if (typeof $(this).data('val') === 'number'){
-            $(this).html(sizeApproximation($(this).data('val') * number,1));
-        }
-    });
     return number;
 }
 
@@ -1658,6 +1706,7 @@ export function clearStates(){
     global.settings.showCiv = false;
     global.settings.showCity = false;
     global.settings.showIndustry = false;
+    global.settings.showPowerGrid = false;
     global.settings.showMechLab = false;
     global.settings.showResearch = false;
     global.settings.showCivic = false;
@@ -1691,7 +1740,6 @@ export function clearStates(){
     global.settings.space.stargate = false;
     global.settings.space.gateway = false;
     global.settings.space.gorddon = false;
-    global.settings.space.alien1 = false;
     global.settings.space.alien1 = false;
     global.settings.space.alien2 = false;
     global.settings.space.chthonian = false;

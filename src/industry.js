@@ -1,6 +1,10 @@
 import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
+import { races } from './races.js';
+import { checkRequirements, checkSpaceRequirements } from './space.js';
+import { fortressTech } from './portal.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -892,7 +896,7 @@ function loadPylon(parent,bind){
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred']) || (spell === 'crafting' && global.tech.magic >= 4)){
+            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['evil']) || (spell === 'crafting' && global.tech.magic >= 4)){
                 let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
                 let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
@@ -959,7 +963,8 @@ function loadPylon(parent,bind){
     function tooltip(spell){
         let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
         let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
-        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff]);
+        let boost = +(100 * (global.race.casting[spell] / (global.race.casting[spell] + 75))).toFixed(2);
+        return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff,boost]);
     }
 
     ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function(type){
@@ -997,4 +1002,209 @@ function colorRange(num,max,invert){
     else {
         return '';
     }
+}
+
+export function gridEnabled(c_action,region,p0,p1){
+    let isOk = false;
+    switch (region){
+        case 'city':
+            isOk = checkCityRequirements(p1);
+            break;
+        case 'portal':
+            isOk = checkRequirements(fortressTech(),p0,p1);
+            break;
+        default:
+            isOk = checkSpaceRequirements(region,p0,p1);
+            break;
+    }
+    return global[region][p1] && isOk && checkPowerRequirements(c_action) ? true : false;
+}
+
+export function setPowerGrid(){
+    let grids = gridDefs();
+    clearGrids(grids);
+
+    clearElement($('#powerGrid'));
+    $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
+    
+    Object.keys(grids).forEach(function(grid_type){
+        if (!grids[grid_type].s){
+            return;
+        }
+
+        if (grids[grid_type].r && grids[grid_type].rs && global[grids[grid_type].r][grids[grid_type].rs]){
+            $('#powerGrid').append(`<div id="pg${grid_type}sup" class="gridHeader"><span class="has-text-caution">${grids[grid_type].n}</span> {{ support }}/{{ s_max }}</div>`);
+            vBind({
+                el: `#pg${grid_type}sup`,
+                data: global[grids[grid_type].r][grids[grid_type].rs]
+            });
+        }
+        else {
+            $('#powerGrid').append(`<div class="gridHeader has-text-caution">${grids[grid_type].n}</div>`);
+        }
+
+        let grid = $(`<div id="grid${grid_type}" class="powerGrid"></div>`);
+        $('#powerGrid').append(grid);
+
+        let idx = 0;
+        for (let i=0; i< grids[grid_type].l.length; i++){
+            let struct = grids[grid_type].l[i];
+
+            let parts = struct.split(":");
+            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+            let region = parts[0] === 'city' ? parts[0] : space;
+            let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
+            
+            let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
+            let extra = ``;
+            switch (parts[1]){
+                case 'factory':
+                    extra = ` (${loc(`tab_city5`)})`;
+                    break;
+                case 'red_factory':
+                    extra = ` (${loc(`tab_space`)})`;
+                    break;
+                case 'casino':
+                    extra = ` (${loc(`tab_city5`)})`;
+                    break;
+                case 'spc_casino':
+                    extra = ` (${loc(`tab_space`)})`;
+                    break;
+            }
+
+            if (gridEnabled(c_action,region,parts[0],parts[1])){
+                idx++;
+                let circuit = $(`<div id="pg${c_action.id}${grid_type}" class="circuit" data-idx="${i}"></div>`);
+                circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span>`);
+                circuit.append(`<span role="button" class="sub off" @click="power_off" aria-label="Powered Off"><span>{{ on | off }}</span></span> <span role="button" class="add on" @click="power_on" aria-label="Powered On"><span>{{ on }}</span></span>`);
+                circuit.append(`<span role="button" class="sub is-sr-only" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add is-sr-only" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
+                grid.append(circuit);
+
+                vBind({
+                    el: `#pg${c_action.id}${grid_type}`,
+                    data: global[region][parts[1]],
+                    methods: {
+                        power_on(){
+                            let keyMult = keyMultiplier();
+                            for (let i=0; i<keyMult; i++){
+                                if (global[region][parts[1]].on < global[region][parts[1]].count){
+                                    global[region][parts[1]].on++;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                            if (c_action['postPower']){
+                                setTimeout(function(){
+                                    c_action.postPower(true);
+                                }, 250);
+                            }
+                        },
+                        power_off(){
+                            let keyMult = keyMultiplier();
+                            for (let i=0; i<keyMult; i++){
+                                if (global[region][parts[1]].on > 0){
+                                    global[region][parts[1]].on--;
+                                }
+                                else {
+                                    break;
+                                }
+                            }
+                            if (c_action['postPower']){
+                                setTimeout(function(){
+                                    c_action.postPower(false);
+                                }, 250);
+                            }
+                        },
+                        higher(){
+                            let oIdx = $(`#pg${c_action.id}${grid_type}`).attr(`data-idx`);
+                            let nIdx = $(`#pg${c_action.id}${grid_type}`).prevAll(`.circuit:not(".inactive")`).attr(`data-idx`);
+                            if (nIdx >= 0){
+                                let order = grids[grid_type].l;
+                                order.splice(nIdx, 0, order.splice(oIdx, 1)[0]);
+                                grids[grid_type].l = order;
+                                setPowerGrid();
+                            }
+                        },
+                        lower(){
+                            let oIdx = $(`#pg${c_action.id}${grid_type}`).attr(`data-idx`);
+                            let nIdx = $(`#pg${c_action.id}${grid_type}`).nextAll(`.circuit:not(".inactive")`).attr(`data-idx`);
+                            if (nIdx < grids[grid_type].l.length){
+                                let order = grids[grid_type].l;
+                                order.splice(nIdx, 0, order.splice(oIdx, 1)[0]);
+                                grids[grid_type].l = order;
+                                setPowerGrid(grid_type);
+                            }
+                        }
+                    },
+                    filters: {
+                        off(c){
+                            return global[region][parts[1]].count - c;
+                        }
+                    }
+                });
+            }
+            else {
+                let circuit = $(`<div id="pg${c_action.id}${grid_type}" class="circuit inactive" data-idx="${i}"></div>`);
+                circuit.append(`<span class="has-text-warning">${title}${extra}</span>`);
+                grid.append(circuit);
+            }
+        };
+
+        dragPowerGrid(grid_type);
+
+        let reset = $(`<div id="${grid_type}GridReset" class="resetPowerGrid"><button class="button" @click="resetGrid('${grid_type}')">${loc('power_grid_reset',[grids[grid_type].n])}</button></div>`);
+        $('#powerGrid').append(reset);
+
+        vBind({
+            el: `#${grid_type}GridReset`,
+            data: {},
+            methods: {
+                resetGrid(type){
+                    powerGrid(type,true);
+                    setPowerGrid();
+                }
+            }
+        });
+    });
+}
+
+export function gridDefs(){
+    return {
+        power: { l: global.power, n: loc(`power`), s: true, r: false, rs: false },
+        moon: { l: global.support.moon, n: loc(`space_moon_info_name`), s: global.settings.space.moon, r: 'space', rs: 'moon_base' },
+        red: { l: global.support.red, n: races[global.race.species].solar.red, s: global.settings.space.red, r: 'space', rs: 'spaceport'  },
+        belt: { l: global.support.belt, n: loc(`space_belt_info_name`), s: global.settings.space.belt, r: 'space', rs: 'space_station'  },
+        alpha: { l: global.support.alpha, n: loc(`interstellar_alpha_name`), s: global.settings.space.alpha, r: 'interstellar', rs: 'starport'  },
+        nebula: { l: global.support.nebula, n: loc(`interstellar_nebula_name`), s: global.settings.space.nebula, r: 'interstellar', rs: 'nexus'  },
+        gateway: { l: global.support.gateway, n: loc(`galaxy_gateway`), s: global.settings.space.gateway, r: 'galaxy', rs: 'starbase'  },
+        alien2: { l: global.support.alien2, n: loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]), s: global.settings.space.alien2, r: 'galaxy', rs: 'foothold'  },
+        lake: { l: global.support.lake, n: loc(`portal_lake_name`), s: global.settings.portal.lake, r: 'portal', rs: 'harbour'  },
+        spire: { l: global.support.spire, n: loc(`portal_spire_name`), s: global.settings.portal.spire, r: 'portal', rs: 'purifier'  },
+    };
+}
+
+function clearGrids(grids){
+    Object.keys(grids).forEach(function(grid_type){
+        let el = $(`#grid${grid_type}`)[0];
+        if (el){
+            let sort = Sortable.get(el);
+            if (sort){
+                sort.destroy();
+            }
+        }
+    });
+}
+
+function dragPowerGrid(grid_type){
+    let el = $(`#grid${grid_type}`)[0];
+    let grids = gridDefs();
+    Sortable.create(el,{
+        onEnd(e){
+            let order = grids[grid_type].l;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            grids[grid_type].l = order;
+            setPowerGrid();
+        }
+    });
 }

@@ -319,7 +319,7 @@ export function setupStats(){
     let stats = $('<div id="statsPanel"></div>');
     $('#stats').append(stats);
     let perks = $('<div id="perksPanel"></div>');
-    $('#stats').append(perks);
+    $('#perks').append(perks);
     let achieve = $('<div id="achievePanel"></div>');
     $('#achieve').append(achieve);
     drawStats();
@@ -812,310 +812,880 @@ function checkBigAchievementUniverse(frag, name, num, level){
     }
 }
 
+export const perkList = {
+    blackhole: {
+        name: loc(`achieve_blackhole_name`),
+        desc(){
+            let bonus = global.stats.achieve['blackhole'] ? global.stats.achieve.blackhole.l * 5 : 5;
+            return loc("achieve_perks_blackhole",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`])
+        ]
+    },
+    creator: {
+        name: loc(`achieve_creator_name`),
+        desc(){
+            let bonus = 1 + (global.stats.achieve['creator'] ? global.stats.achieve['creator'].l * 0.5 : 0.5);
+            return loc("achieve_perks_creator",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['creator'] && global.stats.achieve.creator.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_creator_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_creator_name`)}</span>`])
+        ]
+    },
+    mass_extinction: {
+        name: loc(`achieve_mass_extinction_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_mass_extinction");
+                },
+                active(){
+                    return global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let rank = global.stats.achieve['mass_extinction'] ? global.stats.achieve.mass_extinction.l : 1;
+                    let bonus = (rank - 1) * 50;
+                    return loc("achieve_perks_mass_extinction2",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['mass_extinction'] && global.stats.achieve.mass_extinction.l > 1 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_mass_extinction_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_mass_extinction_name`)}</span>`])
+        ]
+    },
+    explorer: {
+        name: loc(`achieve_explorer_name`),
+        desc(){
+            let bonus = global.stats.achieve['explorer'] ? global.stats.achieve['explorer'].l : 1;
+            return loc("achieve_perks_explorer",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['explorer'] && global.stats.achieve.explorer.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_explorer_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_explorer_name`)}</span>`])
+        ]
+    },
+    miners_dream: {
+        name: loc(`achieve_miners_dream_name`),
+        desc(){
+            let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
+            return loc("achieve_perks_miners_dream",[numGeo]);
+        },
+        active(){
+            return global.stats.achieve['miners_dream'] && global.stats.achieve.miners_dream.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_miners_dream_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_miners_dream_name`)}</span>`])
+        ]
+    },
+    extinct_junker: {
+        name: loc(`achieve_extinct_junker_name`),
+        desc(){
+            return loc("achieve_perks_enlightened");
+        },
+        active(){
+            return global.stats.achieve['extinct_junker'] && global.stats.achieve.extinct_junker.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_extinct_junker_name`)}</span>`])
+        ]
+    },
+    joyless: {
+        name: loc(`achieve_joyless_name`),
+        desc(){
+            let bonus = global.stats.achieve['joyless'] ? global.stats.achieve['joyless'].l * 2 : 2;
+            return loc("achieve_perks_joyless",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['joyless'] && global.stats.achieve.joyless.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_joyless_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_joyless_name`)}</span>`])
+        ]
+    },
+    steelen: {
+        name: loc(`achieve_steelen_name`),
+        desc(){
+            let bonus = global.stats.achieve['steelen'] ? global.stats.achieve['steelen'].l * 2 : 2;
+            return loc("achieve_perks_steelen",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['steelen'] && global.stats.achieve.steelen.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`])
+        ]
+    },
+    whitehole: {
+        name: loc(`achieve_whitehole_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_whitehole");
+                },
+                active(){
+                    return global.stats.achieve['whitehole'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l * 5 : 5;
+                    return loc("achieve_perks_whitehole2",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['whitehole'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_whitehole_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_whitehole_name`)}</span>`])
+        ]
+    },
+    heavyweight: {
+        name: loc(`achieve_heavyweight_name`),
+        desc(){
+            let bonus = global.stats.achieve['heavyweight'] ? global.stats.achieve['heavyweight'].l * 4 : 4;
+            return loc("achieve_perks_heavyweight",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['heavyweight'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_heavyweight_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_heavyweight_name`)}</span>`])
+        ]
+    },
+    dissipated: {
+        name: loc(`achieve_dissipated_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_dissipated1",[1]);
+                },
+                active(){
+                    return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 5 ? 2 : 1;
+                    return loc("achieve_perks_dissipated2",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_dissipated3",[1]);
+                },
+                active(){
+                    return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_dissipated4",[1]);
+                },
+                active(){
+                    return global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_dissipated_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_dissipated_name`)}</span>`])
+        ]
+    },
+    anarchist: {
+        name: loc(`achieve_anarchist_name`),
+        desc(){
+            let bonus = global.stats.achieve['anarchist'] ? global.stats.achieve['anarchist'].l * 10 : 10;
+            return loc("achieve_perks_anarchist",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['anarchist'] && global.stats.achieve['anarchist'].l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_anarchist_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_anarchist_name`)}</span>`])
+        ]
+    },
+    technophobe: {
+        name: loc(`achieve_technophobe_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_technophobe1",[25]);
+                },
+                active(){
+                    return global.stats.achieve['technophobe'] && global.stats.achieve['technophobe'].l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
+                    for (let i=1; i<universe_affixes.length; i++){
+                        if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
+                            bonus += 5;
+                        }
+                    }
+                    return loc("achieve_perks_technophobe2",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let gems = 1;
+                    for (let i=1; i<universe_affixes.length; i++){
+                        if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
+                            gems += 1;
+                        }
+                    }
+                    return gems > 1 ? loc("achieve_perks_technophobe3a",[gems]) : loc("achieve_perks_technophobe3",[gems]);
+                },
+                active(){
+                    return global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_technophobe4",[10]);
+                },
+                active(){
+                    return global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = global.stats.achieve['technophobe'] ? global.stats.achieve.technophobe.l : 0;
+                    return loc("achieve_perks_technophobe5",[bonus]);
+                },
+                active(){
+                    return global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_technophobe_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_technophobe_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_universe`,[`<span class="has-text-caution">${loc(`achieve_technophobe_name`)}</span>`])
+        ]
+    },
+    iron_will: {
+        name: loc(`achieve_iron_will_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_iron_will1",[0.15]);
+                },
+                active(){
+                    return global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_iron_will2",[10]);
+                },
+                active(){
+                    return global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_iron_will3",[6]);
+                },
+                active(){
+                    return global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_iron_will4",[1]);
+                },
+                active(){
+                    return global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_iron_will5");
+                },
+                active(){
+                    return global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 5 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_iron_will_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill`,[`<span class="has-text-caution">${loc(`evo_challenge_cataclysm`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill2`,[1,`<span class="has-text-caution">${loc(`space_red_ziggurat_title`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill3`,[2,`<span class="has-text-caution">${loc(`tech_elerium_mining`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill3`,[3,`<span class="has-text-caution">${loc(`tech_lasers`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill3`,[4,`<span class="has-text-caution">${loc(`tech_generational_ship`)}</span>`]),
+            loc(`wiki_perks_achievement_note_ironwill4`,[5,`<span class="has-text-caution">${loc(`wiki_resets_bioseed`)}</span>`])
+        ]
+    },
+    failed_history: {
+        name: loc(`achieve_failed_history_name`),
+        desc(){
+            return loc("achieve_perks_failed_history",[2]);
+        },
+        active(){
+            return global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_failed_history_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_failed_history`,[`<span class="has-text-caution">${loc(`evo_challenge_cataclysm`)}</span>`])
+        ]
+    },
+    gladiator: {
+        name: loc(`achieve_gladiator_name`),
+        desc(){
+            let mech = global.stats.achieve['gladiator'] ? global.stats.achieve.gladiator.l : 1;
+            return loc("achieve_perks_gladiator",[mech * 20]);
+        },
+        active(){
+            return global.stats.achieve['gladiator'] && global.stats.achieve.gladiator.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_gladiator_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_gladiator_name`)}</span>`])
+        ]
+    },
+    creep: {
+        name: loc(`wiki_arpa_crispr_creep`),
+        desc(){
+            return loc("arpa_perks_creep",[global.genes['creep'] ? global.genes.creep : 0]);
+        },
+        active(){
+            return global.genes['creep'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_genetic_memory_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_animus_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_divine_remembrance_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_divine_proportion_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_genetic_repository_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    store: {
+        name: loc(`wiki_arpa_crispr_store`),
+        desc(){
+            let psb = global.genes['store'] && global.genes.store > 1 ? (global.genes.store === 2 ? 0.06 : 0.08) : 0.04;
+            return loc(global.genes['store'] && global.genes.store >= 4 ? "arpa_perks_store2" : "arpa_perks_store1",[psb]);
+        },
+        active(){
+            return global.genes['store'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_spatial_reasoning_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_spatial_superiority_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_spatial_supremacy_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_dimensional_warping_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    evolve: {
+        name: loc(`wiki_arpa_crispr_evolve`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_evolve");
+                },
+                active(){
+                    return global.genes['evolve'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_recombination_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_homologous_recombination_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_genetic_reshuffling_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_recombinant_dna_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 5 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_chimeric_dna_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 6 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_molecular_cloning_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 7 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_transgenes_desc");
+                },
+                active(){
+                    return global.genes['evolve'] && global.genes.evolve >= 8 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_morphogenesis_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_recombination_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_homologous_recombination_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_genetic_reshuffling_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_recombinant_dna_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_chimeric_dna_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_molecular_cloning_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_transgenes_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    birth: {
+        name: loc(`wiki_arpa_crispr_birth`),
+        desc(){
+            return loc("arpa_perks_birth");
+        },
+        active(){
+            return global.genes['birth'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_replication_title`)}</span>`]),
+        ]
+    },
+    enhance: {
+        name: loc(`wiki_arpa_crispr_enhance`),
+        desc(){
+            return loc("arpa_perks_enhance");
+        },
+        active(){
+            return global.genes['enhance'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_enhanced_muscle_fiber_title`)}</span>`])
+        ]
+    },
+    crafty: {
+        name: loc(`wiki_arpa_crispr_crafty`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_genepool_artificer_desc");
+                },
+                active(){
+                    return global.genes['crafty'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    let bonus = global.genes['crafty'] && global.genes.crafty >= 3 ? 100 : 50;
+                    return loc("arpa_genepool_crafting_desc",[bonus]);
+                },
+                active(){
+                    return global.genes['crafty'] && global.genes.crafty >= 2 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_artificer_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_detail_oriented_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_rigorous_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    synthesis: {
+        name: loc(`wiki_arpa_crispr_synthesis`),
+        desc(){
+            let base = global.genes['synthesis'] && global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 4 : 3) : 2;
+            let auto = global.genes['synthesis'] && global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 50 : 25) : 10;
+            return loc("arpa_genepool_synthesis_desc",[base,auto]);
+        },
+        active(){
+            return global.genes['synthesis'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_synthesis_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_karyokinesis_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_cytokinesis_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    challenge: {
+        name: loc(`wiki_arpa_crispr_challenge`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_challenge");
+                },
+                active(){
+                    return global.genes['challenge'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_unlocked_desc");
+                },
+                active(){
+                    return global.genes['challenge'] && global.genes.challenge >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_challenge2",[
+                        global.genes['challenge'] && global.genes['challenge'] >= 4 ? 80 : 60,
+                        global.genes['challenge'] && global.genes['challenge'] >= 4 ? 40 : 60
+                    ]);
+                },
+                active(){
+                    return global.genes['challenge'] && global.genes.challenge >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_challenge3");
+                },
+                active(){
+                    return global.genes['challenge'] && global.genes.challenge >= 5 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_hardened_genes_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_unlocked_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_universal_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_standard_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_mastered_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    ancients: {
+        name: loc(`wiki_arpa_crispr_ancients`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_ancients");
+                },
+                active(){
+                    return global.genes['ancients'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return global.genes['ancients'] && global.genes.ancients >= 4 ? loc("arpa_perks_ancients3") : loc("arpa_perks_ancients2");
+                },
+                active(){
+                    return global.genes['ancients'] && global.genes.ancients >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_ancients4",[global.genes['ancients'] && global.genes.ancients >= 5 ? 50 : 25]);
+                },
+                active(){
+                    return global.genes['ancients'] && global.genes.ancients >= 3 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_ancients_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_faith_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_devotion_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_acolyte_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_conviction_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    trader: {
+        name: loc(`wiki_arpa_crispr_trader`),
+        desc(){
+            return loc("arpa_genepool_negotiator_desc");
+        },
+        active(){
+            return global.genes['trader'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_negotiator_title`)}</span>`])
+        ]
+    },
+    transcendence: {
+        name: loc(`wiki_arpa_crispr_transcendence`),
+        desc(){
+            return loc("arpa_genepool_transcendence_desc");
+        },
+        active(){
+            return global.genes['transcendence'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_transcendence_title`)}</span>`])
+        ]
+    },
+    queue: {
+        name: loc(`wiki_arpa_crispr_queue`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_genepool_geographer_desc");
+                },
+                active(){
+                    return global.genes['queue'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_architect_desc");
+                },
+                active(){
+                    return global.genes['queue'] && global.genes.queue >= 2 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_geographer_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_architect_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    plasma: {
+        name: loc(`wiki_arpa_crispr_plasma`),
+        desc(){
+            let plasmid_cap = global.genes['plasma'] >= 2 ? 5 : 3;
+            return loc('arpa_genepool_mitosis_desc',[plasmid_cap]);
+        },
+        active(){
+            return global.genes['plasma'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_mitosis_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_metaphase_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    mutation: {
+        name: loc(`wiki_arpa_crispr_mutation`),
+        group: [
+            {
+                desc(){
+                    return global.genes['mutation'] && global.genes.mutation > 1 ? loc("arpa_perks_mutation2") : loc("arpa_perks_mutation1");
+                },
+                active(){
+                    return global.genes['mutation'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_perks_mutation3");
+                },
+                active(){
+                    return global.genes['mutation'] && global.genes.mutation >= 3 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_mutation_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_transformation_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_metamorphosis_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    bleed: {
+        name: loc(`wiki_arpa_crispr_bleed`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_genepool_bleeding_effect_desc",[2.5]);
+                },
+                active(){
+                    return global.genes['bleed'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_synchronicity_desc",[25]);
+                },
+                active(){
+                    return global.genes['bleed'] && global.genes.bleed >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_astral_awareness_desc");
+                },
+                active(){
+                    return global.genes['bleed'] && global.genes.bleed >= 3 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_bleeding_effect_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_synchronicity_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_astral_awareness_title`)}</span>`
+                ].join(', ')
+            ]),
+            loc(`wiki_perks_crispr_note_bleed`,[`<span class="has-text-caution">${loc(`arpa_genepool_bleeding_effect_title`)}</span>`]),
+        ]
+    },
+    harmonic: {
+        name: loc(`harmonic`),
+        desc(){
+            let harmonic = calcPillar();
+            return loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)]);
+        },
+        active(){
+            let harmonic = calcPillar();
+            return global['pillars'] && harmonic[0] > 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_harmonic_note1`),
+            loc(`wiki_perks_harmonic_note2`)
+        ]
+    },
+    novice: {
+        name: loc(`feat_novice_name`),
+        desc(){
+            let rank = global.stats.feat['novice'] ? global.stats.feat['novice'] : 1;
+            let rna = rank / 2;
+            let dna = rank / 4;
+            return loc("achieve_perks_novice",[rna,dna]);
+        },
+        active(){
+            return global.stats.feat['novice'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[10]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
+    journeyman: {
+        name: loc(`feat_journeyman_name`),
+        desc(){
+            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] > 1){
+                let rqueue = global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+                let queue = global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                return loc("achieve_perks_journeyman2",[rqueue,queue]);
+            }
+            else {
+                return loc("achieve_perks_journeyman1",[1]);
+            }
+        },
+        active(){
+            return global.stats.feat['journeyman'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[25]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    }
+};
+
 export function drawPerks(){
     clearElement($('#perksPanel'));
     let perks = $('#perksPanel');
-
-    let unlocked = 0;
-
-    let harmonic = calcPillar();
-    if (global['pillars'] && harmonic[0] > 1){        
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("perks_harmonic",[+((harmonic[0] - 1) * 100).toFixed(0), +((harmonic[1] - 1) * 100).toFixed(0)])}</span></div>`);
-    }
-
-    if (global.stats.achieve['blackhole'] && global.stats.achieve['blackhole'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve.blackhole.l * 5;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_blackhole",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['creator'] && global.stats.achieve['creator'].l >= 1){
-        unlocked++;
-        let bonus = 1 + (global.stats.achieve['creator'].l * 0.5);
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_creator",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction")}</span></div>`);
-        if (global.stats.achieve['mass_extinction'].l > 1){
-            let bonus = (global.stats.achieve['mass_extinction'].l - 1) * 50;
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_mass_extinction2",[bonus])}</span></div>`);
-        }
-    }
-
-    if (global.stats.achieve['explorer'] && global.stats.achieve['explorer'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve['explorer'].l;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_explorer",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['miners_dream'] && global.stats.achieve['miners_dream'].l >= 1){
-        unlocked++;
-        let numGeo = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_miners_dream",[numGeo])}</span></div>`);
-    }
-
-    if (global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_enlightened")}</span></div>`);
-    }
-
-    if (global.stats.achieve['joyless'] && global.stats.achieve['joyless'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve['joyless'].l * 2;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_joyless",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve['steelen'].l * 2;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_steelen",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['whitehole']){
-        unlocked++;
-        let bonus = global.stats.achieve['whitehole'].l * 5;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole")}</span></div>`);
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_whitehole2",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['heavyweight']){
-        unlocked++;
-        let bonus = global.stats.achieve['heavyweight'].l * 4;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_heavyweight",[bonus])}</span></div>`);
-    }
-
-    if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated1",[1])}</span></div>`);
-        if (global.stats.achieve['dissipated'].l >= 3){
-            let bonus = global.stats.achieve['dissipated'].l >= 5 ? 2 : 1;
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated2",[bonus])}</span></div>`);
-        }
-        if (global.stats.achieve['dissipated'].l >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated3",[1])}</span></div>`);
-        }
-        if (global.stats.achieve['dissipated'].l >= 4){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_dissipated4",[1])}</span></div>`);
-        }
-    }
-
-    if (global.stats.achieve['anarchist'] && global.stats.achieve['anarchist'].l >= 1){
-        unlocked++;
-        let bonus = global.stats.achieve['anarchist'].l * 10;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_anarchist",[bonus])}</span></div>`);
-    }
-
-    if (global.genes['creep']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_creep",[global.genes.creep])}</span></div>`);
-    }
-
-    if (global.genes['store']){
-        unlocked++;
-        let psb = global.genes.store === 1 ? 0.04 : (global.genes.store === 2 ? 0.06 : 0.08);
-        perks.append(`<div><span class="has-text-warning">${loc(global.genes.store >= 4 ? "arpa_perks_store2" : "arpa_perks_store1",[psb])}</span></div>`);
-    }
-
-    if (global.genes['evolve']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_evolve")}</span></div>`);
-        if (global.genes.evolve >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_recombination_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 3){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_homologous_recombination_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 4){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_genetic_reshuffling_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 5){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_recombinant_dna_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 6){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_chimeric_dna_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 7){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_molecular_cloning_desc")}</span></div>`);
-        }
-        if (global.genes.evolve >= 8){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transgenes_desc")}</span></div>`);
-        }
-    }
-
-    if (global.genes['birth']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_birth")}</span></div>`);
-    }
-
-    if (global.genes['enhance']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_enhance")}</span></div>`);
-    }
-
-    if (global.genes['crafty']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_artificer_desc")}</span></div>`);
-
-        if (global.genes.crafty >= 2){
-            let bonus = global.genes.crafty === 2 ? 50 : 100;
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_crafting_desc",[bonus])}</span></div>`);
-        }
-    }
-
-    if (global.genes['synthesis']){
-        unlocked++;
-        let base = global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 4 : 3) : 2;
-        let auto = global.genes['synthesis'] >= 2 ? (global.genes['synthesis'] >= 3 ? 50 : 25) : 10;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synthesis_desc",[base,auto])}</span></div>`);
-    }
-
-    if (global.genes['challenge']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge")}</span></div>`);
-        if (global.genes['challenge'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_unlocked_desc")}</span></div>`);
-            if (global.genes['challenge'] >= 3){
-                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge2",[global.genes['challenge'] >= 4 ? 80 : 60, global.genes['challenge'] >= 4 ? 40 : 60])}</span></div>`);
-                if (global.genes['challenge'] >= 5){
-                    perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_challenge3")}</span></div>`);
+    let hasPerk = false;
+    Object.keys(perkList).forEach(function(perk){
+        if (perkList[perk].hasOwnProperty('group')){
+            let isactive = false;
+            let gperk = $(`<div class="achievement"><span class="has-text-warning">${perkList[perk].name}</span></div>`);
+            perkList[perk].group.forEach(function(subperk){
+                if (subperk.active()){
+                    isactive = true;
+                    gperk.append($(`<div class="perk">${subperk.desc()}</div>`));
                 }
+            });
+            if (isactive){
+                hasPerk = true;
+                perks.append(gperk);
             }
-        }
-    }
-
-    if (global.genes['ancients']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients")}</span></div>`);
-        if (global.genes['ancients'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${global.genes['ancients'] >= 4 ? loc("arpa_perks_ancients3") : loc("arpa_perks_ancients2")}</span></div>`);
-            if (global.genes['ancients'] >= 3) {
-                perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_ancients4",[global.genes['ancients'] >= 5 ? 25 : 50])}</span></div>`);
-            }
-        }
-    }
-
-    if (global.genes['trader']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_negotiator_desc")}</span></div>`);
-    }
-
-    if (global.genes['transcendence']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_transcendence_desc")}</span></div>`);
-    }
-
-    if (global.genes['queue']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_geographer_desc")}</span></div>`);
-        if (global.genes['queue'] >= 2) {
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_architect_desc")}</span></div>`);
-        }
-    }
-
-    if (global.stats.feat['journeyman']){
-        unlocked++;
-        if (global.stats.feat['journeyman'] > 1){
-            let rqueue = global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
-            let queue = global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman2",[rqueue,queue])}</span></div>`);
         }
         else {
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_journeyman1",[1])}</span></div>`);
-        }
-    }
-
-    if (global.stats.feat['novice']){
-        unlocked++;
-        let rna = global.stats.feat['novice'] / 2;
-        let dna = global.stats.feat['novice'] / 4;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_novice",[rna,dna])}</span></div>`);
-    }
-
-    if (global.genes['plasma']) {
-        unlocked++;
-        let plasmid_cap = global.genes['plasma'] >= 2 ? 5 : 3;
-        perks.append(`<div><span class="has-text-warning">${loc('arpa_genepool_mitosis_desc',[plasmid_cap])}</span></div>`);
-    }
-
-    if (global.genes['mutation']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${global.genes['mutation'] === 1 ? loc("arpa_perks_mutation1") : loc("arpa_perks_mutation2")}</span></div>`);
-        if (global.genes['mutation'] >= 3){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_perks_mutation3")}</span></div>`);
-        }
-    }
-
-    if (global.genes['bleed']){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_bleeding_effect_desc",[2.5])}</span></div>`);
-        if (global.genes['bleed'] >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_synchronicity_desc",[25])}</span></div>`);
-            if (global.genes['bleed'] >= 3){
-                perks.append(`<div><span class="has-text-warning">${loc("arpa_genepool_astral_awareness_desc")}</span></div>`);
+            if (perkList[perk].active()){
+                hasPerk = true;
+                perks.append($(`<div class="achievement"><span class="has-text-warning">${perkList[perk].name}</span><span>${perkList[perk].desc()}</span></div>`));
             }
         }
-    }
-
-    if (global.stats.achieve['technophobe'] && global.stats.achieve['technophobe'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe1",[25])}</span></div>`);
-        if (global.stats.achieve.technophobe.l >= 2){
-            let bonus = global.stats.achieve.technophobe.l >= 4 ? 25 : 10;
-            for (let i=1; i<universe_affixes.length; i++){
-                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
-                    bonus += 5;
-                }
-            }
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe2",[bonus])}</span></div>`);
-        }
-        if (global.stats.achieve.technophobe.l >= 3){
-            let gems = 1;
-            for (let i=1; i<universe_affixes.length; i++){
-                if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){
-                    gems += 1;
-                }
-            }
-            perks.append(`<div><span class="has-text-warning">${gems > 1 ? loc("achieve_perks_technophobe3a",[gems]) : loc("achieve_perks_technophobe3",[gems])}</span></div>`);
-        }
-        if (global.stats.achieve.technophobe.l >= 5){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe4",[10])}</span></div>`);
-        }
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_technophobe5",[global.stats.achieve.technophobe.l])}</span></div>`);
-    }
-
-    if (global.stats.achieve['iron_will'] && global.stats.achieve['iron_will'].l >= 1){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will1",[0.15])}</span></div>`);
-        if (global.stats.achieve.iron_will.l >= 2){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will2",[10])}</span></div>`);
-        }
-        if (global.stats.achieve.iron_will.l >= 3){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will3",[6])}</span></div>`);
-        }
-        if (global.stats.achieve.iron_will.l >= 4){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will4",[1])}</span></div>`);
-        }
-        if (global.stats.achieve.iron_will.l >= 5){
-            perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_iron_will5")}</span></div>`);
-        }
-    }
-
-    if (global.stats.achieve['failed_history'] && global.stats.achieve['failed_history'].l >= 5){
-        unlocked++;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_failed_history",[2])}</span></div>`);
-    }
-
-    if (global.stats.achieve['gladiator'] && global.stats.achieve['gladiator'].l >= 1){
-        unlocked++;
-        let mech = global.stats.achieve['gladiator'].l * 20;
-        perks.append(`<div><span class="has-text-warning">${loc("achieve_perks_gladiator",[mech])}</span></div>`);
-    }
-
-    if (unlocked > 0){
-        perks.prepend(`<div class="cstat"><span class="has-text-success">${loc("achieve_perks")}</span></div>`);
+    });
+    if (!hasPerk){
+        perks.append($(`<div class="has-text-caution">${loc(`perks_none`)}</div>`));
     }
 }
 

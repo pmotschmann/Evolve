@@ -3,6 +3,7 @@ import { crisprPage } from './crispr.js';
 import { bloodPage } from './blood.js';
 import { pResPage } from './p_res.js';
 import { resetsPage } from './resets.js';
+import { perksPage } from './perks.js';
 
 export function prestigePage(zone){
     let content = $(`#content`);
@@ -20,6 +21,9 @@ export function prestigePage(zone){
             break;
         case 'blood':
             bloodPage(content);
+            break;
+        case 'perks':
+            perksPage(content);
             break;
     }
 }

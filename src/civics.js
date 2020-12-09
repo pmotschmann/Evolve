@@ -531,12 +531,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -550,12 +550,12 @@ function drawEspModal(gov){
                     $('#popGov').hide();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -568,12 +568,12 @@ function drawEspModal(gov){
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
                     poppers['GovLabel'].destroy();
-                    $('#popGovLabel').remove();
+                    clearElement($('#popGovLabel'),true);
 
                     setTimeout(function(){
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
                     },250);
                 }
             },
@@ -587,12 +587,12 @@ function drawEspModal(gov){
                         $('.modal-background').click();
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
 
                         setTimeout(function(){
                             $('#popGovLabel').hide();
                             poppers['GovLabel'].destroy();
-                            $('#popGovLabel').remove();
+                            clearElement($('#popGovLabel'),true);
                         },250);
                     }
                 }
@@ -609,12 +609,12 @@ function drawEspModal(gov){
                         $('.modal-background').click();
                         $('#popGovLabel').hide();
                         poppers['GovLabel'].destroy();
-                        $('#popGovLabel').remove();
+                        clearElement($('#popGovLabel'),true);
 
                         setTimeout(function(){
                             $('#popGovLabel').hide();
                             poppers['GovLabel'].destroy();
-                            $('#popGovLabel').remove();
+                            clearElement($('#popGovLabel'),true);
                         },250);
                     }
                 }
@@ -748,7 +748,7 @@ function taxRates(govern){
 }
 
 export function buildGarrison(garrison,full){
-    garrison.empty();
+    clearElement(garrison);
     if (global.tech['world_control']){
         garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip></div>`));
     }
@@ -846,21 +846,29 @@ export function buildGarrison(garrison,full){
         },
         methods: {
             hire(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost *= 1 - (traits.brute.vars[0] / 100);
-                }
-                cost = Math.round(cost);
-                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
-                    global.resource.Money.amount -= cost;
-                    global.civic['garrison'].workers++;
-                    global.civic.garrison.m_use++;
+                let repeats = keyMultiplier();
+                let canBuy = true;
+                while (canBuy && repeats > 0){
+                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                    if (cost > 25000){
+                        cost = 25000;
+                    }
+                    if (global.civic.garrison.m_use > 0){
+                        cost *= 1.1 ** global.civic.garrison.m_use;
+                    }
+                    if (global.race['brute']){
+                        cost *= 1 - (traits.brute.vars[0] / 100);
+                    }
+                    cost = Math.round(cost);
+                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                        global.resource.Money.amount -= cost;
+                        global.civic['garrison'].workers++;
+                        global.civic.garrison.m_use++;
+                    }
+                    else {
+                        canBuy = false;
+                    }
+                    repeats--;
                 }
             },
             campaign(gov){

@@ -260,7 +260,7 @@ export function craftingRatio(res,auto){
         }
     }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        multiplier *= 1 + (achieve_level * 0.0025);
+        multiplier *= 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100));
     }
     if (res === 'Scarletite'){
         let sup = hellSupression('ruins');
@@ -985,7 +985,7 @@ export const galaxyOffers = [
 export function galacticTrade(modal){
     let galaxyTrade = modal ? modal : $(`#galaxyTrade`);
     if (!modal){
-        $(`#galaxyTrade`).empty();
+        clearElement($(`#galaxyTrade`));
     }
 
     if (global.galaxy['trade']){
@@ -1479,7 +1479,7 @@ function drawModal(name,color){
         }
     });
     
-    if ((global.city['warehouse'] && global.city['warehouse'].count > 0) || global.race['cataclysm']){
+    if (global.resource.Containers.display){
         let containers = $('<div id="modalContainers" class="crates divide"></div>');
         body.append(containers);
         
@@ -1879,7 +1879,7 @@ function loadAlchemy(name,color,basic){
         });
 
         popover(`alchemy${name}`,function(){
-            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 5).toFixed(2) : tradeRatio[name],loc(`resource_${name}_name`)])}</div>`);
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 8).toFixed(2) : +(tradeRatio[name] * 2).toFixed(2), loc(`resource_${name}_name`)])}</div>`);
         },
         {
             elm: `#alchemy${name} h3`
@@ -1947,9 +1947,11 @@ export const spatialReasoning = (function(){
                 }
                 modifier *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
             }
-            if (global['pillars']){
-                let harmonic = calcPillar();
-                modifier *= harmonic[1];
+            if (!type){
+                if (global['pillars']){
+                    let harmonic = calcPillar();
+                    modifier *= harmonic[1];
+                }
             }
             spatial[tkey] = {};
             spatial[tkey][key] = modifier;

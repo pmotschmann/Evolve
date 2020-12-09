@@ -676,7 +676,7 @@ const fortressModules = {
             reqs: { inferno_power: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('inferno_power', offset, 275000000, 1.16, 'portal'); },
-                Neutronium(offset){ return spaceCostMultiplier('inferno_power', offset, 5000000, 1.18, 'portal'); },
+                Neutronium(offset){ return spaceCostMultiplier('inferno_power', offset, 3750000, 1.18, 'portal'); },
                 Stanene(offset){ return spaceCostMultiplier('inferno_power', offset, 12000000, 1.18, 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('inferno_power', offset, 8000000, 1.18, 'portal'); },
             },
@@ -1495,7 +1495,7 @@ const fortressModules = {
             special: true,
             sAction(){
                 global.settings.civTabs = 2;
-                global.settings.govTabs = 3;
+                global.settings.govTabs = 4;
             },
             effect(){
                 let bay = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.bay : 0;
@@ -1517,6 +1517,11 @@ const fortressModules = {
                     return true;
                 }
                 return false;
+            },
+            postPower(){
+                let bays = (spire_on['mechbay'] || 0);
+                global.portal.mechbay.max = bays * 25;
+                drawMechs();
             }
         },
         spire: {
@@ -1908,24 +1913,32 @@ function buildFortress(parent,full){
                 }
             },
             hire(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost = cost / 2;
-                }
-                cost = Math.round(cost);
-                if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
-                    global.resource.Money.amount -= cost;
-                    global.civic['garrison'].workers++;
-                    global.civic.garrison.m_use++;
-                    global.portal.fortress.garrison++;
-                    global.portal.fortress['assigned'] = global.portal.fortress.garrison;
-                    vBind({el: `#garrison`},'update');
+                let repeats = keyMultiplier();
+                let canBuy = true;
+                while (canBuy && repeats > 0){
+                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                    if (cost > 25000){
+                        cost = 25000;
+                    }
+                    if (global.civic.garrison.m_use > 0){
+                        cost *= 1.1 ** global.civic.garrison.m_use;
+                    }
+                    if (global.race['brute']){
+                        cost = cost / 2;
+                    }
+                    cost = Math.round(cost);
+                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                        global.resource.Money.amount -= cost;
+                        global.civic['garrison'].workers++;
+                        global.civic.garrison.m_use++;
+                        global.portal.fortress.garrison++;
+                        global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+                        vBind({el: `#garrison`},'update');
+                    }
+                    else {
+                        canBuy = false;
+                    }
+                    repeats--;
                 }
             },
             hireLabel(){
@@ -3108,22 +3121,22 @@ export function drawMechLab(){
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
                             cost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
-                            size = 2;
+                            size = mechSize('small');
                             soul = 1;
                             break;
                         case 'medium':
                             cost = 180000;
-                            size = 5;
+                            size = mechSize('medium');
                             soul = 2;
                             break;
                         case 'large':
                             cost = 375000;
-                            size = 10;
+                            size = mechSize('large');
                             soul = 5;
                             break;
                         case 'titan':
                             cost = 750000;
-                            size = 25;
+                            size = mechSize('titan');
                             soul = 10;
                             break;
                     }
@@ -3226,16 +3239,7 @@ export function drawMechLab(){
             },
             filters: {
                 bay(s){
-                    switch (s){
-                        case 'small':
-                            return 2;
-                        case 'medium':
-                            return global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
-                        case 'large':
-                            return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
-                        case 'titan':
-                            return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
-                    }
+                    mechSize(s);
                 },
                 price(s){
                     switch (s){
@@ -3311,18 +3315,22 @@ export function drawMechLab(){
             }
         });
 
-        let mechs = $(`<div id="mechList"></div>`);
+        let mechs = $(`<div id="mechList" class="sticky mechList"></div>`);
         lab.append(mechs);
         drawMechs();
     }
 }
 
 function drawMechs(){
+    clearMechDrag();
     clearElement($('#mechList'));
     let list = $('#mechList');
+    let used = 0;
     for (let i=0; i<global.portal.mechbay.mechs.length; i++){
         let mech = global.portal.mechbay.mechs[i];
-        let desc = $(`<div><a @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        used += mechSize(mech.size);
+        let inactive = used > global.portal.mechbay.max ? true : false;
+        let desc = $(`<div${inactive ? ` class="inactive-row"` : ``}><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
         mech.hardpoint.forEach(function(hp){
             desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
         });
@@ -3337,26 +3345,67 @@ function drawMechs(){
         data: global.portal.mechbay.mechs,
         methods: {
             scrap(id){
-                switch (global.portal.mechbay.mechs[id].size){
-                    case 'small':
-                        global.portal.purifier.supply += 25000;
-                        break;
-                    case 'medium':
-                        global.portal.purifier.supply += 60000;
-                        break;
-                    case 'large':
-                        global.portal.purifier.supply += 125000;
-                        break;
-                    case 'titan':
-                        global.portal.purifier.supply += 250000;
-                        break;
+                if (global.portal.mechbay.mechs[id]){
+                    switch (global.portal.mechbay.mechs[id].size){
+                        case 'small':
+                            global.portal.purifier.supply += 25000;
+                            break;
+                        case 'medium':
+                            global.portal.purifier.supply += 60000;
+                            break;
+                        case 'large':
+                            global.portal.purifier.supply += 125000;
+                            break;
+                        case 'titan':
+                            global.portal.purifier.supply += 250000;
+                            break;
+                    }
+                    if (global.portal.purifier.supply > global.portal.purifier.sup_max){
+                        global.portal.purifier.supply = global.portal.purifier.sup_max;
+                    }
+                    global.portal.mechbay.mechs.splice(id,1);
+                    drawMechs();
                 }
-                if (global.portal.purifier.supply > global.portal.purifier.sup_max){
-                    global.portal.purifier.supply = global.portal.purifier.sup_max;
-                }
-                global.portal.mechbay.mechs.splice(id,1);
-                drawMechs();
             }
+        }
+    });
+
+    dragMechList();
+}
+
+export function mechSize(s){
+    switch (s){
+        case 'small':
+            return 2;
+        case 'medium':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 4 : 5;
+        case 'large':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
+        case 'titan':
+            return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
+        case 'default':
+            return 25;
+    }
+}
+
+function clearMechDrag(){
+    let el = $('#mechList')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
+function dragMechList(){
+    let el = $('#mechList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.portal.mechbay.mechs;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            global.portal.mechbay.mechs = order;
+            drawMechs();
         }
     });
 }
@@ -3436,7 +3485,7 @@ export function mechRating(mech,boss){
             rating = 0.01;
             break;
         case 'titan':
-            rating = 0.02;
+            rating = 0.0225;
             break;
     }
 
@@ -3822,6 +3871,12 @@ export function descension(){
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
+    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
+        unlockFeat(`garbage_pie`);
+    }
+    if (global.race['cataclysm']){
+        unlockFeat(`finish_line`);
+    }
 
     let artifacts = 0;
     switch (global.race.universe){
@@ -3882,6 +3937,7 @@ export function descension(){
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
         corruption: 5,
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
 
     global.city = {

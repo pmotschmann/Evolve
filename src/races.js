@@ -1841,6 +1841,10 @@ export const races = {
     custom: customRace()
 };
 
+export function setJType(){
+    races.junker.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
+}
+
 function customRace(){
     if (global.hasOwnProperty('custom')){
         let trait = {};

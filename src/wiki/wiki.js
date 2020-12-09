@@ -50,7 +50,8 @@ function initPage(){
                 { key: 'resets' },
                 { key: 'resources' },
                 { key: 'crispr' },
-                { key: 'blood' }
+                { key: 'blood' },
+                { key: 'perks' }
             ]
         },
         {
