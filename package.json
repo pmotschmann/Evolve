@@ -35,6 +35,6 @@
     "rimraf": "^3.0.2",
     "servehere": "^1.7.0",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.9"
   }
 }
