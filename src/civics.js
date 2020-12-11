@@ -626,7 +626,7 @@ function drawEspModal(gov){
             let esp = $(obj.this).data('esp');
             let desc = '';
             if (esp === 'purchase'){
-                let price = govPrice(gov);
+                let price = govPrice(gov).toLocaleString();
                 desc = loc(`civics_spy_${esp}_desc`,[govTitle(gov),price])
             }
             else if (esp === 'annex'){
@@ -1101,6 +1101,9 @@ function war_campaign(gov){
 
     if (global.civic.garrison.raid > garrisonSize()){
         global.civic.garrison.raid = garrisonSize();
+    }
+    else if (global.civic.garrison.raid < 0){
+        global.civic.garrison.raid = 0;
     }
 
     let highLuck = global.race['claws'] ? 20 : 16;

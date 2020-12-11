@@ -7142,6 +7142,7 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.tech['ancient_deify'] = 1;
                 fanaticism(global.race.old_gods);
+                arpa('Genetics');
                 return true;
             }
             return false;

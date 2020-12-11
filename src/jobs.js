@@ -415,7 +415,7 @@ export function farmerValue(farm){
 
 export function loadFoundry(){
     clearElement($('#foundry'));
-    if (global.city['foundry']){
+    if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm']){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
