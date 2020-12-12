@@ -7,6 +7,7 @@ const changeList = [
         date: `12/12/2020`,
         changes: [
             `Redesigned Inferno Reactor, output is now tied to Infernal Forge.`,
+            `Steel can once again be discovered by Ambush attacks.`,
             `Power Grid is now shown in Cataclysm.`,
             `Cataclysm reset no longer incorrectly grants Rapid Mutation or Ancient Ruins.`,
             `Many minor bug fixes.`

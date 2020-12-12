@@ -58,6 +58,9 @@ if (global.portal['turret']){
 if (global.interstellar['fusion']){
     int_on['fusion'] = global.interstellar.fusion.on;
 }
+if (global.portal['hell_forge']){
+    p_on['hell_forge'] = global.portal.hell_forge.on;
+}
 
 // Load Resources
 defineResources();
