@@ -6,6 +6,7 @@ const changeList = [
         version: `1.0.15`,
         date: `12/12/2020`,
         changes: [
+            `Redesigned Inferno Reactor, output is now tied to Infernal Forge.`,
             `Power Grid is now shown in Cataclysm.`,
             `Cataclysm reset no longer incorrectly grants Rapid Mutation or Ancient Ruins.`,
             `Many minor bug fixes.`

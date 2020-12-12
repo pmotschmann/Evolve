@@ -4408,6 +4408,7 @@
   "portal_arcology_title": "Arcology",
   "portal_hell_forge_title": "Infernal Forge",
   "portal_hell_forge_effect": "+%0 Max Scarletite crafters",
+  "portal_hell_forge_effect2": "+%0 %1 Power",
   "portal_inferno_power_title": "Inferno Reactor",
   "portal_inferno_power_effect": "-%0 %1/s, -%2 %3/s, -%4 %5/s",
   "portal_ancient_pillars_title": "Ancient Pillars",

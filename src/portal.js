@@ -638,7 +638,8 @@ const fortressModules = {
             effect(){
                 let sup = hellSupression('ruins');
                 let craft = +(75 * sup.supress).toFixed(1);
-                return `<div>${loc('portal_hell_forge_effect',[1])}</div><div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let reactor = global.tech['inferno_power'] ? `<div>${loc('portal_hell_forge_effect2',[10,loc(`portal_inferno_power_title`)])}</div>` : ``;
+                return `<div>${loc('portal_hell_forge_effect',[1])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -680,7 +681,13 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('inferno_power', offset, 12000000, 1.18, 'portal'); },
                 Bolognium(offset){ return spaceCostMultiplier('inferno_power', offset, 8000000, 1.18, 'portal'); },
             },
-            powered(){ return powerModifier(-50); },
+            powered(){
+                let power = 20;
+                if (p_on.hasOwnProperty('hell_forge')){
+                    power += p_on['hell_forge'] * 10; 
+                }
+                return powerModifier(-(power));
+            },
             fuel: {
                 Infernite: 5,
                 Coal: 100,
