@@ -6,11 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "less": "lessc -x src/evolve.less evolve/evolve.css",
-    "dev": "npx webpack src/main.js -o evolve/main.js --mode=development",
-    "evolve": "npx webpack src/main.js -o evolve/main.js --mode=production",
+    "dev": "npx webpack --config webpack.evolve.dev.js",
+    "evolve": "npx webpack --config webpack.evolve.prod.js",
     "build": "npm run evolve && npm run wiki",
-    "wiki-dev": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=development",
-    "wiki": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
+    "build-dev": "npm run dev && npm run wiki-dev",
+    "wiki-dev": "npx webpack --config webpack.wiki.dev.js",
+    "wiki": "npx webpack --config webpack.wiki.prod.js",
     "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
     "serve": "servehere -c"
   },
@@ -30,7 +31,7 @@
   "devDependencies": {
     "less": "^3.13.0",
     "servehere": "^1.7.0",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack": "^5.10.1",
+    "webpack-cli": "^4.2.0"
   }
 }
