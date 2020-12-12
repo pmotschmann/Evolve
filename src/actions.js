@@ -2577,7 +2577,7 @@ export const actions = {
             },
             action(){
                 const date = new Date();
-                if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
+                if ( date.getFullYear() <= 2020 && ((date.getMonth() === 11 && date.getDate() <= 16) || (date.getMonth() !== 11)) ){
                     if (global['special'] && global.special['gift']){
                         delete global.special['gift'];
                         if (global.race.universe === 'antimatter'){
@@ -2590,6 +2590,77 @@ export const actions = {
                             global.stats.plasmid += 100;
                             messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info');
                         }
+                        drawCity();
+                    }
+                }
+                else if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
+                    if (global['special'] && global.special['gift']){
+                        delete global.special['gift'];
+                        
+                        let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
+                        let mad = global.stats.hasOwnProperty('mad') ? global.stats.mad : 0;
+                        let bioseed = global.stats.hasOwnProperty('bioseed') ? global.stats.bioseed : 0;
+                        let cataclysm = global.stats.hasOwnProperty('cataclysm') ? global.stats.cataclysm : 0;
+
+                        let plasmid = 100 + resets + mad;
+                        let phage = bioseed + cataclysm;
+
+                        let gift = [];
+                        if (global.race.universe === 'antimatter'){
+                            global.race.Plasmid.anti += plasmid;
+                            global.stats.antiplasmid += plasmid;
+                            gift.push(`${plasmid} ${loc(`resource_AntiPlasmid_plural_name`)}`);
+                        }
+                        else {
+                            global.race.Plasmid.count += plasmid;
+                            global.stats.plasmid += plasmid;
+                            gift.push(`${plasmid} ${loc(`resource_Plasmid_plural_name`)}`);
+                        }
+                        if (phage > 0){
+                            global.race.Phage.count += phage;
+                            global.stats.phage += phage;
+                            gift.push(`${phage} ${loc(`resource_Phage_name`)}`);
+                        }
+
+                        if (global.stats.hasOwnProperty('achieve')){
+                            let universe = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l : 0;
+                            universe += global.stats.achieve['heavy'] ? global.stats.achieve['heavy'].l : 0;
+                            universe += global.stats.achieve['canceled'] ? global.stats.achieve['canceled'].l : 0;
+                            universe += global.stats.achieve['eviltwin'] ? global.stats.achieve['eviltwin'].l : 0;
+                            universe += global.stats.achieve['microbang'] ? global.stats.achieve['microbang'].l : 0;
+                            universe += global.stats.achieve['pw_apocalypse'] ? global.stats.achieve['pw_apocalypse'].l : 0;
+
+                            let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
+                            let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
+
+                            if (universe > 30){ universe = 30; }
+                            if (ascended > 5){ ascended = 5; }
+                            if (descend > 5){ descend = 5; }
+                            
+                            if (universe > 0){
+                                let dark = +(universe / 7.5).toFixed(2);
+                                global.race.Dark.count += dark;
+                                global.stats.dark += dark;
+                                gift.push(`${dark} ${loc(`resource_Dark_name`)}`);
+                            }
+                            if (ascended > 0){
+                                global.race.Harmony.count += ascended;
+                                global.stats.harmony += ascended;
+                                gift.push(`${ascended} ${loc(`resource_Harmony_name`)}`);
+                            }
+                            if (descend > 0){
+                                let blood = descend * 5;
+                                let art = descend;
+                                global.resource.Blood_Stone.amount += blood;
+                                global.stats.blood += blood;
+                                global.resource.Artifact.amount += art;
+                                global.stats.artifact += art;
+                                gift.push(`${blood} ${loc(`resource_Blood_Stone_name`)}`);
+                                gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
+                            }
+                        }
+
+                        messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info');
                         drawCity();
                     }
                 }
@@ -6749,7 +6820,7 @@ function sentience(){
     });
 
     const date = new Date();
-    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
+    if (!global.settings.boring && global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
     }
     const easter = getEaster();

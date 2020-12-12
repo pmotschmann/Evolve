@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.15`,
+        date: `12/12/2020`,
+        changes: [
+            `Power Grid is now shown in Cataclysm.`,
+            `Cataclysm reset no longer incorrectly grants Rapid Mutation or Ancient Ruins.`,
+            `Many minor bug fixes.`
+        ]
+    },
+    {
         version: `1.0.14`,
         date: `12/8/2020`,
         changes: [

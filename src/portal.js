@@ -3499,7 +3499,6 @@ export function mechRating(mech,boss){
 
         let affix = universeAffix();
         if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
-            global.stats.spire[affix].lord;
             rating /= 100 + (global.stats.spire[affix].lord * 25);
         }
         else {
