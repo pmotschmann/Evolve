@@ -1,6 +1,6 @@
 {
   "name": "evolveidle",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Evolve Idle",
   "private": true,
   "scripts": {
@@ -12,9 +12,6 @@
     "wiki-dev": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=development",
     "wiki": "npx webpack src/wiki/wiki.js -o wiki/wiki.js --mode=production",
     "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
-    "mkdoc": "cp dist/* docs && cp -r src/* docs && cp index.html docs && cp evolved.ico docs && cd docs && cp ../lib/* lib && cp ../strings/* strings && cp ../font/* font && cd ..",
-    "clean": "rimraf -f docs && mkdir docs && cd docs && mkdir lib && mkdir strings && mkdir font",
-    "local": "npm run clean && npm run build && npm run mkdoc && servehere -c -d docs",
     "serve": "servehere -c"
   },
   "repository": {
@@ -31,10 +28,9 @@
   },
   "homepage": "https://github.com/pmotschmann/Evolve#readme",
   "devDependencies": {
-    "less": "^3.12.2",
-    "rimraf": "^3.0.2",
+    "less": "^3.13.0",
     "servehere": "^1.7.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
   }
 }
