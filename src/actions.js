@@ -2851,6 +2851,9 @@ export const actions = {
                             if (global.civic.d_job !== 'unemployed'){
                                 global.civic[global.civic.d_job].workers--;
                             }
+                            else {
+                                global.civic.free--;
+                            }
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
                             let high = 600;
@@ -3611,10 +3614,10 @@ export const actions = {
             effect(){
                 let vault = bank_vault();
                 vault = spatialReasoning(vault);
-                vault = +(vault).toFixed(0);
+                vault = (+(vault).toFixed(0)).toLocaleString();
 
                 if (global.tech['banking'] >= 2){
-                    return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
+                    return `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
                 }
                 else {
                     return loc('plus_max_resource',[vault,loc('resource_Money_name')]);
@@ -5041,7 +5044,7 @@ export function casinoEffect(){
     money = Math.round(money);
     let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
     let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
-    let cash = Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
+    let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;
     }
@@ -6987,6 +6990,7 @@ function cataclysm(){
 
         global.settings.showCity = false;
         global.settings.showIndustry = true;
+        global.settings.showPowerGrid = true;
         global.settings.showResearch = true;
         global.settings.showCivic = true;
         global.settings.showMil = true;
@@ -7568,8 +7572,6 @@ export function cataclysm_end(){
             species : global.race.species,
             gods: global.race.gods,
             old_gods: global.race.old_gods,
-            rapid_mutation: 1,
-            ancient_ruins: 1,
             Plasmid: { count: plasmid, anti: antiplasmid },
             Phage: { count: phage },
             Dark: { count: global.race.Dark.count },

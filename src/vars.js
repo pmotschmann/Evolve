@@ -604,6 +604,12 @@ if (convertVersion(global['version']) < 100014){
     }
 }
 
+if (convertVersion(global['version']) < 100015){
+    if (global.race['cataclysm']){
+        global.settings.showPowerGrid = true;
+    }
+}
+
 global['version'] = '1.0.14';
 delete global['beta'];
 
@@ -1572,7 +1578,7 @@ window.soft_reset = function reset(){
     if (global.race['rapid_mutation'] && global.race['rapid_mutation'] > 0){
         replace['rapid_mutation'] = global.race['rapid_mutation'];
     }
-    if (global.race['ancient_ruins'] && global.race['rapid_mutation'] > 0){
+    if (global.race['ancient_ruins'] && global.race['ancient_ruins'] > 0){
         replace['ancient_ruins'] = global.race['ancient_ruins'];
     }
     if (global.race['bigbang']){

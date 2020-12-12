@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -1032,6 +1032,40 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_anarchist_name`)}</span>`])
         ]
     },
+    ascended: {
+        name: loc(`achieve_ascended_name`),
+        group: [
+            {
+                desc(){
+                    let genes = 0;
+                    if (global.stats.achieve['ascended']){
+                        for (let i=0; i<universe_affixes.length; i++){
+                            if (global.stats.achieve.ascended.hasOwnProperty(universe_affixes[i])){
+                                genes += global.stats.achieve.ascended[universe_affixes[i]];
+                            }
+                        }
+                    }
+                    return loc("achieve_perks_ascended1",[genes]);
+                },
+                active(){
+                    return global.stats.achieve['ascended'] && global.stats.achieve['ascended'].l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_ascended2",[harmonyEffect()]);
+                },
+                active(){
+                    return global.stats.achieve['ascended'] && global.stats.achieve['ascended'][universeAffix()] >= 1 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_ascended_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_ascended_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_universe`,[`<span class="has-text-caution">${loc(`achieve_ascended_name`)}</span>`])
+        ]
+    },
     technophobe: {
         name: loc(`achieve_technophobe_name`),
         group: [
@@ -1422,7 +1456,8 @@ export const perkList = {
                     `<span class="has-text-caution">${loc(`arpa_genepool_standard_title`)}</span>`,
                     `<span class="has-text-caution">${loc(`arpa_genepool_mastered_title`)}</span>`
                 ].join(', ')
-            ])
+            ]),
+            loc(`wiki_perks_crispr_note_challenge`,[loc(`arpa_genepool_universal_title`),loc(`arpa_genepool_standard_title`)])
         ]
     },
     ancients: {
@@ -1603,6 +1638,277 @@ export const perkList = {
                 ].join(', ')
             ]),
             loc(`wiki_perks_crispr_note_bleed`,[`<span class="has-text-caution">${loc(`arpa_genepool_bleeding_effect_title`)}</span>`]),
+        ]
+    },
+    blood: {
+        name: loc(`wiki_arpa_crispr_blood`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_genepool_blood_remembrance_desc");
+                },
+                active(){
+                    return global.genes['blood'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_blood_sacrifice_desc");
+                },
+                active(){
+                    return global.genes['blood'] && global.genes.mutation >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_genepool_essence_absorber_desc");
+                },
+                active(){
+                    return global.genes['blood'] && global.genes.mutation >= 3 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_blood_remembrance_title`)}</span>`]),
+            loc(`wiki_perks_crispr_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_genepool_blood_sacrifice_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_genepool_essence_absorber_title`)}</span>`
+                ].join(', ')
+            ]),
+            loc(`wiki_perks_crispr_note_blood`,[loc(`arpa_genepool_blood_remembrance_title`)])
+        ]
+    },
+    spire: {
+        name: loc(`wiki_arpa_blood_spire`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_blood_purify_desc");
+                },
+                active(){
+                    return global.blood['spire'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_blood_chum_desc");
+                },
+                active(){
+                    return global.blood['spire'] && global.blood.spire >= 2 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_purify_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_blood_chum_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    lust: {
+        name: loc(`wiki_arpa_blood_lust`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_lust",[0.2 * (global.blood['lust'] ? global.blood['lust'] : 1)]);
+                },
+                active(){
+                    return global.blood['lust'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_lust_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_lust_title`)])
+        ]
+    },
+    illuminate: {
+        name: loc(`wiki_arpa_blood_illuminate`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_illuminate",[0.01 * (global.blood['illuminate'] ? global.blood['illuminate'] : 1)]);
+                },
+                active(){
+                    return global.blood['illuminate'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_illuminate_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_illuminate_title`)])
+        ]
+    },
+    greed: {
+        name: loc(`wiki_arpa_blood_greed`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_greed",[1 * (global.blood['greed'] ? global.blood['greed'] : 1)]);
+                },
+                active(){
+                    return global.blood['greed'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_greed_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_greed_title`)])
+        ]
+    },
+    hoarder: {
+        name: loc(`wiki_arpa_blood_hoarder`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_hoarder",[1 * (global.blood['hoarder'] ? global.blood['hoarder'] : 1)]);
+                },
+                active(){
+                    return global.blood['hoarder'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_hoarder_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_hoarder_title`)])
+        ]
+    },
+    artisan: {
+        name: loc(`wiki_arpa_blood_artisan`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_artisan",[1 * (global.blood['artisan'] ? global.blood['artisan'] : 1)]);
+                },
+                active(){
+                    return global.blood['artisan'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_artisan_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_artisan_title`)])
+        ]
+    },
+    attract: {
+        name: loc(`wiki_arpa_blood_attract`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_attract",[5 * (global.blood['attract'] ? global.blood['attract'] : 1)]);
+                },
+                active(){
+                    return global.blood['attract'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_attract_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_attract_title`)])
+        ]
+    },
+    wrath: {
+        name: loc(`wiki_arpa_blood_wrath`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_perks_wrath",[5 * (global.blood['wrath'] ? global.blood['wrath'] : 1)]);
+                },
+                active(){
+                    return global.blood['wrath'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_wrath_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_repeat`,[loc(`arpa_blood_wrath_title`)])
+        ]
+    },
+    prepared: {
+        name: loc(`wiki_arpa_blood_prepared`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_blood_prepared_desc");
+                },
+                active(){
+                    return global.blood['prepared'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_blood_compact_desc");
+                },
+                active(){
+                    return global.blood['prepared'] && global.blood.prepared >= 2 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_prepared_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_blood_compact_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    unbound: {
+        name: loc(`wiki_arpa_blood_unbound`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_blood_unbound_desc");
+                },
+                active(){
+                    return global.blood['unbound'] ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("arpa_blood_shadow_war_desc");
+                },
+                active(){
+                    return global.blood['unbound'] && global.blood.unbound >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return global.blood['unbound'] && global.blood.unbound >= 4 ? loc("arpa_blood_unbound_immunity_desc") : loc("arpa_blood_unbound_resistance_desc");
+                },
+                active(){
+                    return global.blood['unbound'] && global.blood.unbound >= 2 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_unbound_title`)}</span>`]),
+            loc(`wiki_perks_blood_note_upgrade`,[ 
+                [
+                    `<span class="has-text-caution">${loc(`arpa_blood_unbound_resistance_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_blood_shadow_war_title`)}</span>`,
+                    `<span class="has-text-caution">${loc(`arpa_blood_unbound_immunity_title`)}</span>`
+                ].join(', ')
+            ])
+        ]
+    },
+    aware: {
+        name: loc(`wiki_arpa_blood_aware`),
+        group: [
+            {
+                desc(){
+                    return loc("arpa_blood_blood_aware_desc");
+                },
+                active(){
+                    return global.blood['aware'] ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_blood_note`,[`<span class="has-text-caution">${loc(`arpa_blood_blood_aware_title`)}</span>`])
         ]
     },
     harmonic: {

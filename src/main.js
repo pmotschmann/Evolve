@@ -2882,16 +2882,18 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 fur_bd[loc('city_factory')] = factory_output + 'v';
+                
+                if (delta > 0){
+                    if (global.race['discharge'] && global.race['discharge'] > 0){
+                        delta *= 0.5;
+                        fur_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
-                    delta *= 0.5;
-                    fur_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
-
-                if (global.tech['q_factory']){
-                    let q_bonus = (quantum_level - 1) / 8 + 1;
-                    delta *= q_bonus;
-                    fur_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    if (global.tech['q_factory']){
+                        let q_bonus = (quantum_level - 1) / 8 + 1;
+                        delta *= q_bonus;
+                        fur_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    }
                 }
                 modRes('Furs', delta * time_multiplier);
             }
@@ -2949,17 +2951,19 @@ function fastLoop(){
                 let alloy_bd = {};
                 alloy_bd[loc('city_factory')] = factory_output + 'v';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
-                    delta *= 0.5;
-                    alloy_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
+                if (delta > 0){
+                    if (global.race['discharge'] && global.race['discharge'] > 0){
+                        delta *= 0.5;
+                        alloy_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
 
-                if (global.tech['q_factory']){
-                    let q_bonus = (quantum_level - 1) / 2 + 1;
-                    delta *= q_bonus;
-                    alloy_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    if (global.tech['q_factory']){
+                        let q_bonus = (quantum_level - 1) / 2 + 1;
+                        delta *= q_bonus;
+                        alloy_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    }
+                    alloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 }
-                alloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Alloy'] = alloy_bd;
                 modRes('Alloy', delta * time_multiplier);
             }
@@ -3019,15 +3023,17 @@ function fastLoop(){
 
                 polymer_bd[loc('city_factory')] = factory_output + 'v';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
-                    delta *= 0.5;
-                    polymer_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
+                if (delta > 0){
+                    if (global.race['discharge'] && global.race['discharge'] > 0){
+                        delta *= 0.5;
+                        polymer_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
 
-                if (global.tech['q_factory']){
-                    let q_bonus = (quantum_level - 1) / 2 + 1;
-                    delta *= q_bonus;
-                    polymer_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    if (global.tech['q_factory']){
+                        let q_bonus = (quantum_level - 1) / 2 + 1;
+                        delta *= q_bonus;
+                        polymer_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    }
                 }
                 polymer_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 modRes('Polymer', delta * time_multiplier);
@@ -3096,17 +3102,19 @@ function fastLoop(){
                 let nano_bd = {};
                 nano_bd[loc('city_factory')] = factory_output + 'v';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
-                    delta *= 0.5;
-                    nano_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
+                if (delta > 0){
+                    if (global.race['discharge'] && global.race['discharge'] > 0){
+                        delta *= 0.5;
+                        nano_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
 
-                if (global.tech['q_factory']){
-                    let q_bonus = (quantum_level - 1) / 2 + 1;
-                    delta *= q_bonus;
-                    nano_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    if (global.tech['q_factory']){
+                        let q_bonus = (quantum_level - 1) / 2 + 1;
+                        delta *= q_bonus;
+                        nano_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    }
+                    nano_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 }
-                nano_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Nano_Tube'] = nano_bd;
                 modRes('Nano_Tube', delta * time_multiplier);
             }
@@ -3163,17 +3171,19 @@ function fastLoop(){
                 let stanene_bd = {};
                 stanene_bd[loc('city_factory')] = factory_output + 'v';
 
-                if (global.race['discharge'] && global.race['discharge'] > 0){
-                    delta *= 0.5;
-                    stanene_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
+                if (delta > 0){
+                    if (global.race['discharge'] && global.race['discharge'] > 0){
+                        delta *= 0.5;
+                        stanene_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
 
-                if (global.tech['q_factory']){
-                    let q_bonus = (quantum_level - 1) / 2 + 1;
-                    delta *= q_bonus;
-                    stanene_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    if (global.tech['q_factory']){
+                        let q_bonus = (quantum_level - 1) / 2 + 1;
+                        delta *= q_bonus;
+                        stanene_bd[`ᄂ${loc('quantum')}`] = ((q_bonus - 1) * 100) + '%';
+                    }
+                    stanene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 }
-                stanene_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Stanene'] = stanene_bd;
                 modRes('Stanene', delta * time_multiplier);
             }
@@ -4307,7 +4317,7 @@ function fastLoop(){
             let gas_mining = int_on['harvester'] * 0.85 * zigguratBonus();
             let delta = gas_mining * hunger * global_multiplier;
 
-            helium_bd['Harvester'] = gas_mining + 'v';
+            helium_bd[loc('interstellar_harvester_title')] = gas_mining + 'v';
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;
                 helium_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
@@ -4618,7 +4628,7 @@ function fastLoop(){
             if (p_on['casino']){ casinos += p_on['casino']; }
             if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
 
-            let cash = (Math.log2(global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+            let cash = (Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
             if (global.tech.gambling >= 2){
                 cash *= global.tech.gambling >= 5 ? 2 : 1.5;
             }

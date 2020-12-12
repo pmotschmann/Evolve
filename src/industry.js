@@ -1008,7 +1008,7 @@ export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
         case 'city':
-            isOk = checkCityRequirements(p1);
+            isOk = global.race['cataclysm'] ? false : checkCityRequirements(p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);

@@ -338,6 +338,7 @@ export function buildQueue(){
                     }
                     else {
                         global.queue.queue.splice(index,1);
+                        buildQueue();
                     }
                 },
                 setID(index){
