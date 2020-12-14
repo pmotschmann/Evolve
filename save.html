@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Evolve Save String</title>
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+    <link rel="icon" href="evolved.ico" type="images/x-icon">
+    <script src="lib/lz-string.min.js"></script>
+    <style>
+        #save {
+            width: 90%;
+            height: 20rem;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="save"></textarea>
+    <script>
+        let global_data = window.localStorage.getItem('evolved') || false;
+        if (global_data) {
+            // Load pre-existing game data
+            let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+            if (saveState){
+                document.getElementById('save').innerHTML = LZString.compressToBase64(JSON.stringify(saveState));
+            }
+            else {
+                document.getElementById('save').innerHTML = 'Corrupted save data detected';
+            }
+        }
+        else {
+            document.getElementById('save').innerHTML = 'No Save data detected';
+        }
+
+    </script>
+</body>
+</html>
