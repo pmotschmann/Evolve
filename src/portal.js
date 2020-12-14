@@ -3246,7 +3246,7 @@ export function drawMechLab(){
             },
             filters: {
                 bay(s){
-                    mechSize(s);
+                    return mechSize(s);
                 },
                 price(s){
                     switch (s){
