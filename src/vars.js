@@ -612,7 +612,7 @@ if (convertVersion(global['version']) < 100015){
 
 if (convertVersion(global['version']) < 100016){
     ['l','a','e','h','m','mg'].forEach(function(affix){
-        if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
+        if (global.stats.hasOwnProperty('spire') && global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
             global.stats.spire[affix]['dlstr'] = global.stats.spire[affix].lord;
         }
     });
