@@ -3505,8 +3505,8 @@ export function mechRating(mech,boss){
         }
 
         let affix = universeAffix();
-        if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
-            rating /= 100 + (global.stats.spire[affix].lord * 25);
+        if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr')){
+            rating /= 100 + (global.stats.spire[affix].dlstr * 25);
         }
         else {
             rating /= 100;
@@ -3893,6 +3893,13 @@ export function descension(){
             artifacts = alevel();
             break;
     }
+
+    [50,100].forEach(function(x){
+        if (global.portal.spire.count > x){
+            artifacts++;
+        }
+    });
+
     global.resource.Artifact.amount += artifacts;
     global.resource.Artifact.display = true;
 
@@ -3903,6 +3910,18 @@ export function descension(){
         }
         else {
             global.stats.spire[affix]['lord'] = 1;
+        }
+
+        if (global.tech['dl_reset']){
+            global.stats.spire[affix]['dlstr'] = 0;
+        }
+        else { 
+            if (global.stats.spire[affix].hasOwnProperty('dlstr')){
+                global.stats.spire[affix].dlstr++;
+            }
+            else {
+                global.stats.spire[affix]['dlstr'] = 1;
+            }
         }
     }
 

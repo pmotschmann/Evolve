@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.16`,
+        date: `12/16/2020`,
+        changes: [
+            `Dark Bomb: Kill and Reset the Demon Lord's accumulated strength using the new Dark Bomb.`,
+            `Bonus Artifacts can now be earned during Demonic Infusion if Spire floor 50 or 100 are cleared.`
+        ]
+    },
+    {
         version: `1.0.15`,
         date: `12/12/2020`,
         changes: [

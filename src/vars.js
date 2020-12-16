@@ -610,7 +610,15 @@ if (convertVersion(global['version']) < 100015){
     }
 }
 
-global['version'] = '1.0.15';
+if (convertVersion(global['version']) < 100016){
+    ['l','a','e','h','m','mg'].forEach(function(affix){
+        if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
+            global.stats.spire[affix]['dlstr'] = global.stats.spire[affix].lord;
+        }
+    }); 
+}
+
+global['version'] = '1.0.16';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

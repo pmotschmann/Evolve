@@ -1,7 +1,7 @@
 import { global, save } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
-import { unlockAchieve, alevel } from './achieve.js';
+import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
 import { races } from './races.js';
@@ -9886,6 +9886,45 @@ const techs = {
             clearElement($('#resources'));
             defineResources();
         }
+    },
+    dark_bomb: {
+        id: 'tech-dark_bomb',
+        title: loc('tech_dark_bomb'),
+        desc: loc('tech_dark_bomb'),
+        category: 'hell_dimension',
+        era: 'dimensional',
+        reqs: {},
+        reqs: { hell_spire: 10, b_stone: 2, waygate: 2, sphinx_bribe: 1 },
+        condition(){
+            let affix = universeAffix();
+            if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr') && global.stats.spire[affix].dlstr > 0){
+                return true;
+            }
+            return false;
+        },
+        grant: ['waygate',3],
+        cost: {
+            Knowledge(){ return 65000000; },
+            Soul_Gem(){ return 5000; },
+            Blood_Stone(){ return 10; },
+            Dark(){ return 1; },
+            Supply(){ return 1000000; }
+        },
+        effect(){
+            return loc('tech_dark_bomb_effect');
+        },
+        action(){
+            if (payCosts($(this)[0].cost)){
+                global.portal.waygate.progress = 100;
+                global.portal.waygate.on = 0;
+                global.tech['dl_reset'] = 1;
+                global.resource.Demonic_Essence.display = true;
+                global.resource.Demonic_Essence.amount = 1;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_dark_bomb_flair'); }
     },
     bribe_sphinx: {
         id: 'tech-bribe_sphinx',

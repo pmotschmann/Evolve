@@ -1,7 +1,7 @@
 import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
-import { actions, actionDesc, updateQueueNames } from './actions.js';
+import { actions, actionDesc } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';

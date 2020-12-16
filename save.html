@@ -17,7 +17,6 @@
     <script>
         let global_data = window.localStorage.getItem('evolved') || false;
         if (global_data) {
-            // Load pre-existing game data
             let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
             if (saveState){
                 document.getElementById('save').innerHTML = LZString.compressToBase64(JSON.stringify(saveState));
