@@ -640,6 +640,11 @@ const extraInformation = {
     demonic_infusion: [
         loc(`wiki_tech_demonic_infusion`)
     ],
+    dark_bomb: [
+        loc(`wiki_tech_dark_bomb`),
+        loc(`wiki_tech_dark_bomb2`),
+        loc(`wiki_tech_dark_bomb3`)
+    ],
     gate_key: [
         loc(`wiki_tech_building_unlock`,[loc(`portal_west_tower`)]),
         loc(`wiki_tech_building_unlock`,[loc(`portal_east_tower`)])

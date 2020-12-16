@@ -7,7 +7,8 @@ const changeList = [
         date: `12/16/2020`,
         changes: [
             `Dark Bomb: Kill and Reset the Demon Lord's accumulated strength using the new Dark Bomb.`,
-            `Bonus Artifacts can now be earned during Demonic Infusion if Spire floor 50 or 100 are cleared.`
+            `Bonus Artifacts can now be earned during Demonic Infusion if Spire floor 50 or 100 are cleared.`,
+            `Renamed the tech upgrade Purify to Enchanced Air Filters in order to prevent confusion with the Blood Infusion Purify.`
         ]
     },
     {

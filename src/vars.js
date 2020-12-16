@@ -615,7 +615,11 @@ if (convertVersion(global['version']) < 100016){
         if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('lord')){
             global.stats.spire[affix]['dlstr'] = global.stats.spire[affix].lord;
         }
-    }); 
+    });
+
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('gift') && global.special.gift){
+        global.special.gift = { g2019: true };
+    }
 }
 
 global['version'] = '1.0.16';
@@ -1025,7 +1029,7 @@ if (!global['special']){
     global['special'] = {};
 }
 if (!global.special.hasOwnProperty('gift')){
-    global.special['gift'] = false;
+    global.special['gift'] = {};
 }
 if (!global.special.hasOwnProperty('egg')){
     global.special['egg'] = {

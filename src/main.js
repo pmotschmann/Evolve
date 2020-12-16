@@ -7698,7 +7698,7 @@ function longLoop(){
     }
 
     if (date.getMonth() === 11 && date.getDate() >= 17 && date.getDate() <= 24){
-        global.special.gift = true;
+        global.special.gift[`g${date.getFullYear()}`] = true;
         global.tech['santa'] = 1;
     }
     else {

@@ -4300,6 +4300,11 @@ const techs = {
                     artifacts = alevel();
                     break;
             }
+            [50,100].forEach(function(x){
+                if (global.portal.hasOwnProperty('spire') && global.portal.spire.count > x){
+                    artifacts++;
+                }
+            });
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[artifacts])}</div>`;
         },
         action(){
@@ -9902,7 +9907,7 @@ const techs = {
             }
             return false;
         },
-        grant: ['waygate',3],
+        grant: ['dl_reset',1],
         cost: {
             Knowledge(){ return 65000000; },
             Soul_Gem(){ return 5000; },
@@ -9917,7 +9922,7 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.portal.waygate.progress = 100;
                 global.portal.waygate.on = 0;
-                global.tech['dl_reset'] = 1;
+                global.tech['waygate'] = 3;
                 global.resource.Demonic_Essence.display = true;
                 global.resource.Demonic_Essence.amount = 1;
                 return true;
