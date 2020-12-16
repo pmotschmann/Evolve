@@ -1243,7 +1243,7 @@ function war_campaign(gov){
                     if (global.race['beast_of_burden']){
                         looted.push(extra[Math.floor(Math.seededRandom(0,extra.length,true))]);
                     }
-                    if (global.resource.Steel.amount < 25 && global.tech['smelting'] && global.tech.smelting === 1 && Math.floor(Math.seededRandom(0,20,true) === 0)){
+                    if (global.resource.Steel.amount < 25 && global.tech['smelting'] && global.tech.smelting === 1 && Math.floor(Math.seededRandom(0,20,true)) === 0){
                         looted.push('Steel');
                     }
                 }
