@@ -9911,7 +9911,7 @@ const techs = {
         cost: {
             Knowledge(){ return 65000000; },
             Soul_Gem(){ return 5000; },
-            Blood_Stone(){ return 10; },
+            Blood_Stone(){ return 25; },
             Dark(){ return 1; },
             Supply(){ return 1000000; }
         },

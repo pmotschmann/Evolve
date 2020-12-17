@@ -1156,8 +1156,6 @@ if (!global.race['evil'] && global.race['immoral']){
     if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
     }
-
-    
 }
 
 {
