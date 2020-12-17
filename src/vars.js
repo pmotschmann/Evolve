@@ -1028,7 +1028,7 @@ if (!global.settings['affix']){
 if (!global['special']){
     global['special'] = {};
 }
-if (!global.special.hasOwnProperty('gift')){
+if (!global.special['gift']){
     global.special['gift'] = {};
 }
 if (!global.special.hasOwnProperty('egg')){
@@ -1155,6 +1155,21 @@ if (!global.race['evil'] && global.race['immoral']){
     const date = new Date();
     if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
+    }
+
+    
+}
+
+{
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('gift')){
+        const sdate = new Date(global.stats.start);
+        const cdate = new Date();
+        Object.keys(global.special.gift).forEach(function(gy){
+            let year = Number(gy.substring(1,5));
+            if ((year < sdate.getFullYear()) || (cdate.getFullYear() < year) || (cdate.getFullYear() === year && cdate.getMonth() !== 11)){
+                delete global.special.gift[gy];
+            }
+        });
     }
 }
 
