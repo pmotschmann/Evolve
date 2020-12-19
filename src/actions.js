@@ -408,31 +408,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['athropods'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
-                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
-                        removeAction(actions.evolution.aquatic.id);
-                        delete global.evolution.aquatic;
-                    }
-                    if (global.city.biome === 'forest' || global.blood['unbound']){
-                        removeAction(actions.evolution.fey.id);
-                        delete global.evolution.fey;
-                    }
-                    if (global.city.biome === 'desert' || global.blood['unbound']){
-                        removeAction(actions.evolution.sand.id);
-                        delete global.evolution.sand;
-                    }
-                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
-                        removeAction(actions.evolution.heat.id);
-                        delete global.evolution.heat;
-                    }
-                    if (global.city.biome === 'tundra' || global.blood['unbound']){
-                        removeAction(actions.evolution.polar.id);
-                        delete global.evolution.polar;
-                    }
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -519,13 +495,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['humanoid'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    delete global.evolution.gigantism;
-                    delete global.evolution.dwarfism;
-                    delete global.evolution.animalism;
+                    cleanEvolution($(this)[0].id);
                     if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
@@ -562,13 +532,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['gigantism'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.dwarfism;
-                    delete global.evolution.animalism;
+                    cleanEvolution($(this)[0].id);
                     if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
@@ -605,13 +569,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['dwarfism'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.gigantism;
-                    delete global.evolution.animalism;
+                    cleanEvolution($(this)[0].id);
                     if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
@@ -648,13 +606,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['animalism'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.gigantism;
-                    delete global.evolution.dwarfism;
+                    cleanEvolution($(this)[0].id);
                     if (global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3){
                         removeAction(actions.evolution.demonic.id);
                         delete global.evolution.demonic;
@@ -691,15 +643,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['celestial'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    removeAction(actions.evolution.celestial.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.gigantism;
-                    delete global.evolution.dwarfism;
-                    delete global.evolution.animalism;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -728,15 +672,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['demonic'].count++;
-                    removeAction(actions.evolution.humanoid.id);
-                    removeAction(actions.evolution.gigantism.id);
-                    removeAction(actions.evolution.dwarfism.id);
-                    removeAction(actions.evolution.animalism.id);
-                    removeAction(actions.evolution.demonic.id);
-                    delete global.evolution.humanoid;
-                    delete global.evolution.gigantism;
-                    delete global.evolution.dwarfism;
-                    delete global.evolution.animalism;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -765,13 +701,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['aquatic'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    removeAction(actions.evolution.aquatic.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -800,13 +730,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['fey'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    removeAction(actions.evolution.fey.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -835,13 +759,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['heat'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    removeAction(actions.evolution.heat.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -870,13 +788,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['polar'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    removeAction(actions.evolution.polar.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -905,13 +817,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['sand'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    removeAction(actions.evolution.sand.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    delete global.evolution.eggshell;
+                    cleanEvolution($(this)[0].id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -940,31 +846,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['eggshell'].count++;
-                    removeAction(actions.evolution.athropods.id);
-                    removeAction(actions.evolution.mammals.id);
-                    removeAction(actions.evolution.eggshell.id);
-                    delete global.evolution.athropods;
-                    delete global.evolution.mammals;
-                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
-                        removeAction(actions.evolution.aquatic.id);
-                        delete global.evolution.aquatic;
-                    }
-                    if (global.city.biome === 'forest' || global.blood['unbound']){
-                        removeAction(actions.evolution.fey.id);
-                        delete global.evolution.fey;
-                    }
-                    if (global.city.biome === 'desert' || global.blood['unbound']){
-                        removeAction(actions.evolution.sand.id);
-                        delete global.evolution.sand;
-                    }
-                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
-                        removeAction(actions.evolution.heat.id);
-                        delete global.evolution.heat;
-                    }
-                    if (global.city.biome === 'tundra' || global.blood['unbound']){
-                        removeAction(actions.evolution.polar.id);
-                        delete global.evolution.polar;
-                    }
+                    cleanEvolution($(this)[0].id);
                     global.evolution['endothermic'] = { count: 0 };
                     global.evolution['ectothermic'] = { count: 0 };
                     global.evolution['final'] = 90;
@@ -5072,6 +4954,15 @@ export const actions = {
     },
     portal: fortressTech()
 };
+
+function cleanEvolution(id){
+    ['humanoid','gigantism','dwarfism','animalism','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
+        removeAction(actions.evolution[path].id);
+        if (global.evolution.hasOwnProperty(path) && `evo-${path}` !== id){
+            delete global.evolution[path];
+        }
+    });
+}
 
 export function templeEffect(){
     let desc;

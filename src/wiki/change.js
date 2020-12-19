@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Larger font size modes.`,
             `Added descriptions for city sectors.`,
-            `Last 3 event messages will now be preserved on reload.`
+            `Last 3 event messages will now be preserved on reload.`,
+            `Fixed Evolution bugs with Unbound Infusion active.`
         ]
     },
     {
