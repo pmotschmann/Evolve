@@ -94,6 +94,13 @@ export function mainVue(){
             },
             remove(index){
                 global.r_queue.queue.splice(index,1);
+            },
+            font(f){
+                global.settings.font = f;
+                $(`html`).removeClass('standard');
+                $(`html`).removeClass('large_log');
+                $(`html`).removeClass('large_all');
+                $('html').addClass(f);
             }
         },
         filters: {
@@ -146,6 +153,16 @@ export function mainVue(){
                         return loc('tab_new_sr_res');
                     default:
                         return loc(lbl);
+                }
+            },
+            notation(n){
+                switch (n){
+                    case 'si':
+                        return loc(`metric`);
+                    case 'sci':
+                        return loc(`scientific`);
+                    case 'sln':
+                        return loc(`sln`);
                 }
             }
         }

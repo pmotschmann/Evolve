@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.17`,
+        date: `12/19/2020`,
+        changes: [
+            `Larger font size modes.`
+        ]
+    },
+    {
         version: `1.0.16`,
         date: `12/16/2020`,
         changes: [

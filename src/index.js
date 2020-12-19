@@ -5,6 +5,8 @@ import { clearElement, easterEgg, trickOrTreat } from './functions.js';
 export function index(){
     clearElement($('body'));
 
+    $('html').addClass(global.settings.font);
+
     // Top Bar
     $('body').append(`<div id="topBar" class="topBar">
         <h2 class="is-sr-only">Top Bar</h2>
@@ -318,7 +320,7 @@ export function index(){
             <span>{{ 'units' | label }} </span>
             <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
-                    <span>{{ s.affix }}</span>
+                    <span>{{ s.affix | notation }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
                 <b-dropdown-item v-on:click="si">{{ 'metric' | label }}</b-dropdown-item>
@@ -338,14 +340,25 @@ export function index(){
             </b-dropdown>
         </div>
         <div id="localization" class="localization">
-          <span>{{ 'locale' | label }} </span>
-          <b-dropdown hoverable>
-              <button class="button is-primary" slot="trigger">
-                  <span>${current_locale}</span>
-                  <i class="fas fa-sort-down"></i>
-              </button>
-              ${localelist}
-          </b-dropdown>
+            <span>{{ 'locale' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>${current_locale}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                ${localelist}
+            </b-dropdown>
+
+            <span>{{ 'font' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.font | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="font('standard')">{{ 'standard' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="font('large_log')">{{ 'large_log' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
+            </b-dropdown>
         </div>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>

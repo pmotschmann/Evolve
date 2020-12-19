@@ -622,7 +622,13 @@ if (convertVersion(global['version']) < 100016){
     }
 }
 
-global['version'] = '1.0.16';
+if (convertVersion(global['version']) < 100017){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('font')){
+        global.settings['font'] = 'standard';
+    }
+}
+
+global['version'] = '1.0.17';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -667,6 +673,7 @@ if (!global['settings']){
         showAchieve: false,
         animated: true,
         disableReset: false,
+        font: 'standard',
         cLabels: true,
         theme: 'night',
         locale: 'en-US',
