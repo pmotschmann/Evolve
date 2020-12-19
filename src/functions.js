@@ -305,11 +305,19 @@ export function powerGrid(type,reset){
     });
 }
 
-export function messageQueue(msg,color){
+export function messageQueue(msg,color,dnr){
     color = color || 'warning';
     var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
     $('#msgQueue').prepend(new_message);
-    global.lastMsg = { m: msg, c: color };
+    if (!dnr){
+        if (!global.lastMsg){
+            global.lastMsg = [];
+        }
+        global.lastMsg.unshift({ m: msg, c: color });
+        if (global.lastMsg.length > 3){
+            global.lastMsg = global.lastMsg.slice(0,3);
+        }
+    }
     if ($('#msgQueue').children().length > 30){
         $('#msgQueue').children().last().remove();
     }

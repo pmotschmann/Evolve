@@ -29,7 +29,9 @@ else {
 }
 
 if (global.lastMsg){
-    messageQueue(global.lastMsg.m, global.lastMsg.c);
+    global.lastMsg.reverse().forEach(function(msg){
+        messageQueue(msg.m, msg.c, true);
+    });
 }
 
 if (global.queue.rename === true){

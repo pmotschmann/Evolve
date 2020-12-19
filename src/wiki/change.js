@@ -6,7 +6,9 @@ const changeList = [
         version: `1.0.17`,
         date: `12/19/2020`,
         changes: [
-            `Larger font size modes.`
+            `Larger font size modes.`,
+            `Added descriptions for city sectors.`,
+            `Last 3 event messages will now be preserved on reload.`
         ]
     },
     {

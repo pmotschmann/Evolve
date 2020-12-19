@@ -16,7 +16,7 @@ export const events = {
             var res = global.resource.DNA.amount + gain;
             if (res > global.resource.DNA.max){ res = global.resource.DNA.max; }
             global.resource.DNA.amount = res;
-            return loc('event_dna',[gain]);
+            return loc('event_dna',[gain.toLocaleString()]);
         }
     },
     rna_meteor: {
@@ -29,7 +29,7 @@ export const events = {
             var res = global.resource.RNA.amount + gain;
             if (res > global.resource.RNA.max){ res = global.resource.RNA.max; }
             global.resource.RNA.amount = res;
-            return loc('event_rna',[gain]);
+            return loc('event_rna',[gain.toLocaleString()]);
         }
     },
     inspiration: {
@@ -52,7 +52,7 @@ export const events = {
             var res = global.resource.Lumber.amount - loss;
             if (res < 0){ res = 0; }
             global.resource.Lumber.amount = res;
-            return loc('event_fire',[loss]);
+            return loc('event_fire',[loss.toLocaleString()]);
         }
     },
     flare: {
@@ -95,7 +95,7 @@ export const events = {
                 global.city['firestorm'] = Math.rand(400,4000);
             }
 
-            return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[races[global.race.species].home, loss]);
+            return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[races[global.race.species].home, loss.toLocaleString()]);
         }
     },
     raid: {
@@ -127,18 +127,18 @@ export const events = {
             }
 
             if (army > enemy){
-                return loc('event_raid1',[killed,wounded]);
+                return loc('event_raid1',[killed.toLocaleString(),wounded.toLocaleString()]);
             }
             else {
                 let loss = Math.rand(1,Math.round(global.resource.Money.amount / 4));
                 if (loss <= 0){
-                    return loc('event_raid1',[killed,wounded]);
+                    return loc('event_raid1',[killed.toLocaleString(),wounded.toLocaleString()]);
                 }
                 else {
                     let res = global.resource.Money.amount - loss;
                     if (res < 0){ res = 0; }
                     global.resource.Money.amount = res;
-                    return loc('event_raid2',[loss,killed,wounded]);
+                    return loc('event_raid2',[loss.toLocaleString(),killed.toLocaleString(),wounded.toLocaleString()]);
                 }
             }
         }
@@ -175,14 +175,14 @@ export const events = {
             }
 
             if (army > enemy){
-                return loc('event_siege1',[killed,wounded]);
+                return loc('event_siege1',[killed.toLocaleString(),wounded.toLocaleString()]);
             }
             else {
                 var loss = Math.rand(1,Math.round(global.resource.Money.amount / 2));
                 var res = global.resource.Money.amount - loss;
                 if (res < 0){ res = 0; }
                 global.resource.Money.amount = res;
-                return loc('event_siege2',[loss,killed,wounded]);
+                return loc('event_siege2',[loss.toLocaleString(),killed.toLocaleString(),wounded.toLocaleString()]);
             }
         }
     },
@@ -208,10 +208,10 @@ export const events = {
             }
 
             if (killed === 0){
-                return loc('event_terrorist1',[wounded]);
+                return loc('event_terrorist1',[wounded.toLocaleString()]);
             }
             else {
-                return loc('event_terrorist2',[wounded,killed]);
+                return loc('event_terrorist2',[wounded.toLocaleString(),killed.toLocaleString()]);
             }
         }
     },
@@ -250,7 +250,7 @@ export const events = {
         effect: function(){
             let surge = Math.rand(2500,5000);
             global.portal.fortress.threat += surge;
-            return loc('event_demon_influx',[surge]);
+            return loc('event_demon_influx',[surge.toLocaleString()]);
         }
     },
     ruins: {
