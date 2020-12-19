@@ -5435,6 +5435,15 @@ export function drawCity(){
             city_buildings[category].forEach(function(city_name) {
                 addAction('city', city_name);
             });
+
+            popover(`dist-${category}`, function(){
+                return loc(`city_dist_${category}_desc`);
+            },
+            {
+                elm: `#city-dist-${category} h3`,
+                classes: `has-background-light has-text-dark`
+            }
+        );
         }
     });
 }
