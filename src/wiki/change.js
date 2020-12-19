@@ -9,7 +9,8 @@ const changeList = [
             `Larger font size modes.`,
             `Added descriptions for city sectors.`,
             `Last 3 event messages will now be preserved on reload.`,
-            `Fixed Evolution bugs with Unbound Infusion active.`
+            `Fixed Evolution bugs with Unbound Infusion active.`,
+            `Improved timer accuracy of stacked queue items when No Queue Order is used.`
         ]
     },
     {

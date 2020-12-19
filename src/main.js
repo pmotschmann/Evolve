@@ -6700,8 +6700,11 @@ function midLoop(){
             let arpa = false;
             let queued = {};
             for (let i=0; i<global.queue.queue.length; i++){
+                if (global.settings.qAny){
+                    spent = { t: 0, r: {}, id: {}};
+                    time = 0;
+                }
                 let struct = global.queue.queue[i];
-                time = global.settings.qAny ? 0 : time;
 
                 let t_action = false;
                 if (deepScan.includes(struct.action)){
@@ -6746,11 +6749,11 @@ function midLoop(){
 
                 if (struct.action === 'arpa'){
                     let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
-                    time += global.settings.qAny ? arpaTimeCheck(t_action, remain) : arpaTimeCheck(t_action, remain, spent);
+                    time += arpaTimeCheck(t_action, remain, spent);
                     global.queue.queue[i]['time'] = time;
                     if (global.queue.queue[i].q > 1){
                         for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += global.settings.qAny ? arpaTimeCheck(t_action, 1) : arpaTimeCheck(t_action, 1, spent);
+                            time += arpaTimeCheck(t_action, 1, spent);
                         }
                     }
                     global.queue.queue[i]['t_max'] = time;
@@ -6793,13 +6796,13 @@ function midLoop(){
                             arpa = false;
                         }
                         else {
-                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            time += timeCheck(t_action, spent);
                         }
                         global.queue.queue[i]['time'] = time;
                         stop = global.settings.qAny ? false : true;
                         if (global.queue.queue[i].q > 1){
                             for (let j=1; j<global.queue.queue[i].q; j++){
-                                time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                                time += timeCheck(t_action, spent);
                             }
                         }
                         global.queue.queue[i]['t_max'] = time;
