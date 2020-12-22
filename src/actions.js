@@ -2466,7 +2466,6 @@ export const actions = {
                 return false;
             },
             count(){
-                const date = new Date();
                 let gift_count = 0;
                 if (global['special'] && global.special['gift']){
                     Object.keys(global.special.gift).forEach(function(g){
@@ -2517,22 +2516,28 @@ export const actions = {
     
                             let plasmid = 100 + resets + mad;
                             let phage = bioseed + cataclysm;
-    
                             let gift = [];
+
+                            if (global.stats.died + global.stats.tdied > 0){
+                                let dead = global.stats.died + global.stats.tdied;
+                                global.resource.Coal.amount += dead;
+                                gift.push(`${dead.toLocaleString()} ${loc(`resource_Coal_name`)}`);
+                            }
+
                             if (global.race.universe === 'antimatter'){
                                 global.race.Plasmid.anti += plasmid;
                                 global.stats.antiplasmid += plasmid;
-                                gift.push(`${plasmid} ${loc(`resource_AntiPlasmid_plural_name`)}`);
+                                gift.push(`${plasmid.toLocaleString()} ${loc(`resource_AntiPlasmid_plural_name`)}`);
                             }
                             else {
                                 global.race.Plasmid.count += plasmid;
                                 global.stats.plasmid += plasmid;
-                                gift.push(`${plasmid} ${loc(`resource_Plasmid_plural_name`)}`);
+                                gift.push(`${plasmid.toLocaleString()} ${loc(`resource_Plasmid_plural_name`)}`);
                             }
                             if (phage > 0){
                                 global.race.Phage.count += phage;
                                 global.stats.phage += phage;
-                                gift.push(`${phage} ${loc(`resource_Phage_name`)}`);
+                                gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
                             }
     
                             if (global.stats.hasOwnProperty('achieve')){
