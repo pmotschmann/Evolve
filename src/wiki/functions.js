@@ -140,15 +140,16 @@ export function actionDesc(info, c_action, extended){
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res](true);
+                let f_res = res === 'Species' ? global.race.species : res;
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
                     }
                     else {
-                        let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                        let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
                         let display_cost = sizeApproximation(res_cost,1);
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
                     }
                     render = true;
                 }
