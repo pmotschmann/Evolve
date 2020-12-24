@@ -6082,14 +6082,15 @@ function srDesc(c_action,old){
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
+                let f_res = res === 'Species' ? global.race.species : res;
                 if (res_cost > 0){
-                    let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                    let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                     label = label.replace("_", " ");
 
                     let display_cost = sizeApproximation(res_cost,1);
                     desc = desc + `${label}${display_cost}. `;
-                    if (global.resource[res].amount < res_cost){
-                        desc = desc + `${loc('insufficient')} ${global.resource[res].name}. `;
+                    if (global.resource[f_res].amount < res_cost){
+                        desc = desc + `${loc('insufficient')} ${global.resource[f_res].name}. `;
                     }
                 }
             }
@@ -6202,15 +6203,16 @@ export function actionDesc(parent,c_action,obj,old){
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
                     }
                     else {
-                        let label = res === 'Money' ? '$' : global.resource[res].name+': ';
+                        let f_res = res === 'Species' ? global.race.species : res;
+                        let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
                         let color = 'has-text-dark';
-                        if (global.resource[res].amount < res_cost){
-                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                        if (global.resource[f_res].amount < res_cost){
+                            color = tc.r === f_res ? 'has-text-danger' : 'has-text-alert';
                         }
                         let display_cost = sizeApproximation(res_cost,1);
                         empty = false;
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${display_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
                     }
                 }
             }
@@ -6291,8 +6293,9 @@ export function payCosts(costs){
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'HellArmy' && res !== 'Structs' && res !== 'Bool' && res !== 'Custom'){
                 let cost = costs[res]();
-                global['resource'][res].amount -= cost;
-                if (res === 'Knowledge'){
+                let f_res = res === 'Species' ? global.race.species : res;
+                global['resource'][f_res].amount -= cost;
+                if (f_res === 'Knowledge'){
                     global.stats.know += cost;
                 }
             }
@@ -6370,7 +6373,8 @@ function checkMaxCosts(costs){
         }
         else {
             var testCost = Number(costs[res]()) || 0;
-            if (global.resource[res].max >= 0 && testCost > Number(global.resource[res].max) && Number(global.resource[res].max) !== -1){
+            let f_res = res === 'Species' ? global.race.species : res;
+            if (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1){
                 test = false;
                 return;
             }
@@ -6439,8 +6443,9 @@ export function checkCosts(costs){
         }
         else {
             var testCost = Number(costs[res]()) || 0;
-            let fail_max = global.resource[res].max >= 0 && testCost > global.resource[res].max ? true : false;
-            if (testCost > Number(global.resource[res].amount) + global.resource[res].diff || fail_max){
+            let f_res = res === 'Species' ? global.race.species : res;
+            let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
+            if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
                 test = false;
                 return;
             }

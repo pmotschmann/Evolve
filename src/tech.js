@@ -4286,7 +4286,7 @@ const techs = {
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
         grant: ['waygate',4],
         cost: {
-            [global.race.species](){ return 1000; },
+            Species(){ return 1000; },
             Knowledge(){ return 55000000; },
             Demonic_Essence(){ return 1; }
         },
@@ -4385,7 +4385,7 @@ const techs = {
         reqs: { high_tech: 16, corrupt: 1 },
         grant: ['corrupt',2],
         cost: {
-            [global.race.species](){ return 1; },
+            Species(){ return 1; },
             Knowledge(){ return 22000000; },
             Corrupt_Gem(){ return 1; }
         },

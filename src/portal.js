@@ -1223,7 +1223,7 @@ const fortressModules = {
             grant: ['hell_spire',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                [global.race.species](){ return 50; },
+                Species(){ return 50; },
                 Oil(){ return 900000; },
                 Helium_3(){ return 750000; },
                 Structs(){

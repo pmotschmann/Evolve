@@ -711,18 +711,19 @@ export function timeCheck(c_action,track,detailed){
             if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
-                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[res].amount);
-                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[res].max;
-                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[res].diff;
+                    let f_res = res === 'Species' ? global.race.species : res;
+                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
+                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[f_res].max;
+                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[f_res].diff;
 
                     if (track){
                         res_have += res_diff * track.t;
-                        if (track.r[res]){
-                            res_have -= Number(track.r[res]);
-                            track.r[res] += testCost;
+                        if (track.r[f_res]){
+                            res_have -= Number(track.r[f_res]);
+                            track.r[f_res] += testCost;
                         }
                         else {
-                            track.r[res] = testCost;
+                            track.r[f_res] = testCost;
                         }
                         if (res_max >= 0 && res_have > res_max){
                             res_have = res_max;
@@ -732,7 +733,7 @@ export function timeCheck(c_action,track,detailed){
                         if (res_diff > 0){
                             let r_time = (testCost - res_have) / res_diff;
                             if (r_time > time){
-                                bottleneck = res;
+                                bottleneck = f_res;
                                 time = r_time;
                             }
                         }

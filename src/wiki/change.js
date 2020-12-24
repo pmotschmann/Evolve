@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.18`,
+        date: `12/24/2020`,
+        changes: [
+            `Fixed issue with species costs on some techs requiring protoplasm withour a reload.`
+        ]
+    },
+    {
         version: `1.0.17`,
         date: `12/19/2020`,
         changes: [
