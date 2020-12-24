@@ -6,7 +6,7 @@ const changeList = [
         version: `1.0.18`,
         date: `12/24/2020`,
         changes: [
-            `Fixed issue with species costs on some techs requiring protoplasm withour a reload.`
+            `Fixed issue with species costs on some techs requiring protoplasm without a reload.`
         ]
     },
     {
