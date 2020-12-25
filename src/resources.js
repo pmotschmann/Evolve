@@ -677,13 +677,16 @@ function loadSpecialResource(name,color) {
         bind = 'Plasmid';
     }
     else {
-        var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count }}</span></div>`);
+        var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div>`);
         $('#resources').append(res_container);
     }
     
     vBind({
         el: `#res${name}`,
-        data: global.race[bind]
+        data: global.race[bind],
+        filters: {
+            round(n){ return +(n).toFixed(3); }
+        }
     });
 
     popover(`res${name}`, function(){
