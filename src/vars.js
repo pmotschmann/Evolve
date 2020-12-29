@@ -1432,11 +1432,13 @@ $(document).keydown(function(e){
             keyMap[k] = true;
         }
     });
-    Object.keys(quickMap).forEach(function(k){
-        if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
-            global.settings.civTabs = quickMap[k];
-        }
-    });
+    if (!$(`input`).is(':focus') && !$(`textarea`).is(':focus')){
+        Object.keys(quickMap).forEach(function(k){
+            if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
+                global.settings.civTabs = quickMap[k];
+            }
+        });
+    }
 });
 $(document).keyup(function(e){
     e = e || window.event;
