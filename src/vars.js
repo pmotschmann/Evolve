@@ -632,7 +632,7 @@ if (convertVersion(global['version']) < 100017){
     }
 }
 
-global['version'] = '1.0.19';
+global['version'] = '1.0.20';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1443,7 +1443,7 @@ $(document).keyup(function(e){
     let key = e.key || e.keyCode;
     Object.keys(keyMap).forEach(function(k){
         if (key === global.settings.keyMap[k]){
-            keyMap[k] = true;
+            keyMap[k] = false;
         }
     });
 });

@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.20`,
+        date: `12/29/2020`,
+        changes: [
+            `Fixed issue with keyup event not releasing multiplier keys.`
+        ]
+    },
+    {
         version: `1.0.19`,
         date: `12/28/2020`,
         changes: [
