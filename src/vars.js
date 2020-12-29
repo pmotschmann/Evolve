@@ -894,7 +894,7 @@ if (typeof global.settings.keyMap === 'undefined'){
         q: 'q', //81
     };
 }
-if (typeof global.settings.keyMap.t_civ === 'undefined'){
+if (typeof global.settings.keyMap.showCiv === 'undefined'){
     global.settings.keyMap['showCiv'] = '1'; // 49
     global.settings.keyMap['showCivic'] = '2'; // 50
     global.settings.keyMap['showResearch'] = '3'; // 51
