@@ -460,7 +460,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (stackable){
         res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button" aria-label="Open crate management for ${name}">+</span></span>`));
     }
-    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft'])){
+    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite'){
         res_container.append($('<span></span>'));
     }
     
@@ -569,8 +569,8 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 let popper = $(`<div></div>`);
                 let res = name;
                 let vol = inc[i];
-                let bonus = (craftingRatio(res) * 100).toFixed(0);
-                popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus,global.resource[res].name])}</div>`));
+                let bonus = +(craftingRatio(res) * 100).toFixed(0);
+                popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus.toLocaleString(),global.resource[res].name])}</div>`));
                 
                 let craft_costs = craftCost();
                 let crafts = $(`<div><span class="has-text-success">${loc('manual_crafting_hover_craft')} </span></div>`);
@@ -801,6 +801,9 @@ function marketItem(mount,market_item,name,color,full){
                 let rate = tradeRatio[res];
                 if (global.race['persuasive']){
                     rate *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.race['merchant']){
+                    rate *= 1 + (traits.merchant.vars[1] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
@@ -1052,6 +1055,9 @@ export function galacticTrade(modal){
                 let buy_vol = galaxyOffers[idx].buy.vol;
                 if (global.race['persuasive']){
                     buy_vol *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.race['merchant']){
+                    buy_vol *= 1 + (traits.merchant.vars[1] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();

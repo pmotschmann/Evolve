@@ -4516,6 +4516,9 @@ export const actions = {
                 if (global.race['nearsighted']){
                     gain *= 1 - (traits.nearsighted.vars[0] / 100);
                 }
+                if (global.race['studious']){
+                    gain *= 1 + (traits.studious.vars[1] / 100);
+                }
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
                 }

@@ -1642,8 +1642,9 @@ export function armyRating(val,type,wound){
         if (global.race['tracker']){
             army *= 1 + (traits.tracker.vars[0] / 100);
         }
-        if (global.race['beast'] && global.city.calendar.wind === 1){
-            army *= 1 + (traits.beast.vars[0] / 100);
+        if (global.race['beast']){
+            let rate = global.city.calendar.wind === 1 ? traits.beast.vars[1] : traits.beast.vars[0];
+            army *= 1 + (rate / 100);
         }
         if (global.race['apex_predator']){
             army *= 1 + (traits.apex_predator.vars[1] / 100);

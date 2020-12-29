@@ -1037,6 +1037,9 @@ function fastLoop(){
                         if (global.race['persuasive']){
                             rate *= 1 + (global.race['persuasive'] / 100);
                         }
+                        if (global.race['merchant']){
+                            rate *= 1 + (traits.merchant.vars[1] / 100);
+                        }
                         if (global.genes['trader']){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
@@ -1116,6 +1119,9 @@ function fastLoop(){
 
                 if (global.race['persuasive']){
                     imprt_vol *= 1 + (global.race['persuasive'] / 100);
+                }
+                if (global.race['merchant']){
+                    imprt_vol *= 1 + (traits.merchant.vars[1] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
@@ -4804,6 +4810,9 @@ function fastLoop(){
             }
             rate *= 1 + (global.city['boot_camp'].count * train);
         }
+        if (global.race['beast']){
+            rate *= 1 + (traits.beast.vars[2] / 100);
+        }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
             global.civic.garrison.progress += traits.brute.vars[1] * time_multiplier;
@@ -5730,6 +5739,9 @@ function midLoop(){
             let shelving = 125;
             if (global.race['nearsighted']){
                 shelving *= 1 - (traits.nearsighted.vars[0] / 100);
+            }
+            if (global.race['studious']){
+                shelving *= 1 + (traits.studious.vars[1] / 100);
             }
             if (global.tech['science'] && global.tech['science'] >= 8){
                 shelving *= 1.4;

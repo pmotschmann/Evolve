@@ -98,12 +98,12 @@ export const traits = {
         type: 'genus',
         val: -5,
     },
-    beast: { // Hunting improved when it's windy
+    beast: { // Improved hunting and soldier training
         name: loc('trait_beast_name'),
         desc: loc('trait_beast'),
         type: 'genus',
-        val: 2,
-        vars: [15]
+        val: 3,
+        vars: [10,20,20]
     },
     cautious: { // Rain reduces combat rating
         name: loc('trait_cautious_name'),
@@ -332,12 +332,12 @@ export const traits = {
         val: -4,
         vars: [25]
     },
-    studious: { // Professors generate an extra 0.25 Knowledge per second
+    studious: { // Professors generate an extra 0.25 Knowledge per second, Libraries provide 10% more knowledge cap
         name: loc('trait_studious_name'),
         desc: loc('trait_studious'),
         type: 'major',
         val: 2,
-        vars: [0.25]
+        vars: [0.25,10]
     },
     arrogant: { // Market prices are higher
         name: loc('trait_arrogant_name'),
@@ -380,12 +380,12 @@ export const traits = {
         val: 4,
         vars: [0.03,0.02]
     },
-    tracker: { // 10% increased gains from hunting
+    tracker: { // 20% increased gains from hunting
         name: loc('trait_tracker_name'),
         desc: loc('trait_tracker'),
         type: 'major',
         val: 2,
-        vars: [10]
+        vars: [20]
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
@@ -425,7 +425,7 @@ export const traits = {
         desc: loc('trait_merchant'),
         type: 'major',
         val: 3,
-        vars: [25]
+        vars: [25,10]
     },
     smart: { // Knowledge costs reduced by 10%
         name: loc('trait_smart_name'),
@@ -529,7 +529,7 @@ export const traits = {
         desc: loc('trait_resourceful'),
         type: 'major',
         val: 4,
-        vars: [10]
+        vars: [12]
     },
     selenophobia: { // Moon phase directly affects productivity, on average this is slightly negative
         name: loc('trait_selenophobia_name'),
@@ -668,7 +668,7 @@ export const traits = {
         desc: loc('trait_claws'),
         type: 'major',
         val: 5,
-        vars: [20]
+        vars: [25]
     },
     atrophy: { // More prone to starvation
         name: loc('trait_atrophy_name'),
@@ -701,7 +701,7 @@ export const traits = {
         desc: loc('trait_apex_predator'),
         type: 'major',
         val: 6,
-        vars: [25,50]
+        vars: [30,50]
     },
     invertebrate: { // You have no bones
         name: loc('trait_invertebrate_name'),
@@ -755,12 +755,12 @@ export const traits = {
         val: -4,
         vars: [25]
     },
-    forge: { // Smelters do not require fuel
+    forge: { // Smelters do not require fuel, boosts geothermal power
         name: loc('trait_forge_name'),
         desc: loc('trait_forge'),
         type: 'major',
         val: 4,
-        vars: [1]
+        vars: [2]
     },
     autoignition: { // Library knowledge bonus reduced
         name: loc('trait_autoignition_name'),

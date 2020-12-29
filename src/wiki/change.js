@@ -3,6 +3,21 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.19`,
+        date: `12/28/2020`,
+        changes: [
+            `Studious now improves library knowledge by 10%.`,
+            `Merchant now increases the amount of resources gained from trading by 10%.`,
+            `Tracker raised from 10% to 20%.`,
+            `Resourceful raised from 10% to 12%.`,
+            `Claws raised from 20% to 25%.`,
+            `Apex Predator combat bonus raised from 25% to 30%.`,
+            `Forge Geothermal power boost raised from +1MW to +2MW.`,
+            `Beast trait now boosts Hunting by 10% or 20% when windy and improves soldier training time by 20%.`,
+            `Beast gene point cost changed from 2 to 3 points.`
+        ]
+    },
+    {
         version: `1.0.18`,
         date: `12/24/2020`,
         changes: [
