@@ -892,9 +892,18 @@ if (typeof global.settings.keyMap === 'undefined'){
         x25: 'Shift', //16
         x100: 'Alt', //18
         q: 'q', //81
-        d: 'd' //68
     };
 }
+if (typeof global.settings.keyMap.t_civ === 'undefined'){
+    global.settings.keyMap['showCiv'] = '1'; // 49
+    global.settings.keyMap['showCivic'] = '2'; // 50
+    global.settings.keyMap['showResearch'] = '3'; // 51
+    global.settings.keyMap['showResources'] = '4'; // 52
+    global.settings.keyMap['showGenetics'] = '5'; // 53
+    global.settings.keyMap['showAchieve'] = '6'; // 54
+    global.settings.keyMap['settings'] = '7'; // 55
+}
+delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
@@ -1402,41 +1411,41 @@ export var keyMap = {
     x10: false,
     x25: false,
     x100: false,
-    q: false,
-    d: false
+    q: false
+};
+
+var quickMap = {
+    showCiv: 1,
+    showCivic: 2,
+    showResearch: 3,
+    showResources: 4,
+    showGenetics: 5,
+    showAchieve: 6,
+    settings: 7
 };
 
 $(document).keydown(function(e){
     e = e || window.event;
     let key = e.key || e.keyCode;
-    if (key === global.settings.keyMap.x10){
-        keyMap.x10 = true;
-    }
-    if (key === global.settings.keyMap.x25){
-        keyMap.x25 = true;
-    }
-    if (key === global.settings.keyMap.x100){
-        keyMap.x100 = true;
-    }
-    if (key === global.settings.keyMap.q){
-        keyMap.q = true;
-    }
+    Object.keys(keyMap).forEach(function(k){
+        if (key === global.settings.keyMap[k]){
+            keyMap[k] = true;
+        }
+    });
+    Object.keys(quickMap).forEach(function(k){
+        if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
+            global.settings.civTabs = quickMap[k];
+        }
+    });
 });
 $(document).keyup(function(e){
     e = e || window.event;
     let key = e.key || e.keyCode;
-    if (key === global.settings.keyMap.x10){
-        keyMap.x10 = false;
-    }
-    if (key === global.settings.keyMap.x25){
-        keyMap.x25 = false;
-    }
-    if (key === global.settings.keyMap.x100){
-        keyMap.x100 = false;
-    }
-    if (key === global.settings.keyMap.q){
-        keyMap.q = false;
-    }
+    Object.keys(keyMap).forEach(function(k){
+        if (key === global.settings.keyMap[k]){
+            keyMap[k] = true;
+        }
+    });
 });
 $(document).mousemove(function(e){
     e = e || window.event;

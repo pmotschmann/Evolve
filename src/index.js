@@ -374,6 +374,16 @@ export function index(){
             <div class="keyMap"><span>${loc('q_key')}</span> <b-input class="keyMap" v-model="s.keyMap.q" id="queueKey"></b-input></div>
         </div>
         <div class="importExport">
+            <div>${loc('tab_mappings')}</div>
+            <div class="keyMap"><span>${loc('tab_city5')}</span> <b-input v-model="s.keyMap.showCiv" id="showCivKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_civics')}</span> <b-input v-model="s.keyMap.showCivic" id="showCivicKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_research')}</span> <b-input v-model="s.keyMap.showResearch" id="showResearchKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_resources')}</span> <b-input v-model="s.keyMap.showResources" id="showResourcesKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tech_arpa')}</span> <b-input v-model="s.keyMap.showGenetics" id="showGeneticsKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_stats')}</span> <b-input v-model="s.keyMap.showAchieve" id="showAchieveKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_settings')}</span> <b-input v-model="s.keyMap.settings" id="settingshKey"></b-input></div>
+        </div>
+        <div class="importExport">
             <b-field label="${loc('import_export')}">
                 <b-input id="importExport" type="textarea"></b-input>
             </b-field>

@@ -95,6 +95,7 @@
   "reset_hard": "Hard Reset Game",
   "m_keys": "Multiplier Keys",
   "key_mappings": "Key Mappings",
+  "tab_mappings": "Tab Mappings",
   "multiplier": "%0X Multiplier",
   "c_cat": "City Categorization",
   "t_cat": "Research Categorization",

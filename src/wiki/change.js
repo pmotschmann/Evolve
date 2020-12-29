@@ -14,7 +14,8 @@ const changeList = [
             `Apex Predator combat bonus raised from 25% to 30%.`,
             `Forge Geothermal power boost raised from +1MW to +2MW.`,
             `Beast trait now boosts Hunting by 10% or 20% when windy and improves soldier training time by 20%.`,
-            `Beast gene point cost changed from 2 to 3 points.`
+            `Beast gene point cost changed from 2 to 3 points.`,
+            `Top level tab quick selection key bindings (default 1-7).`
         ]
     },
     {
