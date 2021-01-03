@@ -712,6 +712,23 @@ export const genePool = {
             return false;
         }
     },
+    governance: {
+        id: 'genes-governance',
+        title: loc('arpa_genepool_governance_title'),
+        desc: loc('arpa_genepool_governance_desc'),
+        reqs: { queue: 2 },
+        grant: ['governor',1],
+        cost: {
+            Plasmid(){ return 300; },
+            Phage(){ return 25; }
+        },
+        action(){
+            if (payCrispr('governance')){
+                return true;
+            }
+            return false;
+        }
+    },
     hardened_genes: {
         id: 'genes-hardened_genes',
         title: loc('arpa_genepool_hardened_genes_title'),

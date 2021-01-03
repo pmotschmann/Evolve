@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.0`,
+        date: `1/??/2021`,
+        changes: [
+            `Governance CRISPR upgrade, unlocks governors.`
+        ]
+    },
+    {
         version: `1.0.20`,
         date: `12/29/2020`,
         changes: [

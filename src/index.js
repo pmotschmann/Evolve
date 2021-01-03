@@ -1,6 +1,363 @@
-import { global } from './vars.js';
+import { global, save } from './vars.js';
 import { loc, locales } from './locale.js';
-import { clearElement, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, easterEgg, trickOrTreat } from './functions.js';
+import { races } from './races.js';
+
+export function mainVue(){
+    vBind({
+        el: '#mainColumn div:first-child',
+        data: {
+            s: global.settings,
+            rq: global.r_queue
+        },
+        methods: {
+            swapTab(tab){
+                //loadTab(tab);
+            },
+            saveImport(){
+                if ($('#importExport').val().length > 0){
+                    importGame($('#importExport').val());
+                }
+            },
+            saveExport(){
+                $('#importExport').val(exportGame());
+                $('#importExport').select();
+                document.execCommand('copy');
+            },
+            restoreGame(){
+                let restore_data = save.getItem('evolveBak') || false;
+                if (restore_data){
+                    importGame(restore_data,true);
+                }
+            },
+            lChange(locale){
+                global.settings.locale = locale;
+                global.queue.rename = true;
+                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
+                window.location.reload();
+            },
+            setTheme(theme){
+                global.settings.theme = theme;
+                $('html').removeClass();
+                $('html').addClass(theme);
+            },
+            si(){
+                global.settings.affix = 'si';
+            },
+            sci(){
+                global.settings.affix = 'sci';
+            },
+            sln(){
+                global.settings.affix = 'sln';
+            },
+            icon(icon){
+                global.settings.icon = icon;
+                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
+                window.location.reload();
+            },
+            keys(){
+                return loc('settings1');
+            },
+            animation(){
+                return loc('settings2');
+            },
+            hard(){
+                return loc('settings3');
+            },
+            soft(){
+                return loc('settings4');
+            },
+            city(){
+                return loc('settings5');
+            },
+            qKey(){
+                return loc('settings6');
+            },
+            qAny(){
+                return loc('settings7');
+            },
+            expose(){
+                return loc('settings8');
+            },
+            boring(){
+                return loc('settings10');
+            },
+            restoreData(){
+                return loc('settings9');
+            },
+            remove(index){
+                global.r_queue.queue.splice(index,1);
+            },
+            font(f){
+                global.settings.font = f;
+                $(`html`).removeClass('standard');
+                $(`html`).removeClass('large_log');
+                $(`html`).removeClass('large_all');
+                $('html').addClass(f);
+            }
+        },
+        filters: {
+            namecase(name){
+                return name.replace(/(?:^|\s)\w/g, function(match) {
+                    return match.toUpperCase();
+                });
+            },
+            label(lbl){
+                switch (lbl){
+                    case 'city':
+                        if (global.resource[global.race.species]){
+                            if (global.resource[global.race.species].amount <= 5){
+                                return loc('tab_city1');
+                            }
+                            else if (global.resource[global.race.species].amount <= 20){
+                                return loc('tab_city2');
+                            }
+                            else if (global.resource[global.race.species].amount <= 75){
+                                return loc('tab_city3');
+                            }
+                            else if (global.resource[global.race.species].amount <= 250){
+                                return loc('tab_city4');
+                            }
+                            else if (global.resource[global.race.species].amount <= 600){
+                                return loc('tab_city5');
+                            }
+                            else if (global.resource[global.race.species].amount <= 1200){
+                                return loc('tab_city6');
+                            }
+                            else if (global.resource[global.race.species].amount <= 2500){
+                                return loc('tab_city7');
+                            }
+                            else {
+                                return loc('tab_city8');
+                            }
+                        }
+                        else {
+                            return loc('tab_city1');
+                        }
+                    case 'local_space':
+                        return loc('sol_system',[races[global.race.species].name]);
+                    case 'old':
+                        return loc('tab_old_res');
+                    case 'new':
+                        return loc('tab_new_res');
+                    case 'old_sr':
+                        return loc('tab_old_sr_res');
+                    case 'new_sr':
+                        return loc('tab_new_sr_res');
+                    default:
+                        return loc(lbl);
+                }
+            },
+            notation(n){
+                switch (n){
+                    case 'si':
+                        return loc(`metric`);
+                    case 'sci':
+                        return loc(`scientific`);
+                    case 'sln':
+                        return loc(`sln`);
+                }
+            }
+        }
+    });
+}
+
+function loadTab(tab,init){
+    switch (tab){
+        case 1:
+        case 'mTabCivil':
+            if (!init){
+                clearElement($(`#mTabCivil`));
+            }
+            $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated">
+                <b-tab-item id="city" :visible="s.showCity">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'city' | label }}</h2>
+                        <span aria-hidden="true">{{ 'city' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="space" :visible="s.showSpace">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
+                        <span aria-hidden="true">{{ 'local_space' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="interstellar" :visible="s.showDeep">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="galaxy" :visible="s.showGalactic">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="portal" :visible="s.showPortal">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
+                    </template>
+                </b-tab-item>
+            </b-tabs>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+        case 2:
+        case 'mTabCivic':
+            if (!init){
+                clearElement($(`#mTabCivic`));
+            }
+            $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated">
+                <b-tab-item id="civic">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_industry' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_industry' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_power_grid' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_power_grid' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="military" class="militaryTab" :visible="s.showMil">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_military' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_military' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
+                        <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
+                    </template>
+                </b-tab-item>
+            </b-tabs>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+        case 3:
+        case 'mTabResearch':
+            if (!init){
+                clearElement($(`#mTabResearch`));
+            }
+            $(`#mTabResearch`).append(`<div id="resQueue" class="resQueue" v-show="rq.display"></div>
+            <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
+                <b-tab-item id="tech">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
+                        <span aria-hidden="true">{{ 'new' | label }}</span>
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="oldTech">
+                    <template slot="header">
+                        <h2 class="is-sr-only">{{ 'old_sr' | label }}</h2>
+                        <span aria-hidden="true">{{ 'old' | label }}</span>
+                    </template>
+                </b-tab-item>
+            </b-tabs>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+        case 4:
+        case 'mTabResource':
+            if (!init){
+                clearElement($(`#mTabResource`));
+            }
+            $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated">
+                <b-tab-item id="market" :visible="s.showMarket">
+                    <template slot="header">
+                        {{ 'tab_market' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="resStorage" :visible="s.showStorage">
+                    <template slot="header">
+                        {{ 'tab_storage' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="resEjector" :visible="s.showEjector">
+                    <template slot="header">
+                        {{ 'tab_ejector' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="resCargo" :visible="s.showCargo">
+                    <template slot="header">
+                        {{ 'tab_cargo' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="resAlchemy" :visible="s.showAlchemy">
+                    <template slot="header">
+                        {{ 'tab_alchemy' | label }}
+                    </template>
+                </b-tab-item>
+            </b-tabs>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+        case 5:
+        case 'mTabArpa':
+            if (!init){
+                clearElement($(`#mTabArpa`));
+            }
+            $(`#mTabArpa`).append(`<div id="apra" class="arpa">
+                <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
+                    <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
+                    <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc('tab_arpa_genetics')}"></b-tab-item>
+                    <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
+                    <b-tab-item id="arpaBlood" :visible="s.arpa.blood" label="${loc('tab_arpa_blood')}"></b-tab-item>
+                </b-tabs>
+            </div>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+        case 6:
+        case 'mTabStats':
+            if (!init){
+                clearElement($(`#mTabStats`));
+            }
+            $(`#mTabStats`).append(`<b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
+                <b-tab-item id="stats">
+                    <template slot="header">
+                        {{ 'tab_stats' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="achieve">
+                    <template slot="header">
+                        {{ 'tab_achieve' | label }}
+                    </template>
+                </b-tab-item>
+                <b-tab-item id="perks">
+                    <template slot="header">
+                        {{ 'tab_perks' | label }}
+                    </template>
+                </b-tab-item>
+            </b-tabs>`);
+            if (!init){
+                vBind({el: `#mainColumn div:first-child`},'update');
+            }
+            break;
+    }
+}
+
 
 export function index(){
     clearElement($('body'));
@@ -51,7 +408,7 @@ export function index(){
     mainColumn.append(content);
 
     content.append(`<h2 class="is-sr-only">Tab Navigation</h2>`);
-    let tabs = $(`<b-tabs v-model="s.civTabs" :animated="s.animated"></b-tabs>`);
+    let tabs = $(`<b-tabs v-model="s.civTabs" :animated="s.animated" @input="swapTab"></b-tabs>`);
     content.append(tabs);
 
     // Evolution Tab
@@ -63,182 +420,75 @@ export function index(){
     tabs.append(evolution);
 
     // City Tab
-    let city = $(`<b-tab-item :visible="s.showCiv">
+    let city = $(`<b-tab-item id="mTabCivil" :visible="s.showCiv">
         <template slot="header">
             {{ 'tab_civil' | label }}
         </template>
-        <b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated">
-            <b-tab-item id="city" :visible="s.showCity">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'city' | label }}</h2>
-                    <span aria-hidden="true">{{ 'city' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="space" :visible="s.showSpace">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
-                    <span aria-hidden="true">{{ 'local_space' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="interstellar" :visible="s.showDeep">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="galaxy" :visible="s.showGalactic">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="portal" :visible="s.showPortal">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
-                </template>
-            </b-tab-item>
-        </b-tabs>
     </b-tab-item>`);
     tabs.append(city);
 
-    let civic = $(`<b-tab-item :visible="s.showCivic">
+    if (global.settings.tabLoad){
+        loadTab(`mTabCivil`,true);
+    }
+
+    let civic = $(`<b-tab-item id="mTabCivic" :visible="s.showCivic">
         <template slot="header">
             {{ 'tab_civics' | label }}
         </template>
-        <b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated">
-            <b-tab-item id="civic">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_industry' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_industry' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_power_grid' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_power_grid' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="military" class="militaryTab" :visible="s.showMil">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_military' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_military' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
-                    <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
-                </template>
-            </b-tab-item>
-        </b-tabs>
     </b-tab-item>`);
     tabs.append(civic);
 
+    if (global.settings.tabLoad){
+        loadTab(`mTabCivic`,true);
+    }
+
     // Research Tab
-    let research = $(`<b-tab-item :visible="s.showResearch">
+    let research = $(`<b-tab-item id="mTabResearch" :visible="s.showResearch">
         <template slot="header">
             {{ 'tab_research' | label }}
         </template>
-        <div id="resQueue" class="resQueue" v-show="rq.display"></div>
-        <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
-            <b-tab-item id="tech">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
-                    <span aria-hidden="true">{{ 'new' | label }}</span>
-                </template>
-            </b-tab-item>
-            <b-tab-item id="oldTech">
-                <template slot="header">
-                    <h2 class="is-sr-only">{{ 'old_sr' | label }}</h2>
-                    <span aria-hidden="true">{{ 'old' | label }}</span>
-                </template>
-            </b-tab-item>
-        </b-tabs>
     </b-tab-item>`);
     tabs.append(research);
 
+    if (global.settings.tabLoad){
+        loadTab(`mTabResearch`,true);
+    }
+
     // Resources Tab
-    let resources = $(`<b-tab-item :visible="s.showResources">
+    let resources = $(`<b-tab-item id="mTabResource" :visible="s.showResources">
         <template slot="header">
             {{ 'tab_resources' | label }}
         </template>
-        <b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated">
-            <b-tab-item id="market" :visible="s.showMarket">
-                <template slot="header">
-                    {{ 'tab_market' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="resStorage" :visible="s.showStorage">
-                <template slot="header">
-                    {{ 'tab_storage' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="resEjector" :visible="s.showEjector">
-                <template slot="header">
-                    {{ 'tab_ejector' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="resCargo" :visible="s.showCargo">
-                <template slot="header">
-                    {{ 'tab_cargo' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="resAlchemy" :visible="s.showAlchemy">
-                <template slot="header">
-                    {{ 'tab_alchemy' | label }}
-                </template>
-            </b-tab-item>
-        </b-tabs>
     </b-tab-item>`);
     tabs.append(resources);
 
+    if (global.settings.tabLoad){
+        loadTab(`mTabResource`,true);
+    }
+
     // ARPA Tab
-    let arpa = $(`<b-tab-item :visible="s.showGenetics">
+    let arpa = $(`<b-tab-item id="mTabArpa" :visible="s.showGenetics">
         <template slot="header">
             {{ 'tech_arpa' | label }}
         </template>
-        <div id="apra" class="arpa">
-            <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
-                <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
-                <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc('tab_arpa_genetics')}"></b-tab-item>
-                <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
-                <b-tab-item id="arpaBlood" :visible="s.arpa.blood" label="${loc('tab_arpa_blood')}"></b-tab-item>
-            </b-tabs>
-        </div>
     </b-tab-item>`);
     tabs.append(arpa);
 
+    if (global.settings.tabLoad){
+        loadTab(`mTabArpa`,true);
+    }
+
     // Stats Tab
-    let stats = $(`<b-tab-item :visible="s.showAchieve">
+    let stats = $(`<b-tab-item id="mTabStats" :visible="s.showAchieve">
         <template slot="header">
             {{ 'tab_stats' | label }}
         </template>
-        <b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
-            <b-tab-item id="stats">
-                <template slot="header">
-                    {{ 'tab_stats' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="achieve">
-                <template slot="header">
-                    {{ 'tab_achieve' | label }}
-                </template>
-            </b-tab-item>
-            <b-tab-item id="perks">
-                <template slot="header">
-                    {{ 'tab_perks' | label }}
-                </template>
-            </b-tab-item>
-        </b-tabs>
     </b-tab-item>`);
     tabs.append(stats);
+
+    if (global.settings.tabLoad){
+        loadTab(`mTabStats`,true);
+    }
 
     let iconlist = '';
     let icons = [

@@ -7,168 +7,6 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 
-export function mainVue(){
-    vBind({
-        el: '#mainColumn div:first-child',
-        data: {
-            s: global.settings,
-            rq: global.r_queue
-        },
-        methods: {
-            saveImport(){
-                if ($('#importExport').val().length > 0){
-                    importGame($('#importExport').val());
-                }
-            },
-            saveExport(){
-                $('#importExport').val(exportGame());
-                $('#importExport').select();
-                document.execCommand('copy');
-            },
-            restoreGame(){
-                let restore_data = save.getItem('evolveBak') || false;
-                if (restore_data){
-                    importGame(restore_data,true);
-                }
-            },
-            lChange(locale){
-                global.settings.locale = locale;
-                global.queue.rename = true;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                if (webWorker.w){
-                    webWorker.w.terminate();
-                }
-                window.location.reload();
-            },
-            setTheme(theme){
-                global.settings.theme = theme;
-                $('html').removeClass();
-                $('html').addClass(theme);
-            },
-            si(){
-                global.settings.affix = 'si';
-            },
-            sci(){
-                global.settings.affix = 'sci';
-            },
-            sln(){
-                global.settings.affix = 'sln';
-            },
-            icon(icon){
-                global.settings.icon = icon;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                if (webWorker.w){
-                    webWorker.w.terminate();
-                }
-                window.location.reload();
-            },
-            keys(){
-                return loc('settings1');
-            },
-            animation(){
-                return loc('settings2');
-            },
-            hard(){
-                return loc('settings3');
-            },
-            soft(){
-                return loc('settings4');
-            },
-            city(){
-                return loc('settings5');
-            },
-            qKey(){
-                return loc('settings6');
-            },
-            qAny(){
-                return loc('settings7');
-            },
-            expose(){
-                return loc('settings8');
-            },
-            boring(){
-                return loc('settings10');
-            },
-            restoreData(){
-                return loc('settings9');
-            },
-            remove(index){
-                global.r_queue.queue.splice(index,1);
-            },
-            font(f){
-                global.settings.font = f;
-                $(`html`).removeClass('standard');
-                $(`html`).removeClass('large_log');
-                $(`html`).removeClass('large_all');
-                $('html').addClass(f);
-            }
-        },
-        filters: {
-            namecase(name){
-                return name.replace(/(?:^|\s)\w/g, function(match) {
-                    return match.toUpperCase();
-                });
-            },
-            label(lbl){
-                switch (lbl){
-                    case 'city':
-                        if (global.resource[global.race.species]){
-                            if (global.resource[global.race.species].amount <= 5){
-                                return loc('tab_city1');
-                            }
-                            else if (global.resource[global.race.species].amount <= 20){
-                                return loc('tab_city2');
-                            }
-                            else if (global.resource[global.race.species].amount <= 75){
-                                return loc('tab_city3');
-                            }
-                            else if (global.resource[global.race.species].amount <= 250){
-                                return loc('tab_city4');
-                            }
-                            else if (global.resource[global.race.species].amount <= 600){
-                                return loc('tab_city5');
-                            }
-                            else if (global.resource[global.race.species].amount <= 1200){
-                                return loc('tab_city6');
-                            }
-                            else if (global.resource[global.race.species].amount <= 2500){
-                                return loc('tab_city7');
-                            }
-                            else {
-                                return loc('tab_city8');
-                            }
-                        }
-                        else {
-                            return loc('tab_city1');
-                        }
-                    case 'local_space':
-                        return loc('sol_system',[races[global.race.species].name]);
-                    case 'old':
-                        return loc('tab_old_res');
-                    case 'new':
-                        return loc('tab_new_res');
-                    case 'old_sr':
-                        return loc('tab_old_sr_res');
-                    case 'new_sr':
-                        return loc('tab_new_sr_res');
-                    default:
-                        return loc(lbl);
-                }
-            },
-            notation(n){
-                switch (n){
-                    case 'si':
-                        return loc(`metric`);
-                    case 'sci':
-                        return loc(`scientific`);
-                    case 'sln':
-                        return loc(`sln`);
-                }
-            }
-        }
-    });
-}
-
 export function popover(id,content,opts){
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
@@ -219,6 +57,7 @@ window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return 'Export is not available during Race Creation';
     }
+    global.stats['current'] = Date.now();
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
@@ -1654,6 +1493,7 @@ export function vacuumCollapse(){
         global.arpa.syphon.complete = 99;
         global.queue.queue = [];
 
+        global.stats['current'] = Date.now();
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
 

@@ -910,6 +910,9 @@ if (typeof global.settings.qAny === 'undefined'){
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
 }
+if (typeof global.settings.tabLoad === 'undefined'){
+    global.settings['tabLoad'] = true;
+}
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
@@ -1672,6 +1675,7 @@ window.soft_reset = function reset(){
     global.new = true;
     Math.seed = Math.rand(0,10000);
 
+    global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
