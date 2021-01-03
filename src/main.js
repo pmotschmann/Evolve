@@ -1,18 +1,18 @@
 import { global, save, webWorker, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { setupStats, unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
-import { vBind, popover, clearElement, powerGrid, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
+import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
+import { vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
-import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
+import { resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
+import { job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
+import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, drawMechLab, mechSize } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events } from './events.js';
-import { index, mainVue } from './index.js';
+import { index, mainVue, initTabs } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
 var intervals = {};
@@ -40,17 +40,11 @@ if (global.queue.rename === true){
 }
 
 mainVue();
-resQueue();
-Object.keys(gridDefs()).forEach(function(gridtype){
-    powerGrid(gridtype);
-});
-setPowerGrid();
 
 if (global['new']){
     messageQueue(loc('new'), 'warning');
     global['new'] = false;
 }
-
 if (global.city['mass_driver']){
     p_on['mass_driver'] = global.city['mass_driver'].on;
 }
@@ -64,26 +58,8 @@ if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
 
-// Load Resources
-defineResources();
-$('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
-defineJobs();
-$('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
-defineGovernment();
-if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
-    defineGarrison();
-    buildGarrison($('#c_garrison'),false);
-    foreignGov();
-    drawMechLab();
-}
-defineIndustry();
-
+initTabs();
 buildQueue();
-
-arpa('Physics');
-arpa('Genetics');
-arpa('Crispr');
-arpa('Blood');
 
 resizeGame();
 
@@ -495,14 +471,9 @@ else {
     if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.on){
         p_on['soul_forge'] = 1;
     }
-    drawCity();
-    drawTech();
-    renderSpace();
-    renderFortress();
     setWeather();
 }
 
-setupStats();
 q_check(true);
 
 $('#lbl_city').html('Village');
