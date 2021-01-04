@@ -5030,6 +5030,9 @@ export function checkRequirements(action_set,region,action){
 }
 
 export function renderSpace(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 1){
+        return;
+    }
     space();
     deepSpace();
     galaxySpace();

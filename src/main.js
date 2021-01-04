@@ -1,9 +1,9 @@
-import { global, save, webWorker, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix } from './achieve.js';
 import { vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
-import { resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
+import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
@@ -12,13 +12,73 @@ import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, 
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events } from './events.js';
-import { index, mainVue, initTabs } from './index.js';
+import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
 var intervals = {};
 if (global.settings.expose){
     enableScript();
 }
+
+var quickMap = {
+    showCiv: 1,
+    showCivic: 2,
+    showResearch: 3,
+    showResources: 4,
+    showGenetics: 5,
+    showAchieve: 6,
+    settings: 7
+};
+
+$(document).keydown(function(e){
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    Object.keys(keyMap).forEach(function(k){
+        if (key === global.settings.keyMap[k]){
+            keyMap[k] = true;
+        }
+    });
+    if (!$(`input`).is(':focus') && !$(`textarea`).is(':focus')){
+        Object.keys(quickMap).forEach(function(k){
+            if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
+                global.settings.civTabs = quickMap[k];
+                loadTab(global.settings.civTabs);
+            }
+        });
+    }
+});
+$(document).keyup(function(e){
+    e = e || window.event;
+    let key = e.key || e.keyCode;
+    Object.keys(keyMap).forEach(function(k){
+        if (key === global.settings.keyMap[k]){
+            keyMap[k] = false;
+        }
+    });
+});
+$(document).mousemove(function(e){
+    e = e || window.event;
+    Object.keys(global.settings.keyMap).forEach(function(k){
+        switch(global.settings.keyMap[k]){
+            case 'Shift':
+            case 16:
+                keyMap[k] = e.shiftKey ? true : false;
+                break;
+            case 'Control':
+            case 17:
+                keyMap[k] = e.ctrlKey ? true : false;
+                break;
+            case 'Alt':
+            case 18:
+                keyMap[k] = e.altKey ? true : false;
+                break;
+            case 'Meta':
+            case 91:
+                keyMap[k] = e.metaKey ? true : false;
+                break;
+        }
+    });
+});
 
 index();
 if (global['beta']){
@@ -58,6 +118,7 @@ if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
 
+defineResources();
 initTabs();
 buildQueue();
 

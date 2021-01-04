@@ -1,9 +1,9 @@
-import { global, save } from './vars.js';
+import { global, tmp_vars, save } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
 import { vBind, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { races } from './races.js';
-import { defineResources } from './resources.js';
+import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov } from './civics.js';
@@ -20,7 +20,9 @@ export function mainVue(){
         },
         methods: {
             swapTab(tab){
-                //loadTab(tab);
+                if (!global.settings.tabLoad){
+                    loadTab(tab);
+                }
                 return tab;
             },
             saveImport(){
@@ -186,40 +188,31 @@ function tabLabel(lbl){
 
 export function initTabs(){
     if (global.settings.tabLoad){
-        loadTab(`mTabCivil`,true);
+        loadTab(`mTabCivil`);
+        loadTab(`mTabCivic`);
+        loadTab(`mTabResearch`);
+        loadTab(`mTabResource`);
+        loadTab(`mTabArpa`);
+        loadTab(`mTabStats`);
     }
-
-    if (global.settings.tabLoad){
-        loadTab(`mTabCivic`,true);
-    }
-
-    if (global.settings.tabLoad){
-        loadTab(`mTabResearch`,true);
-    }
-
-    if (global.settings.tabLoad){
-        loadTab(`mTabResource`,true);
-    }
-
-    if (global.settings.tabLoad){
-        loadTab(`mTabArpa`,true);
-    }
-
-    if (global.settings.tabLoad){
-        loadTab(`mTabStats`,true);
-    }
-
-    if (!global.settings.tabLoad){
+    else {
         loadTab(global.settings.civTabs);
     }
 }
 
-function loadTab(tab){
+export function loadTab(tab){
+    if (!global.settings.tabLoad){
+        clearElement($(`#mTabCivil`));
+        clearElement($(`#mTabCivic`));
+        clearElement($(`#mTabResearch`));
+        clearElement($(`#mTabResource`));
+        clearElement($(`#mTabArpa`));
+        clearElement($(`#mTabStats`));
+    }
     switch (tab){
         case 1:
         case 'mTabCivil':
             {
-                clearElement($(`#mTabCivil`));
                 $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated">
                     <b-tab-item id="city" :visible="s.showCity">
                         <template slot="header">
@@ -273,7 +266,6 @@ function loadTab(tab){
         case 2:
         case 'mTabCivic':
             {
-                clearElement($(`#mTabCivic`));
                 $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated">
                     <b-tab-item id="civic">
                         <template slot="header">
@@ -339,7 +331,6 @@ function loadTab(tab){
         case 3:
         case 'mTabResearch':
             {
-                clearElement($(`#mTabResearch`));
                 $(`#mTabResearch`).append(`<div id="resQueue" class="resQueue" v-show="rq.display"></div>
                 <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
                     <b-tab-item id="tech">
@@ -376,7 +367,6 @@ function loadTab(tab){
         case 4:
         case 'mTabResource':
             {
-                clearElement($(`#mTabResource`));
                 $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated">
                     <b-tab-item id="market" :visible="s.showMarket">
                         <template slot="header">
@@ -415,13 +405,46 @@ function loadTab(tab){
                         }
                     }
                 });
-                defineResources();
+
+                initResourceTabs();
+
+                if (tmp_vars.hasOwnProperty('resource')){
+                    Object.keys(tmp_vars.resource).forEach(function(name){
+                        let color = tmp_vars.resource[name].color;
+                        let tradable = tmp_vars.resource[name].tradable;
+                        let stackable = tmp_vars.resource[name].stackable;
+
+                        if (stackable){
+                            var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+                            $('#resStorage').append(market_item);
+                            containerItem(`#stack-${name}`,market_item,name,color,true);
+                        }
+
+                        if (tradable){
+                            var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
+                            $('#market').append(market_item);
+                            marketItem(`#market-${name}`,market_item,name,color,true);
+                        }
+                    
+                        if (atomic_mass[name]){
+                            loadEjector(name,color);
+                        }
+                    
+                        if (supplyValue[name]){
+                            loadSupply(name,color);
+                        }
+                    
+                        if (tradeRatio[name] && global.race.universe === 'magic'){
+                            global['resource'][name]['basic'] = tradable;
+                            loadAlchemy(name,color,tradable);
+                        }
+                    });
+                }
             }
             break;
         case 5:
         case 'mTabArpa':
             {
-                clearElement($(`#mTabArpa`));
                 $(`#mTabArpa`).append(`<div id="apra" class="arpa">
                     <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
                         <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
@@ -450,7 +473,6 @@ function loadTab(tab){
         case 6:
         case 'mTabStats':
             {
-                clearElement($(`#mTabStats`));
                 $(`#mTabStats`).append(`<b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
                     <b-tab-item id="stats">
                         <template slot="header">
@@ -726,7 +748,7 @@ export function index(){
         <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.boring"><b-tooltip :label="boring()" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
-        <!---<b-switch class="setting" v-model="s.tabLoad"><b-tooltip :label="tabLoad()" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>--->
+        <b-switch class="setting" v-model="s.tabLoad"><b-tooltip :label="tabLoad()" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>

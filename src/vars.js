@@ -20,6 +20,7 @@ export var global = {
     },
     event: 200
 };
+export var tmp_vars = {};
 export var vues = {};
 export var poppers = {};
 export var breakdown = {
@@ -632,8 +633,8 @@ if (convertVersion(global['version']) < 100017){
     }
 }
 
-global['version'] = '1.0.20';
-delete global['beta'];
+global['version'] = '1.1.0';
+global['beta'] = 1;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -911,7 +912,7 @@ if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
 }
 if (typeof global.settings.tabLoad === 'undefined'){
-    global.settings['tabLoad'] = true;
+    global.settings['tabLoad'] = false;
 }
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
@@ -1416,65 +1417,6 @@ export var keyMap = {
     x100: false,
     q: false
 };
-
-var quickMap = {
-    showCiv: 1,
-    showCivic: 2,
-    showResearch: 3,
-    showResources: 4,
-    showGenetics: 5,
-    showAchieve: 6,
-    settings: 7
-};
-
-$(document).keydown(function(e){
-    e = e || window.event;
-    let key = e.key || e.keyCode;
-    Object.keys(keyMap).forEach(function(k){
-        if (key === global.settings.keyMap[k]){
-            keyMap[k] = true;
-        }
-    });
-    if (!$(`input`).is(':focus') && !$(`textarea`).is(':focus')){
-        Object.keys(quickMap).forEach(function(k){
-            if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
-                global.settings.civTabs = quickMap[k];
-            }
-        });
-    }
-});
-$(document).keyup(function(e){
-    e = e || window.event;
-    let key = e.key || e.keyCode;
-    Object.keys(keyMap).forEach(function(k){
-        if (key === global.settings.keyMap[k]){
-            keyMap[k] = false;
-        }
-    });
-});
-$(document).mousemove(function(e){
-    e = e || window.event;
-    Object.keys(global.settings.keyMap).forEach(function(k){
-        switch(global.settings.keyMap[k]){
-            case 'Shift':
-            case 16:
-                keyMap[k] = e.shiftKey ? true : false;
-                break;
-            case 'Control':
-            case 17:
-                keyMap[k] = e.ctrlKey ? true : false;
-                break;
-            case 'Alt':
-            case 18:
-                keyMap[k] = e.altKey ? true : false;
-                break;
-            case 'Meta':
-            case 91:
-                keyMap[k] = e.metaKey ? true : false;
-                break;
-        }
-    });
-});
 
 export function keyMultiplier(){
     let number = 1;

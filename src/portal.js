@@ -1650,6 +1650,9 @@ export function fortressTech(){
 }
 
 export function renderFortress(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 1){
+        return;
+    }
     let parent = $('#portal');
     clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_portal')}</h2>`));

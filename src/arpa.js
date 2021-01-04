@@ -716,7 +716,7 @@ export const genePool = {
         id: 'genes-governance',
         title: loc('arpa_genepool_governance_title'),
         desc: loc('arpa_genepool_governance_desc'),
-        reqs: { queue: 2 },
+        reqs: { queue: 2, locked: 1 },
         grant: ['governor',1],
         cost: {
             Plasmid(){ return 300; },

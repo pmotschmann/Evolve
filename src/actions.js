@@ -5288,6 +5288,9 @@ export function gainTech(action){
 }
 
 export function drawCity(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 1){
+        return;
+    }
     let city_buildings = {};
     Object.keys(actions.city).forEach(function (city_name) {
         removeAction(actions.city[city_name].id);
@@ -5348,6 +5351,9 @@ export function drawCity(){
 }
 
 export function drawTech(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 3){
+        return;
+    }
     let techs = {};
     let old_techs = {};
     let new_techs = {};

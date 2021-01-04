@@ -33,6 +33,9 @@ export function defineGovernment(){
 
 
 export function defineIndustry(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 2){
+        return;
+    }
     clearElement($('#industry'));
 
     if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){

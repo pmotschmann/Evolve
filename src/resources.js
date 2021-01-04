@@ -1,4 +1,4 @@
-import { global, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, achieve_level } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
@@ -269,6 +269,14 @@ export function craftingRatio(res,auto){
     return multiplier;
 }
 
+export function initResourceTabs(){
+    initMarket();
+    initStorage();
+    initEjector();
+    initSupply();
+    initAlchemy();
+}
+
 // Sets up resource definitions
 export function defineResources(){
     if (global.race.species === 'protoplasm'){
@@ -278,13 +286,6 @@ export function defineResources(){
         }
         loadResource('RNA',base,1,false);
         loadResource('DNA',base,1,false);
-    }
-    else {
-        initMarket();
-        initStorage();
-        initEjector();
-        initSupply();
-        initAlchemy();
     }
     
     loadResource('Money',1000,1,false,false,'success');
@@ -614,20 +615,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
             }
             return popper;
         });
-
-        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
-        $('#resStorage').append(market_item);
-        containerItem(`#stack-${name}`,market_item,name,color,true);
     }
 
     if (name !== global.race.species && name !== 'Crates' && name !== 'Containers' && max !== -1){
         breakdownPopover(`inc${name}`,name,'p');
-    }
-
-    if (tradable){
-        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
-        $('#market').append(market_item);
-        marketItem(`#market-${name}`,market_item,name,color,true);
     }
 
     $(`#res${name}`).on('mouseover',function(){
@@ -647,18 +638,15 @@ function loadResource(name,max,rate,tradable,stackable,color){
         });
     });
 
-    if (atomic_mass[name]){
-        loadEjector(name,color);
+    if (typeof tmp_vars['resource'] === 'undefined'){
+        tmp_vars['resource'] = {};
     }
 
-    if (supplyValue[name]){
-        loadSupply(name,color);
-    }
-
-    if (tradeRatio[name] && global.race.universe === 'magic'){
-        global['resource'][name]['basic'] = tradable;
-        loadAlchemy(name,color,tradable);
-    }
+    tmp_vars.resource[name] = {
+        color: color,
+        tradable: tradable,
+        stackable: stackable
+    };
 }
 
 function loadSpecialResource(name,color) {
@@ -762,7 +750,7 @@ function loadSpecialResource(name,color) {
     });
 }
 
-function marketItem(mount,market_item,name,color,full){
+export function marketItem(mount,market_item,name,color,full){
     if (full){
         market_item.append($(`<h3 class="res has-text-${color}">{{ r.name | namespace }}</h3>`));
     }
@@ -1126,7 +1114,7 @@ function assignContainer(res){
     }
 }
 
-function containerItem(mount,market_item,name,color){
+export function containerItem(mount,market_item,name,color){
     market_item.append($(`<h3 class="res has-text-${color}">{{ name }}</h3>`));
 
     if (global.resource.Crates.display){
@@ -1436,7 +1424,7 @@ function buildContainer(){
     }
 }
 
-function drawModal(name,color){
+function drawModal(name){
     $('#modalBox').append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">{{ name }} - {{ amount | size }}/{{ max | size }}</p>'));
     
     let body = $('<div class="modalBody crateModal"></div>');
@@ -1718,7 +1706,7 @@ function initEjector(){
     }
 }
 
-function loadEjector(name,color){
+export function loadEjector(name,color){
     if (atomic_mass[name] && global.interstellar['mass_ejector']){
         if (global.race.universe !== 'magic' && (name === 'Elerium' || name === 'Infernite')){
             color = 'caution';
@@ -1785,7 +1773,7 @@ function initSupply(){
     }
 }
 
-function loadSupply(name,color){
+export function loadSupply(name,color){
     if (supplyValue[name] && global.portal['transport']){
         let ejector = $(`<div id="supply${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
         $('#resCargo').append(ejector);
@@ -1838,7 +1826,7 @@ function initAlchemy(){
     clearElement($('#resAlchemy'));
 }
 
-function loadAlchemy(name,color,basic){
+export function loadAlchemy(name,color,basic){
     if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){
         let alchemy = $(`<div id="alchemy${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
         $('#resAlchemy').append(alchemy);
