@@ -1,5 +1,5 @@
-import { global, set_alevel, set_ulevel, poppers } from './vars.js';
-import { clearElement, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { global, set_alevel, set_ulevel } from './vars.js';
+import { clearElement, popover, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -394,6 +394,20 @@ export function drawAchieve(args){
         }
     });
 
+    if (fool && !global.stats.feat['fool']){
+        $(`#thefool`).on('mouseover',function(){
+            if (global.race.universe === 'micro'){
+                unlockFeat('fool',true);
+            }
+            else {
+                unlockFeat('fool');
+            }
+            drawAchieve();
+        });
+    }
+}
+
+export function challengeIcon(){
     let a_level = alevel();
 
     if ($('#topBar span.flair')){
@@ -409,38 +423,24 @@ export function drawAchieve(args){
             $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
         }
 
-        $('#topBar .planetWrap .flair').on('mouseover',function(){
-            var popper = $(`<div id="topbarPlanet" class="popper has-background-light has-text-dark"></div>`);
-            $('#main').append(popper);
+        popover('topbarPlanet',
+            function(obj){
+                let popper = $(`<div id="topbarPlanet"></div>`);
+                obj.popper.append(popper);
+    
+                if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); }
+                if (global.race['weak_mastery']){ popper.append($(`<div>${loc('evo_challenge_mastery')}</div>`)); }
+                if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
+                if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
+                if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
 
-            if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); }
-            if (global.race['weak_mastery']){ popper.append($(`<div>${loc('evo_challenge_mastery')}</div>`)); }
-            if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
-            if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
-            if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
-
-            popper.show();
-            poppers['topbarPlanet'] = new Popper($('#topBar .planetWrap .flair'),popper);
-
-        });
-
-        $('#topBar .planetWrap .flair').on('mouseout',function(){
-            $(`#topbarPlanet`).hide();
-            poppers['topbarPlanet'].destroy();
-            clearElement($(`#topbarPlanet`),true);
-        });
-    }
-
-    if (fool && !global.stats.feat['fool']){
-        $(`#thefool`).on('mouseover',function(){
-            if (global.race.universe === 'micro'){
-                unlockFeat('fool',true);
+                return undefined;
+            },
+            {
+                elm: `#topBar .planetWrap .flair`,
+                classes: `has-background-light has-text-dark`
             }
-            else {
-                unlockFeat('fool');
-            }
-            drawAchieve();
-        });
+        );
     }
 }
 

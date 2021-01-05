@@ -1,4 +1,4 @@
-import { global, tmp_vars, save } from './vars.js';
+import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
 import { vBind, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';

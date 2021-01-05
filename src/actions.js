@@ -1,7 +1,7 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
-import { unlockAchieve, unlockFeat, drawAchieve, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -2159,7 +2159,7 @@ export const actions = {
                         global.race['no_plasmid'] = 1;
                         $(`#${$(this)[0].id}`).addClass('hl');
                     }
-                    drawAchieve();
+                    challengeIcon();
                 }
                 return false;
             },
@@ -2188,7 +2188,7 @@ export const actions = {
                         $(`#${$(this)[0].id}`).addClass('hl');
                     }
                     calc_mastery(true);
-                    drawAchieve();
+                    challengeIcon();
                 }
                 return false;
             },
@@ -2216,7 +2216,7 @@ export const actions = {
                         global.race['no_trade'] = 1;
                         $(`#${$(this)[0].id}`).addClass('hl');
                     }
-                    drawAchieve();
+                    challengeIcon();
                 }
                 return false;
             },
@@ -2244,7 +2244,7 @@ export const actions = {
                         global.race['no_craft'] = 1;
                         $(`#${$(this)[0].id}`).addClass('hl');
                     }
-                    drawAchieve();
+                    challengeIcon();
                 }
                 return false;
             },
@@ -2273,9 +2273,9 @@ export const actions = {
                             global.race['no_crispr'] = 1;
                             $(`#${$(this)[0].id}`).addClass('hl');
                         }
-                        drawAchieve();
+                        challengeIcon();
                     }
-                    drawAchieve();
+                    challengeIcon();
                 }
                 return false;
             },
@@ -2300,7 +2300,7 @@ export const actions = {
                             global.race['joyless'] = 1;
                             $(`#${$(this)[0].id}`).addClass('hl');
                         }
-                        drawAchieve();
+                        challengeIcon();
                     }
                 }
                 return false;
@@ -2328,7 +2328,7 @@ export const actions = {
                             global.race['steelen'] = 1;
                             $(`#${$(this)[0].id}`).addClass('hl');
                         }
-                        drawAchieve();
+                        challengeIcon();
                     }
                 }
                 return false;
@@ -2356,7 +2356,7 @@ export const actions = {
                             global.race['decay'] = 1;
                             $(`#${$(this)[0].id}`).addClass('hl');
                         }
-                        drawAchieve();
+                        challengeIcon();
                     }
                 }
                 return false;
@@ -2384,7 +2384,7 @@ export const actions = {
                             global.race['emfield'] = 1;
                             $(`#${$(this)[0].id}`).addClass('hl');
                         }
-                        drawAchieve();
+                        challengeIcon();
                     }
                 }
                 return false;
@@ -5132,7 +5132,7 @@ function setScenario(scenario){
             }
         }
     }
-    drawAchieve();
+    challengeIcon();
 }
 
 export function storageMultipler(){

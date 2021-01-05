@@ -1974,7 +1974,7 @@ export const plasmidBonus = (function (){
             global.race['no_plasmid'] || '0',
             global.genes['ancients'] || '0',
             global.city['temple'] ? global.city.temple.count : '0',
-            global.civic.priest.workers,
+            global.civic['priest'] ? global.civic.priest.workers : '0',
             global.race['spiritual'] || '0'
         ].join('-');
 
