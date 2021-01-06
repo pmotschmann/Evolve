@@ -190,29 +190,33 @@ export const job_desc = {
 }
 
 // Sets up jobs in civics tab
-export function defineJobs(){
-    $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
-    loadUnemployed();
-    loadJob('farmer',0.82,5);
-    loadJob('lumberjack',1,5);
-    loadJob('quarry_worker',1,5);
-    loadJob('crystal_miner',0.1,5);
-    loadJob('scavenger',0.12,5);
-    loadJob('miner',1,4,'advanced');
-    loadJob('coal_miner',0.2,4,'advanced');
-    loadJob('craftsman',1,5,'advanced');
-    loadJob('cement_worker',0.4,5,'advanced');
-    loadJob('entertainer',1,10,'advanced');
-    loadJob('priest',1,3,'advanced');
-    loadJob('professor',0.5,6,'advanced');
-    loadJob('scientist',1,5,'advanced');
-    loadJob('banker',0.1,6,'advanced');
-    loadJob('colonist',1,5,'advanced');
-    loadJob('space_miner',1,5,'advanced');
-    loadJob('hell_surveyor',1,1,'advanced');
-    loadJob('archaeologist',1,1,'advanced');
-    loadJob('crew',1,4,'alert');
-    loadFoundry();
+export function defineJobs(define){
+    if (!define){
+        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
+        loadUnemployed();
+    }
+    loadJob('farmer',define,0.82,5);
+    loadJob('lumberjack',define,1,5);
+    loadJob('quarry_worker',define,1,5);
+    loadJob('crystal_miner',define,0.1,5);
+    loadJob('scavenger',define,0.12,5);
+    loadJob('miner',define,1,4,'advanced');
+    loadJob('coal_miner',define,0.2,4,'advanced');
+    loadJob('craftsman',define,1,5,'advanced');
+    loadJob('cement_worker',define,0.4,5,'advanced');
+    loadJob('entertainer',define,1,10,'advanced');
+    loadJob('priest',define,1,3,'advanced');
+    loadJob('professor',define,0.5,6,'advanced');
+    loadJob('scientist',define,1,5,'advanced');
+    loadJob('banker',define,0.1,6,'advanced');
+    loadJob('colonist',define,1,5,'advanced');
+    loadJob('space_miner',define,1,5,'advanced');
+    loadJob('hell_surveyor',define,1,1,'advanced');
+    loadJob('archaeologist',define,1,1,'advanced');
+    loadJob('crew',define,1,4,'alert');
+    if (!define){
+        loadFoundry();
+    }
 }
 
 function loadUnemployed(){
@@ -265,7 +269,7 @@ function loadUnemployed(){
     );
 }
 
-function loadJob(job, impact, stress, color){
+function loadJob(job, define, impact, stress, color){
     color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
@@ -290,7 +294,7 @@ function loadJob(job, impact, stress, color){
     global.civic[job]['stress'] = stress;
     global.civic[job].impact = impact;
     
-    if (job === 'craftsman'){
+    if (job === 'craftsman' || define){
         return;
     }
 

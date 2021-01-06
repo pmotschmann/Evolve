@@ -4,13 +4,14 @@ import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, da
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
-import { loadFoundry } from './jobs.js';
+import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
-import { defineIndustry, defineGarrison, buildGarrison, foreignGov, armyRating } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { techList } from './tech.js';
+import { loadTab } from './index.js';
 
 export const actions = {
     evolution: {
@@ -6938,6 +6939,10 @@ function sentience(){
         cataclysm();
     }
 
+    defineJobs(true);
+    commisionGarrison();
+    defineGovernment();
+
     if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
@@ -6947,10 +6952,15 @@ function sentience(){
     }
 
     calc_mastery(true);
-    drawCity();
-    defineGarrison();
-    buildGarrison($('#c_garrison'),false);
-    foreignGov();
+    if (global.settings.tabLoad){
+        drawCity();
+        defineGarrison();
+        buildGarrison($('#c_garrison'),false);
+        foreignGov();
+    }
+    else {
+        loadTab('mTabCivil');
+    }
 }
 
 function cataclysm(){

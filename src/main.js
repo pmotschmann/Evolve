@@ -7666,10 +7666,7 @@ function longLoop(){
             var event_pool = [];
             Object.keys(events).forEach(function (event){
                 var isOk = true;
-                if (events[event]['condition'] && !events[event].condition()){
-                    isOk = false;
-                }
-                else if (events[event]['reqs']){
+                if (events[event]['reqs']){
                     Object.keys(events[event].reqs).forEach(function (req) {
                         switch(req){
                             case 'race':
@@ -7732,6 +7729,9 @@ function longLoop(){
                                 break;
                         }
                     });
+                }
+                else if (events[event]['condition'] && !events[event].condition()){
+                    isOk = false;
                 }
                 if (isOk){
                     event_pool.push(event);

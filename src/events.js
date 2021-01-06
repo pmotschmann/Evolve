@@ -56,7 +56,9 @@ export const events = {
         }
     },
     flare: {
-        reqs: {},
+        reqs: {
+            tech: 'primitive',
+        },
         condition(){
             return global.city.ptrait === 'flare' ? true : false;
         },
@@ -278,7 +280,8 @@ export const events = {
     tax_revolt: {
         reqs: {
             low_morale: 99,
-            notrait: 'blissful'
+            notrait: 'blissful',
+            tech: 'primitive'
         },
         condition(){
             return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
@@ -336,6 +339,9 @@ export const events = {
         }
     },
     protest: {
+        reqs: {
+            tech: 'primitive'
+        },
         condition(){
             return global.civic.govern.type === 'republic' ? true : false;
         },
@@ -369,7 +375,8 @@ export const events = {
         }
     },
     spy: {
-        reqs: { 
+        reqs: {
+            tech: 'primitive',
             notech: 'world_control'
         },
         condition(){

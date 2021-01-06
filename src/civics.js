@@ -7,17 +7,21 @@ import { loadIndustry } from './industry.js';
 import { drawTech } from  './actions.js';
 
 // Sets up government in civics tab
-export function defineGovernment(){
-    var govern = $('<div id="government" class="government is-child"></div>');
-    govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
-    $('#r_civics').append(govern);
-    
+export function defineGovernment(define){
     if (!global.civic['taxes']){
         global.civic['taxes'] = {
             tax_rate: 20,
             display: false
         };
     }
+
+    if (define){
+        return;
+    }
+
+    var govern = $('<div id="government" class="government is-child"></div>');
+    govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
+    $('#r_civics').append(govern);
 
     vBind({
         el: '#government .header',
@@ -67,12 +71,52 @@ export function defineIndustry(){
 
 // Sets up garrison in civics tab
 export function defineGarrison(){
+    commisionGarrison();
+
     var garrison = $('<div id="garrison" v-show="vis()" class="garrison tile is-child"></div>');
     $('#military').append(garrison);
     $('#military').append($(`<div id="fortress"></div>`));
     
     buildGarrison(garrison,true);
     defineMad();
+}
+
+export function commisionGarrison(){
+    if (!global.civic['garrison']){
+        global.civic['garrison'] = {
+            display: false,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 0,
+            wounded: 0,
+            raid: 0,
+            max: 0
+        };
+    }
+
+    if (!global.civic.garrison['mercs']){
+        global.civic.garrison['mercs'] = false;
+    }
+    if (!global.civic.garrison['fatigue']){
+        global.civic.garrison['fatigue'] = 0;
+    }
+    if (!global.civic.garrison['protest']){
+        global.civic.garrison['protest'] = 0;
+    }
+    if (!global.civic.garrison['m_use']){
+        global.civic.garrison['m_use'] = 0;
+    }
+    if (!global.civic.garrison['crew']){
+        global.civic.garrison['crew'] = 0;
+    }
+
+    if (!global.civic['mad']){
+        global.civic['mad'] = {
+            display: false,
+            armed: true
+        };
+    }
 }
 
 export function govTitle(id){
@@ -808,35 +852,6 @@ export function buildGarrison(garrison,full){
             campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(1)}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)"><span v-show="!g1.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
             campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(2)}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)"><span v-show="!g2.occ">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ">${loc('civics_garrison_deoccupy')}</span></b-tooltip></div>`));
         }
-    }
-
-    if (!global.civic['garrison']){
-        global.civic['garrison'] = {
-            display: false,
-            disabled: false,
-            progress: 0,
-            tactic: 0,
-            workers: 0,
-            wounded: 0,
-            raid: 0,
-            max: 0
-        };
-    }
-
-    if (!global.civic.garrison['mercs']){
-        global.civic.garrison['mercs'] = false;
-    }
-    if (!global.civic.garrison['fatigue']){
-        global.civic.garrison['fatigue'] = 0;
-    }
-    if (!global.civic.garrison['protest']){
-        global.civic.garrison['protest'] = 0;
-    }
-    if (!global.civic.garrison['m_use']){
-        global.civic.garrison['m_use'] = 0;
-    }
-    if (!global.civic.garrison['crew']){
-        global.civic.garrison['crew'] = 0;
     }
 
     vBind({
@@ -1681,12 +1696,6 @@ export function garrisonSize(max){
 }
 
 function defineMad(){
-    if (!global.civic['mad']){
-        global.civic['mad'] = {
-            display: false,
-            armed: true
-        };
-    }
     if ($(`#mad`).length === 0){
         let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
         var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');
