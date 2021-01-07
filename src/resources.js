@@ -339,17 +339,19 @@ export function defineResources(){
     loadResource('Demonic_Essence',-2,0,false,false,'caution');
     loadResource('Blood_Stone',-2,0,false,false,'caution');
     loadResource('Artifact',-2,0,false,false,'caution');
-
-    if (global.race.species !== 'protoplasm'){
-        loadRouteCounter();
-        loadContainerCounter();
-        initGalaxyTrade();
-    }
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
     loadSpecialResource('Harmony');
+}
+
+export function tradeSummery(){
+    if (global.race.species !== 'protoplasm'){
+        loadRouteCounter();
+        loadContainerCounter();
+        initGalaxyTrade();
+    }
 }
 
 // Load resource function

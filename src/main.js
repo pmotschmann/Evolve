@@ -7730,7 +7730,7 @@ function longLoop(){
                         }
                     });
                 }
-                else if (events[event]['condition'] && !events[event].condition()){
+                if (isOk && events[event]['condition'] && !events[event].condition()){
                     isOk = false;
                 }
                 if (isOk){

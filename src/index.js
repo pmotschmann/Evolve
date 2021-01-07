@@ -3,7 +3,7 @@ import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
 import { vBind, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { races } from './races.js';
-import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs } from './resources.js';
+import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov } from './civics.js';
@@ -410,7 +410,6 @@ export function loadTab(tab){
                 });
 
                 initResourceTabs();
-
                 if (tmp_vars.hasOwnProperty('resource')){
                     Object.keys(tmp_vars.resource).forEach(function(name){
                         let color = tmp_vars.resource[name].color;
@@ -443,6 +442,7 @@ export function loadTab(tab){
                         }
                     });
                 }
+                tradeSummery();
             }
             break;
         case 5:
