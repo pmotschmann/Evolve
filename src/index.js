@@ -5,9 +5,9 @@ import { vBind, clearElement, powerGrid, easterEgg, trickOrTreat } from './funct
 import { races } from './races.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
-import { setPowerGrid, gridDefs } from './industry.js';
+import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov } from './civics.js';
-import { drawCity, drawTech, resQueue } from './actions.js';
+import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, drawMechLab } from './portal.js';
 import { arpa } from './arpa.js';
@@ -205,6 +205,8 @@ export function initTabs(){
 
 export function loadTab(tab){
     if (!global.settings.tabLoad){
+        clearResDrag();
+        clearGrids();
         clearElement($(`#mTabCivil`));
         clearElement($(`#mTabCivic`));
         clearElement($(`#mTabResearch`));

@@ -7321,7 +7321,7 @@ export function resQueue(){
     }
 }
 
-function clearResDrag(){
+export function clearResDrag(){
     let el = $('#resQueue .buildList')[0];
     if (el){
         let sort = Sortable.get(el);
