@@ -250,7 +250,8 @@ vBind({
     el: '#topBar',
     data: {
         city: global.city,
-        race: global.race
+        race: global.race,
+        s: global.settings
     },
     methods: {
         weather(){
@@ -306,6 +307,9 @@ vBind({
         },
         showUniverse(){
             return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
+        },
+        atRemain(){
+            return loc(`accelerated_time`);
         }
     },
     filters: {
@@ -314,6 +318,15 @@ vBind({
         },
         universe(universe){
             return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
+        },
+        remain(at){
+            let minutes = Math.ceil(at * 2.5 / 60);
+            if (minutes > 0){
+                let hours = Math.floor(minutes / 60);
+                minutes -= hours * 60;
+                return `${hours}:${minutes.toString().padStart(2,'0')}`;
+            }
+            return;
         }
     }
 });
@@ -557,7 +570,7 @@ if (window.Worker){
         }
     }, false);
 }
-var main_timer = gameLoop('start');
+gameLoop('start');
 
 resourceAlt();
 
@@ -4858,7 +4871,7 @@ function fastLoop(){
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
         if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
-            diffCalc(res,main_timer);
+            diffCalc(res,webWorker.mt);
         }
     });
 
@@ -7748,6 +7761,13 @@ function longLoop(){
 
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');
+    }
+    if (global.settings.at > 0){
+        global.settings.at--;
+        if (global.settings.at <= 0){
+            gameLoop('stop');
+            gameLoop('start');
+        }
     }
 }
 

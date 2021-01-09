@@ -78,6 +78,21 @@ export function gameLoop(act){
                     mid_timer = Math.floor(mid_timer * 0.95);
                     long_timer = Math.floor(long_timer * 0.95);
                 }
+                webWorker.mt = main_timer;
+
+                let dt = Date.now();
+                let timeDiff = dt - global.stats.current;
+                if (global.stats.hasOwnProperty('current') && (timeDiff >= 300000 || global.settings.at > 0)){
+                    main_timer = Math.ceil(main_timer * 0.5);
+                    mid_timer = Math.ceil(mid_timer * 0.5);
+                    long_timer = Math.ceil(long_timer * 0.5);
+                    if (timeDiff >= 300000){
+                        global.settings.at += Math.floor(timeDiff / 5000);
+                    }
+                    if (global.settings.at > 11520){
+                        global.settings.at = 11520;
+                    }
+                }
 
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'short', period: main_timer });
@@ -97,7 +112,6 @@ export function gameLoop(act){
                 }
 
                 webWorker.s = true;
-                return main_timer;
             }
     }
 }

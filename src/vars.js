@@ -1200,6 +1200,10 @@ if (!global.race['evil'] && global.race['immoral']){
 
 $('html').addClass(global.settings.theme);
 
+if (!global.settings['at']){
+    global.settings['at'] = 0;
+}
+
 if (!global.city['morale']){
     global.city['morale'] = {
         current: 0,
@@ -1625,8 +1629,9 @@ window.soft_reset = function reset(){
     window.location.reload();
 }
 
-export var webWorker = { w: false, s: false };
+export var webWorker = { w: false, s: false, mt: 250 };
 export var intervals = {};
+
 export function clearStates(){
     if (webWorker.w){
         webWorker.w.terminate();
