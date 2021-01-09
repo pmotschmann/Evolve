@@ -55,14 +55,8 @@ export function mainVue(){
                 $('html').removeClass();
                 $('html').addClass(theme);
             },
-            si(){
-                global.settings.affix = 'si';
-            },
-            sci(){
-                global.settings.affix = 'sci';
-            },
-            sln(){
-                global.settings.affix = 'sln';
+            numNotation(notation){
+                global.settings.affix = notation;
             },
             icon(icon){
                 global.settings.icon = icon;
@@ -72,38 +66,8 @@ export function mainVue(){
                 }
                 window.location.reload();
             },
-            keys(){
-                return loc('settings1');
-            },
-            animation(){
-                return loc('settings2');
-            },
-            hard(){
-                return loc('settings3');
-            },
-            soft(){
-                return loc('settings4');
-            },
-            city(){
-                return loc('settings5');
-            },
-            qKey(){
-                return loc('settings6');
-            },
-            qAny(){
-                return loc('settings7');
-            },
-            expose(){
-                return loc('settings8');
-            },
-            boring(){
-                return loc('settings10');
-            },
-            tabLoad(){
-                return loc('settings11');
-            },
-            restoreData(){
-                return loc('settings9');
+            locString(s){
+                return loc(s);
             },
             remove(index){
                 global.r_queue.queue.splice(index,1);
@@ -710,9 +674,9 @@ export function index(){
                     <span>{{ s.affix | notation }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
-                <b-dropdown-item v-on:click="si">{{ 'metric' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="sci">{{ 'scientific' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="sln">{{ 'sln' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('si')">{{ 'metric' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('sci')">{{ 'scientific' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="numNotation('sln')">{{ 'sln' | label }}</b-dropdown-item>
                 ${hideTreat}
             </b-dropdown>
 
@@ -747,13 +711,13 @@ export function index(){
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>
-        <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="keys()" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="city()" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="qKey()" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="qAny()" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.expose"><b-tooltip :label="expose()" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="boring()" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><b-tooltip :label="tabLoad()" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="locString('settings1')" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="locString('settings5')" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="locString('settings6')" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="locString('settings7')" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.expose"><b-tooltip :label="locString('settings8')" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="locString('settings10')" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><b-tooltip :label="locString('settings11')" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
@@ -777,7 +741,7 @@ export function index(){
             </b-field>
             <button class="button" @click="saveImport">{{ 'import' | label }}</button>
             <button class="button" @click="saveExport">{{ 'export' | label }}</button>
-            <button class="button right" @click="restoreGame"><b-tooltip :label="restoreData()" position="is-top" size="is-large" multilined animated>{{ 'restore' | label }}</b-tooltip></button>
+            <button class="button right" @click="restoreGame"><b-tooltip :label="locString('settings9')" position="is-top" size="is-large" multilined animated>{{ 'restore' | label }}</b-tooltip></button>
         </div>
         <div class="reset">
             <b-collapse :open="false">
@@ -788,8 +752,8 @@ export function index(){
                             {{ 'reset_warn' | label }}
                         </h4>
                         <p>
-                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="soft()" position="is-top" size="is-large" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
-                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="hard()" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
+                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="locString('settings4')" position="is-top" size="is-large" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
+                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="locString('settings3')" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
                         </p>
                     </div>
                 </div>
