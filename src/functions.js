@@ -1,4 +1,4 @@
-import { global, save, poppers, webWorker, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
+import { global, save, poppers, webWorker, intervals, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -50,6 +50,55 @@ export function popover(id,content,opts){
                 opts['out']({ this: this, popper: $(`#pop${id}`)});
             }
         });
+    }
+}
+
+export function gameLoop(act){
+    switch(act){
+        case 'stop':
+            {
+                if (webWorker.w){
+                    webWorker.w.postMessage({ loop: 'clear' });
+                }
+                else {
+                    clearInterval(intervals['main_loop']);
+                    clearInterval(intervals['mid_loop']);
+                    clearInterval(intervals['long_loop']);
+                }
+                webWorker.s = false;
+            }
+            break;
+        case 'start':
+            {
+                let main_timer = global.race['slow'] ? 275 : 250;
+                let mid_timer = global.race['slow'] ? 1100 : 1000;
+                let long_timer = global.race['slow'] ? 5500 : 5000;
+                if (global.race['hyper']){
+                    main_timer = Math.floor(main_timer * 0.95);
+                    mid_timer = Math.floor(mid_timer * 0.95);
+                    long_timer = Math.floor(long_timer * 0.95);
+                }
+
+                if (webWorker.w){
+                    webWorker.w.postMessage({ loop: 'short', period: main_timer });
+                    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
+                    webWorker.w.postMessage({ loop: 'long', period: long_timer });
+                }
+                else {
+                    intervals['main_loop'] = setInterval(function(){
+                        fastLoop();
+                    }, main_timer);
+                    intervals['mid_loop'] = setInterval(function(){
+                        midLoop();
+                    }, mid_timer);
+                    intervals['long_loop'] = setInterval(function(){
+                        longLoop();
+                    }, long_timer);
+                }
+
+                webWorker.s = true;
+                return main_timer;
+            }
     }
 }
 

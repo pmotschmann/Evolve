@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, gameLoop, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { races } from './races.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
@@ -81,6 +81,11 @@ export function mainVue(){
             },
             toggleTabLoad(){
                 initTabs();
+            },
+            unpause(){
+                if (!global.settings.pause && !webWorker.s){
+                    gameLoop('start');
+                }
             }
         },
         filters: {
@@ -711,13 +716,14 @@ export function index(){
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>
+        <b-switch class="setting" v-model="s.pause" @input="unpause"><b-tooltip :label="locString('settings12')" position="is-bottom" size="is-small" multilined animated>{{ 'pause' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="locString('settings1')" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="locString('settings5')" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="locString('settings6')" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="locString('settings7')" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.expose"><b-tooltip :label="locString('settings8')" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="locString('settings10')" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
         <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><b-tooltip :label="locString('settings11')" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="locString('settings10')" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>

@@ -884,6 +884,9 @@ if (!global.settings['statsTabs']){
 if (!global.settings['locale']){
     global.settings['locale'] = 'en-us';
 }
+if (typeof global.settings.pause === 'undefined'){
+    global.settings['pause'] = false;
+}
 if (typeof global.settings.mKeys === 'undefined'){
     global.settings['mKeys'] = true;
 }
@@ -1622,7 +1625,8 @@ window.soft_reset = function reset(){
     window.location.reload();
 }
 
-export var webWorker = { w: false };
+export var webWorker = { w: false, s: false };
+export var intervals = {};
 export function clearStates(){
     if (webWorker.w){
         webWorker.w.terminate();
@@ -1757,6 +1761,7 @@ export function clearStates(){
     global.settings.marketTabs = 0
     global.settings.statsTabs = 0
     global.settings.disableReset = false;
+    global.settings.pause = false;
     global.arpa = {};
 }
 

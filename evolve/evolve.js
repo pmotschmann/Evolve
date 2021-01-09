@@ -17,5 +17,10 @@ self.addEventListener('message', function(e){
                 self.postMessage('long');
             }, data.period);
             break;
+        case 'clear':
+            clearInterval(intervals['main_loop']);
+            clearInterval(intervals['mid_loop']);
+            clearInterval(intervals['long_loop']);
+            break;
     };
   }, false);

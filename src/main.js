@@ -1,7 +1,7 @@
-import { global, save, webWorker, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon } from './achieve.js';
-import { vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
+import { gameLoop, vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -15,7 +15,6 @@ import { events } from './events.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
-var intervals = {};
 if (global.settings.expose){
     enableScript();
 }
@@ -541,20 +540,8 @@ q_check(true);
 
 $('#lbl_city').html('Village');
 
-var main_timer = global.race['slow'] ? 275 : 250;
-var mid_timer = global.race['slow'] ? 1100 : 1000;
-var long_timer = global.race['slow'] ? 5500 : 5000;
-if (global.race['hyper']){
-    main_timer = Math.floor(main_timer * 0.95);
-    mid_timer = Math.floor(mid_timer * 0.95);
-    long_timer = Math.floor(long_timer * 0.95);
-}
-
 if (window.Worker){
     webWorker.w = new Worker("evolve/evolve.js");
-    webWorker.w.postMessage({ loop: 'short', period: main_timer });
-    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
-    webWorker.w.postMessage({ loop: 'long', period: long_timer });
     webWorker.w.addEventListener('message', function(e){
         var data = e.data;
         switch (data) {
@@ -570,19 +557,7 @@ if (window.Worker){
         }
     }, false);
 }
-else {
-    intervals['main_loop'] = setInterval(function(){
-        fastLoop();
-    }, main_timer);
-
-    intervals['mid_loop'] = setInterval(function(){
-        midLoop();
-    }, mid_timer);
-
-    intervals['long_loop'] = setInterval(function(){
-        longLoop();
-    }, long_timer);
-}
+var main_timer = gameLoop('start');
 
 resourceAlt();
 
@@ -7770,6 +7745,10 @@ function longLoop(){
     // Save game state
     global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+
+    if (global.settings.pause && webWorker.s){
+        gameLoop('stop');
+    }
 }
 
 function buildGene(){

@@ -6,8 +6,9 @@ const changeList = [
         version: `1.1.0`,
         date: `1/??/2021`,
         changes: [
-            `Governance CRISPR upgrade, unlocks governors.`,
-            `Optimized tab content loading for performance.`
+            //`Governance CRISPR upgrade, unlocks governors.`,
+            `Optimized tab content loading for performance.`,
+            `Pause game feature.`,
         ]
     },
     {
