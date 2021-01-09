@@ -7286,6 +7286,9 @@ function fanaticTrait(trait){
 }
 
 export function resQueue(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 3){
+        return;
+    }
     clearResDrag();
     clearElement($('#resQueue'));
 
