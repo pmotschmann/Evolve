@@ -5039,6 +5039,9 @@ export function renderSpace(){
 }
 
 function space(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 1)){
+        return;
+    }
     let parent = $('#space');
     clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_space')}</h2>`));
@@ -5087,6 +5090,9 @@ function space(){
 }
 
 function deepSpace(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 2)){
+        return;
+    }
     let parent = $('#interstellar');
     clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_interstellar')}</h2>`));
@@ -5135,6 +5141,9 @@ function deepSpace(){
 }
 
 function galaxySpace(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 3)){
+        return;
+    }
     let parent = $('#galaxy');
     clearElement(parent);
     parent.append($(`<h2 class="is-sr-only">${loc('tab_galactic')}</h2>`));

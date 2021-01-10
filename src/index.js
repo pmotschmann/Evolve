@@ -195,7 +195,7 @@ export function loadTab(tab){
         case 1:
         case 'mTabCivil':
             {
-                $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated">
+                $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="city" :visible="s.showCity">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'city' | label }}</h2>
@@ -231,6 +231,26 @@ export function loadTab(tab){
                     el: `#mTabCivil`,
                     data: {
                         s: global.settings
+                    },
+                    methods: {
+                        swapTab(tab){
+                            if (!global.settings.tabLoad){
+                                switch (tab){
+                                    case 0:
+                                        drawCity();
+                                        break;
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                        renderSpace();
+                                        break;
+                                    case 4:
+                                        renderFortress();
+                                        break;
+                                }
+                            }
+                            return tab;
+                        }
                     },
                     filters: {
                         label(lbl){

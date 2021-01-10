@@ -5289,7 +5289,7 @@ export function gainTech(action){
 }
 
 export function drawCity(){
-    if (!global.settings.tabLoad && global.settings.civTabs !== 1){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
     }
     let city_buildings = {};

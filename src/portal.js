@@ -1650,7 +1650,7 @@ export function fortressTech(){
 }
 
 export function renderFortress(){
-    if (!global.settings.tabLoad && global.settings.civTabs !== 1){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 4)){
         return;
     }
     let parent = $('#portal');
