@@ -234,12 +234,12 @@ export function loadTab(tab){
                     },
                     methods: {
                         swapTab(tab){
-                            clearElement($(`#city`));
-                            clearElement($(`#space`));
-                            clearElement($(`#interstellar`));
-                            clearElement($(`#galaxy`));
-                            clearElement($(`#portal`));
                             if (!global.settings.tabLoad){
+                                clearElement($(`#city`));
+                                clearElement($(`#space`));
+                                clearElement($(`#interstellar`));
+                                clearElement($(`#galaxy`));
+                                clearElement($(`#portal`));
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -423,7 +423,7 @@ export function loadTab(tab){
         case 4:
         case 'mTabResource':
             {
-                $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated">
+                $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="market" :visible="s.showMarket">
                         <template slot="header">
                             {{ 'tab_market' | label }}
@@ -454,6 +454,95 @@ export function loadTab(tab){
                     el: `#mTabResource`,
                     data: {
                         s: global.settings
+                    },
+                    methods: {
+                        swapTab(tab){
+                            if (!global.settings.tabLoad){
+                                clearElement($(`#market`));
+                                clearElement($(`#resStorage`));
+                                clearElement($(`#resEjector`));
+                                clearElement($(`#resCargo`));
+                                clearElement($(`#resAlchemy`));
+                                switch (tab){
+                                    case 0:
+                                        {
+                                            initResourceTabs('market');
+                                            if (tmp_vars.hasOwnProperty('resource')){
+                                                Object.keys(tmp_vars.resource).forEach(function(name){
+                                                    let color = tmp_vars.resource[name].color;
+                                                    let tradable = tmp_vars.resource[name].tradable;
+                                                    if (tradable){
+                                                        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
+                                                        $('#market').append(market_item);
+                                                        marketItem(`#market-${name}`,market_item,name,color,true);
+                                                    }
+                                                });
+                                            }
+                                            tradeSummery();
+                                        }
+                                        break;
+                                    case 1:
+                                        {
+                                            initResourceTabs('storage');
+                                            if (tmp_vars.hasOwnProperty('resource')){
+                                                Object.keys(tmp_vars.resource).forEach(function(name){
+                                                    let color = tmp_vars.resource[name].color;
+                                                    let stackable = tmp_vars.resource[name].stackable;
+                                                    if (stackable){
+                                                        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+                                                        $('#resStorage').append(market_item);
+                                                        containerItem(`#stack-${name}`,market_item,name,color,true);
+                                                    }
+                                                });
+                                            }
+                                            tradeSummery();
+                                        }
+                                        break;
+                                    case 2:
+                                        {
+                                            initResourceTabs('ejector');
+                                            if (tmp_vars.hasOwnProperty('resource')){
+                                                Object.keys(tmp_vars.resource).forEach(function(name){
+                                                    let color = tmp_vars.resource[name].color;
+                                                    if (atomic_mass[name]){
+                                                        loadEjector(name,color);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        break;
+                                    case 3:
+                                        {
+                                            initResourceTabs('supply');
+                                            if (tmp_vars.hasOwnProperty('resource')){
+                                                Object.keys(tmp_vars.resource).forEach(function(name){
+                                                    let color = tmp_vars.resource[name].color;
+                                                    if (supplyValue[name]){
+                                                        loadSupply(name,color);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        break;
+                                    case 4:
+                                        {
+                                            initResourceTabs('alchemy');
+                                            if (tmp_vars.hasOwnProperty('resource')){
+                                                Object.keys(tmp_vars.resource).forEach(function(name){
+                                                    let color = tmp_vars.resource[name].color;
+                                                    let tradable = tmp_vars.resource[name].tradable;
+                                                    if (tradeRatio[name] && global.race.universe === 'magic'){
+                                                        global['resource'][name]['basic'] = tradable;
+                                                        loadAlchemy(name,color,tradable);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                            return tab;
+                        }
                     },
                     filters: {
                         label(lbl){
