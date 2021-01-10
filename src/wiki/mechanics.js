@@ -1,3 +1,4 @@
+import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
@@ -27,5 +28,25 @@ export function mechanicsPage(content){
     });
     sideMenu('add',`mechanics-gameplay`,`atime`,loc('wiki_mechanics_atime'));
 
-    
+    infoBoxBuilder(mainContent,{ name: 'multiplier', template: 'mechanics', label: loc('wiki_mechanics_multiplier'), paragraphs: 5, break: [4], h_level: 2,
+        para_data: {
+            1: [loc('wiki_mechanics_multiplier')],
+            2: ['10x',global.settings.keyMap.x10,'25x',global.settings.keyMap.x25,'100x',global.settings.keyMap.x100],
+            4: [loc('wiki_mechanics_multiplier')],
+            5: [loc('wiki_mechanics_multiplier')]
+        },
+        data_color: {
+            2: ['warning','caution','warning','caution','warning','caution']
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
+
+    infoBoxBuilder(mainContent,{ name: 'job', template: 'mechanics', label: loc('wiki_mechanics_job'), paragraphs: 8, break: [5], h_level: 2,
+        para_data: {
+            1: [loc('wiki_mechanics_job')],
+            2: ['*'],
+            3: [loc('wiki_mechanics_job')]
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
 }
