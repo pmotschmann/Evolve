@@ -246,6 +246,14 @@ popover('powerStatus',function(obj){
     }
 );
 
+
+if (global.settings.pause){
+    $(`#pausegame`).addClass('pause');
+}
+else {
+    $(`#pausegame`).addClass('play');
+}
+
 vBind({
     el: '#topBar',
     data: {
@@ -310,6 +318,24 @@ vBind({
         },
         atRemain(){
             return loc(`accelerated_time`);
+        },
+        pause(){
+            $(`#pausegame`).removeClass('play');
+            $(`#pausegame`).removeClass('pause');
+            if (global.settings.pause){
+                global.settings.pause = false;
+                $(`#pausegame`).addClass('play');
+            }
+            else {
+                global.settings.pause = true;
+                $(`#pausegame`).addClass('pause');
+            }
+            if (!global.settings.pause && !webWorker.s){
+                gameLoop('start');
+            }
+        },
+        pausedesc(){
+            return global.settings.pause ? `Start the Game` : `Pause the Game`;
         }
     },
     filters: {
