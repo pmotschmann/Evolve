@@ -19,6 +19,10 @@ export function defineGovernment(define){
         return;
     }
 
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 0)){
+        return;
+    }
+
     var govern = $('<div id="government" class="government is-child"></div>');
     govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
     $('#r_civics').append(govern);
@@ -37,7 +41,7 @@ export function defineGovernment(define){
 
 
 export function defineIndustry(){
-    if (!global.settings.tabLoad && global.settings.civTabs !== 2){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
         return;
     }
     clearElement($('#industry'));
@@ -72,6 +76,10 @@ export function defineIndustry(){
 // Sets up garrison in civics tab
 export function defineGarrison(){
     commisionGarrison();
+
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 3)){
+        return;
+    }
 
     var garrison = $('<div id="garrison" v-show="vis()" class="garrison tile is-child"></div>');
     $('#military').append(garrison);

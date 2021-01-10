@@ -6,7 +6,7 @@ import { races } from './races.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, foreignGov } from './civics.js';
+import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, drawMechLab } from './portal.js';
@@ -234,6 +234,11 @@ export function loadTab(tab){
                     },
                     methods: {
                         swapTab(tab){
+                            clearElement($(`#city`));
+                            clearElement($(`#space`));
+                            clearElement($(`#interstellar`));
+                            clearElement($(`#galaxy`));
+                            clearElement($(`#portal`));
                             if (!global.settings.tabLoad){
                                 switch (tab){
                                     case 0:
@@ -268,7 +273,7 @@ export function loadTab(tab){
         case 2:
         case 'mTabCivic':
             {
-                $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated">
+                $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="civic">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
@@ -304,6 +309,55 @@ export function loadTab(tab){
                     el: `#mTabCivic`,
                     data: {
                         s: global.settings
+                    },
+                    methods: {
+                        swapTab(tab){
+                            if (!global.settings.tabLoad){
+                                clearGrids();
+                                clearElement($(`#civic`));
+                                clearElement($(`#industry`));
+                                clearElement($(`#powerGrid`));
+                                clearElement($(`#military`));
+                                clearElement($(`#mechLab`));
+                                switch (tab){
+                                    case 0:
+                                        {
+                                            $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
+                                            defineJobs();
+                                            $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
+                                            defineGovernment();
+                                            if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
+                                                commisionGarrison();
+                                                buildGarrison($('#c_garrison'),false);
+                                                foreignGov();
+                                            }
+                                        }
+                                        break;
+                                    case 1:
+                                        defineIndustry();
+                                        break;
+                                    case 2:
+                                        {
+                                            Object.keys(gridDefs()).forEach(function(gridtype){
+                                                powerGrid(gridtype);
+                                            });
+                                            setPowerGrid();
+                                        }
+                                        break;
+                                    case 3:
+                                        if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
+                                            defineGarrison();
+                                        }
+                                        break;
+                                    case 4:
+                                        if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
+                                            drawMechLab();
+                                        }
+                                        break;
+                                }
+                            }
+                            return tab;
+                        }
                     },
                     filters: {
                         label(lbl){

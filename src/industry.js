@@ -1021,7 +1021,7 @@ export function gridEnabled(c_action,region,p0,p1){
 }
 
 export function setPowerGrid(){
-    if (!global.settings.tabLoad && global.settings.civTabs !== 2){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 && global.settings.govTabs !== 2)){
         return;
     }
     let grids = gridDefs();
