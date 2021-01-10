@@ -634,7 +634,7 @@ if (convertVersion(global['version']) < 100017){
 }
 
 global['version'] = '1.1.0';
-global['beta'] = 4;
+global['beta'] = 5;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1709,6 +1709,7 @@ export function clearStates(){
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
+    global.settings.at = 0;
 
     global.settings.showEvolve = true;
     global.settings.showCiv = false;

@@ -15,6 +15,8 @@ import { events } from './events.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
+global.settings.at = 10;
+
 if (global.settings.expose){
     enableScript();
 }

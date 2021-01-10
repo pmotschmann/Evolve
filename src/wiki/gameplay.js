@@ -1,5 +1,6 @@
 import { clearElement } from './../functions.js';
 import { basicsPage } from './basics.js';
+import { mechanicsPage } from './mechanics.js';
 import { govPage } from './government.js';
 import { combatPage } from './combat.js';
 import { resetsPage } from './resets.js';
@@ -14,6 +15,9 @@ export function gamePlayPage(zone){
     switch (zone){
         case 'basics':
             basicsPage(content);
+            break;
+        case 'mechanics':
+            mechanicsPage(content);
             break;
         case 'government':
             govPage(content);

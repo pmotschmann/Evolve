@@ -82,12 +82,12 @@ export function gameLoop(act){
 
                 let dt = Date.now();
                 let timeDiff = dt - global.stats.current;
-                if (global.stats.hasOwnProperty('current') && (timeDiff >= 300000 || global.settings.at > 0)){
+                if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
                     main_timer = Math.ceil(main_timer * 0.5);
                     mid_timer = Math.ceil(mid_timer * 0.5);
                     long_timer = Math.ceil(long_timer * 0.5);
-                    if (timeDiff >= 300000){
-                        global.settings.at += Math.floor(timeDiff / 5000);
+                    if (timeDiff >= 120000){
+                        global.settings.at += Math.floor(timeDiff / 2500);
                     }
                     if (global.settings.at > 11520){
                         global.settings.at = 11520;

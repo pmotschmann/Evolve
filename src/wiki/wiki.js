@@ -36,6 +36,7 @@ function initPage(){
             key: 'gameplay',
             submenu: [
                 { key: 'basics' },
+                { key: 'mechanics' },
                 { key: 'government' },
                 { key: 'combat' },
                 { key: 'resets' },
