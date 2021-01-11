@@ -50,14 +50,14 @@ export function mechanicsPage(content){
     });
     sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
 
-    infoBoxBuilder(mainContent,{ name: 'queue', template: 'mechanics', label: loc('wiki_mechanics_queue'), paragraphs: 9, break: [4,6,9], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'queue', template: 'mechanics', label: loc('wiki_mechanics_queue'), paragraphs: 10, break: [4,6,9,10], h_level: 2,
         para_data: {
             1: [loc('wiki_mechanics_queue'),loc('tech_urban_planning')],
             2: [loc('building_queue')],
             4: [loc('wiki_mechanics_queue_research'),loc('tech_assistant')],
             7: [loc('q_key'),global.settings.keyMap.q],
             8: [loc('q_key')],
-            9: [loc('q_any')]
+            10: [loc('q_any')]
         },
         data_color: {
             7: ['warning','caution']
