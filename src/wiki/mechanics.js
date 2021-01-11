@@ -28,6 +28,15 @@ export function mechanicsPage(content){
     });
     sideMenu('add',`mechanics-gameplay`,`atime`,loc('wiki_mechanics_atime'));
 
+    infoBoxBuilder(mainContent,{ name: 'job', template: 'mechanics', label: loc('wiki_mechanics_job'), paragraphs: 9, break: [5], h_level: 2,
+        para_data: {
+            1: [loc('wiki_mechanics_job')],
+            2: ['*'],
+            3: [loc('wiki_mechanics_job')]
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
+
     infoBoxBuilder(mainContent,{ name: 'multiplier', template: 'mechanics', label: loc('wiki_mechanics_multiplier'), paragraphs: 5, break: [4], h_level: 2,
         para_data: {
             1: [loc('wiki_mechanics_multiplier')],
@@ -41,12 +50,18 @@ export function mechanicsPage(content){
     });
     sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
 
-    infoBoxBuilder(mainContent,{ name: 'job', template: 'mechanics', label: loc('wiki_mechanics_job'), paragraphs: 8, break: [5], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'queue', template: 'mechanics', label: loc('wiki_mechanics_queue'), paragraphs: 9, break: [4,6,9], h_level: 2,
         para_data: {
-            1: [loc('wiki_mechanics_job')],
-            2: ['*'],
-            3: [loc('wiki_mechanics_job')]
+            1: [loc('wiki_mechanics_queue'),loc('tech_urban_planning')],
+            2: [loc('building_queue')],
+            4: [loc('wiki_mechanics_queue_research'),loc('tech_assistant')],
+            7: [loc('q_key'),global.settings.keyMap.q],
+            8: [loc('q_key')],
+            9: [loc('q_any')]
+        },
+        data_color: {
+            7: ['warning','caution']
         }
     });
-    sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
+    sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
 }
