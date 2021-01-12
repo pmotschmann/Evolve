@@ -949,6 +949,13 @@ Misc ---------> Main template
         .add,
         .sub {
             border: @primary-border solid .0625rem;
+            transition: all 200ms ease;
+        }
+
+        .add:hover,
+        .sub:hover {
+            background-color: @button-hover-background;
+            color: @link-hover;
         }
 
         .current {
@@ -1209,6 +1216,7 @@ Misc ---------> Main template
         .market-item {
             .order {
                 border: @primary-border solid .0625rem;
+                transition: all 200ms ease;
             }
 
             .order:hover {
@@ -1810,6 +1818,10 @@ a {
     margin-left: .75rem;
 }
 
+.zero:hover {
+    text-decoration: underline;
+}
+
 .localization {
     margin-bottom: 1rem;
 }
@@ -2249,6 +2261,10 @@ a {
 
         .controls {
             margin-bottom: 1px;
+
+            .sub {
+                border-right: 0;
+            }
         }
 
         .job_label {
