@@ -2050,6 +2050,50 @@ export function cleanAddTrait(trait){
                 global.city.s_alter.harvest = 0;
             }
             break;
+        case 'smoldering':
+            global.resource.Lumber.display = false;
+            global.resource.Crates.amount += global.resource.Lumber.crates;
+            global.resource.Lumber.crates = 0;
+            global.resource.Containers.amount += global.resource.Lumber.containers;
+            global.resource.Lumber.containers = 0;
+            global.resource.Lumber.trade = 0;
+            global.resource.Plywood.display = false;
+            global.resource.Chrysotile.display = true;
+            global.city['lumber'] = 0;
+            removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
+            removeFromRQueue(['reclaimer', 'axe', 'saw']);
+            if (global.city['sawmill']){
+                delete global.city['sawmill'];
+            }
+            if (global.city['graveyard']){
+                delete global.city['graveyard'];
+            }
+            if (global.city['lumber_yard']){
+                delete global.city['lumber_yard'];
+            }
+            delete global.tech['axe'];
+            delete global.tech['reclaimer'];
+            delete global.tech['saw'];
+            global.civic.lumberjack.display = false;
+            global.civic.lumberjack.workers = 0;
+            if (global.civic.d_job === 'lumberjack') {
+                global.civic.d_job = 'unemployed';
+            }
+            if (global.race['casting']){
+                global.race.casting.total -= global.race.casting.lumberjack;
+                global.race.casting.lumberjack = 0;
+                defineIndustry();
+            }
+            if (global.tech['foundry']){
+                global.civic.craftsman.workers -= global.city.foundry['Plywood'];
+                global.city.foundry.crafting -= global.city.foundry['Plywood'];
+                global.city.foundry['Plywood'] = 0;
+                global['loadFoundry'] = true;
+            }
+            if (global.city['s_alter']) {
+                global.city.s_alter.harvest = 0;
+            }
+            break;
         case 'carnivore':
             removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
             removeFromRQueue(['farm', 'agriculture']);
@@ -2182,6 +2226,16 @@ export function cleanRemoveTrait(trait){
     switch (trait){
         case 'kindling_kindred':
             global.resource.Lumber.display = true;
+            if (global.tech['foundry']){
+                global.resource.Plywood.display = true;
+            }
+            if (global.race['casting']){
+                defineIndustry();
+            }
+            break;
+        case 'smoldering':
+            global.resource.Lumber.display = true;
+            global.resource.Chrysotile.display = false;
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
             }

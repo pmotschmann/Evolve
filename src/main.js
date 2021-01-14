@@ -827,6 +827,7 @@ function fastLoop(){
         Food: {},
         Lumber: {},
         Stone: {},
+        Chrysotile: {},
         Crystal: {},
         Furs: {},
         Copper: {},
@@ -3038,8 +3039,8 @@ function fastLoop(){
                     global.city.factory.Polymer--;
                 }
 
-                let oilIncrement = global.race['kindling_kindred'] ? (assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0]) : (assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0]);
-                let lumberIncrement = global.race['kindling_kindred'] ? 0 : (assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0]);
+                let oilIncrement = global.race['kindling_kindred'] || global.race['smoldering'] ? (assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0]) : (assembly ? f_rate.Polymer.oil[global.tech['factory']] : f_rate.Polymer.oil[0]);
+                let lumberIncrement = global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : (assembly ? f_rate.Polymer.lumber[global.tech['factory']] : f_rate.Polymer.lumber[0]);
                 let oil_cost = global.city.factory.Polymer * oilIncrement;
                 let lumber_cost = global.city.factory.Polymer * lumberIncrement;
                 let workDone = global.city.factory.Polymer;
@@ -3337,10 +3338,10 @@ function fastLoop(){
                 global.city.smelter.Oil = global.city.smelter.cap;
             }
 
-            if (global.race['kindling_kindred'] && !global.race['evil']){
+            if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
                 global.city.smelter.Wood = 0;
             }
-            let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;
+            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] ? 0.15 : 0.25;
 
             let total_fuel = 0;
             ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
@@ -3572,7 +3573,7 @@ function fastLoop(){
 
         // Graphene
         if (global.interstellar['g_factory'] && global.interstellar['g_factory'].count > 0){
-            if (global.race['kindling_kindred']){
+            if (global.race['kindling_kindred'] || global.race['smoldering']){
                 global.interstellar.g_factory.Lumber = 0;
             }
 
@@ -3721,7 +3722,7 @@ function fastLoop(){
         // Lumber
         { //block scope
             if (global.race['cataclysm']){
-                if (global.tech['mars'] && red_on['biodome'] && !global.race['kindling_kindred']){
+                if (global.tech['mars'] && red_on['biodome'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
                     let lumber_bd = {};
                     let lumber = red_on['biodome'] * 1.5 * global.civic.colonist.workers * zigguratBonus();
 
@@ -4991,6 +4992,7 @@ function midLoop(){
             Containers: 0,
             Lumber: 200,
             Stone: 200,
+            Chrysotile: 200,
             Crystal: 10,
             Furs: 100,
             Copper: 100,
@@ -5047,6 +5049,7 @@ function midLoop(){
             caps['Knowledge'] += 100000;
             caps['Lumber'] += 100000;
             caps['Stone'] += 100000;
+            caps['Chrysotile'] += 100000;
             caps['Furs'] += 100000;
             caps['Aluminium'] += 100000;
             caps['Steel'] += 100000;
@@ -5068,6 +5071,7 @@ function midLoop(){
         var bd_Food = { Base: caps['Food']+'v' };
         var bd_Lumber = { Base: caps['Lumber']+'v' };
         var bd_Stone = { Base: caps['Stone']+'v' };
+        var bd_Chrysotile = { Base: caps['Chrysotile']+'v' };
         var bd_Crystal = { Base: caps['Crystal']+'v' };
         var bd_Furs = { Base: caps['Furs']+'v' };
         var bd_Copper = { Base: caps['Copper']+'v' };
@@ -5362,6 +5366,12 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
 
+            if (global.resource.Chrysotile.display){
+                gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
+                caps['Chrysotile'] += gain;
+                bd_Chrysotile[label] = gain+'v';
+            }
+
             if (global.resource.Crystal.display){
                 gain = (global.city['shed'].count * (spatialReasoning(8 * multiplier)));
                 caps['Crystal'] += gain;
@@ -5404,6 +5414,12 @@ function midLoop(){
             gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
+
+            if (global.resource.Chrysotile.display){
+                gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
+                caps['Chrysotile'] += gain;
+                bd_Chrysotile[label] = gain+'v';
+            }
 
             gain = (global.interstellar['warehouse'].count * (spatialReasoning(425 * multiplier)));
             caps['Furs'] += gain;
@@ -5566,10 +5582,16 @@ function midLoop(){
                 caps['Coal'] += gain;
                 bd_Coal[loc('space_red_garage_title')] = gain+'v';
 
-                if (!global.race['kindling_kindred']){
+                if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                     gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
                     caps['Lumber'] += gain;
                     bd_Lumber[loc('space_red_garage_title')] = gain+'v';
+                }
+
+                if (global.race['smoldering']){
+                    gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
+                    caps['Chrysotile'] += gain;
+                    bd_Chrysotile[loc('space_red_garage_title')] = gain+'v';
                 }
 
                 gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
@@ -6208,6 +6230,7 @@ function midLoop(){
             Food: bd_Food,
             Lumber: bd_Lumber,
             Stone: bd_Stone,
+            Chrysotile: bd_Chrysotile,
             Crystal: bd_Crystal,
             Furs: bd_Furs,
             Copper: bd_Copper,
@@ -6579,7 +6602,7 @@ function midLoop(){
 
         if (global.city['foundry']){
             let fworkers = global.civic.craftsman.workers;
-            if (global.race['kindling_kindred'] && global.city.foundry['Plywood'] > 0){
+            if ((global.race['kindling_kindred'] || global.race['smoldering']) && global.city.foundry['Plywood'] > 0){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
@@ -6594,7 +6617,7 @@ function midLoop(){
             });
         }
 
-        if (global.tech['foundry'] === 3 && global.race['kindling_kindred']){
+        if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){
             global.tech['foundry'] = 4;
         }
 
@@ -6603,13 +6626,13 @@ function midLoop(){
             global.civic.farmer.max = 0;
         }
 
-        if (global.race['kindling_kindred']){
+        if (global.race['kindling_kindred'] || global.race['smoldering']){
             global.civic.lumberjack.workers = 0;
             global.resource.Lumber.crates = 0;
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
         }
-        if (global.race['kindling_kindred'] && global.city['foundry'] && global.city.foundry['Plywood']){
+        if ((global.race['kindling_kindred'] || global.race['smoldering']) && global.city['foundry'] && global.city.foundry['Plywood']){
             global.city.foundry['Plywood'] = 0;
         }
 

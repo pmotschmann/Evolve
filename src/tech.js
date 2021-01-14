@@ -22,8 +22,8 @@ const techs = {
         reqs: {},
         grant: ['primitive',1],
         cost: {
-            Lumber(){ return global.race['kindling_kindred'] ? 0 : 5; },
-            Stone(){ return global.race['kindling_kindred'] ? 5 : 0; }
+            Lumber(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : 5; },
+            Stone(){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 5 : 0; }
         },
         action(){
             if (payCosts($(this)[0].cost)){
@@ -51,6 +51,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.resource.Stone.display = true;
+                if (global.race['smoldering']){
+                    global.resource.Chrysotile.display = true;
+                }
                 return true;
             }
             return false;
@@ -1849,7 +1852,19 @@ const techs = {
             Sheet_Metal(){ return 100; }
         },
         effect() {
-            return global.race['kindling_kindred'] ? loc('tech_reinforced_crates_stone_effect') : global.race['evil'] ? loc('tech_reinforced_crates_bone_effect') : loc('tech_reinforced_crates_effect');
+            if (global.race['smoldering'] || global.race['kindling_kindred'] || global.race['evil']){
+                let res = loc('resource_Bones_name');
+                if (global.race['smoldering']){
+                    res = loc('resource_Chrysotile_name');
+                }
+                else if (global.race['kindling_kindred']){
+                    res = loc('resource_Stone_name');
+                }
+                return loc('tech_reinforced_crates_alt_effect',[res]);
+            }
+            else {
+                return loc('tech_reinforced_crates_effect');
+            }
         },
         action(){
             if (payCosts($(this)[0].cost)){
@@ -1997,7 +2012,19 @@ const techs = {
             Steel(){ return 250; }
         },
         effect() {
-            return global.race['kindling_kindred'] ? loc('tech_steel_containers_stone_effect') : global.race['evil'] ? loc('tech_steel_containers_bone_effect') : loc('tech_steel_containers_effect');
+            if (global.race['smoldering'] || global.race['kindling_kindred'] || global.race['evil']){
+                let res = loc('resource_Bones_name');
+                if (global.race['smoldering']){
+                    res = loc('resource_Chrysotile_name');
+                }
+                else if (global.race['kindling_kindred']){
+                    res = loc('resource_Stone_name');
+                }
+                return loc('tech_steel_containers_alt_effect',[res]);
+            }
+            else {
+                return loc('tech_steel_containers_effect');
+            }
         },
         action(){
             if (payCosts($(this)[0].cost)){
@@ -5269,7 +5296,7 @@ const techs = {
         grant: ['reclaimer',1],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 45; },
@@ -5297,7 +5324,7 @@ const techs = {
         grant: ['reclaimer',2],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 540; },
@@ -5321,7 +5348,7 @@ const techs = {
         grant: ['reclaimer',3],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 2700; },
@@ -5345,7 +5372,7 @@ const techs = {
         grant: ['reclaimer',4],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 9000; },
@@ -5369,7 +5396,7 @@ const techs = {
         grant: ['reclaimer',5],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 38000; },
@@ -5393,7 +5420,7 @@ const techs = {
         grant: ['reclaimer',6],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 67500; },
@@ -5417,7 +5444,7 @@ const techs = {
         grant: ['reclaimer',7],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 160000; },
@@ -5441,7 +5468,7 @@ const techs = {
         grant: ['reclaimer',8],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['soul_eater'] ? false : true;
+            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 525000; },
@@ -5463,7 +5490,7 @@ const techs = {
         reqs: { primitive: 3 },
         era: 'civilized',
         grant: ['axe',1],
-        not_trait: ['kindling_kindred','evil','cataclysm'],
+        not_trait: ['kindling_kindred','smoldering','evil','cataclysm'],
         cost: {
             Knowledge(){ return 45; },
             Lumber(){ return 20; },

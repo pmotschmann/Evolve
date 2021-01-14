@@ -2730,6 +2730,53 @@ export const actions = {
                 return gain;
             }
         },
+        chrysotile: {
+            id: 'city-chrysotile',
+            title(){
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                    return loc('city_chrysotile_conjour');
+                }
+                else {
+                    return loc(`city_gather`,[global.resource.Chrysotile.name]);
+                }                
+            },
+            desc(){
+                let gain = $(this)[0].val(false);
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
+                    return loc('city_stone_conjour_desc',[gain,global.resource.Chrysotile.name]);
+                }
+                else {
+                    return loc('city_stone_desc',[gain,global.resource.Chrysotile.name]);
+                }                
+            },
+            category: 'outskirts',
+            reqs: { primitive: 2 },
+            trait: ['smoldering'],
+            not_trait: ['cataclysm'],
+            no_queue(){ return true },
+            cost: {
+                Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
+            },
+            action(){
+                if (global['resource']['Chrysotile'].amount < global['resource']['Chrysotile'].max){
+                    modRes('Chrysotile',$(this)[0].val(true),true);
+                }
+                return false;
+            },
+            val(spend){
+                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
+                if (global.tech['conjuring'] && global.tech['conjuring'] >= 2 && global.resource.Mana.amount >= 1){
+                    gain *= 10;
+                    if (global['resource']['Chrysotile'].amount < global['resource']['Chrysotile'].max && spend){
+                        modRes('Mana',-1,true);
+                    }
+                }
+                return gain;
+            }
+        },
         slaughter: {
             id: 'city-slaughter',
             title: loc('city_evil'),
@@ -2751,7 +2798,7 @@ export const actions = {
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
-                if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                if (!global.race['smoldering'] && global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',gain,true);
                 }
                 if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
@@ -2865,7 +2912,7 @@ export const actions = {
                                         break;
                                 }
                             }
-                            switch (global.race['kindling_kindred'] ? Math.rand(0,4) : Math.rand(0,5)){
+                            switch (global.race['kindling_kindred'] || global.race['smoldering'] ? Math.rand(0,4) : Math.rand(0,5)){
                                 case 0:
                                     global.city.s_alter.rage += Math.rand(low,high);
                                     break;
@@ -2907,8 +2954,9 @@ export const actions = {
                         return 0;
                     }
                 },
-                Lumber(offset){ return global.race['kindling_kindred'] ? 0 : costMultiplier('basic_housing', offset, 10, 1.23); },
-                Stone(offset){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; }
+                Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : costMultiplier('basic_housing', offset, 10, 1.23); },
+                Stone(offset){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; },
+                Chrysotile(offset){ return global.race['smoldering'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; }
             },
             effect(){
                 return global.race['sappy'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
@@ -3420,6 +3468,10 @@ export const actions = {
                     let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
                 }
+                if (global.resource.Chrysotile.display){
+                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Chrysotile.name])}</span>`;
+                }
                 if (global.resource.Crystal.display){
                     let val = sizeApproximation(+(spatialReasoning(8) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Crystal.name])}</span>`;
@@ -3855,7 +3907,7 @@ export const actions = {
                     global.city['foundry'].count++;
                     global.civic.craftsman.max++;
                     global.civic.craftsman.display = true;
-                    if (!global.race['kindling_kindred']){
+                    if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                         global.resource.Plywood.display = true;
                     }
                     global.resource.Brick.display = true;
@@ -3935,7 +3987,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['smelter'].count++;
-                    if (global.race['kindling_kindred']){
+                    if (global.race['kindling_kindred'] || global.race['smoldering']){
                         if (global.race['evil']) {
                             global.city['smelter'].Wood++;
                         }
@@ -5164,10 +5216,10 @@ export function storageMultipler(){
 }
 
 export function checkCityRequirements(action){
-    if (global.race['kindling_kindred'] && action === 'lumber'){
+    if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'lumber'){
         return false;
     }
-    else if (global.race['kindling_kindred'] && action === 'stone'){
+    else if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'stone'){
         return true;
     }
     var isMet = true;
@@ -6820,7 +6872,7 @@ function sentience(){
 
     clearElement($('#resources'));
     defineResources();
-    if (!global.race['kindling_kindred']){
+    if (!global.race['kindling_kindred'] && !global.race['smoldering']){
         global.resource.Lumber.display = true;
     }
     else {
@@ -6830,8 +6882,11 @@ function sentience(){
 
     global.city.calendar.day = 0;
 
-    var city_actions = global.race['kindling_kindred'] ? ['food','stone'] : ['food','lumber','stone'];
-    if (global.race['evil'] && !global.race['kindling_kindred']){
+    var city_actions = global.race['kindling_kindred'] || global.race['smoldering'] ? ['food','stone'] : ['food','lumber','stone'];
+    if (global.race['smoldering']){
+        city_actions.push('chrysotile');
+    }
+    if (global.race['evil'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
         global.city['slaughter'] = 1;
         city_actions = ['slaughter'];
     }
@@ -7068,12 +7123,17 @@ function cataclysm(){
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
-        if (!global.race['kindling_kindred']){
+        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
             global.resource.Lumber.max = 90000;
             global.resource.Lumber.amount = 90000;
             global.resource.Plywood.amount = 50000;
+        }
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.display = true;
+            global.resource.Chrysotile.max = 90000;
+            global.resource.Chrysotile.amount = 90000;
         }
 
         global.resource[global.race.species].max = 8;

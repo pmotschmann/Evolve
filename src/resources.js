@@ -8,6 +8,7 @@ export const resource_values = {
     Food: 5,
     Lumber: 5,
     Stone: 5,
+    Chrysotile: 5,
     Crystal: 6,
     Furs: 8,
     Copper: 25,
@@ -47,6 +48,7 @@ export const tradeRatio = {
     Food: 2,
     Lumber: 2,
     Stone: 2,
+    Chrysotile: 1,
     Crystal: 0.4,
     Furs: 1,
     Copper: 1,
@@ -79,6 +81,7 @@ export const atomic_mass = {
     Food: 4.355,
     Lumber: 7.668,
     Stone: 20.017,
+    Chrysotile: 15.395,
     Crystal: 5.062,
     Furs: 13.009,
     Copper: 63.546,
@@ -118,6 +121,7 @@ export const atomic_mass = {
 export const supplyValue = {
     Lumber: { in: 0.5, out: 25000 },
     Stone: { in: 0.5, out: 25000 },
+    Chrysotile: { in: 0.5, out: 25000 },
     Crystal: { in: 3, out: 25000 },
     Furs: { in: 3, out: 25000 },
     Copper: { in: 1.5, out: 25000 },
@@ -319,6 +323,7 @@ export function defineResources(){
     loadResource('Food',250,1,true,true);
     loadResource('Lumber',200,1,true,true);
     loadResource('Stone',200,1,true,true);
+    loadResource('Chrysotile',200,1,true,true);
     loadResource('Crystal',200,1,true,true);
     loadResource('Furs',100,1,true,true);
     loadResource('Copper',100,1,true,true);
@@ -990,7 +995,7 @@ export const galaxyOffers = [
     },
     {
         buy: { res: 'Graphene', vol: 25 },
-        sell: { res: global.race['kindling_kindred'] ? 'Stone' : 'Lumber', vol: 1000 }
+        sell: { res: global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Lumber', vol: 1000 }
     },
     {
         buy: { res: 'Stanene', vol: 40 },
@@ -1427,8 +1432,8 @@ function tradeRouteColor(res){
 }
 
 function buildCrateLabel(){
-    let material = global.race['kindling_kindred'] ? global.resource.Stone.name : (global.resource['Plywood'] ? global.resource.Plywood.name : loc('resource_Plywood_name'));
-    let cost = global.race['kindling_kindred'] ? 200 : 10
+    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? global.resource.Chrysotile.name : global.resource.Stone.name) : (global.resource['Plywood'] ? global.resource.Plywood.name : loc('resource_Plywood_name'));
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10
     return loc('resource_modal_crate_construct_desc',[cost,material,crateValue()]);
 }
 
@@ -1438,8 +1443,8 @@ function buildContainerLabel(){
 
 function buildCrate(){
     let keyMutipler = keyMultiplier();
-    let material = global.race['kindling_kindred'] ? 'Stone' : 'Plywood';
-    let cost = global.race['kindling_kindred'] ? 200 : 10;
+    let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
         keyMutipler = global.resource.Crates.max - global.resource.Crates.amount;
     }
