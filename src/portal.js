@@ -1174,6 +1174,10 @@ const fortressModules = {
             sAction(){
                 global.settings.civTabs = 4;
                 global.settings.marketTabs = 3;
+                if (!global.settings.tabLoad){
+                    loadTab('mTabResource');
+                    clearElement($('#popportal-transport'),true);
+                }
             },
             ship: {
                 civ: 3,
@@ -1503,6 +1507,10 @@ const fortressModules = {
             sAction(){
                 global.settings.civTabs = 2;
                 global.settings.govTabs = 4;
+                if (!global.settings.tabLoad){
+                    loadTab('mTabCivic');
+                    clearElement($('#popportal-mechbay'),true);
+                }
             },
             effect(){
                 let bay = global.portal.hasOwnProperty('mechbay') ? global.portal.mechbay.bay : 0;

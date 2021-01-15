@@ -568,7 +568,7 @@ function loadFactory(parent,bind){
                 return loc('modal_factory_alloy_label',[copper,loc('resource_Copper_name'),aluminium,loc('resource_Aluminium_name'),loc('resource_Alloy_name')]);
             }
             case 'Polymer':{
-                if (global.race['kindling_kindred']){
+                if (global.race['kindling_kindred'] || global.race['smoldering']){
                     let oil = assembly ? f_rate.Polymer.oil_kk[global.tech['factory']] : f_rate.Polymer.oil_kk[0];
                     return loc('modal_factory_polymer_label2',[oil,loc('resource_Oil_name'),loc('resource_Polymer_name')]);
                 }
@@ -721,7 +721,7 @@ function loadGraphene(parent,bind){
     let fuelTypes = $('<div></div>');
     parent.append(fuelTypes);
 
-    if (!global.race['kindling_kindred']){
+    if (!global.race['kindling_kindred'] && !global.race['smoldering']){
         let f_label = global.resource.Lumber.name;
         let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ Lumber }}</span>`);
         let subWood = $(`<span role="button" class="sub" @click="subWood" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
@@ -984,15 +984,30 @@ function loadPylon(parent,bind){
 function loadQuarry(parent,bind){
     parent.append($(`<div>${loc('modal_quarry_ratio',[global.resource.Chrysotile.name])}</div>`));
 
-    let slider = $(`<div><b-slider v-model="asbestos" format="percent"></b-slider></div>`);
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Increase Stone Production">&laquo;</span><b-slider v-model="asbestos" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Increase Chrysotile Production">&raquo;</span></div>`);
     parent.append(slider);
 
     vBind({
         el: bind ? bind : '#specialModal',
         data: global.city.rock_quarry,
         methods: {
-            buildLabel(spell){
-                return '';
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.city.rock_quarry.asbestos > 0){
+                    global.city.rock_quarry.asbestos -= keyMult;
+                    if (global.city.rock_quarry.asbestos < 0){
+                        global.city.rock_quarry.asbestos = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.city.rock_quarry.asbestos < 100){
+                    global.city.rock_quarry.asbestos += keyMult;
+                    if (global.city.rock_quarry.asbestos > 100){
+                        global.city.rock_quarry.asbestos = 100;
+                    }
+                }
             }
         }
     });

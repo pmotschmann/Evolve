@@ -663,8 +663,9 @@ function fastLoop(){
     }
     if (global.race['untapped']){
         if (global.race['untapped'] > 0){
-            breakdown.p['Global'][loc('trait_untapped_bd')] = `${global.race.untapped / 2}%`;
-            global_multiplier *= 1 + (global.race.untapped / 200);
+            let untapped = +(global.race.untapped / (global.race.untapped + 20) / 10 + 0.00024).toFixed(4);
+            breakdown.p['Global'][loc('trait_untapped_bd')] = `${global.race.untapped * 100}%`;
+            global_multiplier *= 1 + (untapped);
         }
     }
     if (global.race['rainbow'] && global.race['rainbow'] > 1){
@@ -3893,6 +3894,7 @@ function fastLoop(){
                     stone_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
                     if (global.race['smoldering']){
+                        asbestos_base = red_on['red_mine'] * 1.25 * global.civic.colonist.workers * zigguratBonus();
                         chrysotile_bd[loc('space_red_mine_title')] = asbestos_base + 'v';
                     }
                 }

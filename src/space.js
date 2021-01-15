@@ -6,6 +6,7 @@ import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel } from './actions.js';
+import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
 const spaceProjects = {
@@ -625,8 +626,9 @@ const spaceProjects = {
                 let copper = +(0.25 * zigguratBonus()).toFixed(3);
                 let titanium = +(0.02 * zigguratBonus()).toFixed(3);
                 let cat_stone = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(0.75 * zigguratBonus()).toFixed(2),global.resource.Stone.name])}</div>` : ``;
+                let cat_asbestos = global.race['cataclysm'] && global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[+(1.25 * zigguratBonus()).toFixed(2),global.resource.Chrysotile.name])}</div>` : ``;
                 let cat_alum = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(0.12 * zigguratBonus()).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_stone}${cat_alum}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_asbestos}${cat_stone}${cat_alum}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -2986,6 +2988,10 @@ const interstellarProjects = {
             sAction(){
                 global.settings.civTabs = 4;
                 global.settings.marketTabs = 2;
+                if (!global.settings.tabLoad){
+                    loadTab('mTabResource');
+                    clearElement($('#popinterstellar-mass_ejector'),true);
+                }
             },
             action(){
                 if (payCosts($(this)[0].cost)){

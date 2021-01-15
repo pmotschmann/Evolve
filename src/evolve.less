@@ -825,8 +825,24 @@ Misc ---------> Main template
             }
         }
 
-        .is-primary .b-slider-fill {
-            background: @has-text-success !important;
+        .sliderbar {
+            > span {
+                position: relative;
+                display: inline-block;
+                width: 5%;
+                bottom: 1.125rem;
+                margin: 0 .375rem;
+            }
+            .b-slider {
+                display: inline-block;
+                width: 80%;
+                .b-slider-track {
+                    height: 1rem;
+                }
+            }
+            .is-primary .b-slider-fill {
+                background: @has-text-success !important;
+            }
         }
 
         // .fool
