@@ -633,13 +633,13 @@ if (convertVersion(global['version']) < 100017){
     }
 }
 
-if (convertVersion(global['version']) < 100022){
+if (convertVersion(global['version']) < 100023){
     if (global.city.hasOwnProperty('rock_quarry')){
         global.city.rock_quarry['asbestos'] = 50;
     }
 }
 
-global['version'] = '1.0.22';
+global['version'] = '1.0.23';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

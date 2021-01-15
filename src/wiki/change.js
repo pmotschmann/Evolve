@@ -3,10 +3,17 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.0.22`,
+        version: `1.0.23`,
         date: `1/??/2021`,
         changes: [
-            ``,
+            `Redesgined Heat based Genus mechanics.`
+        ]
+    },
+    {
+        version: `1.0.22`,
+        date: `1/15/2021`,
+        changes: [
+            `Fixed Cataclysm mode game start.`
         ]
     },
     {
