@@ -6935,21 +6935,9 @@ function sentience(){
         global.tech['b_stone'] = 2;
     }
 
-    if (global.race['cataclysm']){
-        cataclysm();
-    }
-
     defineJobs(true);
     commisionGarrison();
     defineGovernment();
-
-    if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        if (webWorker.w){
-            webWorker.w.terminate();
-        }
-        window.location.reload();
-    }
 
     calc_mastery(true);
     if (global.settings.tabLoad){
@@ -6960,6 +6948,18 @@ function sentience(){
     }
     else {
         loadTab('mTabCivil');
+    }
+
+    if (global.race['cataclysm']){
+        cataclysm();
+    }
+
+    if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+        window.location.reload();
     }
 }
 

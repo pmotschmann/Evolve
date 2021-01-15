@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.22`,
+        date: `1/15/2021`,
+        changes: [
+            `Fixed Catacylsm mode game start.`
+        ]
+    },
+    {
         version: `1.0.21`,
         date: `1/10/2021`,
         changes: [
