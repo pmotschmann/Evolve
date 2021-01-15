@@ -71,6 +71,11 @@ export function defineIndustry(){
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
     }
+    if (global.race['smoldering'] && global.city['rock_quarry']){
+        var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('quarry',ratio,'#iQuarry');
+    }
 }
 
 // Sets up garrison in civics tab

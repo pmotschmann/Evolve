@@ -3810,13 +3810,15 @@ export const actions = {
             effect(){
                 let stone = spatialReasoning(100);
                 if (global.stats.achieve['blackhole']){ stone = Math.round(stone * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+                let asbestos = global.race['smoldering'] ? `<div>${loc('plus_max_resource',[stone,global.resource.Chrysotile.name])}</div>` : '';
                 if (global.tech['mine_conveyor']){
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div><div class="has-text-caution">${loc('city_rock_quarry_effect2',[4,$(this)[0].powered()])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}<div class="has-text-caution">${loc('city_rock_quarry_effect2',[4,$(this)[0].powered()])}</div>`;
                 }
                 else {
-                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>`;
+                    return `<div>${loc('city_rock_quarry_effect1',[2])}</div><div>${loc('plus_max_resource',[stone,global.resource.Stone.name])}</div>${asbestos}`;
                 }
             },
+            special(){ return global.race['smoldering'] ? true : false; },
             powered(){ return powerCostMod(1); },
             power_reqs: { mine_conveyor: 1 },
             action(){
@@ -6611,6 +6613,9 @@ function drawModal(c_action,type){
         case 'pylon':
             pylonModal(body);
             break;
+        case 'rock_quarry':
+            quarryModal(body);
+            break;
     }
 }
 
@@ -6665,6 +6670,10 @@ function grapheneModal(modal){
 
 function pylonModal(modal){
     loadIndustry('pylon',modal);
+}
+
+function quarryModal(modal){
+    loadIndustry('rock_quarry',modal);
 }
 
 export function evoProgress(){

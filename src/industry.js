@@ -23,6 +23,9 @@ export function loadIndustry(industry,parent,bind){
         case 'pylon':
             loadPylon(parent,bind);
             break;
+        case 'rock_quarry':
+            loadQuarry(parent,bind);
+            break;
     }
 }
 
@@ -975,6 +978,23 @@ function loadPylon(parent,bind){
             elm: $(`#${id} > .pylon > .${type}`),
             attach: '#main',
         });
+    });
+}
+
+function loadQuarry(parent,bind){
+    parent.append($(`<div>${loc('modal_quarry_ratio',[global.resource.Chrysotile.name])}</div>`));
+
+    let slider = $(`<div><b-slider v-model="asbestos" format="percent"></b-slider></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.city.rock_quarry,
+        methods: {
+            buildLabel(spell){
+                return '';
+            }
+        }
     });
 }
 

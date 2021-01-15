@@ -7,8 +7,8 @@ import { loc } from './locale.js';
 export const resource_values = {
     Food: 5,
     Lumber: 5,
-    Stone: 5,
     Chrysotile: 5,
+    Stone: 5,
     Crystal: 6,
     Furs: 8,
     Copper: 25,
@@ -47,8 +47,8 @@ export const resource_values = {
 export const tradeRatio = {
     Food: 2,
     Lumber: 2,
-    Stone: 2,
     Chrysotile: 1,
+    Stone: 2,
     Crystal: 0.4,
     Furs: 1,
     Copper: 1,
@@ -80,8 +80,8 @@ export const tradeRatio = {
 export const atomic_mass = {
     Food: 4.355,
     Lumber: 7.668,
-    Stone: 20.017,
     Chrysotile: 15.395,
+    Stone: 20.017,
     Crystal: 5.062,
     Furs: 13.009,
     Copper: 63.546,
@@ -120,8 +120,8 @@ export const atomic_mass = {
 
 export const supplyValue = {
     Lumber: { in: 0.5, out: 25000 },
-    Stone: { in: 0.5, out: 25000 },
     Chrysotile: { in: 0.5, out: 25000 },
+    Stone: { in: 0.5, out: 25000 },
     Crystal: { in: 3, out: 25000 },
     Furs: { in: 3, out: 25000 },
     Copper: { in: 1.5, out: 25000 },
@@ -322,8 +322,8 @@ export function defineResources(){
     loadResource('Containers',0,0,false,false,'warning');
     loadResource('Food',250,1,true,true);
     loadResource('Lumber',200,1,true,true);
-    loadResource('Stone',200,1,true,true);
     loadResource('Chrysotile',200,1,true,true);
+    loadResource('Stone',200,1,true,true);
     loadResource('Crystal',200,1,true,true);
     loadResource('Furs',100,1,true,true);
     loadResource('Copper',100,1,true,true);

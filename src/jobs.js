@@ -54,6 +54,9 @@ export const job_desc = {
         }
         let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
         let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
+        if (global.race['smoldering']){
+            desc = desc + ' ' + loc('job_quarry_worker_smoldering',[global.resource.Chrysotile.name]);
+        }
         if (global.civic.d_job === 'quarry_worker'){
             desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
         }
@@ -293,7 +296,7 @@ function loadJob(job, define, impact, stress, color){
 
     global.civic[job]['stress'] = stress;
     global.civic[job].impact = impact;
-    
+
     if (job === 'craftsman' || define){
         return;
     }

@@ -3851,6 +3851,13 @@ function fastLoop(){
                 stone_base *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
             }
 
+            let asbestos_base = 0;
+            if (global.race['smoldering']){
+                asbestos_base = stone_base;
+                stone_base *= (100 - global.city.rock_quarry.asbestos) / 100;
+                asbestos_base *= global.city.rock_quarry.asbestos / 100;
+            }
+
             let power_mult = 1;
             let rock_quarry = 1;
             if (global.city['rock_quarry']){
@@ -3861,21 +3868,33 @@ function fastLoop(){
             }
 
             let stone_bd = {};
+            let chrysotile_bd = {};
             stone_bd[loc('workers')] = stone_base + 'v';
             if (stone_base > 0){
                 stone_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                 stone_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                if (global.race['smoldering']){
+                    chrysotile_bd[loc('workers')] = asbestos_base + 'v';
+                    chrysotile_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
+                    chrysotile_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
+                }
             }
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
                 stone_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                if (global.race['smoldering']){
+                    chrysotile_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                }
             }
 
             if (global.race['cataclysm']){
                 if (global.tech['mars'] && red_on['red_mine']){
                     stone_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
+                    if (global.race['smoldering']){
+                        chrysotile_bd[loc('space_red_mine_title')] = asbestos_base + 'v';
+                    }
                 }
                 power_mult = 1;
                 rock_quarry = 1;
@@ -3887,6 +3906,15 @@ function fastLoop(){
             stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
+
+            if (global.race['smoldering']){
+                let a_delta = asbestos_base * power_mult * rock_quarry;
+                a_delta *= hunger * global_multiplier;
+                
+                chrysotile_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                breakdown.p['Chrysotile'] = chrysotile_bd;
+                modRes('Chrysotile', a_delta * time_multiplier);
+            }
 
             // Aluminium
             if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
@@ -5173,6 +5201,11 @@ function midLoop(){
             if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
+
+            if (global.race['smoldering']){
+                caps['Chrysotile'] += gain;
+                bd_Chrysotile[loc('city_rock_quarry')] = gain+'v';
+            }
         }
         if (global.city['lumber_yard']){
             let gain = (global.city['lumber_yard'].count * spatialReasoning(100));

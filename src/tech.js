@@ -1315,7 +1315,8 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.city['rock_quarry'] = {
                     count: 0,
-                    on: 0
+                    on: 0,
+                    asbestos: 50
                 };
                 if (global.race['cannibalize']){
                     global.city['s_alter'] = {

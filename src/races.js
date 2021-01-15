@@ -2008,6 +2008,9 @@ export function randomMinorTrait(ranks){
 export function cleanAddTrait(trait){
     switch (trait){
         case 'kindling_kindred':
+            if (global.race['smoldering']){
+                break;
+            }
             global.resource.Lumber.display = false;
             global.resource.Crates.amount += global.resource.Lumber.crates;
             global.resource.Lumber.crates = 0;
@@ -2051,6 +2054,10 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'smoldering':
+            global.resource.Chrysotile.display = true;
+            if (global.race['kindling_kindred']){
+                break;
+            }
             global.resource.Lumber.display = false;
             global.resource.Crates.amount += global.resource.Lumber.crates;
             global.resource.Lumber.crates = 0;
@@ -2058,7 +2065,6 @@ export function cleanAddTrait(trait){
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
-            global.resource.Chrysotile.display = true;
             global.city['lumber'] = 0;
             removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
             removeFromRQueue(['reclaimer', 'axe', 'saw']);
@@ -2225,6 +2231,9 @@ export function cleanAddTrait(trait){
 export function cleanRemoveTrait(trait){
     switch (trait){
         case 'kindling_kindred':
+            if (global.race['smoldering']){
+                break;
+            }
             global.resource.Lumber.display = true;
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
@@ -2234,8 +2243,11 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'smoldering':
-            global.resource.Lumber.display = true;
             global.resource.Chrysotile.display = false;
+            if (global.race['kindling_kindred']){
+                break;
+            }
+            global.resource.Lumber.display = true;
             if (global.tech['foundry']){
                 global.resource.Plywood.display = true;
             }
