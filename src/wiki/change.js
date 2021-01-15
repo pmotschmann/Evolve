@@ -6,7 +6,7 @@ const changeList = [
         version: `1.0.22`,
         date: `1/15/2021`,
         changes: [
-            `Fixed Catacylsm mode game start.`
+            `Fixed Cataclysm mode game start.`
         ]
     },
     {
