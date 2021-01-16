@@ -8,7 +8,7 @@ const changeList = [
         changes: [
             `Redesigned Heat based Genus mechanics.`,
             `Untapped Potential formula changed: now has diminishing returns for stacking unspent genes.`,
-            `Added new sections to Mechanics topic of Wiki.`
+            `Added new sections to Mechanics topic of Wiki.`,
             `Minor bug fixes.`
         ]
     },
