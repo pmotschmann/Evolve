@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Redesigned Heat based Genus mechanics.`,
             `Untapped Potential formula changed: now has diminishing returns for stacking unspent genes.`,
-            `Added new sections to Mechanics topic of Wiki.`,
+            `Faith now has an effect on auto crafting (Craftsmen Only).`,
+            `Added new topics to Mechanics section of Wiki.`,
             `Minor bug fixes.`
         ]
     },

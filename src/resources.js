@@ -250,6 +250,10 @@ export function craftingRatio(res,auto){
         if (global.blood['artisan']){
             multiplier *= 1 + (global.blood.artisan / 100);
         }
+        let faith = faithBonus();
+        if (faith > 0){
+            multiplier *= 1 + (faith / (global.race.universe === 'antimatter' ? 1.5 : 3));
+        }
     }
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
@@ -2031,6 +2035,32 @@ export const spatialReasoning = (function(){
         return type ? (spatial[tkey][key] * value) : Math.round(spatial[tkey][key] * value);
     }
 })();
+
+export function faithBonus(){
+    if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
+        if ((global.race['cataclysm'] && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
+            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
+            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
+                temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
+            }
+            if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
+                let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
+                temple_bonus += priest_bonus * global.civic.priest.workers;
+            }
+            if (global.race.universe === 'antimatter'){
+                temple_bonus /= 2;
+            }
+            if (global.race['spiritual']){
+                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
+            }
+            if (global.civic.govern.type === 'theocracy'){
+                temple_bonus *= 1.12;
+            }
+            return (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple_bonus;
+        }
+    }
+    return 0;
+}
 
 export const plasmidBonus = (function (){
     var plasma = {};
