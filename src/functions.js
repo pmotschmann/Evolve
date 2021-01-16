@@ -1157,7 +1157,7 @@ function smolderAdjust(costs, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
             }
-            else if (res === 'Structs' || res === 'Chrysotile'){
+            else if (res === 'Structs' || res === 'Chrysotile' || res === 'Knowledge'){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {

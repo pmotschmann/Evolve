@@ -43,7 +43,7 @@ export function infoBoxBuilder(parent,args){
                 let inputs = args.para_data[i];
                 if (args.data_link[i] && Array.isArray(args.data_link[i])){
                     for (let j=0; j<args.data_link[i].length; j++){
-                        if (args.data_link[i][j] !== 'plain'){
+                        if (args.data_link[i][j] && args.data_link[i][j] !== 'plain'){
                             inputs[j] = `<a href="${args.data_link[i][j]}" target="_blank">${inputs[j]}</a>`;
                         }
                     }

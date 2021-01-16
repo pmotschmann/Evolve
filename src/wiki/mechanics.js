@@ -1,5 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
+import { svgIcons, svgViewBox} from './../functions.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
 export function mechanicsPage(content){
@@ -84,12 +85,81 @@ export function mechanicsPage(content){
             17: [loc('tech_mythology')],
             18: [loc('tech_archaeology')],
             19: [loc('tech_merchandising')],
-            20: [loc('wiki_arpa_crispr_transcendence')],
-
+            20: [loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_transcendence')]
         },
         data_link: {
-            10: ['wiki.html#races-species']
+            10: ['wiki.html#races-species'],
+            20: ['wiki.html#crispr-prestige','wiki.html#crispr-prestige-transcendence']
         }
     });
     sideMenu('add',`mechanics-gameplay`,`religion`,loc('wiki_mechanics_religion'));
+
+    let p_star = `<span class="flair" aria-label="star"><svg class="star2" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
+    let b_star = `<span class="flair" aria-label="star"><svg class="star3" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
+    let s_star = `<span class="flair" aria-label="star"><svg class="star4" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
+    let g_star = `<span class="flair" aria-label="star"><svg class="star5" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
+
+    infoBoxBuilder(mainContent,{ name: 'challenge', template: 'mechanics', label: loc('wiki_mechanics_challenge'), paragraphs: 15, break: [4,8,14], h_level: 2,
+        para_data: {
+            1: [loc('wiki_mechanics_challenge'),loc('wiki_menu_prehistoric'),loc('tab_arpa_crispr'),loc('arpa_genepool_hardened_genes_title')],
+            2: [4,loc('evo_challenge_plasmid'),loc('evo_challenge_trade'),loc('evo_challenge_craft'),loc('evo_challenge_crispr')],
+            4: [loc('evo_challenge_plasmid'),loc('resource_Plasmid_plural_name')],
+            5: [loc('evo_challenge_trade')],
+            6: [loc('evo_challenge_craft')],
+            7: [loc('evo_challenge_crispr'),loc('wiki_arpa_crispr_creep'),'20%'],
+            8: [loc('wiki_mechanics_challenge')],
+            9: [1,p_star,loc('plain'),'5%'],
+            10: [2,b_star,loc('bronze'),'12%'],
+            11: [3,s_star,loc('silver'),'25%'],
+            12: [4,g_star,loc('gold'),'45%'],
+            14: [loc('wiki_mechanics_challenge'),p_star]
+        },
+        data_color: {
+            2: ['caution','warning','warning','warning','warning'],
+            7: ['warning','warning','caution'],
+            9: ['caution',false,'warning','warning'],
+            10: ['caution',false,'warning','warning'],
+            11: ['caution',false,'warning','warning'],
+            12: ['caution',false,'warning','warning']
+        },
+        data_link: {
+            1: [false,false,'wiki.html#crispr-prestige','wiki.html#crispr-prestige-hardened_genes'],
+            7: [false,'wiki.html#crispr-prestige-genetic_memory',false]
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`challenge`,loc('wiki_mechanics_challenge'));
+
+    infoBoxBuilder(mainContent,{ name: 'mastery', template: 'mechanics', label: loc('mastery'), paragraphs: 15, break: [3,8,10,13], h_level: 2,
+        para_data: {
+            1: [loc('mastery'),loc('tab_arpa_crispr'),loc('arpa_genepool_unlocked_title')],
+            2: [loc('mastery'),loc('tab_achieve')],
+            4: ['0.15%','0.10%'],
+            5: [1],
+            6: [1,5],
+            7: ['1.25%'],
+            9: [loc('standard'),'0.25%'],
+            10: [loc('arpa_genepool_universal_title'),loc('arpa_genepool_standard_title')],
+            11: [loc('arpa_genepool_universal_title'),'0.05%','0.10%','0.15%'],
+            12: ['0.30%','1.50%'],
+            13: [loc('arpa_genepool_standard_title'),'0.05%'],
+            15: [loc('arpa_genepool_standard_title'),'0.20%','0.10%']
+        },
+        data_color: {
+            4: ['caution','caution'],
+            5: ['caution'],
+            6: ['caution','caution'],
+            7: ['caution'],
+            9: [false,'caution'],
+            11: ['warning','caution','caution','caution'],
+            12: ['caution','caution'],
+            13: ['warning','caution'],
+            15: ['warning','caution','caution']
+        },
+        data_link: {
+            1: [false,'wiki.html#crispr-prestige','wiki.html#crispr-prestige-unlocked'],
+            9: ['wiki.html#universes-gameplay'],
+            10: ['wiki.html#crispr-prestige-universal','wiki.html#crispr-prestige-standard']
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'));
 }

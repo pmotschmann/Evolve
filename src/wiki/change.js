@@ -4,10 +4,12 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.23`,
-        date: `1/??/2021`,
+        date: `1/16/2021`,
         changes: [
             `Redesigned Heat based Genus mechanics.`,
-            `Untapped Potential formula changed: now has diminishing returns for stacking unspent genes.`
+            `Untapped Potential formula changed: now has diminishing returns for stacking unspent genes.`,
+            `Added new sections to Mechanics topic of Wiki.`
+            `Minor bug fixes.`
         ]
     },
     {

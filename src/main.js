@@ -664,7 +664,7 @@ function fastLoop(){
     if (global.race['untapped']){
         if (global.race['untapped'] > 0){
             let untapped = +(global.race.untapped / (global.race.untapped + 20) / 10 + 0.00024).toFixed(4);
-            breakdown.p['Global'][loc('trait_untapped_bd')] = `${global.race.untapped * 100}%`;
+            breakdown.p['Global'][loc('trait_untapped_bd')] = `${untapped * 100}%`;
             global_multiplier *= 1 + (untapped);
         }
     }
