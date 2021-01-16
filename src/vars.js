@@ -725,7 +725,7 @@ if (!global['settings']){
         disableReset: false,
         font: 'standard',
         cLabels: true,
-        theme: 'night',
+        theme: 'dark',
         locale: 'en-US',
         icon: 'star'
     };
