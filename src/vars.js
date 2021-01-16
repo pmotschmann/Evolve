@@ -679,7 +679,7 @@ if (convertVersion(global['version']) < 100023){
 }
 
 global['version'] = '1.0.23';
-global['beta'] = 4;
+delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
