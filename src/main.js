@@ -3861,7 +3861,7 @@ function fastLoop(){
             }
 
             let asbestos_base = 0;
-            if (global.race['smoldering']){
+            if (global.race['smoldering'] && global.resource.Chrysotile.display && global.city['rock_quarry']){
                 asbestos_base = stone_base;
                 stone_base *= (100 - global.city.rock_quarry.asbestos) / 100;
                 asbestos_base *= global.city.rock_quarry.asbestos / 100;
@@ -3882,7 +3882,7 @@ function fastLoop(){
             if (stone_base > 0){
                 stone_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                 stone_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
-                if (global.race['smoldering']){
+                if (global.race['smoldering'] && global.resource.Chrysotile.display){
                     chrysotile_bd[loc('workers')] = asbestos_base + 'v';
                     chrysotile_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                     chrysotile_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
@@ -3892,7 +3892,7 @@ function fastLoop(){
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
                 stone_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                if (global.race['smoldering']){
+                if (global.race['smoldering'] && global.resource.Chrysotile.display){
                     chrysotile_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
             }
@@ -3901,7 +3901,7 @@ function fastLoop(){
                 if (global.tech['mars'] && red_on['red_mine']){
                     stone_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
-                    if (global.race['smoldering']){
+                    if (global.race['smoldering'] && global.resource.Chrysotile.display){
                         asbestos_base = red_on['red_mine'] * 1.25 * global.civic.colonist.workers * zigguratBonus();
                         chrysotile_bd[loc('space_red_mine_title')] = asbestos_base + 'v';
                     }
@@ -3917,7 +3917,7 @@ function fastLoop(){
             breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
 
-            if (global.race['smoldering']){
+            if (global.race['smoldering'] && global.resource.Chrysotile.display){
                 let a_delta = asbestos_base * power_mult * rock_quarry;
                 a_delta *= hunger * global_multiplier;
                 
@@ -5212,7 +5212,7 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
 
-            if (global.race['smoldering']){
+            if (global.race['smoldering'] && global.resource.Chrysotile.display){
                 caps['Chrysotile'] += gain;
                 bd_Chrysotile[loc('city_rock_quarry')] = gain+'v';
             }
@@ -5631,7 +5631,7 @@ function midLoop(){
                     bd_Lumber[loc('space_red_garage_title')] = gain+'v';
                 }
 
-                if (global.race['smoldering']){
+                if (global.race['smoldering'] && global.resource.Chrysotile.display){
                     gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
                     caps['Chrysotile'] += gain;
                     bd_Chrysotile[loc('space_red_garage_title')] = gain+'v';

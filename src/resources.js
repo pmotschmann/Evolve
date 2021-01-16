@@ -258,15 +258,6 @@ export function craftingRatio(res,auto){
     if (global.race.Plasmid.count > 0){
         multiplier *= plasmidBonus() / 8 + 1;
     }
-    if (global.race['no_plasmid']){
-        if (global.city['temple'] && global.city['temple'].count){
-            let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
-            if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                temple_bonus += global.civic.professor.workers * 0.0004;
-            }
-            multiplier *= 1 + (global.city.temple.count * temple_bonus / 4);
-        }
-    }
     if (global.genes['challenge'] && global.genes['challenge'] >= 2){
         multiplier *= 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100));
     }
