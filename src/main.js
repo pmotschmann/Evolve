@@ -15,6 +15,27 @@ import { events } from './events.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 
+{
+    $(document).ready(function() {
+        if (!window.matchMedia)
+            return;
+    
+        var current = $('head > link[rel="icon"][media]');
+        $.each(current, function(i, icon) {
+            var match = window.matchMedia(icon.media);
+            function swap() {
+                if (match.matches) {
+                    current.remove();
+                    current = $(icon).appendTo('head');
+                }
+            }
+            match.addListener(swap);
+            swap();
+        });
+    });
+}
+
+
 if (global.settings.expose){
     enableScript();
 }
