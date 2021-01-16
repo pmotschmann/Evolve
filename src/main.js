@@ -1,10 +1,10 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon } from './achieve.js';
-import { gameLoop, vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind } from './functions.js';
+import { gameLoop, vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { job_desc, loadFoundry, farmerValue } from './jobs.js';
+import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
@@ -117,9 +117,14 @@ if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
 }
 
+defineJobs(true);
 defineResources();
 initTabs();
 buildQueue();
+
+Object.keys(gridDefs()).forEach(function(gridtype){
+    powerGrid(gridtype);
+});
 
 resizeGame();
 

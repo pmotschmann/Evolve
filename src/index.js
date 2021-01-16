@@ -312,6 +312,7 @@ export function loadTab(tab){
                     },
                     methods: {
                         swapTab(tab){
+                            console.log(tab);
                             if (!global.settings.tabLoad){
                                 clearGrids();
                                 clearElement($(`#civic`));
