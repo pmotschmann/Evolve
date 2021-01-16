@@ -6,7 +6,7 @@ const changeList = [
         version: `1.0.23`,
         date: `1/??/2021`,
         changes: [
-            `Redesgined Heat based Genus mechanics.`,
+            `Redesigned Heat based Genus mechanics.`,
             `Untapped Potential formula changed: now has diminishing returns for stacking unspent genes.`
         ]
     },

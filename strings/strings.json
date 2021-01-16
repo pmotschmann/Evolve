@@ -5038,7 +5038,7 @@
   "wiki_trait_effect_low_light": "-%0% Farm/Farmer Production.",
   "wiki_trait_effect_elusive": "Spies are never caught.",
   "wiki_trait_effect_iron_allergy": "-%0% Iron mining production.",
-  "wiki_trait_effect_smoldering": "+%0% morale in Summer, No morale bonus in Spring. +%1% global production bonus for each consecutive Hot day up to 100 stacks; +%2% above 100 stacks.",
+  "wiki_trait_effect_smoldering": "+%0% morale in Summer, No morale bonus in Spring. +%1% global production bonus for each consecutive Hot day up to 100 stacks; +%2% above 100 stacks. Lumber is not available, additional resource Chrysotile is harvested by Quarry Workers. Most resource costs are reduced by 10%.",
   "wiki_trait_effect_cold_intolerance": "-%0% global production penalty for each consecutive Cold day.",
   "wiki_trait_effect_chilled": "+%0% morale in Winter, No morale bonus in Spring. +%1% global production bonus for each consecutive Cold day up to 100 stacks; +%2% above 100 stacks. +%3% Food if Cold, +%4% Food if Snowing, -%5% Food if Sunny.",
   "wiki_trait_effect_heat_intolerance": "-%0% global production penalty for each consecutive Hot day.",

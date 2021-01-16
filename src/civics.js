@@ -1257,6 +1257,9 @@ function war_campaign(gov){
         let basic = ['Food','Lumber','Stone'];
         let common = ['Copper','Iron','Aluminium','Coal'];
         let rare = ['Cement','Steel'];
+        if (global.tech['smoldering']){
+            basic.push('Chrysotile');
+        }
         if (global.race['terrifying']){
             rare.push('Titanium');
         }
