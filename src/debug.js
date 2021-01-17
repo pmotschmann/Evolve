@@ -9,7 +9,6 @@ import { armyRating } from './civics.js';
 import { alevel } from './achieve.js';
 import { loc } from './locale.js';
 
-
 export function enableDebug(){
     if (global.settings.expose){
         window.evolve = {
