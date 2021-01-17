@@ -1167,7 +1167,7 @@ function smolderAdjust(costs, wiki){
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
                 let money = costs['Money'](wiki) || 0;
-                return money > 0 ? Math.round(money / 30) : 0;
+                return money > 0 ? Math.round(money / 50) : 0;
             }
         }
         return newCosts;
