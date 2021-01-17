@@ -2791,7 +2791,7 @@ export const actions = {
             category: 'outskirts',
             reqs: {},
             trait: ['evil'],
-            not_trait: ['kindling_kindred','cataclysm'],
+            not_trait: ['kindling_kindred','smoldering','cataclysm'],
             no_queue(){ return true },
             action(){
                 let gain = global.race['strong'] ? traits.strong.vars[0] : 1;

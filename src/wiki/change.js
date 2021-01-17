@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.24`,
+        date: `1/17/2021`,
+        changes: [
+            `Evil Smoldering races can now research bone tools.`
+        ]
+    },
+    {
         version: `1.0.23`,
         date: `1/16/2021`,
         changes: [

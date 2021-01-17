@@ -3,15 +3,15 @@ import { loc } from './../locale.js';
 import { clearElement, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
-export function headerBoxBuilder(parent,args){
+export function headerBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('h_level')){
         args['h_level'] = 2;
     }
     args['header'] = true;
-    return infoBoxBuilder(parent,args);
+    return infoBoxBuilder(parent,args,box);
 }
 
-export function infoBoxBuilder(parent,args){
+export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('name')){ return; }
     if (!args.hasOwnProperty('template')){ return; }
     if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
@@ -25,8 +25,15 @@ export function infoBoxBuilder(parent,args){
     if (!args.hasOwnProperty('break')){ args['break'] = false; }
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
 
-    let info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
-    info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+    let info = false;
+    if (box){
+        info = box;
+    }
+    else {
+        info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
+        info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+    }
+
     let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];
     
     if (args.break){
@@ -63,7 +70,9 @@ export function infoBoxBuilder(parent,args){
         info.append(para);
     });
     
-    parent.append(info);    
+    if (!box){
+        parent.append(info);
+    }   
     return info;
 }
 

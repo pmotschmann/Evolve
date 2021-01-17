@@ -45,8 +45,8 @@ const techs = {
             return global.race.species === 'wendigo' ? false : true;
         },
         cost: {
-            Food(){ return global.race['evil'] ? 0 : 10; },
-            Lumber(){ return global.race['evil'] ? 10 : 0; }
+            Food(){ return global.race['evil'] && !global.race['smoldering'] ? 0 : 10; },
+            Lumber(){ return global.race['evil'] && !global.race['smoldering'] ? 10 : 0; }
         },
         action(){
             if (payCosts($(this)[0].cost)){

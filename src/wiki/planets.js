@@ -1,13 +1,25 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { planetTraits, biomes } from './../races.js';
-import { headerBoxBuilder } from './functions.js';
+import { headerBoxBuilder, infoBoxBuilder } from './functions.js';
 
 export function planetsPage(content) {
     let info = $('<div class="duelList"/>');
 
-    let intro = headerBoxBuilder(content,{ name: 'planet', template: 'planet', paragraphs: 4, full: true });
-    intro.append($(`<div>${loc('wiki_planet_geology')}</div>`));
+    let intro = headerBoxBuilder(content,{ name: 'planet', template: 'planet', paragraphs: 4, full: true,
+        para_data: {
+            2: [365,'25%'],
+            3: [4],
+            4: ['200-600']
+        }
+    });
+    infoBoxBuilder(content,{ name: 'geology', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
+        para_data: {
+            2: [2],
+            3: ['-10%','+19%'],
+            4: [7,'+44%']
+        }
+    },intro);
 
     let planetInfo = infoForFeature(biomes, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_biome')}</h3></div>`));
     let planetTraitsInfo = infoForFeature(planetTraits, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_trait')}</h3></div>`));

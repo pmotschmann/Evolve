@@ -1,19 +1,20 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon } from './achieve.js';
-import { gameLoop, vBind, popover, clearElement, deepClone, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, checkTechRequirements, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events } from './events.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
+import { enableDebug, updateDebugData } from './debug.js';
 
 {
     $(document).ready(function() {
@@ -37,7 +38,7 @@ import { getTopChange } from './wiki/change.js';
 
 
 if (global.settings.expose){
-    enableScript();
+    enableDebug();
 }
 
 var quickMap = {
@@ -4942,11 +4943,9 @@ function fastLoop(){
 
     if (global.settings.expose){
         if (!window['evolve']){
-            enableScript();
+            enableDebug();
         }
-        window.evolve.global = JSON.parse(JSON.stringify(global));
-        window.evolve.craftCost = JSON.parse(JSON.stringify(craftCost())),
-        window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
+        updateDebugData();
     }
 
     let easter = getEaster();
@@ -8137,19 +8136,6 @@ function spyCaught(i){
             messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
             break;
     }
-}
-
-function enableScript(){
-    window.evolve = {
-        actions: deepClone(actions),
-        races: deepClone(races),
-        tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
-        craftCost: JSON.parse(JSON.stringify(craftCost())),
-        atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
-        checkTechRequirements: deepClone(checkTechRequirements),
-        global: {},
-        breakdown: {},
-    };
 }
 
 intervals['version_check'] = setInterval(function(){

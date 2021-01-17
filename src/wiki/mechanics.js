@@ -162,4 +162,28 @@ export function mechanicsPage(content){
         }
     });
     sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'));
+
+    let planets = infoBoxBuilder(mainContent,{ name: 'planet', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
+        para_data: {
+            2: [365,'25%'],
+            3: [4],
+            4: ['200-600']
+        }
+    });
+    infoBoxBuilder(mainContent,{ name: 'geology', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
+        para_data: {
+            2: [2],
+            3: ['-10%','+19%'],
+            4: [7,'+44%']
+        }
+    },planets);
+    infoBoxBuilder(mainContent,{ name: 'seeother', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 1, h_level: 2,
+        para_data: {
+            1: [loc('wiki_menu_planets')]
+        },
+        data_link: {
+            1: ['wiki.html#planets-gameplay']
+        }
+    },planets);
+    sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'));
 }
