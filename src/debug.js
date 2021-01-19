@@ -29,6 +29,7 @@ export function enableDebug(){
             alevel: deepClone(alevel),
             messageQueue: deepClone(messageQueue),
             loc: deepClone(loc),
+            updateDebugData: deepClone(updateDebugData),
             global: {},
             breakdown: {},
         };
