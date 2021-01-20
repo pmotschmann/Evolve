@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
+import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -5208,8 +5208,7 @@ function midLoop(){
             caps['Containers'] += (global.city['warehouse'].count * volume);
         }
         if (global.city['rock_quarry']){
-            let gain = (global.city['rock_quarry'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['rock_quarry'].count * spatialReasoning(100));
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
 
@@ -5219,20 +5218,17 @@ function midLoop(){
             }
         }
         if (global.city['lumber_yard']){
-            let gain = (global.city['lumber_yard'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['lumber_yard'].count * spatialReasoning(100));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_lumber_yard')] = gain+'v';
         }
         else if (global.city['graveyard']){
-            let gain = (global.city['graveyard'].count * spatialReasoning(100));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['graveyard'].count * spatialReasoning(100));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_graveyard')] = gain+'v';
         }
         if (global.city['sawmill']){
-            let gain = (global.city['sawmill'].count * spatialReasoning(200));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['sawmill'].count * spatialReasoning(200));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_sawmill')] = gain+'v';
         }
@@ -5707,26 +5703,22 @@ function midLoop(){
         }
 
         if (global.city['silo']){
-            let gain = (global.city['silo'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['silo'].count * spatialReasoning(500));
             caps['Food'] += gain;
             bd_Food[loc('city_silo')] = gain+'v';
         }
         if (global.city['compost']){
-            let gain = (global.city['compost'].count * spatialReasoning(200));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['compost'].count * spatialReasoning(200));
             caps['Food'] += gain;
             bd_Food[loc('city_compost_heap')] = gain+'v';
         }
         if (global.city['soul_well']){
-            let gain = (global.city['soul_well'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['soul_well'].count * spatialReasoning(500));
             caps['Food'] += gain;
             bd_Food[loc('city_soul_well')] = gain+'v';
         }
         if (global.city['smokehouse']){
-            let gain = (global.city['smokehouse'].count * spatialReasoning(500));
-            if (global.stats.achieve['blackhole']){ gain = Math.round(gain * (1 + (global.stats.achieve.blackhole.l * 0.05))) };
+            let gain = BHStorageMulti(global.city['smokehouse'].count * spatialReasoning(500));
             caps['Food'] += gain;
             bd_Food[loc('city_smokehouse')] = gain+'v';
         }
