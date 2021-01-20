@@ -42,7 +42,7 @@ const techs = {
         reqs: { primitive: 1 },
         grant: ['primitive',2],
         condition(){
-            return global.race.species === 'wendigo' ? false : true;
+            return global.race['soul_eater'] && !global.race['evil'] ? false : true;
         },
         cost: {
             Food(){ return global.race['evil'] && !global.race['smoldering'] ? 0 : 10; },
@@ -62,17 +62,17 @@ const techs = {
     wooden_tools: {
         id: 'tech-wooden_tools',
         title() {
-            return global.race['evil'] ? loc('tech_bone_tools') : loc('tech_wooden_tools');
+            return global.race['kindling_kindred'] ? loc('tech_bone_tools') : loc('tech_wooden_tools');
         },
         desc() {
-            return global.race['evil'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
+            return global.race['kindling_kindred'] ? loc('tech_bone_tools_desc') : loc('tech_wooden_tools_desc');
         },
         category: 'stone_gathering',
         era: 'primitive',
         reqs: { primitive: 1 },
         grant: ['primitive',2],
         condition(){
-            return global.race.species === 'wendigo' ? true : false;
+            return global.race['soul_eater'] && !global.race['evil'] ? true : false;
         },
         cost: {
             Lumber(){ return 10; }
@@ -1348,7 +1348,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.city['metal_refinery'] = { count: 0, on: 0 };
-                global.resource.Sheet_Metal.display = true;
                 loadFoundry();
                 return true;
             }
@@ -4958,7 +4957,7 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0].cost)){
-                global.city['oil_power'] = { count: 0 };
+                global.city['oil_power'] = { count: 0 , on: 0 };
                 return true;
             }
             return false;
@@ -5297,7 +5296,7 @@ const techs = {
         grant: ['reclaimer',1],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 45; },
@@ -5325,7 +5324,7 @@ const techs = {
         grant: ['reclaimer',2],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 540; },
@@ -5349,7 +5348,7 @@ const techs = {
         grant: ['reclaimer',3],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 2700; },
@@ -5373,7 +5372,7 @@ const techs = {
         grant: ['reclaimer',4],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 9000; },
@@ -5397,7 +5396,7 @@ const techs = {
         grant: ['reclaimer',5],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 38000; },
@@ -5421,7 +5420,7 @@ const techs = {
         grant: ['reclaimer',6],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 67500; },
@@ -5445,7 +5444,7 @@ const techs = {
         grant: ['reclaimer',7],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 160000; },
@@ -5469,7 +5468,7 @@ const techs = {
         grant: ['reclaimer',8],
         trait: ['evil'],
         condition(){
-            return global.race.species === 'wendigo' ? true : global.race['kindling_kindred'] || global.race['smoldering'] || global.race['soul_eater'] ? false : true;
+            return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
         cost: {
             Knowledge(){ return 525000; },

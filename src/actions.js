@@ -3529,6 +3529,12 @@ export const actions = {
                     if (global.tech['storage'] >= 4){
                         global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(20) * multiplier));
                     }
+                    if (global.resource.Chrysotile.display){
+                        global['resource']['Chrysotile'].max += (spatialReasoning(300) * multiplier);
+                    }
+                    if (global.resource.Crystal.display){
+                        global['resource']['Crystal'].max += (spatialReasoning(8) * multiplier);
+                    }
                     global.city['shed'].count++;
                     return true;
                 }
@@ -3826,6 +3832,11 @@ export const actions = {
                     global.city['rock_quarry'].count++;
                     global.civic.quarry_worker.display = true;
                     global['resource']['Stone'].max += 100;
+                    if (global.race['smoldering'] && global.resource.Chrysotile.display){
+                        global.settings.showCivic = true;
+                        global.settings.showIndustry = true;
+                        global['resource']['Chrysotile'].max += stone;
+                    }
                     if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
                         global.city['rock_quarry'].on++;
                     }

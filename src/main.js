@@ -527,7 +527,7 @@ if (global.race.species === 'protoplasm'){
         addAction('evolution','chitin');
     }
     else {
-        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','fey','sand','heat','polar','demonic','angelic','sentience','bunker'];
+        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','aquatic','fey','sand','heat','polar','demonic','celestial','sentience','bunker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);
@@ -3743,7 +3743,7 @@ function fastLoop(){
                     modRes('Lumber', lumber * hunger * global_multiplier * time_multiplier);
                 }
             }
-            else if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+            else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.free * weapons / 2;
@@ -3883,8 +3883,10 @@ function fastLoop(){
             if (stone_base > 0){
                 stone_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                 stone_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
-                if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                    chrysotile_bd[loc('workers')] = asbestos_base + 'v';
+            }
+            if (global.race['smoldering'] && global.resource.Chrysotile.display){
+                chrysotile_bd[loc('workers')] = asbestos_base + 'v';
+                if (asbestos_base > 0){
                     chrysotile_bd[`ᄂ${loc('city_rock_quarry')}`] = ((rock_quarry - 1) * 100) + '%';
                     chrysotile_bd[`ᄂ${loc('power')}`] = ((power_mult - 1) * 100) + '%';
                 }

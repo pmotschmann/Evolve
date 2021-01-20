@@ -575,9 +575,14 @@ const spaceProjects = {
                     let coal = sizeApproximation(+(spatialReasoning(1500) * multiplier).toFixed(0),1);
                     desc = desc + `<span>${loc('plus_max_resource',[coal,global.resource.Coal.name])}</span>`;
 
-                    if (!global.race['kindling_kindred']){
+                    if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                         let lumber = sizeApproximation(+(spatialReasoning(7500) * multiplier).toFixed(0),1);
                         desc = desc + `<span>${loc('plus_max_resource',[lumber,global.resource.Lumber.name])}</span>`;
+                    }
+
+                    if (global.race['smoldering'] && global.resource.Chrysotile.display){
+                        let cat_asbestos = sizeApproximation(+(spatialReasoning(7500) * multiplier).toFixed(0),1);
+                        desc = desc + `<span>${loc('plus_max_resource',[cat_asbestos,global.resource.Chrysotile.name])}</span>`;
                     }
 
                     let stone = sizeApproximation(+(spatialReasoning(7500) * multiplier).toFixed(0),1);
@@ -593,17 +598,44 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('garage');
-                    let multiplier = global.tech['particles'] >= 4  ? 1 + (global.tech['supercollider'] / 20) : 1;
-                    multiplier *= global.tech['world_control'] ? 2 : 1;
+                    let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
+                    let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
+                    if (global.tech['world_control'] || global.race['cataclysm']){
+                        multiplier *= 2;
+                        containers += 10;
+                    }
                     multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
+                    
+                    global['resource']['Containers'].max += containers;
                     global['resource']['Copper'].max += (spatialReasoning(6500) * multiplier);
                     global['resource']['Iron'].max += (spatialReasoning(5500) * multiplier);
-                    global['resource']['Cement'].max += (spatialReasoning(6000) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning((global.race.cataclysm ? 10500 : 6000)) * multiplier);
                     global['resource']['Steel'].max += (spatialReasoning(4500) * multiplier);
                     global['resource']['Titanium'].max += (spatialReasoning(3500) * multiplier);
                     global['resource']['Alloy'].max += (spatialReasoning(2500) * multiplier);
+                    if (global.resource.Nano_Tube.display){
+                        global['resource']['Nano_Tube'].max += (spatialReasoning(25000) * multiplier);
+                    }
                     if (global.resource.Neutronium.display){
                         global['resource']['Neutronium'].max += (spatialReasoning(125) * multiplier);
+                    }
+                    if (global.resource.Infernite.display){
+                        global['resource']['Infernite'].max += (spatialReasoning(75) * multiplier);
+                    }
+                    
+                    if (global.race['cataclysm']){
+                        global['resource']['Crates'].max += containers;
+                        global['resource']['Polymer'].max += (spatialReasoning(2500) * multiplier);
+                        global['resource']['Coal'].max += (spatialReasoning(1500) * multiplier);
+
+                        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+                            global['resource']['Lumber'].max += (spatialReasoning(7500) * multiplier);
+                        }
+                        if (global.race['smoldering']){
+                            global['resource']['Chrysotile'].max += (spatialReasoning(7500) * multiplier);
+                        }
+                        global['resource']['Stone'].max += (spatialReasoning(7500) * multiplier);
+                        global['resource']['Furs'].max += (spatialReasoning(2200) * multiplier);
                     }
                     return true;
                 }
@@ -2202,6 +2234,10 @@ const interstellarProjects = {
                     let val = sizeApproximation(+(spatialReasoning(750) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
                 }
+                if (global.resource.Chrysotile.display){
+                    let val = sizeApproximation(+(spatialReasoning(750) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Chrysotile.name])}</span>`;
+                }
                 if (global.resource.Furs.display){
                     let val = sizeApproximation(+(spatialReasoning(425) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Furs.name])}</span>`;
@@ -2270,6 +2306,9 @@ const interstellarProjects = {
                     }
                     if (global.tech['storage'] >= 4){
                         global['resource']['Titanium'].max += ((spatialReasoning(40) * multiplier));
+                    }
+                    if (global.resource.Chrysotile.display){
+                        global['resource']['Chrysotile'].max += (spatialReasoning(750) * multiplier);
                     }
                     if (global.resource.Nano_Tube.display){
                         global['resource']['Nano_Tube'].max += ((spatialReasoning(30) * multiplier));

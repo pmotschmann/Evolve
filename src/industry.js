@@ -85,7 +85,7 @@ function loadSmelter(parent,bind){
         let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
         parent.append(fuelTypes);
 
-        if (!global.race['kindling_kindred'] || global.race['evil']){
+        if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
             let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
@@ -899,7 +899,7 @@ function loadPylon(parent,bind){
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'].forEach(function (spell){
-            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['evil']) || (spell === 'crafting' && global.tech.magic >= 4)){
+            if ((spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') || (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater']) || (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']) || (spell === 'crafting' && global.tech.magic >= 4)){
                 let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
                 let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);

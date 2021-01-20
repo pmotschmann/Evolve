@@ -7,6 +7,7 @@ import { loadFoundry } from './jobs.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
+import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
 const fortressModules = {
@@ -507,6 +508,8 @@ const fortressModules = {
                 Adamantite(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 12500000 : 0; },
                 Orichalcum(wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 30000000 : 0; },
             },
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
             effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -1398,15 +1401,13 @@ const fortressModules = {
                 Knowledge(wiki){ return global.tech.hell_spire === 6 || global.tech.hell_spire === 7 || wiki ? (global.tech.hell_spire === 7 ? 50000000 : 40000000) : 0; }
             },
             effect(){
-                if (global.tech.hell_spire === 6){
-                    return loc('portal_sphinx_effect');
-                }
-                else if (global.tech.hell_spire === 7){
+                if (global.tech.hell_spire === 7){
                     return loc('portal_sphinx_effect2');
                 }
                 else if (global.tech.hell_spire >= 8){
                     return loc('portal_sphinx_effect3');
                 }
+                return loc('portal_sphinx_effect');
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -2115,7 +2116,7 @@ export function bloodwar(){
 
     let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
     let gem_chance = game_base - global.portal.fortress.pity;
-    if (global.race.universe === 'evil' && global.race.Dark.count > 0){
+    if (global.race.universe === 'evil' && global.race.Dark.count > 1){
         let de = global.race.Dark.count;
         if (global.race.Harmony.count > 0){
             de *= 1 + (global.race.Harmony.count * 0.01);
