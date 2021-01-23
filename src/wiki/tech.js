@@ -15,11 +15,16 @@ const extraInformation = {
         loc(`wiki_tech_club`),
         loc(`wiki_tech_resource_unlock`,[loc(`resource_Food_name`)])
     ],
-    bone_tools: [
-        loc(`wiki_tech_bone_tools`)
+    bone_tools: global.race['smoldering'] ? [
+        loc(`wiki_tech_bone_tools_alt`),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Chrysotile_name`)])]
+        : [
+        loc(`wiki_tech_bone_tools`),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Stone_name`)])
     ],
     wooden_tools: [
-        loc(`wiki_tech_bone_tools`)
+        loc(`wiki_tech_bone_tools`),
+        loc(`wiki_tech_resource_unlock`,[loc(`resource_Stone_name`)])
     ],
     sundial: [
         loc(`wiki_tech_sundial1`),
@@ -1481,6 +1486,7 @@ const extraRequirements = {
     hell_spire8 : loc('wiki_tech_req_hell_spire8'),
     hell_spire10 : loc('wiki_tech_req_hell_spire10'),
     b_stone1 : loc('wiki_tech_req_b_stone1'),
+    waygate2 : loc('wiki_tech_req_megabuilding',[loc('portal_waygate_title')]),
     waygate3 : loc('wiki_tech_req_waygate3'),
     decay1 : loc('wiki_tech_req_decay1')
 };
@@ -1488,14 +1494,18 @@ const extraRequirements = {
 const specialRequirements = {
     bone_tools: [
         [
-            loc(`wiki_tech_special_species_not`,[loc(`race_wendigo`)]),
-            global.race.species !== 'wendigo'
+            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_trait`,[loc(`trait_evil_name`)]),loc(`wiki_tech_special_trait_not`,[loc(`trait_soul_eater_name`)])]),
+            global.race['evil'] || !global.race['soul_eater']
         ]
     ],
     wooden_tools: [
         [
-            loc(`wiki_tech_special_species`,[loc(`race_wendigo`)]),
-            global.race.species === 'wendigo'
+            loc(`wiki_tech_special_trait_not`,[loc(`trait_evil_name`)]),
+            global.race['evil'] ? false : true
+        ],
+        [
+            loc(`wiki_tech_special_trait`,[loc(`trait_soul_eater_name`)]),
+            global.race['soul_eater'] ? true : false
         ]
     ],
     smokehouse: [
@@ -1600,6 +1610,18 @@ const specialRequirements = {
             !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
         ]
     ],
+    republic: [
+        [
+            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)])]),
+            (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying']
+        ]
+    ],
+    socialist: [
+        [
+            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)])]),
+            (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying']
+        ]
+    ],
     federation: [
         [
             loc(`wiki_tech_special_occupy`),
@@ -1672,8 +1694,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1686,8 +1708,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1700,8 +1722,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1714,8 +1736,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1728,8 +1750,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1742,8 +1764,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1756,8 +1778,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1770,8 +1792,8 @@ const specialRequirements = {
             global.race.universe === 'evil'
         ],
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_kindling_kindred_name`)]),
-            !global.race['kindling_kindred']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering']
         ],
         [
             loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
@@ -1780,50 +1802,50 @@ const specialRequirements = {
     ],
     stone_axe: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     copper_axes: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     iron_saw: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     steel_saw: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     iron_axes: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     steel_axes: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     titanium_axes: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     chainsaws: [
         [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['evil']
+            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
+            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
         ]
     ],
     copper_sledgehammer: [

@@ -19,6 +19,39 @@ export function crisprPage(content){
     });
 }
 
+const specialRequirements = {
+    universal: [
+        [
+            loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
+            global.race.universe !== 'standard'
+        ]
+    ],
+    standard: [
+        [
+            loc(`wiki_tech_special_universe_not`,[loc(`universe_standard`)]),
+            global.race.universe !== 'standard'
+        ]
+    ],
+    ancients: [
+        [
+            loc(`wiki_arpa_crispr_special_ancients`),
+            global.genes['old_gods'] ? true : false
+        ]
+    ],
+    bleeding_effect: [
+        [
+            loc(`wiki_tech_special_universe`,[loc(`universe_antimatter`)]),
+            global.race.universe === 'antimatter'
+        ]
+    ],
+    blood_remembrance: [
+        [
+            loc(`wiki_arpa_crispr_special_blood_remembrance`),
+            global.resource.Blood_Stone.amount >= 1
+        ]
+    ]
+}
+
 function geneDesc(info,gene){
     let owned = global.genes[genePool[gene].grant[0]] && global.genes[genePool[gene].grant[0]] >= genePool[gene].grant[1] ? true : false;
 
@@ -50,6 +83,16 @@ function geneDesc(info,gene){
         Object.keys(genePool[gene].reqs).forEach(function (req){
             let color = global.genes[req] && global.genes[req] >= genePool[gene].reqs[req] ? 'success' : 'danger';
             reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_crispr_${req}`)} ${genePool[gene].reqs[req]}</span>`);
+            comma = true;
+        });
+    }
+    if (specialRequirements.hasOwnProperty(gene)){
+        let comma = false;
+        let specialReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_arpa_crispr_req_extra')}</span></div>`);
+        info.append(specialReq);
+        Object.keys(specialRequirements[gene]).forEach(function (req){
+            let color = specialRequirements[gene][req][1] ? 'success' : 'danger';
+            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${specialRequirements[gene][req][0]}</span>`);
             comma = true;
         });
     }
