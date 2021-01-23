@@ -1,6 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { svgIcons, svgViewBox} from './../functions.js';
+import { races } from './../races.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
 export function mechanicsPage(content){
@@ -186,4 +187,48 @@ export function mechanicsPage(content){
         }
     },planets);
     sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'));
+
+    infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', label: loc('wiki_hell_soul_gem'), paragraphs: 4, h_level: 2,
+        para_data: {
+            1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
+            3: [loc('tech_demon_attractor')]
+        }
+    });
+    sideMenu('add',`mechanics-gameplay`,`soulgems`,loc('wiki_hell_soul_gem'));
+
+    let pirates = infoBoxBuilder(mainContent,{ name: 'piracy', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 6, break: [4], h_level: 2,
+        para_data: {
+            1: [loc('galaxy_piracy'),loc('wiki_menu_intergalactic')],
+            2: [loc('galaxy_embassy')],
+            4: [loc('tab_galactic'),loc('galaxy_piracy'),loc('galaxy_stargate')],
+            5: [loc('interstellar_stargate')]
+        }
+    });
+    infoBoxBuilder(mainContent,{ name: 'pirate_ramp', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 3, h_level: 2,
+        para_data: {
+            1: [loc('galaxy_stargate'),loc('galaxy_gateway')],
+            2: [loc('tab_galactic')],
+            3: [loc('galaxy_embassy'),loc('tech_xeno_gift'),loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])],
+        }
+    },pirates);
+    infoBoxBuilder(mainContent,{ name: 'pirate_threat', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 7, break: [2,3,4,5,6,7],  h_level: 2,
+        para_data: {
+            1: [loc('galaxy_armada')],
+            2: [loc('galaxy_gateway'),100,250,500],
+            3: [loc('galaxy_stargate'),100,250,500],
+            4: [loc('galaxy_gorddon'),800],
+            5: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),1000],
+            6: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]),2500],
+            7: [loc('galaxy_chthonian'),7500]
+        },
+        data_color: {
+            2: ['caution','warning','warning','warning'],
+            3: ['caution','warning','warning','warning'],
+            4: ['caution','warning'],
+            5: ['caution','warning'],
+            6: ['caution','warning'],
+            7: ['caution','warning']
+        }
+    },pirates);
+    sideMenu('add',`mechanics-gameplay`,`piracy`,loc('galaxy_piracy'));
 }

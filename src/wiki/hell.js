@@ -13,7 +13,12 @@ export function hellPage(content){
         data_color: { 3: ['caution'] } });
     infoBoxBuilder(content,{ name: 'strategy', template: 'hell', paragraphs: 3 });
 
-    let soul = infoBoxBuilder(content,{ name: 'soul_gem', template: 'hell', paragraphs: 4 });
+    let soul = infoBoxBuilder(content,{ name: 'soul_gem', template: 'hell', paragraphs: 4,
+        para_data: {
+            1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
+            3: [loc('tech_demon_attractor')]
+        }
+    });
     let soul_extra = $(`<div></div>`);
     soul.append(soul_extra);
     soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_hell_sim2`)}</a>`,'Zarakon'])}</div>`);

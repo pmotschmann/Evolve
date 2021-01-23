@@ -6,7 +6,8 @@ const changeList = [
         version: `1.0.25`,
         date: `1/23/2021`,
         changes: [
-            `Bug Fixes.`
+            `Added Piracy section to Wiki under Gameplay-Mechanics.`,
+            `Numerous minor bug fixes.`
         ]
     },
     {
