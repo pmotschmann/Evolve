@@ -1712,7 +1712,6 @@ export function renderFortress(){
 
             if (region === 'prtl_fortress'){
                 buildFortress(parent,true);
-                buildFortress($('#fortress'),false);
             } 
 
             Object.keys(fortressModules[region]).forEach(function (tech){
@@ -1725,7 +1724,26 @@ export function renderFortress(){
     });
 }
 
-function buildFortress(parent,full){
+export function buildFortress(parent,full){
+    if (!global.settings.tabLoad){
+        switch (global.settings.civTabs){
+            case 1:
+                if (global.settings.spaceTabs !== 4){
+                    return;
+                }
+                break;
+            case 2:
+                if (global.settings.govTabs !== 3){
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+    }
+    if (!global.tech['portal'] || global.tech['portal'] < 2){
+        return;
+    }
     let id = full ? 'fort' : 'gFort';
     let fort = full ? $(`<div id="${id}" class="fort"></div>`) : $('#gFort');
     if (full){

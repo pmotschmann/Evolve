@@ -9,7 +9,7 @@ import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
-import { renderFortress, drawMechLab } from './portal.js';
+import { renderFortress, buildFortress, drawMechLab } from './portal.js';
 import { arpa } from './arpa.js';
 
 export function mainVue(){
@@ -347,6 +347,7 @@ export function loadTab(tab){
                                     case 3:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             defineGarrison();
+                                            buildFortress($('#fortress'),false);
                                         }
                                         break;
                                     case 4:
@@ -378,6 +379,7 @@ export function loadTab(tab){
                 if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                     defineGarrison();
                     buildGarrison($('#c_garrison'),false);
+                    buildFortress($('#fortress'),false);
                     foreignGov();
                     drawMechLab();
                 }
