@@ -1956,6 +1956,10 @@ a {
         display: flex;
         flex-direction: column;
         height: calc(100vh - 2.4rem);
+
+        &:empty {
+            display: none;
+        }
     }
 
     .bldQueue,
