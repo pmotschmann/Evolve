@@ -1952,6 +1952,12 @@ a {
         }
     }
 
+    #queueColumn {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 2.4rem);
+    }
+
     .bldQueue,
     .msgQueue {
         height: 5rem;
@@ -1968,14 +1974,11 @@ a {
 
     .msgQueue {
         font-size: .75rem;
-
-        &.right {
-            height: ~"calc(100vh - 9rem)";
-        }
     }
 
     .bldQueue,
     .bldQueue.right {
+        flex-shrink: 0;
         padding-top: .25rem;
 
         h2 {

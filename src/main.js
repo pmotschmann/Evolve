@@ -7101,13 +7101,6 @@ function midLoop(){
         });
     });
 
-    if ($(`#buildQueue.right`).length > 0){
-        $(`#msgQueue.right`).css('height',`calc(100vh - 6.5rem - ${$(`#buildQueue.right`).height()}px)`);
-    }
-    else {
-        $(`#msgQueue`).css('height',`5rem`);
-    }
-
     if ($(`#mechList`).length > 0){
         $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
     }
