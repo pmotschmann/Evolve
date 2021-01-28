@@ -4442,7 +4442,7 @@ export const actions = {
                 }
                 if (global.city['shrine'] && global.city.shrine.know > 0){
                     let know = getShrineBonus('know');
-                    desc = desc + `<div>${loc('city_shrine_know',[+(know.add).toFixed(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know',[(+(know.add).toFixed(1)).toLocaleString()])}</div>`;
                     desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.tax > 0){
@@ -4532,8 +4532,8 @@ export const actions = {
                     let shrineBonus = getShrineBonus('know');
                     gain *= shrineBonus.mult;
                 }
-                gain = gain.toFixed(0);
-                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                gain = +(gain).toFixed(0);
+                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4589,8 +4589,8 @@ export const actions = {
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
-                gain = +(gain).toFixed(1);
-                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
+                gain = +(gain).toFixed(0);
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -4647,8 +4647,8 @@ export const actions = {
                 if (global.space['satellite']){
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
-                gain = +(gain).toFixed(1);
-                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                gain = +(gain).toFixed(0);
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
@@ -4671,10 +4671,10 @@ export const actions = {
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain.toLocaleString(),morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain.toLocaleString()])}</div>`;
                     }
                 }
                 return desc;
@@ -4727,7 +4727,7 @@ export const actions = {
                     gain *= 1.45;
                 }
                 gain = +(gain).toFixed(0);
-                return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
+                return `<span>${loc('city_max_knowledge',[gain.toLocaleString()])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return powerCostMod(2); },
             action(){

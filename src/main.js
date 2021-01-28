@@ -36,7 +36,6 @@ import { enableDebug, updateDebugData } from './debug.js';
     });
 }
 
-
 if (global.settings.expose){
     enableDebug();
 }
