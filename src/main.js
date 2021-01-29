@@ -4780,9 +4780,11 @@ function fastLoop(){
             let crafting_costs = craftCost();
             let crafting_usage = {};
 
+            craftingRatio('','',true); //Recalculation
             Object.keys(crafting_costs).forEach(function (craft){
+                breakdown.ac[craft] = {};
                 let num = global.city.foundry[craft];
-                let craft_ratio = craftingRatio(craft,true);
+                let craft_ratio = craftingRatio(craft,'auto').multiplier;
 
                 let speed = global.genes['crafty'] ? 2 : 1;
                 let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
@@ -4806,6 +4808,8 @@ function fastLoop(){
                         crafting_usage[crafting_costs[craft][i].r] += final / time_multiplier;
                     }
                 }
+                
+                breakdown.ac[craft][loc(`job_craftsman`)] = (volume * speed / 140) + 'v';
 
                 modRes(craft, craft_ratio * volume * speed * time_multiplier / 140);
             });
