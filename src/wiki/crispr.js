@@ -47,7 +47,7 @@ const specialRequirements = {
     blood_remembrance: [
         [
             loc(`wiki_arpa_crispr_special_blood_remembrance`),
-            global.resource.Blood_Stone.amount >= 1
+            global.resource['Blood_Stone'] && global.resource.Blood_Stone.amount >= 1
         ]
     ]
 }
