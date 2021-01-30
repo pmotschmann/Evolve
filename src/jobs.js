@@ -542,7 +542,7 @@ export function loadFoundry(){
                     let craft_total = craftingRatio(res,'auto');
                     let multiplier = craft_total.multiplier;
                     let speed = global.genes['crafty'] ? 2 : 1;
-                    let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
+                    let final = +(global.resource[res].diff).toFixed(2);
                     let bonus = +(multiplier * 100).toFixed(0);
 
                     total.append($(`<div>${loc('craftsman_hover_bonus', [bonus.toLocaleString(), name])}</div>`));
