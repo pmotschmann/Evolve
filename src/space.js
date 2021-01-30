@@ -4064,7 +4064,7 @@ const galaxyProjects = {
             },
         },
         gorddon_mission: {
-            id: 'galaxy-demaus_mission',
+            id: 'galaxy-gorddon_mission',
             title: loc('galaxy_gorddon_mission'),
             desc: loc('galaxy_gorddon_mission_desc'),
             reqs: { xeno: 2 },
