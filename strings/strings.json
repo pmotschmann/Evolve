@@ -4698,7 +4698,7 @@
   "fortress_threat": "%0 demonic creatures have been spotted in the vicinity.",
   "fortress_threat_high": "Surveyors will not live long with this much activity.",
   "fortress_threat_medium": "Although dangerous, surveyors should be able to operate without too many casualties.",
-  "fortress_threat_low": "Surveyors should rarely be killed with the currently level of activity.",
+  "fortress_threat_low": "Surveyors should rarely be killed with the current level of activity.",
   "fortress_threat_level": "Threat Level:",
   "fortress_threat_level1": "Low",
   "fortress_threat_level2": "Moderate",
