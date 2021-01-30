@@ -1446,9 +1446,9 @@ export function craftingPopover(id,res,type,extra){
 
         let col1 = $(`<div></div>`);
         table.append(col1);
-        if (type === 'auto' && breakdown.ac[res]){
-            Object.keys(breakdown.ac[res]).forEach(function (mod){
-                let raw = breakdown.ac[res][mod];
+        if (type === 'auto' && breakdown.p[res]){
+            Object.keys(breakdown.p[res]).forEach(function (mod){
+                let raw = breakdown.p[res][mod];
                 let val = parseFloat(raw.slice(0,-1));
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
@@ -1487,6 +1487,24 @@ export function craftingPopover(id,res,type,extra){
         if (count > 0){
             table.append(col2);
         }
+
+        if (breakdown.p.consume && breakdown.p.consume[res]){
+            let col3 = $(`<div class="col"></div>`);
+            let count = 0;
+            Object.keys(breakdown.p.consume[res]).forEach(function (mod){                
+                let val = breakdown.p.consume[res][mod];
+                if (val != 0 && !isNaN(val)){
+                    count++;
+                    let type = val > 0 ? 'success' : 'danger';
+                    let label = mod.replace("_"," ");
+                    label = mod.replace(/\+.+$/,"");
+                    col3.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${res}['${mod}'] | fix | translate }}</span></div>`);
+                }
+            });
+            if (count > 0){
+                table.append(col3);
+            }
+        }
         
         if (extra){
             bd.append(`<div class="modal_bd sum"></div>`);
@@ -1498,8 +1516,9 @@ export function craftingPopover(id,res,type,extra){
             vBind({
                 el: `#pop${id} > div`,
                 data: {
-                    [res]: breakdown.ac[res],
+                    [res]: breakdown.p[res],
                     res: global['resource'][res],
+                    'consume': breakdown.p['consume'],
                     craft: craftingRatio(res,type)
                 }, 
                 filters: {
@@ -1516,6 +1535,9 @@ export function craftingPopover(id,res,type,extra){
                         else if (val < 0){
                             return sizeApproximation(val,precision) + suffix;
                         }
+                    },
+                    fix(val){
+                        return val + 'v';
                     },
                     namespace(name){
                         return name.replace("_"," ");
