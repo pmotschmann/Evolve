@@ -71,7 +71,7 @@ function achievePage(universe){
         }
     });
     
-    let uAffix = universeAffix(universe);
+    let uAffix = universeAffix(universe || 'standard');
 
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
@@ -126,7 +126,7 @@ function featPage(){
 }
 
 function achieveDesc(achievement,showFlair,universe){
-    let uAffix = universeAffix(universe);
+    let uAffix = universeAffix(universe || 'standard');
     
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){

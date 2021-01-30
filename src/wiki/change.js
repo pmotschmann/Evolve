@@ -7,7 +7,8 @@ const changeList = [
         date: `1/30/2021`,
         changes: [
             `Enhanced crafted material popovers.`,
-            `Universe filters for wiki achievements page.`
+            `Universe filters for wiki achievements page.`,
+            `Cheese Guide.`
         ]
     },
     {
