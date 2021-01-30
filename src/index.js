@@ -593,7 +593,7 @@ export function loadTab(tab){
         case 'mTabArpa':
             {
                 $(`#mTabArpa`).append(`<div id="apra" class="arpa">
-                    <b-tabs v-model="s.arpa.arpaTabs" :animated="s.animated">
+                    <b-tabs class="resTabs" v-model="s.arpa.arpaTabs" :animated="s.animated">
                         <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
                         <b-tab-item id="arpaGenetics" :visible="s.arpa.genetics" label="${loc('tab_arpa_genetics')}"></b-tab-item>
                         <b-tab-item id="arpaCrispr" :visible="s.arpa.crispr" label="${loc('tab_arpa_crispr')}"></b-tab-item>
@@ -827,7 +827,7 @@ export function index(){
     }
 
     // Settings Tab
-    let settings = $(`<b-tab-item class="settings">
+    let settings = $(`<b-tab-item class="settings sticky">
         <template slot="header">
             {{ 'tab_settings' | label }}
         </template>
