@@ -257,7 +257,6 @@ export function mechanicsPage(content){
         let cheeselevel = swissKnife(true);
         let cheeseList = swissKnife(false,true);
         let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
-        resets = 565;
         let looped = Math.floor(resets / cheeseList.length);
         if (looped > 0){
             switch (looped){
