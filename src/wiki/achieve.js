@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
-import { achievements, feats } from './../achieve.js';
+import { achievements, feats, universeAffix } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
 import { monsters } from './../portal.js';
 import { vBind, popover } from './../functions.js';
@@ -71,24 +71,7 @@ function achievePage(universe){
         }
     });
     
-    let uAffix = 'l';
-    switch (universe){
-        case 'evil':
-            uAffix = 'e';
-            break;
-        case 'antimatter':
-            uAffix = 'a';
-            break;
-        case 'micro':
-            uAffix = 'm';
-            break;
-        case 'heavy':
-            uAffix = 'h';
-            break;
-        case 'magic':
-            uAffix = 'mg';
-            break;
-    }
+    let uAffix = universeAffix(universe);
 
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
@@ -143,24 +126,7 @@ function featPage(){
 }
 
 function achieveDesc(achievement,showFlair,universe){
-    let uAffix = 'l';
-    switch (universe){
-        case 'evil':
-            uAffix = 'e';
-            break;
-        case 'antimatter':
-            uAffix = 'a';
-            break;
-        case 'micro':
-            uAffix = 'm';
-            break;
-        case 'heavy':
-            uAffix = 'h';
-            break;
-        case 'magic':
-            uAffix = 'mg';
-            break;
-    }
+    let uAffix = universeAffix(universe);
     
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){
