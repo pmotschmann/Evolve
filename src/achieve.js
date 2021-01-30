@@ -236,7 +236,7 @@ export const feats = {
 
 export function universeAffix(universe){
     universe = universe || global.race.universe;
-    switch (global.race.universe){
+    switch (universe){
         case 'evil':
             return 'e';
         case 'antimatter':
