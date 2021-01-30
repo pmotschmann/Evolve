@@ -25,8 +25,7 @@ export var vues = {};
 export var poppers = {};
 export var breakdown = {
     c: {},
-    p: {},
-    ac: {}
+    p: {}
 };
 export var p_on = {};
 export var red_on = {};
