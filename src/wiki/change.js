@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.26`,
+        date: `1/30/2021`,
+        changes: [
+            `Enhanced crafted material popovers.`,
+            `Universe filters for wiki achievements page.`,
+            `Cheese Guide.`
+        ]
+    },
+    {
         version: `1.0.25`,
         date: `1/23/2021`,
         changes: [

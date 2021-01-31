@@ -182,91 +182,274 @@ export function craftCost(){
         };
 }
 
-export function craftingRatio(res,auto){
-    let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
-    let multiplier = global.tech['foundry'] >= 2 ? 1 + (global.city.foundry.count * skill) : 1;
-    if (global.tech['foundry'] >= 3 && global.city.foundry[res] > 1){
-        multiplier += (global.city.foundry[res] - 1) * 0.03;
-    }
-    if (global.tech['foundry'] >= 4 && res === 'Plywood' && global.city['sawmill']){
-        multiplier += global.city['sawmill'].count * 0.02;
-    }
-    if (global.tech['foundry'] >= 6 && res === 'Brick'){
-        multiplier += global.city['foundry'].count * 0.02;
-    }
-    if (global.tech['foundry'] >= 7){
-        multiplier += p_on['factory'] * 0.05;
-        if (global.tech['mars'] >= 4){
-            multiplier += p_on['red_factory'] * 0.05;
+export const craftingRatio = (function(){
+    var crafting = {};
+    
+    return function (res,type,recalc){
+        if (recalc){
+            crafting = {
+                general: {
+                    add: [],
+                    multi: []
+                },
+                Plywood: {
+                    add: [],
+                    multi: []
+                },
+                Brick: {
+                    add: [],
+                    multi: []
+                },
+                Wrought_Iron: {
+                    add: [],
+                    multi: []
+                },
+                Sheet_Metal: {
+                    add: [],
+                    multi: []
+                },
+                Mythril: {
+                    add: [],
+                    multi: []
+                },
+                Aerogel: {
+                    add: [],
+                    multi: []
+                },
+                Nanoweave: {
+                    add: [],
+                    multi: []
+                },
+                Scarletite: {
+                    add: [],
+                    multi: []
+                }
+            };
+            if (global.tech['foundry'] >= 2){
+                let skill = global.tech['foundry'] >= 5 ? (global.tech['foundry'] >= 8 ? 0.08 : 0.05) : 0.03;
+                crafting.general.add.push({
+                    name: loc(`city_foundry`),
+                    manual: global.city.foundry.count * skill,
+                    auto: global.city.foundry.count * skill
+                });
+            }
+            if (global.tech['foundry'] >= 3){
+                Object.keys(crafting).forEach(function(resource){
+                    if (global.city.foundry[resource] && global.city.foundry[resource] > 1){
+                        crafting[resource].add.push({
+                            name: loc(`tech_apprentices`),
+                            manual: (global.city.foundry[resource] - 1) * 0.03,
+                            auto: (global.city.foundry[resource] - 1) * 0.03
+                        });
+                    }
+                });
+            }
+            if (global.tech['foundry'] >= 4 && global.city['sawmill']){
+                crafting.Plywood.add.push({
+                    name: loc(`city_sawmill`),
+                    manual: global.city['sawmill'].count * 0.02,
+                    auto: global.city['sawmill'].count * 0.02
+                });
+            }
+            if (global.tech['foundry'] >= 6){
+                crafting.Brick.add.push({
+                    name: loc(`city_foundry`),
+                    manual: global.city['foundry'].count * 0.02,
+                    auto: global.city['foundry'].count * 0.02
+                });
+            }
+            if (global.tech['foundry'] >= 7){
+                crafting.general.add.push({
+                    name: loc(`city_factory`) + ` (${loc(`tab_city5`)})`,
+                    manual: p_on['factory'] * 0.05,
+                    auto: p_on['factory'] * 0.05
+                });
+                if (global.tech['mars'] >= 4){
+                    crafting.general.add.push({
+                        name: loc(`city_factory`) + ` (${loc(`tab_space`)})`,
+                        manual: p_on['red_factory'] * 0.05,
+                        auto: p_on['red_factory'] * 0.05
+                    });
+                }
+                if (global.interstellar['int_factory'] && p_on['int_factory']){
+                    crafting.general.add.push({
+                        name: loc(`interstellar_int_factory_title`),
+                        manual: p_on['int_factory'] * 0.1,
+                        auto: p_on['int_factory'] * 0.1
+                    });
+                }
+            }
+            if (global.space['fabrication']){
+                crafting.general.add.push({
+                    name: loc(`space_red_fabrication_title`),
+                    manual: red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02),
+                    auto: red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02)
+                });
+            }
+            if (p_on['stellar_forge']){
+                crafting.Mythril.add.push({
+                    name: loc(`interstellar_stellar_forge_title`),
+                    manual: p_on['stellar_forge'] * 0.05,
+                    auto: p_on['stellar_forge'] * 0.05
+                });
+                crafting.general.add.push({
+                    name: loc(`interstellar_stellar_forge_title`),
+                    manual: 0,
+                    auto: p_on['stellar_forge'] * 0.1
+                });
+            }
+            if (p_on['hell_forge']){
+                let sup = hellSupression('ruins');
+                crafting.general.add.push({
+                    name: loc(`portal_hell_forge_title`),
+                    manual: 0,
+                    auto: p_on['hell_forge'] * 0.75 * sup.supress
+                });
+                crafting.Scarletite.multi.push({
+                    name: loc(`portal_ruins_supressed`),
+                    manual: 1,
+                    auto: sup.supress
+                });
+            }
+            if (global.race['crafty']){
+                crafting.general.add.push({
+                    name: loc(`wiki_arpa_crispr_crafty`),
+                    manual: 0.03,
+                    auto: 0.03
+                });
+            }
+            if (global.race['ambidextrous']){
+                crafting.general.add.push({
+                    name: loc(`trait_ambidextrous_name`),
+                    manual: global.race['ambidextrous'] * 0.03,
+                    auto: global.race['ambidextrous'] * 0.03
+                });
+            }
+            if (global.race['rigid']){
+                crafting.general.add.push({
+                    name: loc(`trait_rigid_name`),
+                    manual: -(traits.rigid.vars[0] / 100),
+                    auto: -(traits.rigid.vars[0] / 100)
+                });
+            }
+            if (global.civic.govern.type === 'socialist'){
+                crafting.general.multi.push({
+                    name: loc(`govern_socialist`),
+                    manual: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35,
+                    auto: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35
+                });
+            }
+            if (global.race['casting'] && global.race.casting['crafting']){
+                let boost_m = 1 + (global.race.casting['crafting'] / (global.race.casting['crafting'] + 75));
+                let boost_a = 1 + (2 * global.race.casting['crafting'] / (2 * global.race.casting['crafting'] + 75));
+                crafting.general.multi.push({
+                    name: loc(`modal_pylon_casting`),
+                    manual: boost_m,
+                    auto: boost_a
+                });
+            }
+            if (global.race['universe'] === 'magic'){
+                crafting.general.multi.push({
+                    name: loc(`universe_magic`),
+                    manual: 0.8,
+                    auto: 0.8
+                });
+            }
+            if (global.tech['v_train']){
+                crafting.general.multi.push({
+                    name: loc(`tech_vocational_training`),
+                    manual: 1,
+                    auto: 2
+                });
+            }
+            if (global.genes['crafty']){
+                crafting.general.multi.push({
+                    name: loc(`tab_arpa_crispr`) + ' ' + loc(`wiki_arpa_crispr_crafty`),
+                    manual: 1,
+                    auto: 1 + ((global.genes.crafty - 1) * 0.5)
+                });
+            }
+            if (global.race['ambidextrous']){
+                crafting.general.multi.push({
+                    name: loc(`trait_ambidextrous_name`),
+                    manual: 1,
+                    auto: 1 + (global.race['ambidextrous'] * 0.02)
+                });
+            }
+            if (global.blood['artisan']){
+                crafting.general.multi.push({
+                    name: loc(`tab_arpa_blood`) + ' ' + loc(`arpa_blood_artisan_title`),
+                    manual: 1,
+                    auto: 1 + (global.blood.artisan / 100)
+                });
+            }
+            let faith = faithBonus();
+            if (faith > 0){
+                crafting.general.multi.push({
+                    name: loc(`faith`),
+                    manual: 1,
+                    auto: 1 + (faith / (global.race.universe === 'antimatter' ? 1.5 : 3))
+                });
+            }
+            if (global.race.Plasmid.count > 0){
+                crafting.general.multi.push({
+                    name: loc(`resource_Plasmid_plural_name`),
+                    manual: plasmidBonus() / 8 + 1,
+                    auto: plasmidBonus() / 8 + 1
+                });
+            }
+            if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+                crafting.general.multi.push({
+                    name: loc(`mastery`),
+                    manual: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100)),
+                    auto: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100))
+                });
+            }
         }
-        if (global.interstellar['int_factory'] && p_on['int_factory']){
-            multiplier += p_on['int_factory'] * 0.1;
+        else{
+            let multiplier = 1;
+            let add_bd = {};
+            let multi_bd = {};
+            if (crafting['general']){
+                for (let i=0; i<crafting.general.add.length; i++){
+                    let curr = crafting.general.add[i];
+                    add_bd[curr.name] = curr[type];
+                    multiplier += curr[type];
+                }
+                for (let i=0; i<crafting[res].add.length; i++){
+                    let curr = crafting[res].add[i];
+                    add_bd[curr.name] = curr[type] + (add_bd[curr.name] ? add_bd[curr.name] : 0);
+                    multiplier += curr[type];
+                }
+                multi_bd[loc(`craft_tools`)] = multiplier - 1;
+                for (let i=0; i<crafting.general.multi.length; i++){
+                    let curr = crafting.general.multi[i];
+                    multi_bd[curr.name] = +(curr[type]) - 1;
+                    multiplier *= curr[type];
+                }
+                for (let i=0; i<crafting[res].multi.length; i++){
+                    let curr = crafting[res].multi[i];
+                    multi_bd[curr.name] = (curr[type] * (1 + (multi_bd[curr.name] ? +(multi_bd[curr.name]) : 0))) - 1;
+                    multiplier *= curr[type];
+                }
+            }
+
+            Object.keys(add_bd).forEach(function(add){
+                add_bd[add] = (+(add_bd[add]) * 100).toFixed(2) + '%';
+            });
+            Object.keys(multi_bd).forEach(function(multi){
+                multi_bd[multi] = (+(multi_bd[multi]) * 100).toFixed(2) + '%';
+            });
+            let craft_total = {
+                multiplier: multiplier,
+                add_bd: add_bd,
+                multi_bd: multi_bd
+                
+            }
+            return craft_total;
         }
     }
-    if (global.space['fabrication']){
-        multiplier += red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02);
-    }
-    if (res === 'Mythril' && p_on['stellar_forge']){
-        multiplier += p_on['stellar_forge'] * 0.05;
-    }
-    if (auto){
-        if (p_on['stellar_forge']){
-            multiplier += p_on['stellar_forge'] * 0.1;
-        }
-        if (p_on['hell_forge']){
-            let sup = hellSupression('ruins');
-            multiplier += p_on['hell_forge'] * 0.75 * sup.supress;
-        }
-    }
-    if (global.race['crafty']){
-        multiplier += 0.03;
-    }
-    if (global.race['ambidextrous']){
-        multiplier += (global.race['ambidextrous'] * 0.03);
-    }
-    if (global.race['rigid']){
-        multiplier -= traits.rigid.vars[0] / 100;
-    }
-    if (global.civic.govern.type === 'socialist'){
-        multiplier *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35;
-    }
-    if (global.race['casting'] && global.race.casting['crafting']){
-        let boost = auto ? global.race.casting['crafting'] * 2 : global.race.casting['crafting'];
-        multiplier *= 1 + (boost / (boost + 75));
-    }
-    if (global.race['universe'] === 'magic'){
-        multiplier *= 0.8;
-    }
-    if (auto){
-        if (global.tech['v_train']){
-            multiplier *= 2;
-        }
-        if (global.genes['crafty']){
-            multiplier *= 1 + ((global.genes.crafty - 1) * 0.5);
-        }
-        if (global.race['ambidextrous']){
-            multiplier *= 1 + (global.race['ambidextrous'] * 0.02);
-        }
-        if (global.blood['artisan']){
-            multiplier *= 1 + (global.blood.artisan / 100);
-        }
-        let faith = faithBonus();
-        if (faith > 0){
-            multiplier *= 1 + (faith / (global.race.universe === 'antimatter' ? 1.5 : 3));
-        }
-    }
-    if (global.race.Plasmid.count > 0){
-        multiplier *= plasmidBonus() / 8 + 1;
-    }
-    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-        multiplier *= 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100));
-    }
-    if (res === 'Scarletite'){
-        let sup = hellSupression('ruins');
-        multiplier *= sup.supress;
-    }
-    return multiplier;
-}
+})();
 
 export function initResourceTabs(tab){
     if (tab){
@@ -550,7 +733,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
             },
             craft(res,vol){
                 if (!global.race['no_craft']){
-                    let craft_bonus = craftingRatio(res);
+                    let craft_bonus = craftingRatio(res,'manual').multiplier;
                     let craft_costs = craftCost();
                     let volume = Math.floor(global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a);
                     for (let i=1; i<craft_costs[res].length; i++){
@@ -589,11 +772,11 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (infopops){
         let inc = [1,5,'A'];
         for (let i=0; i<inc.length; i++){
-            popover(`inc${name}${inc[i]}`,function(){
+            let extra = function(){
                 let popper = $(`<div></div>`);
                 let res = name;
                 let vol = inc[i];
-                let bonus = +(craftingRatio(res) * 100).toFixed(0);
+                let bonus = +(craftingRatio(res,'manual').multiplier * 100).toFixed(0);
                 popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus.toLocaleString(),global.resource[res].name])}</div>`));
                 
                 let craft_costs = craftCost();
@@ -625,8 +808,11 @@ function loadResource(name,max,rate,tradable,stackable,color){
                 }
                 popper.append(crafts);
                 popper.append(costs);
+                
                 return popper;
-            });
+            }
+            
+            craftingPopover(`inc${name}${inc[i]}`,name,'manual',extra);
         }
     }
 
@@ -642,6 +828,9 @@ function loadResource(name,max,rate,tradable,stackable,color){
 
     if (name !== global.race.species && name !== 'Crates' && name !== 'Containers' && max !== -1){
         breakdownPopover(`inc${name}`,name,'p');
+    }
+    else if (max === -1){
+        craftingPopover(`inc${name}`,name,'auto');
     }
 
     $(`#res${name}`).on('mouseover',function(){
@@ -1247,12 +1436,134 @@ export function tradeBuyPrice(res){
     return price;
 }
 
+export function craftingPopover(id,res,type,extra){
+    popover(`${id}`,function(){
+        let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
+        let table = $(`<div class="parent"></div>`);
+        bd.append(table);
+        
+        let craft_total = craftingRatio(res,type);
+
+        let col1 = $(`<div></div>`);
+        table.append(col1);
+        if (type === 'auto' && breakdown.p[res]){
+            Object.keys(breakdown.p[res]).forEach(function (mod){
+                let raw = breakdown.p[res][mod];
+                let val = parseFloat(raw.slice(0,-1));
+                if (val != 0 && !isNaN(val)){
+                    let type = val > 0 ? 'success' : 'danger';
+                    let label = mod.replace("_"," ");
+                    label = mod.replace(/\+.+$/,"");
+                    col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ ${[res]}['${mod}'] | translate }}</span></div>`);
+                }
+            });
+        }
+        Object.keys(craft_total.multi_bd).forEach(function (mod){
+            let raw = craft_total.multi_bd[mod];
+            let val = parseFloat(raw.slice(0,-1));
+            if (val != 0 && !isNaN(val)){
+                let type = val > 0 ? 'success' : 'danger';
+                let label = mod.replace("_"," ");
+                label = mod.replace(/\+.+$/,"");
+                col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ craft.multi_bd['${mod}'] | translate }}</span></div>`);
+            }
+        });
+        
+        let col2 = $(`<div class="col"></div>`);
+        let title = $(`<div class="has-text-info">${loc(`craft_tools_multi`)}</div>`);
+        col2.append(title);
+        let count = 0;
+        Object.keys(craft_total.add_bd).forEach(function (mod){
+            let raw = craft_total.add_bd[mod];
+            let val = parseFloat(raw.slice(0,-1));
+            if (val != 0 && !isNaN(val)){
+                count++;
+                let type = val > 0 ? 'success' : 'danger';
+                let label = mod.replace("_"," ");
+                label = mod.replace(/\+.+$/,"");
+                col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ craft.add_bd['${mod}'] | translate }}</span></div>`);
+            }
+        });
+        if (count > 0){
+            table.append(col2);
+        }
+
+        if (breakdown.p.consume && breakdown.p.consume[res]){
+            let col3 = $(`<div class="col"></div>`);
+            let count = 0;
+            Object.keys(breakdown.p.consume[res]).forEach(function (mod){                
+                let val = breakdown.p.consume[res][mod];
+                if (val != 0 && !isNaN(val)){
+                    count++;
+                    let type = val > 0 ? 'success' : 'danger';
+                    let label = mod.replace("_"," ");
+                    label = mod.replace(/\+.+$/,"");
+                    col3.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${res}['${mod}'] | fix | translate }}</span></div>`);
+                }
+            });
+            if (count > 0){
+                table.append(col3);
+            }
+        }
+        
+        if (extra){
+            bd.append(`<div class="modal_bd sum"></div>`);
+            bd.append(extra);
+        }
+        return bd;
+    },{
+        in: function(){
+            vBind({
+                el: `#pop${id} > div`,
+                data: {
+                    [res]: breakdown.p[res],
+                    res: global['resource'][res],
+                    'consume': breakdown.p['consume'],
+                    craft: craftingRatio(res,type)
+                }, 
+                filters: {
+                    translate(raw){
+                        let type = raw[raw.length -1];
+                        let val = parseFloat(raw.slice(0,-1));
+                        let precision = (val > 0 && val < 1) || (val < 0 && val > -1) ? 4 
+                            : ((val > 0 && val < 10) || (val < 0 && val > -10) ? 3 : 2);
+                        val = +(val).toFixed(precision);
+                        let suffix = type === '%' ? '%' : '';
+                        if (val > 0){
+                            return '+' + sizeApproximation(val,precision) + suffix;
+                        }
+                        else if (val < 0){
+                            return sizeApproximation(val,precision) + suffix;
+                        }
+                    },
+                    fix(val){
+                        return val + 'v';
+                    },
+                    namespace(name){
+                        return name.replace("_"," ");
+                    }
+                }
+            });
+        },
+        out: function(){
+            vBind({el: `#pop${id} > div`},'destroy');
+        },
+        classes: `breakdown has-background-light has-text-dark`,
+        prop: {
+            modifiers: {
+                preventOverflow: { enabled: false },
+                hide: { enabled: false }
+            }
+        }
+    });
+}
+
 function breakdownPopover(id,name,type){
     popover(`${id}`,function(){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
-
+        
         if (breakdown[type][name]){
             let col1 = $(`<div></div>`);
             table.append(col1);

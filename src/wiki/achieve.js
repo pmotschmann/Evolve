@@ -1,10 +1,10 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel } from './../functions.js';
-import { achievements, feats } from './../achieve.js';
+import { achievements, feats, universeAffix } from './../achieve.js';
 import { races, biomes, genus_traits } from './../races.js';
 import { monsters } from './../portal.js';
-import { popover } from './../functions.js';
+import { vBind, popover } from './../functions.js';
 
 export function renderAchievePage(zone){
     let content = $(`#content`);
@@ -44,41 +44,34 @@ function achievePage(universe){
     let content = $(`#content`);
     clearElement(content);
     
-    /*let filtering = `
+    let filtering = `
     <div id="filtering" class="b-tabs">
         <nav class="tabs">
             <ul>
-                <li><a onclick="achievePage()">${loc('universe_all')}</a></li>
-                <li><a onclick="achievePage('standard')">${loc('universe_standard')}</a></li>
-                <li><a onclick="achievePage('evil')">${loc('universe_evil')}</a></li>
-                <li><a onclick="achievePage('antimatter')">${loc('universe_antimatter')}</a></li>
-                <li><a onclick="achievePage('micro')">${loc('universe_micro')}</a></li>
-                <li><a onclick="achievePage('heavy')">${loc('universe_heavy')}</a></li>
-                <li><a onclick="achievePage('magic')">${loc('universe_magic')}</a></li>
+                <li class="${universe ? '' : 'is-active'}"><a @click="universeSwap()">${loc('universe_all')}</a></li>
+                <li class="${universe && universe === 'standard' ? 'is-active' : ''}"><a @click="universeSwap('standard')">${loc('universe_standard')}</a></li>
+                <li class="${universe && universe === 'evil' ? 'is-active' : ''}"><a @click="universeSwap('evil')">${loc('universe_evil')}</a></li>
+                <li class="${universe && universe === 'antimatter' ? 'is-active' : ''}"><a @click="universeSwap('antimatter')">${loc('universe_antimatter')}</a></li>
+                <li class="${universe && universe === 'micro' ? 'is-active' : ''}"><a @click="universeSwap('micro')">${loc('universe_micro')}</a></li>
+                <li class="${universe && universe === 'heavy' ? 'is-active' : ''}"><a @click="universeSwap('heavy')">${loc('universe_heavy')}</a></li>
+                <li class="${universe && universe === 'magic' ? 'is-active' : ''}"><a @click="universeSwap('magic')">${loc('universe_magic')}</a></li>
             </ul>
         </nav>
     </div>
     `;
-    content.append(filtering);*/
     
-    let universeLevel = 'l';
-    switch (universe){
-        case 'evil':
-            universeLevel = 'e';
-            break;
-        case 'antimatter':
-            universeLevel = 'a';
-            break;
-        case 'micro':
-            universeLevel = 'm';
-            break;
-        case 'heavy':
-            universeLevel = 'h';
-            break;
-        case 'magic':
-            universeLevel = 'mg';
-            break;
-    }
+    content.append(filtering);
+    
+    vBind({
+        el: `#filtering`,
+        methods: {
+            universeSwap(universe){
+                achievePage(universe);
+            }
+        }
+    });
+    
+    let uAffix = universeAffix(universe || 'standard');
 
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
@@ -101,13 +94,13 @@ function achievePage(universe){
             let achieve = $(`<div class="achievement"></div>`);
             list.append(achieve);
 
-            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][universeLevel] && global.stats.achieve[achievement][universeLevel] > 0 ? 'warning' : 'fade';
+            let color = global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0 ? 'warning' : 'fade';
             achieve.append(`<span id="a-${achievement}" class="achieve has-text-${color}">${achievements[achievement].name}</span>`);
 
             let emblems = format_emblem(achievement,16,false,false,universe);
             achieve.append(`<span class="icons">${emblems}</span>`);
             
-            achieveDesc(achievement, color === 'warning' ? true : false);
+            achieveDesc(achievement, color === 'warning' ? true : false, universe);
         });
     });
 }
@@ -132,7 +125,9 @@ function featPage(){
     });
 }
 
-function achieveDesc(achievement,showFlair){
+function achieveDesc(achievement,showFlair,universe){
+    let uAffix = universeAffix(universe || 'standard');
+    
     let flair = showFlair ? `<div class="has-text-flair">${achievements[achievement].flair}</div>` : ``;
     if (achievement === 'mass_extinction' || achievement === 'vigilante'){
         let killed = `<div class="flexed wide">`;
@@ -148,11 +143,11 @@ function achieveDesc(achievement,showFlair){
                 if (global.stats.achieve[`extinct_${key}`] 
                     && (
                         achievement === 'mass_extinction'
-                        ? global.stats.achieve[`extinct_${key}`].l >= 0
+                        ? global.stats.achieve[`extinct_${key}`][uAffix] >= 0
                         : global.stats.achieve[`extinct_${key}`].hasOwnProperty('e') && global.stats.achieve[`extinct_${key}`].e >= 0
                         )
                     ){
-                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? 'l' : 'e']}">${races[key].name}</span>`;
+                    killed = killed + `<span class="wide iclr${global.stats.achieve[`extinct_${key}`][achievement === 'mass_extinction' ? [uAffix] : 'e']}">${races[key].name}</span>`;
                 }
                 else {
                     killed = killed + `<span class="wide has-text-danger">${races[key].name}</span>`;
@@ -167,11 +162,13 @@ function achieveDesc(achievement,showFlair){
     else if (achievement === 'explorer'){
         let biome_list = `<div class="flexed">`;
         Object.keys(biomes).sort((a,b) => biomes[a].label.localeCompare(biomes[b].label)).forEach(function (key){
-            if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`].l >= 0){
-                biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`].l}">${biomes[key].label}</span>`;
-            }
-            else {
-                biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}</span>`;
+            if (!universe || (key !== 'hellscape' && key !== 'eden') || (key === 'hellscape' && universe !== 'evil') || (key === 'eden' && universe === 'evil')){
+                if (global.stats.achieve[`biome_${key}`] && global.stats.achieve[`biome_${key}`][uAffix] >= 0){
+                    biome_list = biome_list + `<span class="wide iclr${global.stats.achieve[`biome_${key}`][uAffix]}">${biomes[key].label}</span>`;
+                }
+                else {
+                    biome_list = biome_list + `<span class="wide has-text-danger">${biomes[key].label}</span>`;
+                }
             }
         });
         biome_list = biome_list + `</div>`;
@@ -180,8 +177,8 @@ function achieveDesc(achievement,showFlair){
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
-            if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].l >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`].l : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
+            if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
+                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
             }
             else {
                     genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
@@ -192,13 +189,15 @@ function achieveDesc(achievement,showFlair){
     }
     else if (achievement === 'enlightenment'){
         let genus = {};
-        Object.keys(global.pillars).forEach(function(race){
-            if (races[race]){
-                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
-                    genus[races[race].type] = global.pillars[race];
+        if (global['pillars']){
+            Object.keys(global.pillars).forEach(function(race){
+                if (races[race]){
+                    if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                        genus[races[race].type] = global.pillars[race];
+                    }
                 }
-            }
-        });
+            });
+        }
         let checked = `<div class="flexed">`;    
         Object.keys(genus_traits).sort().forEach(function (key){
             if (genus[key] && genus[key] >= 1){
@@ -214,15 +213,19 @@ function achieveDesc(achievement,showFlair){
     else if (achievement === 'gladiator'){
         let defeated = `<div class="flexed wide">`;
         let list = {};
-        Object.keys(global.stats.spire).forEach(function(universe){
-            Object.keys(global.stats.spire[universe]).forEach(function(boss){
-                if (monsters[boss]){
-                    if (!list.hasOwnProperty(boss) || list[boss] < global.stats.spire[universe][boss]){
-                        list[boss] = global.stats.spire[universe][boss];
-                    }
+        if (global.stats['spire']){
+            Object.keys(global.stats.spire).forEach(function(uni){
+                if (!universe || uAffix === uni){
+                    Object.keys(global.stats.spire[uni]).forEach(function(boss){
+                        if (monsters[boss]){
+                            if (!list.hasOwnProperty(boss) || list[boss] < global.stats.spire[uni][boss]){
+                                list[boss] = global.stats.spire[uni][boss];
+                            }
+                        }
+                    });
                 }
             });
-        });
+        }
         Object.keys(monsters).forEach(function (boss){
             if (list[boss] && list[boss] > 0){
                 defeated = defeated + `<span class="swide iclr${list[boss]}">${loc(`portal_mech_boss_${boss}`)}</span>`;

@@ -1,3 +1,7 @@
+html {
+    overflow-y: auto;
+}
+
 span, div {
     -moz-user-select: initial;
     -khtml-user-select: initial;
@@ -17,11 +21,16 @@ span, div {
 
 .wiki {
     display: flex;
-    margin-top: 1rem;
+    margin: 0 1rem;
+    padding-top: 1rem;
 
     .mainMenu {
         margin-left: .5rem;
         width: 10rem;
+
+        .sticky {
+            height: ~"calc(100vh - 1rem)";
+        }
 
         .menu-list {
             li {
@@ -36,6 +45,10 @@ span, div {
     .mainContent {
         margin-left: 1rem;
         flex: 1;
+
+        .b-tabs:not(:last-child){
+            margin-bottom: 0;
+        }
     }
 
     .paragraph {

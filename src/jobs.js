@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, darkEffect, easterEgg } from './functions
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { armyRating } from './civics.js';
-import { craftingRatio, craftCost } from './resources.js';
+import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 
 export const job_desc = {
     farmer: function(){
@@ -536,26 +536,27 @@ export function loadFoundry(){
         for (let i=0; i<list.length; i++){
             let res = list[i];
             if (global.resource[res].display){
-                popover(`craft${res}`, function(obj){
-                        let name = global.resource[res].name;
-                        let multiplier = craftingRatio(res,true);
-                        let speed = global.genes['crafty'] ? 2 : 1;
-                        let final = +(global.city.foundry[res] * multiplier * speed / 140).toFixed(2);
-                        let bonus = +(multiplier * speed * 100).toFixed(0);
+                let extra = function(){
+                    let total = $(`<div></div>`);
+                    let name = global.resource[res].name;
+                    let craft_total = craftingRatio(res,'auto');
+                    let multiplier = craft_total.multiplier;
+                    let speed = global.genes['crafty'] ? 2 : 1;
+                    let final = +(global.resource[res].diff).toFixed(2);
+                    let bonus = +(multiplier * 100).toFixed(0);
 
-                        obj.popper.append($(`<div>${loc('craftsman_hover_bonus', [bonus.toLocaleString(), name])}</div>`));
-                        obj.popper.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
-                        let craft_cost = craftCost();
-                        for (let i=0; i<craft_cost[res].length; i++){
-                            let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
-                            obj.popper.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
-                        }
-                        return undefined;
-                    },
-                    {
-                        classes: `has-background-light has-text-dark`
+                    total.append($(`<div>${loc('craftsman_hover_bonus', [bonus.toLocaleString(), name])}</div>`));
+                    total.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
+                    let craft_cost = craftCost();
+                    for (let i=0; i<craft_cost[res].length; i++){
+                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
+                        total.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
-                );
+                    
+                    return total;
+                }
+                
+                craftingPopover(`craft${res}`,res,'auto',extra);
             }
         }
 

@@ -9985,7 +9985,7 @@ const techs = {
     },
 };
 
-function swissKnife(){
+export function swissKnife(cheeseOnly,cheeseList){
     let cheeses = [
         'swiss','gouda','cheddar','brie','feta','ricotta','goat','mascarpone','bleu','colby_jack','camembert','gorgonzola',
         'mozzarella','roquefort','provolone','monterey_jack','muenster','cambozola','jarlsberg','bocconcini','cantal',
@@ -9999,9 +9999,11 @@ function swissKnife(){
         'vasterbottensost','mish','anejo','quesillo','nacho','reggianito','catupiry','queso_paipa','canastra','port_wine',
         'cados','brie_de_meaux'
     ];
-
+    if (cheeseList){
+        return cheeses;
+    }
     let type = (global.stats.hasOwnProperty('reset') ? global.stats.reset : 0) % cheeses.length;
-    return loc(`tech_swiss_bank`,[loc(`cheese_${cheeses[type]}`)]);
+    return cheeseOnly ? loc(`cheese_${cheeses[type]}`) : loc(`tech_swiss_bank`,[loc(`cheese_${cheeses[type]}`)]);
 }
 
 export function techList(){

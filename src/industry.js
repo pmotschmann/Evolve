@@ -967,6 +967,10 @@ function loadPylon(parent,bind){
         let draw = +(manaCost(global.race.casting[spell])).toFixed(4);
         let diff = +(manaCost(global.race.casting[spell] + 1) - manaCost(global.race.casting[spell])).toFixed(4);
         let boost = +(100 * (global.race.casting[spell] / (global.race.casting[spell] + 75))).toFixed(2);
+        if (spell === 'crafting'){
+            let auto = +(100 * (2 * global.race.casting[spell] / (2 * global.race.casting[spell] + 75))).toFixed(2);
+            return loc('modal_pylon_casting_label_crafting',[draw,boost,auto,diff]);
+        }
         return loc('modal_pylon_casting_label',[loc(`modal_pylon_spell_${spell}`),draw,diff,boost]);
     }
 
@@ -1056,7 +1060,7 @@ export function gridEnabled(c_action,region,p0,p1){
 }
 
 export function setPowerGrid(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 && global.settings.govTabs !== 2)){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 2)){
         return;
     }
     let grids = gridDefs();
