@@ -1565,7 +1565,7 @@ function genetics(){
         }
 
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
-        let sequence = $(`<div><b-tooltip class="has-text-warning" :label="seq()" position="is-bottom" size="is-small" multilined animated>${label}</b-tooltip> - ${loc('arpa_to_complete')} {{ time | timer }}</div>`);
+        let sequence = $(`<div><span class="seqlbl has-text-warning">${label}</span> - ${loc('arpa_to_complete')} {{ time | timer }}</div>`);
         genome.append(sequence);
         let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
@@ -1604,14 +1604,6 @@ function genetics(){
             el: `#arpaSequence`,
             data: global.arpa.sequence,
             methods: {
-                seq(){
-                    if (global.tech.genetics > 2){
-                        return loc('arpa_mutate_desc');
-                    }
-                    else {
-                        return loc('arpa_sequence_desc');
-                    }
-                },
                 toggle(){
                     if (global.arpa.sequence.on){
                         global.arpa.sequence.on = false;
@@ -1680,36 +1672,56 @@ function genetics(){
                 }
             }
         });
+
+        popover(`popArpaSeq`, function(){
+            if (global.tech.genetics > 2){
+                return loc('arpa_mutate_desc');
+            }
+            else {
+                return loc('arpa_sequence_desc');
+            }
+        },
+        {
+            elm: `#arpaSequence .seqlbl`,
+            classes: `has-background-light has-text-dark`
+        });
     }
+
     if (global.tech['genetics'] > 2){
         let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
         $('#arpaGenetics').append(breakdown);
 
         let minor = false;
+        let minor_list = [];
         if (global.tech['decay'] && global.tech['decay'] >= 2){
             minor = true;
             bindTrait(breakdown,'fortify');
+            minor_list.push('fortify');
         }
 
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
                 minor = true;
                 bindTrait(breakdown,trait);
+                minor_list.push(trait);
             }
         });
 
         if (global.genes['challenge'] && global.genes['challenge'] >= 5){
             minor = true;
             bindTrait(breakdown,'mastery');
+            minor_list.push('mastery');
         }
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[races[global.race.species].name])}</div>`)
         
+        let remove_list = [];
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater'){
                 if ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2)){
                     let major = $(`<div class="traitRow"></div>`);
-                    let purge = $(`<b-tooltip :label="removeCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span></b-tooltip>`);
+                    let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
+                    remove_list.push(trait);
                     
                     major.append(purge);
                     major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
@@ -1722,10 +1734,10 @@ function genetics(){
             }
         });
         
+        let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
-
-            let trait_list = [];
+            
             let conflict_traits = ['dumb','smart','carnivore','herbivore']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
                 if (race !== 'junker' && race !== 'custom' && races[race].type === races[global.race.species].type){
@@ -1761,7 +1773,7 @@ function genetics(){
             for (let i=0; i<trait_list.length; i++){
                 let trait = trait_list[i];
                 let major = $(`<div class="traitRow"></div>`);
-                let add = $(`<b-tooltip :label="addCost('${trait}')" position="is-bottom" multilined animated><span class="basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span></b-tooltip>`);
+                let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
                 
                 major.append(add);
                 major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
@@ -1773,6 +1785,40 @@ function genetics(){
         if (minor){
             breakdown.prepend(`<div class="trait minor has-text-success">${loc('arpa_race_genetic_minor_traits',[races[global.race.species].name])}</div>`)
         }
+
+        let rmCost = function(t){
+            let cost = traits[t].val * 5;
+            if (global.race.species === 'custom'){
+                cost *= 10;
+            }
+            if (cost < 0){
+                cost *= -1;
+            }
+            return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+        };
+
+        let addCost = function(t){
+            let cost = traits[t].val * 5;
+            if (global.race.species === 'custom'){
+                cost *= 10;
+            }
+            if (cost < 0){
+                cost *= -1;
+            }
+            return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+        };
+
+        let mGeneCost = function(t){
+            let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
+            if (t === 'mastery'){ cost *= 5; }
+            return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+        };
+
+        let mPhageCost = function(t){
+            let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
+            if (t === 'mastery'){ cost *= 2; }
+            return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+        };
 
         vBind({
             el: `#geneticBreakdown`,
@@ -1906,37 +1952,19 @@ function genetics(){
                     }
                 },
                 geneCost(t){
-                    let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
-                    if (t === 'mastery'){ cost *= 5; }
-                    return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+                    return mGeneCost(t);
                 },
                 phageCost(t){
-                    let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
-                    if (t === 'mastery'){ cost *= 2; }
-                    return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+                    return mPhageCost(t);
                 },
                 traitEffect(t){
                     return loc(`trait_${t}_effect`);
                 },
                 removeCost(t){
-                    let cost = traits[t].val * 5;
-                    if (global.race.species === 'custom'){
-                        cost *= 10;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
-                    return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+                    return rmCost(t);
                 },
                 addCost(t){
-                    let cost = traits[t].val * 5;
-                    if (global.race.species === 'custom'){
-                        cost *= 10;
-                    }
-                    if (cost < 0){
-                        cost *= -1;
-                    }
-                    return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+                    return addCost(t);
                 },
                 genePurchasable(t){
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
@@ -1950,15 +1978,55 @@ function genetics(){
                 }
             }
         });
+
+        minor_list.forEach(function (t){
+            popover(`popGenetrait${t}`, function(){
+                return mGeneCost(t);
+            },
+            {
+                elm: `#geneticBreakdown .t-${t} .gbuy`,
+                classes: `has-background-light has-text-dark`
+            });
+
+            if (global.race.Phage.count > 0){
+                popover(`popGenetrait${t}`, function(){
+                    return mPhageCost(t);
+                },
+                {
+                    elm: `#geneticBreakdown .t-${t} .pbuy`,
+                    classes: `has-background-light has-text-dark`
+                });
+            }
+        });
+
+        remove_list.forEach(function (t){
+            popover(`popRemoveBkdwn${t}`, function(){
+                return rmCost(t);
+            },
+            {
+                elm: `#geneticBreakdown .remove${t}`,
+                classes: `has-background-light has-text-dark`
+            });
+        });
+
+        trait_list.forEach(function (t){
+            popover(`popAddBkdwn${t}`, function(){
+                return addCost(t);
+            },
+            {
+                elm: `#geneticBreakdown .add${t}`,
+                classes: `has-background-light has-text-dark`
+            });
+        });
     }
 }
 
 function bindTrait(breakdown,trait){
     let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
-    let gene = $(`<b-tooltip :label="geneCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span></b-tooltip>`);
+    let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span>`);
     m_trait.append(gene);
     if (global.race.Phage.count > 0){
-        let phage = $(`<b-tooltip :label="phageCost('${trait}')" position="is-bottom" multilined animated><span v-bind:class="['basic-button', 'gene', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span></b-tooltip>`);
+        let phage = $(`<span v-bind:class="['basic-button', 'gene', 'pbuy', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span>`);
         m_trait.append(phage);
     }
 

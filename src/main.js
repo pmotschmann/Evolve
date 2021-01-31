@@ -7144,6 +7144,7 @@ function longLoop(){
         if (updatePowerGrid){
             setPowerGrid();
         }
+        setPowerGrid();
 
         if (global.tech['syphon'] && global.tech.syphon >= 80){
             if (webWorker.w){
