@@ -266,6 +266,27 @@ export function mechanicsPage(content){
                 case 2:
                     cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_cubed')}`;
                     break;
+                case 3:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_tesseracted')}`;
+                    break;
+                case 4:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_penteracted')}`;
+                    break;
+                case 5:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_hexeracted')}`;
+                    break;
+                case 6:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_hepteracted')}`;
+                    break;
+                case 7:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_octeracted')}`;
+                    break;
+                case 8:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_enneracted')}`;
+                    break;
+                case 9:
+                    cheeselevel = `${cheeselevel} ${loc('wiki_mechanics_cheese_dekeracted')}`;
+                    break;
                 default:
                     cheeselevel = `${cheeselevel}^${looped+1}`;
                     break;
