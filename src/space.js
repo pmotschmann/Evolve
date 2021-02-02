@@ -930,7 +930,7 @@ const spaceProjects = {
                 return false;
             },
             flair(){
-                return ``;
+                return loc('space_red_space_barracks_flair');
             }
         },
     },

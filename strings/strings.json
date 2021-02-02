@@ -4031,6 +4031,7 @@
   "space_red_space_barracks_desc_req": "Requires Oil",
   "space_red_space_barracks_effect2": "-%0 Oil/s",
   "space_red_space_barracks_effect3": "-10 %0/s",
+  "space_red_space_barracks_flair": "Woolly Space Whalers",
   "space_hell_info_desc": "The planet %0 is located about 0.4AU from the sun and is very hot.",
   "space_hell_mission_effect1": "Launch a mission to survey the hellish planet %0.",
   "space_hell_mission_action": "%0 is a hot planet close to the sun. Its prospects for development are poor.",
