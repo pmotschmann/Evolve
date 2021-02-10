@@ -79,6 +79,8 @@
   "large_log": "Larger Log Text",
   "large_all": "All Text Larger",
   "icons": "Prestige Icon",
+  "add": "Add",
+  "remove": "Remove",
   "settings1": "Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys",
   "settings2": "Enable tab transition animations",
   "settings3": "A hard reset will permanently erase all your game progress. This resets everything as if you never played.",
