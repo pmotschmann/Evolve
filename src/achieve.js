@@ -1,7 +1,7 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
-import { universe_affixes, piracy } from './space.js';
+import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
 import { loc } from './locale.js'
 
@@ -219,7 +219,14 @@ export const feats = {
 }
 
 {
-    let affix = universeAffix();
+    let al = universeLevel();
+    set_alevel(al.aLvl);
+    set_ulevel(al.uLvl);
+}
+
+export function universeLevel(universe){
+    universe = universe || global.race.universe;
+    let affix = universeAffix(universe);
     let lvl = 0;
     let ulvl = 0;
     Object.keys(achievements).forEach(function (achievement){
@@ -230,8 +237,7 @@ export const feats = {
             }
         }
     });
-    set_alevel(lvl);
-    set_ulevel(ulvl);
+    return { aLvl: lvl, uLvl: ulvl };
 }
 
 export function universeAffix(universe){
@@ -814,6 +820,28 @@ function checkBigAchievementUniverse(frag, name, num, level){
 }
 
 export const perkList = {
+    mastery: {
+        name: loc(`mastery`),
+        desc(){
+            let desc = '';
+            Object.keys(universe_types).forEach(function(universe){
+                let mastery = masteryType(universe,true);
+                if (universe == 'standard'){
+                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
+                }
+                else {
+                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}, ${loc('perks_mastery_universe',[`<span class="has-text-advanced">${+(mastery.u).toFixed(2)}%</span>`])}</span></span>`;
+                }
+            });
+            return desc;
+        },
+        active(){
+            return global.genes['challenge'] && global.genes['challenge'] >= 2 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_unlocked_title`)}</span>`]),
+        ]
+    },
     blackhole: {
         name: loc(`achieve_blackhole_name`),
         desc(){
