@@ -3901,12 +3901,12 @@ export function descension(){
     }
     global.lastMsg = false;
 
+    unlockAchieve(`squished`,true);
     unlockAchieve(`extinct_${global.race.species}`);
     unlockAchieve(`corrupted`);
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
     }
-
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
     }

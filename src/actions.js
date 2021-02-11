@@ -7676,7 +7676,6 @@ export function cataclysm_end(){
         }
         global.stats.phage += new_phage;
 
-        unlockAchieve(`apocalypse`);
         unlockAchieve(`squished`,true);
         unlockAchieve(`extinct_${global.race.species}`);
         if (global.civic.govern.type === 'anarchy'){
@@ -7771,6 +7770,7 @@ export function big_bang(){
             break;
     }
 
+    unlockAchieve(`squished`,true);
     if (global.race.universe === 'evil' && races[global.race.species].type === 'angelic'){
         unlockFeat('nephilim');
     }

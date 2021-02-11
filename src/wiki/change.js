@@ -7,7 +7,8 @@ const changeList = [
         date: `2/10/2021`,
         changes: [
             `Added Mastery section to perks page.`,
-            `Fixed aria label of jobs.`
+            `Fixed aria label of jobs.`,
+            `Squished achievement will now unlock from Blackhole or Demonic Infusion.`
         ]
     },
     {
