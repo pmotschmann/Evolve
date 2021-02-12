@@ -4,8 +4,9 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.27`,
-        date: `2/10/2021`,
+        date: `2/11/2021`,
         changes: [
+            `Added Trade Federation achievement.`,
             `Added Mastery section to perks page.`,
             `Fixed aria label of jobs.`,
             `Squished achievement will now unlock from Blackhole or Demonic Infusion.`

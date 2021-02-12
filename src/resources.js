@@ -999,7 +999,14 @@ export function marketItem(mount,market_item,name,color,full){
             aSell(res){
                 let unit = tradeRatio[res] === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeSellPrice(res);
-                return loc('resource_market_auto_sell_desc',[tradeRatio[res],unit,price]);
+                let rate = tradeRatio[res];
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    rate *= 1 - (rank / 100);
+                }
+                rate = +(rate).toFixed(3);
+                return loc('resource_market_auto_sell_desc',[rate,unit,price]);
             },
             aBuy(res){
                 let rate = tradeRatio[res];
@@ -1013,7 +1020,12 @@ export function marketItem(mount,market_item,name,color,full){
                     let mastery = calc_mastery();
                     rate *= 1 + (mastery / 100);
                 }
-                rate = +(rate).toFixed(2);
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    rate *= 1 + (rank / 50);
+                }
+                rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeBuyPrice(res);
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
@@ -1212,7 +1224,7 @@ export function galacticTrade(modal){
             offer.append($(`<span class="offer-vol has-text-advanced">+{{ '${i}' | t_vol }}/s</span>`));
             
             offer.append($(`<span class="offer-item has-text-danger">${global.resource[galaxyOffers[i].sell.res].name}</span>`));
-            offer.append($(`<span class="offer-vol has-text-caution">-${galaxyOffers[i].sell.vol}/s</span>`));
+            offer.append($(`<span class="offer-vol has-text-caution">-{{ '${i}' | s_vol }}/s</span>`));
 
             let trade = $(`<span class="trade"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
             offer.append(trade);
@@ -1270,8 +1282,23 @@ export function galacticTrade(modal){
                     let mastery = calc_mastery();
                     buy_vol *= 1 + (mastery / 100);
                 }
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    buy_vol *= 1 + (rank / 50);
+                }
                 buy_vol = +(buy_vol).toFixed(2);
                 return buy_vol;
+            },
+            s_vol(idx){
+                let sell_vol = galaxyOffers[idx].sell.vol;
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    sell_vol *= 1 - (rank / 100);
+                }
+                sell_vol = +(sell_vol).toFixed(2);
+                return sell_vol;
             }
         }
     });

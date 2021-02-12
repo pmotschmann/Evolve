@@ -1103,6 +1103,11 @@ function fastLoop(){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
                         }
+                        if (global.stats.achieve.hasOwnProperty('trade')){
+                            let rank = global.stats.achieve.trade.l * 2;
+                            if (rank > 10){ rank = 10; }
+                            rate *= 1 + (rank / 100);
+                        }
                         modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
@@ -1114,11 +1119,18 @@ function fastLoop(){
                     used_trade -= global.resource[res].trade;
                     let price = tradeSellPrice(res) * global.resource[res].trade;
 
-                    if (global.resource[res].amount >= time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
+                    let rate = tradeRatio[res];
+                    if (global.stats.achieve.hasOwnProperty('trade')){
+                        let rank = global.stats.achieve.trade.l;
+                        if (rank > 5){ rank = 5; }
+                        rate *= 1 - (rank / 100);
+                    }
+
+                    if (global.resource[res].amount >= rate * time_multiplier){
+                        modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
-                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * tradeRatio[res];
+                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * rate;
                     }
                     steelCheck();
                 }
@@ -1185,6 +1197,12 @@ function fastLoop(){
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
                     imprt_vol *= 1 + (mastery / 100);
+                }
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    imprt_vol *= 1 + (rank / 50);
+                    exprt_vol *= 1 - (rank / 100);
                 }
 
                 used += global.galaxy.trade[`f${i}`];

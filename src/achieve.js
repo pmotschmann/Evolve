@@ -20,7 +20,8 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator','corrupted'
+        'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
+        'corrupted'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -50,11 +51,15 @@ const flairData = {
     colonist: [races[global.race.species].name]
 };
 
+const descData = {
+    trade: [600,50]
+};
+
 export const achievements = {};
 Object.keys(achieve_list).forEach(function(type){
     achieve_list[type].forEach(achieve => achievements[achieve] = {
         name: loc(`achieve_${achieve}_name`),
-        desc: loc(`achieve_${achieve}_desc`),
+        desc: descData[achieve] ? loc(`achieve_${achieve}_desc`,descData[achieve]) : loc(`achieve_${achieve}_desc`),
         flair: flairData[achieve] ? loc(`achieve_${achieve}_flair`,flairData[achieve]) : loc(`achieve_${achieve}_flair`),
         type: type
     });
@@ -515,6 +520,10 @@ export function checkAchievements(){
         unlockAchieve('scrooge');
     }
 
+    if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 600 && global.civic.govern.type === 'federation'){
+        unlockAchieve('trade');
+    }
+
     if (global.tech['pillars']){
         let genus = {};
         let rCnt = 0;
@@ -854,6 +863,19 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`])
+        ]
+    },
+    trade: {
+        name: loc(`achieve_trade_name`),
+        desc(){
+            let bonus = global.stats.achieve['blackhole'] ? global.stats.achieve.blackhole.l : 1;
+            return loc("achieve_perks_trade",[bonus * 2,bonus]);
+        },
+        active(){
+            return global.stats.achieve['trade'] && global.stats.achieve['trade'].l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_trade_name`)}</span>`])
         ]
     },
     creator: {
