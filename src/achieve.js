@@ -52,7 +52,7 @@ const flairData = {
 };
 
 const descData = {
-    trade: [600,50]
+    trade: [750,50]
 };
 
 export const achievements = {};
@@ -520,7 +520,7 @@ export function checkAchievements(){
         unlockAchieve('scrooge');
     }
 
-    if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 600 && global.civic.govern.type === 'federation'){
+    if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 750 && global.civic.govern.type === 'federation'){
         unlockAchieve('trade');
     }
 

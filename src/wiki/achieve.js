@@ -41,7 +41,7 @@ const universeExclusives = {
 };
 
 const achieveDescData = {
-    trade: [600,50]
+    trade: [750,50]
 };
 
 function achievePage(universe){
