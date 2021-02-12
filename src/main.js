@@ -1102,6 +1102,11 @@ function fastLoop(){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
                         }
+                        if (global.stats.achieve.hasOwnProperty('trade')){
+                            let rank = global.stats.achieve.trade.l * 2;
+                            if (rank > 10){ rank = 10; }
+                            rate *= 1 + (rank / 100);
+                        }
                         modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
@@ -1113,11 +1118,18 @@ function fastLoop(){
                     used_trade -= global.resource[res].trade;
                     let price = tradeSellPrice(res) * global.resource[res].trade;
 
-                    if (global.resource[res].amount >= time_multiplier){
-                        modRes(res,global.resource[res].trade * time_multiplier * tradeRatio[res]);
+                    let rate = tradeRatio[res];
+                    if (global.stats.achieve.hasOwnProperty('trade')){
+                        let rank = global.stats.achieve.trade.l;
+                        if (rank > 5){ rank = 5; }
+                        rate *= 1 - (rank / 100);
+                    }
+
+                    if (global.resource[res].amount >= rate * time_multiplier){
+                        modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
-                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * tradeRatio[res];
+                        breakdown.p.consume[res][loc('trade')] = global.resource[res].trade * rate;
                     }
                     steelCheck();
                 }
@@ -1184,6 +1196,12 @@ function fastLoop(){
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
                     imprt_vol *= 1 + (mastery / 100);
+                }
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    imprt_vol *= 1 + (rank / 50);
+                    exprt_vol *= 1 - (rank / 100);
                 }
 
                 used += global.galaxy.trade[`f${i}`];
@@ -6167,24 +6185,34 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('galaxy_scavenger')] = gain+'v';
         }
+        breakdown['t_route'] = {};
         if (global.city['trade']){
             let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
             if (global.tech['trade'] && global.tech['trade'] >= 3){
                 routes--;
             }
             global.city.market.mtrade = routes * global.city.trade.count;
+            breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                global.city.market.mtrade += global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count;
+                let r_count = global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count;
+                global.city.market.mtrade += r_count;
+                breakdown.t_route[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : loc('city_temple')] = r_count;
             }
         }
         if (global.city['wharf']){
-            global.city.market.mtrade += global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
+            let r_count = global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('city_wharf')] = r_count;
         }
         if (global.space['gps'] && global.space.gps.count >= 4){
+            let r_count = global.space.gps.count * 2;
             global.city.market.mtrade += global.space.gps.count * 2;
+            breakdown.t_route[loc('space_home_gps_title')] = r_count;
         }
         if (global.city['storage_yard'] && global.tech['trade'] && global.tech['trade'] >= 3){
-            global.city.market.mtrade += global.city.storage_yard.count;
+            let r_count = global.city.storage_yard.count;
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('city_storage_yard')] = r_count;
         }
         if (global.tech['railway']){
             let routes = 0;
@@ -6195,6 +6223,7 @@ function midLoop(){
                 routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
             }
             global.city.market.mtrade += global.tech['railway'] * routes;
+            breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
         }
         if (global.galaxy['bolognium_ship']){
             lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.ship.civ;

@@ -1875,7 +1875,7 @@ a {
         }
 
         .offer-vol {
-            width: 4.25rem;
+            width: 4.5rem;
             border-right: 1px solid;
             margin-right: .125rem;
         }
@@ -2741,15 +2741,18 @@ a {
 
         span {
             display: inline-block;
+            > span.row {
+                display: block;
+            }
         }
 
-        :first-child {
+        > :first-child {
             margin-left: .5rem;
             width: 100%;
         }
 
-        :nth-child(2),
-        >div.perk {
+        > :nth-child(2),
+        > div.perk {
             margin-left: .5rem;
         }
 

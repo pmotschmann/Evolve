@@ -1,7 +1,7 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, calc_mastery, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
-import { universe_affixes, piracy } from './space.js';
+import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
 import { loc } from './locale.js'
 
@@ -20,7 +20,8 @@ const achieve_list = {
         'red_tactics','pacifist','neutralized','paradise','scrooge','madagascar_tree','godwin',
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
-        'miners_dream','shaken','blacken_the_sun','resonance','enlightenment','gladiator','corrupted'
+        'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
+        'corrupted'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_centaur','extinct_kobold',
@@ -50,11 +51,15 @@ const flairData = {
     colonist: [races[global.race.species].name]
 };
 
+const descData = {
+    trade: [600,50]
+};
+
 export const achievements = {};
 Object.keys(achieve_list).forEach(function(type){
     achieve_list[type].forEach(achieve => achievements[achieve] = {
         name: loc(`achieve_${achieve}_name`),
-        desc: loc(`achieve_${achieve}_desc`),
+        desc: descData[achieve] ? loc(`achieve_${achieve}_desc`,descData[achieve]) : loc(`achieve_${achieve}_desc`),
         flair: flairData[achieve] ? loc(`achieve_${achieve}_flair`,flairData[achieve]) : loc(`achieve_${achieve}_flair`),
         type: type
     });
@@ -219,7 +224,14 @@ export const feats = {
 }
 
 {
-    let affix = universeAffix();
+    let al = universeLevel();
+    set_alevel(al.aLvl);
+    set_ulevel(al.uLvl);
+}
+
+export function universeLevel(universe){
+    universe = universe || global.race.universe;
+    let affix = universeAffix(universe);
     let lvl = 0;
     let ulvl = 0;
     Object.keys(achievements).forEach(function (achievement){
@@ -230,8 +242,7 @@ export const feats = {
             }
         }
     });
-    set_alevel(lvl);
-    set_ulevel(ulvl);
+    return { aLvl: lvl, uLvl: ulvl };
 }
 
 export function universeAffix(universe){
@@ -507,6 +518,10 @@ export function checkAchievements(){
 
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
+    }
+
+    if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 600 && global.civic.govern.type === 'federation'){
+        unlockAchieve('trade');
     }
 
     if (global.tech['pillars']){
@@ -814,6 +829,28 @@ function checkBigAchievementUniverse(frag, name, num, level){
 }
 
 export const perkList = {
+    mastery: {
+        name: loc(`mastery`),
+        desc(){
+            let desc = '';
+            Object.keys(universe_types).forEach(function(universe){
+                let mastery = masteryType(universe,true);
+                if (universe == 'standard'){
+                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
+                }
+                else {
+                    desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}, ${loc('perks_mastery_universe',[`<span class="has-text-advanced">${+(mastery.u).toFixed(2)}%</span>`])}</span></span>`;
+                }
+            });
+            return desc;
+        },
+        active(){
+            return global.genes['challenge'] && global.genes['challenge'] >= 2 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_unlocked_title`)}</span>`]),
+        ]
+    },
     blackhole: {
         name: loc(`achieve_blackhole_name`),
         desc(){
@@ -826,6 +863,19 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_blackhole_name`)}</span>`])
+        ]
+    },
+    trade: {
+        name: loc(`achieve_trade_name`),
+        desc(){
+            let bonus = global.stats.achieve['blackhole'] ? global.stats.achieve.blackhole.l : 1;
+            return loc("achieve_perks_trade",[bonus * 2,bonus]);
+        },
+        active(){
+            return global.stats.achieve['trade'] && global.stats.achieve['trade'].l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_trade_name`)}</span>`])
         ]
     },
     creator: {

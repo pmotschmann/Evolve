@@ -1,11 +1,11 @@
-import { global, save, poppers, webWorker, intervals, achieve_level, universe_level, resizeGame, clearStates } from './vars.js';
+import { global, save, poppers, webWorker, intervals, achieve_level, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
-import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './achieve.js';
 
 export function popover(id,content,opts){
     if (!opts){ opts = {}; }
@@ -891,28 +891,40 @@ export const calc_mastery = (function(){
             return mastery;
         }
         else if (global.genes['challenge'] && global.genes['challenge'] >= 2){
-            let m_rate = global.race.universe === 'standard' ? 0.25 : 0.15;
-            let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
-            if (global.genes['challenge'] >= 4 && global.race.universe !== 'standard'){
-                m_rate += 0.05;
-                u_rate -= 0.05;
-            }
-            if (global.race['weak_mastery']){
-                m_rate /= 10;
-                u_rate /= 10;
-            }
-            mastery = achieve_level * m_rate;
-            if (global.race.universe !== 'standard'){
-                mastery += universe_level * u_rate;
-            }
-            if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
-                mastery *= 1 + (0.01 * global.race.mastery);
-            }
+            mastery = masteryType(global.race.universe);
             return mastery;
         }
         return 0;
     }
 })();
+
+export function masteryType(universe,detailed){
+    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        universe = universe || global.race.universe;
+        let ua_level = universeLevel(universe);
+        let m_rate = universe === 'standard' ? 0.25 : 0.15;
+        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
+        if (global.genes['challenge'] >= 4 && universe !== 'standard'){
+            m_rate += 0.05;
+            u_rate -= 0.05;
+        }
+        if (global.race['weak_mastery'] && universe === 'antimatter'){
+            m_rate /= 10;
+            u_rate /= 10;
+        }
+        let m_mastery = ua_level.aLvl * m_rate;
+        let u_mastery = 0;
+        if (universe !== 'standard'){
+            u_mastery = ua_level.uLvl * u_rate;
+        }
+        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+            m_mastery *= 1 + (0.01 * global.race.mastery);
+            u_mastery *= 1 + (0.01 * global.race.mastery);
+        }
+        return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
+    }
+    return 0;
+}
 
 export const calcPillar = (function(){
     var bonus;
@@ -1479,8 +1491,8 @@ export function trickOrTreatBind(id){
     });
 }
 
-function single_emblem(achieve,size,icon,iconName,fool,universeAffix){
-    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][universeAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][universeAffix] - 1 : global.stats.achieve[achieve][universeAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+function single_emblem(achieve,size,icon,iconName,fool,uAffix){
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 1 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
 }
 
 export function format_emblem(achieve,size,baseIcon,fool,universe){

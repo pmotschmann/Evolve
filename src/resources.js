@@ -1,4 +1,4 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, gal_on } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
@@ -999,7 +999,14 @@ export function marketItem(mount,market_item,name,color,full){
             aSell(res){
                 let unit = tradeRatio[res] === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeSellPrice(res);
-                return loc('resource_market_auto_sell_desc',[tradeRatio[res],unit,price]);
+                let rate = tradeRatio[res];
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    rate *= 1 - (rank / 100);
+                }
+                rate = +(rate).toFixed(3);
+                return loc('resource_market_auto_sell_desc',[rate,unit,price]);
             },
             aBuy(res){
                 let rate = tradeRatio[res];
@@ -1013,7 +1020,12 @@ export function marketItem(mount,market_item,name,color,full){
                     let mastery = calc_mastery();
                     rate *= 1 + (mastery / 100);
                 }
-                rate = +(rate).toFixed(2);
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    rate *= 1 + (rank / 50);
+                }
+                rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeBuyPrice(res);
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
@@ -1212,7 +1224,7 @@ export function galacticTrade(modal){
             offer.append($(`<span class="offer-vol has-text-advanced">+{{ '${i}' | t_vol }}/s</span>`));
             
             offer.append($(`<span class="offer-item has-text-danger">${global.resource[galaxyOffers[i].sell.res].name}</span>`));
-            offer.append($(`<span class="offer-vol has-text-caution">-${galaxyOffers[i].sell.vol}/s</span>`));
+            offer.append($(`<span class="offer-vol has-text-caution">-{{ '${i}' | s_vol }}/s</span>`));
 
             let trade = $(`<span class="trade"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
             offer.append(trade);
@@ -1224,7 +1236,7 @@ export function galacticTrade(modal){
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
         }
 
-        let totals = $(`<div class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
+        let totals = $(`<div id="galacticTradeTotal" class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
         galaxyTrade.append(totals);
     }
 
@@ -1270,10 +1282,39 @@ export function galacticTrade(modal){
                     let mastery = calc_mastery();
                     buy_vol *= 1 + (mastery / 100);
                 }
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    buy_vol *= 1 + (rank / 50);
+                }
                 buy_vol = +(buy_vol).toFixed(2);
                 return buy_vol;
+            },
+            s_vol(idx){
+                let sell_vol = galaxyOffers[idx].sell.vol;
+                if (global.stats.achieve.hasOwnProperty('trade')){
+                    let rank = global.stats.achieve.trade.l;
+                    if (rank > 5){ rank = 5; }
+                    sell_vol *= 1 - (rank / 100);
+                }
+                sell_vol = +(sell_vol).toFixed(2);
+                return sell_vol;
             }
         }
+    });
+
+    popover(`galacticTradeTotal`,function(){
+        let bd = $(`<div class="resBreakdown"></div>`);
+        if (global.galaxy['freighter']){
+            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_freighter')}</span> <span>+${gal_on['freighter'] * 2}</span></div>`);
+        }
+        if (global.galaxy['super_freighter']){
+            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_super_freighter')}</span> <span>+${gal_on['super_freighter'] * 5}</span></div>`);
+        }
+        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> <span>${global.galaxy.trade.max}</span></div>`);
+        return bd;
+    },{
+        elm: `#galacticTradeTotal > span`
     });
 }
 
@@ -1702,6 +1743,19 @@ function loadRouteCounter(){
     vBind({
         el: '#tradeTotal',
         data: global.city.market
+    });
+
+    popover(`tradeTotal`,function(){
+        let bd = $(`<div class="resBreakdown"></div>`);
+        if (breakdown.hasOwnProperty('t_route')){
+            Object.keys(breakdown.t_route).forEach(function(k){
+                bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.t_route[k]}</span></div>`);
+            });
+        }
+        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span>${global.city.market.mtrade}</span></div>`);
+        return bd;
+    },{
+        elm: `#tradeTotal > span`
     });
 }
 

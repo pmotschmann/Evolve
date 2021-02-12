@@ -40,6 +40,10 @@ const universeExclusives = {
     fullmetal: ['magic']
 };
 
+const achieveDescData = {
+    trade: [600,50]
+};
+
 function achievePage(universe){
     let content = $(`#content`);
     clearElement(content);
@@ -252,7 +256,8 @@ function achieveDesc(achievement,showFlair,universe){
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_planet_type',[achievement.substring(0,1) === 'b' ? loc(`biome_${planet}_name`) : loc(`planet_${planet}`)])}</div>${flair}`));
     }
     else {
-        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${flair}`));
+        let desc = achieveDescData[achievement] ? loc(`wiki_achieve_${achievement}`,achieveDescData[achievement]) : loc(`wiki_achieve_${achievement}`);
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${desc}</div>${flair}`));
     }
 }
 
