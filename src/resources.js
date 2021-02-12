@@ -1,4 +1,4 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, gal_on } from './vars.js';
 import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
@@ -1236,7 +1236,7 @@ export function galacticTrade(modal){
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
         }
 
-        let totals = $(`<div class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
+        let totals = $(`<div id="galacticTradeTotal" class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
         galaxyTrade.append(totals);
     }
 
@@ -1301,6 +1301,20 @@ export function galacticTrade(modal){
                 return sell_vol;
             }
         }
+    });
+
+    popover(`galacticTradeTotal`,function(){
+        let bd = $(`<div class="resBreakdown"></div>`);
+        if (global.galaxy['freighter']){
+            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_freighter')}</span> <span>+${gal_on['freighter'] * 2}</span></div>`);
+        }
+        if (global.galaxy['super_freighter']){
+            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_super_freighter')}</span> <span>+${gal_on['super_freighter'] * 5}</span></div>`);
+        }
+        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> <span>${global.galaxy.trade.max}</span></div>`);
+        return bd;
+    },{
+        elm: `#galacticTradeTotal > span`
     });
 }
 
@@ -1729,6 +1743,19 @@ function loadRouteCounter(){
     vBind({
         el: '#tradeTotal',
         data: global.city.market
+    });
+
+    popover(`tradeTotal`,function(){
+        let bd = $(`<div class="resBreakdown"></div>`);
+        if (breakdown.hasOwnProperty('t_route')){
+            Object.keys(breakdown.t_route).forEach(function(k){
+                bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.t_route[k]}</span></div>`);
+            });
+        }
+        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span>${global.city.market.mtrade}</span></div>`);
+        return bd;
+    },{
+        elm: `#tradeTotal > span`
     });
 }
 
