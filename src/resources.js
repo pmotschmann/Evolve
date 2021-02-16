@@ -321,8 +321,8 @@ export const craftingRatio = (function(){
             if (global.race['ambidextrous']){
                 crafting.general.add.push({
                     name: loc(`trait_ambidextrous_name`),
-                    manual: global.race['ambidextrous'] * 0.03,
-                    auto: global.race['ambidextrous'] * 0.03
+                    manual: traits.ambidextrous.vars[0] * global.race['ambidextrous'] / 100,
+                    auto: traits.ambidextrous.vars[0] * global.race['ambidextrous'] / 100
                 });
             }
             if (global.race['rigid']){
@@ -373,7 +373,7 @@ export const craftingRatio = (function(){
                 crafting.general.multi.push({
                     name: loc(`trait_ambidextrous_name`),
                     manual: 1,
-                    auto: 1 + (global.race['ambidextrous'] * 0.02)
+                    auto: 1 + (traits.ambidextrous.vars[1] * global.race['ambidextrous'] / 100)
                 });
             }
             if (global.blood['artisan']){

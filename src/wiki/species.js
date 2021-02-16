@@ -108,7 +108,7 @@ export function traitDesc(info,trait,fanatic){
     if (traits[trait].hasOwnProperty('val')){
         color = traits[trait].val >= 0 ? 'success' : 'danger';
     }
-    info.append(`<div class="has-text-${color} effect">${traits[trait].type === 'minor' ? loc(`trait_${trait}_effect`) : loc(`wiki_trait_effect_${trait}`,vals)}</div>`);
+    info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,vals)}</div>`);
     if (traitExtra[trait]){
         traitExtra[trait].forEach(function(te){
             info.append(`<div class="effect">${te}</div>`);

@@ -1094,7 +1094,7 @@ function fastLoop(){
                     if (global.resource.Money.amount >= price * time_multiplier){
                         let rate = tradeRatio[res];
                         if (global.race['persuasive']){
-                            rate *= 1 + (global.race['persuasive'] / 100);
+                            rate *= 1 + (traits.persuasive.vars[0] * global.race['persuasive'] / 100);
                         }
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars[1] / 100);
@@ -2636,7 +2636,7 @@ function fastLoop(){
                     lowerBound += global.genes['birth'];
                 }
                 if (global.race['promiscuous']){
-                    lowerBound += global.race['promiscuous'];
+                    lowerBound += traits.promiscuous.vars[0] * global.race['promiscuous'];
                 }
                 let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * planetTraits.toxic.vars[1] : global['resource'][global.race.species].amount;
                 if (global.race['parasite'] && global.race['cataclysm']){
@@ -3021,7 +3021,7 @@ function fastLoop(){
                     factory_output *= 1.37;
                 }
                 if (global.race['metallurgist']){
-                    factory_output *= 1 + (global.race['metallurgist'] * 0.04);
+                    factory_output *= 1 + (traits.metallurgist.vars[0] * global.race['metallurgist'] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
@@ -4077,7 +4077,7 @@ function fastLoop(){
                 miner_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['industrious']){
-                let bonus = 1 + (global.race['industrious'] / 50);
+                let bonus = 1 + (traits.industrious.vars[0] * global.race['industrious'] / 100);
                 miner_base *= bonus;
             }
             if (global.city.ptrait === 'dense'){
@@ -4274,7 +4274,7 @@ function fastLoop(){
                 coal_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['resilient']){
-                let bonus = 1 + (global.race['resilient'] / 50);
+                let bonus = 1 + (traits.resilient.vars[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
             coal_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
@@ -4747,7 +4747,12 @@ function fastLoop(){
             if (p_on['casino']){ casinos += p_on['casino']; }
             if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
 
-            let cash = (Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+            let cash = Math.log2(1 + global.resource[global.race.species].amount);
+            let revenue = 2.5;
+            if (global.race['gambler']){
+                revenue *= 1 + (traits.gambler.vars[0] * global.race['gambler'] / 100);
+            }
+            cash *= revenue;
             if (global.tech.gambling >= 2){
                 cash *= global.tech.gambling >= 5 ? 2 : 1.5;
             }
@@ -6047,7 +6052,7 @@ function midLoop(){
             }
             let vault = casinos * spatialReasoning(casino_capacity);
             if (global.race['gambler']){
-                vault *= 1 + (global.race['gambler'] * 0.04);
+                vault *= 1 + (traits.gambler.vars[0] * global.race['gambler'] / 100);
             }
             if (global.tech['world_control']){
                 vault = Math.round(vault * 1.25);
@@ -7277,7 +7282,7 @@ function longLoop(){
                 hc *= 2;
             }
             if (global.race['fibroblast']){
-                hc += global.race['fibroblast'] * 2;
+                hc += traits.fibroblast.vars[1] * global.race['fibroblast'];
             }
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc += 3

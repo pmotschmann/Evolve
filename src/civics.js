@@ -1652,7 +1652,7 @@ export function armyRating(val,type,wound){
             army *= 1 - (traits.pathetic.vars[0] / 100);
         }
         if (global.race['tactical']){
-            army *= 1 + (global.race['tactical'] / 20);
+            army *= 1 + (traits.tactical.vars[0] * global.race['tactical'] / 100);
         }
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 4){
             army *= 1 + (global.city.temple.count * 0.01);
@@ -1693,7 +1693,7 @@ export function armyRating(val,type,wound){
             army *= planetTraits.rage.vars[1];
         }
         if (global.race['cunning']){
-            army *= 1 + (global.race['cunning'] / 20);
+            army *= 1 + (traits.cunning.vars[0] * global.race['cunning'] / 100);
         }
     }
     if (global.civic.govern.type === 'autocracy'){
