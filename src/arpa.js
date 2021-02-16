@@ -1,6 +1,6 @@
 import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect } from './functions.js';
-import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, checkCosts } from './actions.js';
+import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
@@ -42,14 +42,14 @@ export const arpaProjects = {
             let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
-                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,wardenLabel()]);
                 }
                 else {
-                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm2',[sc]) : loc('arpa_projects_lhc_effect2',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm2',[sc]) : loc('arpa_projects_lhc_effect2',[sc,wardenLabel()]);
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,global.race['evil'] ? loc('city_babel_title') : loc('city_wardenclyffe')]);
+                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,wardenLabel()]);
             }
         },
         cost: {

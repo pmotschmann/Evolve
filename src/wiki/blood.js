@@ -20,7 +20,7 @@ export function bloodPage(content){
 }
 
 function bloodDesc(info,trait){
-    let owned = global.genes[bloodPool[trait].grant[0]] && global.genes[bloodPool[trait].grant[0]] >= bloodPool[trait].grant[1] ? true : false;
+    let owned = global.blood[bloodPool[trait].grant[0]] && global.blood[bloodPool[trait].grant[0]] >= bloodPool[trait].grant[1] ? true : false;
 
     info.append(`<div class="type"><h2 class="has-text-warning">${bloodPool[trait].title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_blood_${bloodPool[trait].grant[0]}`)}: ${bloodPool[trait].grant[1]}</span></div>`);
 

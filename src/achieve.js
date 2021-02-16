@@ -875,7 +875,8 @@ export const perkList = {
             return global.stats.achieve['trade'] && global.stats.achieve.trade.l >= 1 ? true : false;
         },
         notes: [
-            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_trade_name`)}</span>`])
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_trade_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_trade_name`)}</span>`])
         ]
     },
     creator: {
@@ -1707,7 +1708,7 @@ export const perkList = {
                     return loc("arpa_genepool_blood_sacrifice_desc");
                 },
                 active(){
-                    return global.genes['blood'] && global.genes.mutation >= 2 ? true : false;
+                    return global.genes['blood'] && global.genes.blood >= 2 ? true : false;
                 }
             },
             {
@@ -1715,7 +1716,7 @@ export const perkList = {
                     return loc("arpa_genepool_essence_absorber_desc");
                 },
                 active(){
-                    return global.genes['blood'] && global.genes.mutation >= 3 ? true : false;
+                    return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
                 }
             }
         ],

@@ -168,7 +168,7 @@ export function craftCost(){
             Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
-            Scarletite: [{ r: 'Iron', a: 137500 },{ r: 'Adamantite', a: 5500 },{ r: 'Orichalcum', a: 550 }],
+            Scarletite: [{ r: 'Iron', a: 275000 },{ r: 'Adamantite', a: 8250 },{ r: 'Orichalcum', a: 550 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -1305,13 +1305,14 @@ export function galacticTrade(modal){
 
     popover(`galacticTradeTotal`,function(){
         let bd = $(`<div class="resBreakdown"></div>`);
-        if (global.galaxy['freighter']){
-            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_freighter')}</span> <span>+${gal_on['freighter'] * 2}</span></div>`);
+        if (breakdown.hasOwnProperty('gt_route')){
+            Object.keys(breakdown.gt_route).forEach(function(k){
+                if (breakdown.gt_route[k] > 0){
+                    bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.gt_route[k]}</span></div>`);
+                }
+            });
         }
-        if (global.galaxy['super_freighter']){
-            bd.append(`<div class="modal_bd"><span class="has-text-warning">${loc('galaxy_super_freighter')}</span> <span>+${gal_on['super_freighter'] * 5}</span></div>`);
-        }
-        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> <span>${global.galaxy.trade.max}</span></div>`);
+        bd.append(`<div class="modal_bd ${global.galaxy.trade.max > 0 ? 'sum' : ''}"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> <span>${global.galaxy.trade.max}</span></div>`);
         return bd;
     },{
         elm: `#galacticTradeTotal > span`
@@ -1749,10 +1750,12 @@ function loadRouteCounter(){
         let bd = $(`<div class="resBreakdown"></div>`);
         if (breakdown.hasOwnProperty('t_route')){
             Object.keys(breakdown.t_route).forEach(function(k){
-                bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.t_route[k]}</span></div>`);
+                if (breakdown.t_route[k] > 0){
+                    bd.append(`<div class="modal_bd"><span class="has-text-warning">${k}</span> <span>+${breakdown.t_route[k]}</span></div>`);
+                }
             });
         }
-        bd.append(`<div class="modal_bd"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span>${global.city.market.mtrade}</span></div>`);
+        bd.append(`<div class="modal_bd ${global.city.market.mtrade > 0 ? 'sum' : ''}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span>${global.city.market.mtrade}</span></div>`);
         return bd;
     },{
         elm: `#tradeTotal > span`

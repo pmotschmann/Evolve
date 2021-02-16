@@ -2103,7 +2103,7 @@ const interstellarProjects = {
                     global.resource.Graphene.display = true;
                     if (global.interstellar.starport.support < global.interstellar.starport.s_max){
                         global.interstellar.g_factory.on++;
-                        if (global.race['kindling_kindred']){
+                        if (global.race['kindling_kindred'] || global.race['smoldering']){
                             global.interstellar.g_factory.Oil++;
                         }
                         else {
@@ -4105,7 +4105,9 @@ const galaxyProjects = {
             title: loc('galaxy_embassy'),
             desc: `<div>${loc('galaxy_embassy')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { xeno: 4 },
-            no_queue(){ return global.galaxy.embassy.count >= 1 ? true : false; },
+            no_queue(){ return global.galaxy.embassy.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
+            queue_complete(){ return 1 - global.galaxy.embassy.count; },
             cost: {
                 Money(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 30000000 : 0; },
                 Lumber(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 38000000 : 0; },
@@ -4260,7 +4262,9 @@ const galaxyProjects = {
                 return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]);
             },
             reqs: { xeno: 8 },
-            no_queue(){ return global.galaxy.consulate.count >= 1 ? true : false; },
+            no_queue(){ return global.galaxy.consulate.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
+            queue_complete(){ return 1 - global.galaxy.consulate.count; },
             cost: {
                 Money(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
                 Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
@@ -4991,7 +4995,8 @@ const structDefinitions = {
     mass_ejector:{
         count: 0, on: 0, total: 0, mass: 0,
         Food: 0, Lumber: 0,
-        Stone: 0, Furs: 0,
+        Chrysotile: 0, Stone: 0,
+        Crystal: 0, Furs: 0,
         Copper: 0, Iron: 0,
         Aluminium: 0, Cement: 0,
         Coal: 0, Oil: 0,
@@ -5003,10 +5008,11 @@ const structDefinitions = {
         Infernite: 0, Elerium: 0,
         Nano_Tube: 0, Graphene: 0,
         Stanene: 0, Bolognium: 0,
-        Vitreloy: 0, Plywood: 0,
-        Brick: 0, Wrought_Iron: 0,
-        Sheet_Metal: 0, Mythril: 0,
-        Aerogel: 0, Crystal: 0
+        Vitreloy: 0, Orichalcum: 0,
+        Plywood: 0, Brick: 0,
+        Wrought_Iron: 0, Sheet_Metal: 0,
+        Mythril: 0, Aerogel: 0,
+        Nanoweave: 0, Scarletite: 0
     },
     stargate: { count: 0 },
     gateway_station: { count: 0, on: 0 },

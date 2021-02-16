@@ -5124,41 +5124,41 @@ function midLoop(){
             caps['Uranium'] += 1000;
         }
 
-        var bd_Money = { Base: caps['Money']+'v' };
+        var bd_Money = { [loc('base')]: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};
-        var bd_Mana = { Base: caps['Mana']+'v' };
-        var bd_Knowledge = { Base: caps['Knowledge']+'v' };
-        var bd_Food = { Base: caps['Food']+'v' };
-        var bd_Lumber = { Base: caps['Lumber']+'v' };
-        var bd_Stone = { Base: caps['Stone']+'v' };
-        var bd_Chrysotile = { Base: caps['Chrysotile']+'v' };
-        var bd_Crystal = { Base: caps['Crystal']+'v' };
-        var bd_Furs = { Base: caps['Furs']+'v' };
-        var bd_Copper = { Base: caps['Copper']+'v' };
-        var bd_Iron = { Base: caps['Iron']+'v' };
-        var bd_Cement = { Base: caps['Cement']+'v' };
-        var bd_Coal = { Base: caps['Coal']+'v' };
-        var bd_Oil = { Base: caps['Oil']+'v' };
-        var bd_Uranium = { Base: caps['Uranium']+'v' };
-        var bd_Steel = { Base: caps['Steel']+'v' };
-        var bd_Aluminium = { Base: caps['Aluminium']+'v' };
-        var bd_Titanium = { Base: caps['Titanium']+'v' };
-        var bd_Alloy = { Base: caps['Alloy']+'v' };
-        var bd_Polymer = { Base: caps['Polymer']+'v' };
-        var bd_Iridium = { Base: caps['Iridium']+'v' };
-        var bd_Helium = { Base: caps['Helium_3']+'v' };
-        var bd_Deuterium = { Base: caps['Deuterium']+'v' };
-        var bd_Neutronium = { Base: caps['Neutronium']+'v' };
-        var bd_Adamantite = { Base: caps['Adamantite']+'v' };
-        var bd_Infernite = { Base: caps['Infernite']+'v' };
-        var bd_Elerium = { Base: caps['Elerium']+'v' };
-        var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
-        var bd_Graphene = { Base: caps['Graphene']+'v' };
-        var bd_Stanene = { Base: caps['Stanene']+'v' };
-        var bd_Bolognium = { Base: caps['Bolognium']+'v' };
-        var bd_Vitreloy = { Base: caps['Vitreloy']+'v' };
-        var bd_Orichalcum = { Base: caps['Orichalcum']+'v' };
+        var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
+        var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
+        var bd_Food = { [loc('base')]: caps['Food']+'v' };
+        var bd_Lumber = { [loc('base')]: caps['Lumber']+'v' };
+        var bd_Stone = { [loc('base')]: caps['Stone']+'v' };
+        var bd_Chrysotile = { [loc('base')]: caps['Chrysotile']+'v' };
+        var bd_Crystal = { [loc('base')]: caps['Crystal']+'v' };
+        var bd_Furs = { [loc('base')]: caps['Furs']+'v' };
+        var bd_Copper = { [loc('base')]: caps['Copper']+'v' };
+        var bd_Iron = { [loc('base')]: caps['Iron']+'v' };
+        var bd_Cement = { [loc('base')]: caps['Cement']+'v' };
+        var bd_Coal = { [loc('base')]: caps['Coal']+'v' };
+        var bd_Oil = { [loc('base')]: caps['Oil']+'v' };
+        var bd_Uranium = { [loc('base')]: caps['Uranium']+'v' };
+        var bd_Steel = { [loc('base')]: caps['Steel']+'v' };
+        var bd_Aluminium = { [loc('base')]: caps['Aluminium']+'v' };
+        var bd_Titanium = { [loc('base')]: caps['Titanium']+'v' };
+        var bd_Alloy = { [loc('base')]: caps['Alloy']+'v' };
+        var bd_Polymer = { [loc('base')]: caps['Polymer']+'v' };
+        var bd_Iridium = { [loc('base')]: caps['Iridium']+'v' };
+        var bd_Helium = { [loc('base')]: caps['Helium_3']+'v' };
+        var bd_Deuterium = { [loc('base')]: caps['Deuterium']+'v' };
+        var bd_Neutronium = { [loc('base')]: caps['Neutronium']+'v' };
+        var bd_Adamantite = { [loc('base')]: caps['Adamantite']+'v' };
+        var bd_Infernite = { [loc('base')]: caps['Infernite']+'v' };
+        var bd_Elerium = { [loc('base')]: caps['Elerium']+'v' };
+        var bd_Nano_Tube = { [loc('base')]: caps['Nano_Tube']+'v' };
+        var bd_Graphene = { [loc('base')]: caps['Graphene']+'v' };
+        var bd_Stanene = { [loc('base')]: caps['Stanene']+'v' };
+        var bd_Bolognium = { [loc('base')]: caps['Bolognium']+'v' };
+        var bd_Vitreloy = { [loc('base')]: caps['Vitreloy']+'v' };
+        var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
 
         caps[global.race.species] = 0;
         caps['Slave'] = 0;
@@ -6226,6 +6226,18 @@ function midLoop(){
             global.city.market.mtrade += global.tech['railway'] * routes;
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
         }
+        breakdown['gt_route'] = {};
+        if (global.galaxy['freighter']){
+            breakdown.gt_route[loc('galaxy_freighter')] = gal_on['freighter'] * 2;
+        }
+        if (global.galaxy['super_freighter']){
+            breakdown.gt_route[loc('galaxy_super_freighter')] = gal_on['super_freighter'] * 5;
+        }
+        if (global.city['wharf']){
+            let r_count = global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('city_wharf')] = r_count;
+        }
         if (global.galaxy['bolognium_ship']){
             lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.ship.civ;
         }
@@ -6371,8 +6383,8 @@ function midLoop(){
             let container = global.resource[res].containers * container_value;
             caps[res] += container;
             if (breakdown.c[res]){
-                breakdown.c[res]['Crates'] = crate+'v';
-                breakdown.c[res]['Containers'] = container+'v';
+                breakdown.c[res][loc('resource_Crates_plural')] = crate+'v';
+                breakdown.c[res][loc('resource_Containers_plural')] = container+'v';
             }
             global.resource[res].max = caps[res];
             if (global.resource[res].amount > global.resource[res].max){

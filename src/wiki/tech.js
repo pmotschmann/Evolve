@@ -1202,7 +1202,8 @@ const extraInformation = {
         loc(`wiki_tech_unification2e`),
         loc(`wiki_tech_unification2f`,[getSolarName('gas')]),
         loc(`wiki_tech_unification2g`),
-        loc(`wiki_tech_unification2h`)
+        loc(`wiki_tech_unification2h`),
+        loc(`wiki_tech_unification2i`)
     ],
     star_dock: [
         loc(`wiki_tech_building_unlock`,[loc(`space_gas_star_dock_title`)])

@@ -3493,7 +3493,7 @@ const techs = {
         cost: {
             Knowledge(){ return 635000; }
         },
-        effect(){ return loc('tech_virtual_assistant_effect'); },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_virtual_assistant_magic_effect') : loc('tech_virtual_assistant_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
                 return true;
@@ -3533,7 +3533,7 @@ const techs = {
             Neutronium(){ return 7500; },
             Soul_Gem(){ return 2; }
         },
-        effect(){ return loc('tech_quantum_entanglement_effect',[2]); },
+        effect(){ return loc('tech_quantum_entanglement_effect',[2, global.race.universe === 'magic' ? loc('tech_sanctum') : loc('interstellar_laboratory_title'), wardenLabel()]); },
         action(){
             if (payCosts($(this)[0].cost)){
                 return true;
@@ -8498,7 +8498,8 @@ const techs = {
                 global.interstellar['mass_ejector'] = {
                     count: 0, on: 0, total: 0, mass: 0,
                     Food: 0, Lumber: 0,
-                    Stone: 0, Furs: 0,
+                    Chrysotile: 0, Stone: 0,
+                    Crystal: 0, Furs: 0,
                     Copper: 0, Iron: 0,
                     Aluminium: 0, Cement: 0,
                     Coal: 0, Oil: 0,
@@ -8514,8 +8515,7 @@ const techs = {
                     Plywood: 0, Brick: 0,
                     Wrought_Iron: 0, Sheet_Metal: 0,
                     Mythril: 0, Aerogel: 0,
-                    Nanoweave: 0, Scarletite: 0,
-                    Crystal: 0
+                    Nanoweave: 0, Scarletite: 0
                 };
                 return true;
             }

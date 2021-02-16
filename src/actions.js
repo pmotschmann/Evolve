@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -6501,13 +6501,13 @@ export function checkCosts(costs){
             }
         }
         else if (res === 'Army'){
-            if (costs[res]() === false){
+            if (armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
                 test = false;
                 return;
             }
         }
         else if (res === 'HellArmy'){
-            if (costs[res]() === false){
+            if (typeof global.portal['fortress'] === 'undefined' || global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -7006,6 +7006,8 @@ function sentience(){
             global.resource.Soul_Gem.amount = gems;
         }
     }
+    
+    calcPillar(true);
 
     if (global.blood['aware']){
         global.settings.arpa['blood'] = true;
