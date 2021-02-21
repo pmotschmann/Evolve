@@ -5234,7 +5234,7 @@
   "wiki_tech_store_upgrade": "Increases %0 storage by %1%.",
   "wiki_tech_pocket_dimensions": "Supercolliders increase Warehouse storage by 5% each.",
   "wiki_tech_ai_logistics": "Cargo Yards increase Warehouse storage scaling with Quantum Level.",
-  "wiki_tech_crate_upgrade": "Increases base Crate storage to %0, from %1.",
+  "wiki_tech_containerized_upgrade": "Increases base %0 storage to %1, from %2.",
   "wiki_tech_cranes": "%0s provide 20 %1 instead of 10.",
   "wiki_tech_urban_planning": "Unlocks the Building Queue.",
   "wiki_tech_zoning_permits": "+%0 to Building Queue size.",
