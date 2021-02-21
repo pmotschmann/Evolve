@@ -4256,7 +4256,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('trade', offset, 200, 1.32) : 0; },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wharf', offset, 200, 1.32) : 0; },
                 Cement(offset){ return costMultiplier('wharf', offset, 3000, 1.32); },
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
