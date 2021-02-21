@@ -6859,214 +6859,6 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
-        if (global.tech['queue'] && global.queue.display){
-            let idx = -1;
-            let c_action = false;
-            let stop = false;
-            let deepScan = ['space','interstellar','galaxy','portal'];
-            let time = 0;
-            let spent = { t: 0, r: {}, id: {}};
-            let arpa = false;
-            let queued = {};
-            for (let i=0; i<global.queue.queue.length; i++){
-                if (global.settings.qAny){
-                    spent = { t: 0, r: {}, id: {}};
-                    time = 0;
-                }
-                let struct = global.queue.queue[i];
-
-                let t_action = false;
-                if (deepScan.includes(struct.action)){
-                    let scan = true;
-                    Object.keys(actions[struct.action]).forEach(function (region){
-                        if (actions[struct.action][region][struct.type] && scan){
-                            t_action = actions[struct.action][region][struct.type];
-                            scan = false;
-                        }
-                    });
-                }
-                else {
-                    t_action = actions[struct.action][struct.type];
-                }
-
-                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue.splice(i,1);
-                    buildQueue();
-                    break;
-                }
-
-                if (t_action){
-                    if (queued.hasOwnProperty(global.queue.queue[i].id)){
-                        queued[global.queue.queue[i].id] += global.queue.queue[i].q;
-                    }
-                    else {
-                        queued[global.queue.queue[i].id] = global.queue.queue[i].q;
-                    }
-                    if (t_action['queue_complete']){
-                        if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
-                            cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                            global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
-                            if (global.queue.queue[i].q <= 0){
-                                global.queue.queue.splice(i,1);
-                                buildQueue();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (struct.action === 'arpa'){
-                    let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
-                    time += arpaTimeCheck(t_action, remain, spent);
-                    global.queue.queue[i]['time'] = time;
-                    if (global.queue.queue[i].q > 1){
-                        for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += arpaTimeCheck(t_action, 1, spent);
-                        }
-                    }
-                    global.queue.queue[i]['t_max'] = time;
-                    if (global.settings.qAny){
-                        if (Math.floor(global.queue.queue[i]['time']) <= 1){
-                            if (!stop){
-                                c_action = t_action;
-                                idx = i;
-                                arpa = true;
-                            }
-                            stop = true;
-                        }
-                        else {
-                            if (!stop){
-                                buildArpa(global.queue.queue[i].type,100);
-                            }
-                        }
-                    }
-                    else {
-                        if (!stop){
-                            c_action = t_action;
-                            idx = i;
-                            arpa = true;
-                        }
-                        stop = true;
-                    }
-                }
-                else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue.splice(i,1);
-                    buildQueue();
-                    break;
-                }
-                else {
-                    if (checkAffordable(t_action,true)){
-                        global.queue.queue[i].cna = false;
-                        if (checkAffordable(t_action) && !stop){
-                            c_action = t_action;
-                            idx = i;
-                            arpa = false;
-                        }
-                        else {
-                            time += timeCheck(t_action, spent);
-                        }
-                        global.queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny ? false : true;
-                        if (global.queue.queue[i].q > 1){
-                            for (let j=1; j<global.queue.queue[i].q; j++){
-                                time += timeCheck(t_action, spent);
-                            }
-                        }
-                        global.queue.queue[i]['t_max'] = time;
-                    }
-                    else {
-                        global.queue.queue[i].cna = true;
-                        global.queue.queue[i]['time'] = -1;
-                    }
-                }
-                global.queue.queue[i].qa = global.settings.qAny ? true : false;
-            }
-            if (idx >= 0 && c_action){
-                if (arpa){
-                    let label = global.queue.queue[idx].label;
-                    if (buildArpa(global.queue.queue[idx].type,100)){
-                        messageQueue(loc('build_success',[label]),'success');
-                        if (label !== 'Launch Facility') {
-                            if (global.queue.queue[idx].q > 1){
-                                global.queue.queue[idx].q--;
-                            }
-                            else {
-                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
-                                global.queue.queue.splice(idx,1);
-                                buildQueue();
-                            }
-                        }
-                    }
-                }
-                else {
-                    let attempts = global.queue.queue[idx].q;
-                    let struct = global.queue.queue[idx];
-                    let triggerd = false;
-                    for (var i=0; i<attempts; i++){
-                        if (c_action.action()){
-                            triggerd = true;
-                            if (c_action['queue_complete']){
-                                if (c_action.queue_complete() <= 0){
-                                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                                }
-                            }
-                            else {
-                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                            }
-                            if (global.queue.queue[idx].q > 1){
-                                global.queue.queue[idx].q--;
-                            }
-                            else {
-                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
-                                global.queue.queue.splice(idx,1);
-                                buildQueue();
-                            }
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    if (triggerd){
-                        if (c_action['grant']){
-                            let tech = c_action.grant[0];
-                            global.tech[tech] = c_action.grant[1];
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            renderSpace();
-                            renderFortress();
-                        }
-                        else if (c_action['refresh']){
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            renderSpace();
-                            renderFortress();
-                        }
-                        updateDesc(c_action,struct.action,struct.type);
-                        if (c_action['post']){
-                            setTimeout(function(){
-                                c_action.post();
-                            }, 250);
-                        }
-                    }
-                }
-            }
-
-            let last = false;
-            for (let i=0; i<global.queue.queue.length; i++){
-                if (last === global.queue.queue[i].id){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue[i-1].q += global.queue.queue[i].q;
-                    global.queue.queue.splice(i,1);
-                    break;
-                }
-                last = global.queue.queue[i].id;
-            }
-        }
-
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
@@ -7131,6 +6923,217 @@ function midLoop(){
         }
 
         checkAchievements();
+    }
+
+    if (global.tech['queue'] && global.queue.display){
+        let idx = -1;
+        let c_action = false;
+        let stop = false;
+        let deepScan = ['space','interstellar','galaxy','portal'];
+        let time = 0;
+        let spent = { t: 0, r: {}, id: {}};
+        let arpa = false;
+        let queued = {};
+        for (let i=0; i<global.queue.queue.length; i++){
+            console.log(`scan idx ${idx}`);
+            if (global.settings.qAny){
+                spent = { t: 0, r: {}, id: {}};
+                time = 0;
+            }
+            let struct = global.queue.queue[i];
+
+            let t_action = false;
+            if (deepScan.includes(struct.action)){
+                let scan = true;
+                Object.keys(actions[struct.action]).forEach(function (region){
+                    if (actions[struct.action][region][struct.type] && scan){
+                        t_action = actions[struct.action][region][struct.type];
+                        scan = false;
+                    }
+                });
+            }
+            else {
+                t_action = actions[struct.action][struct.type];
+            }
+
+            if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue.splice(i,1);
+                buildQueue();
+                break;
+            }
+
+            if (t_action){
+                if (queued.hasOwnProperty(global.queue.queue[i].id)){
+                    queued[global.queue.queue[i].id] += global.queue.queue[i].q;
+                }
+                else {
+                    queued[global.queue.queue[i].id] = global.queue.queue[i].q;
+                }
+                if (t_action['queue_complete']){
+                    if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
+                        cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                        global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
+                        if (global.queue.queue[i].q <= 0){
+                            global.queue.queue.splice(i,1);
+                            buildQueue();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (struct.action === 'arpa'){
+                let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
+                time += arpaTimeCheck(t_action, remain, spent);
+                global.queue.queue[i]['time'] = time;
+                if (global.queue.queue[i].q > 1){
+                    for (let j=1; j<global.queue.queue[i].q; j++){
+                        time += arpaTimeCheck(t_action, 1, spent);
+                    }
+                }
+                global.queue.queue[i]['t_max'] = time;
+                if (global.settings.qAny){
+                    if (Math.floor(global.queue.queue[i]['time']) <= 1){
+                        if (!stop){
+                            c_action = t_action;
+                            idx = i;
+                            arpa = true;
+                        }
+                        stop = true;
+                    }
+                    else {
+                        if (!stop){
+                            buildArpa(global.queue.queue[i].type,100);
+                        }
+                    }
+                }
+                else {
+                    if (!stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = true;
+                    }
+                    stop = true;
+                }
+            }
+            else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue.splice(i,1);
+                buildQueue();
+                break;
+            }
+            else {
+                if (checkAffordable(t_action,true)){
+                    global.queue.queue[i].cna = false;
+                    if (checkAffordable(t_action) && !stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = false;
+                    }
+                    else {
+                        time += timeCheck(t_action, spent);
+                    }
+                    global.queue.queue[i]['time'] = time;
+                    stop = global.settings.qAny ? false : true;
+                    if (global.queue.queue[i].q > 1){
+                        for (let j=1; j<global.queue.queue[i].q; j++){
+                            time += timeCheck(t_action, spent);
+                        }
+                    }
+                    global.queue.queue[i]['t_max'] = time;
+                }
+                else {
+                    global.queue.queue[i].cna = true;
+                    global.queue.queue[i]['time'] = -1;
+                }
+            }
+            global.queue.queue[i].qa = global.settings.qAny ? true : false;
+        }
+        if (idx >= 0 && c_action){
+            console.log(`queue idx ${idx}`);
+            if (arpa){
+                let label = global.queue.queue[idx].label;
+                if (buildArpa(global.queue.queue[idx].type,100)){
+                    messageQueue(loc('build_success',[label]),'success');
+                    if (label !== 'Launch Facility') {
+                        if (global.queue.queue[idx].q > 1){
+                            global.queue.queue[idx].q--;
+                        }
+                        else {
+                            cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
+                            global.queue.queue.splice(idx,1);
+                            buildQueue();
+                        }
+                    }
+                }
+            }
+            else {
+                let attempts = global.queue.queue[idx].q;
+                let struct = global.queue.queue[idx];
+                let triggerd = false;
+                for (var i=0; i<attempts; i++){
+                    console.log(`test queue ${i}`);
+                    if (c_action.action()){
+                        triggerd = true;
+                        if (c_action['queue_complete']){
+                            if (c_action.queue_complete() <= 0){
+                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                            }
+                        }
+                        else {
+                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                        }
+                        if (global.queue.queue[idx].q > 1){
+                            global.queue.queue[idx].q--;
+                        }
+                        else {
+                            cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
+                            global.queue.queue.splice(idx,1);
+                            buildQueue();
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (triggerd){
+                    if (c_action['grant']){
+                        let tech = c_action.grant[0];
+                        global.tech[tech] = c_action.grant[1];
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    else if (c_action['refresh']){
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    updateDesc(c_action,struct.action,struct.type);
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 250);
+                    }
+                }
+            }
+        }
+
+        let last = false;
+        for (let i=0; i<global.queue.queue.length; i++){
+            if (last === global.queue.queue[i].id){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue[i-1].q += global.queue.queue[i].q;
+                global.queue.queue.splice(i,1);
+                break;
+            }
+            last = global.queue.queue[i].id;
+        }
     }
 
     resourceAlt();

@@ -280,7 +280,7 @@ export function buildQueue(){
                     if (segments[0].substring(0,4) === 'arpa'){
                         c_action = segments[0].substring(4);
                     }
-                    else if (segments[0] === 'city' || segments[0] === 'starDock'){
+                    else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
                     else {
@@ -360,7 +360,7 @@ function attachQueuePopovers(){
         if (segments[0].substring(0,4) === 'arpa'){
             c_action = segments[0].substring(4);
         }
-        else if (segments[0] === 'city' || segments[0] === 'starDock'){
+        else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
             c_action = actions[segments[0]][segments[1]];
         }
         else {

@@ -1821,6 +1821,11 @@ export function clearStates(){
     global.settings.disableReset = false;
     global.settings.pause = false;
     global.arpa = {};
+
+    if (global.genes['queue']){
+        global.tech['queue'] = 1;
+        global.queue.display = true;
+    }
 }
 
 // executes a hard reset
