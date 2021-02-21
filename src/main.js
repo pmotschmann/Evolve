@@ -6935,7 +6935,6 @@ function midLoop(){
         let arpa = false;
         let queued = {};
         for (let i=0; i<global.queue.queue.length; i++){
-            console.log(`scan idx ${idx}`);
             if (global.settings.qAny){
                 spent = { t: 0, r: {}, id: {}};
                 time = 0;
@@ -7051,7 +7050,6 @@ function midLoop(){
             global.queue.queue[i].qa = global.settings.qAny ? true : false;
         }
         if (idx >= 0 && c_action){
-            console.log(`queue idx ${idx}`);
             if (arpa){
                 let label = global.queue.queue[idx].label;
                 if (buildArpa(global.queue.queue[idx].type,100)){
@@ -7073,7 +7071,6 @@ function midLoop(){
                 let struct = global.queue.queue[idx];
                 let triggerd = false;
                 for (var i=0; i<attempts; i++){
-                    console.log(`test queue ${i}`);
                     if (c_action.action()){
                         triggerd = true;
                         if (c_action['queue_complete']){
