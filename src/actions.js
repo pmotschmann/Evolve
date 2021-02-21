@@ -176,6 +176,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         phagocytosis: {
@@ -206,6 +207,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         chloroplasts: {
@@ -235,6 +237,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         chitin: {
@@ -264,6 +267,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         multicellular: {
@@ -300,6 +304,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         spores: {
@@ -325,6 +330,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         poikilohydric: {
@@ -350,6 +356,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         bilateral_symmetry: {
@@ -402,6 +409,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         bryophyte: {
@@ -447,6 +455,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         athropods: {
@@ -481,6 +490,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         mammals: {
@@ -544,6 +554,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         humanoid: {
@@ -586,6 +597,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         gigantism: {
@@ -628,6 +640,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         dwarfism: {
@@ -670,6 +683,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         animalism: {
@@ -712,6 +726,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         celestial: {
@@ -746,6 +761,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         demonic: {
@@ -780,6 +796,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         aquatic: {
@@ -814,6 +831,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         fey: {
@@ -848,6 +866,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         heat: {
@@ -882,6 +901,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         polar: {
@@ -916,6 +936,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         sand: {
@@ -950,6 +971,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         eggshell: {
@@ -977,6 +999,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         endothermic: {
@@ -1013,6 +1036,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         ectothermic: {
@@ -1049,6 +1073,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         sentience: {
@@ -1369,6 +1394,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true
         },
         human: {
@@ -1393,6 +1419,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_human'); }
         },
@@ -1418,6 +1445,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_orc'); }
         },
@@ -1443,6 +1471,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_elven'); }
         },
@@ -1468,6 +1497,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_troll'); }
         },
@@ -1493,6 +1523,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_ogre'); }
         },
@@ -1518,6 +1549,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_cyclops'); }
         },
@@ -1543,6 +1575,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_kobold'); }
         },
@@ -1568,6 +1601,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_goblin'); }
         },
@@ -1593,6 +1627,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_gnome'); }
         },
@@ -1618,6 +1653,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_cath'); }
         },
@@ -1643,6 +1679,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_wolven'); }
         },
@@ -1668,6 +1705,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_centaur'); }
         },
@@ -1693,6 +1731,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_tortoisan'); }
         },
@@ -1718,6 +1757,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_gecko'); }
         },
@@ -1743,6 +1783,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_slitheryn'); }
         },
@@ -1768,6 +1809,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_arraak'); }
         },
@@ -1793,6 +1835,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_pterodacti'); }
         },
@@ -1818,6 +1861,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_dracnid'); }
         },
@@ -1843,6 +1887,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_sporgar'); }
         },
@@ -1868,6 +1913,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_shroomi'); }
         },
@@ -1893,6 +1939,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_moldling'); }
         },
@@ -1918,6 +1965,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_mantis'); }
         },
@@ -1943,6 +1991,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_scorpid'); }
         },
@@ -1968,6 +2017,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_antid'); }
         },
@@ -1993,6 +2043,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_entish'); }
         },
@@ -2018,6 +2069,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_cacti'); }
         },
@@ -2043,6 +2095,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_pinguicula'); }
         },
@@ -2068,6 +2121,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_sharkin'); }
         },
@@ -2093,6 +2147,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_octigoran'); }
         },
@@ -2118,6 +2173,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_dryad'); }
         },
@@ -2143,6 +2199,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_satyr'); }
         },
@@ -2168,6 +2225,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_phoenix'); }
         },
@@ -2193,6 +2251,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_salamander'); }
         },
@@ -2218,6 +2277,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_yeti'); }
         },
@@ -2243,6 +2303,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_wendigo'); }
         },
@@ -2268,6 +2329,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_tuskin'); }
         },
@@ -2293,6 +2355,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_kamel'); }
         },
@@ -2318,6 +2381,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_balorg'); }
         },
@@ -2343,6 +2407,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_imp'); }
         },
@@ -2368,6 +2433,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_seraph'); }
         },
@@ -2393,6 +2459,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_unicorn'); }
         },
@@ -2418,6 +2485,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             emblem(){ return format_emblem('extinct_custom'); }
         },
@@ -2486,6 +2554,7 @@ export const actions = {
                 let key = $(this)[0].id.split('-')[1];
                 return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
             },
+            queue_complete(){ return 1; },
             queueable: true,
             flair: loc('evo_bunker_flair')
         },
