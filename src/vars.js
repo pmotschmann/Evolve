@@ -685,7 +685,7 @@ if (convertVersion(global['version']) < 100025){
     }
 }
 
-global['version'] = '1.0.27';
+global['version'] = '1.0.28';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1821,6 +1821,11 @@ export function clearStates(){
     global.settings.disableReset = false;
     global.settings.pause = false;
     global.arpa = {};
+
+    if (global.genes['queue']){
+        global.tech['queue'] = 1;
+        global.queue.display = true;
+    }
 }
 
 // executes a hard reset

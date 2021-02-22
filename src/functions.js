@@ -280,7 +280,7 @@ export function buildQueue(){
                     if (segments[0].substring(0,4) === 'arpa'){
                         c_action = segments[0].substring(4);
                     }
-                    else if (segments[0] === 'city' || segments[0] === 'starDock'){
+                    else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
                         c_action = actions[segments[0]][segments[1]];
                     }
                     else {
@@ -360,7 +360,7 @@ function attachQueuePopovers(){
         if (segments[0].substring(0,4) === 'arpa'){
             c_action = segments[0].substring(4);
         }
-        else if (segments[0] === 'city' || segments[0] === 'starDock'){
+        else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
             c_action = actions[segments[0]][segments[1]];
         }
         else {
@@ -918,8 +918,8 @@ export function masteryType(universe,detailed){
             u_mastery = ua_level.uLvl * u_rate;
         }
         if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
-            m_mastery *= 1 + (0.01 * global.race.mastery);
-            u_mastery *= 1 + (0.01 * global.race.mastery);
+            m_mastery *= 1 + (traits.mastery.vars[0] * global.race.mastery / 100);
+            u_mastery *= 1 + (traits.mastery.vars[0] * global.race.mastery / 100);
         }
         return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
     }

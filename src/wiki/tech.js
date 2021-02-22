@@ -289,25 +289,25 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`city_storage_yard`)])
     ],
     reinforced_crates: [
-        loc(`wiki_tech_crate_upgrade`,[500,300])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),500,300])
     ],
     cranes: [
         loc(`wiki_tech_cranes`,[loc(`city_storage_yard`),loc(`resource_Crates_name`)])
     ],
     titanium_crates: [
-        loc(`wiki_tech_crate_upgrade`,[750,500])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),750,500])
     ],
     mythril_crates: [
-        loc(`wiki_tech_crate_upgrade`,[1000,750])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),1000,750])
     ],
     infernite_crates: [
-        loc(`wiki_tech_crate_upgrade`,[1500,1000])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),1500,1000])
     ],
     graphene_crates: [
-        loc(`wiki_tech_crate_upgrade`,[2200,1500])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),2200,1500])
     ],
     bolognium_crates: [
-        loc(`wiki_tech_crate_upgrade`,[6200,2200])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),6200,2200])
     ],
     steel_containers: [
         loc(`wiki_tech_building_unlock`,[loc(`city_warehouse`)])
@@ -316,22 +316,22 @@ const extraInformation = {
         loc(`wiki_tech_cranes`,[loc(`city_warehouse`),loc(`resource_Containers_name`)])
     ],
     alloy_containers: [
-        loc(`wiki_tech_crate_upgrade`,[1200,800])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),1200,800])
     ],
     mythril_containers: [
-        loc(`wiki_tech_crate_upgrade`,[1600,1200])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),1600,1200])
     ],
     adamantite_containers: [
-        loc(`wiki_tech_crate_upgrade`,[2200,1600])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),2200,1600])
     ],
     aerogel_containers: [
-        loc(`wiki_tech_crate_upgrade`,[3200,2200])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),3200,2200])
     ],
     bolognium_containers: [
-        loc(`wiki_tech_crate_upgrade`,[9700,3200])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),9700,3200])
     ],
     nanoweave_containers: [
-        loc(`wiki_tech_crate_upgrade`,[17700,9700])
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),17700,9700])
     ],
     evil_planning: [
         loc(`wiki_tech_urban_planning`)
@@ -1202,7 +1202,8 @@ const extraInformation = {
         loc(`wiki_tech_unification2e`),
         loc(`wiki_tech_unification2f`,[getSolarName('gas')]),
         loc(`wiki_tech_unification2g`),
-        loc(`wiki_tech_unification2h`)
+        loc(`wiki_tech_unification2h`),
+        loc(`wiki_tech_unification2i`)
     ],
     star_dock: [
         loc(`wiki_tech_building_unlock`,[loc(`space_gas_star_dock_title`)])

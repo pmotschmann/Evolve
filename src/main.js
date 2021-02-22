@@ -1093,7 +1093,7 @@ function fastLoop(){
                     if (global.resource.Money.amount >= price * time_multiplier){
                         let rate = tradeRatio[res];
                         if (global.race['persuasive']){
-                            rate *= 1 + (global.race['persuasive'] / 100);
+                            rate *= 1 + (traits.persuasive.vars[0] * global.race['persuasive'] / 100);
                         }
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars[1] / 100);
@@ -2635,7 +2635,7 @@ function fastLoop(){
                     lowerBound += global.genes['birth'];
                 }
                 if (global.race['promiscuous']){
-                    lowerBound += global.race['promiscuous'];
+                    lowerBound += traits.promiscuous.vars[0] * global.race['promiscuous'];
                 }
                 let base = global.city.ptrait === 'toxic' ? global['resource'][global.race.species].amount * planetTraits.toxic.vars[1] : global['resource'][global.race.species].amount;
                 if (global.race['parasite'] && global.race['cataclysm']){
@@ -3020,7 +3020,7 @@ function fastLoop(){
                     factory_output *= 1.37;
                 }
                 if (global.race['metallurgist']){
-                    factory_output *= 1 + (global.race['metallurgist'] * 0.04);
+                    factory_output *= 1 + (traits.metallurgist.vars[0] * global.race['metallurgist'] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
@@ -4076,7 +4076,7 @@ function fastLoop(){
                 miner_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['industrious']){
-                let bonus = 1 + (global.race['industrious'] / 50);
+                let bonus = 1 + (traits.industrious.vars[0] * global.race['industrious'] / 100);
                 miner_base *= bonus;
             }
             if (global.city.ptrait === 'dense'){
@@ -4273,7 +4273,7 @@ function fastLoop(){
                 coal_base *= 1 + (traits.tough.vars[0] / 100);
             }
             if (global.race['resilient']){
-                let bonus = 1 + (global.race['resilient'] / 50);
+                let bonus = 1 + (traits.resilient.vars[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
             coal_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
@@ -4746,7 +4746,12 @@ function fastLoop(){
             if (p_on['casino']){ casinos += p_on['casino']; }
             if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
 
-            let cash = (Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5)).toFixed(2);
+            let cash = Math.log2(1 + global.resource[global.race.species].amount);
+            let revenue = 2.5;
+            if (global.race['gambler']){
+                revenue *= 1 + (traits.gambler.vars[0] * global.race['gambler'] / 100);
+            }
+            cash *= revenue;
             if (global.tech.gambling >= 2){
                 cash *= global.tech.gambling >= 5 ? 2 : 1.5;
             }
@@ -5123,41 +5128,41 @@ function midLoop(){
             caps['Uranium'] += 1000;
         }
 
-        var bd_Money = { Base: caps['Money']+'v' };
+        var bd_Money = { [loc('base')]: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};
-        var bd_Mana = { Base: caps['Mana']+'v' };
-        var bd_Knowledge = { Base: caps['Knowledge']+'v' };
-        var bd_Food = { Base: caps['Food']+'v' };
-        var bd_Lumber = { Base: caps['Lumber']+'v' };
-        var bd_Stone = { Base: caps['Stone']+'v' };
-        var bd_Chrysotile = { Base: caps['Chrysotile']+'v' };
-        var bd_Crystal = { Base: caps['Crystal']+'v' };
-        var bd_Furs = { Base: caps['Furs']+'v' };
-        var bd_Copper = { Base: caps['Copper']+'v' };
-        var bd_Iron = { Base: caps['Iron']+'v' };
-        var bd_Cement = { Base: caps['Cement']+'v' };
-        var bd_Coal = { Base: caps['Coal']+'v' };
-        var bd_Oil = { Base: caps['Oil']+'v' };
-        var bd_Uranium = { Base: caps['Uranium']+'v' };
-        var bd_Steel = { Base: caps['Steel']+'v' };
-        var bd_Aluminium = { Base: caps['Aluminium']+'v' };
-        var bd_Titanium = { Base: caps['Titanium']+'v' };
-        var bd_Alloy = { Base: caps['Alloy']+'v' };
-        var bd_Polymer = { Base: caps['Polymer']+'v' };
-        var bd_Iridium = { Base: caps['Iridium']+'v' };
-        var bd_Helium = { Base: caps['Helium_3']+'v' };
-        var bd_Deuterium = { Base: caps['Deuterium']+'v' };
-        var bd_Neutronium = { Base: caps['Neutronium']+'v' };
-        var bd_Adamantite = { Base: caps['Adamantite']+'v' };
-        var bd_Infernite = { Base: caps['Infernite']+'v' };
-        var bd_Elerium = { Base: caps['Elerium']+'v' };
-        var bd_Nano_Tube = { Base: caps['Nano_Tube']+'v' };
-        var bd_Graphene = { Base: caps['Graphene']+'v' };
-        var bd_Stanene = { Base: caps['Stanene']+'v' };
-        var bd_Bolognium = { Base: caps['Bolognium']+'v' };
-        var bd_Vitreloy = { Base: caps['Vitreloy']+'v' };
-        var bd_Orichalcum = { Base: caps['Orichalcum']+'v' };
+        var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
+        var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
+        var bd_Food = { [loc('base')]: caps['Food']+'v' };
+        var bd_Lumber = { [loc('base')]: caps['Lumber']+'v' };
+        var bd_Stone = { [loc('base')]: caps['Stone']+'v' };
+        var bd_Chrysotile = { [loc('base')]: caps['Chrysotile']+'v' };
+        var bd_Crystal = { [loc('base')]: caps['Crystal']+'v' };
+        var bd_Furs = { [loc('base')]: caps['Furs']+'v' };
+        var bd_Copper = { [loc('base')]: caps['Copper']+'v' };
+        var bd_Iron = { [loc('base')]: caps['Iron']+'v' };
+        var bd_Cement = { [loc('base')]: caps['Cement']+'v' };
+        var bd_Coal = { [loc('base')]: caps['Coal']+'v' };
+        var bd_Oil = { [loc('base')]: caps['Oil']+'v' };
+        var bd_Uranium = { [loc('base')]: caps['Uranium']+'v' };
+        var bd_Steel = { [loc('base')]: caps['Steel']+'v' };
+        var bd_Aluminium = { [loc('base')]: caps['Aluminium']+'v' };
+        var bd_Titanium = { [loc('base')]: caps['Titanium']+'v' };
+        var bd_Alloy = { [loc('base')]: caps['Alloy']+'v' };
+        var bd_Polymer = { [loc('base')]: caps['Polymer']+'v' };
+        var bd_Iridium = { [loc('base')]: caps['Iridium']+'v' };
+        var bd_Helium = { [loc('base')]: caps['Helium_3']+'v' };
+        var bd_Deuterium = { [loc('base')]: caps['Deuterium']+'v' };
+        var bd_Neutronium = { [loc('base')]: caps['Neutronium']+'v' };
+        var bd_Adamantite = { [loc('base')]: caps['Adamantite']+'v' };
+        var bd_Infernite = { [loc('base')]: caps['Infernite']+'v' };
+        var bd_Elerium = { [loc('base')]: caps['Elerium']+'v' };
+        var bd_Nano_Tube = { [loc('base')]: caps['Nano_Tube']+'v' };
+        var bd_Graphene = { [loc('base')]: caps['Graphene']+'v' };
+        var bd_Stanene = { [loc('base')]: caps['Stanene']+'v' };
+        var bd_Bolognium = { [loc('base')]: caps['Bolognium']+'v' };
+        var bd_Vitreloy = { [loc('base')]: caps['Vitreloy']+'v' };
+        var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
 
         caps[global.race.species] = 0;
         caps['Slave'] = 0;
@@ -6046,7 +6051,7 @@ function midLoop(){
             }
             let vault = casinos * spatialReasoning(casino_capacity);
             if (global.race['gambler']){
-                vault *= 1 + (global.race['gambler'] * 0.04);
+                vault *= 1 + (traits.gambler.vars[0] * global.race['gambler'] / 100);
             }
             if (global.tech['world_control']){
                 vault = Math.round(vault * 1.25);
@@ -6225,6 +6230,18 @@ function midLoop(){
             global.city.market.mtrade += global.tech['railway'] * routes;
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
         }
+        breakdown['gt_route'] = {};
+        if (global.galaxy['freighter']){
+            breakdown.gt_route[loc('galaxy_freighter')] = gal_on['freighter'] * 2;
+        }
+        if (global.galaxy['super_freighter']){
+            breakdown.gt_route[loc('galaxy_super_freighter')] = gal_on['super_freighter'] * 5;
+        }
+        if (global.city['wharf']){
+            let r_count = global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
+            global.city.market.mtrade += r_count;
+            breakdown.t_route[loc('city_wharf')] = r_count;
+        }
         if (global.galaxy['bolognium_ship']){
             lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.ship.civ;
         }
@@ -6370,8 +6387,8 @@ function midLoop(){
             let container = global.resource[res].containers * container_value;
             caps[res] += container;
             if (breakdown.c[res]){
-                breakdown.c[res]['Crates'] = crate+'v';
-                breakdown.c[res]['Containers'] = container+'v';
+                breakdown.c[res][loc('resource_Crates_plural')] = crate+'v';
+                breakdown.c[res][loc('resource_Containers_plural')] = container+'v';
             }
             global.resource[res].max = caps[res];
             if (global.resource[res].amount > global.resource[res].max){
@@ -6841,214 +6858,6 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
-        if (global.tech['queue'] && global.queue.display){
-            let idx = -1;
-            let c_action = false;
-            let stop = false;
-            let deepScan = ['space','interstellar','galaxy','portal'];
-            let time = 0;
-            let spent = { t: 0, r: {}, id: {}};
-            let arpa = false;
-            let queued = {};
-            for (let i=0; i<global.queue.queue.length; i++){
-                if (global.settings.qAny){
-                    spent = { t: 0, r: {}, id: {}};
-                    time = 0;
-                }
-                let struct = global.queue.queue[i];
-
-                let t_action = false;
-                if (deepScan.includes(struct.action)){
-                    let scan = true;
-                    Object.keys(actions[struct.action]).forEach(function (region){
-                        if (actions[struct.action][region][struct.type] && scan){
-                            t_action = actions[struct.action][region][struct.type];
-                            scan = false;
-                        }
-                    });
-                }
-                else {
-                    t_action = actions[struct.action][struct.type];
-                }
-
-                if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue.splice(i,1);
-                    buildQueue();
-                    break;
-                }
-
-                if (t_action){
-                    if (queued.hasOwnProperty(global.queue.queue[i].id)){
-                        queued[global.queue.queue[i].id] += global.queue.queue[i].q;
-                    }
-                    else {
-                        queued[global.queue.queue[i].id] = global.queue.queue[i].q;
-                    }
-                    if (t_action['queue_complete']){
-                        if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
-                            cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                            global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
-                            if (global.queue.queue[i].q <= 0){
-                                global.queue.queue.splice(i,1);
-                                buildQueue();
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (struct.action === 'arpa'){
-                    let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
-                    time += arpaTimeCheck(t_action, remain, spent);
-                    global.queue.queue[i]['time'] = time;
-                    if (global.queue.queue[i].q > 1){
-                        for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += arpaTimeCheck(t_action, 1, spent);
-                        }
-                    }
-                    global.queue.queue[i]['t_max'] = time;
-                    if (global.settings.qAny){
-                        if (Math.floor(global.queue.queue[i]['time']) <= 1){
-                            if (!stop){
-                                c_action = t_action;
-                                idx = i;
-                                arpa = true;
-                            }
-                            stop = true;
-                        }
-                        else {
-                            if (!stop){
-                                buildArpa(global.queue.queue[i].type,100);
-                            }
-                        }
-                    }
-                    else {
-                        if (!stop){
-                            c_action = t_action;
-                            idx = i;
-                            arpa = true;
-                        }
-                        stop = true;
-                    }
-                }
-                else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue.splice(i,1);
-                    buildQueue();
-                    break;
-                }
-                else {
-                    if (checkAffordable(t_action,true)){
-                        global.queue.queue[i].cna = false;
-                        if (checkAffordable(t_action) && !stop){
-                            c_action = t_action;
-                            idx = i;
-                            arpa = false;
-                        }
-                        else {
-                            time += timeCheck(t_action, spent);
-                        }
-                        global.queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny ? false : true;
-                        if (global.queue.queue[i].q > 1){
-                            for (let j=1; j<global.queue.queue[i].q; j++){
-                                time += timeCheck(t_action, spent);
-                            }
-                        }
-                        global.queue.queue[i]['t_max'] = time;
-                    }
-                    else {
-                        global.queue.queue[i].cna = true;
-                        global.queue.queue[i]['time'] = -1;
-                    }
-                }
-                global.queue.queue[i].qa = global.settings.qAny ? true : false;
-            }
-            if (idx >= 0 && c_action){
-                if (arpa){
-                    let label = global.queue.queue[idx].label;
-                    if (buildArpa(global.queue.queue[idx].type,100)){
-                        messageQueue(loc('build_success',[label]),'success');
-                        if (label !== 'Launch Facility') {
-                            if (global.queue.queue[idx].q > 1){
-                                global.queue.queue[idx].q--;
-                            }
-                            else {
-                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
-                                global.queue.queue.splice(idx,1);
-                                buildQueue();
-                            }
-                        }
-                    }
-                }
-                else {
-                    let attempts = global.queue.queue[idx].q;
-                    let struct = global.queue.queue[idx];
-                    let triggerd = false;
-                    for (var i=0; i<attempts; i++){
-                        if (c_action.action()){
-                            triggerd = true;
-                            if (c_action['queue_complete']){
-                                if (c_action.queue_complete() <= 0){
-                                    messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                                }
-                            }
-                            else {
-                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
-                            }
-                            if (global.queue.queue[idx].q > 1){
-                                global.queue.queue[idx].q--;
-                            }
-                            else {
-                                cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
-                                global.queue.queue.splice(idx,1);
-                                buildQueue();
-                            }
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    if (triggerd){
-                        if (c_action['grant']){
-                            let tech = c_action.grant[0];
-                            global.tech[tech] = c_action.grant[1];
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            renderSpace();
-                            renderFortress();
-                        }
-                        else if (c_action['refresh']){
-                            removeAction(c_action.id);
-                            drawCity();
-                            drawTech();
-                            renderSpace();
-                            renderFortress();
-                        }
-                        updateDesc(c_action,struct.action,struct.type);
-                        if (c_action['post']){
-                            setTimeout(function(){
-                                c_action.post();
-                            }, 250);
-                        }
-                    }
-                }
-            }
-
-            let last = false;
-            for (let i=0; i<global.queue.queue.length; i++){
-                if (last === global.queue.queue[i].id){
-                    cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
-                    global.queue.queue[i-1].q += global.queue.queue[i].q;
-                    global.queue.queue.splice(i,1);
-                    break;
-                }
-                last = global.queue.queue[i].id;
-            }
-        }
-
         if (global.tech['r_queue'] && global.r_queue.display){
             let idx = -1;
             let c_action = false;
@@ -7113,6 +6922,214 @@ function midLoop(){
         }
 
         checkAchievements();
+    }
+
+    if (global.tech['queue'] && global.queue.display){
+        let idx = -1;
+        let c_action = false;
+        let stop = false;
+        let deepScan = ['space','interstellar','galaxy','portal'];
+        let time = 0;
+        let spent = { t: 0, r: {}, id: {}};
+        let arpa = false;
+        let queued = {};
+        for (let i=0; i<global.queue.queue.length; i++){
+            if (global.settings.qAny){
+                spent = { t: 0, r: {}, id: {}};
+                time = 0;
+            }
+            let struct = global.queue.queue[i];
+
+            let t_action = false;
+            if (deepScan.includes(struct.action)){
+                let scan = true;
+                Object.keys(actions[struct.action]).forEach(function (region){
+                    if (actions[struct.action][region][struct.type] && scan){
+                        t_action = actions[struct.action][region][struct.type];
+                        scan = false;
+                    }
+                });
+            }
+            else {
+                t_action = actions[struct.action][struct.type];
+            }
+
+            if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue.splice(i,1);
+                buildQueue();
+                break;
+            }
+
+            if (t_action){
+                if (queued.hasOwnProperty(global.queue.queue[i].id)){
+                    queued[global.queue.queue[i].id] += global.queue.queue[i].q;
+                }
+                else {
+                    queued[global.queue.queue[i].id] = global.queue.queue[i].q;
+                }
+                if (t_action['queue_complete']){
+                    if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
+                        cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                        global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
+                        if (global.queue.queue[i].q <= 0){
+                            global.queue.queue.splice(i,1);
+                            buildQueue();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (struct.action === 'arpa'){
+                let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
+                time += arpaTimeCheck(t_action, remain, spent);
+                global.queue.queue[i]['time'] = time;
+                if (global.queue.queue[i].q > 1){
+                    for (let j=1; j<global.queue.queue[i].q; j++){
+                        time += arpaTimeCheck(t_action, 1, spent);
+                    }
+                }
+                global.queue.queue[i]['t_max'] = time;
+                if (global.settings.qAny){
+                    if (Math.floor(global.queue.queue[i]['time']) <= 1){
+                        if (!stop){
+                            c_action = t_action;
+                            idx = i;
+                            arpa = true;
+                        }
+                        stop = true;
+                    }
+                    else {
+                        if (!stop){
+                            buildArpa(global.queue.queue[i].type,100);
+                        }
+                    }
+                }
+                else {
+                    if (!stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = true;
+                    }
+                    stop = true;
+                }
+            }
+            else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue.splice(i,1);
+                buildQueue();
+                break;
+            }
+            else {
+                if (checkAffordable(t_action,true)){
+                    global.queue.queue[i].cna = false;
+                    if (checkAffordable(t_action) && !stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = false;
+                    }
+                    else {
+                        time += timeCheck(t_action, spent);
+                    }
+                    global.queue.queue[i]['time'] = time;
+                    stop = global.settings.qAny ? false : true;
+                    if (global.queue.queue[i].q > 1){
+                        for (let j=1; j<global.queue.queue[i].q; j++){
+                            time += timeCheck(t_action, spent);
+                        }
+                    }
+                    global.queue.queue[i]['t_max'] = time;
+                }
+                else {
+                    global.queue.queue[i].cna = true;
+                    global.queue.queue[i]['time'] = -1;
+                }
+            }
+            global.queue.queue[i].qa = global.settings.qAny ? true : false;
+        }
+        if (idx >= 0 && c_action){
+            if (arpa){
+                let label = global.queue.queue[idx].label;
+                if (buildArpa(global.queue.queue[idx].type,100)){
+                    messageQueue(loc('build_success',[label]),'success');
+                    if (label !== 'Launch Facility') {
+                        if (global.queue.queue[idx].q > 1){
+                            global.queue.queue[idx].q--;
+                        }
+                        else {
+                            cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
+                            global.queue.queue.splice(idx,1);
+                            buildQueue();
+                        }
+                    }
+                }
+            }
+            else {
+                let attempts = global.queue.queue[idx].q;
+                let struct = global.queue.queue[idx];
+                let triggerd = false;
+                for (var i=0; i<attempts; i++){
+                    if (c_action.action()){
+                        triggerd = true;
+                        if (c_action['queue_complete']){
+                            if (c_action.queue_complete() <= 0){
+                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                            }
+                        }
+                        else {
+                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                        }
+                        if (global.queue.queue[idx].q > 1){
+                            global.queue.queue[idx].q--;
+                        }
+                        else {
+                            cleanBuildPopOver(`q${global.queue.queue[idx].id}${idx}`);
+                            global.queue.queue.splice(idx,1);
+                            buildQueue();
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (triggerd){
+                    if (c_action['grant']){
+                        let tech = c_action.grant[0];
+                        global.tech[tech] = c_action.grant[1];
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    else if (c_action['refresh']){
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    updateDesc(c_action,struct.action,struct.type);
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 250);
+                    }
+                }
+            }
+        }
+
+        let last = false;
+        for (let i=0; i<global.queue.queue.length; i++){
+            if (last === global.queue.queue[i].id){
+                cleanBuildPopOver(`q${global.queue.queue[i].id}${i}`);
+                global.queue.queue[i-1].q += global.queue.queue[i].q;
+                global.queue.queue.splice(i,1);
+                break;
+            }
+            last = global.queue.queue[i].id;
+        }
     }
 
     resourceAlt();
@@ -7264,7 +7281,7 @@ function longLoop(){
                 hc *= 2;
             }
             if (global.race['fibroblast']){
-                hc += global.race['fibroblast'] * 2;
+                hc += traits.fibroblast.vars[1] * global.race['fibroblast'];
             }
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc += 3

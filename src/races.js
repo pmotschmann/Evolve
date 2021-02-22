@@ -923,41 +923,49 @@ export const traits = {
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),
         type: 'minor',
+        vars: [5]
     },
     analytical: { // Science Bonus
         name: loc('trait_analytical_name'),
         desc: loc('trait_analytical'),
         type: 'minor',
+        vars: [1]
     },
     promiscuous: { // Population Growth Bonus
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
         type: 'minor',
+        vars: [1]
     },
     resilient: { // Coal Mining Bonus
         name: loc('trait_resilient_name'),
         desc: loc('trait_resilient'),
         type: 'minor',
+        vars: [2]
     },
     cunning: { // Hunting Bonus
         name: loc('trait_cunning_name'),
         desc: loc('trait_cunning'),
         type: 'minor',
+        vars: [5]
     },
     hardy: { // Factory Woker Bonus
         name: loc('trait_hardy_name'),
         desc: loc('trait_hardy'),
         type: 'minor',
+        vars: [1]
     },
     ambidextrous: { // Crafting Bonus
         name: loc('trait_ambidextrous_name'),
         desc: loc('trait_ambidextrous'),
         type: 'minor',
+        vars: [3,2]
     },
     industrious: { // Miner Bonus
         name: loc('trait_industrious_name'),
         desc: loc('trait_industrious'),
         type: 'minor',
+        vars: [2]
     },
     content: { // Morale Bonus
         name: loc('trait_content_name'),
@@ -968,21 +976,25 @@ export const traits = {
         name: loc('trait_fibroblast_name'),
         desc: loc('trait_fibroblast'),
         type: 'minor',
+        vars: [10,2]
     },
     metallurgist: { // Alloy bonus
         name: loc('trait_metallurgist_name'),
         desc: loc('trait_metallurgist'),
         type: 'minor',
+        vars: [4]
     },
-    gambler: { // Alloy bonus
+    gambler: { // Casino bonus
         name: loc('trait_gambler_name'),
         desc: loc('trait_gambler'),
         type: 'minor',
+        vars: [4]
     },
     persuasive: { // Trade bonus
         name: loc('trait_persuasive_name'),
         desc: loc('trait_persuasive'),
         type: 'minor',
+        vars: [1]
     },
     fortify: { // gene fortification
         name: loc('trait_fortify_name'),
@@ -993,6 +1005,7 @@ export const traits = {
         name: loc('trait_mastery_name'),
         desc: loc('trait_mastery'),
         type: 'special',
+        vars: [1]
     }
 };
 
@@ -1952,10 +1965,10 @@ export function racialTrait(workers,type){
         modifier *= 1 + (traits.toxic.vars[2] / 100);
     }
     if (global.race['hardy'] && type === 'factory'){
-        modifier *= 1 + (global.race['hardy'] / 100);
+        modifier *= 1 + (traits.hardy.vars[0] * global.race['hardy'] / 100);
     }
     if (global.race['analytical'] && type === 'science'){
-        modifier *= 1 + (global.race['analytical'] / 100);
+        modifier *= 1 + (traits.analytical.vars[0] * global.race['analytical'] / 100);
     }
     if (global.civic.govern.type === 'democracy'){
         modifier *= 0.95;

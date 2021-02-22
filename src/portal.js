@@ -318,7 +318,8 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_pit: 4 },
-            no_queue(){ return global.portal.soul_forge.count < 1 ? false : true },
+            no_queue(){ return global.portal.soul_forge.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
             queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
             postPower(o){

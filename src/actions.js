@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -16,7 +16,7 @@ import { loadTab } from './index.js';
 export const actions = {
     evolution: {
         rna: {
-            id: 'evo-rna',
+            id: 'evolution-rna',
             title: 'RNA',
             desc(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
@@ -30,7 +30,7 @@ export const actions = {
             }
         },
         dna: {
-            id: 'evo-dna',
+            id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
             cost: { RNA(){ return 2; } },
@@ -44,7 +44,7 @@ export const actions = {
             effect: loc('evo_dna_effect')
         },
         membrane: {
-            id: 'evo-membrane',
+            id: 'evolution-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
             cost: { RNA(){ return evolveCosts('membrane',2,2); } },
@@ -59,10 +59,11 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            queueable: true
         },
         organelles: {
-            id: 'evo-organelles',
+            id: 'evolution-organelles',
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
             cost: {
@@ -82,10 +83,11 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            queueable: true
         },
         nucleus: {
-            id: 'evo-nucleus',
+            id: 'evolution-nucleus',
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
             cost: {
@@ -102,10 +104,11 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            queueable: true
         },
         eukaryotic_cell: {
-            id: 'evo-eukaryotic_cell',
+            id: 'evolution-eukaryotic_cell',
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
             cost: {
@@ -123,10 +126,11 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            queueable: true
         },
         mitochondria: {
-            id: 'evo-mitochondria',
+            id: 'evolution-mitochondria',
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
             cost: {
@@ -140,10 +144,11 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            queueable: true
         },
         sexual_reproduction: {
-            id: 'evo-sexual_reproduction',
+            id: 'evolution-sexual_reproduction',
             title: loc('evo_sexual_reproduction_title'),
             desc: loc('evo_sexual_reproduction_desc'),
             cost: {
@@ -166,10 +171,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         phagocytosis: {
-            id: 'evo-phagocytosis',
+            id: 'evolution-phagocytosis',
             title: loc('evo_phagocytosis_title'),
             desc: loc('evo_phagocytosis_desc'),
             cost: {
@@ -177,6 +188,7 @@ export const actions = {
             },
             effect: loc('evo_phagocytosis_effect'),
             action(){
+                console.log('phagocytosis triggered');
                 if (payCosts($(this)[0].cost)){
                     global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
@@ -190,10 +202,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         chloroplasts: {
-            id: 'evo-chloroplasts',
+            id: 'evolution-chloroplasts',
             title: loc('evo_chloroplasts_title'),
             desc: loc('evo_chloroplasts_desc'),
             cost: {
@@ -214,10 +232,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         chitin: {
-            id: 'evo-chitin',
+            id: 'evolution-chitin',
             title: loc('evo_chitin_title'),
             desc: loc('evo_chitin_desc'),
             cost: {
@@ -238,10 +262,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         multicellular: {
-            id: 'evo-multicellular',
+            id: 'evolution-multicellular',
             title: loc('evo_multicellular_title'),
             desc: loc('evo_multicellular_desc'),
             cost: {
@@ -269,10 +299,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         spores: {
-            id: 'evo-spores',
+            id: 'evolution-spores',
             title: loc('evo_spores_title'),
             desc: loc('evo_spores_desc'),
             cost: {
@@ -289,10 +325,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         poikilohydric: {
-            id: 'evo-poikilohydric',
+            id: 'evolution-poikilohydric',
             title: loc('evo_poikilohydric_title'),
             desc: loc('evo_poikilohydric_desc'),
             cost: {
@@ -309,10 +351,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         bilateral_symmetry: {
-            id: 'evo-bilateral_symmetry',
+            id: 'evolution-bilateral_symmetry',
             title: loc('evo_bilateral_symmetry_title'),
             desc: loc('evo_bilateral_symmetry_desc'),
             cost: {
@@ -356,10 +404,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         bryophyte: {
-            id: 'evo-bryophyte',
+            id: 'evolution-bryophyte',
             title: loc('evo_bryophyte_title'),
             desc: loc('evo_bryophyte_desc'),
             cost: {
@@ -396,10 +450,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         athropods: {
-            id: 'evo-athropods',
+            id: 'evolution-athropods',
             title: loc('evo_athropods_title'),
             desc: loc('evo_athropods_desc'),
             cost: {
@@ -425,10 +485,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         mammals: {
-            id: 'evo-mammals',
+            id: 'evolution-mammals',
             title: loc('evo_mammals_title'),
             desc: loc('evo_mammals_desc'),
             cost: {
@@ -483,10 +549,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         humanoid: {
-            id: 'evo-humanoid',
+            id: 'evolution-humanoid',
             title: loc('evo_humanoid_title'),
             desc: loc('evo_humanoid_desc'),
             cost: {
@@ -520,10 +592,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         gigantism: {
-            id: 'evo-gigantism',
+            id: 'evolution-gigantism',
             title: loc('evo_gigantism_title'),
             desc: loc('evo_gigantism_desc'),
             cost: {
@@ -557,10 +635,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         dwarfism: {
-            id: 'evo-dwarfism',
+            id: 'evolution-dwarfism',
             title: loc('evo_dwarfism_title'),
             desc: loc('evo_dwarfism_desc'),
             cost: {
@@ -594,10 +678,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         animalism: {
-            id: 'evo-animalism',
+            id: 'evolution-animalism',
             title: loc('evo_animalism_title'),
             desc: loc('evo_animalism_desc'),
             cost: {
@@ -631,10 +721,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         celestial: {
-            id: 'evo-celestial',
+            id: 'evolution-celestial',
             title: loc('evo_celestial_title'),
             desc: loc('evo_celestial_desc'),
             cost: {
@@ -660,10 +756,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         demonic: {
-            id: 'evo-demonic',
+            id: 'evolution-demonic',
             title: loc('evo_demonic_title'),
             desc: loc('evo_demonic_desc'),
             cost: {
@@ -689,10 +791,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         aquatic: {
-            id: 'evo-aquatic',
+            id: 'evolution-aquatic',
             title: loc('evo_aquatic_title'),
             desc: loc('evo_aquatic_desc'),
             cost: {
@@ -718,10 +826,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         fey: {
-            id: 'evo-fey',
+            id: 'evolution-fey',
             title: loc('evo_fey_title'),
             desc: loc('evo_fey_desc'),
             cost: {
@@ -747,10 +861,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         heat: {
-            id: 'evo-heat',
+            id: 'evolution-heat',
             title: loc('evo_heat_title'),
             desc: loc('evo_heat_desc'),
             cost: {
@@ -776,10 +896,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         polar: {
-            id: 'evo-polar',
+            id: 'evolution-polar',
             title: loc('evo_polar_title'),
             desc: loc('evo_polar_desc'),
             cost: {
@@ -805,10 +931,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         sand: {
-            id: 'evo-sand',
+            id: 'evolution-sand',
             title: loc('evo_sand_title'),
             desc: loc('evo_sand_desc'),
             cost: {
@@ -834,10 +966,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         eggshell: {
-            id: 'evo-eggshell',
+            id: 'evolution-eggshell',
             title: loc('evo_eggshell_title'),
             desc: loc('evo_eggshell_desc'),
             cost: {
@@ -856,10 +994,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         endothermic: {
-            id: 'evo-endothermic',
+            id: 'evolution-endothermic',
             title: loc('evo_endothermic_title'),
             desc: loc('evo_endothermic_desc'),
             cost: {
@@ -887,10 +1031,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         ectothermic: {
-            id: 'evo-ectothermic',
+            id: 'evolution-ectothermic',
             title: loc('evo_ectothermic_title'),
             desc: loc('evo_ectothermic_desc'),
             cost: {
@@ -918,10 +1068,16 @@ export const actions = {
                     evoProgress();
                 }
                 return false;
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         sentience: {
-            id: 'evo-sentience',
+            id: 'evolution-sentience',
             title: loc('evo_sentience_title'),
             desc: loc('evo_sentience_desc'),
             cost: {
@@ -1233,10 +1389,16 @@ export const actions = {
                 else {
                     return '';
                 }
-            }
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
         },
         human: {
-            id: 'evo-human',
+            id: 'evolution-human',
             title(){ return races.human.name; },
             desc(){ return `${loc("evo_evolve")} ${races.human.name}`; },
             cost: {
@@ -1253,10 +1415,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_human'); }
         },
         orc: {
-            id: 'evo-orc',
+            id: 'evolution-orc',
             title(){ return races.orc.name; },
             desc(){ return `${loc("evo_evolve")} ${races.orc.name}`; },
             cost: {
@@ -1273,10 +1441,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_orc'); }
         },
         elven: {
-            id: 'evo-elven',
+            id: 'evolution-elven',
             title(){ return races.elven.name; },
             desc(){ return `${loc("evo_evolve")} ${races.elven.name}`; },
             cost: {
@@ -1293,10 +1467,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_elven'); }
         },
         troll: {
-            id: 'evo-troll',
+            id: 'evolution-troll',
             title(){ return races.troll.name; },
             desc(){ return `${loc("evo_evolve")} ${races.troll.name}`; },
             cost: {
@@ -1313,10 +1493,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_troll'); }
         },
         ogre: {
-            id: 'evo-ogre',
+            id: 'evolution-ogre',
             title(){ return races.ogre.name; },
             desc(){ return `${loc("evo_evolve")} ${races.ogre.name}`; },
             cost: {
@@ -1333,10 +1519,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_ogre'); }
         },
         cyclops: {
-            id: 'evo-cyclops',
+            id: 'evolution-cyclops',
             title(){ return races.cyclops.name; },
             desc(){ return `${loc("evo_evolve")} ${races.cyclops.name}`; },
             cost: {
@@ -1353,10 +1545,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_cyclops'); }
         },
         kobold: {
-            id: 'evo-kobold',
+            id: 'evolution-kobold',
             title(){ return races.kobold.name; },
             desc(){ return `${loc("evo_evolve")} ${races.kobold.name}`; },
             cost: {
@@ -1373,10 +1571,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_kobold'); }
         },
         goblin: {
-            id: 'evo-goblin',
+            id: 'evolution-goblin',
             title(){ return races.goblin.name; },
             desc(){ return `${loc("evo_evolve")} ${races.goblin.name}`; },
             cost: {
@@ -1393,10 +1597,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_goblin'); }
         },
         gnome: {
-            id: 'evo-gnome',
+            id: 'evolution-gnome',
             title(){ return races.gnome.name; },
             desc(){ return `${loc("evo_evolve")} ${races.gnome.name}`; },
             cost: {
@@ -1413,10 +1623,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_gnome'); }
         },
         cath: {
-            id: 'evo-cath',
+            id: 'evolution-cath',
             title(){ return races.cath.name; },
             desc(){ return `${loc("evo_evolve")} ${races.cath.name}`; },
             cost: {
@@ -1433,10 +1649,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_cath'); }
         },
         wolven: {
-            id: 'evo-wolven',
+            id: 'evolution-wolven',
             title(){ return races.wolven.name; },
             desc(){ return `${loc("evo_evolve")} ${races.wolven.name}`; },
             cost: {
@@ -1453,10 +1675,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_wolven'); }
         },
         centaur: {
-            id: 'evo-centaur',
+            id: 'evolution-centaur',
             title(){ return races.centaur.name; },
             desc(){ return `${loc("evo_evolve")} ${races.centaur.name}`; },
             cost: {
@@ -1473,10 +1701,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_centaur'); }
         },
         tortoisan: {
-            id: 'evo-tortoisan',
+            id: 'evolution-tortoisan',
             title(){ return races.tortoisan.name; },
             desc(){ return `${loc("evo_evolve")} ${races.tortoisan.name}`; },
             cost: {
@@ -1493,10 +1727,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_tortoisan'); }
         },
         gecko: {
-            id: 'evo-gecko',
+            id: 'evolution-gecko',
             title(){ return races.gecko.name; },
             desc(){ return `${loc("evo_evolve")} ${races.gecko.name}`; },
             cost: {
@@ -1513,10 +1753,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_gecko'); }
         },
         slitheryn: {
-            id: 'evo-slitheryn',
+            id: 'evolution-slitheryn',
             title(){ return races.slitheryn.name; },
             desc(){ return `${loc("evo_evolve")} ${races.slitheryn.name}`; },
             cost: {
@@ -1533,10 +1779,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_slitheryn'); }
         },
         arraak: {
-            id: 'evo-arraak',
+            id: 'evolution-arraak',
             title(){ return races.arraak.name; },
             desc(){ return `${loc("evo_evolve")} ${races.arraak.name}`; },
             cost: {
@@ -1553,10 +1805,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_arraak'); }
         },
         pterodacti: {
-            id: 'evo-pterodacti',
+            id: 'evolution-pterodacti',
             title(){ return races.pterodacti.name; },
             desc(){ return `${loc("evo_evolve")} ${races.pterodacti.name}`; },
             cost: {
@@ -1573,10 +1831,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_pterodacti'); }
         },
         dracnid: {
-            id: 'evo-dracnid',
+            id: 'evolution-dracnid',
             title(){ return races.dracnid.name; },
             desc(){ return `${loc("evo_evolve")} ${races.dracnid.name}`; },
             cost: {
@@ -1593,10 +1857,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_dracnid'); }
         },
         sporgar: {
-            id: 'evo-sporgar',
+            id: 'evolution-sporgar',
             title(){ return races.sporgar.name; },
             desc(){ return `${loc("evo_evolve")} ${races.sporgar.name}`; },
             cost: {
@@ -1613,10 +1883,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_sporgar'); }
         },
         shroomi: {
-            id: 'evo-shroomi',
+            id: 'evolution-shroomi',
             title(){ return races.shroomi.name; },
             desc(){ return `${loc("evo_evolve")} ${races.shroomi.name}`; },
             cost: {
@@ -1633,10 +1909,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_shroomi'); }
         },
         moldling: {
-            id: 'evo-moldling',
+            id: 'evolution-moldling',
             title(){ return races.moldling.name; },
             desc(){ return `${loc("evo_evolve")} ${races.moldling.name}`; },
             cost: {
@@ -1653,10 +1935,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_moldling'); }
         },
         mantis: {
-            id: 'evo-mantis',
+            id: 'evolution-mantis',
             title(){ return races.mantis.name; },
             desc(){ return `${loc("evo_evolve")} ${races.mantis.name}`; },
             cost: {
@@ -1673,10 +1961,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_mantis'); }
         },
         scorpid: {
-            id: 'evo-scorpid',
+            id: 'evolution-scorpid',
             title(){ return races.scorpid.name; },
             desc(){ return `${loc("evo_evolve")} ${races.scorpid.name}`; },
             cost: {
@@ -1693,10 +1987,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_scorpid'); }
         },
         antid: {
-            id: 'evo-antid',
+            id: 'evolution-antid',
             title(){ return races.antid.name; },
             desc(){ return `${loc("evo_evolve")} ${races.antid.name}`; },
             cost: {
@@ -1713,10 +2013,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_antid'); }
         },
         entish: {
-            id: 'evo-entish',
+            id: 'evolution-entish',
             title(){ return races.entish.name; },
             desc(){ return `${loc("evo_evolve")} ${races.entish.name}`; },
             cost: {
@@ -1733,10 +2039,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_entish'); }
         },
         cacti: {
-            id: 'evo-cacti',
+            id: 'evolution-cacti',
             title(){ return races.cacti.name; },
             desc(){ return `${loc("evo_evolve")} ${races.cacti.name}`; },
             cost: {
@@ -1753,10 +2065,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_cacti'); }
         },
         pinguicula: {
-            id: 'evo-pinguicula',
+            id: 'evolution-pinguicula',
             title(){ return races.pinguicula.name; },
             desc(){ return `${loc("evo_evolve")} ${races.pinguicula.name}`; },
             cost: {
@@ -1773,10 +2091,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_pinguicula'); }
         },
         sharkin: {
-            id: 'evo-sharkin',
+            id: 'evolution-sharkin',
             title(){ return races.sharkin.name; },
             desc(){ return `${loc("evo_evolve")} ${races.sharkin.name}`; },
             cost: {
@@ -1793,10 +2117,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_sharkin'); }
         },
         octigoran: {
-            id: 'evo-octigoran',
+            id: 'evolution-octigoran',
             title(){ return races.octigoran.name; },
             desc(){ return `${loc("evo_evolve")} ${races.octigoran.name}`; },
             cost: {
@@ -1813,10 +2143,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_octigoran'); }
         },
         dryad: {
-            id: 'evo-dryad',
+            id: 'evolution-dryad',
             title(){ return races.dryad.name; },
             desc(){ return `${loc("evo_evolve")} ${races.dryad.name}`; },
             cost: {
@@ -1833,10 +2169,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_dryad'); }
         },
         satyr: {
-            id: 'evo-satyr',
+            id: 'evolution-satyr',
             title(){ return races.satyr.name; },
             desc(){ return `${loc("evo_evolve")} ${races.satyr.name}`; },
             cost: {
@@ -1853,10 +2195,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_satyr'); }
         },
         phoenix: {
-            id: 'evo-phoenix',
+            id: 'evolution-phoenix',
             title(){ return races.phoenix.name; },
             desc(){ return `${loc("evo_evolve")} ${races.phoenix.name}`; },
             cost: {
@@ -1873,10 +2221,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_phoenix'); }
         },
         salamander: {
-            id: 'evo-salamander',
+            id: 'evolution-salamander',
             title(){ return races.salamander.name; },
             desc(){ return `${loc("evo_evolve")} ${races.salamander.name}`; },
             cost: {
@@ -1893,10 +2247,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_salamander'); }
         },
         yeti: {
-            id: 'evo-yeti',
+            id: 'evolution-yeti',
             title(){ return races.yeti.name; },
             desc(){ return `${loc("evo_evolve")} ${races.yeti.name}`; },
             cost: {
@@ -1913,10 +2273,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_yeti'); }
         },
         wendigo: {
-            id: 'evo-wendigo',
+            id: 'evolution-wendigo',
             title(){ return races.wendigo.name; },
             desc(){ return `${loc("evo_evolve")} ${races.wendigo.name}`; },
             cost: {
@@ -1933,10 +2299,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_wendigo'); }
         },
         tuskin: {
-            id: 'evo-tuskin',
+            id: 'evolution-tuskin',
             title(){ return races.tuskin.name; },
             desc(){ return `${loc("evo_evolve")} ${races.tuskin.name}`; },
             cost: {
@@ -1953,10 +2325,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_tuskin'); }
         },
         kamel: {
-            id: 'evo-kamel',
+            id: 'evolution-kamel',
             title(){ return races.kamel.name; },
             desc(){ return `${loc("evo_evolve")} ${races.kamel.name}`; },
             cost: {
@@ -1973,10 +2351,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_kamel'); }
         },
         balorg: {
-            id: 'evo-balorg',
+            id: 'evolution-balorg',
             title(){ return races.balorg.name; },
             desc(){ return `${loc("evo_evolve")} ${races.balorg.name}`; },
             cost: {
@@ -1993,10 +2377,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_balorg'); }
         },
         imp: {
-            id: 'evo-imp',
+            id: 'evolution-imp',
             title(){ return races.imp.name; },
             desc(){ return `${loc("evo_evolve")} ${races.imp.name}`; },
             cost: {
@@ -2013,10 +2403,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_imp'); }
         },
         seraph: {
-            id: 'evo-seraph',
+            id: 'evolution-seraph',
             title(){ return races.seraph.name; },
             desc(){ return `${loc("evo_evolve")} ${races.seraph.name}`; },
             cost: {
@@ -2033,10 +2429,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_seraph'); }
         },
         unicorn: {
-            id: 'evo-unicorn',
+            id: 'evolution-unicorn',
             title(){ return races.unicorn.name; },
             desc(){ return `${loc("evo_evolve")} ${races.unicorn.name}`; },
             cost: {
@@ -2053,10 +2455,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_unicorn'); }
         },
         custom: {
-            id: 'evo-custom',
+            id: 'evolution-custom',
             title(){ return races.custom.name; },
             desc(){ return `${loc("evo_evolve")} ${races.custom.name}`; },
             cost: {
@@ -2073,10 +2481,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             emblem(){ return format_emblem('extinct_custom'); }
         },
         bunker: {
-            id: 'evo-bunker',
+            id: 'evolution-bunker',
             title: loc('evo_bunker'),
             desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
             cost: {
@@ -2136,10 +2550,16 @@ export const actions = {
                 }
                 return false;
             },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true,
             flair: loc('evo_bunker_flair')
         },
         plasmid: {
-            id: 'evo-plasmid',
+            id: 'evolution-plasmid',
             title: loc('evo_challenge_plasmid'),
             desc: loc('evo_challenge_plasmid'),
             cost: {
@@ -2153,7 +2573,7 @@ export const actions = {
                         $(`#${$(this)[0].id}`).removeClass('hl');
                         ['junker','cataclysm'].forEach(function(s){
                             delete global.race[s];
-                            $(`#evo-${s}`).removeClass('hl');
+                            $(`#evolution-${s}`).removeClass('hl');
                         });
                     }
                     else {
@@ -2167,7 +2587,7 @@ export const actions = {
             highlight(){ return global.race['no_plasmid'] ? true : false; }
         },
         mastery: {
-            id: 'evo-mastery',
+            id: 'evolution-mastery',
             title: loc('evo_challenge_mastery'),
             desc: loc('evo_challenge_mastery'),
             cost: {
@@ -2181,7 +2601,7 @@ export const actions = {
                         $(`#${$(this)[0].id}`).removeClass('hl');
                         ['junker','cataclysm'].forEach(function(s){
                             delete global.race[s];
-                            $(`#evo-${s}`).removeClass('hl');
+                            $(`#evolution-${s}`).removeClass('hl');
                         });
                     }
                     else {
@@ -2196,7 +2616,7 @@ export const actions = {
             highlight(){ return global.race['weak_mastery'] ? true : false; }
         },
         trade: {
-            id: 'evo-trade',
+            id: 'evolution-trade',
             title: loc('evo_challenge_trade'),
             desc: loc('evo_challenge_trade'),
             cost: {
@@ -2210,7 +2630,7 @@ export const actions = {
                         $(`#${$(this)[0].id}`).removeClass('hl');
                         ['junker','cataclysm'].forEach(function(s){
                             delete global.race[s];
-                            $(`#evo-${s}`).removeClass('hl');
+                            $(`#evolution-${s}`).removeClass('hl');
                         });
                     }
                     else {
@@ -2224,7 +2644,7 @@ export const actions = {
             highlight(){ return global.race['no_trade'] ? true : false; }
         },
         craft: {
-            id: 'evo-craft',
+            id: 'evolution-craft',
             title: loc('evo_challenge_craft'),
             desc: loc('evo_challenge_craft'),
             cost: {
@@ -2238,7 +2658,7 @@ export const actions = {
                         $(`#${$(this)[0].id}`).removeClass('hl');
                         ['junker','cataclysm'].forEach(function(s){
                             delete global.race[s];
-                            $(`#evo-${s}`).removeClass('hl');
+                            $(`#evolution-${s}`).removeClass('hl');
                         });
                     }
                     else {
@@ -2252,7 +2672,7 @@ export const actions = {
             highlight(){ return global.race['no_craft'] ? true : false; }
         },
         crispr: {
-            id: 'evo-crispr',
+            id: 'evolution-crispr',
             title: loc('evo_challenge_crispr'),
             desc: loc('evo_challenge_crispr_desc'),
             cost: {
@@ -2267,7 +2687,7 @@ export const actions = {
                             $(`#${$(this)[0].id}`).removeClass('hl');
                             ['junker','cataclysm'].forEach(function(s){
                                 delete global.race[s];
-                                $(`#evo-${s}`).removeClass('hl');
+                                $(`#evolution-${s}`).removeClass('hl');
                             });
                         }
                         else {
@@ -2283,7 +2703,7 @@ export const actions = {
             highlight(){ return global.race['no_crispr'] ? true : false; }
         },
         joyless: {
-            id: 'evo-joyless',
+            id: 'evolution-joyless',
             title: loc('evo_challenge_joyless'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_joyless_desc')}</div>` : loc('evo_challenge_joyless_desc'); },
             cost: {
@@ -2311,7 +2731,7 @@ export const actions = {
             highlight(){ return global.race['joyless'] ? true : false; }
         },
         steelen: {
-            id: 'evo-steelen',
+            id: 'evolution-steelen',
             title: loc('evo_challenge_steelen'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_steelen_desc')}</div>` : loc('evo_challenge_steelen_desc'); },
             cost: {
@@ -2339,7 +2759,7 @@ export const actions = {
             highlight(){ return global.race['steelen'] ? true : false; }
         },
         decay: {
-            id: 'evo-decay',
+            id: 'evolution-decay',
             title: loc('evo_challenge_decay'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_decay_desc')}</div>` : loc('evo_challenge_decay_desc'); },
             cost: {
@@ -2367,7 +2787,7 @@ export const actions = {
             highlight(){ return global.race['decay'] ? true : false; }
         },
         emfield: {
-            id: 'evo-emfield',
+            id: 'evolution-emfield',
             title: loc('evo_challenge_emfield'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_emfield_desc')}</div>` : loc('evo_challenge_emfield_desc'); },
             cost: {
@@ -2395,7 +2815,7 @@ export const actions = {
             highlight(){ return global.race['emfield'] ? true : false; }
         },
         junker: {
-            id: 'evo-junker',
+            id: 'evolution-junker',
             title: loc('evo_challenge_junker'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div class="has-text-danger">${loc('evo_start')}</div>` : `<div>${loc('evo_challenge_junker_desc')}</div><div class="has-text-danger">${loc('evo_start')}</div>`; },
             cost: {
@@ -2414,7 +2834,7 @@ export const actions = {
             highlight(){ return global.race['junker'] ? true : false; }
         },
         cataclysm: {
-            id: 'evo-cataclysm',
+            id: 'evolution-cataclysm',
             title: loc('evo_challenge_cataclysm'),
             desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div>` : `<div>${loc('evo_challenge_cataclysm_desc')}</div>`; },
             cost: {
@@ -4256,7 +4676,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('trade', offset, 200, 1.32) : 0; },
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wharf', offset, 200, 1.32) : 0; },
                 Cement(offset){ return costMultiplier('wharf', offset, 3000, 1.32); },
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
@@ -5027,7 +5447,7 @@ export const actions = {
 function cleanEvolution(id){
     ['humanoid','gigantism','dwarfism','animalism','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
         removeAction(actions.evolution[path].id);
-        if (global.evolution.hasOwnProperty(path) && `evo-${path}` !== id){
+        if (global.evolution.hasOwnProperty(path) && `evolution-${path}` !== id){
             delete global.evolution[path];
         }
     });
@@ -5149,47 +5569,47 @@ function addRaces(races){
 function setScenario(scenario){
     Object.keys(races).forEach(function(r){
         if (r !== 'junker'){
-            $(`#evo-${r}`).removeClass('is-hidden');
+            $(`#evolution-${r}`).removeClass('is-hidden');
         }
     });
     if (global.race[scenario]){
         delete global.race[scenario];
-        $(`#evo-${scenario}`).removeClass('hl');
+        $(`#evolution-${scenario}`).removeClass('hl');
     }
     else {
         ['junker','cataclysm'].forEach(function(s){
             delete global.race[s];
-            $(`#evo-${s}`).removeClass('hl');
+            $(`#evolution-${s}`).removeClass('hl');
         });
         global.race[scenario] = 1;
-        $(`#evo-${scenario}`).addClass('hl');
+        $(`#evolution-${scenario}`).addClass('hl');
 
         if (scenario === 'junker'){
             Object.keys(races).forEach(function(r){
                 if (r !== 'junker'){
-                    $(`#evo-${r}`).addClass('is-hidden');
+                    $(`#evolution-${r}`).addClass('is-hidden');
                 }
             });
         }
 
         if (global.race.universe === 'antimatter') {
             global.race['weak_mastery'] = 1;
-            if (!$(`#evo-mastery`).hasClass('hl')){
-                $(`#evo-mastery`).addClass('hl');
+            if (!$(`#evolution-mastery`).hasClass('hl')){
+                $(`#evolution-mastery`).addClass('hl');
             }
         }
         else {
             global.race['no_plasmid'] = 1;
-            if (!$(`#evo-plasmid`).hasClass('hl')){
-                $(`#evo-plasmid`).addClass('hl');
+            if (!$(`#evolution-plasmid`).hasClass('hl')){
+                $(`#evolution-plasmid`).addClass('hl');
             }
         }
 
         let genes = ['crispr','trade','craft'];
         for (let i=0; i<genes.length; i++){
             global.race[`no_${genes[i]}`] = 1;
-            if (!$(`#evo-${genes[i]}`).hasClass('hl')){
-                $(`#evo-${genes[i]}`).addClass('hl');
+            if (!$(`#evolution-${genes[i]}`).hasClass('hl')){
+                $(`#evolution-${genes[i]}`).addClass('hl');
             }
         }
     }
@@ -5710,7 +6130,7 @@ export function setAction(c_action,action,type,old){
                                 }
                                 let grant = false;
                                 let add_queue = false;
-                                let no_queue = action === 'evolution' || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
+                                let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 for (let i=0; i<keyMult; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action()){
                                         if (!no_queue && global.tech['queue'] && keyMult === 1){
@@ -6501,13 +6921,13 @@ export function checkCosts(costs){
             }
         }
         else if (res === 'Army'){
-            if (costs[res]() === false){
+            if (armyRating(global.civic.garrison.raid,'army') < Number(costs[res]())){
                 test = false;
                 return;
             }
         }
         else if (res === 'HellArmy'){
-            if (costs[res]() === false){
+            if (typeof global.portal['fortress'] === 'undefined' || global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -7006,6 +7426,8 @@ function sentience(){
             global.resource.Soul_Gem.amount = gems;
         }
     }
+    
+    calcPillar(true);
 
     if (global.blood['aware']){
         global.settings.arpa['blood'] = true;
@@ -7014,7 +7436,7 @@ function sentience(){
 
     defineJobs(true);
     commisionGarrison();
-    defineGovernment();
+    defineGovernment(true);
 
     calc_mastery(true);
     if (global.settings.tabLoad){

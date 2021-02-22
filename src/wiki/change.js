@@ -3,6 +3,16 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.28`,
+        date: `2/21/2021`,
+        changes: [
+            `Queue can now be used during evolution stage if unlocked with CRISPR tech.`,
+            `Fixed incorrect Scarletite costs with Wasteful trait.`,
+            `Graphene Plants now default to Oil with Smoldering.`,
+            `Fixed many string errors.`
+        ]
+    },
+    {
         version: `1.0.27`,
         date: `2/11/2021`,
         changes: [
