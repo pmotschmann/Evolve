@@ -7453,6 +7453,10 @@ function sentience(){
         cataclysm();
     }
 
+    if (global.queue.hasOwnProperty('queue')){
+        global.queue.queue = [];
+    }
+
     if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
