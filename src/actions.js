@@ -188,7 +188,6 @@ export const actions = {
             },
             effect: loc('evo_phagocytosis_effect'),
             action(){
-                console.log('phagocytosis triggered');
                 if (payCosts($(this)[0].cost)){
                     global.evolution['phagocytosis'].count++;
                     removeAction(actions.evolution.phagocytosis.id);
@@ -7424,6 +7423,34 @@ function sentience(){
                 }
             }
             global.resource.Soul_Gem.amount = gems;
+        }
+    }
+
+    if (global.race.species === 'tortoisan'){
+        let color = Math.floor(Math.seededRandom(100));
+        if (color === 99){
+            global.race['shell_color'] = 'rainbow';
+        }
+        else if (color >= 97 && color <= 98){
+            global.race['shell_color'] = 'white';
+        }
+        else if (color >= 93 && color <= 96){
+            global.race['shell_color'] = 'red';
+        }
+        else if (color >= 89 && color <= 92){
+            global.race['shell_color'] = 'orange';
+        }
+        else if (color >= 85 && color <= 88){
+            global.race['shell_color'] = 'yellow';
+        }
+        else if (color >= 75 && color <= 84){
+            global.race['shell_color'] = 'purple';
+        }
+        else if (color >= 65 && color <= 74){
+            global.race['shell_color'] = 'blue';
+        }
+        else {
+            global.race['shell_color'] = 'green';
         }
     }
     

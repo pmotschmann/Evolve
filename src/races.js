@@ -1256,7 +1256,7 @@ export const races = {
     },
     tortoisan: {
         name: loc('race_tortoisan'),
-        desc: loc('race_tortoisan_desc'),
+        desc(){ return loc('race_tortoisan_desc',[shellColor()]); },
         type: 'reptilian',
         home: loc('race_tortoisan_home'),
         entity: loc('race_tortoisan_entity'),
@@ -2411,3 +2411,10 @@ export const planetTraits = {
         desc: loc('planet_unstable_desc')
     }
 };
+
+function shellColor(){
+    if (global.race.hasOwnProperty('shell_color')){
+        return loc(`color_${global.race.shell_color}`);
+    }
+    return loc(`color_green`);
+}

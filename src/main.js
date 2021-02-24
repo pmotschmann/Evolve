@@ -173,7 +173,7 @@ vBind({
 
 popover('race',
     function(){
-        return races[global.race.species].desc;
+        return typeof races[global.race.species].desc === 'string' ? races[global.race.species].desc : races[global.race.species].desc();
     },{
         elm: '#race > .name'
     }
