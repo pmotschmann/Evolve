@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.29`,
+        date: `2/25/2021`,
+        changes: [
+            `Evolved species will no longer be stuck in the queue after evolution.`,
+        ]
+    },
+    {
         version: `1.0.28`,
         date: `2/21/2021`,
         changes: [
