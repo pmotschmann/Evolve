@@ -7,6 +7,9 @@ const changeList = [
         date: `2/25/2021`,
         changes: [
             `Evolved species will no longer be stuck in the queue after evolution.`,
+            `Fixed potential viewport scrolling issues with Settings and Evolution tabs.`,
+            `Added a warning for users running Evolve in multiple tabs.`,
+            `The game will now remind players to backup their game data once every 100,000 game days.`
         ]
     },
     {

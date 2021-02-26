@@ -82,6 +82,8 @@
   "icons": "Prestige Icon",
   "add": "Add",
   "remove": "Remove",
+  "multitab_warning": "Warning you have Evolve running in muiltiple tabs, this can cause loss of save data. Run the game in one tab at a time only.",
+  "backup_warning": "Have you Exported your save data recently? Making regular backups of your game data prevents permanent loss of progress in the event your browser cache is cleared.",
   "settings1": "Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys",
   "settings2": "Enable tab transition animations",
   "settings3": "A hard reset will permanently erase all your game progress. This resets everything as if you never played.",
