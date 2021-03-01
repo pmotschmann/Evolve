@@ -923,7 +923,7 @@ export function masteryType(universe,detailed){
         }
         return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
     }
-    return 0;
+    return detailed ? { g: 0, u: 0, m:0 } : 0;
 }
 
 export const calcPillar = (function(){
