@@ -6245,11 +6245,6 @@ function midLoop(){
         if (global.galaxy['super_freighter']){
             breakdown.gt_route[loc('galaxy_super_freighter')] = gal_on['super_freighter'] * 5;
         }
-        if (global.city['wharf']){
-            let r_count = global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
-            global.city.market.mtrade += r_count;
-            breakdown.t_route[loc('city_wharf')] = r_count;
-        }
         if (global.galaxy['bolognium_ship']){
             lCaps['crew'] += global.galaxy.bolognium_ship.on * actions.galaxy.gxy_gateway.bolognium_ship.ship.civ;
         }

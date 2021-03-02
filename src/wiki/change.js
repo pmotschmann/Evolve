@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.30`,
+        date: `3/1/2021`,
+        changes: [
+            `Wharves once again now grant the correct number of trade routes.`
+        ]
+    },
+    {
         version: `1.0.29`,
         date: `2/25/2021`,
         changes: [
