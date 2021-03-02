@@ -3278,7 +3278,7 @@ export const actions = {
                 Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
             effect(){
-                let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                let sacrifices = global.civic[global.civic.d_job].workers;
                 let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
@@ -3304,15 +3304,10 @@ export const actions = {
                         global.city['s_alter'].count++;
                     }
                     else {
-                        let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                        let sacrifices = global.civic[global.civic.d_job].workers;
                         if (sacrifices > 0){
                             global['resource'][global.race.species].amount--;
-                            if (global.civic.d_job !== 'unemployed'){
-                                global.civic[global.civic.d_job].workers--;
-                            }
-                            else {
-                                global.civic.free--;
-                            }
+                            global.civic[global.civic.d_job].workers--;
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
                             let high = 600;
@@ -7363,7 +7358,7 @@ function sentience(){
     global.civic.govern.type = 'anarchy';
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
-
+    
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;
@@ -7437,6 +7432,15 @@ function sentience(){
     defineJobs(true);
     commisionGarrison();
     defineGovernment(true);
+
+    if (global.race['carnivore'] || global.race['soul_eater']){
+        global.civic.d_job = 'hunter';
+        global.civic.hunter.display = true;
+    }
+    else {
+        global.civic.d_job = 'unemployed';
+        global.civic.unemployed.display = true;
+    }
 
     calc_mastery(true);
     if (global.settings.tabLoad){
