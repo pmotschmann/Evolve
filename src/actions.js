@@ -5553,10 +5553,11 @@ export function templeEffect(){
 }
 
 export function casinoEffect(){
-    let money = spatialReasoning(global.tech['gambling'] >= 3 ? 60000 : 40000);
+    let money = global.tech['gambling'] >= 3 ? 60000 : 40000;
     if (global.tech['gambling'] >= 5){
         money += global.tech['gambling'] >= 6 ? 240000 : 60000;
     }
+    money = spatialReasoning(money);
     if (global.race['gambler']){
         money *= 1 + (global.race['gambler'] * 0.04);
     }

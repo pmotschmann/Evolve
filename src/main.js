@@ -6054,7 +6054,7 @@ function midLoop(){
                 casinos += global.space.spc_casino.count;
             }
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
-            if (global.tech['gambling'] >= 4){
+            if (global.tech['gambling'] >= 5){
                 casino_capacity += global.tech['gambling'] >= 6 ? 240000 : 60000;
             }
             let vault = casinos * spatialReasoning(casino_capacity);
