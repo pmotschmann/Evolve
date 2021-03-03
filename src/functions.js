@@ -772,14 +772,18 @@ export function timeFormat(time){
                     formatted = `${days}d ${r}h`;
                 }
                 else {
+                    r = ('0' + r).slice(-2);
                     formatted = `${hours}h ${r}m`;
                 }
             }
             else {
+                mins = ('0' + mins).slice(-2);
+                secs = ('0' + secs).slice(-2);
                 formatted = `${mins}m ${secs}s`;
             }
         }
         else {
+            time = ('0' + time).slice(-2);
             formatted = `${time}s`;
         }
     }
