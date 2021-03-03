@@ -3729,7 +3729,7 @@ function fastLoop(){
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                let hunters = global.civic.hunter * weapons / 2;
+                let hunters = global.civic.hunter.workers * weapons / 2;
 
                 let soldiers = armyRating(garrisonSize(),'hunting') / 3;
 
