@@ -211,7 +211,7 @@ export function defineJobs(define){
     if (!define){
         $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
     }
-    loadJob('unemployed',define,0,0);
+    loadJob('unemployed',define,0,0,'warning');
     loadJob('hunter',define,0,0);
     loadJob('farmer',define,0.82,5);
     loadJob('lumberjack',define,1,5);
@@ -269,8 +269,9 @@ function loadJob(job, define, impact, stress, color){
 
     var civ_container = $(`<div id="${id}" v-show="civic.${job}.display" class="job"></div>`);
     var controls = $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
-    if (!color){
-        let job_label = $(`<div class="job_label"><h3><a class="has-text-info" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
+    if (!color || job === 'unemployed'){
+        color ||= 'info'
+        let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
         civ_container.append(job_label);
     }
     else {
