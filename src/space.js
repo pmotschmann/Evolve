@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -5869,16 +5869,9 @@ function ascend(){
     harmony += new_harmony;
     harmony = parseFloat(harmony.toFixed(2));
 
-    global.stats.reset++;
     global.stats.ascend++;
-    global.stats.tdays += global.stats.days;
-    global.stats.days = 0;
-    global.stats.tknow += global.stats.know;
-    global.stats.know = 0;
-    global.stats.tstarved += global.stats.starved;
-    global.stats.starved = 0;
-    global.stats.tdied += global.stats.died;
-    global.stats.died = 0;
+    updateResetStats();
+
     if (global.race.universe === 'antimatter'){
         antiplasmid += new_plasmid;
         global.stats.antiplasmid += new_plasmid;

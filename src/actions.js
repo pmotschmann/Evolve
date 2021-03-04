@@ -1,6 +1,6 @@
 import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, getEaster, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -3354,6 +3354,7 @@ export const actions = {
                             else {
                                 global.civic.free--;
                             }
+                            global.stats.sac++;
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
                             let high = 600;
@@ -8010,16 +8011,8 @@ function bioseed(){
     let new_phage = gains.phage;
 
     phage += new_phage;
-    global.stats.reset++;
     global.stats.bioseed++;
-    global.stats.tdays += global.stats.days;
-    global.stats.days = 0;
-    global.stats.tknow += global.stats.know;
-    global.stats.know = 0;
-    global.stats.tstarved += global.stats.starved;
-    global.stats.starved = 0;
-    global.stats.tdied += global.stats.died;
-    global.stats.died = 0;
+    updateResetStats();
     if (global.race.universe === 'antimatter'){
         antiplasmid += new_plasmid;
         global.stats.antiplasmid += new_plasmid;
@@ -8150,16 +8143,8 @@ export function cataclysm_end(){
         let new_plasmid = gains.plasmid;
         let new_phage = gains.phage;
 
-        global.stats.reset++;
         global.stats.cataclysm++;
-        global.stats.tdays += global.stats.days;
-        global.stats.days = 0;
-        global.stats.tknow += global.stats.know;
-        global.stats.know = 0;
-        global.stats.tstarved += global.stats.starved;
-        global.stats.starved = 0;
-        global.stats.tdied += global.stats.died;
-        global.stats.died = 0;
+        updateResetStats();
 
         phage += new_phage;
         if (global.race.universe === 'antimatter'){
@@ -8298,16 +8283,8 @@ export function big_bang(){
     checkAchievements();
 
     phage += new_phage;
-    global.stats.reset++;
     global.stats.blackhole++;
-    global.stats.tdays += global.stats.days;
-    global.stats.days = 0;
-    global.stats.tknow += global.stats.know;
-    global.stats.know = 0;
-    global.stats.tstarved += global.stats.starved;
-    global.stats.starved = 0;
-    global.stats.tdied += global.stats.died;
-    global.stats.died = 0;
+    updateResetStats();
     if (global.race.universe === 'antimatter'){
         antiplasmid += new_plasmid;
         global.stats.antiplasmid += new_plasmid;

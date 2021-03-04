@@ -999,6 +999,12 @@ if (!global.stats['died']){
 if (!global.stats['tdied']){
     global.stats['tdied'] = 0;
 }
+if (!global.stats['sac']){
+    global.stats['sac'] = 0;
+}
+if (!global.stats['tsac']){
+    global.stats['tsac'] = 0;
+}
 if (!global.stats['know']){
     global.stats['know'] = 0;
 }
@@ -1659,11 +1665,6 @@ window.soft_reset = function reset(){
         geology: geo
     };
 
-    global.stats.days = 0;
-    global.stats.know = 0;
-    global.stats.starved = 0;
-    global.stats.died = 0;
-
     if (global.tech['theology'] && global.tech['theology'] >= 1){
         global.tech = { theology: 1 };
     }
@@ -1761,6 +1762,7 @@ export function clearStates(){
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
+    global.stats.sac = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;

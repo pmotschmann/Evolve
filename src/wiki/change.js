@@ -4,10 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.30`,
-        date: `3/1/2021`,
+        date: `3/4/2021`,
         changes: [
             `Wharves once again now grant the correct number of trade routes.`,
-            `Fixed errors with Casino vault size.`
+            `Fixed errors with Casino vault size.`,
+            `Sacrificed Citizens stat for Mantis players.`
         ]
     },
     {
