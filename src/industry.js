@@ -493,7 +493,12 @@ function loadFactory(parent,bind){
                 }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
-                    if (global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene < max){
+                    let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
+                    if (used < max){
+                        global.city.factory[item]++;
+                    }
+                    else if (used === max && item !== 'Alloy' && global.city.factory['Alloy'] > 0){
+                        global.city.factory['Alloy']--;
                         global.city.factory[item]++;
                     }
                     else {

@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Wharves once again now grant the correct number of trade routes.`,
             `Fixed errors with Casino vault size.`,
-            `Sacrificed Citizens stat for Mantis players.`
+            `Sacrificed Citizens stat for Mantis players.`,
+            `Factory production can be assigned without first removing it from Alloy production.`
         ]
     },
     {
