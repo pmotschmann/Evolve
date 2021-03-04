@@ -9,7 +9,7 @@ export var global = {
     space: {},
     interstellar: {},
     portal: {},
-    civic: { free: 0 },
+    civic: {},
     race: {},
     genes: {},
     blood: {},
@@ -685,8 +685,29 @@ if (convertVersion(global['version']) < 100025){
     }
 }
 
-global['version'] = '1.0.30';
-delete global['beta'];
+if (convertVersion(global['version']) < 101000){
+    if (global.civic.hasOwnProperty('free')){
+        global.civic['hunter'] = {
+            job: 'hunter',
+            display: global.race['carnivore'] || global.race['soul_eater'],
+            workers: global.race['carnivore'] || global.race['soul_eater'] ? global.civic.free : 0,
+            max: -1
+        };
+        global.civic['unemployed'] = {
+            job: 'unemployed',
+            display: !(global.race['carnivore'] || global.race['soul_eater']),
+            workers: global.race['carnivore'] || global.race['soul_eater'] ? 0 : global.civic.free,
+            max: -1
+        };
+        if (global.civic.d_job === 'unemployed' && (global.race['carnivore'] || global.race['soul_eater'])){
+            global.civic.d_job = 'hunter';
+        }
+        delete global.civic.free;
+    }
+}
+
+global['version'] = '1.1.0';
+global['beta'] = 1;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1448,7 +1469,7 @@ if (!global.civic['new']){
 
 if (!global.civic['d_job']){
     if (global.race['carnivore'] || global.race['soul_eater']){
-        global.civic['d_job'] = 'unemployed';
+        global.civic['d_job'] = 'hunter';
     }
     else if (global.tech['agriculture'] && global.tech['agriculture'] >= 1){
         global.civic['d_job'] = 'farmer';
@@ -1696,7 +1717,7 @@ export function clearStates(){
     global.galaxy = {};
     global.portal = {};
     global.starDock = {};
-    global.civic = { free: 0, new: 0 };
+    global.civic = { new: 0 };
     global.civic['foreign'] = {
         gov0: {
             unrest: 0,

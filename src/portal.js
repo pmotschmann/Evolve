@@ -562,14 +562,7 @@ const fortressModules = {
                     global.civic.archaeologist.display = true;
                     if (global.city.power >= $(this)[0].powered()){
                         global.portal.archaeology.on++;
-                        if (global.civic.d_job === 'unemployed'){
-                            if (global.civic.free > 0){
-                                let hired = global.civic.free - 2 < 0 ? 1 : 2;
-                                global.civic.free -= hired;
-                                global.civic.archaeologist.workers += hired;
-                            }
-                        }
-                        else if (global.civic[global.civic.d_job].workers > 0){
+                        if (global.civic[global.civic.d_job].workers > 0){
                             let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.archaeologist.workers += hired;
@@ -2355,6 +2348,7 @@ export function bloodwar(){
             }
             if (dead > 0){
                 global.civic.hell_surveyor.workers -= dead;
+                global.civic.hell_surveyor.max -= dead;
                 global.resource[global.race.species].amount -= dead;
                 global.portal.carport.damaged += dead;
             }

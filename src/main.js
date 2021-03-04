@@ -1056,20 +1056,17 @@ function fastLoop(){
         morale += global.race['submerged'] ? 0 : weather_morale;
 
         let stress = 0;
-        if (!global.race['carnivore'] && !global.race['soul_eater']){
-            if (global.city.ptrait !== 'mellow'){
-                morale -= global.civic.free;
-                global.city.morale.unemployed = -(global.civic.free);
-            }
+        
+        let divisor = 5;
+        global.city.morale.unemployed = 0;
+        if (global.city.ptrait !== 'mellow'){
+            morale -= global.civic.unemployed.workers;
+            global.city.morale.unemployed = -(global.civic.unemployed.workers);
         }
         else {
-            let divisor = 5;
-            if (global.city.ptrait === 'mellow'){
-                divisor *= planetTraits.mellow.vars[0];
-            }
-            stress -= global.civic.free / divisor;
-            global.city.morale.unemployed = 0;
+            divisor *= planetTraits.mellow.vars[0];
         }
+        stress -= global.civic.hunter.workers / divisor;
 
         if (global.race['optimistic']){
             stress += traits.optimistic.vars[0];
@@ -2057,33 +2054,17 @@ function fastLoop(){
                         }
                         if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ){
                             if (total < global.resource[global.race.species].amount){
-                                if (global.civic.d_job === 'unemployed' || (global.civic.free > 0 && global.civic.free > actions[area][region][ship].ship.civ)){
-                                    if (global.civic.free > 0 && global.civic.free > actions[area][region][ship].ship.civ){
-                                        global.civic.free -= actions[area][region][ship].ship.civ;
-                                        global.civic.crew.workers += actions[area][region][ship].ship.civ;
-                                        global[area][ship]['crew'] += actions[area][region][ship].ship.civ;
-                                    }
-                                }
-                                else {
-                                    if (global.civic[global.civic.d_job].workers > actions[area][region][ship].ship.civ){
-                                        global.civic[global.civic.d_job].workers -= actions[area][region][ship].ship.civ;
-                                        global.civic.crew.workers += actions[area][region][ship].ship.civ;
-                                        global[area][ship]['crew'] += actions[area][region][ship].ship.civ;
-                                    }
+                                if (global.civic[global.civic.d_job].workers > actions[area][region][ship].ship.civ){
+                                    global.civic[global.civic.d_job].workers -= actions[area][region][ship].ship.civ;
+                                    global.civic.crew.workers += actions[area][region][ship].ship.civ;
+                                    global[area][ship]['crew'] += actions[area][region][ship].ship.civ;
                                 }
                             }
                         }
                         if (global[area][ship]['crew'] > global[area][ship].on * actions[area][region][ship].ship.civ){
-                            if (global.civic.d_job === 'unemployed'){
-                                global.civic.free += actions[area][region][ship].ship.civ;
-                                global.civic.crew.workers -= actions[area][region][ship].ship.civ;
-                                global[area][ship]['crew'] -= actions[area][region][ship].ship.civ;
-                            }
-                            else {
-                                global.civic[global.civic.d_job].workers += actions[area][region][ship].ship.civ;
-                                global.civic.crew.workers -= actions[area][region][ship].ship.civ;
-                                global[area][ship]['crew'] -= actions[area][region][ship].ship.civ;
-                            }
+                            global.civic[global.civic.d_job].workers += actions[area][region][ship].ship.civ;
+                            global.civic.crew.workers -= actions[area][region][ship].ship.civ;
+                            global[area][ship]['crew'] -= actions[area][region][ship].ship.civ;
                         }
                         global.civic.crew.assigned = global.civic.crew.workers;
                         crew_civ += global[area][ship]['crew'];
@@ -2133,43 +2114,31 @@ function fastLoop(){
                     global.civic[job].workers = 0;
                 }
 
-                let stress_level = global.civic[job].stress;
-                if (global.city.ptrait === 'mellow'){
-                    stress_level += planetTraits.mellow.vars[1];
-                }
-                if (global.race['content']){
-                    let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
-                    stress_level += global.race['content'] * effectiveness;
-                }
-                if (global.city.ptrait === 'dense' && job === 'miner'){
-                    stress_level -= planetTraits.dense.vars[1];
-                }
+                if (job !== 'unemployed' && job !== 'hunter'){
+                    let stress_level = global.civic[job].stress;
+                    if (global.city.ptrait === 'mellow'){
+                        stress_level += planetTraits.mellow.vars[1];
+                    }
+                    if (global.race['content']){
+                        let effectiveness = job === 'hell_surveyor' ? 0.2 : 0.4;
+                        stress_level += global.race['content'] * effectiveness;
+                    }
+                    if (global.city.ptrait === 'dense' && job === 'miner'){
+                        stress_level -= planetTraits.dense.vars[1];
+                    }
 
-                stress -= global.civic[job].workers / stress_level;
+                    stress -= global.civic[job].workers / stress_level;
+                }
             }
         });
-        global.civic.free = global.resource[global.race.species].amount - total;
+        global.civic[global.civic.d_job].workers += global.resource[global.race.species].amount - total;
 
         Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic.free > 0 && global.civic[job].workers < global.civic[job].max){
-                global.civic[job].workers++;
-                global.civic.free--;
-            }
-            else if (global.civic.d_job !== 'unemployed' && global.civic.d_job !== job && job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
+            if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic[global.civic.d_job].workers--;
             }
         });
-
-        if (global.civic.d_job === 'farmer' && global.civic.new > 0 && !global.race['carnivore'] && !global.race['soul_eater'] && global.civic.farmer.display){
-            global.civic.farmer.workers += global.civic.new;
-            global.civic.free -= global.civic.new;
-        }
-        else if (global.civic.d_job !== 'unemployed'){
-            global.civic[global.civic.d_job].workers += global.civic.new;
-            global.civic.free -= global.civic.new;
-        }
-        global.civic.new = 0;
 
         let entertainment = 0;
         if (global.tech['theatre']){
@@ -2411,7 +2380,7 @@ function fastLoop(){
             }
             else if (global.race['carnivore'] || global.race['soul_eater']){
                 let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                food_base = global.civic.free * strength * (global.race['carnivore'] ? 2 : 0.5);
+                food_base = global.civic.hunter.workers * strength * (global.race['carnivore'] ? 2 : 0.5);
                 if (global.race['ghostly']){
                     food_base *= 1 + (traits.ghostly.vars[0] / 100);
                 }
@@ -2490,7 +2459,7 @@ function fastLoop(){
                 }
             }
 
-            let consume = (global.resource[global.race.species].amount + soldiers - (global.civic.free * 0.5));
+            let consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + global.civic.hunter.workers) * 0.5));
             consume *= (global.race['gluttony'] ? (1 + traits.gluttony.vars[0] / 100) : 1);
             if (global.race['high_metabolism']){
                 consume *= 1 + (traits.high_metabolism.vars[0] / 100);
@@ -2652,9 +2621,6 @@ function fastLoop(){
                 }
                 if(Math.rand(0, base * (3 - (2 ** time_multiplier))) <= lowerBound){
                     global['resource'][global.race.species].amount++;
-                    if (global.civic['hell_surveyor'].workers + global.civic.free >= global.civic['hell_surveyor'].assigned){
-                        global.civic.new++;
-                    }
                 }
             }
         }
@@ -2754,7 +2720,7 @@ function fastLoop(){
         if (global.resource.Furs.display){
             if (global.race['evil']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                let hunters = global.civic.free * weapons / 20;
+                let hunters = global.civic.hunter.workers * weapons / 20;
                 fur_bd[loc('job_hunter')] = hunters  + 'v';
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
 
@@ -3771,7 +3737,7 @@ function fastLoop(){
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                let hunters = global.civic.free * weapons / 2;
+                let hunters = global.civic.hunter.workers * weapons / 2;
 
                 let soldiers = armyRating(garrisonSize(),'hunting') / 3;
 
@@ -4681,7 +4647,7 @@ function fastLoop(){
 
         // Income
         if (global.tech['currency'] >= 1){
-            let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - (global.race['carnivore'] || global.race['evil'] ? 0 : global.civic.free);
+            let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
             income_base *= 0.4;
             if (global.race['greedy']){
                 income_base *= 1 - (traits.greedy.vars[0] / 100);
@@ -5095,6 +5061,8 @@ function midLoop(){
         };
         // labor caps
         var lCaps = {
+            unemployed: -1,
+            hunter: -1,
             farmer: -1,
             lumberjack: -1,
             quarry_worker: -1,

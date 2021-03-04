@@ -2044,7 +2044,7 @@ function purgeLumber(){
     global.civic.lumberjack.display = false;
     global.civic.lumberjack.workers = 0;
     if (global.civic.d_job === 'lumberjack') {
-        global.civic.d_job = 'unemployed';
+        global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
     }
     if (global.race['casting']){
         global.race.casting.total -= global.race.casting.lumberjack;
@@ -2110,7 +2110,16 @@ export function cleanAddTrait(trait){
             global.civic.farmer.max = 0;
             global.civic.farmer.display = false;
             if (global.civic.d_job === 'farmer') {
-                global.civic.d_job = 'unemployed';
+                global.civic.d_job = 'hunter';
+            }
+            if (!global.race['soul_eater']){
+                if (global.civic.d_job === 'unemployed') {
+                    global.civic.d_job = 'hunter';
+                }
+                global.civic.hunter.display = true;
+                global.civic.hunter.workers = global.civic.unemployed.workers;
+                global.civic.unemployed.display = false;
+                global.civic.unemployed.workers = 0;
             }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.farmer;
@@ -2257,6 +2266,15 @@ export function cleanRemoveTrait(trait){
             if (global.city['windmill']){
                 global.city['mill'] = { count: global.city.windmill.count };
                 delete global.city['windmill'];
+            }
+            if (!global.race['soul_eater']){
+                if (global.civic.d_job === 'hunter') {
+                    global.civic.d_job = 'unemployed';
+                }
+                global.civic.unemployed.display = true;
+                global.civic.unemployed.workers = global.civic.hunter.workers;
+                global.civic.hunter.display = false;
+                global.civic.hunter.workers = 0;
             }
             if (global.race['casting']){
                 defineIndustry();

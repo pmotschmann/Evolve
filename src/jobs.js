@@ -6,6 +6,20 @@ import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 
 export const job_desc = {
+    unemployed: function(){
+        let desc = loc('job_unemployed_desc');
+        if (global.civic.d_job === 'unemployed'){
+            desc = desc + ' ' + loc('job_default',[loc('job_unemployed')]);
+        }
+        return desc;
+    },
+    hunter: function(){
+        let desc = (global.race['soul_eater'] ? (global.race.species === 'wendigo' ? loc('job_hunter_desc') : loc('job_evil_hunter_desc')) : loc('job_hunter_desc'));
+        if (global.civic.d_job === 'hunter'){
+            desc = desc + ' ' + loc('job_default',[loc('job_hunter')]);
+        }
+        return desc;
+    },
     farmer: function(){
         let farmer = +farmerValue(true).toFixed(2);
         let farmhand = +farmerValue(false).toFixed(2);
@@ -196,8 +210,9 @@ export const job_desc = {
 export function defineJobs(define){
     if (!define){
         $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
-        loadUnemployed();
     }
+    loadJob('unemployed',define,0,0);
+    loadJob('hunter',define,0,0);
     loadJob('farmer',define,0.82,5);
     loadJob('lumberjack',define,1,5);
     loadJob('quarry_worker',define,1,5);
@@ -222,58 +237,7 @@ export function defineJobs(define){
     }
 }
 
-function loadUnemployed(){
-    let color = 'warning';
-    
-    let id = 'civ-free';
-    let civ_container = $(`<div id="${id}" class="job"></div>`);
-    let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault()">{{ 'job' | title }}{{ 'unemployed' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(free)"></span></div>`);
-    civ_container.append(job_label);
-    $('#jobs').append(civ_container);
-    
-    vBind({
-        el: `#${id}`,
-        data: global.civic,
-        methods: {
-            setDefault(){
-                global.civic.d_job = 'unemployed';
-            }
-        },
-        filters: {
-            title(){
-                return global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed');
-            },
-            d_state(j){
-                return global.civic.d_job === j ? '*' : '';
-            },
-            event(c){
-                let egg = easterEgg(3,14);
-                if (c === 0 && egg.length > 0){
-                    return egg;
-                }
-                else {
-                    return c;
-                }
-            }
-        }
-    });
-
-    popover(id, function(){
-            let text = global.race['carnivore'] || global.race['soul_eater'] ? (global.race['soul_eater'] ? (global.race.species === 'wendigo' ? loc('job_hunter_desc') : loc('job_evil_hunter_desc')) : loc('job_hunter_desc')) : loc('job_unemployed_desc');
-            if (global.civic.d_job === 'unemployed'){
-                text = text + ' ' + loc('job_default',[global.race['carnivore'] || global.race['soul_eater'] ? loc('job_hunter') : loc('job_unemployed')]);
-            }
-            return text;
-        },
-        {
-            elm: `#${id} .job_label`,
-            classes: `has-background-light has-text-dark`
-        }
-    );
-}
-
 function loadJob(job, define, impact, stress, color){
-    color = color || 'info';
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
@@ -302,15 +266,15 @@ function loadJob(job, define, impact, stress, color){
     }
 
     var id = 'civ-' + job;
-    
-    var civ_container = $(`<div id="${id}" v-show="display" class="job"></div>`);
-    var controls = $('<div class="controls"></div>');
-    if (job === 'farmer' || job === 'lumberjack' || job === 'quarry_worker' || job === 'scavenger' || job === 'crystal_miner'){
-        let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ workers }}</span></div>`);
+
+    var civ_container = $(`<div id="${id}" v-show="civic.${job}.display" class="job"></div>`);
+    var controls = $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
+    if (!color){
+        let job_label = $(`<div class="job_label"><h3><a class="has-text-info" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
         civ_container.append(job_label);
     }
     else {
-        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ name }}</h3><span :class="level('${job}')">{{ workers }} / {{ max }}</span></div>`);
+        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span :class="level('${job}')">{{ civic.${job}.workers }} / {{ civic.${job}.max }}</span></div>`);
         civ_container.append(job_label);
     }
     civ_container.append(controls);
@@ -325,19 +289,16 @@ function loadJob(job, define, impact, stress, color){
     
     vBind({
         el: `#${id}`,
-        data: global.civic[job],
+        data: {
+            civic: global.civic
+        },
         methods: {
             add(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
-                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))){
+                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)){
                         global.civic[job].workers++;
-                        if (global.civic.free > 0){
-                            global.civic.free--;
-                        }
-                        else {
-                            global.civic[global.civic.d_job].workers--;
-                        }
+                        global.civic[global.civic.d_job].workers--;
                         global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
@@ -350,12 +311,7 @@ function loadJob(job, define, impact, stress, color){
                 for (let i=0; i<keyMult; i++){
                     if (global.civic[job].workers > 0){
                         global.civic[job].workers--;
-                        if (global.civic.d_job === 'unemployed' || job === global.civic.d_job){
-                            global.civic.free++;
-                        }
-                        else {
-                            global.civic[global.civic.d_job].workers++;
-                        }
+                        global.civic[global.civic.d_job].workers++;
                         global.civic[job].assigned = global.civic[job].workers;
                     }
                     else {
@@ -385,11 +341,23 @@ function loadJob(job, define, impact, stress, color){
             },
             setDefault(j){
                 global.civic.d_job = j;
+            },
+            isDefault(j){
+                return global.civic.d_job === j;
             }
         },
         filters: {
             d_state(j){
                 return global.civic.d_job === j ? '*' : '';
+            },
+            event(c){
+                if (job === 'unemployed' || job === 'hunter'){
+                    let egg = easterEgg(3,14);
+                    if (c === 0 && egg.length > 0){
+                        return egg;
+                    }
+                }
+                return c;
             }
         }
     });
@@ -468,18 +436,13 @@ export function loadFoundry(){
                     }
                     for (let i=0; i<keyMult; i++){                        
                         if (global.city.foundry.crafting < global.civic.craftsman.max 
-                            && (global.civic.free > 0 || (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0))
+                            && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)
                             && (tMax === -1 || tMax > global.city.foundry[res])
                         ){
                             global.civic.craftsman.workers++;
                             global.city.foundry.crafting++;
                             global.city.foundry[res]++;
-                            if (global.civic.free > 0){
-                                global.civic.free--;
-                            }
-                            else {
-                                global.civic[global.civic.d_job].workers--;
-                            }
+                            global.civic[global.civic.d_job].workers--;
                         }
                         else {
                             break;
@@ -493,12 +456,7 @@ export function loadFoundry(){
                             global.city.foundry[res]--;
                             global.civic.craftsman.workers--;
                             global.city.foundry.crafting--;
-                            if (global.civic.d_job === 'unemployed'){
-                                global.civic.free++;
-                            }
-                            else {
-                                global.civic[global.civic.d_job].workers++;
-                            }
+                            global.civic[global.civic.d_job].workers++;
                         }
                         else {
                             break;
