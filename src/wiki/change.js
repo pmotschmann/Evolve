@@ -3,6 +3,26 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.30`,
+        date: `3/4/2021`,
+        changes: [
+            `Wharves once again now grant the correct number of trade routes.`,
+            `Fixed errors with Casino vault size.`,
+            `Sacrificed Citizens stat for Mantis players.`,
+            `Factory production can be assigned without first removing it from Alloy production.`
+        ]
+    },
+    {
+        version: `1.0.29`,
+        date: `2/25/2021`,
+        changes: [
+            `Evolved species will no longer be stuck in the queue after evolution.`,
+            `Fixed potential viewport scrolling issues with Settings and Evolution tabs.`,
+            `Added a warning for users running Evolve in multiple tabs.`,
+            `The game will now remind players to backup their game data once every 100,000 game days.`
+        ]
+    },
+    {
         version: `1.0.28`,
         date: `2/21/2021`,
         changes: [

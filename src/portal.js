@@ -1,5 +1,5 @@
 import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone } from './functions.js';
+import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -3971,17 +3971,8 @@ export function descension(){
     let harmony = global.race.Harmony.count;
 
     global.stats.artifact += artifacts;
-    global.stats.reset++;
     global.stats.descend++;
-    global.stats.tdays += global.stats.days;
-    global.stats.days = 0;
-    global.stats.tknow += global.stats.know;
-    global.stats.know = 0;
-    global.stats.tstarved += global.stats.starved;
-    global.stats.starved = 0;
-    global.stats.tdied += global.stats.died;
-    global.stats.died = 0;
-
+    updateResetStats();
     checkAchievements();
 
     global['race'] = {

@@ -710,7 +710,7 @@ export function index(){
     content.append(tabs);
 
     // Evolution Tab
-    let evolution = $(`<b-tab-item id="evolution" :visible="s.showEvolve">
+    let evolution = $(`<b-tab-item id="evolution" class="tab-item sticky" :visible="s.showEvolve">
         <template slot="header">
             {{ 'tab_evolve' | label }}
         </template>

@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -2052,7 +2052,7 @@ const interstellarProjects = {
                 Graphene(offset){ return spaceCostMultiplier('exchange', offset, 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let banks = global.race['cataclysm'] ? p_on['spaceport'] : global.city['bank'].count;
+                let banks = global.race['cataclysm'] ? p_on['spaceport'] : (global.city['bank'] ? global.city.bank.count : 0);
                 let b_vault = global.race['cataclysm'] ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.tech.banking >= 13){
@@ -4431,9 +4431,11 @@ const galaxyProjects = {
             },
             effect(){
                 let total = 0;
-                Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
-                    total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
-                });
+                if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_alien2')){
+                    Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
+                    });
+                }
                 let odds = total >= 650 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>`;
                 return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])}</div>`;
             },
@@ -4655,9 +4657,11 @@ const galaxyProjects = {
             },
             effect(){
                 let total = 0;
-                Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
-                    total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
-                });
+                if (global.galaxy.hasOwnProperty('defense') && global.galaxy.defense.hasOwnProperty('gxy_chthonian')){
+                    Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
+                        total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_chthonian[ship];
+                    });
+                }
                 let odds = total >= 4500 ? `<span class="has-text-success">${loc(`galaxy_piracy_low`)}</span>` : (total >= 2500 ? `<span class="has-text-warning">${loc(`galaxy_piracy_avg`)}</span>` : `<span class="has-text-danger">${loc(`galaxy_piracy_high`)}</span>`);
                 return `<div>${loc('galaxy_alien2_mission_effect2',[total])}</div><div>${loc('galaxy_alien2_mission_effect3',[odds])}</div><div class="has-text-caution">${loc('galaxy_alien2_mission_effect',[loc('galaxy_chthonian')])}</div>`;
             },
@@ -5865,16 +5869,9 @@ function ascend(){
     harmony += new_harmony;
     harmony = parseFloat(harmony.toFixed(2));
 
-    global.stats.reset++;
     global.stats.ascend++;
-    global.stats.tdays += global.stats.days;
-    global.stats.days = 0;
-    global.stats.tknow += global.stats.know;
-    global.stats.know = 0;
-    global.stats.tstarved += global.stats.starved;
-    global.stats.starved = 0;
-    global.stats.tdied += global.stats.died;
-    global.stats.died = 0;
+    updateResetStats();
+
     if (global.race.universe === 'antimatter'){
         antiplasmid += new_plasmid;
         global.stats.antiplasmid += new_plasmid;

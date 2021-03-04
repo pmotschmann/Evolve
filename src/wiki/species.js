@@ -16,7 +16,7 @@ export function racesPage(){
         content.append(info);
 
         info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span class="has-text-caution">${loc(`genelab_genus_${races[race].type}`)}</span></div>`);
-        info.append(`<div class="desc">${races[race].desc}</div>`);
+        info.append(`<div class="desc">${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()}</div>`);
 
         let traitList = [];
         let extraTraits = extraTraitList(race);

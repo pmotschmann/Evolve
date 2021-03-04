@@ -835,7 +835,7 @@ export const perkList = {
             let desc = '';
             Object.keys(universe_types).forEach(function(universe){
                 let mastery = masteryType(universe,true);
-                if (universe == 'standard'){
+                if (universe === 'standard'){
                     desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
                 }
                 else {
@@ -2051,6 +2051,7 @@ export function drawStats(){
     clearElement($('#statsPanel'));
     let stats = $('#statsPanel');
 
+    // Overall Stats
     stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid | format }}</div>`);
     if (global.stats.antiplasmid > 0){
@@ -2097,6 +2098,8 @@ export function drawStats(){
     if (global.stats.portals > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals | format }}</div>`);
     }
+
+    // Current Run Stats
     stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | format }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | format }}</div>`);
@@ -2105,6 +2108,9 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | format }}</div>`);
     if (global.stats.dkills > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_demons_kills")}</span> {{ dkills | format }}</div>`);
+    }
+    if (global.stats.sac > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_sacrificed")}</span> {{ sac | format }}</div>`);
     }
 
     vBind({
