@@ -5987,23 +5987,6 @@ export function drawTech(){
     });
 }
 
-export function evalAffordable(){
-    Object.keys(global.resource).forEach(function (res){
-        $(`[data-${res}]`).each(function (i,v){
-            if (global.resource[res].amount < $(this).attr(`data-${res}`)){
-                if ($(this).hasClass('has-text-dark')){
-                    $(this).removeClass('has-text-dark');
-                    $(this).addClass('has-text-danger');
-                }
-            }
-            else if ($(this).hasClass('has-text-danger')){
-                $(this).removeClass('has-text-danger');
-                $(this).addClass('has-text-dark');
-            }
-        });
-    });
-}
-
 export function addAction(action,type,old){
     let c_action = actions[action][type];
     setAction(c_action,action,type,old)
@@ -6666,7 +6649,7 @@ export function actionDesc(parent,c_action,obj,old){
     let tc = timeCheck(c_action,false,true);
     if (c_action.cost && !old){
         let empty = true;
-        var cost = $('<div></div>');
+        var cost = $('<div class="costList"></div>');
 
         var costs = type !== 'genes' && type !== 'blood' ? adjustCosts(c_action.cost) : c_action.cost;
         Object.keys(costs).forEach(function (res){
@@ -6716,7 +6699,7 @@ export function actionDesc(parent,c_action,obj,old){
                         color = 'has-text-danger';
                     }
                     empty = false;
-                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                 }
             }
             else if (res === 'Supply'){
@@ -6728,7 +6711,7 @@ export function actionDesc(parent,c_action,obj,old){
                         color = 'has-text-danger';
                     }
                     empty = false;
-                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                 }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
@@ -6752,7 +6735,7 @@ export function actionDesc(parent,c_action,obj,old){
                         }
                         let display_cost = sizeApproximation(res_cost,1);
                         empty = false;
-                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
+                        cost.append($(`<div class="${color} res-${res}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
                     }
                 }
             }
