@@ -777,13 +777,11 @@ export function timeFormat(time){
                 }
             }
             else {
-                // mins = ('0' + mins).slice(-2);
                 secs = ('0' + secs).slice(-2);
                 formatted = `${mins}m ${secs}s`;
             }
         }
         else {
-            time = ('0' + time).slice(-2);
             formatted = `${time}s`;
         }
     }
