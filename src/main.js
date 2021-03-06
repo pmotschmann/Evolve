@@ -7105,20 +7105,28 @@ function midLoop(){
 
     resourceAlt();
 
-    Object.keys(global.resource).forEach(function (res){
-        $(`.res-${res}`).each(function (){
-            let res_val = $(this).attr(`data-${res}`);
-            let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
-            if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
-                if ($(this).hasClass('has-text-dark')){
-                    $(this).removeClass('has-text-dark');
-                    $(this).addClass('has-text-danger');
+    $(`.costList`).each(function (){
+        $(this).children().each(function (){
+            let elm = $(this);
+            this.className.split(/\s+/).forEach(function(cls){
+                if (cls.startsWith(`res-`)){
+                    let res = cls.split(`-`)[1];
+                    if (global.resource.hasOwnProperty(res)){
+                        let res_val = elm.attr(`data-${res}`);
+                        let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
+                        if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
+                            if (elm.hasClass('has-text-dark')){
+                                elm.removeClass('has-text-dark');
+                                elm.addClass('has-text-danger');
+                            }
+                        }
+                        else if (elm.hasClass('has-text-danger') || elm.hasClass('has-text-alert')){
+                            elm.removeClass('has-text-danger');
+                            elm.addClass('has-text-dark');
+                        }
+                    }
                 }
-            }
-            else if ($(this).hasClass('has-text-danger') || $(this).hasClass('has-text-alert')){
-                $(this).removeClass('has-text-danger');
-                $(this).addClass('has-text-dark');
-            }
+            });
         });
     });
 
