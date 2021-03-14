@@ -4307,7 +4307,7 @@
   "galaxy_super_freighter": "超级星际货轮",
   "galaxy_fleet_rating": "舰队评级：%0",
   "galaxy_alien2_proxy": "外星人2#",
-  "galaxy_alien2_desc": "%0星系中心是个G型恒星，有大量的%0活动。该星系资源丰富，然而，%0对天外访客并不友好。部署舰队及防御力量达到 2500 战力评级可彻底清除海盗势力。",
+  "galaxy_alien2_desc": "%0星系中心是个G型恒星，有大量的%0活动。该星系资源丰富，然而，%1对天外访客并不友好。部署舰队及防御力量达到 2500 战力评级可彻底清除海盗势力。",
   "galaxy_alien2_mission": "%0突袭行动",
   "galaxy_alien2_mission_desc": "入侵%0星系",
   "galaxy_alien2_mission_effect": "在%0星系部署所需的舰队，然后开始攻击。",

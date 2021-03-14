@@ -3882,7 +3882,7 @@
   "galaxy_vitreloy_plant_bd": "Vit. továrna",
   "galaxy_super_freighter": "Nákladní superloď",
   "galaxy_alien2_proxy": "Mimozemšťan2",
-  "galaxy_alien2_desc": "Systém %0 je hvězdný systém typu G obsahující vysokou činnost druhu %0. Tento systém je bohatý na zdroje a druhu %0 se nelíbí, když se k němu někdo jiný přibližuje.",
+  "galaxy_alien2_desc": "Systém %0 je hvězdný systém typu G obsahující vysokou činnost druhu %1. Tento systém je bohatý na zdroje a druhu %1 se nelíbí, když se k němu někdo jiný přibližuje.",
   "galaxy_alien2_mission": "Mise Útok na %0",
   "galaxy_alien2_mission_desc": "Napadni systém %0",
   "galaxy_alien2_mission_effect": "Umísti vyžadovanou invazivní sílu v systémů %0 a poté zahaj útok.",

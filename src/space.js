@@ -4246,8 +4246,8 @@ const galaxyProjects = {
     },
     gxy_alien1: {
         info: {
-            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
+            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
             control(){
                 return {
                     name: races[global.galaxy.alien1.id].name,
@@ -4259,7 +4259,7 @@ const galaxyProjects = {
             id: 'galaxy-consulate',
             title: loc('galaxy_consulate'),
             desc(){
-                return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]);
+                return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]);
             },
             reqs: { xeno: 8 },
             no_queue(){ return global.galaxy.consulate.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -4394,8 +4394,12 @@ const galaxyProjects = {
     },
     gxy_alien2: {
         info: {
-            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien2_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
+            desc(){ return loc('galaxy_alien2_desc',[
+                    races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red,
+                    races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name
+                ]); 
+            },
             control(){
                 return {
                     name: races[global.galaxy.alien2.id].name,
@@ -4406,8 +4410,8 @@ const galaxyProjects = {
         },
         alien2_mission: {
             id: 'galaxy-alien2_mission',
-            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
+            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
             reqs: { andromeda: 4 },
             grant: ['conflict',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -4446,7 +4450,7 @@ const galaxyProjects = {
                         total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
                     });
                     if (total >= 400){
-                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].name]),'info');
+                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].home]),'info');
                         if (total < 650){
                             let wreck = 80;
                             let loss = [];
@@ -5126,7 +5130,7 @@ function space(){
             }
 
             popover(region, function(){
-                    return typeof typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
+                    return typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
                 },
                 {
                     elm: `#${region} h3.name`,
@@ -5222,7 +5226,7 @@ function galaxySpace(){
             regionContent.append(regionHeader);
 
             if (global.tech['xeno'] && global.tech['xeno'] >= 3){
-                regionContent.append(`<b-tooltip class="has-text-warning" :label="owner()" position="is-bottom" size="is-small" multilined animated><span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span></b-tooltip>`);
+                regionContent.append(`<span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span>`);
             }
 
             let vData = {
@@ -5231,9 +5235,6 @@ function galaxySpace(){
                     r: galaxyProjects[region].info
                 },
                 methods: {
-                    owner(){
-                        return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
-                    },
                     threat(r){
                         let scouts_req = global.race['infiltrator'] ? 1 : 2;
                         if (global.galaxy.defense[r].scout_ship >= scouts_req){
@@ -5323,6 +5324,15 @@ function galaxySpace(){
                 },
                 {
                     elm: `#${region} h3.name`,
+                    classes: `has-background-light has-text-dark`
+                }
+            );
+
+            popover(region, function(){
+                    return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
+                },
+                {
+                    elm: `#${region} .regionControl`,
                     classes: `has-background-light has-text-dark`
                 }
             );
