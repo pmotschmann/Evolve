@@ -4247,7 +4247,10 @@ const galaxyProjects = {
     gxy_alien1: {
         info: {
             name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
-            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
+            desc(){ return loc('galaxy_alien1_desc',[
+                races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home,
+                races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name, 
+            ]); },
             control(){
                 return {
                     name: races[global.galaxy.alien1.id].name,

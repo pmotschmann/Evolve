@@ -4297,7 +4297,7 @@
   "galaxy_freighter_unassign": "Unassign a freighter from importing %0 and exporting %1.",
   "galaxy_alien": "%0 System",
   "galaxy_alien1_proxy": "Alien1",
-  "galaxy_alien1_desc": "The %0 System is the home system of the %0. It is a binary star system 4.2 light years from the Gorddon System.",
+  "galaxy_alien1_desc": "The %0 System is the home system of the %1. It is a binary star system 4.2 light years from the Gorddon System.",
   "galaxy_consulate": "Consulate",
   "galaxy_consulate_desc": "The Consulate is your local diplomatic office in the %0 system.",
   "galaxy_resort": "Resort",
