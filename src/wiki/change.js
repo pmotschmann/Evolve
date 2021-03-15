@@ -4,10 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.30`,
-        date: `3/14/2021`,
+        date: `3/15/2021`,
         changes: [
             `Alien 1 system is now named after their homeworld.`,
             `Alien 2 system is now named after their red planet.`,
+            `Fixed various cut off popovers.`
         ]
     },
     {

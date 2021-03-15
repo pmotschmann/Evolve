@@ -1,5 +1,5 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on, gal_on } from './vars.js';
-import { vBind, clearElement, modRes, calc_mastery, calcPillar, easterEgg, getHalloween, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { loc } from './locale.js';
@@ -577,7 +577,12 @@ function loadResource(name,max,rate,tradable,stackable,color){
         };
     }
     else {
-        global['resource'][name].name = name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`));
+        if (name === global.race.species){
+            global['resource'][name].name = flib('name');
+        }
+        else {
+            global['resource'][name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
+        }
     }
 
     if (name === 'Mana'){
@@ -615,7 +620,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
-    let hallowed = getHalloween();
+    let hallowed = eventActive('halloween');
     if (hallowed.active){
         switch(name){
             case 'Food':

@@ -1,7 +1,7 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon } from './achieve.js';
-import { gameLoop, vBind, popover, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, getEaster, easterEgg, easterEggBind, getHalloween, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, flib, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -165,7 +165,7 @@ vBind({
     },
     methods: {
         name(){
-            return races[global.race.species].name;
+            return flib('name');
         }
     },
     filters: {
@@ -398,7 +398,7 @@ popover('topBarPlanet',
         }
         else {
             let planet = races[global.race.species].home;
-            let race = races[global.race.species].name;
+            let race = flib('name');
             let planet_label = biomes[global.city.biome].label;
             let trait = global.city.ptrait;
             if (trait !== 'none'){
@@ -2518,7 +2518,7 @@ function fastLoop(){
             if (global.race['hibernator'] && global.city.calendar.season === 3){
                 consume *= 1 - (traits.hibernator.vars[0] / 100);
             }
-            breakdown.p.consume.Food[races[global.race.species].name] = -(consume);
+            breakdown.p.consume.Food[flib('name')] = -(consume);
 
             let tourism = 0;
             if (global.city['tourist_center']){
@@ -3854,7 +3854,7 @@ function fastLoop(){
                 let stone_bd = {};
 
                 let stone_base = global.resource[global.race.species].amount * 0.6;
-                stone_bd[races[global.race.species].name] = stone_base + 'v';
+                stone_bd[flib('name')] = stone_base + 'v';
                 if (global.city.hasOwnProperty('basic_housing')){
                     let grove = global.city.basic_housing.count * 0.025;
                     stone_base *= 1 + grove;
@@ -4984,7 +4984,7 @@ function fastLoop(){
         updateDebugData();
     }
 
-    let easter = getEaster();
+    let easter = eventActive('easter');
     if (easter.active){
         for (i=1; i<13; i++){
             if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
@@ -4994,7 +4994,7 @@ function fastLoop(){
         }
     }
 
-    let halloween = getHalloween();
+    let halloween = eventActive('halloween');
     if (halloween.active){
         for (i=1; i<13; i++){
             if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
@@ -6647,7 +6647,7 @@ function midLoop(){
                 global.arpa.sequence.progress = 0;
                 global.arpa.sequence.time = global.arpa.sequence.max;
                 if (global.tech['genetics'] === 2){
-                    messageQueue(loc('genome',[races[global.race.species].name]),'success');
+                    messageQueue(loc('genome',[flib('name')]),'success');
                     global.tech['genetics'] = 3;
                 }
                 else {
@@ -7531,28 +7531,28 @@ function longLoop(){
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration1',[races[global.race.species].name,death_clock]),'danger');
+                messageQueue(loc('deterioration1',[flib('name'),death_clock]),'danger');
             }
             else if (global.race.deterioration === 1 && deterioration < 20000000){
                 global.race.deterioration = 2;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration2',[races[global.race.species].name,death_clock]),'danger');
+                messageQueue(loc('deterioration2',[flib('name'),death_clock]),'danger');
             }
             else if (global.race.deterioration === 2 && deterioration < 5000000){
                 global.race.deterioration = 3;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration3',[races[global.race.species].name,death_clock]),'danger');
+                messageQueue(loc('deterioration3',[flib('name'),death_clock]),'danger');
             }
             else if (global.race.deterioration === 3 && deterioration < 1000000){
                 global.race.deterioration = 4;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration4',[races[global.race.species].name,death_clock]),'danger');
+                messageQueue(loc('deterioration4',[flib('name'),death_clock]),'danger');
             }
             else if (global.race.deterioration === 4 && deterioration <= 0){
                 global.race.deterioration = 5;
                 global.race['decayed'] = global.stats.days;
                 global.tech['decay'] = 1;
-                messageQueue(loc('deterioration5',[races[global.race.species].name]),'danger');
+                messageQueue(loc('deterioration5',[flib('name')]),'danger');
                 drawTech();
             }
         }
@@ -7890,7 +7890,7 @@ function longLoop(){
         delete global.tech['santa'];
     }
 
-    if (!global.settings.boring && date.getMonth() === 3 && date.getDate() === 1){
+    if (eventActive('fool')){
         if (!$(`body`).hasClass('fool')){
             $(`body`).addClass('fool');
             drawAchieve({fool: true});

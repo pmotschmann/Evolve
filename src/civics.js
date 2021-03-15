@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -172,7 +172,7 @@ function government(govern){
     var setgov = $(`<div></div>`);
     gov.append(setgov);
 
-    var change = $(`<b-tooltip :label="change()" position="is-bottom" animated multilined><button class="button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button></b-tooltip>`);
+    var change = $(`<button class="change button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button>`);
     setgov.append(change);
 
     var modal = {
@@ -208,9 +208,6 @@ function government(govern){
                 global.civic.govern.fr = global.civic.govern.rev;
                 global.civic.govern.rev = 0;
             },
-            change(){                
-                return global.civic.govern.rev > 0 ? loc('civics_change_desc',[global.civic.govern.rev]) : loc('civics_change_desc2');
-            },
             force(){                
                 return global.civic.govern.rev > 0 ? loc('civics_force_rev_desc') : loc('civics_force_rev_desc2');
             },
@@ -226,9 +223,14 @@ function government(govern){
                 effect_type = 'theocracy_alt';
             }
             return $(`<div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
+        }
+    );
+
+    popover(`govTypeChange`, function(){
+            return global.civic.govern.rev > 0 ? loc('civics_change_desc',[global.civic.govern.rev]) : loc('civics_change_desc2');
         },
         {
-            classes: `has-background-light has-text-dark`
+            elm: `#govType .change`
         }
     );
 }
@@ -810,10 +812,10 @@ function taxRates(govern){
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control']){
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">${loc('rating')} <span class="defenseRating">{{ g.workers | hell | rating }}</span></div>`));
     }
     else {
-        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">Rating <b-tooltip :label="defense()" position="is-bottom" animated>{{ g.workers | hell | rating }}</b-tooltip> / <b-tooltip :label="offense()" position="is-bottom" animated>{{ g.raid | rating }}</b-tooltip></span></div>`));
+        garrison.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_garrison')}</h2> - <span class="has-text-success">${loc('rating')} <span class="defenseRating">{{ g.workers | hell | rating }}</span> / <span class="offenseRating">{{ g.raid | rating }}</span></span></div>`));
     }
 
     var barracks = $('<div class="columns is-mobile bunk"></div>');
@@ -823,11 +825,11 @@ export function buildGarrison(garrison,full){
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
     
-    bunks.append($(`<div class="barracks"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
-    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><b-tooltip :label="crewDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_crew')}</span></b-tooltip> <span>{{ g.crew }}</span></div>`));
-    bunks.append($(`<div class="barracks"><b-tooltip :label="woundedDesc()" position="is-bottom" multilined animated><span>${loc('civics_garrison_wounded')}</span></b-tooltip> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
+    bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
+    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
+    bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
-    barracks.append($(`<div class="hire"><b-tooltip :label="hireLabel()" size="is-small" position="is-bottom" animated><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip><div>`));
+    barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
     
     if (full){
         garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
@@ -861,9 +863,9 @@ export function buildGarrison(garrison,full){
         battalion.append(anext);
 
         if (full){
-            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(0)}</div><b-tooltip :label="battleAssessment(0)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(0)"><span v-show="!g0.occ && !g0.anx && !g0.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g0.occ || g0.anx || g0.buy">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
-            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(1)}</div><b-tooltip :label="battleAssessment(1)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(1)"><span v-show="!g1.occ && !g1.anx && !g1.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ || g1.anx || g1.buy">${loc('civics_garrison_deoccupy')}</span></button></b-tooltip></div>`));
-            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(2)}</div><b-tooltip :label="battleAssessment(2)" position="is-bottom" multilined animated><button class="button campaign" @click="campaign(2)"><span v-show="!g2.occ && !g2.anx && !g2.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ || g2.anx || g2.buy">${loc('civics_garrison_deoccupy')}</span></b-tooltip></div>`));
+            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(0)}</div><button class="button campaign gov0" @click="campaign(0)"><span v-show="!g0.occ && !g0.anx && !g0.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g0.occ || g0.anx || g0.buy">${loc('civics_garrison_deoccupy')}</span></button></div>`));
+            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(1)}</div><button class="button campaign gov1" @click="campaign(1)"><span v-show="!g1.occ && !g1.anx && !g1.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g1.occ || g1.anx || g1.buy">${loc('civics_garrison_deoccupy')}</span></button></div>`));
+            campaign.append($(`<div class="launch"><div class="has-text-caution">${govTitle(2)}</div><button class="button campaign gov2" @click="campaign(2)"><span v-show="!g2.occ && !g2.anx && !g2.buy">${loc('civics_garrison_launch_campaign')}</span><span v-show="g2.occ || g2.anx || g2.buy">${loc('civics_garrison_deoccupy')}</span></button></div>`));
         }
     }
 
@@ -904,38 +906,6 @@ export function buildGarrison(garrison,full){
             },
             campaign(gov){
                 war_campaign(gov);
-            },
-            hireLabel(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost *= 1 - (traits.brute.vars[0] / 100);
-                }
-                cost = Math.round(cost);
-                return loc('civics_garrison_hire_mercenary_cost',[cost]);
-            },
-            battleAssessment(gov){
-                return battleAssessment(gov);
-            },
-            soldierDesc(){
-                return describeSoldier();
-            },
-            crewDesc(){
-                return loc('civics_garrison_crew_desc');
-            },
-            woundedDesc(){
-                return loc('civics_garrison_wounded_desc');
-            },
-            defense(){
-                return loc('civics_garrison_defensive_rate');
-            },
-            offense(){
-                return loc('civics_garrison_offensive_rate');
             },
             next(){
                 if (global.civic.garrison.tactic < 4){
@@ -1004,37 +974,77 @@ export function buildGarrison(garrison,full){
                 if (full && w === 0 && egg.length > 0){
                     return egg;
                 }
-                return w;
+                return eventActive('fool',2021) ? garrisonSize() - w : w;
             }
         }
     });
 
-    popover(full ? 'garrisonTactics' : 'cGarrisonTactics',
-        function(){
-            switch (global.civic.garrison.tactic){
-                case 0:
-                    return loc('civics_garrison_tactic_ambush_desc');
-                case 1:
-                    return loc('civics_garrison_tactic_raid_desc');
-                case 2:
-                    return loc('civics_garrison_tactic_pillage_desc');
-                case 3:
-                    return loc('civics_garrison_tactic_assault_desc');
-                case 4:
-                    return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
+    ['tactic','bat','soldier','crew','wounded','hire','defenseRating','offenseRating'].forEach(function(k){
+        popover(full ? `garrison${k}` : `cGarrison${k}`,
+            function(){
+                switch(k){
+                    case 'tactic':
+                        {
+                            switch (global.civic.garrison.tactic){
+                                case 0:
+                                    return loc('civics_garrison_tactic_ambush_desc');
+                                case 1:
+                                    return loc('civics_garrison_tactic_raid_desc');
+                                case 2:
+                                    return loc('civics_garrison_tactic_pillage_desc');
+                                case 3:
+                                    return loc('civics_garrison_tactic_assault_desc');
+                                case 4:
+                                    return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
+                            }
+                        }
+                    case 'bat':
+                        return loc('civics_garrison_army_label');
+                    case 'soldier':
+                        return describeSoldier();
+                    case 'crew':
+                        return loc('civics_garrison_crew_desc');
+                    case 'wounded':
+                        return loc('civics_garrison_wounded_desc');
+                    case 'hire':
+                        {
+                            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                            if (cost > 25000){
+                                cost = 25000;
+                            }
+                            if (global.civic.garrison.m_use > 0){
+                                cost *= 1.1 ** global.civic.garrison.m_use;
+                            }
+                            if (global.race['brute']){
+                                cost *= 1 - (traits.brute.vars[0] / 100);
+                            }
+                            cost = Math.round(cost);
+                            return loc('civics_garrison_hire_mercenary_cost',[cost]);
+                        }
+                    case 'defenseRating':
+                        return loc('civics_garrison_defensive_rate');
+                    case 'offenseRating':
+                        return loc('civics_garrison_offensive_rate');
+                }
+            },
+            {
+                elm: `${full ? '#garrison' : '#c_garrison'} .${k}`
             }
-        },{
-            elm: `${full ? '#garrison' : '#c_garrison'} .tactic`
-        }
-    );
+        );
+    });
 
-    popover(full ? 'garrisonBat' : 'cGarrisonBat',
-        function(){
-            return loc('civics_garrison_army_label');
-        },{
-            elm: `${full ? '#garrison' : '#c_garrison'} .bat`
+    if (full){
+        for (let i=0; i<3; i++){
+            popover(`garrison${i}`,
+                function(){
+                    return battleAssessment(i);
+                },
+                {
+                    elm: `#garrison .gov${i}`
+                }
+            );
         }
-    );
+    }
 }
 
 export function describeSoldier(){
@@ -1103,6 +1113,10 @@ function battleAssessment(gov){
             break;
     }
     enemy *= global.civic.foreign[`gov${gov}`].mil / 100;
+
+    if (eventActive('fool',2021)){
+        enemy /= 1.25;
+    }
 
     if (army < enemy){
         return loc('civics_garrison_disadvantage',[+((1 - (army / enemy)) * 100).toFixed(1)]);
@@ -1721,8 +1735,8 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        mad.append($(`<div class="defcon"><b-tooltip :label="defcon()" position="is-bottom" multilined animated><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></b-tooltip></div>`));
-        mad.append($(`<div class="defcon"><b-tooltip :label="warning()" position="is-bottom" multilined animated><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></b-tooltip></div>`));
+        mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></div>`));
+        mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></div>`));
 
         if (!global.civic.mad.armed){
             $('#mad').addClass('armed');
@@ -1760,18 +1774,30 @@ function defineMad(){
                         global.civic.mad.armed = true;
                         $('#mad').removeClass('armed');
                     }
-                },
-                defcon(){
-                    return global.tech['world_control']
-                        ? loc('civics_mad_missiles_world_control_desc')
-                        : loc('civics_mad_missiles_desc');
-                },
-                warning(){
-                    let gains = calcPrestige('mad');
-                    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                    return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
                 }
             }
+        });
+
+        ['mdarm','mdlaunch'].forEach(function(k){
+            popover(`mad${k}`,
+                function(){
+                    switch(k){
+                        case 'mdarm':
+                            return global.tech['world_control']
+                                ? loc('civics_mad_missiles_world_control_desc')
+                                : loc('civics_mad_missiles_desc');
+                        case 'mdlaunch':
+                            {
+                                let gains = calcPrestige('mad');
+                                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
+                            }
+                    }
+                },
+                {
+                    elm: `#mad .${k}`
+                }
+            );
         });
     }
 }
