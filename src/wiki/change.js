@@ -8,7 +8,7 @@ const changeList = [
         changes: [
             `Alien 1 system is now named after their homeworld.`,
             `Alien 2 system is now named after their red planet.`,
-            `Fixed various cut off popovers.`
+            `Fixed various cut off tooltips.`
         ]
     },
     {

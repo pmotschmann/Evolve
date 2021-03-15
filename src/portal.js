@@ -1725,6 +1725,60 @@ export function renderFortress(){
     });
 }
 
+function fortressData(dt){
+    switch (dt){
+        case 'hostiles':
+            {
+                if (global.portal.fortress.threat >= 2000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_high')}`;
+                }
+                else if (global.portal.fortress.threat < 1000){
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_low')}`;
+                }
+                else {
+                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_medium')}`;
+                }
+            }
+        case 'threatLevel':
+            {
+                let t = global.portal.fortress.threat;
+                if (t < 1000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level1')}`;
+                }
+                else if (t < 1500){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level2')}`;
+                }
+                else if (t >= 5000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level6')}`;
+                }
+                else if (t >= 3000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level5')}`;
+                }
+                else if (t >= 2000){
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level4')}`;
+                }
+                else {
+                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level3')}`;
+                }
+            }
+        case 'hireLabel':
+            {
+                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                if (cost > 25000){
+                    cost = 25000;
+                }
+                if (global.civic.garrison.m_use > 0){
+                    cost *= 1.1 ** global.civic.garrison.m_use;
+                }
+                if (global.race['brute']){
+                    cost = cost / 2;
+                }
+                cost = Math.round(cost);
+                return loc('civics_garrison_hire_mercenary_cost',[cost]);
+            }
+    }
+}
+
 export function buildFortress(parent,full){
     if (!global.settings.tabLoad){
         switch (global.settings.civTabs){
@@ -1767,9 +1821,9 @@ export function buildFortress(parent,full){
 
     let defense = $(`<span class="defense has-text-success" :aria-label="defense()">${loc('fortress_defense')} {{ f.garrison | defensive }}</span>`);
     status.append(defense);
-    let activity = $(`<b-tooltip :label="hostiles()" position="is-bottom" multilined animated><span class="has-text-danger pad" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span></b-tooltip>`);
+    let activity = $(`<span class="has-text-danger pad hostiles" :aria-label="hostiles()">${loc('fortress_spotted')} {{ f.threat }}</span>`);
     status.append(activity);
-    let threatLevel = $(`<b-tooltip :label="threatLevel()" position="is-bottom" multilined animated><span :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span></b-tooltip>`);
+    let threatLevel = $(`<span class="pad threatLevel" :class="threaten()" :aria-label="threatLevel()">{{ f.threat | threat }}</span>`);
     status.append(threatLevel);
 
     let wallStatus = $('<div></div>');
@@ -1782,20 +1836,20 @@ export function buildFortress(parent,full){
     
     station.append($(`<span>${loc('fortress_army')}</span>`));
     station.append($('<span role="button" aria-label="remove soldiers from the fortress" class="sub has-text-danger" @click="aLast"><span>&laquo;</span></span>'));
-    station.append($('<b-tooltip :label="armyLabel()" position="is-bottom" multilined animated><span class="current">{{ f.garrison | patrolling }}</span></b-tooltip>'));
+    station.append($('<span class="current armyLabel">{{ f.garrison | patrolling }}</span>'));
     station.append($('<span role="button" aria-label="add soldiers to the fortress" class="add has-text-success" @click="aNext"><span>&raquo;</span></span>'));
     
     station.append($(`<span>${loc('fortress_patrol')}</span>`));
     station.append($('<span role="button" aria-label="reduce number of patrols" class="sub has-text-danger" @click="patDec"><span>&laquo;</span></span>'));
-    station.append($('<b-tooltip :label="patLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrols }}</span></b-tooltip>'));
+    station.append($('<span class="current patLabel">{{ f.patrols }}</span>'));
     station.append($('<span role="button" aria-label="increase number of patrols" class="add has-text-success" @click="patInc"><span>&raquo;</span></span>'));
 
     station.append($(`<span>${loc('fortress_patrol_size')}</span>`));
     station.append($('<span role="button" aria-label="reduce size of each patrol" class="sub has-text-danger" @click="patSizeDec"><span>&laquo;</span></span>'));
-    station.append($('<b-tooltip :label="patSizeLabel()" position="is-bottom" multilined animated><span class="current">{{ f.patrol_size }}</span></b-tooltip>'));
+    station.append($('<span class="current patSizeLabel">{{ f.patrol_size }}</span>'));
     station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
 
-    station.append($(`<b-tooltip :label="hireLabel()" size="is-small merctip" position="is-bottom" animated><button v-show="g.mercs" class="button merc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button></b-tooltip>`));
+    station.append($(`<span class="hireLabel"><button v-show="g.mercs" class="button merc" @click="hire" :aria-label="hireLabel()">${loc('civics_garrison_hire_mercenary')}</button></span>`));
 
     let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
     let reports = $(`<div></div>`);
@@ -1818,45 +1872,10 @@ export function buildFortress(parent,full){
                 return loc('fortress_defense');
             },
             hostiles(){
-                if (global.portal.fortress.threat >= 2000){
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_high')}`;
-                }
-                else if (global.portal.fortress.threat < 1000){
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_low')}`;
-                }
-                else {
-                    return `${loc('fortress_threat',[global.portal.fortress.threat])} ${loc('fortress_threat_medium')}`;
-                }
-            },
-            armyLabel(){
-                return loc('fortress_stationed');
-            },
-            patLabel(){
-                return loc('fortress_patrol_desc',[global.portal.fortress.patrols]);
-            },
-            patSizeLabel(){
-                return loc('fortress_patrol_size_desc',[global.portal.fortress.patrol_size]);
+                return fortressData('hostiles');
             },
             threatLevel(){
-                let t = global.portal.fortress.threat;
-                if (t < 1000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level1')}`;
-                }
-                else if (t < 1500){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level2')}`;
-                }
-                else if (t >= 5000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level6')}`;
-                }
-                else if (t >= 3000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level5')}`;
-                }
-                else if (t >= 2000){
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level4')}`;
-                }
-                else {
-                    return `${loc('fortress_threat_level')} ${loc('fortress_threat_level3')}`;
-                }
+                return fortressData('threatLevel');
             },
             aNext(){
                 let inc = keyMultiplier();
@@ -1980,18 +1999,7 @@ export function buildFortress(parent,full){
                 }
             },
             hireLabel(){
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost = cost / 2;
-                }
-                cost = Math.round(cost);
-                return loc('civics_garrison_hire_mercenary_cost',[cost]);
+                return fortressData('hireLabel');
             }
         },
         filters: {
@@ -2032,6 +2040,29 @@ export function buildFortress(parent,full){
                 }
             }
         }
+    });
+
+    ['hostiles','threatLevel','armyLabel','patLabel','patSizeLabel','hireLabel'].forEach(function(k){
+        popover(`hf${id}${k}`, function(){
+                switch(k){
+                    case 'hostiles':
+                        return fortressData('hostiles');
+                    case 'threatLevel':
+                        return fortressData('hostiles');
+                    case 'armyLabel':
+                        return loc('fortress_stationed');
+                    case 'patLabel':
+                        return loc('fortress_patrol_desc',[global.portal.fortress.patrols]);
+                    case 'patSizeLabel':
+                        return loc('fortress_patrol_size_desc',[global.portal.fortress.patrol_size]);
+                    case 'hireLabel':
+                        return fortressData('hireLabel');
+                }
+            },
+            {
+                elm: `#${id} span.${k}`
+            }
+        );
     });
 }
 
