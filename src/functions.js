@@ -1,4 +1,4 @@
-import { global, save, poppers, webWorker, intervals, achieve_level, resizeGame, clearStates } from './vars.js';
+import { global, save, poppers, webWorker, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -1738,6 +1738,48 @@ export function deepClone(obj){
         }
     }
     return clonedObj;
+}
+
+// function library
+export function flib(func,val){
+    switch (func){
+        case 'reverse':
+            {
+                let str = val.toLowerCase().split('').reverse().join('');
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+        case 'name':
+            {
+                if (eventActive('fool',2021)){
+                    return flib('reverse',races[global.race.species].name);
+                }
+                return races[global.race.species].name;
+            }
+    }
+    return false;
+}
+
+export function eventActive(event,val){
+    switch(event){
+        case 'easter':
+            return getEaster();
+        case 'halloween':
+            return getHalloween();
+        case 'fool':
+            {
+                const date = new Date();
+                if (!global.settings.boring && date.getMonth() === 3 && date.getDate() === 1){
+                    if (val){
+                        return date.getFullYear() === val ? true : false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+    }
 }
 
 export function getEaster(){

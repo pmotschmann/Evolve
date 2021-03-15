@@ -3897,7 +3897,7 @@
   "galaxy_vitreloy_plant_bd": "Planta Vit.",
   "galaxy_super_freighter": "Super Cargueiro",
   "galaxy_alien2_proxy": "Alien2",
-  "galaxy_alien2_desc": "O sistema %0 é um sistema em estrela do tipo G com uma forte atividade %0. Este sistema é rico em recursos e o %0 não é agradável para ninguém que se aproxime dele.",
+  "galaxy_alien2_desc": "O sistema %0 é um sistema em estrela do tipo G com uma forte atividade %1. Este sistema é rico em recursos e o %1 não é agradável para ninguém que se aproxime dele.",
   "galaxy_alien2_mission": "%0 Missão de Assalto",
   "galaxy_alien2_mission_desc": "Invadir o sistema %0",
   "galaxy_alien2_mission_effect": "Coloque a força de invasão necessária no sistema %0 e inicie o ataque.",

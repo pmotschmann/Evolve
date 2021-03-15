@@ -845,6 +845,7 @@ Misc ---------> Main template
             }
         }
 
+        /* AFP 2020
         // .fool
         .fool {
             .has-text-advanced {
@@ -887,6 +888,7 @@ Misc ---------> Main template
                 }
             }
         }
+        */
 
         // .tabs
         .tabs a {
@@ -1319,6 +1321,7 @@ Misc ---------> Main template
         }
 
         // -webkit-scrollbar
+        .hscroll::-webkit-scrollbar-track,
         .sticky::-webkit-scrollbar-track,
         .resTabs>section::-webkit-scrollbar-track,
         .bldQueue::-webkit-scrollbar-track {
@@ -1333,12 +1336,19 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-background;
         }
 
+        .hscroll::-webkit-scrollbar {
+            height: 8px;
+            background-color: @webkit-scrollbar-background;
+        }
+
+        .hscroll::-webkit-scrollbar-thumb,
         .sticky::-webkit-scrollbar-thumb,
         .resTabs>section::-webkit-scrollbar-thumb,
         .bldQueue::-webkit-scrollbar-thumb {
             background-color: @webkit-scrollbar-thumb-background;
         }
 
+        .hscroll,
         .sticky,
         .resTabs>section,
         .bldQueue {
@@ -2549,9 +2559,10 @@ a {
         .area {
             width: 8rem;
 
-            >span {
+            > span {
                 display: inline-block;
                 min-width: 8rem;
+                white-space: nowrap;
             }
 
             .ship {
@@ -3650,6 +3661,11 @@ div.bigbang {
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: thin;
+}
+
+.hscroll {
+    overflow-x: auto;
     scrollbar-width: thin;
 }
 

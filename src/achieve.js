@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -48,7 +48,7 @@ const achieve_list = {
 };
 
 const flairData = {
-    colonist: [races[global.race.species].name]
+    colonist: [flib('name')]
 };
 
 const descData = {

@@ -1,8 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, gameLoop, powerGrid, easterEgg, trickOrTreat } from './functions.js';
-import { races } from './races.js';
+import { vBind, clearElement, flib, gameLoop, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -152,7 +151,7 @@ function tabLabel(lbl){
                 return loc('tab_city1');
             }
         case 'local_space':
-            return loc('sol_system',[races[global.race.species].name]);
+            return loc('sol_system',[flib('name')]);
         case 'old':
             return loc('tab_old_res');
         case 'new':

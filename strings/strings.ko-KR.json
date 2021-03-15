@@ -4310,7 +4310,7 @@
   "galaxy_super_freighter": "Super Freighter",
   "galaxy_fleet_rating": "Fleet Rating: %0",
   "galaxy_alien2_proxy": "Alien2",
-  "galaxy_alien2_desc": "The %0 System is a type G star system with heavy %0 activity in it. This system is rich with resources and the %0 do not take kindly to anyone else approaching it.",
+  "galaxy_alien2_desc": "The %0 System is a type G star system with heavy %1 activity in it. This system is rich with resources and the %1 do not take kindly to anyone else approaching it.",
   "galaxy_alien2_mission": "%0 Assault Mission",
   "galaxy_alien2_mission_desc": "Invade the %0 system",
   "galaxy_alien2_mission_effect": "Station the required invasion force at the %0 system then initiate the attack.",

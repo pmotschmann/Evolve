@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -3183,7 +3183,7 @@ const interstellarProjects = {
                 Helium_3(){ return +int_fuel_adjust(480000).toFixed(0); },
                 Deuterium(){ return +int_fuel_adjust(225000).toFixed(0); }
             },
-            effect(){ return loc('interstellar_sirius_mission_effect',[races[global.race.species].name,races[global.race.species].home]); },
+            effect(){ return loc('interstellar_sirius_mission_effect',[flib('name'),races[global.race.species].home]); },
             action(){
                 if (payCosts($(this)[0].cost)){
                     return true;
@@ -3346,7 +3346,7 @@ const interstellarProjects = {
             effect(){
                 if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100){
                     let remain = global.interstellar.hasOwnProperty('ascension_machine') ? 100 - global.interstellar.ascension_machine.count : 100;
-                    return `<div>${loc('interstellar_ascension_machine_effect',[races[global.race.species].name])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('interstellar_ascension_machine_effect',[flib('name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
                     return interstellarProjects.int_sirius.ascension_trigger.effect();
@@ -3487,7 +3487,7 @@ const galaxyProjects = {
             desc(){ return loc('galaxy_gateway_desc'); },
             control(){
                 return {
-                    name: races[global.race.species].name,
+                    name: flib('name'),
                     color: 'success',
                 }; 
             },
@@ -3858,7 +3858,7 @@ const galaxyProjects = {
             desc(){ return global.tech['piracy'] ? loc('galaxy_stargate_desc_alt') : loc('galaxy_stargate_desc'); },
             control(){
                 return {
-                    name: races[global.race.species].name,
+                    name: flib('name'),
                     color: 'success',
                 }; 
             }
@@ -4232,8 +4232,8 @@ const galaxyProjects = {
     },
     gxy_alien1: {
         info: {
-            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
+            desc(){ return loc('galaxy_alien1_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]); },
             control(){
                 return {
                     name: races[global.galaxy.alien1.id].name,
@@ -4245,7 +4245,7 @@ const galaxyProjects = {
             id: 'galaxy-consulate',
             title: loc('galaxy_consulate'),
             desc(){
-                return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]);
+                return loc('galaxy_consulate_desc',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]);
             },
             reqs: { xeno: 8 },
             no_queue(){ return global.galaxy.consulate.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -4380,8 +4380,12 @@ const galaxyProjects = {
     },
     gxy_alien2: {
         info: {
-            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien2_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            name(){ return loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
+            desc(){ return loc('galaxy_alien2_desc',[
+                    races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red,
+                    races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name
+                ]); 
+            },
             control(){
                 return {
                     name: races[global.galaxy.alien2.id].name,
@@ -4392,8 +4396,8 @@ const galaxyProjects = {
         },
         alien2_mission: {
             id: 'galaxy-alien2_mission',
-            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
-            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]); },
+            title(){ return loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
+            desc(){ return loc('galaxy_alien2_mission_desc',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]); },
             reqs: { andromeda: 4 },
             grant: ['conflict',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
@@ -4432,7 +4436,7 @@ const galaxyProjects = {
                         total += galaxyProjects.gxy_gateway[ship].ship.rating * global.galaxy.defense.gxy_alien2[ship];
                     });
                     if (total >= 400){
-                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].name]),'info');
+                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].home]),'info');
                         if (total < 650){
                             let wreck = 80;
                             let loss = [];
@@ -5112,7 +5116,7 @@ function space(){
             }
 
             popover(region, function(){
-                    return typeof typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
+                    return typeof spaceProjects[region].info.desc === 'string' ? spaceProjects[region].info.desc : spaceProjects[region].info.desc();
                 },
                 {
                     elm: `#${region} h3.name`,
@@ -5208,7 +5212,7 @@ function galaxySpace(){
             regionContent.append(regionHeader);
 
             if (global.tech['xeno'] && global.tech['xeno'] >= 3){
-                regionContent.append(`<b-tooltip class="has-text-warning" :label="owner()" position="is-bottom" size="is-small" multilined animated><span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span></b-tooltip>`);
+                regionContent.append(`<span class="regionControl has-text-${galaxyProjects[region].info.control().color}">{{ r.control().name }}</span>`);
             }
 
             let vData = {
@@ -5217,9 +5221,6 @@ function galaxySpace(){
                     r: galaxyProjects[region].info
                 },
                 methods: {
-                    owner(){
-                        return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
-                    },
                     threat(r){
                         let scouts_req = global.race['infiltrator'] ? 1 : 2;
                         if (global.galaxy.defense[r].scout_ship >= scouts_req){
@@ -5313,6 +5314,15 @@ function galaxySpace(){
                 }
             );
 
+            popover(region, function(){
+                    return loc('galaxy_control',[galaxyProjects[region].info.control().name,name]);
+                },
+                {
+                    elm: `#${region} .regionControl`,
+                    classes: `has-background-light has-text-dark`
+                }
+            );
+
             Object.keys(galaxyProjects[region]).forEach(function (tech){
                 if (tech !== 'info' && checkRequirements(galaxyProjects,region,tech)){
                     let c_action = galaxyProjects[region][tech];
@@ -5331,28 +5341,17 @@ function armada(parent,id){
 
         let soldier_title = global.tech['world_control'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
         header.append($(`<span>|</span>`));
-        header.append($(`<span class="has-text-caution"><b-tooltip :label="soldierDesc()" position="is-bottom" multilined animated><span>${soldier_title}</span></b-tooltip> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></span>`));
+        header.append($(`<span class="has-text-caution"><span class="soldier">${soldier_title}</span> <span>{{ g.workers | stationed }} / {{ g.max | s_max }}</span></span>`));
         header.append($(`<span>|</span>`));
-        header.append($(`<span class="has-text-caution"><b-tooltip :label="crewMil()" position="is-bottom" multilined animated><span>${loc('job_crew_mil')}</span></b-tooltip> <span>{{ g.crew }}</span></span>`));
+        header.append($(`<span class="has-text-caution"><span class="crew1">${loc('job_crew_mil')}</span> <span>{{ g.crew }}</span></span>`));
         header.append($(`<span>|</span>`));
-        header.append($(`<span class="has-text-success"><b-tooltip :label="crewCiv()" position="is-bottom" multilined animated><span>${loc('job_crew_civ')}</span></b-tooltip> <span>{{ c.workers }} / {{ c.max }}</span></span>`));
+        header.append($(`<span class="has-text-success"><span class="crew2">${loc('job_crew_civ')}</span> <span>{{ c.workers }} / {{ c.max }}</span></span>`));
 
         vBind({
             el: `#h${id}`,
             data: {
                 g: global.civic.garrison,
                 c: global.civic.crew,
-            },
-            methods: {
-                soldierDesc(){
-                    return describeSoldier();
-                },
-                crewMil(){
-                    return loc('civics_garrison_crew_desc');
-                },
-                crewCiv(){
-                    return loc('job_crew_desc');
-                }
             },
             filters: {
                 stationed(v){
@@ -5362,6 +5361,23 @@ function armada(parent,id){
                     return garrisonSize(true);
                 }
             }
+        });
+
+        ['soldier','crew1','crew2'].forEach(function(k){
+            popover(`h${id}${k}`, function(){
+                    switch(k){
+                        case 'soldier':
+                            return describeSoldier();
+                        case 'crew1':
+                            return loc('civics_garrison_crew_desc');
+                        case 'crew2':
+                            return loc('job_crew_desc');
+                    }
+                },
+                {
+                    elm: `#h${id} span.${k}`
+                }
+            );
         });
 
         let fleet = $(`<div id="${id}" class="fleet"></div>`);
@@ -5687,7 +5703,7 @@ function ascendLab(){
     Object.keys(genus_traits).forEach(function (type){
         if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
             if (!dGenus){ dGenus = type; }
-            genus = genus + `<div class="field"><b-tooltip :label="genusDesc('${type}')" position="is-bottom" multilined animated><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></b-tooltip></div>`;
+            genus = genus + `<div class="field ${type}"><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
     });
     genus = genus + `</section></template></div>`;
@@ -5714,10 +5730,10 @@ function ascendLab(){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             if (traits[trait].val >= 0){
-                trait_list = trait_list + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></b-tooltip></div>`;
+                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
             else {
-                negative = negative + `<div class="field"><b-tooltip :label="trait('${trait}')" position="is-bottom" size="is-small" multilined animated><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></b-tooltip></div>`;
+                negative = negative + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
         }
     });
@@ -5760,18 +5776,6 @@ function ascendLab(){
         el: '#celestialLab',
         data: genome,
         methods: {
-            genusDesc(g){
-                let desc = '';
-                Object.keys(genus_traits[g]).forEach(function (t){
-                    if (traits[t]){
-                        desc = desc + `${traits[t].desc} `;
-                    }
-                });                
-                return desc;
-            },
-            trait(t){
-                return traits[t].desc;
-            },
             geneEdit(){
                 genome.genes = calcGenomeScore(genome);
             },
@@ -5828,6 +5832,32 @@ function ascendLab(){
                     return traits[trait].val;
                 }
             }
+        }
+    });
+
+    Object.keys(genus_traits).forEach(function (type){
+        if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
+            popover(`celestialLabgenusSelection${type}`, function(){
+                let desc = '';
+                Object.keys(genus_traits[type]).forEach(function (t){
+                    if (traits[t]){
+                        desc = desc + `${traits[t].desc} `;
+                    }
+                });                
+                return desc;
+            },{
+                elm: `#celestialLab .genus_selection .${type}`,
+            });
+        }
+    });
+
+    Object.keys(unlockedTraits).sort().forEach(function (trait){
+        if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
+            popover(`celestialLabtraitSelection${trait}`, function(){
+                return traits[trait].desc;
+            },{
+                elm: `#celestialLab .trait_selection .t${trait}`,
+            });
         }
     });
 }
