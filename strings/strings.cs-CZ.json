@@ -3870,7 +3870,7 @@
   "galaxy_freighter_unassign": "Odstraň obchodní loď od importování %0 a exportování %1.",
   "galaxy_alien": "Systém %0",
   "galaxy_alien1_proxy": "Mimozemšťan1",
-  "galaxy_alien1_desc": "Systém %0 je domovský systém druhu %0. Je to binární hvězdný systém vzdálený 4.2 světelných let od systému Gorddon.",
+  "galaxy_alien1_desc": "Systém %0 je domovský systém druhu %1. Je to binární hvězdný systém vzdálený 4.2 světelných let od systému Gorddon.",
   "galaxy_consulate": "Konzulát",
   "galaxy_consulate_desc": "Konzulát je tvůj lokální diplomatický úřad v systému %0.",
   "galaxy_resort": "Letovisko",

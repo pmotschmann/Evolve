@@ -3885,7 +3885,7 @@
   "galaxy_freighter_unassign": "Cancelar a atribuição de um cargueiro de importar %0 e exportar %1.",
   "galaxy_alien": "Sistema %0",
   "galaxy_alien1_proxy": "Alien1",
-  "galaxy_alien1_desc": "O Sistema %0 é o sistema inicial do %0. É um sistema binário em estrela a 4,2 anos-luz do Sistema Gorddon.",
+  "galaxy_alien1_desc": "O Sistema %0 é o sistema inicial do %1. É um sistema binário em estrela a 4,2 anos-luz do Sistema Gorddon.",
   "galaxy_consulate": "Consulado",
   "galaxy_consulate_desc": "O Consulado é o seu escritório diplomático local no sistema %0.",
   "galaxy_resort": "Resort",
