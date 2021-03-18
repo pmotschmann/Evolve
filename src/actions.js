@@ -7928,7 +7928,6 @@ function attachQueuePopovers(){
             wide: c_action['wide']
         });
     }
-
 }
 
 export function cleanTechPopOver(id){

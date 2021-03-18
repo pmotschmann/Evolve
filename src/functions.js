@@ -34,7 +34,7 @@ export function popover(id,content,opts){
             );
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
-                opts['in']({ this: this, popper: popper });
+                opts['in']({ this: this, popper: popper, id: `pop${id}` });
             }
         });
     }
@@ -47,7 +47,7 @@ export function popover(id,content,opts){
             }
             clearElement($(`#pop${id}`),true);
             if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                opts['out']({ this: this, popper: $(`#pop${id}`)});
+                opts['out']({ this: this, popper: $(`#pop${id}`), id: `pop${id}`});
             }
         });
     }

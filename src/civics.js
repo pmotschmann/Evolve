@@ -829,7 +829,7 @@ export function buildGarrison(garrison,full){
     bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
     bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
-    barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
+    barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
     
     if (full){
         garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
@@ -879,29 +879,31 @@ export function buildGarrison(garrison,full){
         },
         methods: {
             hire(){
-                let repeats = keyMultiplier();
-                let canBuy = true;
-                while (canBuy && repeats > 0){
-                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                    if (cost > 25000){
-                        cost = 25000;
+                if (global.tech['mercs']){
+                    let repeats = keyMultiplier();
+                    let canBuy = true;
+                    while (canBuy && repeats > 0){
+                        let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                        if (cost > 25000){
+                            cost = 25000;
+                        }
+                        if (global.civic.garrison.m_use > 0){
+                            cost *= 1.1 ** global.civic.garrison.m_use;
+                        }
+                        if (global.race['brute']){
+                            cost *= 1 - (traits.brute.vars[0] / 100);
+                        }
+                        cost = Math.round(cost);
+                        if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                            global.resource.Money.amount -= cost;
+                            global.civic['garrison'].workers++;
+                            global.civic.garrison.m_use++;
+                        }
+                        else {
+                            canBuy = false;
+                        }
+                        repeats--;
                     }
-                    if (global.civic.garrison.m_use > 0){
-                        cost *= 1.1 ** global.civic.garrison.m_use;
-                    }
-                    if (global.race['brute']){
-                        cost *= 1 - (traits.brute.vars[0] / 100);
-                    }
-                    cost = Math.round(cost);
-                    if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
-                        global.resource.Money.amount -= cost;
-                        global.civic['garrison'].workers++;
-                        global.civic.garrison.m_use++;
-                    }
-                    else {
-                        canBuy = false;
-                    }
-                    repeats--;
                 }
             },
             campaign(gov){
@@ -979,56 +981,68 @@ export function buildGarrison(garrison,full){
         }
     });
 
-    ['tactic','bat','soldier','crew','wounded','hire','defenseRating','offenseRating'].forEach(function(k){
+    ['tactic','bat','soldier','crew','wounded','hmerc','defenseRating','offenseRating'].forEach(function(k){
         popover(full ? `garrison${k}` : `cGarrison${k}`,
-            function(){
-                switch(k){
-                    case 'tactic':
-                        {
-                            switch (global.civic.garrison.tactic){
-                                case 0:
-                                    return loc('civics_garrison_tactic_ambush_desc');
-                                case 1:
-                                    return loc('civics_garrison_tactic_raid_desc');
-                                case 2:
-                                    return loc('civics_garrison_tactic_pillage_desc');
-                                case 3:
-                                    return loc('civics_garrison_tactic_assault_desc');
-                                case 4:
-                                    return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
-                            }
-                        }
-                    case 'bat':
-                        return loc('civics_garrison_army_label');
-                    case 'soldier':
-                        return describeSoldier();
-                    case 'crew':
-                        return loc('civics_garrison_crew_desc');
-                    case 'wounded':
-                        return loc('civics_garrison_wounded_desc');
-                    case 'hire':
-                        {
-                            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                            if (cost > 25000){
-                                cost = 25000;
-                            }
-                            if (global.civic.garrison.m_use > 0){
-                                cost *= 1.1 ** global.civic.garrison.m_use;
-                            }
-                            if (global.race['brute']){
-                                cost *= 1 - (traits.brute.vars[0] / 100);
-                            }
-                            cost = Math.round(cost);
-                            return loc('civics_garrison_hire_mercenary_cost',[cost]);
-                        }
-                    case 'defenseRating':
-                        return loc('civics_garrison_defensive_rate');
-                    case 'offenseRating':
-                        return loc('civics_garrison_offensive_rate');
-                }
-            },
+            function(){ return '<span>{{ label() }}</span>'; },
             {
-                elm: `${full ? '#garrison' : '#c_garrison'} .${k}`
+                elm: `${full ? '#garrison' : '#c_garrison'} .${k}`,
+                in: function(obj){
+                    vBind({
+                        el: `#${obj.id} > span`,
+                        data: { test: 'val' },
+                        methods: {
+                            label(){
+                                switch(k){
+                                    case 'tactic':
+                                        {
+                                            switch (global.civic.garrison.tactic){
+                                                case 0:
+                                                    return loc('civics_garrison_tactic_ambush_desc');
+                                                case 1:
+                                                    return loc('civics_garrison_tactic_raid_desc');
+                                                case 2:
+                                                    return loc('civics_garrison_tactic_pillage_desc');
+                                                case 3:
+                                                    return loc('civics_garrison_tactic_assault_desc');
+                                                case 4:
+                                                    return loc('civics_garrison_tactic_siege_desc',[global.civic.govern.type === 'federation' ? 15 : 20]);
+                                            }
+                                        }
+                                    case 'bat':
+                                        return loc('civics_garrison_army_label');
+                                    case 'soldier':
+                                        return describeSoldier();
+                                    case 'crew':
+                                        return loc('civics_garrison_crew_desc');
+                                    case 'wounded':
+                                        return loc('civics_garrison_wounded_desc');
+                                    case 'hmerc':
+                                        {
+                                            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+                                            if (cost > 25000){
+                                                cost = 25000;
+                                            }
+                                            if (global.civic.garrison.m_use > 0){
+                                                cost *= 1.1 ** global.civic.garrison.m_use;
+                                            }
+                                            if (global.race['brute']){
+                                                cost *= 1 - (traits.brute.vars[0] / 100);
+                                            }
+                                            cost = Math.round(cost);
+                                            return loc('civics_garrison_hire_mercenary_cost',[cost]);
+                                        }
+                                    case 'defenseRating':
+                                        return loc('civics_garrison_defensive_rate');
+                                    case 'offenseRating':
+                                        return loc('civics_garrison_offensive_rate');
+                                }
+                            }
+                        }
+                    });
+                },
+                out: function(obj){
+                    vBind({el: obj.id},'destroy');
+                },
             }
         );
     });
@@ -1780,22 +1794,34 @@ function defineMad(){
 
         ['mdarm','mdlaunch'].forEach(function(k){
             popover(`mad${k}`,
-                function(){
-                    switch(k){
-                        case 'mdarm':
-                            return global.tech['world_control']
-                                ? loc('civics_mad_missiles_world_control_desc')
-                                : loc('civics_mad_missiles_desc');
-                        case 'mdlaunch':
-                            {
-                                let gains = calcPrestige('mad');
-                                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
-                                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
-                            }
-                    }
-                },
+                function(){ return '<span>{{ label() }}</span>'; },
                 {
-                    elm: `#mad .${k}`
+                    elm: `#mad .${k}`,
+                    in: function(obj){
+                        vBind({
+                            el: `#${obj.id} > span`,
+                            data: { test: 'val' },
+                            methods: {
+                                label(){
+                                    switch(k){
+                                        case 'mdarm':
+                                            return global.tech['world_control']
+                                                ? loc('civics_mad_missiles_world_control_desc')
+                                                : loc('civics_mad_missiles_desc');
+                                        case 'mdlaunch':
+                                            {
+                                                let gains = calcPrestige('mad');
+                                                let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+                                                return loc('civics_mad_missiles_warning',[gains.plasmid,plasmidType]);
+                                            }
+                                    }
+                                }
+                            }
+                        });
+                    },
+                    out: function(obj){
+                        vBind({el: `#${obj.id} > span`},'destroy');
+                    },
                 }
             );
         });
