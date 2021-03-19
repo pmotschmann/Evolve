@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Unemployment Rework.`,
             `Fixed reactivity of some tooltips.`,
-            `Fixed cut off tooltips on settings tab.`
+            `Fixed cut off tooltips on settings tab.`,
+            `Xeno Tourism now requires 10 Monuments and Tourism.`
         ]
     },
     {

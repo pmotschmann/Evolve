@@ -3216,7 +3216,7 @@ const techs = {
         desc: loc('tech_tourism'),
         category: 'banking',
         era: 'early_space',
-        reqs: { monuments: 2 },
+        reqs: { monuments: 2, monument: 1 },
         not_trait: ['cataclysm'],
         grant: ['monument',2],
         cost: {
@@ -3237,7 +3237,7 @@ const techs = {
         desc: loc('tech_xeno_tourism'),
         category: 'banking',
         era: 'intergalactic',
-        reqs: { monuments: 2, xeno: 10 },
+        reqs: { monument: 2, xeno: 10, monuments: 10 },
         not_trait: ['cataclysm'],
         grant: ['monument',3],
         cost: {
