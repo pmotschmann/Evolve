@@ -13,7 +13,7 @@ export function popover(id,content,opts){
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
     if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (opts['bind']){
-        $(opts.elm).on('mouseover',function(){
+        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
             $('.popper').hide();
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
@@ -39,7 +39,7 @@ export function popover(id,content,opts){
         });
     }
     if (opts['unbind']){
-        $(opts.elm).on('mouseout',function(){
+        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
             $(`#pop${id}`).hide();
             if (poppers[id]){
                 poppers[id].destroy();

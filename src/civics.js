@@ -172,7 +172,7 @@ function government(govern){
     var setgov = $(`<div></div>`);
     gov.append(setgov);
 
-    var change = $(`<button class="change button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button>`);
+    var change = $(`<span class="change inline"><button class="button" @click="trigModal" :disabled="rev > 0">{{ type | set }}</button></span>`);
     setgov.append(change);
 
     var modal = {
