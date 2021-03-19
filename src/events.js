@@ -80,17 +80,9 @@ export const events = {
 
             let loss = Math.rand(0,at_risk);
             global.resource[global.race.species].amount -= loss;
-            if (global.civic.d_job === 'unemployed'){
-                global.civic.free -= loss;
-                if (global.civic.free < 0){
-                    global.civic.free = 0;
-                }
-            }
-            else {
-                global.civic[global.civic.d_job].workers -= loss;
-                if (global.civic[global.civic.d_job].workers < 0){
-                    global.civic[global.civic.d_job].workers = 0;
-                }
+            global.civic[global.civic.d_job].workers -= loss;
+            if (global.civic[global.civic.d_job].workers < 0){
+                global.civic[global.civic.d_job].workers = 0;
             }
 
             if (global.city.biome !== 'oceanic'){

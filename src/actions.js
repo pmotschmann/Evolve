@@ -3319,7 +3319,7 @@ export const actions = {
                 Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
             effect(){
-                let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                let sacrifices = global.civic[global.civic.d_job].workers;
                 let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
@@ -3345,15 +3345,10 @@ export const actions = {
                         global.city['s_alter'].count++;
                     }
                     else {
-                        let sacrifices = global.civic.d_job !== 'unemployed' ? global.civic[global.civic.d_job].workers : global.civic.free;
+                        let sacrifices = global.civic[global.civic.d_job].workers;
                         if (sacrifices > 0){
                             global['resource'][global.race.species].amount--;
-                            if (global.civic.d_job !== 'unemployed'){
-                                global.civic[global.civic.d_job].workers--;
-                            }
-                            else {
-                                global.civic.free--;
-                            }
+                            global.civic[global.civic.d_job].workers--;
                             global.stats.sac++;
                             global['resource'].Food.amount += Math.rand(250,1000);
                             let low = 300;
@@ -4904,7 +4899,7 @@ export const actions = {
                 }
                 if (global.city['shrine'] && global.city.shrine.know > 0){
                     let know = getShrineBonus('know');
-                    desc = desc + `<div>${loc('city_shrine_know',[+(know.add).toFixed(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_shrine_know',[(+(know.add).toFixed(1)).toLocaleString()])}</div>`;
                     desc = desc + `<div>${loc('city_shrine_know2',[+((know.mult - 1) * 100).toFixed(1)])}</div>`;
                 }
                 if (global.city['shrine'] && global.city.shrine.tax > 0){
@@ -4994,8 +4989,8 @@ export const actions = {
                     let shrineBonus = getShrineBonus('know');
                     gain *= shrineBonus.mult;
                 }
-                gain = gain.toFixed(0);
-                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                gain = +(gain).toFixed(0);
+                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -5051,8 +5046,8 @@ export const actions = {
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     gain *= 1 + (global.civic.scientist.workers * 0.12);
                 }
-                gain = +(gain).toFixed(1);
-                return `<div>${loc('city_max_knowledge',[gain])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
+                gain = +(gain).toFixed(0);
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -5109,8 +5104,8 @@ export const actions = {
                 if (global.space['satellite']){
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
-                gain = +(gain).toFixed(1);
-                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain])}</div>`;
+                gain = +(gain).toFixed(0);
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
@@ -5133,10 +5128,10 @@ export const actions = {
                     }
                     if (global.tech['broadcast']){
                         let morale = global.tech['broadcast'];
-                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain,morale])}</div>`
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect3',[$(this)[0].powered(),pgain.toLocaleString(),morale])}</div>`
                     }
                     else {
-                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain])}</div>`;
+                        desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain.toLocaleString()])}</div>`;
                     }
                 }
                 return desc;
@@ -5189,7 +5184,7 @@ export const actions = {
                     gain *= 1.45;
                 }
                 gain = +(gain).toFixed(0);
-                return `<span>${loc('city_max_knowledge',[gain])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
+                return `<span>${loc('city_max_knowledge',[gain.toLocaleString()])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return powerCostMod(2); },
             action(){
@@ -7389,7 +7384,7 @@ function sentience(){
     global.civic.govern.type = 'anarchy';
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
-
+    
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;
@@ -7491,6 +7486,15 @@ function sentience(){
     defineJobs(true);
     commisionGarrison();
     defineGovernment(true);
+
+    if (global.race['carnivore'] || global.race['soul_eater']){
+        global.civic.d_job = 'hunter';
+        global.civic.hunter.display = true;
+    }
+    else {
+        global.civic.d_job = 'unemployed';
+        global.civic.unemployed.display = true;
+    }
 
     calc_mastery(true);
     if (global.settings.tabLoad){
