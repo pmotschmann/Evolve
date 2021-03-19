@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, flib, gameLoop, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, flib, gameLoop, popover, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -65,9 +65,6 @@ export function mainVue(){
                 }
                 window.location.reload();
             },
-            locString(s){
-                return loc(s);
-            },
             remove(index){
                 global.r_queue.queue.splice(index,1);
             },
@@ -115,6 +112,16 @@ export function mainVue(){
                 }
             }
         }
+    });
+
+    ['settings1','settings3','settings4','settings5','settings6','settings7','settings8','settings9','settings10','settings11','settings12'].forEach(function(k){
+        popover(`${k}`, function(){
+                return loc(k);
+            },
+            {
+                elm: `#settings span.${k}`
+            }
+        );
     });
 }
 
@@ -826,7 +833,7 @@ export function index(){
     }
 
     // Settings Tab
-    let settings = $(`<b-tab-item class="settings sticky">
+    let settings = $(`<b-tab-item id="settings" class="settings sticky">
         <template slot="header">
             {{ 'tab_settings' | label }}
         </template>
@@ -890,14 +897,14 @@ export function index(){
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>
-        <b-switch class="setting" v-model="s.pause" @input="unpause"><b-tooltip :label="locString('settings12')" position="is-bottom" size="is-small" multilined animated>{{ 'pause' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.mKeys"><b-tooltip :label="locString('settings1')" position="is-bottom" size="is-small" multilined animated>{{ 'm_keys' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.cLabels"><b-tooltip :label="locString('settings5')" position="is-bottom" size="is-small" multilined animated>{{ 'c_cat' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.qKey"><b-tooltip :label="locString('settings6')" position="is-bottom" size="is-small" multilined animated>{{ 'q_key' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.qAny"><b-tooltip :label="locString('settings7')" position="is-bottom" size="is-small" multilined animated>{{ 'q_any' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.expose"><b-tooltip :label="locString('settings8')" position="is-bottom" size="is-small" multilined animated>{{ 'expose' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><b-tooltip :label="locString('settings11')" position="is-bottom" size="is-small" multilined animated>{{ 'tabLoad' | label }}</b-tooltip></b-switch>
-        <b-switch class="setting" v-model="s.boring"><b-tooltip :label="locString('settings10')" position="is-bottom" size="is-small" multilined animated>{{ 'boring' | label }}</b-tooltip></b-switch>
+        <b-switch class="setting" v-model="s.pause" @input="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ 'pause' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.mKeys"><span class="settings1" aria-label="${loc('settings1')}">{{ 'm_keys' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ 'c_cat' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.qKey"><span class="settings6" aria-label="${loc('settings6')}">{{ 'q_key' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.qAny"><span class="settings7" aria-label="${loc('settings7')}">{{ 'q_any' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.expose"><span class="settings8" aria-label="${loc('settings8')}">{{ 'expose' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ 'tabLoad' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ 'boring' | label }}</span></b-switch>
         <div>
             <div>${loc('key_mappings')}</div>
             <div class="keyMap"><span>${loc('multiplier',[10])}</span> <b-input v-model="s.keyMap.x10" id="x10Key"></b-input></div>
@@ -921,7 +928,7 @@ export function index(){
             </b-field>
             <button class="button" @click="saveImport">{{ 'import' | label }}</button>
             <button class="button" @click="saveExport">{{ 'export' | label }}</button>
-            <button class="button right" @click="restoreGame"><b-tooltip :label="locString('settings9')" position="is-top" size="is-large" multilined animated>{{ 'restore' | label }}</b-tooltip></button>
+            <button class="button right" @click="restoreGame"><span class="settings9" aria-label="${loc('settings9')}">{{ 'restore' | label }}</span></button>
         </div>
         <div class="reset">
             <b-collapse :open="false">
@@ -932,8 +939,8 @@ export function index(){
                             {{ 'reset_warn' | label }}
                         </h4>
                         <p>
-                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><b-tooltip :label="locString('settings4')" position="is-top" size="is-large" multilined animated>{{ 'reset_soft' | label }}</b-tooltip></button>
-                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><b-tooltip :label="locString('settings3')" position="is-top" size="is-small" multilined animated>{{ 'reset_hard' | label }}</b-tooltip></button>
+                            <button class="button" :disabled="!s.disableReset" @click="soft_reset()"><span class="settings4" aria-label="${loc('settings4')}">{{ 'reset_soft' | label }}</span></button>
+                            <button class="button right" :disabled="!s.disableReset" @click="reset()"><span class="settings3" aria-label="${loc('settings3')}">{{ 'reset_hard' | label }}</span></button>
                         </p>
                     </div>
                 </div>
