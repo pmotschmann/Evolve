@@ -117,6 +117,7 @@
   "tabLoad": "Preload Tab Content",
   "import": "Import Game",
   "export": "Export Game",
+  "export_file": "Save as File",
   "restore": "Restore Backup",
   "update_avail": "Update Available",
   "building_queue": "Building Queue",

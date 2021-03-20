@@ -34,6 +34,18 @@ export function mainVue(){
                 $('#importExport').select();
                 document.execCommand('copy');
             },
+            saveExportFile(){
+                const downloadToFile = (content, filename, contentType) => {
+                    const a = document.createElement('a');
+                    const file = new Blob([content], {type: contentType});
+                    a.href= URL.createObjectURL(file);
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                };
+                const date = new Date();
+                downloadToFile(exportGame(), `evolve-${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}.txt`, 'text/plain');
+            },
             restoreGame(){
                 let restore_data = save.getItem('evolveBak') || false;
                 if (restore_data){
@@ -928,6 +940,7 @@ export function index(){
             </b-field>
             <button class="button" @click="saveImport">{{ 'import' | label }}</button>
             <button class="button" @click="saveExport">{{ 'export' | label }}</button>
+            <button class="button" @click="saveExportFile">{{ 'export_file' | label }}</button>
             <button class="button right" @click="restoreGame"><span class="settings9" aria-label="${loc('settings9')}">{{ 'restore' | label }}</span></button>
         </div>
         <div class="reset">
