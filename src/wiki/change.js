@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.33`,
+        date: `3/20/2021`,
+        changes: [
+            `Enchanced threat assessment for Spire.`
+        ]
+    },
+    {
         version: `1.0.32`,
         date: `3/19/2021`,
         changes: [

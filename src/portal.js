@@ -1546,12 +1546,32 @@ const fortressModules = {
                 let terrain = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${loc(`portal_spire_type_${global.portal.spire.type}`)}</span>` : '?';
                 let status = ``;
                 if (global.portal.hasOwnProperty('spire') && Object.keys(global.portal.spire.status).length > 0){
-                    status = `<div>${Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')}</div>`;
+                    status = `<div>${loc('portal_spire_hazard',[Object.keys(global.portal.spire.status).map(v => `<span class="has-text-warning">${loc(`portal_spire_status_${v}`)}</span>`).join(', ')])}</div>`;
                 }
                 let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${+(global.portal.spire.progress).toFixed(3)}%</span>` : '0%';
+                let leftSide = `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                
                 let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
-                return `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div><div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
+                let threat = `<div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>`;
+
+                let weak = `???`;
+                let resist = `???`;
+                if (global.stats['spire']){
+                    let resists = bossResists(boss);
+                    Object.keys(global.stats.spire).forEach(function(uni){
+                        if (weak === '???' && global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] > 0){
+                            weak = loc(`portal_mech_weapon_${resists.w}`);
+                        }
+                        if (resist === '???' && global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] >= 5){
+                            resist = loc(`portal_mech_weapon_${resists.r}`);
+                        }
+                    });
+                }
+                let rightSide = `<div>${threat}<div>${loc('portal_spire_mob_weak',[`<span class="has-text-warning">${weak}</span>`])}</div><div>${loc('portal_spire_mob_resist',[`<span class="has-text-warning">${resist}</span>`])}</div></div>`;
+
+                return `<div class="split"><div>${leftSide}</div><div>${rightSide}</div></div>`;
             },
+            wide: true,
             action(){
                 return false;
             }
@@ -3084,6 +3104,21 @@ export const monsters = {
         amp: {}
     }
 };
+
+function bossResists(boss){
+    let weak = `laser`;
+    let resist = `laser`;
+    
+    Object.keys(monsters[boss].weapon).forEach(function(weapon){
+        if (monsters[boss].weapon[weapon] > monsters[boss].weapon[weak]){
+            weak = weapon;
+        }
+        if (monsters[boss].weapon[weapon] < monsters[boss].weapon[resist]){
+            resist = weapon;
+        }
+    });
+    return { w: weak, r: resist };
+}
 
 export function drawMechLab(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){

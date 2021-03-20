@@ -823,6 +823,18 @@ Misc ---------> Main template
             .has-text-dark {
                 color: @popper;
             }
+
+            .split {
+                display: flex;
+                > div {
+                    flex-wrap: nowrap;
+                }
+                > div:nth-of-type(2) {
+                    border-left: solid .0625rem @modal-child-popper-border;
+                    margin-left: .375rem;
+                    padding-left: .375rem;
+                }
+            }
         }
 
         .sliderbar {
