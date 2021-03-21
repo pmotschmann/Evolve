@@ -264,9 +264,11 @@ function achieveDesc(achievement,showFlair,universe){
 function featDesc(feat,showFlair){
     let flair = showFlair ? `<div class="has-text-flair">${feats[feat].flair}</div>` : ``;
     if (feat === 'egghunt'){
+        const date = new Date();
+        let year = date.getFullYear();
         let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div><div class="flexed">`;
         for (let i=1; i<13; i++){
-            let egg = global.special.egg[`egg${i}`] ? 'has-text-success' : 'has-text-danger';
+            let egg = global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
             eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
         }
         eggs = eggs + `</div>`;

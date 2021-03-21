@@ -86,7 +86,14 @@ export const events = {
             }
 
             if (global.city.biome !== 'oceanic'){
-                global.city['firestorm'] = Math.rand(400,4000);
+                let time = 400;
+                if (global.city.biome === 'forest'){
+                    time *= 2;
+                }
+                else if (global.city.biome === 'desert' || global.city.biome === 'volcanic'){
+                    time /= 2;
+                }
+                global.city['firestorm'] = Math.rand(time,time * 10);
             }
 
             return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[races[global.race.species].home, loss.toLocaleString()]);

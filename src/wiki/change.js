@@ -6,7 +6,7 @@ const changeList = [
         version: `1.0.33`,
         date: `3/20/2021`,
         changes: [
-            `Enchanced threat assessment for Spire.`,
+            `Enhanced threat assessment for Spire.`,
             `Added a Save as File option for exporting game state.`
         ]
     },

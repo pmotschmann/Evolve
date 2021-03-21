@@ -706,6 +706,24 @@ if (convertVersion(global['version']) < 100032){
     }
 }
 
+if (convertVersion(global['version']) < 100033){
+    if (global.special.hasOwnProperty('egg')){
+        global.special.egg['2020'] = JSON.parse(JSON.stringify(global.special['egg']));
+        delete global.special.egg.egg1;
+        delete global.special.egg.egg2;
+        delete global.special.egg.egg3;
+        delete global.special.egg.egg4;
+        delete global.special.egg.egg5;
+        delete global.special.egg.egg6;
+        delete global.special.egg.egg7;
+        delete global.special.egg.egg8;
+        delete global.special.egg.egg9;
+        delete global.special.egg.egg10;
+        delete global.special.egg.egg11;
+        delete global.special.egg.egg12;
+    }
+}
+
 global['version'] = '1.0.33';
 delete global['beta'];
 
@@ -1138,20 +1156,7 @@ if (!global.special['gift']){
     global.special['gift'] = {};
 }
 if (!global.special.hasOwnProperty('egg')){
-    global.special['egg'] = {
-        egg1: false,
-        egg2: false,
-        egg3: false,
-        egg4: false,
-        egg5: false,
-        egg6: false,
-        egg7: false,
-        egg8: false,
-        egg9: false,
-        egg10: false,
-        egg11: false,
-        egg12: false
-    };
+    global.special['egg'] = {};
 }
 
 if (!global.special.hasOwnProperty('trick')){

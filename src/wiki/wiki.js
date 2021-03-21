@@ -10,6 +10,7 @@ import { renderTechPage } from './tech.js';
 import { renderAchievePage } from './achieve.js';
 import { gamePlayPage } from './gameplay.js';
 import { prestigePage } from './prestige.js';
+import { eventsPage } from './events.js';
 import { arpaPage } from './arpa.js';
 import { changeLog } from './change.js';
 
@@ -53,6 +54,13 @@ function initPage(){
                 { key: 'crispr' },
                 { key: 'blood' },
                 { key: 'perks' }
+            ]
+        },
+        {
+            key: 'events',
+            submenu: [
+                { key: 'major' },
+                //{ key: 'special' }              
             ]
         },
         {
@@ -168,6 +176,11 @@ function menuDispatch(main,sub,frag){
 
         case 'prestige':
             prestigePage(sub);
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'events':
+            eventsPage(sub);
             setWindowHash(main,sub,frag);
             break;
 

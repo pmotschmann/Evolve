@@ -1417,7 +1417,8 @@ export function drawIcon(icon,size,shade,id,inject){
 
 export function easterEgg(num,size){
     let easter = getEaster();
-    if (easter.active && !global.special.egg[`egg${num}`]){
+    const date = new Date();
+    if (easter.active && !global.special.egg[date.getFullYear()][`egg${num}`]){
         return drawIcon('egg', size ? size : 16, 2, `egg${num}`, `role="button" aria-label="Egg" `);
     }
     return '';
@@ -1425,8 +1426,10 @@ export function easterEgg(num,size){
 
 export function easterEggBind(id){
     $(`#egg${id}`).click(function(){
-        if (!global.special.egg[`egg${id}`]){
-            global.special.egg[`egg${id}`] = true;
+        const date = new Date();
+        let year = date.getFullYear();
+        if (!global.special.egg[year][`egg${id}`]){
+            global.special.egg[year][`egg${id}`] = true;
             if (id <= 10){
                 if (global.race.universe === 'antimatter'){
                     global.race.Plasmid.anti += 10;
@@ -1785,6 +1788,23 @@ export function eventActive(event,val){
 export function getEaster(){
     const date = new Date();
     let year = date.getFullYear();
+
+    if (!global.special.egg.hasOwnProperty(year)){
+        global.special.egg[year] = {
+            egg1: false,
+            egg2: false,
+            egg3: false,
+            egg4: false,
+            egg5: false,
+            egg6: false,
+            egg7: false,
+            egg8: false,
+            egg9: false,
+            egg10: false,
+            egg11: false,
+            egg12: false
+        };
+    }
 
 	let f = Math.floor,
 		// Golden Number - 1
