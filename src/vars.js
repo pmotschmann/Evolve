@@ -707,7 +707,7 @@ if (convertVersion(global['version']) < 100032){
 }
 
 if (convertVersion(global['version']) < 100033){
-    if (global.special.hasOwnProperty('egg')){
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('egg')){
         global.special.egg['2020'] = JSON.parse(JSON.stringify(global.special['egg']));
         delete global.special.egg.egg1;
         delete global.special.egg.egg2;
