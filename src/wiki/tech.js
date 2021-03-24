@@ -1,5 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
+import { universeAffix } from './../achieve.js';
 import { actions, housingLabel } from './../actions.js';
 import { checkControlling } from './../civics.js';
 import { races } from './../races.js';
@@ -1442,6 +1443,7 @@ const extraRequirements = {
     supercollider3 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),3]),
     stock_exchange1 : loc('wiki_tech_req_arpa',[loc('arpa_projects_stock_exchange_title'),1]),
     monuments2 : loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),2]),
+    monuments10 : loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),10]),
     space2 : loc('wiki_tech_req_mission',[loc('space_home_test_launch_title')]),
     space3 : loc('wiki_tech_req_mission',[loc('space_moon_mission_title')]),
     space4 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('red')])]),
@@ -2067,6 +2069,15 @@ const specialRequirements = {
         [
             loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
             global.race.universe === 'magic'
+        ]
+    ],
+    dark_bomb: [
+        [
+            loc(`wiki_tech_special_demon_lord`),
+            global.stats.hasOwnProperty('spire') && 
+            global.stats.spire.hasOwnProperty(universeAffix()) && 
+            global.stats.spire[universeAffix()].hasOwnProperty('dlstr') && 
+            global.stats.spire[universeAffix()].dlstr > 0
         ]
     ]
 };

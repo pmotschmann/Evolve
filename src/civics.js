@@ -1028,7 +1028,7 @@ export function buildGarrison(garrison,full){
                                             if (global.race['brute']){
                                                 cost *= 1 - (traits.brute.vars[0] / 100);
                                             }
-                                            cost = Math.round(cost);
+                                            cost = Math.round(cost).toLocaleString();
                                             return loc('civics_garrison_hire_mercenary_cost',[cost]);
                                         }
                                     case 'defenseRating':

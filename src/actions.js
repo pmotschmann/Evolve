@@ -6737,12 +6737,13 @@ export function actionDesc(parent,c_action,obj,old){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'HellArmy'){
+                        let label = loc('fortress_troops');
                         let color = 'has-text-dark';
                         if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
                             color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
                         }
                         empty = false;
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
                     }
                     else {
                         let f_res = res === 'Species' ? global.race.species : res;
@@ -6985,6 +6986,9 @@ export function checkCosts(costs){
         }
         else {
             var testCost = Number(costs[res]()) || 0;
+            if (testCost === 0){
+                return;
+            }
             let f_res = res === 'Species' ? global.race.species : res;
             let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
             if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
@@ -7454,7 +7458,7 @@ function sentience(){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info');
     }
     else {
-        messageQueue(loc('sentience',[races[global.race.species].type,races[global.race.species].entity,flib('name')]),'info');
+        messageQueue(loc('sentience',[loc('genelab_genus_' + races[global.race.species].type),races[global.race.species].entity,flib('name')]),'info');
     }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){

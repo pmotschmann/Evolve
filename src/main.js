@@ -824,11 +824,6 @@ function fastLoop(){
         }
     }
 
-    if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
-        breakdown.p['Global'][loc('event_protest')] = `-${30}%`;
-        global_multiplier *= 0.7;
-    }
-
     if (global.race['hibernator'] && global.city.calendar.season === 3){
         global_multiplier *= 1 - (traits.hibernator.vars[1] / 100);
         breakdown.p['Global'][loc('morale_winter')] = `-${traits.hibernator.vars[1]}%`;

@@ -479,7 +479,8 @@ const fortressModules = {
             powered(){ return powerCostMod(5); },
             support(){ return 1; },
             effect(){
-                let rating = Math.round(armyRating(1,'hellArmy',0));
+                let holy = global.race['holy'] ? 1 + (traits.holy.vars[1] / 100) : 1;
+                let rating = Math.round(holy * armyRating(1,'hellArmy',0));
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -513,7 +514,7 @@ const fortressModules = {
             q_once: true,
             effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (global.portal.vault.count < 2 && payCosts($(this)[0].cost)){
                     incrementStruct('vault','portal');
                     if (global.portal.vault.count === 2){
                         global.tech.hell_ruins = 3;
@@ -1786,7 +1787,7 @@ function fortressData(dt){
                 if (global.race['brute']){
                     cost = cost / 2;
                 }
-                cost = Math.round(cost);
+                cost = Math.round(cost).toLocaleString();
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
     }
@@ -3117,6 +3118,10 @@ function bossResists(boss){
             resist = weapon;
         }
     });
+    if (weak === resist){
+        weak = 'none';
+        resist = 'none';
+    }
     return { w: weak, r: resist };
 }
 

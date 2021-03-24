@@ -1133,7 +1133,7 @@ export function marketItem(mount,market_item,name,color,full){
                 tradeRouteColor(res);
             },
             zero(res){
-                global.city.market.trade += global.resource[res].trade;
+                global.city.market.trade -= Math.abs(global.resource[res].trade);
                 global.resource[res].trade = 0;
                 tradeRouteColor(res);
             }
@@ -1271,8 +1271,10 @@ export function galacticTrade(modal){
                 let keyMutipler = keyMultiplier();
                 if (global.galaxy.trade[`f${idx}`] >= keyMutipler){
                     global.galaxy.trade[`f${idx}`] -= keyMutipler;
+                    global.galaxy.trade.cur -= keyMutipler;
                 }
                 else {
+                    global.galaxy.trade.cur -= global.galaxy.trade[`f${idx}`];
                     global.galaxy.trade[`f${idx}`] = 0;
                 }
             },
@@ -1283,6 +1285,7 @@ export function galacticTrade(modal){
                         keyMutipler = global.galaxy.trade.max - global.galaxy.trade.cur;
                     }
                     global.galaxy.trade[`f${idx}`] += keyMutipler;
+                    global.galaxy.trade.cur += keyMutipler;
                 }
             },
             desc(s){
@@ -1625,6 +1628,7 @@ function breakdownPopover(id,name,type){
         let bd = $(`<div class="resBreakdown"><div class="has-text-info">{{ res.name | namespace }}</div></div>`);
         let table = $(`<div class="parent"></div>`);
         bd.append(table);
+        let prevCol = false;
         
         if (breakdown[type][name]){
             let col1 = $(`<div></div>`);
@@ -1637,6 +1641,7 @@ function breakdownPopover(id,name,type){
                         let raw = breakdown[type][t][mod];
                         let val = parseFloat(raw.slice(0,-1));
                         if (val != 0 && !isNaN(val)){
+                            prevCol = true;
                             let type = val > 0 ? 'success' : 'danger';
                             let label = mod.replace("_"," ");
                             label = mod.replace(/\+.+$/,"");
@@ -1648,7 +1653,7 @@ function breakdownPopover(id,name,type){
         }
 
         if (breakdown[type].consume && breakdown[type].consume[name]){
-            let col2 = $(`<div class="col"></div>`);
+            let col2 = $(`<div class="${prevCol ? 'col' : ''}"></div>`);
             let count = 0;
             Object.keys(breakdown[type].consume[name]).forEach(function (mod){                
                 let val = breakdown[type].consume[name][mod];

@@ -409,10 +409,11 @@ export const events = {
 };
 
 function tax_revolt(){
+    let special_res = ['Soul_Gem', 'Corrupt_Gem', 'Codex', 'Demonic_Essence', 'Blood_Stone', 'Artifact']
     let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
     let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
-        if (res !== 'Soul_Gem'){
+        if (!special_res.includes(res)){
             let loss = Math.rand(1,Math.round(global.resource[res].amount * risk));
             let remain = global.resource[res].amount - loss;
             if (remain < 0){ remain = 0; }

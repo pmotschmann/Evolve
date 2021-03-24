@@ -659,7 +659,7 @@ const techs = {
         id: 'tech-wind_plant',
         title: loc('tech_windmill'),
         desc: loc('tech_windmill'),
-        category: 'agriculture',
+        category: 'power_generation',
         era: 'globalized',
         reqs: { high_tech: 4 },
         condition(){ return (global.tech['hunting'] && global.tech['hunting'] >= 2) || global.race['detritivore'] || global.race['soul_eater'] ? true : false; },
@@ -791,6 +791,7 @@ const techs = {
         desc: loc('tech_master_craftsman'),
         category: 'crafting',
         era: 'discovery',
+        wiki: global.race['evil'] ? true : false,
         reqs: { foundry: 3 },
         grant: ['foundry',5],
         trait: ['evil'],
@@ -811,6 +812,7 @@ const techs = {
         desc: loc('tech_master_craftsman'),
         category: 'crafting',
         era: 'discovery',
+        wiki: global.race['evil'] ? false : true,
         reqs: { foundry: 4 },
         grant: ['foundry',5],
         not_trait: ['evil'],
@@ -3695,10 +3697,10 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 global.settings.arpa.genetics = true;
+                arpa('Genetics');
                 if (global.race['cataclysm']){
                     global.arpa.sequence.on = false;
                 }
-                arpa('Genetics');
                 return true;
             }
             return false;
