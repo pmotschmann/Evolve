@@ -1254,9 +1254,11 @@ export function galacticTrade(modal){
             trade.append($(`<b-tooltip :label="desc('${unassign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${unassign}" class="sub has-text-danger" @click="less('${i}')"><span>-</span></span></b-tooltip>`));
             trade.append($(`<span class="current">{{ g.f${i} }}</span>`));
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
+            trade.append($(`<span role="button" class="zero has-text-advanced" @click="zero('${i}')">${loc('cancel_routes')}</span>`));
         }
 
-        let totals = $(`<div id="galacticTradeTotal" class="market-item trade-offer"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div>`);
+        let totals = $(`<div class="market-item trade-offer"><div id="galacticTradeTotal"><span class="tradeTotal"><span class="has-text-caution">${loc('resource_market_galactic_trade_routes')}</span> {{ g.cur }} / {{ g.max }}</span></div></div>`);
+        totals.append($(`<span role="button" class="zero has-text-advanced" @click="zero()">${loc('cancel_all_routes')}</span>`));
         galaxyTrade.append(totals);
     }
 
@@ -1286,6 +1288,18 @@ export function galacticTrade(modal){
                     }
                     global.galaxy.trade[`f${idx}`] += keyMutipler;
                     global.galaxy.trade.cur += keyMutipler;
+                }
+            },
+            zero(idx){
+                if (idx){
+                    global.galaxy.trade.cur -= global.galaxy.trade[`f${idx}`];
+                    global.galaxy.trade[`f${idx}`] = 0;
+                }
+                else {
+                    for (let i=0; i<galaxyOffers.length; i++){
+                        global.galaxy.trade.cur -= global.galaxy.trade[`f${i}`];
+                        global.galaxy.trade[`f${i}`] = 0;
+                    }
                 }
             },
             desc(s){
@@ -1764,14 +1778,26 @@ function loadRouteCounter(){
     }
 
     let no_market = global.race['no_trade'] ? ' nt' : '';
-    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><span class="tradeTotal${no_market}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div>`);
+    var market_item = $(`<div id="tradeTotal" v-show="active" class="market-item"><div id="tradeTotalPopover"><span class="tradeTotal${no_market}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> {{ trade }} / {{ mtrade }}</span></div></div>`);
+    market_item.append($(`<span role="button" class="zero has-text-advanced" @click="zero()">${loc('cancel_all_routes')}</span>`));
     $('#market').append(market_item);
     vBind({
         el: '#tradeTotal',
-        data: global.city.market
+        data: global.city.market,
+        methods: {
+            zero(){
+                Object.keys(global.resource).forEach(function(res){
+                    if (global.resource[res]['trade']){
+                        global.city.market.trade -= Math.abs(global.resource[res].trade);
+                        global.resource[res].trade = 0;
+                        tradeRouteColor(res);
+                    }
+                });
+            }
+        }
     });
 
-    popover(`tradeTotal`,function(){
+    popover(`tradeTotalPopover`,function(){
         let bd = $(`<div class="resBreakdown"></div>`);
         if (breakdown.hasOwnProperty('t_route')){
             Object.keys(breakdown.t_route).forEach(function(k){
@@ -1783,7 +1809,7 @@ function loadRouteCounter(){
         bd.append(`<div class="modal_bd ${global.city.market.mtrade > 0 ? 'sum' : ''}"><span class="has-text-caution">${loc('resource_market_trade_routes')}</span> <span>${global.city.market.mtrade}</span></div>`);
         return bd;
     },{
-        elm: `#tradeTotal > span`
+        elm: `#tradeTotalPopover > span`
     });
 }
 

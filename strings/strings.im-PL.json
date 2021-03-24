@@ -229,6 +229,7 @@
   "research_success": "%0 ashay eenbay esearchedray.",
   "action_ready": "Affordableway inway [%0]",
   "cancel_routes": "Ancelcay Outesray",
+  "cancel_all_routes": "Ancelcay Allway Outesray",
   "gain": "+%0 %1/s",
   "spend": "-%0 %1/s",
   "produce": "+%0 %1 Oductionpray",
