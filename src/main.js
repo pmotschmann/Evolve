@@ -463,6 +463,9 @@ popover('topBarPlanet',
             if (global.race['emfield']){
                 challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
             }
+            if (global.race['banana']){
+                challenges = challenges + `<div>${loc('evo_challenge_banana_desc')}</div>`;
+            }
 
             if (global.race['cataclysm']){
                 if (calc_mastery() >= 50 && global.race.universe !== 'antimatter'){
@@ -594,7 +597,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         scenarioActionHeader();
-        var challenge_actions = ['junker','cataclysm'];
+        var challenge_actions = ['junker','cataclysm','banana'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);
@@ -2225,7 +2228,7 @@ function fastLoop(){
         }
         moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
 
-        if (global.civic.taxes.tax_rate < 20){
+        if (global.civic.taxes.tax_rate < 20 && !global.race['banana']){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);
         }
 
@@ -4682,6 +4685,9 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 income_base *= 0.8;
             }
+            if (global.race['banana']){
+                income_base *= 0.1;
+            }
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
@@ -6481,6 +6487,20 @@ function midLoop(){
                     }
                 }
             }
+        }
+
+        if (global.race['banana']){
+            let exporting = false;
+            Object.keys(global.resource).forEach(function(res){
+                if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
+                    if (exporting){
+                        global.resource[res].trade = 0;
+                    }
+                    else {
+                        exporting = res;
+                    }
+                }
+            });
         }
 
         if (global.galaxy['defense']){

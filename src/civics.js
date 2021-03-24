@@ -1127,6 +1127,9 @@ function battleAssessment(gov){
             break;
     }
     enemy *= global.civic.foreign[`gov${gov}`].mil / 100;
+    if (global.race['banana']){
+        enemy *= 2;
+    }
 
     if (eventActive('fool',2021)){
         enemy /= 1.25;
@@ -1195,6 +1198,9 @@ function war_campaign(gov){
             break;
     }
     enemy = Math.floor(enemy * global.civic.foreign[`gov${gov}`].mil / 100);
+    if (global.race['banana']){
+        enemy *= 2;
+    }
     if (global.race['mistrustful']){
         global.civic.foreign[`gov${gov}`].hstl++;
     }

@@ -967,6 +967,21 @@ function loadSpecialResource(name,color) {
     });
 }
 
+function exportRouteEnabled(route){
+    if (global.race['banana']){
+        let exporting = false;
+        Object.keys(global.resource).forEach(function(res){
+            if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
+                exporting = res;
+            }
+        });
+        if (exporting && exporting !== route){
+            return false;
+        }
+    }
+    return true;
+}
+
 export function marketItem(mount,market_item,name,color,full){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
@@ -1102,7 +1117,7 @@ export function marketItem(mount,market_item,name,color,full){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     if (global.resource[res].trade <= 0){
-                        if (global.city.market.trade < global.city.market.mtrade){
+                        if (exportRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
                             global.city.market.trade++;
                             global.resource[res].trade--;
                         }

@@ -2564,6 +2564,9 @@ export const actions = {
                     if (global.stats.achieve['shaken']){
                         global.evolution['cataclysm'] = { count: 0 };
                     }
+                    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+                        global.evolution['banana'] = { count: 0 };
+                    }
                     challengeGeneHeader();
                     if (global.race.universe === 'antimatter'){
                         addAction('evolution','mastery');
@@ -2587,6 +2590,9 @@ export const actions = {
                     addAction('evolution','junker');
                     if (global.stats.achieve['shaken']){
                         addAction('evolution','cataclysm');
+                    }
+                    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+                        addAction('evolution','banana');
                     }
                 }
                 return false;
@@ -2612,7 +2618,7 @@ export const actions = {
                     if (global.race['no_plasmid']){
                         delete global.race['no_plasmid'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm'].forEach(function(s){
+                        ['junker','cataclysm','banana'].forEach(function(s){
                             delete global.race[s];
                             $(`#evolution-${s}`).removeClass('hl');
                         });
@@ -2640,7 +2646,7 @@ export const actions = {
                     if (global.race['weak_mastery']){
                         delete global.race['weak_mastery'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm'].forEach(function(s){
+                        ['junker','cataclysm','banana'].forEach(function(s){
                             delete global.race[s];
                             $(`#evolution-${s}`).removeClass('hl');
                         });
@@ -2669,7 +2675,7 @@ export const actions = {
                     if (global.race['no_trade']){
                         delete global.race['no_trade'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm'].forEach(function(s){
+                        ['junker','cataclysm','banana'].forEach(function(s){
                             delete global.race[s];
                             $(`#evolution-${s}`).removeClass('hl');
                         });
@@ -2697,7 +2703,7 @@ export const actions = {
                     if (global.race['no_craft']){
                         delete global.race['no_craft'];
                         $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm'].forEach(function(s){
+                        ['junker','cataclysm','banana'].forEach(function(s){
                             delete global.race[s];
                             $(`#evolution-${s}`).removeClass('hl');
                         });
@@ -2726,7 +2732,7 @@ export const actions = {
                         if (global.race['no_crispr']){
                             delete global.race['no_crispr'];
                             $(`#${$(this)[0].id}`).removeClass('hl');
-                            ['junker','cataclysm'].forEach(function(s){
+                            ['junker','cataclysm','banana'].forEach(function(s){
                                 delete global.race[s];
                                 $(`#evolution-${s}`).removeClass('hl');
                             });
@@ -2898,6 +2904,24 @@ export const actions = {
             emblem(){ return format_emblem('iron_will'); },
             flair: loc('evo_challenge_cataclysm_flair'),
             highlight(){ return global.race['cataclysm'] ? true : false; }
+        },
+        banana: {
+            id: 'evolution-banana',
+            title: loc('evo_challenge_banana'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_banana_desc')}</div>` : loc('evo_challenge_banana_desc'); },
+            cost: {
+                DNA(){ return 50; }
+            },
+            effect: loc('evo_challenge_banana_effect'),
+            action(){
+                if (payCosts(actions.evolution.banana.cost)){
+                    setScenario('banana');
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('banana'); },
+            flair: loc('evo_challenge_banana_flair'),
+            highlight(){ return global.race['banana'] ? true : false; }
         },
     },
     city: {
@@ -5615,7 +5639,7 @@ function setScenario(scenario){
         $(`#evolution-${scenario}`).removeClass('hl');
     }
     else {
-        ['junker','cataclysm'].forEach(function(s){
+        ['junker','cataclysm','banana'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });

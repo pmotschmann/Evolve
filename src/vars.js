@@ -724,7 +724,7 @@ if (convertVersion(global['version']) < 100033){
     }
 }
 
-global['version'] = '1.0.33';
+global['version'] = '1.0.34';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1089,9 +1089,17 @@ if (!global.stats['blood']){
 if (!global.stats['artifact']){
     global.stats['artifact'] = 0;
 }
-
 if (!global.stats['spire']){
     global.stats['spire'] = {};
+}
+if (!global.stats.hasOwnProperty('banana')){
+    global.stats['banana'] = {
+        b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+        b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+        b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+        b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+        b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+    };
 }
 
 if (!global['lastMsg']){
