@@ -3,6 +3,17 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.35`,
+        date: `3/25/2021`,
+        changes: [
+            `Added the Banana Republic challenge.`,
+            `Tax Riots will no longer cause loss of Artifacts, Blood Stones, and other key resources.`,
+            `Cancel all routes option for trade screen.`,
+            `Protests no longer apply their penalty twice.`,
+            `Misc minor bug fixes.`
+        ]
+    },
+    {
         version: `1.0.33`,
         date: `3/20/2021`,
         changes: [
