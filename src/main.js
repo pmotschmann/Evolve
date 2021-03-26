@@ -6501,8 +6501,6 @@ function midLoop(){
                 }
             });
             if (global.resource[exporting].trade <= -500){
-                console.log(exporting);
-                console.log(global.resource[exporting].trade);
                 let affix = universeAffix();
                 global.stats.banana.b4[affix] = true;
                 if (affix !== 'm' && affix !== 'l'){
