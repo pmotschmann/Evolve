@@ -4,12 +4,13 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.34`,
-        date: `3/25/2021`,
+        date: `3/26/2021`,
         changes: [
             `Added the Banana Republic challenge.`,
             `Tax Riots will no longer cause loss of Artifacts, Blood Stones, and other key resources.`,
             `Cancel all routes option for trade screen.`,
             `Protests no longer apply their penalty twice.`,
+            `Minor genetic traits can now be reordered by dragging.`,
             `Misc minor bug fixes.`
         ]
     },

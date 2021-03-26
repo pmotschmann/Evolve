@@ -1532,8 +1532,31 @@ function physics(){
     });
 }
 
+export function clearGeneticsDrag(){
+    let el = $('#geneticMinor')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
+function dragGeneticsList(){
+    let el = $('#geneticMinor')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.settings.mtorder;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            global.settings.mtorder = order;
+            genetics();
+        }
+    });
+}
+
 function genetics(){
     let parent = $('#arpaGenetics');
+    clearGeneticsDrag();
     clearElement(parent);
     if (!global.settings.arpa.genetics){
         return false;
@@ -1691,27 +1714,40 @@ function genetics(){
         let breakdown = $('<div id="geneticBreakdown" class="geneticTraits"></div>');
         $('#arpaGenetics').append(breakdown);
 
-        let minor = false;
-        let minor_list = [];
+        let minorList = $('<div id="geneticMinor"></div>');
+        breakdown.append(minorList);
+
         if (global.tech['decay'] && global.tech['decay'] >= 2){
-            minor = true;
-            bindTrait(breakdown,'fortify');
-            minor_list.push('fortify');
+            if (!global.settings.mtorder.includes('fortify')){
+                global.settings.mtorder.push('fortify');
+            }
         }
 
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type === 'minor'){
-                minor = true;
-                bindTrait(breakdown,trait);
-                minor_list.push(trait);
+                if (!global.settings.mtorder.includes(trait)){
+                    global.settings.mtorder.push(trait);
+                }
             }
         });
 
         if (global.genes['challenge'] && global.genes['challenge'] >= 5){
-            minor = true;
-            bindTrait(breakdown,'mastery');
-            minor_list.push('mastery');
+            if (!global.settings.mtorder.includes('mastery')){
+                global.settings.mtorder.push('mastery');
+            }
         }
+
+        let minor = false;
+        let minor_list = [];
+        global.settings.mtorder.forEach(function(trait){
+            if ((traits[trait] && traits[trait].type === 'minor') || trait === 'mastery' || trait === 'fortify'){
+                if (trait !== 'fortify' || (global.tech['decay'] && global.tech['decay'] >= 2)){
+                    minor = true;
+                    bindTrait(minorList,trait);
+                    minor_list.push(trait);
+                }
+            }
+        });
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
         
@@ -2018,6 +2054,8 @@ function genetics(){
                 classes: `has-background-light has-text-dark`
             });
         });
+
+        dragGeneticsList();
     }
 }
 

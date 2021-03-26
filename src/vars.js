@@ -1011,6 +1011,9 @@ if (typeof global.settings.tabLoad === 'undefined'){
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
+if (!global.settings.hasOwnProperty('mtorder')){
+    global.settings['mtorder'] = [];
+}
 if (!global.stats['reset']){
     global.stats['reset'] = 0;
 }

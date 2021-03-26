@@ -8,8 +8,8 @@ import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
-import { renderFortress, buildFortress, drawMechLab } from './portal.js';
-import { arpa } from './arpa.js';
+import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
+import { arpa, clearGeneticsDrag } from './arpa.js';
 
 export function mainVue(){
     vBind({
@@ -202,6 +202,8 @@ export function loadTab(tab){
     if (!global.settings.tabLoad){
         clearResDrag();
         clearGrids();
+        clearMechDrag();
+        clearGeneticsDrag();
         clearElement($(`#mTabCivil`));
         clearElement($(`#mTabCivic`));
         clearElement($(`#mTabResearch`));
@@ -332,6 +334,7 @@ export function loadTab(tab){
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearGrids();
+                                clearMechDrag();
                                 clearElement($(`#civic`));
                                 clearElement($(`#industry`));
                                 clearElement($(`#powerGrid`));

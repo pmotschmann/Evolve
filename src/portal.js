@@ -3494,7 +3494,7 @@ export function mechSize(s){
     }
 }
 
-function clearMechDrag(){
+export function clearMechDrag(){
     let el = $('#mechList')[0];
     if (el){
         let sort = Sortable.get(el);
