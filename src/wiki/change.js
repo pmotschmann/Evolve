@@ -11,6 +11,7 @@ const changeList = [
             `Cancel all routes option for trade screen.`,
             `Protests no longer apply their penalty twice.`,
             `Minor genetic traits can now be reordered by dragging.`,
+            `Max trade routes per resource type are now governed by Large Trade and Massive Trade upgrades.`,
             `Misc minor bug fixes.`
         ]
     },

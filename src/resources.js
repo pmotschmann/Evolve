@@ -968,6 +968,7 @@ function loadSpecialResource(name,color) {
 }
 
 function exportRouteEnabled(route){
+    let routeCap = global.tech.currency >= 6 ? -1000000 : (global.tech.currency >= 4 ? -100 : -25);
     if (global.race['banana']){
         let exporting = false;
         Object.keys(global.resource).forEach(function(res){
@@ -978,6 +979,18 @@ function exportRouteEnabled(route){
         if (exporting && exporting !== route){
             return false;
         }
+        routeCap = global.tech.currency >= 6 ? -1000000 : (global.tech.currency >= 4 ? -25 : -10);
+    }
+    if (global.resource[route].trade <= routeCap){
+        return false;
+    }
+    return true;
+}
+
+function importRouteEnabled(route){
+    let routeCap = global.tech.currency >= 6 ? 1000000 : (global.tech.currency >= 4 ? 100 : 25);
+    if (global.resource[route].trade >= routeCap){
+        return false;
     }
     return true;
 }
@@ -1098,7 +1111,7 @@ export function marketItem(mount,market_item,name,color,full){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     if (global.resource[res].trade >= 0){
-                        if (global.city.market.trade < global.city.market.mtrade){
+                        if (importRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
                             global.city.market.trade++;
                             global.resource[res].trade++;
                         }

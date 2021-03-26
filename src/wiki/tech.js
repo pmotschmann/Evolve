@@ -398,13 +398,13 @@ const extraInformation = {
         loc(`wiki_tech_tax_rates`)
     ],
     large_trades: [
-        loc(`wiki_tech_large_trades`,[5000])
+        loc(`wiki_tech_large_trades`,[5000,25])
     ],
     corruption: [
         loc(`wiki_tech_corruption`)
     ],
     massive_trades: [
-        loc(`wiki_tech_large_trades`,[1000000])
+        loc(`wiki_tech_large_trades`,[1000000,1000000])
     ],
     trade: [
         loc(`wiki_tech_building_unlock`,[loc(`city_trade`)])

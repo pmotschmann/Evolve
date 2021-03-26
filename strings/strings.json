@@ -5341,7 +5341,7 @@
   "wiki_tech_spy_gadgets": "Spy missions take 2/3 of the time to complete.",
   "wiki_tech_code_breakers": "Spy missions are ~43% more effective.",
   "wiki_tech_tax_rates": "Tax Rates can be changed in the Civics tab.",
-  "wiki_tech_large_trades": "Raises the manual trade cap to %0.",
+  "wiki_tech_large_trades": "Raises the manual trade cap to %0 and the trade route cap per route to %1.",
   "wiki_tech_corruption": "Taxes can be set to anywhere from 0-50%.",
   "wiki_tech_diplomacy": "Trade Posts give another Trade Route.",
   "wiki_tech_freight": "Freight Yards give +1 Trade Route.",
