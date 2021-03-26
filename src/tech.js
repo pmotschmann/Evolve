@@ -8650,6 +8650,13 @@ const techs = {
                 global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 40;
                 global.interstellar.stellar_engine.exotic = 0;
                 delete global.tech['whitehole'];
+                if (global.race['banana']){
+                    let affix = universeAffix();
+                    global.stats.banana.b3[affix] = true;
+                    if (affix !== 'm' && affix !== 'l'){
+                        global.stats.banana.b3.l = true;
+                    }
+                }
                 return true;
             }
             return false;

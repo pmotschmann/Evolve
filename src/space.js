@@ -1,6 +1,6 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
-import { unlockAchieve, checkAchievements, unlockFeat } from './achieve.js';
+import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -1740,6 +1740,13 @@ const spaceProjects = {
                         global.space['world_controller'] = { count: 1, on: 0 };
                         drawTech();
                         renderSpace();
+                        if (global.race['banana']){
+                            let affix = universeAffix();
+                            global.stats.banana.b2[affix] = true;
+                            if (affix !== 'm' && affix !== 'l'){
+                                global.stats.banana.b2.l = true;
+                            }
+                        }
                         var id = $(this)[0].id;
                         $(`#pop${id}`).hide();
                         if (poppers[id]){

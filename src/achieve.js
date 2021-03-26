@@ -121,6 +121,11 @@ export const feats = {
         desc: loc("feat_steelem_desc"),
         flair: loc("feat_steelem_flair")
     },
+    banana: {
+        name: loc("feat_banana_name"),
+        desc: loc("feat_banana_desc",[500,500]),
+        flair: loc("feat_banana_flair")
+    },
     rocky_road: {
         name: loc("feat_rocky_road_name"),
         desc: loc("feat_rocky_road_desc"),
@@ -575,6 +580,33 @@ export function checkAchievements(){
         });
         if (Object.keys(highest).length === mobs){
             unlockAchieve('gladiator',false,Math.min(...Object.values(highest)),'l');
+        }
+    }
+
+    if (global.race['banana']){
+        let affix = universeAffix();
+        if (global.tech.hasOwnProperty('monuments') && global.tech.monuments >= 50){
+            global.stats.banana.b5[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.banana.b5.l = true;
+            }
+        }
+
+        let slist = 0;
+        let ulist = 0;
+        ['b1','b2','b3','b4','b5'].forEach(function(b){
+            if (global.stats.banana[b].l){
+                slist++;
+            }
+            if (affix !== 'l' && global.stats.banana[b][affix]){
+                ulist++;
+            }
+        });
+        if (slist > 0){
+            unlockAchieve('banana',false,slist);
+        }
+        if (ulist > 0 && affix !== 'l'){
+            unlockAchieve('banana',false,ulist,affix);
         }
     }
 

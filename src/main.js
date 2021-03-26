@@ -1,6 +1,6 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon } from './achieve.js';
+import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, flib, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
@@ -6486,6 +6486,7 @@ function midLoop(){
 
         if (global.race['banana']){
             let exporting = false;
+            let importing = 0;
             Object.keys(global.resource).forEach(function(res){
                 if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
                     if (exporting){
@@ -6495,7 +6496,22 @@ function midLoop(){
                         exporting = res;
                     }
                 }
+                if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade > 0){
+                    importing += global.resource[res].trade;
+                }
             });
+            if (global.resource[exporting].trade <= -500){
+                console.log(exporting);
+                console.log(global.resource[exporting].trade);
+                let affix = universeAffix();
+                global.stats.banana.b4[affix] = true;
+                if (affix !== 'm' && affix !== 'l'){
+                    global.stats.banana.b4.l = true;
+                }
+                if (importing >= 500){
+                    unlockFeat('banana');
+                }
+            }
         }
 
         if (global.galaxy['defense']){

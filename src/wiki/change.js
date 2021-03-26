@@ -3,7 +3,7 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.0.35`,
+        version: `1.0.34`,
         date: `3/25/2021`,
         changes: [
             `Added the Banana Republic challenge.`,

@@ -1,7 +1,7 @@
 import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
-import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
 import { drawTech } from  './actions.js';
@@ -1505,6 +1505,13 @@ function war_campaign(gov){
             global.civic.foreign[`gov${gov}`].act = 'none';
             if (drawTechs){
                 drawTech();
+            }
+            if (global.race['banana']){
+                let affix = universeAffix();
+                global.stats.banana.b1[affix] = true;
+                if (affix !== 'm' && affix !== 'l'){
+                    global.stats.banana.b1.l = true;
+                }
             }
         }
     }

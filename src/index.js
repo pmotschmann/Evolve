@@ -800,6 +800,7 @@ export function index(){
         {i: 'martini',      f: 'utopia',        r: 2 },
         {i: 'lightbulb',    f: 'energetic',     r: 2 },
         {i: 'trash',        f: 'garbage_pie',   r: 2 },
+        {i: 'banana',       f: 'banana',        r: 2 },
         {i: 'turtle',       f: 'finish_line',   r: 2 },
         {i: 'heart',        f: 'valentine',     r: 1 },
         {i: 'clover',       f: 'leprechaun',    r: 1 },
