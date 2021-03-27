@@ -1437,7 +1437,7 @@ export function containerItem(mount,market_item,name,color){
         market_item.append(crate);
 
         crate.append($(`<span role="button" aria-label="remove ${name} ${loc('resource_Crates_name')}" class="sub has-text-danger" @click="subCrate('${name}')"><span>&laquo;</span></span>`));
-        crate.append($(`<span class="current">{{ crates }}</span>`));
+        crate.append($(`<span class="current" v-html="$options.filters.cCnt(crates,'${name}')"></span>`));
         crate.append($(`<span role="button" aria-label="add ${name} ${loc('resource_Crates_name')}" class="add has-text-success" @click="addCrate('${name}')"><span>&raquo;</span></span>`));
     }
 
@@ -1476,6 +1476,15 @@ export function containerItem(mount,market_item,name,color){
                     }
                 }
                 return v;
+            },
+            cCnt(ct,res){
+                if (res === 'Food'){
+                    let egg = easterEgg(13,10);
+                    if (ct === 10 && egg.length > 0){
+                        return '1'+egg;
+                    }
+                }
+                return ct;
             }
         }
     });

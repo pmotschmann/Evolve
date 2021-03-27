@@ -2584,7 +2584,7 @@ const techs = {
         not_trait: ['terrifying'],
         grant: ['currency',2],
         cost: {
-            Knowledge(){ return 1800; }
+            Knowledge(){ return global.race['banana'] ? 300 : 1800; }
         },
         effect: loc('tech_market_effect'),
         action(){
@@ -2695,7 +2695,7 @@ const techs = {
         reqs: { currency: 2, military: 1 },
         grant: ['trade',1],
         cost: {
-            Knowledge(){ return 4500; }
+            Knowledge(){ return global.race['banana'] ? 450 : 4500; }
         },
         effect: loc('tech_trade_effect'),
         action(){

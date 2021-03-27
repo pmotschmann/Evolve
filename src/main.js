@@ -4953,7 +4953,7 @@ function fastLoop(){
 
     let easter = eventActive('easter');
     if (easter.active){
-        for (i=1; i<13; i++){
+        for (i=1; i<=15; i++){
             if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
                 easterEggBind(i);
                 $(`#egg${i}`).addClass('binded');
@@ -4963,7 +4963,7 @@ function fastLoop(){
 
     let halloween = eventActive('halloween');
     if (halloween.active){
-        for (i=1; i<13; i++){
+        for (i=1; i<=15; i++){
             if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
                 trickOrTreatBind(i);
                 $(`#trick${i}`).addClass('binded');
@@ -6500,7 +6500,7 @@ function midLoop(){
                     importing += global.resource[res].trade;
                 }
             });
-            if (global.resource[exporting].trade <= -500){
+            if (global.resource[exporting] && global.resource[exporting].trade <= -500){
                 let affix = universeAffix();
                 global.stats.banana.b4[affix] = true;
                 if (affix !== 'm' && affix !== 'l'){

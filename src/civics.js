@@ -1649,6 +1649,10 @@ function lootModify(val,gov){
             break;
     }
 
+    if (global.race['banana']){
+        loot *= 0.5;
+    }
+
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 
@@ -1700,6 +1704,9 @@ export function armyRating(val,type,wound){
         }
         if (global.race['holy'] && type === 'hellArmy'){
             army *= 1 + (traits.holy.vars[0] / 100);
+        }
+        if (global.race['banana'] && type === 'hellArmy'){
+            army *= 0.8;
         }
         if (global.city.ptrait === 'rage'){
             army *= planetTraits.rage.vars[0];

@@ -824,10 +824,10 @@ export function index(){
         }
     }
 
-    let egg = easterEgg(9,14);
+    let egg9 = easterEgg(9,14);
     let hideEgg = '';
-    if (egg.length > 0){
-        hideEgg = `<b-dropdown-item>${egg}</b-dropdown-item>`;
+    if (egg9.length > 0){
+        hideEgg = `<b-dropdown-item>${egg9}</b-dropdown-item>`;
     }
 
     let trick = trickOrTreat(11,12);
@@ -970,12 +970,14 @@ export function index(){
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
 
+
+    let egg15 = easterEgg(15,8);
     // Bottom Bar
     $('body').append(`
         <div class="promoBar">
             <span class="left">
                 <h1>
-                    <span class="has-text-warning">Evolve</span>
+                    <span class="has-text-warning">${egg15.length > 0 ? `Ev${egg15}lve` : `Evolve`}</span>
                     by
                     <span class="has-text-success">Demagorddon</span>
                 </h1>

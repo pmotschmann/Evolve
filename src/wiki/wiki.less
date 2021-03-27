@@ -275,6 +275,20 @@ span, div {
         list-style: disc;
         margin-left: 1.25rem;
     }
+
+    .tbl {
+        display: table;
+        .trow {
+            display: table-row;
+            .tcell {
+                display: table-cell;
+                padding-right: 0.75rem;
+            }
+            .tcell:last-child {
+                padding-right: 0;
+            }
+        }
+    }
 }
 
 html.dark,

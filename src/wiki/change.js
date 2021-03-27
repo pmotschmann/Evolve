@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.0.34`,
-        date: `3/26/2021`,
+        date: `3/27/2021`,
         changes: [
             `Added the Banana Republic challenge.`,
             `Tax Riots will no longer cause loss of Artifacts, Blood Stones, and other key resources.`,

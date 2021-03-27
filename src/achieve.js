@@ -649,14 +649,14 @@ export function checkAchievements(){
             unlockFeat('easter');
         }
 
-        let checkAll = true;
-        for (let i=1; i<13; i++){
+        let eggs = 0;
+        for (let i=1; i<=15; i++){
             if (!global.special.egg[`egg${i}`]){
-                checkAll = false;
+                eggs++;
             }
         }
 
-        if (checkAll){
+        if (eggs >= 12){
             if (global.race.universe === 'micro'){
                 unlockFeat('egghunt',true);
             }

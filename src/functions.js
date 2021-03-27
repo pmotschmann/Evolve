@@ -1450,9 +1450,9 @@ export function easterEggBind(id){
                 }
             }
             else {
-                global.race.Phage.count += 5;
-                global.stats.phage += 5;
-                messageQueue(loc('city_egg_msg',[5,loc('resource_Phage_name')]),'success');
+                global.race.Phage.count += 4;
+                global.stats.phage += 4;
+                messageQueue(loc('city_egg_msg',[4,loc('resource_Phage_name')]),'success');
             }
             $(`#egg${id}`).remove();
             $('.popper').hide();
@@ -1813,6 +1813,12 @@ export function getEaster(){
         };
     }
 
+    if (global.special.egg.hasOwnProperty(year) && !global.special.egg[year].hasOwnProperty('egg13')){
+        global.special.egg[year]['egg13'] = false;
+        global.special.egg[year]['egg14'] = false;
+        global.special.egg[year]['egg15'] = false;
+    }
+
 	let f = Math.floor,
 		// Golden Number - 1
 		G = year % 19,
@@ -1831,7 +1837,11 @@ export function getEaster(){
     let easter = {
         date: [month-1,day],
         active: false,
-        endDate: [month-1,day]
+        endDate: [month-1,day],
+        hint: false,
+        hintDate: [month-1,day],
+        solve: false,
+        solveDate: [month-1,day]
     };
 
     if (global.settings.boring){
@@ -1843,10 +1853,26 @@ export function getEaster(){
         easter.endDate[1] -= easter.endDate[0] === 2 ? 31 : 30;
         easter.endDate[0]++;
     }
+    easter.hintDate[1] += 1;
+    if ((easter.hintDate[0] === 2 && easter.hintDate[1] > 31) || (easter.hintDate[0] === 3 && easter.hintDate[1] > 30)){
+        easter.hintDate[1] -= easter.hintDate[0] === 2 ? 31 : 30;
+        easter.hintDate[0]++;
+    }
+    easter.solveDate[1] += 3;
+    if ((easter.solveDate[0] === 2 && easter.solveDate[1] > 31) || (easter.solveDate[0] === 3 && easter.solveDate[1] > 30)){
+        easter.solveDate[1] -= easter.solveDate[0] === 2 ? 31 : 30;
+        easter.solveDate[0]++;
+    }
     if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
         easter.active = true;
+        if (date.getMonth() >= easter.hintDate[0] && date.getDate() >= easter.hintDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+            easter.hint = true;
+        }
+        if (date.getMonth() >= easter.solveDate[0] && date.getDate() >= easter.solveDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+            easter.solve = true;
+        }
     }
-
+    
     return easter;
 }
 
