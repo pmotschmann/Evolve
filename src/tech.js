@@ -108,6 +108,13 @@ const techs = {
                     global.settings.showCivic = true;
                     global.city['garrison'] = { count: 0, on: 0 };
                 }
+                if (global.race['banana']){
+                    global.settings.showResources = true;
+                    global.settings.showMarket = true;
+                    global.resource.Money.display = true;
+                    global.city.market.active = true;
+                    global.tech['currency'] = 2;
+                }
                 return true;
             }
             return false;
@@ -2695,7 +2702,7 @@ const techs = {
         reqs: { currency: 2, military: 1 },
         grant: ['trade',1],
         cost: {
-            Knowledge(){ return global.race['banana'] ? 450 : 4500; }
+            Knowledge(){ return global.race['banana'] ? 1200 : 4500; }
         },
         effect: loc('tech_trade_effect'),
         action(){

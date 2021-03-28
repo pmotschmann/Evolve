@@ -1148,7 +1148,12 @@ export const perkList = {
         ],
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_banana_name`)}</span>`]),
-            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_banana_name`)}</span>`])
+            loc(`wiki_perks_achievement_note_task`,[`<span class="has-text-caution">${loc(`achieve_banana_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[1,`<span class="has-text-${global.stats.banana.b1.l ? `success` : `danger`}">${loc(`wiki_achieve_banana1`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.banana.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_banana2`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.banana.b3.l ? `success` : `danger`}">${loc(`wiki_achieve_banana3`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.banana.b4.l ? `success` : `danger`}">${loc(`wiki_achieve_banana4`,[500])}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.banana.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_banana5`,[50])}</span>`])
         ]
     },
     anarchist: {

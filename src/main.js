@@ -1086,7 +1086,7 @@ function fastLoop(){
         breakdown.p.consume.Money[loc('trade')] = 0;
 
         // trade routes
-        if (global.tech['trade']){
+        if (global.tech['trade'] || (global.race['banana'] && global.tech['primitive'] && global.tech.primitive >= 3)){
             let used_trade = 0;
             Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
@@ -4681,7 +4681,7 @@ function fastLoop(){
                 income_base *= 0.8;
             }
             if (global.race['banana']){
-                income_base *= 0.1;
+                income_base *= 0.05;
             }
 
             let temple_mult = 1;
@@ -6171,12 +6171,17 @@ function midLoop(){
             bd_Knowledge[loc('galaxy_scavenger')] = gain+'v';
         }
         breakdown['t_route'] = {};
+        global.city.market.mtrade = 0;
+        if (global.race['banana']){
+            global.city.market.mtrade++;
+            breakdown.t_route[loc('base')] = 1;
+        }
         if (global.city['trade']){
             let routes = global.race['nomadic'] || global.race['xenophobic'] ? global.tech.trade : global.tech.trade + 1;
             if (global.tech['trade'] && global.tech['trade'] >= 3){
                 routes--;
             }
-            global.city.market.mtrade = routes * global.city.trade.count;
+            global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
                 let r_count = global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count;
