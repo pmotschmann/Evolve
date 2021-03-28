@@ -1548,14 +1548,16 @@ export function clearGeneticsDrag(){
 
 function dragGeneticsList(){
     let el = $('#geneticMinor')[0];
-    Sortable.create(el,{
-        onEnd(e){
-            let order = global.settings.mtorder;
-            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.settings.mtorder = order;
-            genetics();
-        }
-    });
+    if (el){
+        Sortable.create(el,{
+            onEnd(e){
+                let order = global.settings.mtorder;
+                order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+                global.settings.mtorder = order;
+                genetics();
+            }
+        });
+    }
 }
 
 function genetics(){
