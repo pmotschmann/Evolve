@@ -4748,16 +4748,19 @@ function fastLoop(){
             let tourism = 0;
             let amp = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
             if (global.city['amphitheatre']){
-                tourism += global.city['tourist_center'].on * global.city['amphitheatre'].count * amp;
+                tourism += global.city['tourist_center'].on * global.city.amphitheatre.count * amp;
             }
             if (global.city['casino']){
-                tourism += global.city['tourist_center'].on * global.city['casino'].count * 5 * amp;
+                tourism += global.city['tourist_center'].on * global.city.casino.count * 5 * amp;
             }
             if (global.space['spc_casino']){
-                tourism += global.city['tourist_center'].on * global.space['spc_casino'].count * 5 * amp;
+                tourism += global.city['tourist_center'].on * global.space.spc_casino.count * 5 * amp;
             }
             if (global.tech['monuments']){
                 tourism += global.city['tourist_center'].on * global.tech['monuments'] * 2 * amp;
+            }
+            if (global.city['trade'] && global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
+                tourism += global.city['tourist_center'].on * global.city.trade.count * 3 * amp;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 2;
@@ -6203,6 +6206,9 @@ function midLoop(){
             }
             else {
                 routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
+            }
+            if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2){
+                routes++;
             }
             global.city.market.mtrade += global.tech['railway'] * routes;
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;

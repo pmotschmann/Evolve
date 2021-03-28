@@ -4028,9 +4028,9 @@ export const actions = {
             reqs: { container: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ return costMultiplier('storage_yard', offset, 10, 1.36); },
-                Brick(offset){ return costMultiplier('storage_yard', offset, 3, 1.35); },
-                Wrought_Iron(offset){ return costMultiplier('storage_yard', offset, 5, 1.35); }
+                Money(offset){ return costMultiplier('storage_yard', offset, 10, bananaPerk(1.36)); },
+                Brick(offset){ return costMultiplier('storage_yard', offset, 3, bananaPerk(1.35)); },
+                Wrought_Iron(offset){ return costMultiplier('storage_yard', offset, 5, bananaPerk(1.35)); }
             },
             effect(){
                 let cap = global.tech.container >= 3 ? 20 : 10;
@@ -4084,9 +4084,9 @@ export const actions = {
             reqs: { steel_container: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ return costMultiplier('warehouse', offset, 400, 1.26); },
-                Cement(offset){ return costMultiplier('warehouse', offset, 75, 1.26); },
-                Sheet_Metal(offset){ return costMultiplier('warehouse', offset, 25, 1.25); }
+                Money(offset){ return costMultiplier('warehouse', offset, 400, bananaPerk(1.26)); },
+                Cement(offset){ return costMultiplier('warehouse', offset, 75, bananaPerk(1.26)); },
+                Sheet_Metal(offset){ return costMultiplier('warehouse', offset, 25, bananaPerk(1.25)); }
             },
             effect(){
                 let cap = global.tech.steel_container >= 2 ? 20 : 10;
@@ -4789,7 +4789,11 @@ export const actions = {
                 let amp = (global.civic.govern.type === 'corpocracy' ? 2 : 1) * xeno;
                 let cas = (global.civic.govern.type === 'corpocracy' ? 10 : 5) * xeno;
                 let mon = (global.civic.govern.type === 'corpocracy' ? 4 : 2) * xeno;
-                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>`;
+                let post = '';
+                if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
+                    post = `<div>${loc(`city_tourist_center_effect5`,[(global.civic.govern.type === 'corpocracy' ? 6 : 3) * xeno])}</div>`;
+                }
+                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}`;
             },
             powered(){ return powerCostMod(1); },
             action(){
@@ -7969,6 +7973,13 @@ export function cleanTechPopOver(id){
         poppers[id].destroy();
     }
     clearElement($(`#pop${id}`),true);
+}
+
+function bananaPerk(val){
+    if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 5){
+        return val - 0.01;
+    }
+    return val;
 }
 
 export function bank_vault(){

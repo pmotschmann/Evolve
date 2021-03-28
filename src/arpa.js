@@ -157,7 +157,11 @@ export const arpaProjects = {
             }
             else {
                 let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
-                return loc('arpa_projects_railway_effect1',[routes,2,6,1]);
+                let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
+                if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2){
+                    routes++;
+                }
+                return loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
             }
         },
         cost: {

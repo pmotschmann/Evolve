@@ -1509,7 +1509,8 @@ export function tradeSellPrice(res){
         price = price * (1 + (global.space['gps'].count * 0.01));
     }
     if (global.tech['railway']){
-        price = price * (1 + (global.tech['railway'] * 0.02));
+        let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
+        price = price * (1 + (global.tech['railway'] * boost));
     }
     price = +(price).toFixed(1);
     return price;
@@ -1531,7 +1532,8 @@ export function tradeBuyPrice(res){
         price = price * (0.99 ** global.space['gps'].count);
     }
     if (global.tech['railway']){
-        price = price * (0.98 ** global.tech['railway']);
+        let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
+        price = price * (boost ** global.tech['railway']);
     }
     price = +(price).toFixed(1);
     return price;
@@ -2054,6 +2056,9 @@ export function crateValue(){
     }
     if (global.race['pack_rat']){
         create_value *= 1 + (traits.pack_rat.vars[0] / 100);
+    }
+    if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 3){
+        create_value *= 1.1;
     }
     create_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(create_value));

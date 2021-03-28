@@ -8182,6 +8182,7 @@ const techs = {
                     global.civic.foreign[`gov${i}`].sab = 0;
                     global.civic.foreign[`gov${i}`].act = 'none';
                 }
+                delete global.race['banana'];
                 return true;
             }
             return false;

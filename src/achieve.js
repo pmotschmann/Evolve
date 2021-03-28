@@ -870,7 +870,7 @@ export const perkList = {
                 if (universe === 'standard'){
                     desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}</span></span>`;
                 }
-                else {
+                else if (global.stats.achieve['whitehole']){
                     desc += `<span class="row"><span class="has-text-caution">${universe_types[universe].name}</span>: <span>${loc('perks_mastery_general',[`<span class="has-text-advanced">${+(mastery.g).toFixed(2)}%</span>`])}, ${loc('perks_mastery_universe',[`<span class="has-text-advanced">${+(mastery.u).toFixed(2)}%</span>`])}</span></span>`;
                 }
             });
@@ -1100,6 +1100,55 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_dissipated_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_dissipated_name`)}</span>`])
+        ]
+    },
+    banana: {
+        name: loc(`achieve_banana_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_banana1",[50]);
+                },
+                active(){
+                    return global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_banana2",[1]);
+                },
+                active(){
+                    return global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_banana3",[10]);
+                },
+                active(){
+                    return global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_banana4",[3]);
+                },
+                active(){
+                    return global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_banana5",[0.01]);
+                },
+                active(){
+                    return global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 5 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_banana_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_banana_name`)}</span>`])
         ]
     },
     anarchist: {

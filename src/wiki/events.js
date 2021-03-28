@@ -188,7 +188,7 @@ function specialEventsPage(content){
 
     {   // Valentine's Day
         let event = 'valentine';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
             para_data: {
                 2: [loc('feat_love_name')],
             }
@@ -202,6 +202,17 @@ function specialEventsPage(content){
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
                 2: [loc('feat_leprechaun_name')],
+            }
+        });
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+    }
+
+    {   // April Fools Day
+        let event = 'fool';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                2: [loc('feat_fool_name')],
             }
         });
         infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
@@ -227,9 +238,10 @@ function specialEventsPage(content){
 
         {   // Egg Hunt
             let event = 'egghunt';
-            let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
+            let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 5, break: [2,3,4], h_level: 2,
                 para_data: {
                     2: [loc('feat_egghunt_name'),12,15],
+                    5: [loc('trait_hyper_name'),loc('trait_fast_growth_name'),loc('trait_rainbow_name'),loc('trait_optimistic_name')],
                 }
             });
 
@@ -277,16 +289,15 @@ function specialEventsPage(content){
             for (let i=1; i<=15; i++){
                 let egg = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
                 
-                let hint = `<span class="tcell">Hint available on ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}</span>`;
+                let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}</span>`;
                 if (easter.hint){
                     const bytes = CryptoJS.AES.decrypt(hints[i-1], passphrase);
                     hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
                 }
 
-                let sol = `<span class="tcell">Solution available on ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}</span>`;
+                let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}</span>`;
                 if (easter.solve){
-                    
-                    sol = `<span class="tcell eggsol" data-sol="${solutions[i-1]}">Click to Reveal Solution</span>`;
+                    sol = `<span class="tcell eggsol" data-sol="${solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
                 }
 
                 eggs = eggs + `<div class="trow"><span class="tcell ${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>${hint}${sol}</div>`
@@ -322,7 +333,7 @@ function specialEventsPage(content){
 
     {   // Thanksgiving
         let event = 'turkey';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
             para_data: {
                 2: [loc('feat_gobble_gobble_name')],
             }
@@ -331,14 +342,14 @@ function specialEventsPage(content){
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
 
-    {   // April Fools Day
-        let event = 'fool';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+    {   // XMas
+        let event = 'xmas';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 5, break: [2,3,4,5], h_level: 2,
             para_data: {
-                2: [loc('feat_fool_name')],
+                2: [loc('feat_xmas_name')],
             }
         });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 }, section);
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
 }
