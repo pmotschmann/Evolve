@@ -69,12 +69,5 @@ function getString(locale) {
 }
 
 export const locales = {
-    'en-US': 'English (US)',
-    'es-ES': 'Spanish (ESP)',
-    'pt-BR': 'Português (BR)',
-    'zh-CN': '简体中文',
-    'ko-KR': '한국어',
-    'cs-CZ': 'Čeština',
-    'im-PL': 'Igpay-Atinlay',
     'ru-RU': 'Russian'
 };
