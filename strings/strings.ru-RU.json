@@ -238,6 +238,7 @@
   "bonus": "Бонус",
   "unsuited": "Не подходит",
   "rating": "Военная мощь",
+  "rating": "Рейтинг",
   "cheese_swiss": "Швейцар",
   "cheese_gouda": "Гауда",
   "cheese_cheddar": "Чеддер",
@@ -2900,6 +2901,8 @@
   "arpa_remove_button": "Remove",
   "arpa_gain": "Add %0 to your species, cost %1 %2. This is not easily reversible.",
   "arpa_gain_button": "Gain",
+  "perks_mastery_general": "General Mastery: %0",
+  "perks_mastery_universe": "Universe Mastery: %0",  
   "perks_harmonic": "Harmonic Energy is boosting your production by %0% and most storage by %1%.",
   "perks_none": "You have not unlocked any perks.",
   "perks_mastery_general": "General Mastery: %0",
@@ -5646,7 +5649,7 @@
   "wiki_feat_valentine": "Play the game during Valentines Day.",
   "wiki_feat_leprechaun": "Play the game during Saint Patrick's Day.",
   "wiki_feat_easter": "Play the game during the Easter event period.",
-  "wiki_feat_egghunt": "Find all 12 hidden Eggs during the Easter event period.",
+  "wiki_feat_egghunt": "Find at least 12 hidden Eggs during the Easter event period.",
   "wiki_feat_halloween": "Play the game during Halloween.",
   "wiki_feat_trickortreat": "Find all 6 hidden Treats and all 6 hidden Ghosts during the Halloween event period.",
   "wiki_feat_thanksgiving": "Play the game during Thanksgiving day.",
@@ -6332,4 +6335,3 @@
   "wiki_events_xmas_para4": "The 2019 gift contained 100 Plasmids.",
   "wiki_events_xmas_para5": "The 2020 gift contained: 100 + Resets + Mad Resets Plasmids, Bioseeds + Cataclysms Phage, Lifetime soldier deaths Coal, 0-4 Dark Energy, 0-5 Harmony Crystals, 0-25 Blood Stones, and 0-5 Artifacts.",
   "wiki_events_xmas_condition_para1": "Occurs on December 25th."
-}
