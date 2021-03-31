@@ -7,7 +7,7 @@ const changeList = [
         date: `3/31/2021`,
         changes: [
             `Changed Blackhole objective of Banana Republic scenerio from stabilize a blackhole to Expand a blackhole to 12 solar mass without exotic matter.`,
-            `Fixed Balorg trade exploit in Banana Republic scenerio.`
+            `Fixed Terrifying trade exploit in Banana Republic scenerio.`
         ]
     },
     {
