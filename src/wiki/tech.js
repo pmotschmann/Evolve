@@ -398,7 +398,7 @@ const extraInformation = {
         loc(`wiki_tech_tax_rates`)
     ],
     large_trades: [
-        loc(`wiki_tech_large_trades`,[5000,25])
+        loc(`wiki_tech_large_trades`,[5000,100])
     ],
     corruption: [
         loc(`wiki_tech_corruption`)

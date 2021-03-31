@@ -108,7 +108,7 @@ const techs = {
                     global.settings.showCivic = true;
                     global.city['garrison'] = { count: 0, on: 0 };
                 }
-                if (global.race['banana']){
+                if (global.race['banana'] && !global.race['terrifying']){
                     global.settings.showResources = true;
                     global.settings.showMarket = true;
                     global.resource.Money.display = true;
@@ -2610,6 +2610,7 @@ const techs = {
         category: 'banking',
         era: 'civilized',
         reqs: { banking: 2, currency: 2, queue: 1 },
+        not_trait: ['terrifying'],
         grant: ['currency',3],
         cost: {
             Knowledge(){ return 3375; }
@@ -2630,6 +2631,7 @@ const techs = {
         category: 'market',
         era: 'civilized',
         reqs: { currency: 3 },
+        not_trait: ['terrifying'],
         grant: ['currency',4],
         cost: {
             Knowledge(){ return 6750; }
@@ -2658,6 +2660,7 @@ const techs = {
         category: 'banking',
         era: 'industrialized',
         reqs: { currency: 4, high_tech: 3 },
+        not_trait: ['terrifying'],
         grant: ['currency',5],
         not_trait: ['noble'],
         cost: {
@@ -2678,6 +2681,7 @@ const techs = {
         category: 'market',
         era: 'globalized',
         reqs: { currency: 5, high_tech: 4 },
+        not_trait: ['terrifying'],
         grant: ['currency',6],
         cost: {
             Knowledge(){ return 108000; }
@@ -2700,6 +2704,7 @@ const techs = {
         category: 'market',
         era: 'civilized',
         reqs: { currency: 2, military: 1 },
+        not_trait: ['terrifying'],
         grant: ['trade',1],
         cost: {
             Knowledge(){ return global.race['banana'] ? 1200 : 4500; }
@@ -2721,6 +2726,7 @@ const techs = {
         category: 'market',
         era: 'discovery',
         reqs: { trade: 1, high_tech: 1 },
+        not_trait: ['terrifying'],
         grant: ['trade',2],
         cost: {
             Knowledge(){ return 16200; }
@@ -2740,6 +2746,7 @@ const techs = {
         category: 'market',
         era: 'industrialized',
         reqs: { trade: 2, high_tech: 3 },
+        not_trait: ['terrifying'],
         grant: ['trade',3],
         cost: {
             Knowledge(){ return 37800; }
@@ -8658,7 +8665,7 @@ const techs = {
                 global.interstellar.stellar_engine.mass += global.interstellar.stellar_engine.exotic * 40;
                 global.interstellar.stellar_engine.exotic = 0;
                 delete global.tech['whitehole'];
-                if (global.race['banana']){
+                if (global.race['banana'] && global.interstellar.stellar_engine.mass >= 12){
                     let affix = universeAffix();
                     global.stats.banana.b3[affix] = true;
                     if (affix !== 'm' && affix !== 'l'){

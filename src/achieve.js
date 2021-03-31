@@ -608,6 +608,13 @@ export function checkAchievements(){
         if (ulist > 0 && affix !== 'l'){
             unlockAchieve('banana',false,ulist,affix);
         }
+
+        if (global.interstellar.hasOwnProperty('stellar_engine') && global.interstellar.stellar_engine.mass >= 12 && global.interstellar.stellar_engine.exotic === 0){
+            global.stats.banana.b3[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.banana.b3.l = true;
+            }
+        }
     }
 
     const date = new Date();
