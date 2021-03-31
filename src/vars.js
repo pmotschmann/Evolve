@@ -724,7 +724,14 @@ if (convertVersion(global['version']) < 100033){
     }
 }
 
-global['version'] = '1.0.34';
+if (convertVersion(global['version']) < 100035){
+    if (global.race['terrifying']){
+        delete global.tech['trade'];
+        delete global.city['trade'];
+    }
+}
+
+global['version'] = '1.0.35';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

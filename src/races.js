@@ -2139,6 +2139,7 @@ export function cleanAddTrait(trait){
             if (global.settings.marketTabs === 0) {
                 global.settings.marketTabs = 1;
             }
+            delete global.city['trade'];
             break;
         case 'slaver':
             global.tech['slaves'] = 2;
