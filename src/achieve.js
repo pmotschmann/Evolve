@@ -320,9 +320,10 @@ export function unlockFeat(feat,small,rank){
         rank = a_level;
     }
     if (!global.stats.feat[feat] || (global.stats.feat[feat] && global.stats.feat[feat] < rank)){
+        let upgrade = global.stats.feat[feat] ? true : false;
         global.settings.showAchieve = true;
         global.stats.feat[feat] = rank;
-        messageQueue(loc('feat_unlocked', [feats[feat].name] ),'special');
+        messageQueue(loc(upgrade ? 'feat_upgraded' : 'feat_unlocked', [feats[feat].name] ),'special');
         drawPerks();
         drawAchieve();
         return true;
@@ -714,6 +715,15 @@ export function checkAchievements(){
         }
         else {
             unlockFeat('xmas');
+        }
+    }
+
+    if (!global.settings.boring && date.getMonth() === 3 && date.getDate() >= 1 && date.getDate() <= 3 && global.stats.feat.hasOwnProperty('fool') && global.stats.feat.fool > 0){
+        if (global.race.universe === 'micro'){
+            unlockFeat('fool',true,a_level);
+        }
+        else {
+            unlockFeat('fool',false,a_level);
         }
     }
 

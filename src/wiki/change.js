@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.36`,
+        date: `4/1/2021`,
+        changes: [
+            `Fool Feat will automatically upgrade to current challenge level for eligible players.`
+        ]
+    },
+    {
         version: `1.0.35`,
         date: `3/31/2021`,
         changes: [

@@ -731,7 +731,7 @@ if (convertVersion(global['version']) < 100035){
     }
 }
 
-global['version'] = '1.0.35';
+global['version'] = '1.0.36';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
