@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.37`,
+        date: `4/3/2021`,
+        changes: [
+            `Fixed a bug with unlocking the Egg Hunt feat.`
+        ]
+    },
+    {
         version: `1.0.36`,
         date: `4/1/2021`,
         changes: [
