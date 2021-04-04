@@ -352,7 +352,7 @@ function loadJob(job, define, impact, stress, color){
                 return global.civic.d_job === j ? '*' : '';
             },
             event(c){
-                if (job === 'unemployed' || job === 'hunter'){
+                if ((job === 'unemployed' && global.civic.unemployed.display) || (job === 'hunter' && !global.civic.unemployed.display)){
                     let egg = easterEgg(3,14);
                     if (c === 0 && egg.length > 0){
                         return egg;

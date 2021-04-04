@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.38`,
+        date: `4/4/2021`,
+        changes: [
+            `Fixed a bug that prevented some races from acquiring Egg #3.`
+        ]
+    },
+    {
         version: `1.0.37`,
         date: `4/3/2021`,
         changes: [
