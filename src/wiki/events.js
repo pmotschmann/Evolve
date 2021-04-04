@@ -288,6 +288,7 @@ function specialEventsPage(content){
             eggs = eggs + `<div class="tbl">`;
             for (let i=1; i<=15; i++){
                 let egg = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
+                let found = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'found' : 'missing';
                 
                 let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}</span>`;
                 if (easter.hint){
@@ -300,7 +301,7 @@ function specialEventsPage(content){
                     sol = `<span class="tcell eggsol" data-sol="${solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
                 }
 
-                eggs = eggs + `<div class="trow"><span class="tcell ${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>${hint}${sol}</div>`
+                eggs = eggs + `<div class="trow"><span role="img" class="tcell ${egg}" aria-label="${loc('wiki_feat_egghunt_num',[i])} ${found}">${loc('wiki_feat_egghunt_num',[i])}</span>${hint}${sol}</div>`
             }
             eggs = eggs + `</div>`;
             section.append(eggs);
