@@ -748,7 +748,7 @@ if (!global.hasOwnProperty('support')){
         gateway: [],
         alien2: [],
         lake: [],
-        spire: [],
+        spire: []
     };
 }
 
