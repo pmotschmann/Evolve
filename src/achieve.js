@@ -621,6 +621,7 @@ export function checkAchievements(){
     const date = new Date();
     let easter = getEaster();
     let halloween = getHalloween();
+    let year = date.getFullYear();
     if (!global.settings.boring && date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
         if (global.race.universe === 'micro'){
@@ -659,7 +660,7 @@ export function checkAchievements(){
 
         let eggs = 0;
         for (let i=1; i<=15; i++){
-            if (!global.special.egg[`egg${i}`]){
+            if (global.special.egg[year][`egg${i}`]){
                 eggs++;
             }
         }
