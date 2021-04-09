@@ -5875,6 +5875,10 @@ function ascendLab(){
 function ascend(){
     global.lastMsg = false;
 
+    tagEvent('reset',{
+        'end': 'ascend'
+    });
+
     let god = global.race.species;
     let old_god = global.race.gods;
     let orbit = global.city.calendar.orbit;

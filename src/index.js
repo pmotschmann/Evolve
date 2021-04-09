@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, flib, gameLoop, popover, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -211,10 +211,21 @@ export function loadTab(tab){
         clearElement($(`#mTabArpa`));
         clearElement($(`#mTabStats`));
     }
+    else {
+        tagEvent('page_view',{ page_title: `Evolve - All Tabs` });
+    }
     switch (tab){
+        case 0:
+            if (!global.settings.tabLoad){
+                tagEvent('page_view',{ page_title: `Evolve - Evolution` });
+            }
+            break;
         case 1:
         case 'mTabCivil':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Civilization` });
+                }
                 $(`#mTabCivil`).append(`<b-tabs class="resTabs" v-model="s.spaceTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="city" :visible="s.showCity">
                         <template slot="header">
@@ -293,6 +304,9 @@ export function loadTab(tab){
         case 2:
         case 'mTabCivic':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Civics` });
+                }
                 $(`#mTabCivic`).append(`<b-tabs class="resTabs" v-model="s.govTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="civic">
                         <template slot="header">
@@ -410,6 +424,9 @@ export function loadTab(tab){
         case 3:
         case 'mTabResearch':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Research` });
+                }
                 $(`#mTabResearch`).append(`<div id="resQueue" class="resQueue" v-show="rq.display"></div>
                 <b-tabs class="resTabs" v-model="s.resTabs" :animated="s.animated">
                     <b-tab-item id="tech">
@@ -446,6 +463,9 @@ export function loadTab(tab){
         case 4:
         case 'mTabResource':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Resources` });
+                }
                 $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="market" :visible="s.showMarket">
                         <template slot="header">
@@ -613,6 +633,9 @@ export function loadTab(tab){
         case 5:
         case 'mTabArpa':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Arpa` });
+                }
                 $(`#mTabArpa`).append(`<div id="apra" class="arpa">
                     <b-tabs class="resTabs" v-model="s.arpa.arpaTabs" :animated="s.animated">
                         <b-tab-item id="arpaPhysics" :visible="s.arpa.physics" label="${loc('tab_arpa_projects')}"></b-tab-item>
@@ -641,6 +664,9 @@ export function loadTab(tab){
         case 6:
         case 'mTabStats':
             {
+                if (!global.settings.tabLoad){
+                    tagEvent('page_view',{ page_title: `Evolve - Stats` });
+                }
                 $(`#mTabStats`).append(`<b-tabs class="resTabs" v-model="s.statsTabs" :animated="s.animated">
                     <b-tab-item id="stats">
                         <template slot="header">
@@ -670,6 +696,11 @@ export function loadTab(tab){
                     }
                 });
                 setupStats();
+            }
+            break;
+        case 7:
+            if (!global.settings.tabLoad){
+                tagEvent('page_view',{ page_title: `Evolve - Settings` });
             }
             break;
     }

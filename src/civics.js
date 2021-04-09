@@ -1,6 +1,6 @@
 import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, vBind, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, vBind, tagEvent, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -1852,6 +1852,10 @@ function warhead(){
     if (!global.civic.mad.armed && !global.race['cataclysm']){
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
+
+        tagEvent('reset',{
+            'end': 'mad'
+        });
 
         let god = global.race.species;
         let old_god = global.race.gods;

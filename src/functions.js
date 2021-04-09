@@ -405,6 +405,14 @@ export function cleanBuildPopOver(id){
     clearElement($(`#pop${id}`),true);
 }
 
+const tagDebug = false;
+export function tagEvent(event, data){
+    try {
+        data['debug_mode'] = tagDebug;
+        gtag('event', event, data);
+    } catch (err){}
+}
+
 export function modRes(res,val,notrack,buffer){
     let count = global.resource[res].amount + val;
     let success = true;
@@ -1627,6 +1635,10 @@ export function vacuumCollapse(){
         global.stats['current'] = Date.now();
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
         global.lastMsg = false;
+
+        tagEvent('reset',{
+            'end': 'vacuum'
+        });
 
         unlockAchieve(`extinct_${global.race.species}`);
         unlockAchieve(`pw_apocalypse`);
