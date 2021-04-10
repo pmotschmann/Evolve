@@ -449,22 +449,22 @@ popover('topBarPlanet',
 
             let challenges = '';
             if (global.race['junker']){
-                challenges = challenges + `<div>${loc('evo_challenge_junker_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_junker_desc')} ${loc('evo_challenge_junker_conditions')}</div>`;
             }
             if (global.race['joyless']){
-                challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')} ${loc('evo_challenge_joyless_conditions')}</div>`;
             }
             if (global.race['steelen']){
-                challenges = challenges + `<div>${loc('evo_challenge_steelen_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_steelen_desc')} ${loc('evo_challenge_steelen_conditions')}</div>`;
             }
             if (global.race['decay']){
-                challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_decay_desc')} ${loc('evo_challenge_decay_conditions')}</div>`;
             }
             if (global.race['emfield']){
-                challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')} ${loc('evo_challenge_emfield_conditions')}</div>`;
             }
             if (global.race['banana']){
-                challenges = challenges + `<div>${loc('evo_challenge_banana_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_banana_desc')} ${loc('wiki_achieve_banana1')}. ${loc('wiki_achieve_banana2')}. ${loc('wiki_achieve_banana3')}. ${loc('wiki_achieve_banana4',[500])}. ${loc('wiki_achieve_banana5',[50])}.</div>`;
             }
 
             if (global.race['cataclysm']){
