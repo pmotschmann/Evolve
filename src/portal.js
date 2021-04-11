@@ -1,5 +1,5 @@
 import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { vBind, clearElement, popover, tagEvent, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -3966,6 +3966,10 @@ export function descension(){
         webWorker.w.terminate();
     }
     global.lastMsg = false;
+
+    tagEvent('reset',{
+        'end': 'descension'
+    });
 
     unlockAchieve(`squished`,true);
     unlockAchieve(`extinct_${global.race.species}`);

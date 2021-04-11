@@ -1,5 +1,5 @@
 import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -5874,6 +5874,10 @@ function ascendLab(){
 
 function ascend(){
     global.lastMsg = false;
+
+    tagEvent('reset',{
+        'end': 'ascend'
+    });
 
     let god = global.race.species;
     let old_god = global.race.gods;

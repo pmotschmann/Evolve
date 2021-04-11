@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.0.39`,
+        date: `4/9/2021`,
+        changes: [
+            `Added challenge win conditions to planet description popover.`
+        ]
+    },
+    {
         version: `1.0.38`,
         date: `4/4/2021`,
         changes: [

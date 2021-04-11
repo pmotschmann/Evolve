@@ -1,7 +1,7 @@
 import { global, setGlobal, save } from './../vars.js';
 import { loc } from './../locale.js';
 import {} from './../achieve.js';
-import { vBind, clearElement } from './../functions.js';
+import { vBind, clearElement, tagEvent } from './../functions.js';
 import { faqPage } from './faq.js';
 import { racesPage, traitsPage } from './species.js';
 import { planetsPage } from './planets.js';
@@ -157,6 +157,8 @@ function menuDispatch(main,sub,frag){
     if (global_data){
         setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
     }
+
+    tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });
 
     switch (main){
         case 'intro':

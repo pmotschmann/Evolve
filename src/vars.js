@@ -731,7 +731,7 @@ if (convertVersion(global['version']) < 100035){
     }
 }
 
-global['version'] = '1.0.38';
+global['version'] = '1.0.39';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1654,6 +1654,10 @@ export function srSpeak(text, priority) {
 
 // executes a soft reset
 window.soft_reset = function reset(){
+    try {
+        gtag('event', 'reset', { 'end': 'soft'});
+    } catch (err){}
+
     let replace = {
         species : 'protoplasm',
         Plasmid: { count: global.race.Plasmid.count },
@@ -1876,6 +1880,9 @@ export function clearStates(){
 
 // executes a hard reset
 window.reset = function reset(){
+    try {
+        gtag('event', 'reset', { 'end': 'hard'});
+    } catch (err){}
     localStorage.removeItem('evolved');
     global = null;
     if (webWorker.w){

@@ -1,7 +1,7 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, flib, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, cleanBuildPopOver, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -449,22 +449,22 @@ popover('topBarPlanet',
 
             let challenges = '';
             if (global.race['junker']){
-                challenges = challenges + `<div>${loc('evo_challenge_junker_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_junker_desc')} ${loc('evo_challenge_junker_conditions')}</div>`;
             }
             if (global.race['joyless']){
-                challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_joyless_desc')} ${loc('evo_challenge_joyless_conditions')}</div>`;
             }
             if (global.race['steelen']){
-                challenges = challenges + `<div>${loc('evo_challenge_steelen_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_steelen_desc')} ${loc('evo_challenge_steelen_conditions')}</div>`;
             }
             if (global.race['decay']){
-                challenges = challenges + `<div>${loc('evo_challenge_decay_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_decay_desc')} ${loc('evo_challenge_decay_conditions')}</div>`;
             }
             if (global.race['emfield']){
-                challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')} ${loc('evo_challenge_emfield_conditions')}</div>`;
             }
             if (global.race['banana']){
-                challenges = challenges + `<div>${loc('evo_challenge_banana_desc')}</div>`;
+                challenges = challenges + `<div>${loc('evo_challenge_banana_desc')} ${loc('wiki_achieve_banana1')}. ${loc('wiki_achieve_banana2')}. ${loc('wiki_achieve_banana3')}. ${loc('wiki_achieve_banana4',[500])}. ${loc('wiki_achieve_banana5',[50])}.</div>`;
             }
 
             if (global.race['cataclysm']){
@@ -7188,6 +7188,7 @@ let sythMap = {
     3: 1.5,
 };
 
+var kplv = 60;
 function longLoop(){
     const date = new Date();
     if (global.race.species !== 'protoplasm'){
@@ -7915,6 +7916,12 @@ function longLoop(){
 
     if (global.race.species !== 'protoplasm' && (global.stats.days + global.stats.tdays) % 100000 === 99999){
         messageQueue(loc(`backup_warning`), 'advanced', true);
+    }
+
+    kplv--;
+    if (kplv <= 0){
+        kplv = 60;
+        tagEvent('page_view',{ page_title: `Game Loop` });
     }
 
     if (global.settings.pause && webWorker.s){
