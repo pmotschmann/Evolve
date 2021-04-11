@@ -731,7 +731,14 @@ if (convertVersion(global['version']) < 100035){
     }
 }
 
-global['version'] = '1.0.39';
+if (convertVersion(global['version']) < 100040){
+    const dt = new Date();
+    if (dt.getFullYear() === '2021' && dt.getMonth() === 3 && dt.getDate() <= 14 && global.race.hasOwnProperty('species') && global.race.species === 'wolven'){
+        global.race['hrt'] = 'wolven';
+    }
+}
+
+global['version'] = '1.0.40';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1871,6 +1878,8 @@ export function clearStates(){
     global.settings.disableReset = false;
     global.settings.pause = false;
     global.arpa = {};
+
+    delete global.race['hrt'];
 
     if (global.genes['queue']){
         global.tech['queue'] = 1;

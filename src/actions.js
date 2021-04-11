@@ -2,7 +2,7 @@ import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, s
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
-import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType } from './races.js';
+import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
 import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -7538,6 +7538,8 @@ function sentience(){
     else {
         loadTab('mTabCivil');
     }
+
+    altRace(global.race.species,true);
 
     tagEvent('sentience',{
         'species': global.race.species,

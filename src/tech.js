@@ -8164,7 +8164,10 @@ const techs = {
                 return owned === 3 ? true : false;
             }
         },
-        effect(){ return `<div>${loc('tech_unification_effect2')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>`; },
+        effect(){
+            let banana_warn = global.race['banana'] ? `<div class="has-text-danger">${loc('tech_unification_banana')}</div>` : '';
+            return `<div>${loc('tech_unification_effect2')}</div><div class="has-text-special">${loc('tech_unification_warning')}</div>${banana_warn}`;
+        },
         action(){
             if (payCosts($(this)[0].cost)){
                 global.tech['world_control'] = 1;
