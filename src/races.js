@@ -8,6 +8,53 @@ const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
+export function altRace(race,set){
+    if (global.settings.boring){
+        if (global.race['hrt']){
+            delete global.race['hrt'];
+        }
+        return false;
+    }
+    switch (race){
+        case 'elven':
+            {
+                if ((date.getMonth() === 11 && date.getDate() >= 17) || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+            }
+        case 'wolven':
+            {
+                if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+            }
+        case 'arraak':
+            {
+                if ((date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28) || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+            }
+        case 'seraph':
+            {
+                if ((date.getMonth() === 1 && date.getDate() === 14) || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+            }
+        case 'junker':
+            {
+                if (hallowed.active || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+            }
+    }
+    return false;
+}
+
 export const genus_traits = {
     humanoid: {
         adaptable: 1,
@@ -1047,20 +1094,20 @@ export const races = {
     },
     elven: {
         name: loc('race_elven'),
-        desc: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_desc' : 'race_elven_desc'),
+        desc: loc(altRace('elven') ? 'race_xmas_elf_desc' : 'race_elven_desc'),
         type: 'humanoid',
-        home: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_home' : 'race_elven_home'),
+        home: loc(altRace('elven') ? 'race_xmas_elf_home' : 'race_elven_home'),
         entity: loc('race_elven_entity'),
         traits: {
             studious: 1,
             arrogant: 1
         },
         solar: {
-            red: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_red' : 'race_elven_solar_red'),
-            hell: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_hell' : 'race_elven_solar_hell'),
-            gas: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_gas' : 'race_elven_solar_gas'),
-            gas_moon: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_gas_moon' : 'race_elven_solar_gas_moon'),
-            dwarf: loc(!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17 ? 'race_xmas_elf_solar_dwarf' : 'race_elven_solar_dwarf'),
+            red: loc(altRace('elven') ? 'race_xmas_elf_solar_red' : 'race_elven_solar_red'),
+            hell: loc(altRace('elven') ? 'race_xmas_elf_solar_hell' : 'race_elven_solar_hell'),
+            gas: loc(altRace('elven') ? 'race_xmas_elf_solar_gas' : 'race_elven_solar_gas'),
+            gas_moon: loc(altRace('elven') ? 'race_xmas_elf_solar_gas_moon' : 'race_elven_solar_gas_moon'),
+            dwarf: loc(altRace('elven') ? 'race_xmas_elf_solar_dwarf' : 'race_elven_solar_dwarf'),
         },
         fanaticism: 'studious'
     },
@@ -1103,21 +1150,21 @@ export const races = {
         fanaticism: 'carnivore'
     },
     wolven: {
-        name: easter.active ? loc('race_rabbit') : loc('race_wolven'),
-        desc: easter.active ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
+        name: altRace('wolven') ? loc('race_rabbit') : loc('race_wolven'),
+        desc: altRace('wolven')  ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
         type: 'animal',
-        home: easter.active ? loc('race_rabbit_home') : loc('race_wolven_home'),
-        entity: easter.active ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
+        home: altRace('wolven')  ? loc('race_rabbit_home') : loc('race_wolven_home'),
+        entity: altRace('wolven')  ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
         traits: {
             pack_mentality: 1,
             tracker: 1
         },
         solar: {
-            red: easter.active ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
-            hell: easter.active ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
-            gas: easter.active ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
-            gas_moon: easter.active ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
-            dwarf: easter.active ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
+            red: altRace('wolven')  ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
+            hell: altRace('wolven')  ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
+            gas: altRace('wolven')  ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
+            gas_moon: altRace('wolven')  ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
+            dwarf: altRace('wolven')  ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
         },
         fanaticism: 'tracker'
     },
@@ -1312,21 +1359,21 @@ export const races = {
         fanaticism: 'slow_digestion'
     },
     arraak: {
-        name: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey' : 'race_arraak'),
-        desc: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_desc' : 'race_arraak_desc'),
+        name: loc(altRace('arraak') ? 'race_turkey' : 'race_arraak'),
+        desc: loc(altRace('arraak') ? 'race_turkey_desc' : 'race_arraak_desc'),
         type: 'avian',
-        home: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_home' : 'race_arraak_home'),
+        home: loc(altRace('arraak') ? 'race_turkey_home' : 'race_arraak_home'),
         entity: loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
         },
         solar: {
-            red: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_red' : 'race_arraak_solar_red'),
-            hell: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_hell' : 'race_arraak_solar_hell'),
-            gas: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_gas' : 'race_arraak_solar_gas'),
-            gas_moon: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_gas_moon' : 'race_arraak_solar_gas_moon'),
-            dwarf: loc(!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28 ? 'race_turkey_solar_dwarf' : 'race_arraak_solar_dwarf'),
+            red: loc(altRace('arraak') ? 'race_turkey_solar_red' : 'race_arraak_solar_red'),
+            hell: loc(altRace('arraak') ? 'race_turkey_solar_hell' : 'race_arraak_solar_hell'),
+            gas: loc(altRace('arraak') ? 'race_turkey_solar_gas' : 'race_arraak_solar_gas'),
+            gas_moon: loc(altRace('arraak') ? 'race_turkey_solar_gas_moon' : 'race_arraak_solar_gas_moon'),
+            dwarf: loc(altRace('arraak') ? 'race_turkey_solar_dwarf' : 'race_arraak_solar_dwarf'),
         },
         fanaticism: 'resourceful'
     },
@@ -1772,22 +1819,22 @@ export const races = {
         fanaticism: 'conniving'
     },
     seraph: {
-        name: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub' : 'race_seraph'),
-        desc: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_desc' : 'race_seraph_desc'),
+        name: loc(altRace('seraph') ? 'race_cherub' : 'race_seraph'),
+        desc: loc(altRace('seraph') ? 'race_cherub_desc' : 'race_seraph_desc'),
         type: 'angelic',
-        home: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_home' : 'race_seraph_home'),
-        entity: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_entity' : 'race_seraph_entity'),
+        home: loc(altRace('seraph') ? 'race_cherub_home' : 'race_seraph_home'),
+        entity: loc(altRace('seraph') ? 'race_cherub_entity' : 'race_seraph_entity'),
         traits: {
             unified: 1,
             spiritual: 1,
             truthful: 1
         },
         solar: {
-            red: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_solar_red' : 'race_seraph_solar_red'),
-            hell: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_solar_hell' : 'race_seraph_solar_hell'),
-            gas: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_solar_gas' : 'race_seraph_solar_gas'),
-            gas_moon: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_solar_gas_moon' : 'race_seraph_solar_gas_moon'),
-            dwarf: loc(!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14 ? 'race_cherub_solar_dwarf' : 'race_seraph_solar_dwarf'),
+            red: loc(altRace('seraph') ? 'race_cherub_solar_red' : 'race_seraph_solar_red'),
+            hell: loc(altRace('seraph') ? 'race_cherub_solar_hell' : 'race_seraph_solar_hell'),
+            gas: loc(altRace('seraph') ? 'race_cherub_solar_gas' : 'race_seraph_solar_gas'),
+            gas_moon: loc(altRace('seraph') ? 'race_cherub_solar_gas_moon' : 'race_seraph_solar_gas_moon'),
+            dwarf: loc(altRace('seraph') ? 'race_cherub_solar_dwarf' : 'race_seraph_solar_dwarf'),
         },
         fanaticism: 'spiritual'
     },
@@ -1812,11 +1859,11 @@ export const races = {
         fanaticism: 'magnificent'
     },
     junker: {
-        name: hallowed.active ? loc('race_ghoul') : loc('race_junker'),
-        desc: hallowed.active ? loc('race_ghoul_desc') : loc('race_junker_desc'),
+        name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
+        desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),
         type: (function(){ return global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid'; })(),
-        home: hallowed.active ? loc('race_ghoul_home') : loc('race_junker_home'),
-        entity: hallowed.active ? loc('race_ghoul_entity') : loc('race_junker_entity'),
+        home: altRace('junker') ? loc('race_ghoul_home') : loc('race_junker_home'),
+        entity: altRace('junker') ? loc('race_ghoul_entity') : loc('race_junker_entity'),
         traits: {
             diverse: 1,
             arrogant: 1,
@@ -1843,11 +1890,11 @@ export const races = {
             hibernator: 1
         },
         solar: {
-            red: hallowed.active ? loc('race_ghoul_solar_red') : loc('race_junker_solar_red'),
-            hell: hallowed.active ? loc('race_ghoul_solar_hell') : loc('race_junker_solar_hell'),
-            gas: hallowed.active ? loc('race_ghoul_solar_gas') : loc('race_junker_solar_gas'),
-            gas_moon: hallowed.active ? loc('race_ghoul_solar_gas_moon') : loc('race_junker_solar_gas_moon'),
-            dwarf: hallowed.active ? loc('race_ghoul_solar_dwarf') : loc('race_junker_solar_dwarf'),
+            red: altRace('junker') ? loc('race_ghoul_solar_red') : loc('race_junker_solar_red'),
+            hell: altRace('junker') ? loc('race_ghoul_solar_hell') : loc('race_junker_solar_hell'),
+            gas: altRace('junker') ? loc('race_ghoul_solar_gas') : loc('race_junker_solar_gas'),
+            gas_moon: altRace('junker') ? loc('race_ghoul_solar_gas_moon') : loc('race_junker_solar_gas_moon'),
+            dwarf: altRace('junker') ? loc('race_ghoul_solar_dwarf') : loc('race_junker_solar_dwarf'),
         },
         fanaticism: 'none'
     },
