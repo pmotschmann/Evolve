@@ -22,6 +22,7 @@ export function altRace(race,set){
                     if (set){global.race['hrt'] = race;}
                     return true;
                 }
+                return false;
             }
         case 'wolven':
             {
@@ -29,6 +30,7 @@ export function altRace(race,set){
                     if (set){global.race['hrt'] = race;}
                     return true;
                 }
+                return false;
             }
         case 'arraak':
             {
@@ -36,6 +38,7 @@ export function altRace(race,set){
                     if (set){global.race['hrt'] = race;}
                     return true;
                 }
+                return false;
             }
         case 'seraph':
             {
@@ -43,6 +46,7 @@ export function altRace(race,set){
                     if (set){global.race['hrt'] = race;}
                     return true;
                 }
+                return false;
             }
         case 'junker':
             {
@@ -50,6 +54,7 @@ export function altRace(race,set){
                     if (set){global.race['hrt'] = race;}
                     return true;
                 }
+                return false;
             }
     }
     return false;
