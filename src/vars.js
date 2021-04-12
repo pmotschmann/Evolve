@@ -733,7 +733,8 @@ if (convertVersion(global['version']) < 100035){
 
 if (convertVersion(global['version']) < 100040){
     const dt = new Date();
-    if (dt.getFullYear() === '2021' && dt.getMonth() === 3 && dt.getDate() <= 14 && global.race.hasOwnProperty('species') && global.race.species === 'wolven'){
+    if (dt.getFullYear() === 2021 && dt.getMonth() === 3 && dt.getDate() <= 14 && global.race.hasOwnProperty('species') && global.race.species === 'wolven'){
+        console.log('true');
         global.race['hrt'] = 'wolven';
     }
 }
