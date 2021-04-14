@@ -739,6 +739,15 @@ if (convertVersion(global['version']) < 100040){
     }
 }
 
+if (convertVersion(global['version']) < 101000){
+    if (global.race['jtype'] && global.race['jtype'] === 'animal'){
+        global.race['jtype'] = 'omnivore';
+    }
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('genus') && global.custom.race0.genus === 'animal'){
+        global.custom.race0.genus = 'omnivore';
+    }
+}
+
 global['version'] = '1.0.40';
 delete global['beta'];
 

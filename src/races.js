@@ -65,9 +65,15 @@ export const genus_traits = {
         adaptable: 1,
         wasteful: 1
     },
-    animal: {
-        beast: 1,
-        cautious: 1
+    carnivore: {
+        carnivore: 1,
+        beast: 1
+    },
+    herbivore: {
+        herbivore: 1
+    },
+    omnivore: {
+        
     },
     small: {
         small: 1,
@@ -354,7 +360,7 @@ export const traits = {
         name: loc('trait_blissful_name'),
         desc: loc('trait_blissful'),
         type: 'genus',
-        val: 4,
+        val: 3,
     },
     pompous: { // Professors are less effective
         name: loc('trait_pompous_name'),
@@ -367,7 +373,7 @@ export const traits = {
         name: loc('trait_holy_name'),
         desc: loc('trait_holy'),
         type: 'genus',
-        val: 1,
+        val: 4,
         vars: [50,25]
     },
     creative: { // A.R.P.A. Projects are cheaper
@@ -1138,12 +1144,11 @@ export const races = {
     cath: {
         name: loc('race_cath'),
         desc: loc('race_cath_desc'),
-        type: 'animal',
+        type: 'carnivore',
         home: loc('race_cath_home'),
         entity: loc('race_cath_entity'),
         traits: {
-            lazy: 1,
-            carnivore: 1
+            lazy: 1
         },
         solar: {
             red: loc('race_cath_solar_red'),
@@ -1152,36 +1157,53 @@ export const races = {
             gas_moon: loc('race_cath_solar_gas_moon'),
             dwarf: loc('race_cath_solar_dwarf'),
         },
-        fanaticism: 'carnivore'
+        fanaticism: ''
     },
     wolven: {
         name: altRace('wolven') ? loc('race_rabbit') : loc('race_wolven'),
-        desc: altRace('wolven')  ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
-        type: 'animal',
-        home: altRace('wolven')  ? loc('race_rabbit_home') : loc('race_wolven_home'),
-        entity: altRace('wolven')  ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
+        desc: altRace('wolven') ? loc('race_rabbit_desc') : loc('race_wolven_desc'),
+        type: 'carnivore',
+        home: altRace('wolven') ? loc('race_rabbit_home') : loc('race_wolven_home'),
+        entity: altRace('wolven') ? loc('race_rabbit_entity') : loc('race_wolven_entity'),
         traits: {
             pack_mentality: 1,
             tracker: 1
         },
         solar: {
-            red: altRace('wolven')  ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
-            hell: altRace('wolven')  ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
-            gas: altRace('wolven')  ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
-            gas_moon: altRace('wolven')  ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
-            dwarf: altRace('wolven')  ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
+            red: altRace('wolven') ? loc('race_rabbit_solar_red') : loc('race_wolven_solar_red'),
+            hell: altRace('wolven') ? loc('race_rabbit_solar_hell') : loc('race_wolven_solar_hell'),
+            gas: altRace('wolven') ? loc('race_rabbit_solar_gas') : loc('race_wolven_solar_gas'),
+            gas_moon: altRace('wolven') ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
+            dwarf: altRace('wolven') ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
         },
         fanaticism: 'tracker'
+    },
+    vulpine: {
+        name: loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'),
+        desc(){ return loc('race_vulpine_desc',[loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'), foxColor()]); },
+        type: 'carnivore',
+        home: loc('race_vulpine_home'),
+        entity: loc('race_vulpine_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_vulpine_solar_red'),
+            hell: loc('race_vulpine_solar_hell'),
+            gas: loc('race_vulpine_solar_gas'),
+            gas_moon: loc('race_vulpine_solar_gas_moon'),
+            dwarf: loc('race_vulpine_solar_dwarf'),
+        },
+        fanaticism: ''
     },
     centaur: {
         name: loc('race_centaur'),
         desc: loc('race_centaur_desc'),
-        type: 'animal',
+        type: 'herbivore',
         home: loc('race_centaur_home'),
         entity: loc('race_centaur_entity'),
         traits: {
-            beast_of_burden: 1,
-            herbivore: 1
+            beast_of_burden: 1
         },
         solar: {
             red: loc('race_centaur_solar_red'),
@@ -1191,6 +1213,96 @@ export const races = {
             dwarf: loc('race_centaur_solar_dwarf'),
         },
         fanaticism: 'beast_of_burden'
+    },
+    rhinotaur: {
+        name: loc('race_rhinotaur'),
+        desc: loc('race_rhinotaur_desc'),
+        type: 'herbivore',
+        home: loc('race_rhinotaur_home'),
+        entity: loc('race_rhinotaur_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_rhinotaur_solar_red'),
+            hell: loc('race_rhinotaur_solar_hell'),
+            gas: loc('race_rhinotaur_solar_gas'),
+            gas_moon: loc('race_rhinotaur_solar_gas_moon'),
+            dwarf: loc('race_rhinotaur_solar_dwarf'),
+        },
+        fanaticism: ''
+    },
+    capybara: {
+        name: loc('race_capybara'),
+        desc: loc('race_capybara_desc'),
+        type: 'herbivore',
+        home: loc('race_capybara_home'),
+        entity: loc('race_capybara_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_capybara_solar_red'),
+            hell: loc('race_capybara_solar_hell'),
+            gas: loc('race_capybara_solar_gas'),
+            gas_moon: loc('race_capybara_solar_gas_moon'),
+            dwarf: loc('race_capybara_solar_dwarf'),
+        },
+        fanaticism: ''
+    },
+    bearkin: {
+        name: loc('race_bearkin'),
+        desc: loc('race_bearkin_desc'),
+        type: 'omnivore',
+        home: loc('race_bearkin_home'),
+        entity: loc('race_bearkin_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_bearkin_solar_red'),
+            hell: loc('race_bearkin_solar_hell'),
+            gas: loc('race_bearkin_solar_gas'),
+            gas_moon: loc('race_bearkin_solar_gas_moon'),
+            dwarf: loc('race_bearkin_solar_dwarf'),
+        },
+        fanaticism: ''
+    },
+    porkenari: {
+        name: loc('race_porkenari'),
+        desc: loc('race_porkenari_desc'),
+        type: 'omnivore',
+        home: loc('race_porkenari_home'),
+        entity: loc('race_porkenari_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_porkenari_solar_red'),
+            hell: loc('race_porkenari_solar_hell'),
+            gas: loc('race_porkenari_solar_gas'),
+            gas_moon: loc('race_porkenari_solar_gas_moon'),
+            dwarf: loc('race_porkenari_solar_dwarf'),
+        },
+        fanaticism: ''
+    },
+    hedgeoken: {
+        name: loc('race_hedgeoken'),
+        desc: loc('race_hedgeoken_desc'),
+        type: 'omnivore',
+        home: loc('race_hedgeoken_home'),
+        entity: loc('race_hedgeoken_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_hedgeoken_solar_red'),
+            hell: loc('race_hedgeoken_solar_hell'),
+            gas: loc('race_hedgeoken_solar_gas'),
+            gas_moon: loc('race_hedgeoken_solar_gas_moon'),
+            dwarf: loc('race_hedgeoken_solar_dwarf'),
+        },
+        fanaticism: ''
     },
     kobold: {
         name: loc('race_kobold'),
@@ -2488,4 +2600,11 @@ function shellColor(){
         return loc(`color_${global.race.shell_color}`);
     }
     return loc(`color_green`);
+}
+
+function foxColor(){
+    if (global.race.hasOwnProperty('fox_color')){
+        return loc(`color_${global.race.fox_color}`);
+    }
+    return loc(`color_red`);
 }

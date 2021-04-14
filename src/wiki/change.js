@@ -3,6 +3,18 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.0`,
+        date: `??/??/2021`,
+        changes: [
+            `Animal genus split into 3 new beast genus: Carnivore, Herbivore, and Omnivore.`,
+            `Carnivore Species: Cath, Wolven, Vulpine.`,
+            `Herbivore Species: Centaur, Rhinotaur, Capybara.`,
+            `Omnivore Species: Bearkin, Porkenari, Hedgeoken.`,
+            `Cath, Wolven, and Centaur redesigned.`,
+            `Reweighted Angelic genus trait costs.`
+        ]
+    },
+    {
         version: `1.0.40`,
         date: `4/11/2021`,
         changes: [
