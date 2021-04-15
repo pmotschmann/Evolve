@@ -406,7 +406,7 @@ export const craftingRatio = (function(){
                 });
             }
         }
-        else{
+        else {
             let multiplier = 1;
             let add_bd = {};
             let multi_bd = {};

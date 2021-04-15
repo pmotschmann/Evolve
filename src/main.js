@@ -2351,6 +2351,17 @@ function fastLoop(){
             }
         }
 
+        if (global.race['carnivore']){
+            if (global.resource['Food'].amount > 10){
+                let rot = +((global.resource['Food'].amount - 10) * (0.5)).toFixed(3);
+                if (global.city['smokehouse']){
+                    rot *= 0.9 ** global.city.smokehouse.count;
+                }
+                modRes('Food', -(rot * time_multiplier));
+                breakdown.p.consume['Food'][loc('spoilage')] = -(rot);
+            }
+        }
+
         // Consumption
         var fed = true;
         if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center']){
@@ -2386,6 +2397,11 @@ function fastLoop(){
                     food_base *= 1 + (traits.ghostly.vars[0] / 100);
                 }
                 food_bd[loc('job_hunter')] = food_base + 'v';
+
+                if (global.race['carnivore'] && global.city['lodge'] && food_base > 0){
+                    food_base *= 1 + (global.city.lodge.count / 20);
+                    food_bd[`ᄂ${loc('city_lodge')}`] = (global.city.lodge.count * 5) + '%';
+                }
 
                 if (global.city['soul_well']){
                     let souls = global.city['soul_well'].count * (global.race['ghostly'] ? (2 + traits.ghostly.vars[1]) : 2);
@@ -5727,7 +5743,7 @@ function midLoop(){
             bd_Food[loc('city_soul_well')] = gain+'v';
         }
         if (global.city['smokehouse']){
-            let gain = BHStorageMulti(global.city['smokehouse'].count * spatialReasoning(500));
+            let gain = BHStorageMulti(global.city['smokehouse'].count * spatialReasoning(100));
             caps['Food'] += gain;
             bd_Food[loc('city_smokehouse')] = gain+'v';
         }

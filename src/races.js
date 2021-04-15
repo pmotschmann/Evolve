@@ -1986,7 +1986,6 @@ export const races = {
             arrogant: 1,
             angry: 1,
             lazy: 1,
-            herbivore: 1,
             paranoid: 1,
             greedy: 1,
             puny: 1,

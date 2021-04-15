@@ -712,14 +712,6 @@ export const actions = {
                     addAction('evolution','carnivore');
                     addAction('evolution','herbivore');
                     addAction('evolution','omnivore');
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'animal'){
-                        global.evolution['custom'] = { count: 0 };
-                        addAction('evolution','custom');
-                    }
-                    if (global.genes['challenge']){
-                        global.evolution['bunker'] = { count: 0 };
-                        addAction('evolution','bunker');
-                    }
                     evoProgress();
                 }
                 return false;
@@ -742,9 +734,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['carnivore'].count++;
-                    cleanEvolution($(this)[0].id);
                     delete global.evolution.herbivore;
                     delete global.evolution.omnivore;
+                    removeAction(actions.evolution.carnivore.id);
                     removeAction(actions.evolution.herbivore.id);
                     removeAction(actions.evolution.omnivore.id);
                     global.evolution['sentience'] = { count: 0 };
@@ -781,15 +773,15 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['herbivore'].count++;
-                    cleanEvolution($(this)[0].id);
                     delete global.evolution.carnivore;
                     delete global.evolution.omnivore;
                     removeAction(actions.evolution.carnivore.id);
+                    removeAction(actions.evolution.herbivore.id);
                     removeAction(actions.evolution.omnivore.id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
-                    addRaces(['cantaur','rhinotaur','capybara']);
+                    addRaces(['centaur','rhinotaur','capybara']);
                     if (races.custom.hasOwnProperty('type') && races.custom.type === 'herbivore'){
                         global.evolution['custom'] = { count: 0 };
                         addAction('evolution','custom');
@@ -820,11 +812,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.evolution['omnivore'].count++;
-                    cleanEvolution($(this)[0].id);
                     delete global.evolution.carnivore;
                     delete global.evolution.herbivore;
                     removeAction(actions.evolution.carnivore.id);
                     removeAction(actions.evolution.herbivore.id);
+                    removeAction(actions.evolution.omnivore.id);
                     global.evolution['sentience'] = { count: 0 };
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
@@ -1281,16 +1273,16 @@ export const actions = {
                             }
                         }
                     }
-                    else if (global.evolution['herbivore']){
+                    else if (global.evolution['omnivore']){
                         if (global.race['junker']){
-                            global.race['jtype'] = 'herbivore';
+                            global.race['jtype'] = 'omnivore';
                             races.push('junker');
                         }
                         else {
                             races.push('bearkin');
                             races.push('porkenari');
                             races.push('hedgeoken');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'herbivore'){
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'omnivore'){
                                 races.push('custom');
                             }
                         }
@@ -2582,7 +2574,9 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('lodge', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('lodge', offset, 10, 1.36); }
             },
-            effect(){ return loc('plus_max_resource',[1,loc('citizen')]); },
+            effect(){
+                return global.race['carnivore'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['lodge'].count++;
@@ -2597,7 +2591,7 @@ export const actions = {
         smokehouse: {
             id: 'city-smokehouse',
             title: loc('city_smokehouse'),
-            desc: loc('city_food_storage'),
+            desc: loc('city_smokehouse_desc'),
             category: 'trade',
             reqs: { hunting: 1 },
             not_trait: ['cataclysm'],
@@ -2607,13 +2601,13 @@ export const actions = {
                 Stone(offset){ return costMultiplier('smokehouse', offset, 50, 1.36); }
             },
             effect(){
-                let food = BHStorageMulti(spatialReasoning(500));
-                return loc('plus_max_resource',[food, loc('resource_Food_name')]);
+                let food = BHStorageMulti(spatialReasoning(100));
+                return `<div>${loc('plus_max_resource',[food, loc('resource_Food_name')])}</div><div>${loc('city_smokehouse_effect',[10])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['smokehouse'].count++;
-                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(500));
+                    global['resource']['Food'].max += BHStorageMulti(spatialReasoning(100));
                     return true;
                 }
                 return false;
@@ -4580,7 +4574,7 @@ raceList.forEach(race => actions.evolution[race] = {
 });
 
 function cleanEvolution(id){
-    ['humanoid','gigantism','dwarfism','carnivore','herbivore','omnivore','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
+    ['humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
         removeAction(actions.evolution[path].id);
         if (global.evolution.hasOwnProperty(path) && `evolution-${path}` !== id){
             delete global.evolution[path];
@@ -6408,10 +6402,10 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','herbivore','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant'];
+        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
-            if ((global.race['carnivore'] && trait === 'herbivore') || (global.race['smart'] && trait === 'dumb')) {
+            if (global.race['smart'] && trait === 'dumb') {
                 continue;
             }
             if (!global.race[trait]){
