@@ -6606,6 +6606,10 @@ function sentience(){
         global.civic.d_job = 'hunter';
         global.civic.hunter.display = true;
     }
+    else if (global.race['forager']){
+        global.civic.d_job = 'forager';
+        global.civic.forager.display = true;
+    }
     else {
         global.civic.d_job = 'unemployed';
         global.civic.unemployed.display = true;

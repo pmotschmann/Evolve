@@ -2115,7 +2115,7 @@ function fastLoop(){
                     global.civic[job].workers = 0;
                 }
 
-                if (job !== 'unemployed' && job !== 'hunter'){
+                if (job !== 'unemployed' && job !== 'hunter' && job !== 'forager'){
                     let stress_level = global.civic[job].stress;
                     if (global.city.ptrait === 'mellow'){
                         stress_level += planetTraits.mellow.vars[1];
@@ -2425,6 +2425,12 @@ function fastLoop(){
                     }
                 }
 
+                if (global.race['forager']){
+                    let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
+                    food_base = global.civic.forager.workers * forage * 0.35;
+                    food_bd[loc('job_forager')] = food_base + 'v';
+                }
+
                 if (global.city['farm']){
                     let farmers = global.civic.farmer.workers;
                     let farmhands = 0;
@@ -2443,7 +2449,7 @@ function fastLoop(){
                     let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
 
                     food_bd[loc('job_farmer')] = (food) + 'v';
-                    food_base = (food * weather_multiplier * mill_multiplier);
+                    food_base += (food * weather_multiplier * mill_multiplier);
 
                     if (food > 0){
                         food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
@@ -2477,6 +2483,9 @@ function fastLoop(){
             }
 
             let consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + global.civic.hunter.workers) * 0.5));
+            if (global.race['forager']){
+                consume -= global.civic.forager.workers;
+            }
             consume *= (global.race['gluttony'] ? (1 + traits.gluttony.vars[0] / 100) : 1);
             if (global.race['high_metabolism']){
                 consume *= 1 + (traits.high_metabolism.vars[0] / 100);
@@ -2759,6 +2768,13 @@ function fastLoop(){
             fur_bd[loc('soldiers')] = hunting  + 'v';
 
             let delta = hunting;
+
+            if (global.race['forager']){
+                let forage = 1 + (global.tech['foraging'] ? 0.5 * global.tech['foraging'] : 0);
+                let forage_base = global.civic.forager.workers * forage * 0.15;
+                fur_bd[loc('job_forager')] = forage_base + 'v';
+            }
+            
             delta *= hunger * global_multiplier;
 
             modRes('Furs', delta * time_multiplier);
@@ -3780,6 +3796,12 @@ function fastLoop(){
                 lumber_bd[loc('job_reclaimer')] = reclaimers  + 'v';
                 lumber_bd[loc('city_graveyard')] = ((graveyard - 1) * 100) + '%';
                 lumber_bd[loc('soldiers')] = soldiers  + 'v';
+                if (global.race['forager']){
+                    let forage = 1;
+                    let forage_base = global.civic.forager.workers * forage * 0.25;
+                    lumber_bd[loc('job_forager')] = forage_base  + 'v';
+                    modRes('Lumber', forage_base * hunger * global_multiplier * time_multiplier);
+                }
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
                 modRes('Lumber', reclaimers * hunger * graveyard * global_multiplier * time_multiplier);
@@ -3821,6 +3843,13 @@ function fastLoop(){
 
                 let delta = lumber_base * sawmills * power_mult * lumber_yard;
                 delta *= hunger * global_multiplier;
+
+                if (global.race['forager']){
+                    let forage = 1;
+                    let forage_base = global.civic.forager.workers * forage * 0.25;
+                    lumber_bd[loc('job_forager')] = forage_base  + 'v';
+                    modRes('Lumber', forage_base * hunger * global_multiplier * time_multiplier);
+                }
 
                 lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Lumber'] = lumber_bd;
@@ -3923,6 +3952,13 @@ function fastLoop(){
 
             let delta = stone_base * power_mult * rock_quarry;
             delta *= hunger * global_multiplier;
+
+            if (global.race['forager'] && global.resource.Stone.display){
+                let forage = 1;
+                let forage_base = global.civic.forager.workers * forage * 0.22;
+                stone_bd[loc('job_forager')] = forage_base  + 'v';
+                modRes('Stone', forage_base * hunger * global_multiplier * time_multiplier);
+            }
 
             stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Stone'] = stone_bd;
@@ -4114,6 +4150,19 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 modRes('Copper', delta * time_multiplier);
+
+                if (global.race['forager'] && global.tech['dowsing']){
+                    let forage = global.tech.dowsing >= 2 ? 5 : 1;
+                    let forage_base = global.civic.forager.workers * forage * 0.025;
+                    if (global.city.geology['Copper']){
+                        forage_base *= global.city.geology['Copper'] + 1;
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        forage_base *= biomes.volcanic.vars[1];
+                    }
+                    copper_bd[loc('job_forager')] = forage_base  + 'v';
+                    modRes('Copper', forage_base * hunger * global_multiplier * time_multiplier);
+                }
             }
 
             // Iron
@@ -4157,6 +4206,20 @@ function fastLoop(){
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
                 iron_bd[loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+
+                if (global.race['forager'] && global.tech['dowsing']){
+                    let forage = global.tech.dowsing >= 2 ? 5 : 1;
+                    let forage_base = global.civic.forager.workers * forage * 0.035;
+                    if (global.city.geology['Iron']){
+                        forage_base *= global.city.geology['Iron'] + 1;
+                    }
+                    if (global.city.biome === 'volcanic'){
+                        forage_base *= biomes.volcanic.vars[2];
+                    }
+                    iron_bd[loc('job_forager')] = forage_base  + 'v';
+                    modRes('Iron', forage_base * hunger * global_multiplier * time_multiplier);
+                }
+
                 iron_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Iron'] = iron_bd;
                 modRes('Iron', delta * time_multiplier);
@@ -5086,6 +5149,7 @@ function midLoop(){
         var lCaps = {
             unemployed: -1,
             hunter: -1,
+            forager: -1,
             farmer: -1,
             lumberjack: -1,
             quarry_worker: -1,

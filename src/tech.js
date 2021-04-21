@@ -349,6 +349,110 @@ const techs = {
             return false;
         }
     },
+    spear: {
+        id: 'tech-spear',
+        title: loc('tech_spear'),
+        desc: loc('tech_spear_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { primitive: 3, storage: 1 },
+        trait: ['forager'],
+        grant: ['foraging',1],
+        cost: {
+            Knowledge(){ return 110; },
+            Stone(){ return 75; }
+        },
+        effect: loc('tech_spear_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    bronze_spear: {
+        id: 'tech-bronze_spear',
+        title: loc('tech_bronze_spear'),
+        desc: loc('tech_bronze_spear_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { foraging: 1, mining: 2 },
+        trait: ['forager'],
+        grant: ['foraging',2],
+        cost: {
+            Knowledge(){ return 525; },
+            Copper(){ return 50; }
+        },
+        effect: loc('tech_bronze_spear_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    iron_spear: {
+        id: 'tech-iron_spear',
+        title: loc('tech_iron_spear'),
+        desc: loc('tech_iron_spear_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { foraging: 2, mining: 3 },
+        trait: ['forager'],
+        grant: ['foraging',3],
+        cost: {
+            Knowledge(){ return global.city.ptrait === 'unstable' ? 1650 : 3300; },
+            Iron(){ return 375; }
+        },
+        effect: loc('tech_bronze_spear_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    dowsing_rod: {
+        id: 'tech-dowsing_rod',
+        title: loc('tech_dowsing_rod'),
+        desc: loc('tech_dowsing_rod_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { foraging: 1, mining: 2 },
+        trait: ['forager'],
+        grant: ['dowsing',1],
+        cost: {
+            Knowledge(){ return 450; },
+            Lumber(){ return 2500; }
+        },
+        effect: loc('tech_dowsing_rod_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
+    metal_detector: {
+        id: 'tech-metal_detector',
+        title: loc('tech_metal_detector'),
+        desc: loc('tech_metal_detector_desc'),
+        category: 'foraging',
+        era: 'civilized',
+        reqs: { dowsing: 1, high_tech: 4 },
+        trait: ['forager'],
+        grant: ['dowsing',2],
+        cost: {
+            Knowledge(){ return 65000; }
+        },
+        effect: loc('tech_metal_detector_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
     smokehouse: {
         id: 'tech-smokehouse',
         title: loc('tech_smokehouse'),

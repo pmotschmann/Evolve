@@ -70,10 +70,10 @@ export const genus_traits = {
         beast: 1
     },
     herbivore: {
-        herbivore: 1
+        herbivore: 1,
     },
     omnivore: {
-        
+        forager: 1
     },
     small: {
         small: 1,
@@ -156,12 +156,30 @@ export const traits = {
         type: 'genus',
         val: -5,
     },
+    carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
+        name: loc('trait_carnivore_name'),
+        desc: loc('trait_carnivore'),
+        type: 'genus',
+        val: 3,
+    },
     beast: { // Improved hunting and soldier training
         name: loc('trait_beast_name'),
         desc: loc('trait_beast'),
         type: 'genus',
         val: 3,
         vars: [10,20,20]
+    },
+    herbivore: { // No food is gained from hunting
+        name: loc('trait_herbivore_name'),
+        desc: loc('trait_herbivore'),
+        type: 'genus',
+        val: -7,
+    },
+    forager: { // Will eat just about anything
+        name: loc('trait_forager_name'),
+        desc: loc('trait_forager'),
+        type: 'genus',
+        val: 0,
     },
     cautious: { // Rain reduces combat rating
         name: loc('trait_cautious_name'),
@@ -425,12 +443,6 @@ export const traits = {
         val: -4,
         vars: [10]
     },
-    carnivore: { // No agriculture tech tree path, however unemployed citizens now act as hunters.
-        name: loc('trait_carnivore_name'),
-        desc: loc('trait_carnivore'),
-        type: 'major',
-        val: 2,
-    },
     pack_mentality: { // Cabins cost more, but cottages cost less.
         name: loc('trait_pack_mentality_name'),
         desc: loc('trait_pack_mentality'),
@@ -450,12 +462,6 @@ export const traits = {
         desc: loc('trait_beast_of_burden'),
         type: 'major',
         val: 3
-    },
-    herbivore: { // No food is gained from hunting
-        name: loc('trait_herbivore_name'),
-        desc: loc('trait_herbivore'),
-        type: 'major',
-        val: -7,
     },
     pack_rat: { // Storage space is increased
         name: loc('trait_pack_rat_name'),
