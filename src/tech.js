@@ -423,7 +423,7 @@ const techs = {
         grant: ['dowsing',1],
         cost: {
             Knowledge(){ return 450; },
-            Lumber(){ return 2500; }
+            Lumber(){ return 750; }
         },
         effect: loc('tech_dowsing_rod_effect'),
         action(){

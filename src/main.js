@@ -2771,8 +2771,9 @@ function fastLoop(){
 
             if (global.race['forager']){
                 let forage = 1 + (global.tech['foraging'] ? 0.5 * global.tech['foraging'] : 0);
-                let forage_base = global.civic.forager.workers * forage * 0.15;
+                let forage_base = global.civic.forager.workers * forage * 0.05;
                 fur_bd[loc('job_forager')] = forage_base + 'v';
+                modRes('Furs', forage_base * hunger * time_multiplier);
             }
             
             delta *= hunger * global_multiplier;

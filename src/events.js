@@ -111,8 +111,12 @@ export const events = {
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
             let enemy = global['resource'][global.race.species].amount / Math.rand(1,4);
             
-            let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+            let killed =  Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
+            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            if (global.race['instinct']){
+                killed = Math.round(killed / 2);
+                wounded = Math.round(wounded / 2);
+            }
             global.civic.garrison.workers -= killed;
             global.civic.garrison.wounded += wounded;
             global.stats.died += killed;
@@ -158,9 +162,13 @@ export const events = {
         effect: function(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
             let enemy = global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil;
-            
+
             let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            if (global.race['instinct']){
+                killed = Math.round(killed / 2);
+                wounded = Math.round(wounded / 2);
+            }
             global.civic.garrison.workers -= killed;
             global.civic.garrison.wounded += wounded;
             global.stats.died += killed;
@@ -193,7 +201,11 @@ export const events = {
         },
         effect: function(){            
             let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
+            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            if (global.race['instinct']){
+                killed = Math.round(killed / 2);
+                wounded = Math.round(wounded / 2);
+            }
             global.civic.garrison.workers -= killed;
             global.civic.garrison.wounded += wounded;
             global.stats.died += killed;

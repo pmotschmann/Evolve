@@ -4449,6 +4449,9 @@ const galaxyProjects = {
                         messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].home]),'info');
                         if (total < 650){
                             let wreck = 80;
+                            if (global.race['instinct']){
+                                wreck /= 2;
+                            }
                             let loss = [];
                             Object.keys(global.galaxy.defense.gxy_alien2).forEach(function(ship){
                                 for (let i=0; i<global.galaxy.defense.gxy_alien2[ship]; i++){
@@ -4681,6 +4684,9 @@ const galaxyProjects = {
                         if (total >= 2500){
                             wreck = total >= 4500 ? 80 : 160;
                         }
+                        if (global.race['instinct']){
+                            wreck /= 2;
+                        }
 
                         Object.keys(global.galaxy.defense.gxy_chthonian).forEach(function(ship){
                             for (let i=0; i<global.galaxy.defense.gxy_chthonian[ship]; i++){
@@ -4842,25 +4848,25 @@ export function piracy(region,rating,raw){
         let pillage = 0.75;
         switch(region){
             case 'gxy_stargate':
-                pirate = 0.1 * global.tech.piracy;
+                pirate = 0.1 * (global.race['instinct'] ? global.tech.piracy * 0.9 : global.tech.piracy);
                 pillage = 0.5;
                 break;
             case 'gxy_gateway':
-                pirate = 0.1 * global.tech.piracy;
+                pirate = 0.1 * (global.race['instinct'] ? global.tech.piracy * 0.9 : global.tech.piracy);
                 pillage = 1;
                 break;
             case 'gxy_gorddon':
-                pirate = 800;
+                pirate = global.race['instinct'] ? 720 : 800;
                 break;
             case 'gxy_alien1':
-                pirate = 1000;
+                pirate = global.race['instinct'] ? 900 : 1000;
                 break;
             case 'gxy_alien2':
-                pirate = 2500;
+                pirate = global.race['instinct'] ? 2250 : 2500;
                 pillage = 1;
                 break;
             case 'gxy_chthonian':
-                pirate = 7500;
+                pirate = global.race['instinct'] ? 7000 : 7500;
                 pillage = 1;
                 break;
         }

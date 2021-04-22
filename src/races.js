@@ -71,6 +71,7 @@ export const genus_traits = {
     },
     herbivore: {
         herbivore: 1,
+        instinct: 1
     },
     omnivore: {
         forager: 1
@@ -175,11 +176,18 @@ export const traits = {
         type: 'genus',
         val: -7,
     },
+    instinct: { // Avoids Danger
+        name: loc('trait_instinct_name'),
+        desc: loc('trait_instinct'),
+        type: 'genus',
+        val: 5,
+        vars: [10]
+    },
     forager: { // Will eat just about anything
         name: loc('trait_forager_name'),
         desc: loc('trait_forager'),
         type: 'genus',
-        val: 0,
+        val: 2,
     },
     cautious: { // Rain reduces combat rating
         name: loc('trait_cautious_name'),

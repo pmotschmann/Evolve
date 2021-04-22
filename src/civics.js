@@ -1259,6 +1259,9 @@ function war_campaign(gov){
         if (death > global.civic.garrison.raid){
             death = global.civic.garrison.raid;
         }
+        if (global.race['instinct']){
+            death = Math.round(death / 1.5);
+        }
         global.civic.garrison.workers -= death;
         global.stats.died += death;
         global.civic.garrison.protest += death;
@@ -1547,6 +1550,9 @@ function war_campaign(gov){
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
+        }
+        if (global.race['instinct']){
+            death = Math.round(death / 1.25);
         }
 
         if (death < 1){
