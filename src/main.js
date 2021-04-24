@@ -192,7 +192,7 @@ popover('morale',
     function(obj){
         if (global.city.morale.unemployed !== 0){
             let type = global.city.morale.unemployed > 0 ? 'success' : 'danger';
-            obj.popper.append(`<p class="modal_bd"><span>${loc('morale_unemployed')}</span> <span class="has-text-${type}"> ${+(global.city.morale.unemployed).toFixed(1)}%</span></p>`);
+            obj.popper.append(`<p class="modal_bd"><span>${loc(global.race['playful'] ? 'morale_hunter' : 'morale_unemployed')}</span> <span class="has-text-${type}"> ${+(global.city.morale.unemployed).toFixed(1)}%</span></p>`);
         }
         if (global.city.morale.stress !== 0){
             let type = global.city.morale.stress > 0 ? 'success' : 'danger';
@@ -1067,7 +1067,14 @@ function fastLoop(){
         else {
             divisor *= planetTraits.mellow.vars[0];
         }
-        stress -= global.civic.hunter.workers / divisor;
+
+        if (global.race['playful']){
+            morale += global.civic.hunter.workers * traits.playful.vars[0];
+            global.city.morale.unemployed = global.civic.hunter.workers * traits.playful.vars[0];
+        }
+        else {
+            stress -= global.civic.hunter.workers / divisor;
+        }
 
         if (global.race['optimistic']){
             stress += traits.optimistic.vars[0];
@@ -2126,6 +2133,9 @@ function fastLoop(){
                     }
                     if (global.city.ptrait === 'dense' && job === 'miner'){
                         stress_level -= planetTraits.dense.vars[1];
+                    }
+                    if (job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
+                        stress_level -= 0.5;
                     }
 
                     stress -= global.civic[job].workers / stress_level;

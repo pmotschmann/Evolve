@@ -6402,7 +6402,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant'];
+        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if (global.race['smart'] && trait === 'dumb') {

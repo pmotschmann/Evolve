@@ -465,6 +465,20 @@ export const traits = {
         val: 2,
         vars: [20]
     },
+    playful: { // Hunters are Happy
+        name: loc('trait_playful_name'),
+        desc: loc('trait_playful'),
+        type: 'major',
+        val: 5,
+        vars: [0.5]
+    },
+    freespirit: { // Job Stress is higher for those who must work mundane jobs
+        name: loc('trait_freespirit_name'),
+        desc: loc('trait_freespirit'),
+        type: 'major',
+        val: -4,
+        vars: [20]
+    },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
         desc: loc('trait_beast_of_burden'),
@@ -1199,7 +1213,8 @@ export const races = {
         home: loc('race_vulpine_home'),
         entity: loc('race_vulpine_entity'),
         traits: {
-            
+            playful: 1,
+            freespirit: 1
         },
         solar: {
             red: loc('race_vulpine_solar_red'),
@@ -1208,7 +1223,7 @@ export const races = {
             gas_moon: loc('race_vulpine_solar_gas_moon'),
             dwarf: loc('race_vulpine_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: 'playful'
     },
     centaur: {
         name: loc('race_centaur'),
