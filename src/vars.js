@@ -18,7 +18,8 @@ export var global = {
         days: 0,
         tdays: 0
     },
-    event: 200
+    event: 200,
+    m_event: 499
 };
 export var tmp_vars = {};
 export var vues = {};
@@ -737,6 +738,10 @@ if (convertVersion(global['version']) < 100040){
         console.log('true');
         global.race['hrt'] = 'wolven';
     }
+}
+
+if (convertVersion(global['version']) < 100041){
+    global['m_event'] = 99;
 }
 
 global['version'] = '1.0.41';
@@ -1812,6 +1817,7 @@ export function clearStates(){
     }
     global.evolution = {};
     global.event = 100;
+    global.m_event = 499;
     global.stats.days = 0;
     global.stats.know = 0;
     global.stats.starved = 0;

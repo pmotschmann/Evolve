@@ -6,7 +6,8 @@ const changeList = [
         version: `1.0.41`,
         date: `5/2/2021`,
         changes: [
-            `Added launch day event for May 6th.`
+            `Added launch day event for May 6th.`,
+            `New minor event system.`
         ]
     },
     {

@@ -11,7 +11,7 @@ import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenar
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
-import { events } from './events.js';
+import { events, eventList } from './events.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
@@ -7806,88 +7806,29 @@ function longLoop(){
     // Event triggered
     if (!global.race.seeded || (global.race.seeded && global.race['chose'])){
         if (Math.rand(0,global.event) === 0){
-            var event_pool = [];
-            Object.keys(events).forEach(function (event){
-                var isOk = true;
-                if (events[event]['reqs']){
-                    Object.keys(events[event].reqs).forEach(function (req) {
-                        switch(req){
-                            case 'race':
-                                if (events[event].reqs[req] !== global.race.species){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'genus':
-                                if (events[event].reqs[req] !== races[global.race.species].type){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'nogenus':
-                                if (events[event].reqs[req] === races[global.race.species].type){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'resource':
-                                if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'trait':
-                                if (!global.race[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'notrait':
-                                if (global.race[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'tech':
-                                if (!global.tech[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'notech':
-                                if (global.tech[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'high_tax_rate':
-                                if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'low_morale':
-                                if (global.city.morale.current >= [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'biome':
-                                if (global.city.biome !== [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            default:
-                                isOk = false;
-                                break;
-                        }
-                    });
-                }
-                if (isOk && events[event]['condition'] && !events[event].condition()){
-                    isOk = false;
-                }
-                if (isOk){
-                    event_pool.push(event);
-                }
-            });
+            let event_pool = eventList('major');
             if (event_pool.length > 0){
-                var msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                let msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
                 messageQueue(msg);
             }
             global.event = 999;
         }
         else {
             global.event--;
+        }
+
+        if (global.race.species !== 'protoplasm'){
+            if (Math.rand(0,global.event) === 0){
+                let event_pool = eventList('minor');
+                if (event_pool.length > 0){
+                    let msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                    messageQueue(msg);
+                }
+                global.m_event = 499;
+            }
+            else {
+                global.m_event--;
+            }
         }
     }
 
