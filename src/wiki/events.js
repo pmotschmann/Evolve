@@ -321,6 +321,18 @@ function specialEventsPage(content){
         }
     }
 
+    {   // Launch Day
+        let event = 'launch_day';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
+            para_data: {
+                2: [loc('feat_launch_day_name')],
+                3: [`5%`],
+            }
+        });
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+    }
+
     {   // Halloween
         let event = 'halloween';
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
