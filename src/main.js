@@ -7824,7 +7824,7 @@ function longLoop(){
                     let msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
                     messageQueue(msg);
                 }
-                global.m_event = 499;
+                global.m_event = 749;
             }
             else {
                 global.m_event--;

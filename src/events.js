@@ -479,10 +479,32 @@ export const events = {
             if (global.resource.Money.amount < 0){
                 global.resource.Money.amount = 0;
             }
-            return loc('pickpocket',[cash]);
+            return loc('event_pickpocket',[cash]);
         }
     },
     cloud: basicEvent('cloud','primitive'),
+    dark_cloud: {
+        reqs: {
+            tech: 'primitive',
+        },
+        type: 'minor',
+        condition(){
+            if (!global.race['cataclysm'] && global.city.calendar.weather !== 0){
+                return true;
+            }
+            return false;
+        },
+        effect: function(){
+            global.city.calendar.weather = 0;
+            return loc('event_dark_cloud');
+        }
+    },
+    tracks: basicEvent('tracks','primitive'),
+    hoax: basicEvent('hoax','primitive'),
+    burial: basicEvent('burial','primitive'),
+    artifacts: basicEvent('artifacts','high_tech'),
+    parade: basicEvent('parade','world_control'),
+    crop_circle: basicEvent('parade','agriculture'),
 };
 
 function basicEvent(title,tech){
