@@ -3,7 +3,7 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.0.44`,
+        version: `1.0.42`,
         date: `5/4/2021`,
         changes: [
             `Minor bug fixes with new events.`
