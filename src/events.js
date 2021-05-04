@@ -445,7 +445,7 @@ export const events = {
     dollar: basicEvent('dollar','currency',function(){
         let cash = Math.rand(1,10);
         global.resource.Money.amount += cash;
-        if (global.resource.Money.max > 0){
+        if (global.resource.Money.amount > global.resource.Money.max){
             global.resource.Money.amount = global.resource.Money.max;
         }
         return cash;
@@ -490,6 +490,22 @@ export const events = {
             return loc('event_dark_cloud');
         }
     },
+    gloom: {
+        reqs: {
+            tech: 'primitive',
+        },
+        type: 'minor',
+        condition(){
+            if (!global.race['cataclysm'] && global.city.calendar.weather !== 1){
+                return true;
+            }
+            return false;
+        },
+        effect(){
+            global.city.calendar.weather = 1;
+            return loc('event_gloom');
+        }
+    },
     tracks: basicEvent('tracks','primitive'),
     hoax: basicEvent('hoax','primitive'),
     burial: basicEvent('burial','primitive'),
@@ -513,7 +529,10 @@ export const events = {
     compass: basicEvent('compass','mining'),
     bone: basicEvent('bone','primitive'),
     delicacy: basicEvent('delicacy','high_tech'),
-    prank: basicEvent('prank','primitive'),
+    prank: basicEvent('prank','primitive',function(){
+        let prank = Math.rand(0,10);
+        return loc(`event_prank_type${prank}`);
+    }),
     graffiti: basicEvent('graffiti','science'),
     soul: basicEvent('soul','soul_eater'),
     cheese: {
