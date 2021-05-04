@@ -12,7 +12,7 @@ export const events = {
             resource: 'DNA'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             var gain = Math.rand(1,Math.round(global.resource.DNA.max / 3));
             var res = global.resource.DNA.amount + gain;
             if (res > global.resource.DNA.max){ res = global.resource.DNA.max; }
@@ -26,7 +26,7 @@ export const events = {
             resource: 'RNA'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             var gain = Math.rand(1,Math.round(global.resource.RNA.max / 2));
             var res = global.resource.RNA.amount + gain;
             if (res > global.resource.RNA.max){ res = global.resource.RNA.max; }
@@ -39,7 +39,7 @@ export const events = {
             resource: 'Knowledge'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             global.race['inspired'] = Math.rand(300,600);
             return loc('event_inspiration');
         }
@@ -51,7 +51,7 @@ export const events = {
             notrait: 'evil'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             var loss = Math.rand(1,Math.round(global.resource.Lumber.amount / 4));
             var res = global.resource.Lumber.amount - loss;
             if (res < 0){ res = 0; }
@@ -67,7 +67,7 @@ export const events = {
         condition(){
             return global.city.ptrait === 'flare' ? true : false;
         },
-        effect: function(){
+        effect(){
             let at_risk = 0;
             if (global.city.hasOwnProperty('basic_housing')){
                 at_risk += global.city.basic_housing.count;
@@ -113,7 +113,7 @@ export const events = {
         condition(){
             return !global.race['cataclysm'] && (global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60) ? true : false;
         },
-        effect: function(){
+        effect(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
             let enemy = global['resource'][global.race.species].amount / Math.rand(1,4);
             
@@ -162,7 +162,7 @@ export const events = {
             }
             return global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
         },
-        effect: function(){
+        effect(){
             let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
             let enemy = global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil;
             
@@ -199,7 +199,7 @@ export const events = {
             tech: 'world_control'
         },
         type: 'major',
-        effect: function(){            
+        effect(){            
             let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
             let wounded = Math.floor(Math.seededRandom(global.civic.garrison.wounded,global.civic.garrison.workers));
             global.civic.garrison.workers -= killed;
@@ -233,7 +233,7 @@ export const events = {
         condition(){
             return global.city.ptrait === 'unstable' ? true : false;
         },
-        effect: function(){
+        effect(){
             global.tech['quaked'] = 1;
             drawTech();
             return loc('event_quake',[global.race['cataclysm'] ? races[global.race.species].solar.red : races[global.race.species].home]);
@@ -248,7 +248,7 @@ export const events = {
         condition(){
             return global.space['space_barracks'] && global.space.space_barracks.on > 0 ? true : false;
         },
-        effect: function(){
+        effect(){
             unlockAchieve('doomed');
             global.stats.portals++;
             return loc(global.race['evil'] ? 'event_doom_alt' : 'event_doom',[races[global.race.species].solar.dwarf]);
@@ -259,7 +259,7 @@ export const events = {
             tech: 'portal_guard'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             let surge = Math.rand(2500,5000);
             global.portal.fortress.threat += surge;
             return loc('event_demon_influx',[surge.toLocaleString()]);
@@ -271,7 +271,7 @@ export const events = {
             resource: 'Knowledge'
         },
         type: 'major',
-        effect: function(){
+        effect(){
             let resources = ['Iron','Copper','Steel','Cement'];
             for (var i = 0; i < resources.length; i++){
                 let res = resources[i];
@@ -298,7 +298,7 @@ export const events = {
         condition(){
             return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
         },
-        effect: function(){
+        effect(){
             return tax_revolt();
         }
     },
@@ -313,7 +313,7 @@ export const events = {
         condition(){
             return global.civic.govern.type === 'republic' ? true : false;
         },
-        effect: function(){
+        effect(){
             global.civic.govern['protest'] = Math.rand(30,60);
             switch(Math.rand(0,10)){
                 case 0:
@@ -359,7 +359,7 @@ export const events = {
             }
             return false;
         },
-        effect: function(){
+        effect(){
             let govs = [];
             for (let i=0; i<3; i++){
                 if (global.civic.foreign[`gov${i}`].spy > 0 && !global.civic.foreign[`gov${i}`].occ && !global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy){
@@ -387,7 +387,7 @@ export const events = {
             }
             return false;
         },
-        effect: function(){
+        effect(){
             global.resource[global.race.species].amount--;
             global.civic.miner.workers--;
             return loc('event_mine_collapse');
@@ -410,7 +410,7 @@ export const events = {
             }
             return false;
         },
-        effect: function(){
+        effect(){
             global.city.calendar.temp = 2;
             global.city.cold = 0;
             return loc('event_heatwave');
@@ -427,7 +427,7 @@ export const events = {
             }
             return false;
         },
-        effect: function(){
+        effect(){
             global.city.calendar.temp = 0;
             global.city.hot = 0;
             return loc('event_coldsnap');
@@ -442,47 +442,38 @@ export const events = {
     haunting: basicEvent('haunting','science'),
     mothman: basicEvent('mothman','science'),
     dejavu: basicEvent('dejavu','theology'),
-    dollar: {
-        reqs: {
-            tech: 'currency',
-        },
-        type: 'minor',
-        effect: function(){
-            let cash = Math.rand(1,10);
-            global.resource.Money.amount += cash;
-            if (global.resource.Money.max > 0){
-                global.resource.Money.amount = global.resource.Money.max;
-            }
-            return loc('event_dollar',[cash]);
+    dollar: basicEvent('dollar','currency',function(){
+        let cash = Math.rand(1,10);
+        global.resource.Money.amount += cash;
+        if (global.resource.Money.max > 0){
+            global.resource.Money.amount = global.resource.Money.max;
         }
-    },
+        return cash;
+    }),
+    pickpocket: basicEvent('pickpocket','currency',function(){
+        let cash = Math.rand(1,10);
+        global.resource.Money.amount -= cash;
+        if (global.resource.Money.amount < 0){
+            global.resource.Money.amount = 0;
+        }
+        return cash;
+    }),
     bird: basicEvent('bird','primitive'),
     contest: {
         reqs: {
             tech: 'science',
         },
         type: 'minor',
-        effect: function(){
+        effect(){
             let place = Math.rand(0,3);
             let contest = Math.rand(0,10);
             return loc('event_contest',[loc(`event_contest_place${place}`),loc(`event_contest_type${contest}`)]);
         }
     },
-    pickpocket: {
-        reqs: {
-            tech: 'currency',
-        },
-        type: 'minor',
-        effect: function(){
-            let cash = Math.rand(1,10);
-            global.resource.Money.amount -= cash;
-            if (global.resource.Money.amount < 0){
-                global.resource.Money.amount = 0;
-            }
-            return loc('event_pickpocket',[cash]);
-        }
-    },
-    cloud: basicEvent('cloud','primitive'),
+    cloud: basicEvent('cloud','primitive',function(){
+        let type = Math.rand(0,11);
+        return loc(`event_cloud_type${type}`);
+    }),
     dark_cloud: {
         reqs: {
             tech: 'primitive',
@@ -494,7 +485,7 @@ export const events = {
             }
             return false;
         },
-        effect: function(){
+        effect(){
             global.city.calendar.weather = 0;
             return loc('event_dark_cloud');
         }
@@ -504,17 +495,62 @@ export const events = {
     burial: basicEvent('burial','primitive'),
     artifacts: basicEvent('artifacts','high_tech'),
     parade: basicEvent('parade','world_control'),
-    crop_circle: basicEvent('parade','agriculture'),
+    crop_circle: basicEvent('crop_circle','agriculture'),
+    llama: basicEvent('llama','primitive',function(){
+        let food = Math.rand(25,100);
+        global.resource.Food.amount -= food;
+        if (global.resource.Food.amount < 0){
+            global.resource.Food.amount = 0;
+        }
+        return food;
+    }),
+    cat: basicEvent('cat','primitive'),
+    omen: basicEvent('omen','primitive'),
+    theft: basicEvent('theft','primitive',function(){
+        let thief = Math.rand(0,10);
+        return loc(`event_theft_type${thief}`);
+    }),
+    compass: basicEvent('compass','mining'),
+    bone: basicEvent('bone','primitive'),
+    delicacy: basicEvent('delicacy','high_tech'),
+    prank: basicEvent('prank','primitive'),
+    graffiti: basicEvent('graffiti','science'),
+    soul: basicEvent('soul','soul_eater'),
+    cheese: {
+        reqs: {
+            tech: 'banking',
+        },
+        type: 'minor',
+        condition(){
+            if (global.tech['banking'] && global.tech.banking >= 7){
+                return true;
+            }
+            return false;
+        },
+        effect(){
+            global.race['cheese'] = Math.rand(10,25);
+            return loc(`event_cheese`);
+        }
+    },
+    tremor: basicEvent('tremor','primitive'),
+    rumor: basicEvent('rumor','primitive',function(){
+        let rumor = Math.rand(0,10);
+        return loc(`event_rumor_type${rumor}`);
+    }),
 };
 
-function basicEvent(title,tech){
+function basicEvent(title,tech,func){
     return {
         reqs: {
             tech: tech,
         },
         type: 'minor',
-        effect: function(){
-            return loc(`event_${title}`);
+        effect(){
+            let val = false;
+            if (typeof func === 'function'){
+                val = func();
+            }
+            return val ? loc(`event_${title}`,[val]) : loc(`event_${title}`);
         }
     };
 }
@@ -526,7 +562,7 @@ function slaveLoss(type,string){
             tech: 'slaves'
         },
         type: type,
-        effect: function(){
+        effect(){
             if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
                 global.city.slave_pen.slaves--;
                 global.resource.Slave.amount = global.city.slave_pen.slaves;
@@ -540,10 +576,16 @@ function slaveLoss(type,string){
 }
 
 export function eventList(type){
-    var event_pool = [];
+    let event_pool = [];
     Object.keys(events).forEach(function (event){
-        var isOk = true;
-        if (events[event]['reqs'] && type === events[event].type){
+        let isOk = true;
+        if (type !== events[event].type){
+            isOk = false;
+        }
+        if ((type === 'major' && global.event.l === event) || (type === 'minor' && global.m_event.l === event)){
+            isOk = false;
+        }
+        if (events[event]['reqs']){
             Object.keys(events[event].reqs).forEach(function (req) {
                 switch(req){
                     case 'race':

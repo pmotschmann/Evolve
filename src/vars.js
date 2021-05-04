@@ -18,8 +18,14 @@ export var global = {
         days: 0,
         tdays: 0
     },
-    event: 200,
-    m_event: 499
+    event: {
+        t: 200,
+        l: false
+    },
+    m_event: {
+        t: 499,
+        l: false
+    }
 };
 export var tmp_vars = {};
 export var vues = {};
@@ -741,7 +747,14 @@ if (convertVersion(global['version']) < 100040){
 }
 
 if (convertVersion(global['version']) < 100041){
-    global['m_event'] = 99;
+    global['event'] = {
+        t: 499,
+        l: false
+    };
+    global['m_event'] = {
+        t: 99,
+        l: false
+    };
 }
 
 global['version'] = '1.0.41';
@@ -1816,8 +1829,8 @@ export function clearStates(){
         global.resource['Artifact'] = artifacts;
     }
     global.evolution = {};
-    global.event = 100;
-    global.m_event = 499;
+    global.event = { t: 100, l: false };
+    global.m_event = { t: 499, l: false };
     global.stats.days = 0;
     global.stats.know = 0;
     global.stats.starved = 0;

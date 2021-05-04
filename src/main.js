@@ -12,6 +12,7 @@ import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, 
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
+import { swissKnife } from './tech.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
@@ -240,6 +241,11 @@ popover('morale',
         if (global.civic.govern.type === 'federation'){
             total += 10;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +10%</span></p>`);
+        }
+
+        if (global.race['cheese']){
+            total++;
+            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +1%</span></p>`);
         }
 
         total = +(total).toFixed(1);
@@ -972,6 +978,10 @@ function fastLoop(){
         }
         else {
             global.city.morale.season = 0;
+        }
+
+        if (global.race['cheese']){
+            morale++;
         }
 
         if (global.tech['m_boost']){
@@ -7603,6 +7613,14 @@ function longLoop(){
                 renderSpace();
             }
         }
+
+        if (global.race['cheese']){
+            global.race.cheese--;
+            if (global.race.cheese <= 0){
+                delete global.race.cheese;
+            }
+        }
+
         if (global.tech['piracy']){
             if (global.tech.piracy < 1000){
                 global.tech.piracy++;
@@ -7805,29 +7823,33 @@ function longLoop(){
 
     // Event triggered
     if (!global.race.seeded || (global.race.seeded && global.race['chose'])){
-        if (Math.rand(0,global.event) === 0){
+        if (Math.rand(0,global.event.t) === 0){
             let event_pool = eventList('major');
             if (event_pool.length > 0){
-                let msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                let msg = events[event].effect();
                 messageQueue(msg);
+                global.event.l = event;
             }
-            global.event = 999;
+            global.event.t = 999;
         }
         else {
-            global.event--;
+            global.event.t--;
         }
 
         if (global.race.species !== 'protoplasm'){
-            if (Math.rand(0,global.event) === 0){
+            if (Math.rand(0,global.m_event.t) === 0){
                 let event_pool = eventList('minor');
                 if (event_pool.length > 0){
-                    let msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                    let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                    let msg = events[event].effect();
                     messageQueue(msg);
+                    global.m_event.l = event;
                 }
-                global.m_event = 749;
+                global.m_event.t = 749;
             }
             else {
-                global.m_event--;
+                global.m_event.t--;
             }
         }
     }

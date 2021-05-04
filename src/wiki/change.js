@@ -7,7 +7,8 @@ const changeList = [
         date: `5/3/2021`,
         changes: [
             `Added launch day event for May 6th.`,
-            `New minor event system.`
+            `New minor event system.`,
+            `The same event can no longer trigger twice in a row.`
         ]
     },
     {
