@@ -11,7 +11,8 @@ import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenar
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
-import { events } from './events.js';
+import { events, eventList } from './events.js';
+import { swissKnife } from './tech.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
@@ -240,6 +241,11 @@ popover('morale',
         if (global.civic.govern.type === 'federation'){
             total += 10;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +10%</span></p>`);
+        }
+
+        if (global.race['cheese']){
+            total++;
+            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +1%</span></p>`);
         }
 
         total = +(total).toFixed(1);
@@ -975,6 +981,10 @@ function fastLoop(){
         }
         else {
             global.city.morale.season = 0;
+        }
+
+        if (global.race['cheese']){
+            morale++;
         }
 
         if (global.tech['m_boost']){
@@ -7697,6 +7707,14 @@ function longLoop(){
                 renderSpace();
             }
         }
+
+        if (global.race['cheese']){
+            global.race.cheese--;
+            if (global.race.cheese <= 0){
+                delete global.race.cheese;
+            }
+        }
+
         if (global.tech['piracy']){
             if (global.tech.piracy < 1000){
                 global.tech.piracy++;
@@ -7899,89 +7917,34 @@ function longLoop(){
 
     // Event triggered
     if (!global.race.seeded || (global.race.seeded && global.race['chose'])){
-        if (Math.rand(0,global.event) === 0){
-            var event_pool = [];
-            Object.keys(events).forEach(function (event){
-                var isOk = true;
-                if (events[event]['reqs']){
-                    Object.keys(events[event].reqs).forEach(function (req) {
-                        switch(req){
-                            case 'race':
-                                if (events[event].reqs[req] !== global.race.species){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'genus':
-                                if (events[event].reqs[req] !== races[global.race.species].type){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'nogenus':
-                                if (events[event].reqs[req] === races[global.race.species].type){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'resource':
-                                if (!global.resource[events[event].reqs[req]] || !global.resource[events[event].reqs[req]].display){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'trait':
-                                if (!global.race[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'notrait':
-                                if (global.race[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'tech':
-                                if (!global.tech[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'notech':
-                                if (global.tech[events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'high_tax_rate':
-                                if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'low_morale':
-                                if (global.city.morale.current >= [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            case 'biome':
-                                if (global.city.biome !== [events[event].reqs[req]]){
-                                    isOk = false;
-                                }
-                                break;
-                            default:
-                                isOk = false;
-                                break;
-                        }
-                    });
-                }
-                if (isOk && events[event]['condition'] && !events[event].condition()){
-                    isOk = false;
-                }
-                if (isOk){
-                    event_pool.push(event);
-                }
-            });
+        if (Math.rand(0,global.event.t) === 0){
+            let event_pool = eventList('major');
             if (event_pool.length > 0){
-                var msg = events[event_pool[Math.floor(Math.seededRandom(0,event_pool.length))]].effect();
+                let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                let msg = events[event].effect();
                 messageQueue(msg);
+                global.event.l = event;
             }
-            global.event = 999;
+            global.event.t = 999;
         }
         else {
-            global.event--;
+            global.event.t--;
+        }
+
+        if (global.race.species !== 'protoplasm'){
+            if (Math.rand(0,global.m_event.t) === 0){
+                let event_pool = eventList('minor');
+                if (event_pool.length > 0){
+                    let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                    let msg = events[event].effect();
+                    messageQueue(msg);
+                    global.m_event.l = event;
+                }
+                global.m_event.t = 749;
+            }
+            else {
+                global.m_event.t--;
+            }
         }
     }
 

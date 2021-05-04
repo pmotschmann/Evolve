@@ -18,7 +18,14 @@ export var global = {
         days: 0,
         tdays: 0
     },
-    event: 200
+    event: {
+        t: 200,
+        l: false
+    },
+    m_event: {
+        t: 499,
+        l: false
+    }
 };
 export var tmp_vars = {};
 export var vues = {};
@@ -739,6 +746,17 @@ if (convertVersion(global['version']) < 100040){
     }
 }
 
+if (convertVersion(global['version']) < 100041){
+    global['event'] = {
+        t: 499,
+        l: false
+    };
+    global['m_event'] = {
+        t: 99,
+        l: false
+    };
+}
+
 if (convertVersion(global['version']) < 101000){
     if (global.race['jtype'] && global.race['jtype'] === 'animal'){
         global.race['jtype'] = 'omnivore';
@@ -748,7 +766,7 @@ if (convertVersion(global['version']) < 101000){
     }
 }
 
-global['version'] = '1.0.40';
+global['version'] = '1.0.41';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1820,7 +1838,8 @@ export function clearStates(){
         global.resource['Artifact'] = artifacts;
     }
     global.evolution = {};
-    global.event = 100;
+    global.event = { t: 100, l: false };
+    global.m_event = { t: 499, l: false };
     global.stats.days = 0;
     global.stats.know = 0;
     global.stats.starved = 0;

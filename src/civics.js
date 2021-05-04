@@ -1171,9 +1171,9 @@ function war_campaign(gov){
     let highLuck = global.race['claws'] ? 20 : 16;
     let lowLuck = global.race['puny'] ? 3 : 5;
 
-    let luck = Math.floor(Math.seededRandom(lowLuck,highLuck),true) / 10;
+    let luck = Math.floor(Math.seededRandom(lowLuck,highLuck,true)) / 10;
     let army = armyRating(global.civic.garrison.raid,'army') * luck;
-    let enemy = 0;                
+    let enemy = 0;
 
     switch(global.civic.garrison.tactic){
         case 0:

@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, getEaster, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -200,6 +200,11 @@ export const feats = {
         name: loc("feat_egghunt_name"),
         desc: loc("feat_egghunt_desc"),
         flair: loc("feat_egghunt_flair")
+    },
+    launch_day: {
+        name: loc("feat_launch_day_name"),
+        desc: loc("feat_launch_day_desc"),
+        flair: loc("feat_launch_day_flair")
     },
     halloween: {
         name: loc("feat_boo_name"),
@@ -619,44 +624,24 @@ export function checkAchievements(){
     }
 
     const date = new Date();
-    let easter = getEaster();
-    let halloween = getHalloween();
+    let easter = eventActive('easter');
+    let halloween = eventActive('halloween');
     let year = date.getFullYear();
     if (!global.settings.boring && date.getDate() === 13 && date.getDay() === 5 && global.resource[global.race.species].amount >= 1){
         let murder = false;
-        if (global.race.universe === 'micro'){
-            murder = unlockFeat('friday',true);
-        }
-        else {
-            murder = unlockFeat('friday');
-        }
+        murder = unlockFeat('friday',global.race.universe === 'micro' ? true : false);
         if (murder){
             global.resource[global.race.species].amount--;
         }
     }
     else if (!global.settings.boring && date.getMonth() === 1 && date.getDate() === 14){
-        if (global.race.universe === 'micro'){
-            unlockFeat('valentine',true);
-        }
-        else {
-            unlockFeat('valentine');
-        }
+        unlockFeat('valentine',global.race.universe === 'micro' ? true : false);
     }
     else if (!global.settings.boring && date.getMonth() === 2 && date.getDate() === 17){
-        if (global.race.universe === 'micro'){
-            unlockFeat('leprechaun',true);
-        }
-        else {
-            unlockFeat('leprechaun');
-        }
+        unlockFeat('leprechaun',global.race.universe === 'micro' ? true : false);
     }
     else if (easter.active){
-        if (global.race.universe === 'micro'){
-            unlockFeat('easter',true);
-        }
-        else {
-            unlockFeat('easter');
-        }
+        unlockFeat('easter',global.race.universe === 'micro' ? true : false);
 
         let eggs = 0;
         for (let i=1; i<=15; i++){
@@ -666,14 +651,11 @@ export function checkAchievements(){
         }
 
         if (eggs >= 12){
-            if (global.race.universe === 'micro'){
-                unlockFeat('egghunt',true);
-            }
-            else {
-                unlockFeat('egghunt');
-            }
-
+            unlockFeat('egghunt',global.race.universe === 'micro' ? true : false);
         }
+    }
+    else if (eventActive('launch_day')){
+        unlockFeat('launch_day',global.race.universe === 'micro' ? true : false);
     }
     else if (halloween.active){
         let checkAll = true;
@@ -684,48 +666,22 @@ export function checkAchievements(){
         }
 
         if (checkAll){
-            if (global.race.universe === 'micro'){
-                unlockFeat('trickortreat',true);
-            }
-            else {
-                unlockFeat('trickortreat');
-            }
-
+            unlockFeat('trickortreat',global.race.universe === 'micro' ? true : false);
         }
 
         if (date.getMonth() === 9 && date.getDate() === 31){
-            if (global.race.universe === 'micro'){
-                unlockFeat('halloween',true);
-            }
-            else {
-                unlockFeat('halloween');
-            }
+            unlockFeat('halloween',global.race.universe === 'micro' ? true : false);
         }
     }
     else if (!global.settings.boring && date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28){
-        if (global.race.universe === 'micro'){
-            unlockFeat('thanksgiving',true);
-        }
-        else {
-            unlockFeat('thanksgiving');
-        }
+        unlockFeat('thanksgiving',global.race.universe === 'micro' ? true : false);
     }
     else if (!global.settings.boring && date.getMonth() === 11 && date.getDate() == 25){
-        if (global.race.universe === 'micro'){
-            unlockFeat('xmas',true);
-        }
-        else {
-            unlockFeat('xmas');
-        }
+        unlockFeat('xmas',global.race.universe === 'micro' ? true : false);
     }
-
+    
     if (!global.settings.boring && date.getMonth() === 3 && date.getDate() >= 1 && date.getDate() <= 3 && global.stats.feat.hasOwnProperty('fool') && global.stats.feat.fool > 0){
-        if (global.race.universe === 'micro'){
-            unlockFeat('fool',true,a_level);
-        }
-        else {
-            unlockFeat('fool',false,a_level);
-        }
+        unlockFeat('fool',global.race.universe === 'micro' ? true : false);
     }
 
     if (global.stats.dkills >= 666000000){
