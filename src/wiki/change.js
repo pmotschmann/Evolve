@@ -15,6 +15,13 @@ const changeList = [
         ]
     },
     {
+        version: `1.0.42`,
+        date: `5/4/2021`,
+        changes: [
+            `Minor bug fixes with new events.`
+        ]
+    },
+    {
         version: `1.0.41`,
         date: `5/3/2021`,
         changes: [
