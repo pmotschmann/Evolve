@@ -2,6 +2,7 @@ import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, re
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
+import { govActive } from './governor.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -1043,6 +1044,10 @@ export function marketItem(mount,market_item,name,color,full){
             },
             aBuy(res){
                 let rate = tradeRatio[res];
+                let dealVal = govActive('dealmaker',0);
+                if (dealVal){
+                    rate *= 1 + (dealVal / 100);
+                }
                 if (global.race['persuasive']){
                     rate *= 1 + (global.race['persuasive'] / 100);
                 }
@@ -1110,6 +1115,21 @@ export function marketItem(mount,market_item,name,color,full){
             autoBuy(res){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
+                    if (govActive('dealmaker',0)){
+                        let exporting = 0;
+                        let importing = 0;
+                        Object.keys(global.resource).forEach(function(res){
+                            if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
+                                exporting -= global.resource[res].trade;
+                            }
+                            if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade > 0){
+                                importing += global.resource[res].trade;
+                            }
+                        });
+                        if (exporting <= importing){
+                            break;
+                        }
+                    }
                     if (global.resource[res].trade >= 0){
                         if (importRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
                             global.city.market.trade++;
@@ -1700,7 +1720,7 @@ function breakdownPopover(id,name,type){
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
                     label = mod.replace(/\+.+$/,"");
-                    col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                    col2.append(`<div class="modal_bd"><span>${label} F</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
             if (count > 0){
@@ -1730,7 +1750,6 @@ function breakdownPopover(id,name,type){
                         let val = parseFloat(raw.slice(0,-1));
                         let precision = (val > 0 && val < 1) || (val < 0 && val > -1) ? 4 
                             : ((val > 0 && val < 10) || (val < 0 && val > -10) ? 3 : 2);
-                        val = +(val).toFixed(precision);
                         let suffix = type === '%' ? '%' : '';
                         if (val > 0){
                             return '+' + sizeApproximation(val,precision) + suffix;

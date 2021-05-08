@@ -4,6 +4,7 @@ import { calcPrestige, clearElement, popover, vBind, tagEvent, modRes, messageQu
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
+import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 
 // Sets up government in civics tab
@@ -24,21 +25,41 @@ export function defineGovernment(define){
     }
 
     var govern = $('<div id="government" class="government is-child"></div>');
-    govern.append($(`<div class="header" v-show="display"><h2 class="has-text-warning">${loc('civics_government')}</h2></div>`));
+
+    var tabs = $(`<b-tabs class="resTabs govTabs2" v-show="t.display" v-model="s.govTabs2" :animated="s.animated">
+        <b-tab-item id="r_govern0">
+            <template slot="header">
+                <h2 class="is-sr-only">${loc('civics_government')}}</h2>
+                <span aria-hidden="true">${loc('civics_government')}</span>
+            </template>
+        </b-tab-item>
+        <b-tab-item id="r_govern1" :visible="s.showGovernor">
+            <template slot="header">
+                <h2 class="is-sr-only">${loc('governor')}}</h2>
+                <span aria-hidden="true">${loc('governor')}</span>
+            </template>
+        </b-tab-item>
+    </b-tabs>`);
+
+    govern.append(tabs);
     $('#r_civics').append(govern);
 
     vBind({
-        el: '#government .header',
-        data: global.civic['taxes']
+        el: '#government .govTabs2',
+        data: {
+            t: global.civic['taxes'],
+            s: global.settings
+        }
     });
     
-    government(govern);
-    taxRates(govern);
+    government($(`#r_govern0`));
+    taxRates($(`#r_govern0`));
 
     var civ_garrison = $('<div id="c_garrison" v-show="g.display" class="garrison tile is-child"></div>');
-    $('#r_civics').append(civ_garrison);
-}
+    $('#r_govern0').append(civ_garrison);
 
+    defineGovernor();
+}
 
 export function defineIndustry(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
@@ -350,7 +371,7 @@ export function foreignGov(){
     if ($('#foreign').length === 0 && !global.race['cataclysm'] && !global.tech['world_control']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
-        $('#r_civics').append(foreign);
+        $('#r_govern0').append(foreign);
 
         var modal = {
             template: '<div id="modalBox" class="modalBox"></div>'
@@ -1713,6 +1734,10 @@ export function armyRating(val,type,wound){
         }
         if (global.race['banana'] && type === 'hellArmy'){
             army *= 0.8;
+        }
+        let tacVal = govActive('tactician',0);
+        if (tacVal){
+            army *= 1 + (tacVal / 100);
         }
         if (global.city.ptrait === 'rage'){
             army *= planetTraits.rage.vars[0];

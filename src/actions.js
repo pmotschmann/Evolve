@@ -11,6 +11,7 @@ import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace,
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { techList } from './tech.js';
+import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 
 export const actions = {
@@ -2914,6 +2915,10 @@ export const actions = {
                 if (global.blood['lust']){
                     rate += global.blood.lust * 0.2;
                 }
+                let milVal = govActive('militant',0);
+                if (milVal){
+                    rate *= 1 + (milVal / 100);
+                }
                 return global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : loc('city_boot_camp_effect',[rate]);
             },
             action(){
@@ -4962,8 +4967,7 @@ export function drawCity(){
             {
                 elm: `#city-dist-${category} h3`,
                 classes: `has-background-light has-text-dark`
-            }
-        );
+            });
         }
     });
 }
@@ -7107,6 +7111,10 @@ export function bank_vault(){
     }
     if (global.blood['greed']){
         vault *= 1 + (global.blood.greed / 100);
+    }
+    let rskVal = govActive('risktaker',0);
+    if (rskVal){
+        vault *= 1 + (rskVal / 100);
     }
     return vault;
 }

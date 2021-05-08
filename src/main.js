@@ -12,6 +12,7 @@ import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, 
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
+import { govern, govActive } from './governor.js';
 import { swissKnife } from './tech.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
@@ -241,6 +242,12 @@ popover('morale',
         if (global.civic.govern.type === 'federation'){
             total += 10;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +10%</span></p>`);
+        }
+
+        let milVal = govActive('militant',1);
+        if (milVal){
+            total -= milVal;
+            obj.popper.append(`<p class="modal_bd"><span>${loc('gov_trait_militant')}</span> <span class="has-text-danger"> -${milVal}%</span></p>`);
         }
 
         if (global.race['cheese']){
@@ -1001,6 +1008,10 @@ function fastLoop(){
             morale += shrineMorale.add;
         }
 
+        let milVal = govActive('militant',1);
+        if (milVal){
+            morale -= milVal;
+        }
         if (global.civic.govern.type === 'corpocracy'){
             morale -= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10;
         }
@@ -1108,6 +1119,7 @@ function fastLoop(){
         // trade routes
         if (global.tech['trade'] || (global.race['banana'] && global.tech['primitive'] && global.tech.primitive >= 3)){
             let used_trade = 0;
+            let dealVal = govActive('dealmaker',0);
             Object.keys(global.resource).forEach(function (res){
                 if (global.resource[res].trade > 0){
                     used_trade += global.resource[res].trade;
@@ -1115,6 +1127,9 @@ function fastLoop(){
 
                     if (global.resource.Money.amount >= price * time_multiplier){
                         let rate = tradeRatio[res];
+                        if (dealVal){
+                            rate *= 1 + (dealVal / 100);
+                        }
                         if (global.race['persuasive']){
                             rate *= 1 + (traits.persuasive.vars[0] * global.race['persuasive'] / 100);
                         }
@@ -2144,7 +2159,7 @@ function fastLoop(){
                     if (global.city.ptrait === 'dense' && job === 'miner'){
                         stress_level -= planetTraits.dense.vars[1];
                     }
-                    if (job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
+                    if (global.race['freespirit'] && job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
                         stress_level -= 0.5;
                     }
 
@@ -2940,7 +2955,7 @@ function fastLoop(){
                     delta *= 1.1;
                 }
 
-                FactoryMoney = delta * hunger; //Money doesn't normally have hunger/tax breakdowns. Better to lump in the manually calculable total.
+                FactoryMoney = delta * hunger;
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
@@ -4747,6 +4762,7 @@ function fastLoop(){
         breakdown.p['Orichalcum'] = orichalcum_bd;
 
         // Income
+        let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
             income_base *= 0.4;
@@ -4817,6 +4833,7 @@ function fastLoop(){
                 money_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
             modRes('Money', +(delta * time_multiplier).toFixed(2));
+            rawCash += delta;
         }
 
         if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'])){
@@ -4842,9 +4859,14 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 cash *= 0.8;
             }
+            let racVal = govActive('racketeer',1);
+            if (racVal){
+                cash *= 1 + (racVal / 100);
+            }
             cash *= casinos;
             money_bd[loc('city_casino')] = cash + 'v';
             modRes('Money', +(cash * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += cash * global_multiplier * hunger;
         }
 
         if (global.city['tourist_center']){
@@ -4873,6 +4895,16 @@ function fastLoop(){
             }
             money_bd[loc('tech_tourism')] = Math.round(tourism) + 'v';
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += tourism* global_multiplier * hunger;
+        }
+
+        {
+            let racVal = govActive('racketeer',0);
+            if (racVal){
+                let theft = -(Math.round(rawCash * (racVal / 100)));
+                breakdown.p.consume.Money[loc('gov_trait_racketeer')] = theft;
+                modRes('Money', +(theft * time_multiplier).toFixed(2));
+            }
         }
 
         breakdown.p['Money'] = money_bd;
@@ -5004,6 +5036,10 @@ function fastLoop(){
             let train = global.tech['boot_camp'] >= 2 ? 0.08 : 0.05;
             if (global.blood['lust']){
                 train += global.blood.lust * 0.002;
+            }
+            let milVal = govActive('militant',0);
+            if (milVal){
+                train *= 1 + (milVal / 100);
             }
             rate *= 1 + (global.city['boot_camp'].count * train);
         }
@@ -7359,6 +7395,7 @@ function longLoop(){
 
         // Market price fluctuation
         if (global.tech['currency'] && global.tech['currency'] >= 2){
+            let fluxVal = govActive('risktaker',0) ? 2 : 4;
             Object.keys(resource_values).forEach(function (res) {
                 let r_val = resource_values[res];
                 if (res === 'Copper' && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
@@ -7372,7 +7409,7 @@ function longLoop(){
                         r_val *= 5;
                     }
                 }
-                if (global.resource[res].display && Math.rand(0,4) === 0){
+                if (global.resource[res].display && Math.rand(0,fluxVal) === 0){
                     let max = r_val * 3;
                     let min = r_val / 2;
                     let variance = (Math.rand(0,200) - 100) / 100;
@@ -7913,6 +7950,8 @@ function longLoop(){
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
             buildGene();
         }
+
+        govern();
     }
 
     // Event triggered
@@ -7922,7 +7961,7 @@ function longLoop(){
             if (event_pool.length > 0){
                 let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
                 let msg = events[event].effect();
-                messageQueue(msg);
+                messageQueue(msg,'caution');
                 global.event.l = event;
             }
             global.event.t = 999;
@@ -7940,7 +7979,7 @@ function longLoop(){
                     messageQueue(msg);
                     global.m_event.l = event;
                 }
-                global.m_event.t = 749;
+                global.m_event.t = 850;
             }
             else {
                 global.m_event.t--;

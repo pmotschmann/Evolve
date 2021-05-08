@@ -4,14 +4,17 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.0`,
-        date: `??/??/2021`,
+        date: `5/??/2021`,
         changes: [
+            `Appoint a Governor to help run the everyday tasks, unlock in the CRISPR lab.`,
             `Animal genus split into 3 new beast genus: Carnivore, Herbivore, and Omnivore.`,
             `Carnivore Species: Cath, Wolven, Vulpine.`,
             `Herbivore Species: Centaur, Rhinotaur, Capybara.`,
             `Omnivore Species: Bearkin, Porkenari, Hedgeoken.`,
             `Cath, Wolven, and Centaur redesigned.`,
-            `Reweighted Angelic genus trait costs.`
+            `Reweighted Angelic genus trait costs.`,
+            `Major event messages are now shown in a different color from minor ones.`,
+            `Decreased frequency of minor events.`
         ]
     },
     {

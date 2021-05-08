@@ -847,6 +847,9 @@ if (!global.settings['showStorage']){
 if (!global.settings['showAlchemy']){
     global.settings['showAlchemy'] = false;
 }
+if (!global.settings['showGovernor']){
+    global.settings['showGovernor'] = false;
+}
 
 if (!global.settings['space']){
     global.settings['space'] = {
@@ -1014,6 +1017,9 @@ if (!global.settings['spaceTabs']){
 if (!global.settings['statsTabs']){
     global.settings['statsTabs'] = 0;
 }
+if (!global.settings['govTabs2']){
+    global.settings['govTabs2'] = 0;
+}
 if (!global.settings['locale']){
     global.settings['locale'] = 'en-us';
 }
@@ -1178,7 +1184,6 @@ if (!global.race['gene_fortify']){
 if (!global.race['old_gods']){
     global.race['old_gods'] = 'none';
 }
-
 if (!global.race['universe']){
     global.race['universe'] = 'standard';
 }
@@ -1186,9 +1191,16 @@ if (!global.race['universe']){
 if (!global.genes['minor']){
     global.genes['minor'] = {};
 }
-
 if (!global.race['minor']){
     global.race['minor'] = {};
+}
+
+if (!global.hasOwnProperty('govern')){
+    global['govern'] = {
+        governor: {},
+        candidate: [],
+        policy: {}
+    };
 }
 
 if (!global.settings.hasOwnProperty('showMil')){
@@ -1628,6 +1640,10 @@ var affix_list = {
 export function sizeApproximation(value,precision,fixed){
     let result = 0;
     let affix = '';
+    let neg = value < 0 ? true : false;
+    if (neg){
+        value *= -1;
+    }
     if (value <= 9999){
         result = +value.toFixed(precision);
     }
@@ -1663,7 +1679,13 @@ export function sizeApproximation(value,precision,fixed){
         affix = affix_list[global.settings.affix][7];
         result = fixed ? +(value / 1000000000000000000000000).toFixed(1) : (Math.floor(value / 10000000000000000000000) / 100);
     }
-    return (result >= 100 ? +result.toFixed(1) : result) + affix;
+    if (result >= 100){
+        result = +result.toFixed(1);
+    }
+    if (neg){
+        result *= -1;
+    }
+    return result + affix;
 }
 
 $(window).resize(function(){
@@ -1869,6 +1891,7 @@ export function clearStates(){
     global.settings.showEjector = false;
     global.settings.showCargo = false;
     global.settings.showAlchemy  = false;
+    global.settings.showGovernor = false;
     global.settings.space.home = true;
     global.settings.space.moon = false;
     global.settings.space.red = false;

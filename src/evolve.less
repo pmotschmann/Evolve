@@ -2045,6 +2045,10 @@ a {
         height: ~"calc(100vh - 10rem)";
     }
 
+    .govTabs2>section {
+        height: ~"calc(100vh - 17.5rem)";
+    }
+
     .resources {
         margin-top: .25rem;
         padding-right: .25rem;
@@ -2821,6 +2825,26 @@ a {
         .star4,
         .star5 {
             width: 1rem;
+        }
+    }
+
+    .governor {
+        &.candidates {
+            display: table;
+            width: 100%;
+        }
+        .appoint {
+            display: table-row;
+            > span {
+                display: table-cell;
+            }
+            &.header > span {
+                padding-bottom: .5rem;
+            }
+            button {
+                height: 1.5rem;
+                margin-bottom: .25rem;
+            }
         }
     }
 

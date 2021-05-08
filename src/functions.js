@@ -5,6 +5,7 @@ import { actions, actionDesc } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
+import { govActive } from './governor.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './achieve.js';
 
 export function popover(id,content,opts){
@@ -534,6 +535,10 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     else if (global.genes['creep'] && global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.002;
     }
+    let nqVal = govActive('noquestions',0);
+    if (nqVal){
+        mutiplier -= nqVal;
+    }
     if (mutiplier < 1.005){
         mutiplier = 1.005;
     }
@@ -561,6 +566,10 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     if (global.race['compact']){ mutiplier -= traits.compact.vars[1]; }
     if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         mutiplier -= harmonyEffect();
+    }
+    let nqVal = govActive('noquestions',0);
+    if (nqVal){
+        mutiplier -= nqVal;
     }
     if (mutiplier < 1.005){
         mutiplier = 1.005;

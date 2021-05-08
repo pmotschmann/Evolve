@@ -11,6 +11,7 @@ import { defineIndustry, buildGarrison, checkControlling } from './civics.js';
 import { renderSpace } from './space.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
+import { defineGovernor } from './governor.js';
 
 const techs = {
     club: {
@@ -2561,6 +2562,32 @@ const techs = {
                 return true;
             }
             return false;
+        }
+    },
+    governor: {
+        id: 'tech-governor',
+        title: loc('tech_governor'),
+        desc: loc('tech_governor'),
+        category: 'government',
+        era: 'civilized',
+        reqs: { govern: 1 },
+        condition(){
+            return global.genes['governor'] ? true : false;
+        },
+        grant: ['governor',1],
+        cost: {
+            Knowledge(){ return 1000; }
+        },
+        effect: loc('tech_governor_effect'),
+        action(){
+            if (payCosts($(this)[0].cost) && global.genes['governor']){
+                global.settings.showGovernor = true;
+                return true;
+            }
+            return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     spy: {
