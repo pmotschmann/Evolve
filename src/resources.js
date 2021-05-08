@@ -1720,7 +1720,7 @@ function breakdownPopover(id,name,type){
                     let type = val > 0 ? 'success' : 'danger';
                     let label = mod.replace("_"," ");
                     label = mod.replace(/\+.+$/,"");
-                    col2.append(`<div class="modal_bd"><span>${label} F</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
+                    col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
             if (count > 0){
