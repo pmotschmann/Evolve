@@ -1157,11 +1157,11 @@ const fortressModules = {
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
-                Oil(offset){ return spaceCostMultiplier('bireme', offset, 180000, 1.22, 'portal'); },
-                Alloy(offset){ return spaceCostMultiplier('bireme', offset, 18000000, 1.22, 'portal'); },
-                Graphene(offset){ return spaceCostMultiplier('bireme', offset, 12500000, 1.22, 'portal'); },
-                Soul_Gem(offset){ return spaceCostMultiplier('bireme', offset, 5, 1.22, 'portal'); },
-                Scarletite(offset){ return spaceCostMultiplier('bireme', offset, 250000, 1.22, 'portal'); },
+                Oil(offset){ return spaceCostMultiplier('transport', offset, 180000, 1.22, 'portal'); },
+                Alloy(offset){ return spaceCostMultiplier('transport', offset, 18000000, 1.22, 'portal'); },
+                Graphene(offset){ return spaceCostMultiplier('transport', offset, 12500000, 1.22, 'portal'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('transport', offset, 5, 1.22, 'portal'); },
+                Scarletite(offset){ return spaceCostMultiplier('transport', offset, 250000, 1.22, 'portal'); },
             },
             effect(){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
