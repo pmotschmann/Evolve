@@ -1898,8 +1898,19 @@ function buildContainerLabel(){
     return loc('resource_modal_container_construct_desc',[125,containerValue()]);
 }
 
-function buildCrate(){
-    let keyMutipler = keyMultiplier();
+export function crateGovHook(type,num){
+    switch (type){
+        case 'crate':
+            buildCrate(num);
+            break;
+        case 'container':
+            buildContainer(num);
+            break;
+    }
+}
+
+function buildCrate(num){
+    let keyMutipler = num || keyMultiplier();
     let material = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
     let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
     if (keyMutipler + global.resource.Crates.amount > global.resource.Crates.max){
@@ -1914,8 +1925,8 @@ function buildCrate(){
     }
 }
 
-function buildContainer(){
-    let keyMutipler = keyMultiplier();
+function buildContainer(num){
+    let keyMutipler = num || keyMultiplier();
     if (keyMutipler + global.resource.Containers.amount > global.resource.Containers.max){
         keyMutipler = global.resource.Containers.max - global.resource.Containers.amount;
     }

@@ -2,6 +2,7 @@ import { global } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements } from './actions.js'
+import { crateGovHook } from './resources.js';
 import { loc } from './locale.js';
 
 const gmen = {
@@ -206,9 +207,11 @@ function genGovernor(setSize){
 
 export function govern(){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-        global.race.governor.tasks.forEach(function(task){
-            if (gov_tasks[task].req()){
-                gov_tasks[task].task()
+        let cnt = [0,1,2];
+        if (govActive('organizer',0)){ cnt.push(3); }
+        cnt.forEach(function(n){
+            if (gov_tasks[global.race.governor.tasks[`t${n}`]] && gov_tasks[global.race.governor.tasks[`t${n}`]].req()){
+                gov_tasks[global.race.governor.tasks[`t${n}`]].task()
             }
         });
     }
@@ -231,6 +234,40 @@ function drawnGovernOffice(){
     $('#r_govern1').append(govern);
 
     govern.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span><div>`));
+
+    let cnt = [0,1,2];
+    if (govActive('organizer',0)){ cnt.push(3); }
+    cnt.forEach(function(num){
+        let options = `<b-dropdown-item v-on:click="setTask('none',${num})">{{ 'none' | label }}</b-dropdown-item>`;
+        Object.keys(gov_tasks).forEach(function(task){
+            if (gov_tasks[task].req()){
+                options += `<b-dropdown-item v-on:click="setTask('${task}',${num})">{{ '${task}' | label }}</b-dropdown-item>`;
+            }
+        });
+
+        govern.append(`<div class="govTask"><span>${loc(`gov_task`,[num+1])}</span><b-dropdown hoverable>
+            <button class="button is-primary" slot="trigger">
+                <span>{{ t${num} | label }}</span>
+                <i class="fas fa-sort-down"></i>
+            </button>
+            ${options}
+        </b-dropdown></div>`);
+    });
+
+    vBind({
+        el: '#govOffice',
+        data: global.race.governor.tasks,
+        methods: {
+            setTask(t,n){
+                global.race.governor.tasks[`t${n}`] = t;
+            }
+        },
+        filters: {
+            label(t){
+                return loc(`gov_task_${t}`);
+            }
+        }
+    });
 
     popover(`govOffice`, function(){
         let desc = '';
@@ -269,6 +306,9 @@ function appointGovernor(){
                     let gov = global.race.governor.candidates[gi];
                     global.race.governor['g'] = gov;
                     delete global.race.governor.candidates;
+                    global.race.governor['tasks'] = {
+                        t0: 'none', t1: 'none', t2: 'none', t3: 'none'
+                    };
                     defineGovernor();
                 }
             }
@@ -297,6 +337,87 @@ export function govActive(trait,val){
 }
 
 const gov_tasks = {
+    storage: { // Balance Storage
+        name: loc(`gov_task_storage`),
+        req(){
+            return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                if (global.resource.Crates.amount < global.resource.Crates.max){
+                    let mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+                    let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
+                    let reserve = global.resource[mat].max === -1 ? 1000 : global.resource[mat].max / 2;
+                    if (reserve > 100000){ reserve = 100000; }
+                    if (global.resource[mat].amount + cost > reserve){
+                        let build = Math.floor((global.resource[mat].amount - reserve) / cost);
+                        crateGovHook('crate',build);
+                    }
+                }
+                if (checkCityRequirements('warehouse') && global.resource.Containers.display && global.resource.Containers.amount < global.resource.Containers.max){
+                    let cost = 125;
+                    let reserve = global.resource.Steel.max / 2;
+                    if (reserve > 100000){ reserve = 100000; }
+                    if (global.resource.Steel.amount + cost > reserve){
+                        let build = Math.floor((global.resource.Steel.amount - reserve) / cost);
+                        crateGovHook('container',build);
+                    }
+                }
+
+                let crates = global.resource.Crates.amount;
+                let containers = global.resource.Containers.amount;
+                let active = 0;
+                
+                Object.keys(global.resource).forEach(function(res){
+                    if (global.resource[res].display && global.resource[res].stackable){
+                        crates += global.resource[res].crates;
+                        containers += global.resource[res].containers;
+                        active++;
+                    }
+                });
+
+                let crateSet = Math.floor(crates / active);
+                let containerSet = Math.floor(containers / active);
+
+                if (global.resource.Food.display){
+                    active--;
+                    let set = Math.floor(crateSet / 10);
+                    if (set > 100){ set = 100; }
+                    global.resource.Food.crates = set;
+                    crates -= set;
+                    crateSet = Math.floor(crates / active);
+
+                    if (global.resource.Containers.display){
+                        let set = Math.floor(containerSet / 10);
+                        if (set > 100){ set = 100; }
+                        global.resource.Food.containers = set;
+                        containers -= set;
+                        containerSet = Math.floor(containers / active);
+                    }
+                }
+
+                let crtRemain = crates - (crateSet * active);
+                let cntRemain = containers - (containerSet * active);
+
+                Object.keys(global.resource).forEach(function(res){
+                    if (global.resource[res].display && global.resource[res].stackable && res !== 'Food'){
+                        global.resource[res].crates = crateSet;
+                        if (global.resource.Containers.display){
+                            global.resource[res].containers = containerSet;
+                        }
+                        if (crtRemain > 0){
+                            global.resource[res].crates++;
+                            crtRemain--;
+                        }
+                        if (cntRemain > 0){
+                            global.resource[res].containers++;
+                            cntRemain--;
+                        }
+                    }
+                });
+            }
+        }
+    },
     slave: { // Replace Slaves
         name: loc(`gov_task_slave`),
         req(){
@@ -312,7 +433,7 @@ const gov_tasks = {
         }
     },
     sacrifice: { // Sacrifice Population
-        name: loc(`gov_task_slave`),
+        name: loc(`gov_task_sacrifice`),
         req(){
             return checkCityRequirements('s_alter') && global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? true : false;
         },
