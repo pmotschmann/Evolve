@@ -4125,6 +4125,7 @@
   "gov_task_slave": "Slave Replenishment",
   "gov_task_sacrifice": "Schedule Sacrifices",
   "gov_task_storage": "Crate/Container Management",
+  "gov_task_merc": "Merc Recruitment",
   "power_grid_header": "Click and drag to reorder the priority for powering structures.",
   "power_grid_reset": "Reset %0 Grid",
   "govern_anarchy": "Anarchy",

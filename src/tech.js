@@ -2572,7 +2572,7 @@ const techs = {
         era: 'civilized',
         reqs: { govern: 1 },
         condition(){
-            return global.genes['governor'] ? true : false;
+            return global.genes['governor'] && global.civic.govern.type !== 'anarchy' ? true : false;
         },
         grant: ['governor',1],
         cost: {

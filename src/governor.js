@@ -1,7 +1,8 @@
 import { global } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements } from './actions.js'
+import { actions, checkCityRequirements } from './actions.js';
+import { govCivics } from './civics.js'
 import { crateGovHook } from './resources.js';
 import { loc } from './locale.js';
 
@@ -415,6 +416,19 @@ const gov_tasks = {
                         }
                     }
                 });
+            }
+        }
+    },
+    merc: { // Hire Mercs
+        name: loc(`gov_task_merc`),
+        req(){
+            return checkCityRequirements('garrison') && global.tech['mercs'] ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                while (global.civic.garrison.max > global.civic.garrison.workers && global.resource.Money.amount + govCivics('m_cost') + global.resource.Money.diff >= global.resource.Money.max){
+                    govCivics('m_buy');
+                }
             }
         }
     },

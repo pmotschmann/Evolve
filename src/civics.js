@@ -830,6 +830,48 @@ function taxRates(govern){
     );
 }
 
+export function govCivics(f){
+    switch (f){
+        case 'm_cost':
+            return mercCost();
+        case 'm_buy':
+            return hireMerc();
+    }
+}
+
+function mercCost(){
+    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+    if (cost > 25000){
+        cost = 25000;
+    }
+    if (global.civic.garrison.m_use > 0){
+        cost *= 1.1 ** global.civic.garrison.m_use;
+    }
+    if (global.race['brute']){
+        cost *= 1 - (traits.brute.vars[0] / 100);
+    }
+    return Math.round(cost);
+}
+
+function hireMerc(){
+    if (global.tech['mercs']){
+        let repeats = keyMultiplier();
+        let canBuy = true;
+        while (canBuy && repeats > 0){
+            let cost = mercCost();
+            if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                global.resource.Money.amount -= cost;
+                global.civic['garrison'].workers++;
+                global.civic.garrison.m_use++;
+            }
+            else {
+                canBuy = false;
+            }
+            repeats--;
+        }
+    }
+}
+
 export function buildGarrison(garrison,full){
     clearElement(garrison);
     if (global.tech['world_control']){
@@ -900,32 +942,7 @@ export function buildGarrison(garrison,full){
         },
         methods: {
             hire(){
-                if (global.tech['mercs']){
-                    let repeats = keyMultiplier();
-                    let canBuy = true;
-                    while (canBuy && repeats > 0){
-                        let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                        if (cost > 25000){
-                            cost = 25000;
-                        }
-                        if (global.civic.garrison.m_use > 0){
-                            cost *= 1.1 ** global.civic.garrison.m_use;
-                        }
-                        if (global.race['brute']){
-                            cost *= 1 - (traits.brute.vars[0] / 100);
-                        }
-                        cost = Math.round(cost);
-                        if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
-                            global.resource.Money.amount -= cost;
-                            global.civic['garrison'].workers++;
-                            global.civic.garrison.m_use++;
-                        }
-                        else {
-                            canBuy = false;
-                        }
-                        repeats--;
-                    }
-                }
+                hireMerc();
             },
             campaign(gov){
                 war_campaign(gov);
