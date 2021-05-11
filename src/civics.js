@@ -26,7 +26,7 @@ export function defineGovernment(define){
 
     var govern = $('<div id="government" class="government is-child"></div>');
 
-    var tabs = $(`<b-tabs class="resTabs govTabs2" v-show="t.display" v-model="s.govTabs2" :animated="s.animated">
+    var tabs = $(`<b-tabs class="resTabs govTabs2" v-show="vis()" v-model="s.govTabs2" :animated="s.animated">
         <b-tab-item id="r_govern0">
             <template slot="header">
                 <h2 class="is-sr-only">${loc('civics_government')}}</h2>
@@ -49,6 +49,11 @@ export function defineGovernment(define){
         data: {
             t: global.civic['taxes'],
             s: global.settings
+        },
+        methods: {
+            vis(){
+                return global.tech['govern'] ? true : false;
+            }
         }
     });
     
@@ -525,23 +530,7 @@ export function foreignGov(){
                     return global.civic.foreign[`gov${i}`].trn > 0 || spyCost(i) > global.resource.Money.amount ? true : false;
                 },
                 spy(i){
-                    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
-                        let cost = spyCost(i)
-                        if (global.resource.Money.amount >= cost){
-                            global.resource.Money.amount -= cost;
-                            let time = 300;
-                            if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                                time -= global.city['boot_camp'].count * 10;                            
-                                if (time < 10){
-                                    time = 10;
-                                }                            
-                            }
-                            if (global.race['infiltrator']){
-                                time = Math.round(time / 2);
-                            }
-                            global.civic.foreign[`gov${i}`].trn = time;
-                        }
-                    }
+                    trainSpy(i);
                 },
                 spyDesc(i){
                     if (global.civic.foreign[`gov${i}`].trn > 0){
@@ -572,6 +561,26 @@ function spyCost(i){
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
 
+function trainSpy(i){
+    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
+        let cost = spyCost(i)
+        if (global.resource.Money.amount >= cost){
+            global.resource.Money.amount -= cost;
+            let time = 300;
+            if (global.tech['spy'] >= 3 && global.city['boot_camp']){
+                time -= global.city['boot_camp'].count * 10;
+                if (time < 10){
+                    time = 10;
+                }
+            }
+            if (global.race['infiltrator']){
+                time = Math.round(time / 2);
+            }
+            global.civic.foreign[`gov${i}`].trn = time;
+        }
+    }
+}
+
 function govPrice(gov){
     let price = global.civic.foreign[`gov${gov}`].eco * 15384;
     price *= 1 + global.civic.foreign[`gov${gov}`].hstl * 1.6 / 100;
@@ -581,6 +590,38 @@ function govPrice(gov){
     
 export function checkControlling() {
     return global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy;
+}
+
+function spyAction(sa,g){
+    switch (sa){
+        case 'influence':
+            {
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    let timer = global.tech['spy'] >= 4 ? 200 : 300;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].act = 'influence';
+                }
+            }
+            break;
+        case 'sabotage':
+            {
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    let timer = global.tech['spy'] >= 4 ? 400 : 600;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].act = 'sabotage';
+                }
+            }
+            break;
+        case 'incite':
+            {
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    let timer = global.tech['spy'] >= 4 ? 600 : 900;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].act = 'incite';
+                }
+            }
+            break;
+    }
 }
 
 function drawEspModal(gov){
@@ -607,9 +648,7 @@ function drawEspModal(gov){
         methods: {
             influence(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 4 ? 200 : 300;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
-                    global.civic.foreign[`gov${g}`].act = 'influence';
+                    spyAction('influence',g);
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
@@ -625,9 +664,7 @@ function drawEspModal(gov){
             },
             sabotage(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 4 ? 400 : 600;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
-                    global.civic.foreign[`gov${g}`].act = 'sabotage';
+                    spyAction('sabotage',g);
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGov').hide();
@@ -644,9 +681,7 @@ function drawEspModal(gov){
             },
             incite(g){
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
-                    let timer = global.tech['spy'] >= 4 ? 600 : 900;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
-                    global.civic.foreign[`gov${g}`].act = 'incite';
+                    spyAction('incite',g);
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGovLabel').hide();
@@ -743,6 +778,60 @@ function drawEspModal(gov){
     );
 }
 
+function taxCap(min){
+    let extreme = global.tech['currency'] && global.tech.currency >= 5 ? true : false;
+    if (min){
+        return (extreme || global.race['terrifying']) && !global.race['noble'] ? 0 : 10;
+    }
+    else {
+        if (global.race['noble']){
+            return global.civic.govern.type === 'oligarchy' ? 40 : 20;
+        }
+        else {
+            let cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
+            if (extreme || global.race['terrifying']){
+                cap += 20;
+            }
+            return cap;
+        }
+    }
+}
+
+function adjustTax(a){
+    switch (a){
+        case 'add':
+            {
+                let inc = keyMultiplier();
+                let cap = taxCap(false);
+                if (global.race['noble']){
+                    global.civic.taxes.tax_rate += inc;
+                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
+                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
+                    }
+                }
+                else if (global.civic.taxes.tax_rate < cap){
+                    global.civic.taxes.tax_rate += inc;
+                    if (global.civic.taxes.tax_rate > cap){
+                        global.civic.taxes.tax_rate = cap;
+                    }
+                }
+            }
+            break;
+        case 'sub':
+            {
+                let dec = keyMultiplier();
+                let min = taxCap(true);
+                if (global.civic.taxes.tax_rate > min){
+                    global.civic.taxes.tax_rate -= dec;
+                    if (global.civic.taxes.tax_rate < min){
+                        global.civic.taxes.tax_rate = min;
+                    }
+                }
+            }
+            break;
+    }
+}
+
 function taxRates(govern){
     var tax_rates = $('<div id="tax_rates" v-show="display" class="taxRate"></div>');
     govern.append(tax_rates);
@@ -777,46 +866,10 @@ function taxRates(govern){
         },
         methods: {
             add(){
-                let inc = keyMultiplier();
-                let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-                let cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
-                if (extreme || global.race['terrifying']){
-                    cap += 20;
-                }
-                if (global.race['noble']){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
-                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
-                    }
-                }
-                else if (global.civic.taxes.tax_rate < cap){
-                    global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > cap){
-                        global.civic.taxes.tax_rate = cap;
-                    }
-                }
+                adjustTax('add');
             },
             sub(){
-                let dec = keyMultiplier();
-                let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-                if (global.race['noble']){
-                    global.civic.taxes.tax_rate -= dec;
-                    if (global.civic.taxes.tax_rate < 10){
-                        global.civic.taxes.tax_rate = 10;
-                    }
-                }
-                else if ((extreme || global.race['terrifying']) && global.civic.taxes.tax_rate > 0){
-                    global.civic.taxes.tax_rate -= dec;
-                    if (global.civic.taxes.tax_rate < 0){
-                        global.civic.taxes.tax_rate = 0;
-                    }
-                }
-                else if (global.civic.taxes.tax_rate > 10){
-                    global.civic.taxes.tax_rate -= dec;
-                    if (global.civic.taxes.tax_rate < 10){
-                        global.civic.taxes.tax_rate = 10;
-                    }
-                }
+                adjustTax('sub');
             }
         }
     });
@@ -830,12 +883,26 @@ function taxRates(govern){
     );
 }
 
-export function govCivics(f){
+export function govCivics(f,v){
     switch (f){
         case 'm_cost':
             return mercCost();
         case 'm_buy':
             return hireMerc();
+        case 's_cost':
+            return spyCost(v);
+        case 't_spy':
+            return trainSpy(v);
+        case 'adj_tax':
+            return adjustTax(v);
+        case 'tax_cap':
+            return taxCap(v);
+        case 's_influence':
+            return spyAction('influence',v);
+        case 's_sabotage':
+            return spyAction('sabotage',v);
+        case 's_incite':
+            return spyAction('incite',v);
     }
 }
 

@@ -203,7 +203,7 @@ popover('morale',
 
         let total = 100 + global.city.morale.unemployed + global.city.morale.stress;
         Object.keys(global.city.morale).forEach(function (morale){
-            if (!['current','unemployed','stress','season'].includes(morale) && global.city.morale[morale] !== 0){
+            if (!['current','unemployed','stress','season','cap','potential'].includes(morale) && global.city.morale[morale] !== 0){
                 total += global.city.morale[morale];
                 let type = global.city.morale[morale] > 0 ? 'success' : 'danger';
 
@@ -256,12 +256,11 @@ popover('morale',
         }
 
         total = +(total).toFixed(1);
-        if (total > moraleCap || total < 50){
-            obj.popper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}% (${total}%)</span></div>`);
-        }
-        else {
-            obj.popper.append(`<div class="modal_bd sum"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}%</span></div>`);
-        }
+        global.city.morale.potential = total;
+
+        obj.popper.append(`<div class="modal_bd sum"><span>${loc('morale_total')}</span> <span class="has-text-warning"> ${+(total).toFixed(1)}%</span></div>`);
+        obj.popper.append(`<div class="modal_bd"><span>${loc('morale_max')}</span> <span class="has-text-${total > moraleCap ? 'caution' : 'warning'}"> ${+(moraleCap).toFixed(1)}%</span></div>`);
+        obj.popper.append(`<div class="modal_bd"><span>${loc('morale_current')}</span> <span class="has-text-warning"> ${+(global.city.morale.current).toFixed(1)}%</span></div>`);
 
         return undefined;
     },
@@ -2285,6 +2284,7 @@ function fastLoop(){
         else if (morale > moraleCap){
             morale = moraleCap;
         }
+        global.city.morale.cap = moraleCap;
 
         global.city.morale.current = morale;
 

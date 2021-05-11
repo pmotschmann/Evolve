@@ -1356,6 +1356,8 @@ if (!global.settings['at']){
 if (!global.city['morale']){
     global.city['morale'] = {
         current: 0,
+        cap: 0,
+        potential: 0,
         unemployed: 0,
         stress: 0,
         entertain: 0,
@@ -1403,6 +1405,12 @@ if (!global.city.morale['vr']){
 }
 if (!global.city.morale['zoo']){
     global.city.morale['zoo'] = 0;
+}
+if (!global.city.morale['cap']){
+    global.city.morale['cap'] = 0;
+}
+if (!global.city.morale['potential']){
+    global.city.morale['potential'] = 0;
 }
 
 if (!global.city['calendar']){

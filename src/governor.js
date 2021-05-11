@@ -2,7 +2,7 @@ import { global } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements } from './actions.js';
-import { govCivics } from './civics.js'
+import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
 import { loc } from './locale.js';
 
@@ -338,7 +338,29 @@ export function govActive(trait,val){
 }
 
 const gov_tasks = {
-    storage: { // Balance Storage
+    tax: { // Dynamic Taxes
+        name: loc(`gov_task_tax`),
+        req(){
+            return global.tech['currency'] && global.tech.currency >= 3 && global.civic.taxes.display ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                let max = govCivics('tax_cap',false);
+                if (global.city.morale.current < 100 && global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 45 : 25)){
+                    while (global.city.morale.current < 100 && global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 45 : 25)){
+                        govCivics('adj_tax','sub');
+                    }
+                }
+                else if (global.city.morale.potential > global.city.morale.cap + 1 && global.civic.taxes.tax_rate < max){
+                    govCivics('adj_tax','add');
+                }
+                else if (global.city.morale.current < global.city.morale.cap + 1 && global.civic.taxes.tax_rate > 20){
+                    govCivics('adj_tax','sub');
+                }
+            }
+        }
+    },
+    storage: { // Crate/Container Construction
         name: loc(`gov_task_storage`),
         req(){
             return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display ? true : false;
@@ -364,7 +386,16 @@ const gov_tasks = {
                         crateGovHook('container',build);
                     }
                 }
-
+            }
+        }
+    },
+    bal_storage: { // Balanced Storage
+        name: loc(`gov_task_bal_storage`),
+        req(){
+            return checkCityRequirements('storage_yard') && global.tech['container'] && global.resource.Crates.display ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
                 let crates = global.resource.Crates.amount;
                 let containers = global.resource.Containers.amount;
                 let active = 0;
@@ -429,6 +460,45 @@ const gov_tasks = {
                 while (global.civic.garrison.max > global.civic.garrison.workers && global.resource.Money.amount + govCivics('m_cost') + global.resource.Money.diff >= global.resource.Money.max){
                     govCivics('m_buy');
                 }
+            }
+        }
+    },
+    spy: { // Spy Recruiter
+        name: loc(`gov_task_spy`),
+        req(){
+            return global.tech['spy'] && !global.tech['world_control'] ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                for (let i=0; i<3; i++){
+                    let cost = govCivics('s_cost',i);
+                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount + cost + global.resource.Money.diff >= global.resource.Money.max){
+                        govCivics('t_spy',i);
+                    }
+                }
+            }
+        }
+    },
+    spyop: { // Spy Operator
+        name: loc(`gov_task_spyop`),
+        req(){
+            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                [0,1,2].forEach(function(gov){
+                    if (global.civic.foreign[`gov${gov}`].act === 'none' && global.civic.foreign[`gov${gov}`].spy > 0){
+                        if (global.civic.foreign[`gov${gov}`].mil > 50){
+                            govCivics('s_sabotage',gov)
+                        }
+                        else if (global.civic.foreign[`gov${gov}`].hstl > 0){
+                            govCivics('s_influence',gov)
+                        }
+                        else if (global.civic.foreign[`gov${gov}`].unrest < 100){
+                            govCivics('s_incite',gov)
+                        }
+                    }
+                });
             }
         }
     },
