@@ -1156,7 +1156,8 @@ function technoAdjust(costs, wiki){
 }
 
 function scienceAdjust(costs){
-    if ((global.race['smart'] || global.race['dumb']) && costs['Knowledge']){
+    let pragVal = govActive('pragmatist',1);
+    if ((global.race['smart'] || global.race['dumb'] || pragVal) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -1167,6 +1168,9 @@ function scienceAdjust(costs){
                     }
                     if (global.race['dumb']){
                         cost *= 1 + (traits.dumb.vars[0] / 100);
+                    }
+                    if (pragVal){
+                        rate *= 1 + (pragVal / 100);
                     }
                     return Math.round(cost);
                 }

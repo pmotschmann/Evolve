@@ -2,6 +2,7 @@ import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
+import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 
 const date = new Date();
@@ -2091,6 +2092,10 @@ types: farmer, miner, lumberjack, science, factory, army, hunting
 */
 export function racialTrait(workers,type){
     let modifier = 1;
+    let theoryVal = govActive('theorist',1);
+    if (theoryVal && (type === 'factory' || type === 'miner' || type === 'lumberjack')){
+        modifier *= 1 - (theoryVal / 100);
+    }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
     }

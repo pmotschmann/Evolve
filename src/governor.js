@@ -56,7 +56,8 @@ const gmen = {
         desc: loc('governor_bluecollar_desc'),
         title: [{ m: loc('governor_bluecollar_t1m'), f: loc('governor_bluecollar_t1f') },loc('governor_bluecollar_t2'),{ m: loc('governor_bluecollar_t3m'), f: loc('governor_bluecollar_t3f') }],
         traits: {
-            pragmatist: 1
+            pragmatist: 1,
+            dirty_jobs: 1
         }
     },
     noble: {
@@ -127,13 +128,24 @@ const gov_traits = {
         vars: [10]
     },
     teacher: {
-        name: loc(`gov_trait_teacher`)
+        name: loc(`gov_trait_teacher`),
+        effect(){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars[0]]); },
+        vars: [5]
     },
     theorist: {
-        name: loc(`gov_trait_theorist`)
+        name: loc(`gov_trait_theorist`),
+        effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
+        vars: [50,4]
     },
     pragmatist: {
-        name: loc(`gov_trait_extravagant`)
+        name: loc(`gov_trait_pragmatist`),
+        effect(){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
+        vars: [50,2]
+    },
+    dirty_jobs: {
+        name: loc(`gov_trait_dirty_jobs`),
+        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars[0]]); },
+        vars: [0.015]
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`)

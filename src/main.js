@@ -5974,6 +5974,10 @@ function midLoop(){
                 let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
                 multiplier *= 1 + uni;
             }
+            let teachVal = govActive('teacher',0);
+            if (teachVal){
+                multiplier *= 1 + (teachVal / 100);
+            }
             if (shrineBonusActive()){
                 let shrineBonus = getShrineBonus('know');
                 multiplier *= shrineBonus.mult;
@@ -6003,6 +6007,10 @@ function midLoop(){
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
                 shelving *= 1 + (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
+            }
+            let teachVal = govActive('teacher',0);
+            if (teachVal){
+                shelving *= 1 + (teachVal / 100);
             }
             let gain = Math.round(global.city['library'].count * shelving);
             caps['Knowledge'] += gain;

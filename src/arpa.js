@@ -4,6 +4,7 @@ import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction,
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
+import { govActive } from './governor.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
 
@@ -2153,6 +2154,10 @@ function addProject(parent,project){
                             }
                             if (global.genes['queue'] && global.genes['queue'] >= 2){
                                 max_queue *= 2;
+                            }
+                            let pragVal = govActive('pragmatist',0);
+                            if (pragVal){
+                                max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
                             }
                             let used = 0;
                             for (var j=0; j<global.queue.queue.length; j++){
