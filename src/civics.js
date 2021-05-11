@@ -596,7 +596,7 @@ function spyAction(sa,g){
     switch (sa){
         case 'influence':
             {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
@@ -605,7 +605,7 @@ function spyAction(sa,g){
             break;
         case 'sabotage':
             {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
@@ -614,7 +614,7 @@ function spyAction(sa,g){
             break;
         case 'incite':
             {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
                     global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
@@ -697,7 +697,7 @@ function drawEspModal(gov){
             },
             annex(g){
                 if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
-                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
                         global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
                         global.civic.foreign[`gov${g}`].act = 'annex';
@@ -718,7 +718,7 @@ function drawEspModal(gov){
             purchase(g){
                 let price = govPrice(g);
                 if (price <= global.resource.Money.amount){
-                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab === 0){
                         global.resource.Money.amount -= price;
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
                         global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;

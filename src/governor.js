@@ -487,7 +487,7 @@ const gov_tasks = {
         task(){
             if ( $(this)[0].req() ){
                 [0,1,2].forEach(function(gov){
-                    if (global.civic.foreign[`gov${gov}`].act === 'none' && global.civic.foreign[`gov${gov}`].spy > 0){
+                    if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0){
                         if (global.civic.foreign[`gov${gov}`].mil > 50){
                             govCivics('s_sabotage',gov)
                         }
