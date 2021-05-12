@@ -65,6 +65,7 @@ export function mainVue(){
                 global.settings.theme = theme;
                 $('html').removeClass();
                 $('html').addClass(theme);
+                $('html').addClass(global.settings.font);
             },
             numNotation(notation){
                 global.settings.affix = notation;

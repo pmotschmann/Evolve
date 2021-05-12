@@ -212,7 +212,7 @@ export function mechanicsPage(content){
                 3: [loc('tech_demon_attractor')]
             }
         });
-        sideMenu('add',`mechanics-gameplay`,`soulgems`,loc('wiki_hell_soul_gem'));
+        sideMenu('add',`mechanics-gameplay`,`soul_gem`,loc('wiki_hell_soul_gem'));
     }
 
     {
@@ -237,8 +237,8 @@ export function mechanicsPage(content){
                 2: [loc('galaxy_gateway'),100,250,500],
                 3: [loc('galaxy_stargate'),100,250,500],
                 4: [loc('galaxy_gorddon'),800],
-                5: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),1000],
-                6: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]),2500],
+                5: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].home]),1000],
+                6: [loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red]),2500],
                 7: [loc('galaxy_chthonian'),7500]
             },
             data_color: {

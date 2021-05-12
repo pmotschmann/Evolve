@@ -609,7 +609,7 @@ export function checkAchievements(){
             }
         });
         if (slist > 0){
-            unlockAchieve('banana',false,slist);
+            unlockAchieve('banana',false,slist,'l');
         }
         if (ulist > 0 && affix !== 'l'){
             unlockAchieve('banana',false,ulist,affix);

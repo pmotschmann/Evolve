@@ -4094,13 +4094,11 @@ function fastLoop(){
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
                 if (copper_base > 0){
                     copper_bd[`ᄂ${loc('power')}`] = ((copper_power - 1) * 100) + '%';
+                    if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
+                        copper_power = (copper_power - 1) * 0.5 + 1;
+                        copper_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
                 }
-
-                if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
-                    copper_power = (copper_power - 1) * 0.5 + 1;
-                    copper_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
-                }
-
                 let delta = copper_base * shrineMetal.mult * copper_power;
                 delta *= hunger * global_multiplier;
 
@@ -4135,11 +4133,10 @@ function fastLoop(){
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
                 if (iron_base > 0){
                     iron_bd[`ᄂ${loc('power')}`] = ((iron_power - 1) * 100) + '%';
-                }
-
-                if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
-                    iron_power = (iron_power - 1) * 0.5 + 1;
-                    iron_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
+                        iron_power = (iron_power - 1) * 0.5 + 1;
+                        iron_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    }
                 }
 
                 let delta = ((iron_base * iron_power) + space_iron) * smelter_mult * shrineMetal.mult;
@@ -4919,7 +4916,7 @@ function fastLoop(){
         }
         global.civic.garrison.progress += rate * time_multiplier;
         if (global.race['brute']){
-            global.civic.garrison.progress += traits.brute.vars[1] * time_multiplier;
+            global.civic.garrison.progress += traits.brute.vars[1] / 40 * time_multiplier;
         }
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;

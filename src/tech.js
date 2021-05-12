@@ -8579,7 +8579,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_exotic_infusion_effect',[global.resource.Soul_Gem.name])}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
         action(){
             if (payCosts($(this)[0].cost)){
-                global.resource.Soul_Gem.amount += 10;
+                global.resource.Soul_Gem.amount += global.race['smoldering'] ? 9 : 10;
                 global.resource.Knowledge.amount += 1500000;
                 return true;
             }
@@ -8602,7 +8602,7 @@ const techs = {
         effect(){ return `<div>${loc('tech_infusion_check_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
         action(){
             if (payCosts($(this)[0].cost)){
-                global.resource.Soul_Gem.amount += 10;
+                global.resource.Soul_Gem.amount += global.race['smoldering'] ? 9 : 10;
                 global.resource.Knowledge.amount += 1500000;
                 return true;
             }
