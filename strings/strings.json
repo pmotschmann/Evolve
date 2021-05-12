@@ -230,6 +230,7 @@
   "build_success": "%0 has been constructed.",
   "research_success": "%0 has been researched.",
   "action_ready": "Affordable in [%0]",
+  "floor_clearing": "Cleared in [%0]",
   "cancel_routes": "Cancel Routes",
   "cancel_all_routes": "Cancel All Routes",
   "gain": "+%0 %1/s",

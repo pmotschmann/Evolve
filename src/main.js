@@ -6790,9 +6790,15 @@ function midLoop(){
             global.portal.mechbay.bay = space;
             if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
                 global.portal.waygate.progress += progress;
+                global.portal.waygate.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.waygate.progress) / progress);
+                global.portal.spire.time = timeFormat(-1);
             }
             else {
                 global.portal.spire.progress += progress;
+                global.portal.spire.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.spire.progress) / progress);
+                if (global.tech['waygate'] && global.tech.waygate >= 2){
+                    global.portal.waygate.time = timeFormat(-1);
+                }
             }
             if (global.portal.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.portal.waygate.progress >= 100){
                 global.portal.waygate.progress = 100;
