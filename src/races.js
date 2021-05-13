@@ -2096,6 +2096,10 @@ export function racialTrait(workers,type){
     if (theoryVal && (type === 'factory' || type === 'miner' || type === 'lumberjack')){
         modifier *= 1 - (theoryVal / 100);
     }
+    let inspireVal = govActive('inspirational',0);
+    if (inspireVal && (type === 'farmer' || type === 'factory' || type === 'miner' || type === 'lumberjack')){
+        modifier *= 1 + (inspireVal / 100);
+    }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
     }
@@ -2108,7 +2112,7 @@ export function racialTrait(workers,type){
             modifier *= 1 + (1 - (mod ** (workers - 10)));
         }
     }
-    if(global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
+    if (global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
         switch(global.city.calendar.temp){
             case 0:
                 modifier *= 1 - (traits.cold_blooded.vars[0] / 100);

@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, p_on } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements } from './actions.js';
@@ -48,7 +48,8 @@ const gmen = {
         desc: loc('governor_spiritual_desc'),
         title: [loc('governor_spiritual_t1'),loc('governor_spiritual_t2'),loc('governor_spiritual_t3')],
         traits: {
-            
+            inspirational: 1,
+            pious: 1
         }
     },
     bluecollar: {
@@ -136,6 +137,21 @@ const gov_traits = {
         name: loc(`gov_trait_theorist`),
         effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
         vars: [50,4]
+    },
+    inspirational: {
+        name: loc(`gov_trait_inspirational`),
+        effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars[0]]); },
+        vars: [10]
+    },
+    pious: {
+        name: loc(`gov_trait_pious`),
+        effect(){
+            let val = $(this)[0].vars[1];
+            let xeno = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
+            val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
+            return loc(`gov_trait_pious_effect`,[$(this)[0].vars[0],val]);
+        },
+        vars: [10,2]
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),

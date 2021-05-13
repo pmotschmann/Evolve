@@ -4902,8 +4902,17 @@ function fastLoop(){
             let racVal = govActive('racketeer',0);
             if (racVal){
                 let theft = -(Math.round(rawCash * (racVal / 100)));
-                breakdown.p.consume.Money[loc('gov_trait_racketeer')] = theft;
+                breakdown.p.consume.Money[loc('gov_trait_racketeer_bd')] = theft;
                 modRes('Money', +(theft * time_multiplier).toFixed(2));
+            }
+        }
+
+        {
+            let psVal = govActive('pious',0);
+            if (psVal){
+                let tithe = -(Math.round(rawCash * (psVal / 100)));
+                breakdown.p.consume.Money[loc('gov_trait_pious_bd')] = tithe;
+                modRes('Money', +(tithe * time_multiplier).toFixed(2));
             }
         }
 
