@@ -1,7 +1,7 @@
 import { global, p_on } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements } from './actions.js';
+import { actions, checkCityRequirements, housingLabel } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
 import { loc } from './locale.js';
@@ -164,10 +164,14 @@ const gov_traits = {
         vars: [0.015]
     },
     extravagant: {
-        name: loc(`gov_trait_extravagant`)
+        name: loc(`gov_trait_extravagant`),
+        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars[0],housingLabel('large',true),$(this)[0].vars[1],$(this)[0].vars[2]+5]); },
+        vars: [8,1.25,1]
     },
     respected: {
-        name: loc(`gov_trait_respected`)
+        name: loc(`gov_trait_respected`),
+        effect(){ return loc(`gov_trait_respected_effect`,[$(this)[0].vars[0]]); },
+        vars: [5]
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`)

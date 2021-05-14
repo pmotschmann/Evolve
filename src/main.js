@@ -4887,6 +4887,10 @@ function fastLoop(){
             if (global.city['trade'] && global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 4){
                 tourism += global.city['tourist_center'].on * global.city.trade.count * 3 * amp;
             }
+            let piousVal = govActive('pious',1);
+            if (piousVal && global.city['temple']){
+                tourism += global.city['tourist_center'].on * global.city.temple.count * piousVal * amp;
+            }
             if (global.civic.govern.type === 'corpocracy'){
                 tourism *= 2;
             }
@@ -5467,8 +5471,10 @@ function midLoop(){
             }
         }
         if (global.city['apartment']){
-            caps[global.race.species] += p_on['apartment'] * 5;
-            bd_Citizen[housingLabel('large')] = (p_on['apartment']  * 5)+'v';
+            let extraVal = govActive('extravagant',2);
+            let pop = extraVal ? 5 + extraVal : 5;
+            caps[global.race.species] += p_on['apartment'] * pop;
+            bd_Citizen[housingLabel('large')] = (p_on['apartment'] * pop)+'v';
             if (global.tech['home_safe']){
                 let gain = (p_on['apartment']  * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000));
                 caps['Money'] += gain;

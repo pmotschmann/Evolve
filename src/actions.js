@@ -2539,15 +2539,20 @@ export const actions = {
                 Steel(offset){ return costMultiplier('apartment', offset, 800, 1.32) - 500; }
             },
             effect(){
+                let extraVal = govActive('extravagant',2);
+                let pop = extraVal ? 5 + extraVal : 5;
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000);
-                    return `<div>${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
+                    return `<div>${loc('plus_max_citizens',[pop])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
-                    return `${loc('plus_max_citizens',[5])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
+                    return `${loc('plus_max_citizens',[pop])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
                 }
             },
-            powered(){ return powerCostMod(1); },
+            powered(){
+                let extraVal = govActive('extravagant',1);
+                return powerCostMod(extraVal ? extraVal : 1);
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['apartment'].count++;
@@ -6328,7 +6333,10 @@ function mediumHousingLabel(){
     }
 }
 
-function largeHousingLabel(){
+function largeHousingLabel(basic){
+    if (!basic && govActive('extravagant',0)){
+        return loc(`city_mansion`);
+    }
     switch (global.race.species){
         case 'sporgar':
             return loc('city_apartment_title2');
@@ -6345,14 +6353,14 @@ function largeHousingLabel(){
     }
 }
 
-export function housingLabel(type){
+export function housingLabel(type,flag){
     switch (type){
         case 'small':
             return basicHousingLabel();
         case 'medium':
             return mediumHousingLabel();
         case 'large':
-            return largeHousingLabel();
+            return largeHousingLabel(flag);
     }
 }
 

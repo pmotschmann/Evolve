@@ -1132,7 +1132,26 @@ export function adjustCosts(costs, wiki){
     costs = smolderAdjust(costs, wiki);
     costs = scienceAdjust(costs);
     costs = rebarAdjust(costs, wiki);
+    costs = extraAdjust(costs, wiki);
     return craftAdjust(costs, wiki);
+}
+
+function extraAdjust(costs, wiki){
+    let extraVal = govActive('extravagant',0);
+    if (extraVal){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Money'){
+                let waste = 1 + (extraVal / 100);
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * waste); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function technoAdjust(costs, wiki){
