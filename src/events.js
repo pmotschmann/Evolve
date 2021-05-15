@@ -3,6 +3,7 @@ import { loc } from './locale.js';
 import { races } from './races.js';
 import { govTitle } from './civics.js';
 import { housingLabel, drawTech } from './actions.js';
+import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 
 export const events = {
@@ -308,7 +309,12 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
+            let threshold = global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
+            let aristoVal = govActive('aristocrat',2);
+            if (aristoVal){
+                threshold -= aristoVal;
+            }
+            return global.civic.taxes.tax_rate > threshold;
         },
         effect(){
             return tax_revolt();

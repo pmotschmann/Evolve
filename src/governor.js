@@ -67,7 +67,7 @@ const gmen = {
         title: [{ m: loc('governor_noble_t1m'), f: loc('governor_noble_t1f') },{ m: loc('governor_noble_t2m'), f: loc('governor_noble_t2f') },{ m: loc('governor_noble_t3m'), f: loc('governor_noble_t3f') },{ m: loc('governor_noble_t4m'), f: loc('governor_noble_t4f') }],
         traits: {
             extravagant: 1,
-            respected: 1
+            aristocrat: 1
         }
     },
     media: {
@@ -84,7 +84,7 @@ const gmen = {
         desc: loc('governor_sports_desc'),
         title: [loc('governor_sports_t1'),loc('governor_sports_t2'),loc('governor_sports_t3')],
         traits: {
-            
+            endurance: 1,
         }
     },
     bureaucrat: {
@@ -166,18 +166,21 @@ const gov_traits = {
     extravagant: {
         name: loc(`gov_trait_extravagant`),
         effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars[0],housingLabel('large',true),$(this)[0].vars[1],$(this)[0].vars[2]+5]); },
-        vars: [8,1.25,1]
+        vars: [10,1.25,1]
     },
-    respected: {
-        name: loc(`gov_trait_respected`),
-        effect(){ return loc(`gov_trait_respected_effect`,[$(this)[0].vars[0]]); },
-        vars: [5]
+    aristocrat: {
+        name: loc(`gov_trait_aristocrat`),
+        effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2]]); },
+        vars: [50,10,15]
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`)
     },
     renowned: {
         name: loc(`gov_trait_renowned`)
+    },
+    endurance: {
+        name: loc(`gov_trait_endurance`)
     },
     organizer: {
         name: loc(`gov_trait_organizer`),

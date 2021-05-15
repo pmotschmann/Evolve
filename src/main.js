@@ -6,7 +6,7 @@ import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } fr
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
-import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle } from './civics.js';
+import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
@@ -7903,18 +7903,13 @@ function longLoop(){
         }
 
         {
-            let extreme = global.tech['currency'] && global.tech['currency'] >= 5 ? true : false;
-            let tax_cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
-            if (extreme || global.race['terrifying']){
-                tax_cap += 20;
-            }
-            if (global.race['noble']){
-                if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
-                    global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
-                }
-            }
-            else if (global.civic.taxes.tax_rate > tax_cap){
+            let tax_cap = govCivics('tax_cap');
+            let tax_min = govCivics('tax_cap',true);
+            if (global.civic.taxes.tax_rate > tax_cap){
                 global.civic.taxes.tax_rate = tax_cap;
+            }
+            else if (global.civic.taxes.tax_rate < tax_min){
+                global.civic.taxes.tax_rate = tax_min;
             }
         }
 

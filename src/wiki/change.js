@@ -14,7 +14,8 @@ const changeList = [
             `Cath, Wolven, and Centaur redesigned.`,
             `Reweighted Angelic genus trait costs.`,
             `Major event messages are now shown in a different color from minor ones.`,
-            `Decreased frequency of minor events.`
+            `Decreased frequency of minor events.`,
+            `Smoldering no longer applies to a variety of special resources.`
         ]
     },
     {

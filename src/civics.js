@@ -337,6 +337,10 @@ function drawGovModal(){
                     if (global.race['lawless']){
                         time = Math.round(time / (100 - traits.lawless.vars[0]));
                     }
+                    let aristoVal = govActive('aristocrat',0);
+                    if (aristoVal){
+                        time = Math.round(time * (1 - (aristoVal / 100)));
+                    }
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
@@ -784,16 +788,21 @@ function taxCap(min){
         return (extreme || global.race['terrifying']) && !global.race['noble'] ? 0 : 10;
     }
     else {
+        let cap = 30;
         if (global.race['noble']){
-            return global.civic.govern.type === 'oligarchy' ? 40 : 20;
+            cap = global.civic.govern.type === 'oligarchy' ? 40 : 20;
         }
         else {
-            let cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
+            cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
             if (extreme || global.race['terrifying']){
                 cap += 20;
             }
-            return cap;
         }
+        let aristoVal = govActive('aristocrat',1);
+        if (aristoVal){
+            cap += aristoVal;
+        }
+        return cap;
     }
 }
 

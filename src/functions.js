@@ -1211,7 +1211,7 @@ function smolderAdjust(costs, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
             }
-            else if (res === 'Structs' || res === 'Chrysotile' || res === 'Knowledge' ||res === 'Custom'){
+            else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence'].includes(res)){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {
