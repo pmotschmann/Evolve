@@ -7,6 +7,7 @@ import { loadFoundry } from './jobs.js';
 import { armyRating } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
+import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
