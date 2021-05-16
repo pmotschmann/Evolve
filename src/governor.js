@@ -84,7 +84,8 @@ const gmen = {
         desc: loc('governor_sports_desc'),
         title: [loc('governor_sports_t1'),loc('governor_sports_t2'),loc('governor_sports_t3')],
         traits: {
-            athleticism: 1
+            athleticism: 1,
+            nopain: 1
         }
     },
     bureaucrat: {
