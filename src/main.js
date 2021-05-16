@@ -2190,12 +2190,16 @@ function fastLoop(){
         morale += entertainment;
 
         if (global.tech['broadcast']){
-            global.city.morale.broadcast = global.city.wardenclyffe.on * global.tech.broadcast;
-            morale += global.city.wardenclyffe.on * global.tech.broadcast;
+            let gasVal = govActive('gaslighter',0);
+            let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
+            global.city.morale.broadcast = global.city.wardenclyffe.on * mVal;
+            morale += global.city.wardenclyffe.on * mVal;
         }
         if (red_on['vr_center']){
-            global.city.morale.vr = red_on['vr_center'];
-            morale += red_on['vr_center'];
+            let gasVal = govActive('gaslighter',1);
+            let vr_morale = gasVal ? gasVal + 1 : 1;
+            global.city.morale.vr = red_on['vr_center'] * vr_morale;
+            morale += red_on['vr_center'] * vr_morale;
         }
         if (int_on['zoo']){
             global.city.morale.zoo = int_on['zoo'] * 5;
@@ -2258,7 +2262,13 @@ function fastLoop(){
         if (global.tech['superstar']){
             mBaseCap += global.civic.entertainer.workers;
         }
-        moraleCap = global.tech['monuments'] ? mBaseCap + (global.tech['monuments'] * 2) : mBaseCap;
+        moraleCap = mBaseCap;
+
+        if (global.tech['monuments']){
+            let gasVal = govActive('gaslighter',2);
+            let mcap = gasVal ? (2 - gasVal) : 2;
+            moraleCap += global.tech['monuments'] * mcap;
+        }
 
         if (global.civic.taxes.tax_rate < 20 && !global.race['banana']){
             moraleCap += 10 - Math.floor(global.civic.taxes.tax_rate / 2);

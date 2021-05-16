@@ -2673,7 +2673,7 @@
   "arpa_project_monument_pillar": "뼈 기둥",
   "arpa_project_monument_megalith": "수정 기념비",
   "arpa_projects_monument_desc": "문명의 위대함을 표현",
-  "arpa_projects_monument_effect1": "최대 행복도 +2%",
+  "arpa_projects_monument_effect1": "최대 행복도 +%0%",
   "arpa_projects_railway_title": "철도",
   "arpa_projects_railway_desc": "교역 옵션 증가",
   "arpa_projects_railway_effect1": "화물 부지 %2개마다 교역로 %3개 증가. 교역에서의 이익 %1%. 현재 교역로 +%0개",

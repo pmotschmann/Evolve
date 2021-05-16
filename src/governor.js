@@ -1,7 +1,7 @@
 import { global, p_on } from './vars.js';
 import { vBind, popover, tagEvent, clearElement } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel } from './actions.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
 import { loc } from './locale.js';
@@ -171,10 +171,14 @@ const gov_traits = {
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
         effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2]]); },
-        vars: [50,10,15]
+        vars: [50,10,10]
     },
     gaslighter: {
-        name: loc(`gov_trait_gaslighter`)
+        name: loc(`gov_trait_gaslighter`),
+        effect(){
+            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars[0],wardenLabel(),$(this)[0].vars[1],$(this)[0].vars[2]]);
+        },
+        vars: [0.5,0.75,0.5]
     },
     renowned: {
         name: loc(`gov_trait_renowned`)

@@ -2306,7 +2306,7 @@
   "arpa_project_monument_sculpture": "Skulptura",
   "arpa_project_monument_monolith": "Monolit",
   "arpa_projects_monument_desc": "Postav pomník pro oslavu velikosti tvé civilizace.",
-  "arpa_projects_monument_effect1": "Každý pomník zvýší tvé maximum morálky o 2%",
+  "arpa_projects_monument_effect1": "Každý pomník zvýší tvé maximum morálky o %0%",
   "arpa_projects_railway_title": "Železnice",
   "arpa_projects_railway_desc": "Postav novou železnici pro rozšíření svých obchodních možností.",
   "arpa_projects_railway_effect1": "Každých %2 železnic přidá %3 ochnodních tras a zlepší zisk z obchodování o %1%. Železnice momentálně každá přidává celkově %0 obchodních tras.",

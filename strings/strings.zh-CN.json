@@ -2627,7 +2627,7 @@
   "arpa_project_monument_pillar": "骸骨立柱",
   "arpa_project_monument_megalith": "巨石",
   "arpa_projects_monument_desc": "为你的伟大文明建造一座纪念碑，士气上限 +2%",
-  "arpa_projects_monument_effect1": "每建造一座纪念碑，士气上限 +2%",
+  "arpa_projects_monument_effect1": "每建造一座纪念碑，士气上限 +%0%",
   "arpa_projects_railway_title": "铁路",
   "arpa_projects_railway_desc": "建造一条新铁路扩展贸易",
   "arpa_projects_railway_effect1": "贸易盈利 +%1%，每条铁路增加 %0 条贸易路线（该贸易路线与货场数量挂钩，每 %2 个货场增加 %3 条）",

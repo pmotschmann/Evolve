@@ -501,7 +501,9 @@ const spaceProjects = {
                 Soul_Gem(offset){ return spaceCostMultiplier('vr_center', offset, 1, 1.25); }
             },
             effect(){
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[1])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
+                let gasVal = govActive('gaslighter',1);
+                let morale = gasVal ? gasVal + 1 : 1;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[morale])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },

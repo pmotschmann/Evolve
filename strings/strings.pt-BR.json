@@ -2312,7 +2312,7 @@
   "arpa_project_monument_sculpture": "Escultura",
   "arpa_project_monument_monolith": "Monólito",
   "arpa_projects_monument_desc": "Construa um monumento à grandeza da sua civilização.",
-  "arpa_projects_monument_effect1": "Cada monumento aumenta o moral máximo em 2%",
+  "arpa_projects_monument_effect1": "Cada monumento aumenta o moral máximo em %0%",
   "arpa_projects_railway_title": "Estrada de Ferro",
   "arpa_projects_railway_desc": "Construa uma nova ferrovia para expandir suas opções comerciais.",
   "arpa_projects_railway_effect1": "A cada %2 Pátio de Carga aumenta o número de rotas em %3 e cada ferrovia melhora a lucrabilidade das trocas em %1%. Cada ferrovias está atualmente adicionando um total de %0 rotas de troca.",
