@@ -7516,10 +7516,16 @@ function longLoop(){
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc += 3
             }
+            let painVal = govActive('nopain',0);
+            if (painVal){
+                hc *= 1 + (painVal / 100);
+            }
+
             let max_bound = 20;
             if (global.race['slow_regen']){
                 max_bound *= 1 + (traits.slow_regen.vars[0] / 100);
             }
+            hc = Math.round(hc);
             if (hc > 0){
                 while (hc >= max_bound){
                     healed++;

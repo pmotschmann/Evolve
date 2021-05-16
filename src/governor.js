@@ -192,6 +192,11 @@ const gov_traits = {
         effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2],wardenLabel()]); },
         vars: [1.5,2,4]
     },
+    nopain: {
+        name: loc(`gov_trait_nopain`),
+        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars[0]]); },
+        vars: [50,10]
+    },
     organizer: {
         name: loc(`gov_trait_organizer`),
         effect(){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars[0]]); },

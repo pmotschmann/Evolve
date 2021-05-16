@@ -4150,6 +4150,8 @@
   "gov_trait_muckraker_effect": "Journalists occasionally uncover scandals. %0% increased Library Max Knowledge. -%1% Library knowledge production.",
   "gov_trait_athleticism": "Athleticism",
   "gov_trait_athleticism_effect": "Amphitheatre replaced with Stadium (+%0% Max Morale and +%1 Entertainers). -%2% University, Library, and %3 Max Knowledge.",
+  "gov_trait_nopain": "No Pain",
+  "gov_trait_nopain_effect": "Wounded heal %0% faster. Surveyors %1% less likely to be killed.",
   "gov_trait_organizer": "Organizer",
   "gov_trait_organizer_effect": "%0 extra task slot.",
   "gov_task": "Task %0",
