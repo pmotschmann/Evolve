@@ -622,7 +622,7 @@
   "city_casino_flair": "A casa sempre ganha.",
   "city_casino_space_flair": "A parte decadente do espaço.",
   "city_max_entertainer": "+%0 Máximo de Animadores",
-  "city_max_morale": "+1% Máximo de Moral",
+  "city_max_morale": "+%0% Máximo de Moral",
   "city_temple": "Templo",
   "city_temple_desc": "Sua raça acredita que foram feitos por uma espécie de %0. Dedique um templo a eles.",
   "city_temple_effect1": "Aumenta produção em %0%.",

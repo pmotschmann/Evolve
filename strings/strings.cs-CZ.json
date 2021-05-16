@@ -619,7 +619,7 @@
   "city_casino_flair": "Pořadatel vždy vyhrává.",
   "city_casino_space_flair": "Ta špinavá část vesmíru.",
   "city_max_entertainer": "+%0 max bavičů",
-  "city_max_morale": "+1% max morálky",
+  "city_max_morale": "+%0% max morálky",
   "city_temple": "Chrám",
   "city_temple_desc": "Tvoje rasa věří, že byla stvořena druhem %0. Zasvěť jim chrám.",
   "city_temple_effect1": "Zvedá produkci o %0%.",

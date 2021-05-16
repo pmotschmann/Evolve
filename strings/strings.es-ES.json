@@ -537,7 +537,7 @@
   "city_casino_desc": "Una nueva forma de entretenimiento para su población",
   "city_casino_flair": "La casa siempre gana",
   "city_max_entertainer": "Artistas máximos +1",
-  "city_max_morale": "Moral máxima +1%",
+  "city_max_morale": "Moral máxima +%0%",
   "city_temple": "Templo",
   "city_temple_desc": "Su raza cree que fue creada por una especie de %0. Dedíqueles un templo",
   "city_temple_effect1": "Aumenta la producción en %0%.",

@@ -84,7 +84,7 @@ const gmen = {
         desc: loc('governor_sports_desc'),
         title: [loc('governor_sports_t1'),loc('governor_sports_t2'),loc('governor_sports_t3')],
         traits: {
-            endurance: 1,
+            athleticism: 1
         }
     },
     bureaucrat: {
@@ -183,8 +183,10 @@ const gov_traits = {
     renowned: {
         name: loc(`gov_trait_renowned`)
     },
-    endurance: {
-        name: loc(`gov_trait_endurance`)
+    athleticism: {
+        name: loc(`gov_trait_athleticism`),
+        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2],wardenLabel()]); },
+        vars: [1.5,2,3]
     },
     organizer: {
         name: loc(`gov_trait_organizer`),

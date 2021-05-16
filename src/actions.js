@@ -3857,8 +3857,14 @@ export const actions = {
         },
         amphitheatre: {
             id: 'city-amphitheatre',
-            title: loc('city_amphitheatre'),
-            desc: loc('city_amphitheatre_desc'),
+            title(){
+                let athVal = govActive('athleticism',0);
+                return athVal ? loc('city_stadium') : loc('city_amphitheatre');
+            },
+            desc(){
+                let athVal = govActive('athleticism',0);
+                return athVal ? loc('city_stadium') : loc('city_amphitheatre_desc');
+            },
             category: 'commercial',
             reqs: { theatre: 1 },
             not_trait: ['joyless','cataclysm'],
@@ -3868,7 +3874,11 @@ export const actions = {
                 Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('amphitheatre', offset, 18, 1.36) : 0; },
             },
-            effect: `<div>${loc('city_max_entertainer',[1])}</div><div>${loc('city_max_morale')}</div>`,
+            effect(){
+                let athVal1 = govActive('athleticism',0);
+                let athVal2 = govActive('athleticism',1);
+                return`<div>${loc('city_max_entertainer',[athVal2 ? athVal2 : 1])}</div><div>${loc('city_max_morale',[athVal1 ? athVal1 : 1])}</div>`;
+            },
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.city['amphitheatre'].count++;
@@ -3878,7 +3888,10 @@ export const actions = {
                 }
                 return false;
             },
-            flair: loc('city_amphitheatre_flair')
+            flair(){
+                let athVal = govActive('athleticism',0);
+                return athVal ? loc('city_stadium_flair') : loc('city_amphitheatre_flair');
+            },
         },
         casino: {
             id: 'city-casino',
@@ -4062,6 +4075,10 @@ export const actions = {
                 if (teachVal){
                     multiplier *= 1 + (teachVal / 100);
                 }
+                let athVal = govActive('athleticism',2);
+                if (athVal){
+                    multiplier *= 1 - (athVal / 100);
+                }
                 gain *= multiplier;
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
@@ -4132,6 +4149,10 @@ export const actions = {
                 if (teachVal){
                     gain *= 1 + (teachVal / 100);
                 }
+                let athVal = govActive('athleticism',2);
+                if (athVal){
+                    gain *= 1 - (athVal / 100);
+                }
                 gain = +(gain).toFixed(0);
                 return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
             },
@@ -4190,6 +4211,10 @@ export const actions = {
                 if (global.space['satellite']){
                     gain *= 1 + (global.space.satellite.count * 0.04);
                 }
+                let athVal = govActive('athleticism',2);
+                if (athVal){
+                    gain *= 1 - (athVal / 100);
+                }
                 gain = +(gain).toFixed(0);
                 let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
@@ -4203,6 +4228,10 @@ export const actions = {
                     if (global.tech['supercollider']){
                         let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                         pgain *= (global.tech['supercollider'] / ratio) + 1;
+                    }
+                    let athVal = govActive('athleticism',2);
+                    if (athVal){
+                        pgain *= 1 - (athVal / 100);
                     }
                     pgain = +(pgain).toFixed(1);
                     if (global.tech.science >= 15){
@@ -4680,7 +4709,7 @@ export function casinoEffect(){
     }
     money = Math.round(money);
     let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[1])}</div>`;
-    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale')}</div>`;
+    let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('city_max_morale',[1])}</div>`;
     let cash = Math.log2(1 + global.resource[global.race.species].amount) * (global.race['gambler'] ? 2.5 + (global.race['gambler'] / 10) : 2.5);
     if (global.tech['gambling'] && global.tech['gambling'] >= 2){
         cash *= global.tech.gambling >= 5 ? 2 : 1.5;

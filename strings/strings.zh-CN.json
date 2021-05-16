@@ -770,7 +770,7 @@
   "city_casino_flair": "庄家永远是赢家。",
   "city_casino_space_flair": "赌场是最肮脏的。",
   "city_max_entertainer": "艺人上限 +%0",
-  "city_max_morale": "士气上限 +1%",
+  "city_max_morale": "士气上限 +%0%",
   "city_temple": "寺庙",
   "city_temple_desc": "市民们相信自己的造物主是一种%0，并为他们奉献一座庙宇",
   "city_temple_effect1": "所有物资产量 +%0%",

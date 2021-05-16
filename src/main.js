@@ -2246,9 +2246,14 @@ function fastLoop(){
             global.city.morale.warmonger = 0;
         }
 
-        let mBaseCap = global.city['amphitheatre'] ? 100 + global.city['amphitheatre'].count : 100;
+        let mBaseCap = 100;
         mBaseCap += global.city['casino'] ? p_on['casino'] : 0;
         mBaseCap += global.space['spc_casino'] ? p_on['spc_casino'] : 0;
+
+        if (global.city['amphitheatre']){
+            let athVal = govActive('athleticism',0);
+            mBaseCap += athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count;
+        }
 
         if (red_on['vr_center']){
             mBaseCap += red_on['vr_center'] * 2;
@@ -5377,7 +5382,7 @@ function midLoop(){
             caps['Containers'] += (global.city['warehouse'].count * volume);
         }
         if (global.city['rock_quarry']){
-            let gain = BHStorageMulti(global.city['rock_quarry'].count * spatialReasoning(100));
+            let gain = BHStorageMulti(global.city.rock_quarry.count * spatialReasoning(100));
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
 
@@ -5387,43 +5392,44 @@ function midLoop(){
             }
         }
         if (global.city['lumber_yard']){
-            let gain = BHStorageMulti(global.city['lumber_yard'].count * spatialReasoning(100));
+            let gain = BHStorageMulti(global.city.lumber_yard.count * spatialReasoning(100));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_lumber_yard')] = gain+'v';
         }
         else if (global.city['graveyard']){
-            let gain = BHStorageMulti(global.city['graveyard'].count * spatialReasoning(100));
+            let gain = BHStorageMulti(global.city.graveyard.count * spatialReasoning(100));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_graveyard')] = gain+'v';
         }
         if (global.city['sawmill']){
-            let gain = BHStorageMulti(global.city['sawmill'].count * spatialReasoning(200));
+            let gain = BHStorageMulti(global.city.sawmill.count * spatialReasoning(200));
             caps['Lumber'] += gain;
             bd_Lumber[loc('city_sawmill')] = gain+'v';
         }
         if (global.city['mine']){
-            lCaps['miner'] += global.city['mine'].count;
+            lCaps['miner'] += global.city.mine.count;
         }
         if (global.city['coal_mine']){
-            lCaps['coal_miner'] += global.city['coal_mine'].count;
+            lCaps['coal_miner'] += global.city.coal_mine.count;
         }
         if (global.city['bank']){
-            lCaps['banker'] += global.city['bank'].count;
+            lCaps['banker'] += global.city.bank.count;
         }
         if (global.city['amphitheatre']){
-            lCaps['entertainer'] += global.city['amphitheatre'].count;
+            let athVal = govActive('athleticism',1);
+            lCaps['entertainer'] += athVal ? (global.city.amphitheatre.count * athVal) : global.city.amphitheatre.count;
         }
         if (global.city['casino']){
-            lCaps['entertainer'] += global.city['casino'].count;
+            lCaps['entertainer'] += global.city.casino.count;
         }
         if (global.space['spc_casino']){
-            lCaps['entertainer'] += global.space['spc_casino'].count;
+            lCaps['entertainer'] += global.space.spc_casino.count;
         }
         if (global.galaxy['resort']){
             lCaps['entertainer'] += p_on['resort'] * 2;
         }
         if (global.city['cement_plant']){
-            lCaps['cement_worker'] += global.city['cement_plant'].count * 2;
+            lCaps['cement_worker'] += global.city.cement_plant.count * 2;
         }
         if (global.race['parasite']){
             lCaps['garrison'] += 2;
@@ -6003,6 +6009,10 @@ function midLoop(){
             if (teachVal){
                 multiplier *= 1 + (teachVal / 100);
             }
+            let athVal = govActive('athleticism',2);
+            if (athVal){
+                multiplier *= 1 - (athVal / 100);
+            }
             if (shrineBonusActive()){
                 let shrineBonus = getShrineBonus('know');
                 multiplier *= shrineBonus.mult;
@@ -6037,6 +6047,10 @@ function midLoop(){
             if (teachVal){
                 shelving *= 1 + (teachVal / 100);
             }
+            let athVal = govActive('athleticism',2);
+            if (athVal){
+                shelving *= 1 - (athVal / 100);
+            }
             let gain = Math.round(global.city['library'].count * shelving);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_library')] = gain+'v';
@@ -6059,6 +6073,10 @@ function midLoop(){
             }
             if (global.space['satellite']){
                 gain *= 1 + (global.space.satellite.count * 0.04);
+            }
+            let athVal = govActive('athleticism',2);
+            if (athVal){
+                gain *= 1 - (athVal / 100);
             }
             caps['Knowledge'] += gain;
             bd_Knowledge[wardenLabel()] = gain+'v';
