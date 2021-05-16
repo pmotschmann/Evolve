@@ -810,6 +810,14 @@ function fastLoop(){
         breakdown.p['Global'][loc('event_protest')] = `-${30}%`;
         global_multiplier *= 0.7;
     }
+    if (global.civic.govern['scandal'] && global.civic.govern.scandal > 0){
+        let muckVal = govActive('muckraker',0);
+        if (muckVal){
+            breakdown.p['Global'][loc('event_scandal')] = `-${muckVal}%`;
+            global_multiplier *= 1 - (muckVal / 100);
+        }
+    }
+
     if (global.city['firestorm'] && global.city.firestorm > 0){
         global.city.firestorm--;
         breakdown.p['Global'][loc('event_flare_bd')] = `-${20}%`;
@@ -2871,7 +2879,12 @@ function fastLoop(){
                 scientist_base *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 0.75 : 0.6 ) : 0.5;
             }
 
-            let library_bonus = global.race['autoignition'] ? (traits.autoignition.vars[0] / 100) : 0.05;
+            let lib_multiplier = 0.05;
+            let muckVal = govActive('muckraker',2);
+            if (muckVal){
+                lib_multiplier -= (muckVal / 100);
+            }
+            let library_bonus = global.race['autoignition'] ? (traits.autoignition.vars[0] / 100) : lib_multiplier;
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * library_bonus) : 1;
 
             let gene_consume = 0;
@@ -6017,10 +6030,10 @@ function midLoop(){
                 let shrineBonus = getShrineBonus('know');
                 multiplier *= shrineBonus.mult;
             }
-            let gain = (global.city['university'].count * base * multiplier);
-            lCaps['professor'] += global.city['university'].count;
+            let gain = (global.city.university.count * base * multiplier);
+            lCaps['professor'] += global.city.university.count;
             if (global.tech['supercollider']){
-                let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                let ratio = global.tech['particles'] && global.tech.particles >= 3 ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             caps['Knowledge'] += gain;
@@ -6051,7 +6064,11 @@ function midLoop(){
             if (athVal){
                 shelving *= 1 - (athVal / 100);
             }
-            let gain = Math.round(global.city['library'].count * shelving);
+            let muckVal = govActive('muckraker',1);
+            if (muckVal){
+                shelving *= 1 + (muckVal / 100);
+            }
+            let gain = Math.round(global.city.library.count * shelving);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_library')] = gain+'v';
             if (global.tech['science'] && global.tech['science'] >= 3){
@@ -7928,6 +7945,9 @@ function longLoop(){
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
             global.civic.govern.protest--;
+        }
+        if (global.civic.govern['scandal'] && global.civic.govern.scandal > 0){
+            global.civic.govern.scandal--;
         }
 
         {

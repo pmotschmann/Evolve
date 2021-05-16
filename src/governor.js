@@ -76,7 +76,7 @@ const gmen = {
         title: [loc('governor_media_t1'),{ m: loc('governor_media_t2m'), f: loc('governor_media_t2f') },loc('governor_media_t3')],
         traits: {
             gaslighter: 1,
-            renowned: 1
+            muckraker: 1
         }
     },
     sports: {
@@ -180,13 +180,17 @@ const gov_traits = {
         },
         vars: [0.5,0.75,0.5]
     },
-    renowned: {
-        name: loc(`gov_trait_renowned`)
+    muckraker: {
+        name: loc(`gov_trait_muckraker`),
+        effect(){
+            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars[1],$(this)[0].vars[2]]);
+        },
+        vars: [8,10,3]
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
         effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2],wardenLabel()]); },
-        vars: [1.5,2,3]
+        vars: [1.5,2,4]
     },
     organizer: {
         name: loc(`gov_trait_organizer`),

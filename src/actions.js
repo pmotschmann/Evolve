@@ -4153,8 +4153,14 @@ export const actions = {
                 if (athVal){
                     gain *= 1 - (athVal / 100);
                 }
+                let muckVal1 = govActive('muckraker',1);
+                if (muckVal1){
+                    gain *= 1 + (muckVal1 / 100);
+                }
                 gain = +(gain).toFixed(0);
-                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : 5])}</div>`;
+                let muckVal2 = govActive('muckraker',2);
+                let know = muckVal2 ? (5 - muckVal2) : 5;
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : know])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

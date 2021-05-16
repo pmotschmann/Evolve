@@ -360,6 +360,40 @@ export const events = {
             }
         }
     },
+    scandal: {
+        reqs: {
+            tech: 'govern'
+        },
+        type: 'major',
+        condition(){
+            return govActive('muckraker',0) ? true : false;
+        },
+        effect(){
+            global.civic.govern['scandal'] = Math.rand(15,90);
+            switch(Math.rand(0,10)){
+                case 0:
+                    return loc('event_scandal0');
+                case 1:
+                    return loc('event_scandal1');
+                case 2:
+                    return loc('event_scandal2');
+                case 3:
+                    return loc('event_scandal3');
+                case 4:
+                    return loc('event_scandal4');
+                case 5:
+                    return loc('event_scandal5');
+                case 6:
+                    return loc('event_scandal6');
+                case 7:
+                    return loc('event_scandal7');
+                case 8:
+                    return loc('event_scandal8');
+                case 9:
+                    return loc('event_scandal9');
+            }
+        }
+    },
     spy: {
         reqs: {
             tech: 'primitive',
