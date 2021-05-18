@@ -806,11 +806,11 @@ function taxCap(min){
     }
 }
 
-function adjustTax(a){
+function adjustTax(a,n){
     switch (a){
         case 'add':
             {
-                let inc = keyMultiplier();
+                let inc = n || keyMultiplier();
                 let cap = taxCap(false);
                 if (global.race['noble']){
                     global.civic.taxes.tax_rate += inc;
@@ -828,7 +828,7 @@ function adjustTax(a){
             break;
         case 'sub':
             {
-                let dec = keyMultiplier();
+                let dec = n || keyMultiplier();
                 let min = taxCap(true);
                 if (global.civic.taxes.tax_rate > min){
                     global.civic.taxes.tax_rate -= dec;
@@ -897,13 +897,13 @@ export function govCivics(f,v){
         case 'm_cost':
             return mercCost();
         case 'm_buy':
-            return hireMerc();
+            return hireMerc(1);
         case 's_cost':
             return spyCost(v);
         case 't_spy':
             return trainSpy(v);
         case 'adj_tax':
-            return adjustTax(v);
+            return adjustTax(v,1);
         case 'tax_cap':
             return taxCap(v);
         case 's_influence':
@@ -929,9 +929,9 @@ function mercCost(){
     return Math.round(cost);
 }
 
-function hireMerc(){
+function hireMerc(num){
     if (global.tech['mercs']){
-        let repeats = keyMultiplier();
+        let repeats = num || keyMultiplier();
         let canBuy = true;
         while (canBuy && repeats > 0){
             let cost = mercCost();

@@ -112,7 +112,7 @@ const gov_traits = {
     noquestions: {
         name: loc(`gov_trait_noquestions`),
         effect(){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars[0]]); },
-        vars: [0.0075]
+        vars: [0.005]
     },
     racketeer: {
         name: loc(`gov_trait_racketeer`),
@@ -195,7 +195,7 @@ const gov_traits = {
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
-        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars[0]]); },
+        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
         vars: [50,10]
     },
     organizer: {
@@ -462,28 +462,44 @@ const gov_tasks = {
                 let crateSet = Math.floor(crates / active);
                 let containerSet = Math.floor(containers / active);
 
-                if (global.resource.Food.display){
-                    active--;
-                    let set = Math.floor(crateSet / 10);
-                    if (set > 100){ set = 100; }
-                    global.resource.Food.crates = set;
-                    crates -= set;
-                    crateSet = Math.floor(crates / active);
+                let dist = {
+                    Food: { m: 0.1, cap: 100 },
+                    Stanene: { m: 2, check(){ return global.tech['science'] && global.tech.science >= 19 ? true : false; } },
+                };
 
-                    if (global.resource.Containers.display){
-                        let set = Math.floor(containerSet / 10);
-                        if (set > 100){ set = 100; }
-                        global.resource.Food.containers = set;
-                        containers -= set;
-                        containerSet = Math.floor(containers / active);
+                Object.keys(dist).forEach(function(r){
+                    if (global.resource[r].display){
+                        if (!dist[r].hasOwnProperty('check') || dist[r].check()){
+                            active--;
+                            {
+                                let set = Math.floor(crateSet * dist[r].m);
+                                if (dist[r].hasOwnProperty('cap') && set > dist[r].cap){ set = dist[r].cap; }
+                                global.resource[r].crates = set;
+                                crates -= set;
+                            }
+                            if (global.resource.Containers.display){
+                                let set = Math.floor(containerSet * dist[r].m);
+                                if (dist[r].hasOwnProperty('cap') && set > dist[r].cap){ set = dist[r].cap; }
+                                global.resource[r].containers = set;
+                                containers -= set;
+                            }
+                        }
                     }
-                }
+                });
+
+                crateSet = Math.floor(crates / active);
+                containerSet = Math.floor(containers / active);
 
                 let crtRemain = crates - (crateSet * active);
                 let cntRemain = containers - (containerSet * active);
 
                 Object.keys(global.resource).forEach(function(res){
-                    if (global.resource[res].display && global.resource[res].stackable && res !== 'Food'){
+                    if (Object.keys(dist).includes(res)){
+                        if (!dist[res].hasOwnProperty('check') || dist[res].check()){
+                            return;
+                        }
+                    }
+                    if (global.resource[res].display && global.resource[res].stackable){
                         global.resource[res].crates = crateSet;
                         if (global.resource.Containers.display){
                             global.resource[res].containers = containerSet;
@@ -508,7 +524,7 @@ const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                while (global.civic.garrison.max > global.civic.garrison.workers && global.resource.Money.amount + govCivics('m_cost') + global.resource.Money.diff >= global.resource.Money.max){
+                while (global.civic.garrison.max > global.civic.garrison.workers + 1 && global.resource.Money.amount + govCivics('m_cost') + global.resource.Money.diff >= global.resource.Money.max){
                     govCivics('m_buy');
                 }
             }
@@ -542,10 +558,10 @@ const gov_tasks = {
                         if (global.civic.foreign[`gov${gov}`].mil > 50){
                             govCivics('s_sabotage',gov)
                         }
-                        else if (global.civic.foreign[`gov${gov}`].hstl > 0){
+                        else if (global.civic.foreign[`gov${gov}`].hstl > 0 && global.civic.foreign[`gov${gov}`].spy > 1){
                             govCivics('s_influence',gov)
                         }
-                        else if (global.civic.foreign[`gov${gov}`].unrest < 100){
+                        else if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2){
                             govCivics('s_incite',gov)
                         }
                     }

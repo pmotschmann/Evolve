@@ -256,7 +256,6 @@ popover('morale',
         }
 
         total = +(total).toFixed(1);
-        global.city.morale.potential = total;
 
         obj.popper.append(`<div class="modal_bd sum"><span>${loc('morale_total')}</span> <span class="has-text-warning"> ${+(total).toFixed(1)}%</span></div>`);
         obj.popper.append(`<div class="modal_bd"><span>${loc('morale_max')}</span> <span class="has-text-${total > moraleCap ? 'caution' : 'warning'}"> ${+(moraleCap).toFixed(1)}%</span></div>`);
@@ -2301,6 +2300,8 @@ function fastLoop(){
         else {
             global.city.morale.rev = 0;
         }
+
+        global.city.morale.potential = +(morale).toFixed(1);
         if (morale < m_min){
             morale = m_min;
         }
@@ -2308,7 +2309,6 @@ function fastLoop(){
             morale = moraleCap;
         }
         global.city.morale.cap = moraleCap;
-
         global.city.morale.current = morale;
 
         if (global.city.morale.current < 100){
