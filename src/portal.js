@@ -512,7 +512,7 @@ const fortressModules = {
             },
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             q_once: true,
-            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
+            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[global.race['smoldering'] ? 90 : 100]) : loc('portal_vault_effect2'); },
             action(){
                 if (global.portal.vault.count < 2 && payCosts($(this)[0].cost)){
                     incrementStruct('vault','portal');
@@ -2468,7 +2468,7 @@ export function bloodwar(){
         }
     }
 
-    if (global.tech['gate_turret']){
+    if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
         if (forgeOperating && p_on['gate_turret']){
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;
