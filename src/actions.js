@@ -6808,7 +6808,8 @@ export function actionDesc(parent,c_action,obj,old){
                 data: obj,
                 filters: {
                     timer(t){
-                        return loc('floor_clearing',[t]);
+                        let time = !c_action.hasOwnProperty('mscan') || (c_action.hasOwnProperty('mscan') && c_action.mscan() > 0) ? t : '???';
+                        return loc('floor_clearing',[time]);
                     }
                 }
             });
