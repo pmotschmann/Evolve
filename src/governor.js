@@ -4,6 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
+import { checkHellRequirements, mechSize, drawMechList } from './portal.js';
 import { loc } from './locale.js';
 
 const gmen = {
@@ -559,11 +560,11 @@ const gov_tasks = {
                         if (global.civic.foreign[`gov${gov}`].mil > 50){
                             govCivics('s_sabotage',gov)
                         }
-                        else if (global.civic.foreign[`gov${gov}`].hstl > 0 && global.civic.foreign[`gov${gov}`].spy > 1){
-                            govCivics('s_influence',gov)
-                        }
                         else if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2){
                             govCivics('s_incite',gov)
+                        }
+                        else if (global.civic.foreign[`gov${gov}`].hstl > 0 && global.civic.foreign[`gov${gov}`].spy > 1){
+                            govCivics('s_influence',gov)
                         }
                     }
                 });
@@ -592,6 +593,107 @@ const gov_tasks = {
         task(){
             if ( $(this)[0].req() && global.resource[global.race.species].amount === global.resource[global.race.species].max ){
                 actions.city.s_alter.action();
+            }
+        }
+    },
+    mech: { // Mech Builder
+        name: loc(`gov_task_mech`),
+        req(){
+            return checkHellRequirements('prtl_spire','mechbay') && global.portal.hasOwnProperty('mechbay') ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                let cost = 375000;
+                let size = mechSize('large');
+                let soul = 5;
+                let ctype = 'large';
+
+                let mechs = {
+                    type: {},
+                    chassis: {},
+                    weapon: {},
+                    equip: {}
+                };
+
+                ['hover','spider','wheel','tread','biped','quad'].forEach(function(chassis){
+                    mechs.chassis[chassis] = 0;
+                });
+                ['small','medium','large','titan'].forEach(function(type){
+                    mechs.type[type] = 0;
+                });
+                ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'].map((a) => ({sort: Math.random(), value: a})).sort((a, b) => a.sort - b.sort).map((a) => a.value).forEach(function(weapon){
+                    mechs.weapon[weapon] = 0;
+                });
+                ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer',].forEach(function(equip){
+                    mechs.equip[equip] = 0;
+                });
+
+                global.portal.mechbay.mechs.forEach(function(mech){
+                    mechs.type[mech.size]++;
+                    mechs.chassis[mech.chassis]++;
+                    mech.hardpoint.forEach(function(wep){
+                        mechs.weapon[wep]++;
+                    });
+                    mech.equip.forEach(function(equip){
+                        mechs.equip[equip]++;
+                    });
+                });
+
+                if (mechs.type.large >= 12 && mechs.type.medium < 24){
+                    cost = 180000;
+                    size = mechSize('medium');
+                    soul = 2;
+                    ctype = 'medium';
+                }
+
+                let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
+                if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
+                    let c_val = 99;
+                    let chassis = 'hover';
+                    Object.keys(mechs.chassis).forEach(function(val){
+                        if (mechs.chassis[val] < c_val){
+                            c_val = mechs.chassis[val];
+                            chassis = val;
+                        }
+                    });
+                    let weapons = ['???','???'];
+                    for (let i=0; i<2; i++){
+                        Object.keys(mechs.weapon).forEach(function(val){
+                            if (weapons[i] === '???' || mechs.weapon[val] < mechs.weapon[weapons[i]]){
+                                if (!weapons.includes(val)){
+                                    weapons[i] = val;
+                                }
+                            }
+                        });
+                    }
+                    let equip = ['???','???','???'];
+                    for (let i=0; i<3; i++){
+                        Object.keys(mechs.equip).forEach(function(val){
+                            if (equip[i] === '???' || mechs.equip[val] < mechs.equip[equip[i]]){
+                                if (!equip.includes(val)){
+                                    equip[i] = val;
+                                }
+                            }
+                        });
+                    }
+
+                    let equipment = global.blood['prepared'] ? equip : [equip[0],equip[1]];
+                    if (ctype === 'medium'){
+                        weapons = [weapons[0]];
+                        equipment = global.blood['prepared'] ? [equip[0],equip[1]] : [equip[0]];
+                    }
+
+                    global.portal.purifier.supply -= cost;
+                    global.resource.Soul_Gem.amount -= soul;
+                    global.portal.mechbay.mechs.push({
+                        chassis: chassis,
+                        size: ctype,
+                        equip: equipment,
+                        hardpoint: weapons
+                    });
+                    global.portal.mechbay.bay += size;
+                    drawMechList();
+                }
             }
         }
     },

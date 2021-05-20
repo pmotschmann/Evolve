@@ -1748,6 +1748,10 @@ export function renderFortress(){
     });
 }
 
+export function checkHellRequirements(region,tech){
+    return checkRequirements(fortressModules,region,tech);
+}
+
 function fortressData(dt){
     switch (dt){
         case 'hostiles':
@@ -3493,6 +3497,13 @@ function drawMechs(){
     });
 
     dragMechList();
+}
+
+export function drawMechList(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
+        return;
+    }
+    drawMechs();
 }
 
 export function mechSize(s){

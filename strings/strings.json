@@ -4186,6 +4186,7 @@
   "gov_task_spyop": "Spy Operator",
   "gov_task_slave": "Slave Replenishment",
   "gov_task_sacrifice": "Schedule Sacrifices",
+  "gov_task_mech": "Mech Constructor",
   "power_grid_header": "Click and drag to reorder the priority for powering structures.",
   "power_grid_reset": "Reset %0 Grid",
   "govern_anarchy": "Anarchy",
