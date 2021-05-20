@@ -3609,16 +3609,16 @@ export function mechRating(mech,boss){
     let rating = 0;
     switch (mech.size){
         case 'small':
-            rating = 0.002;
+            rating = 0.003;
             break;
         case 'medium':
-            rating = 0.005;
+            rating = 0.0075;
             break;
         case 'large':
             rating = 0.01;
             break;
         case 'titan':
-            rating = 0.0225;
+            rating = 0.0238;
             break;
     }
 
@@ -3965,10 +3965,10 @@ export function mechRating(mech,boss){
                     {
                         switch (mech.size){
                             case 'medium':
-                                rating *= 0.75;
+                                rating *= 0.8;
                                 break;
                             case 'large':
-                                rating *= 0.5;
+                                rating *= 0.45;
                                 break;
                             case 'titan':
                                 rating *= 0.25;
