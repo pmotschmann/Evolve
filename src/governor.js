@@ -464,6 +464,7 @@ const gov_tasks = {
 
                 let dist = {
                     Food: { m: 0.1, cap: 100 },
+                    Coal: { m: 0.25 },
                     Stanene: { m: 2, check(){ return global.tech['science'] && global.tech.science >= 19 ? true : false; } },
                 };
 

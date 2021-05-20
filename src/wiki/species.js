@@ -74,7 +74,7 @@ export function traitsPage(){
             if (traits[trait].type === types[i]){
                 let info = $(`<div id="${trait}" class="infoBox"></div>`);
                 content.append(info);
-                traitDesc(info,trait);
+                traitDesc(info,trait,false,true);
                 sideMenu('add',`traits-species`,trait,traits[trait].name);
             }
         });
@@ -95,9 +95,15 @@ const traitExtra = {
     ]
 };
 
-export function traitDesc(info,trait,fanatic){
+export function traitDesc(info,trait,fanatic,tpage){
     info.append(`<h2 class="has-text-warning">${traits[trait].name}</h2>`);
-    info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+    if (tpage && traits[trait].hasOwnProperty('val')){
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
+    }
+    else {
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+    }
+    
     if (fanatic){
         info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
     }

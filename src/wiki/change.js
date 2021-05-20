@@ -19,6 +19,15 @@ const changeList = [
         ]
     },
     {
+        version: `1.0.43`,
+        date: `5/18/2021`,
+        changes: [
+            `Banana Smoothie will no longer unlock for free in alternate universes.`,
+            `Added a Spire Floor clear timer for previously beaten monsters.`,
+            `Gate Turrets now correctly contribute to demon kills.`
+        ]
+    },
+    {
         version: `1.0.42`,
         date: `5/4/2021`,
         changes: [

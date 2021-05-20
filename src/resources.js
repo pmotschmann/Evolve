@@ -945,9 +945,9 @@ function loadSpecialResource(name,color) {
     
                     case 'heavy':
                         let hDE = darkEffect('heavy');
-                        let space = +(0.25 + (0.5 * hDE)).toFixed(4);
-                        let int = +(0.2 + (0.3 * hDE)).toFixed(4);
-                        desc.append($(`<span>${loc(`resource_${name}_desc_h`,[space * 100,int * 100])}</span>`));
+                        let space = 0.25 + (0.5 * hDE);
+                        let int = 0.2 + (0.3 * hDE);
+                        desc.append($(`<span>${loc(`resource_${name}_desc_h`,[+(space * 100).toFixed(4),+(int * 100).toFixed(4)])}</span>`));
                         break;
     
                     case 'antimatter':
@@ -1629,6 +1629,10 @@ export function craftingPopover(id,res,type,extra){
             }
         }
         
+        if (global['resource'][res].diff < 0 && global['resource'][res].amount > 0){
+            bd.append(`<div class="modal_bd sum"><span>${loc('to_empty')}</span><span class="has-text-danger">{{ res.amount | counter }}</span></div>`);
+        }
+        
         if (extra){
             bd.append(`<div class="modal_bd sum"></div>`);
             bd.append(extra);
@@ -1661,6 +1665,26 @@ export function craftingPopover(id,res,type,extra){
                     },
                     fix(val){
                         return val + 'v';
+                    },
+                    counter(val){
+                        let rate = -global['resource'][res].diff;
+                        let time = +(val / rate).toFixed(0);
+                        
+                        if (time > 60){
+                            let secs = time % 60;
+                            let mins = (time - secs) / 60;
+                            if (mins >= 60){
+                                let r = mins % 60;
+                                let hours = (mins - r) / 60;
+                                return `${hours}h ${r}m`;
+                            }
+                            else {
+                                return `${mins}m ${secs}s`;
+                            }
+                        }
+                        else {
+                            return `${time}s`;
+                        }
                     },
                     namespace(name){
                         return name.replace("_"," ");
@@ -2343,6 +2367,9 @@ export function loadSupply(name,color){
                     let keyMutipler = keyMultiplier();
                     if (keyMutipler + global.portal.transport.cargo.used > global.portal.transport.cargo.max){
                         keyMutipler = global.portal.transport.cargo.max - global.portal.transport.cargo.used;
+                        if (global.portal.transport.cargo[r] + keyMutipler < 0){
+                            keyMutipler = -global.portal.transport.cargo[r];
+                        }
                     }
                     global.portal.transport.cargo[r] += keyMutipler;
                     global.portal.transport.cargo.used += keyMutipler;

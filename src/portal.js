@@ -1560,18 +1560,26 @@ const fortressModules = {
                 let resist = `???`;
                 if (global.stats['spire']){
                     let resists = bossResists(boss);
-                    Object.keys(global.stats.spire).forEach(function(uni){
-                        if (weak === '???' && global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] > 0){
-                            weak = loc(`portal_mech_weapon_${resists.w}`);
-                        }
-                        if (resist === '???' && global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] >= 5){
-                            resist = loc(`portal_mech_weapon_${resists.r}`);
-                        }
-                    });
+                    let level = $(this)[0].mscan();
+                    if (level > 0){
+                        weak = loc(`portal_mech_weapon_${resists.w}`);
+                    }
+                    if (level >= 5){
+                        resist = loc(`portal_mech_weapon_${resists.r}`);
+                    }
                 }
                 let rightSide = `<div>${threat}<div>${loc('portal_spire_mob_weak',[`<span class="has-text-warning">${weak}</span>`])}</div><div>${loc('portal_spire_mob_resist',[`<span class="has-text-warning">${resist}</span>`])}</div></div>`;
 
                 return `<div class="split"><div>${leftSide}</div><div>${rightSide}</div></div>`;
+            },
+            mscan(){
+                let level = 0;
+                Object.keys(global.stats.spire).forEach(function(uni){
+                    if (global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] > level){
+                        level = global.stats.spire[uni][global.portal.spire.boss];
+                    }
+                });
+                return level;
             },
             wide: true,
             action(){
@@ -2476,7 +2484,7 @@ export function bloodwar(){
         }
     }
 
-    if (global.tech['gate_turret']){
+    if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
         if (forgeOperating && p_on['gate_turret']){
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;

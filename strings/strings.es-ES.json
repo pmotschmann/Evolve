@@ -1929,7 +1929,7 @@
   "arpa_projects_railway_title": "Ferrocarril",
   "arpa_projects_railway_desc": "Construya un nuevo ferrocarril para ampliar sus opciones comerciales.",
   "arpa_projects_railway_effect1": "Cada ferrocarril agrega %0 rutas comerciales y mejora la rentabilidad comercial en %1%. Cada %2 yardas de carga aumenta el número de rutas en %3.",
-  "arpa_perks_creep": "Reducción de costos reducida en 0.0%0",
+  "arpa_perks_creep": "Reducción de costos reducida en %0",
   "arpa_perks_store1": "Los plásmidos aumentan el almacenamiento en %0%",
   "arpa_perks_store2": "Cada plásmido y los fagos aumentan el almacenamiento en %0%",
   "arpa_perks_evolve": "Los costos de evolución disminuyeron",

@@ -436,7 +436,7 @@ export const traits = {
         desc: loc('trait_brute'),
         type: 'major',
         val: 7,
-        vars: [50,2.5]
+        vars: [50,100]
     },
     angry: { // When hungry you get hangry, low food penalty is more severe
         name: loc('trait_angry_name'),

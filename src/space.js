@@ -4919,17 +4919,21 @@ function xeno_race(){
     while (typeof global.galaxy['alien1'] === 'undefined'){
         let key = randomKey(races);
         if (key !== 'protoplasm' && key !== global.race.species && races[key].type !== 'demonic'){
-            global.galaxy['alien1'] = {
-                id: key
-            };
+            if (key !== 'custom' || (key === 'custom' && global.hasOwnProperty('custom'))){
+                global.galaxy['alien1'] = {
+                    id: key
+                };
+            }
         }
     }
     while (typeof global.galaxy['alien2'] === 'undefined'){
         let key = randomKey(races);
         if (key !== 'protoplasm' && key !== global.race.species && key !== global.galaxy.alien1.id && races[key].type !== 'angelic'){
-            global.galaxy['alien2'] = {
-                id: key
-            };
+            if (key !== 'custom' || (key === 'custom' && global.hasOwnProperty('custom'))){
+                global.galaxy['alien2'] = {
+                    id: key
+                };
+            }
         }
     }
 }

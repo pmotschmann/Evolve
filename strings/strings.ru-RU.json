@@ -2721,7 +2721,7 @@
   "arpa_syphon_effect4": "The universe is collapsing, you are just accelerating the process at this point.",
   "arpa_syphon_effect_reward": "The bubble of true vacuum ripping apart the universe could be worth %0 %3, %1 Phage, and %2 Dark Energy. About %4 Mana Syphons should end things quickly.",
   "arpa_syphon_damage": "Vacuum Collapse",
-  "arpa_perks_creep": "Цена сдвига снижена на 0.0%0",
+  "arpa_perks_creep": "Цена сдвига снижена на %0",
   "arpa_perks_store1": "Plasmids increase storage by %0%",
   "arpa_perks_store2": "Each Plasmid and Phage increase storage by %0%",
   "arpa_perks_evolve": "Evolution costs decreased",

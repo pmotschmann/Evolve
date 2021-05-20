@@ -2702,7 +2702,7 @@
   "arpa_syphon_effect4": "우주가 곧 붕괴됩니다. 그런데 당신은 이를 가속화하고 있습니다.",
   "arpa_syphon_effect_reward": "우주 붕괴를 통해 %0 %3, %1 파지 및 %2 암흑 에너지를 얻을 수 있습니다. %4개의 마나 흡입기가 있으면 우주가 붕괴됩니다.",
   "arpa_syphon_damage": "진공 붕괴",
-  "arpa_perks_creep": "비용 증가율 -0.0%0",
+  "arpa_perks_creep": "비용 증가율 -%0",
   "arpa_perks_store1": "플라스미드당 저장 공간 +%0%",
   "arpa_perks_store2": "플라스미드 및 파지당 저장 공간 +%0%",
   "arpa_perks_evolve": "진화 비용 감소",

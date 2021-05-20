@@ -5929,6 +5929,21 @@ export function actionDesc(parent,c_action,obj,old){
             parent.append($(`<div class="flair has-text-advanced">${loc('action_ready',[time])}</div>`));
         }
     }
+    if (c_action.id === 'portal-spire' || (c_action.id === 'portal-waygate' && global.tech.waygate >= 2)){
+        if (obj && obj['time']){
+            parent.append($(`<div id="popTimer" class="flair has-text-advanced">{{ time | timer }}</div>`));
+            vBind({
+                el: '#popTimer',
+                data: obj,
+                filters: {
+                    timer(t){
+                        let time = !c_action.hasOwnProperty('mscan') || (c_action.hasOwnProperty('mscan') && c_action.mscan() > 0) ? t : '???';
+                        return loc('floor_clearing',[time]);
+                    }
+                }
+            });
+        }
+    }
 }
 
 export function removeAction(id){
