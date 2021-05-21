@@ -1886,6 +1886,8 @@ function genetics(){
                             global.race.minor[t] ? global.race.minor[t]++ : global.race.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
                             redraw = true;
+                            
+                            messageQueue(loc('gene_gene_level', [cost, t, global.race.minor[t]]),'info');
                         }
                         else {
                             can_purchase = false;
@@ -1915,6 +1917,8 @@ function genetics(){
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
                             redraw = true;
+                            
+                            messageQueue(loc('gene_phage_level', [cost, t, global.genes.minor[t]]),'info');
                         }
                         else {
                             can_purchase = false;
@@ -1967,6 +1971,8 @@ function genetics(){
                         if (count === 0){
                             unlockFeat('blank_slate');
                         }
+                        
+                        messageQueue(loc('gene_remove_trait', [cost, t]),'info');
                     }
                 },
                 gain(t){
@@ -1995,6 +2001,8 @@ function genetics(){
                         genetics();
                         drawTech();
                         drawCity();
+                        
+                        messageQueue(loc('gene_gain_trait', [cost, t]),'info');
                     }
                 },
                 geneCost(t){
