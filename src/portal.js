@@ -3588,7 +3588,7 @@ function dragMechList(){
 }
 
 export function genSpireFloor(){
-    let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush'];
+    let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush','concrete'];
     global.portal.spire.type = types[Math.floor(Math.seededRandom(0,types.length))];
     if (global.portal.spire.count >= 10){
         global.portal.spire.status = {};
@@ -3700,6 +3700,20 @@ export function mechRating(mech,boss){
             rating *= 1 + (global.blood.wrath / 20);
         }
 
+        if (global.portal.spire.type === 'concrete'){
+            switch (mech.size){
+                case 'small':
+                    rating *= 0.92;
+                    break;
+                case 'medium':
+                    rating *= 0.95;
+                    break;
+                case 'titan':
+                    rating *= 1.5;
+                    break;
+            }
+        }
+
         switch (mech.chassis){
             case 'wheel':
                 {
@@ -3727,6 +3741,9 @@ export function mechRating(mech,boss){
                             break;
                         case 'brush':
                             rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                            break;
+                        case 'concrete':
+                            rating *= ['small','medium'].includes(mech.size) ? 1.1 : 1;
                             break;
                     }
                 }

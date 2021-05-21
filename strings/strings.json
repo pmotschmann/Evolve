@@ -4952,6 +4952,8 @@
   "portal_spire_type_grass_desc": "A nice grassy surface covers the land.",
   "portal_spire_type_brush": "Brush",
   "portal_spire_type_brush_desc": "Thick underbrush covers the land.",
+  "portal_spire_type_concrete": "Concrete",
+  "portal_spire_type_concrete_desc": "The entire landscape is just a flat open area paved in concrete.",
   "portal_spire_mob": "Threat: %0",
   "portal_spire_mob_weak": "Weak: %0",
   "portal_spire_mob_resist": "Resist: %0",
