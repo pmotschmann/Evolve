@@ -605,7 +605,7 @@ const gov_tasks = {
             if ( $(this)[0].req() ){
                 let cost = 375000;
                 let size = mechSize('large');
-                let soul = 5;
+                let soul = 25;
                 let ctype = 'large';
 
                 let mechs = {
@@ -642,7 +642,7 @@ const gov_tasks = {
                 if (mechs.type.large >= 12 && mechs.type.medium < 24){
                     cost = 180000;
                     size = mechSize('medium');
-                    soul = 2;
+                    soul = 5;
                     ctype = 'medium';
                 }
 

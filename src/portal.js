@@ -3201,7 +3201,7 @@ export function drawMechLab(){
             </button>${chassis}
         </b-dropdown>`);
 
-        for (let i=0; i<2; i++){
+        for (let i=0; i<4; i++){
             let weapons = ``;
             ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val){
                 weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
@@ -3215,7 +3215,7 @@ export function drawMechLab(){
             </b-dropdown>`);
         }
 
-        let e_cap = global.blood['prepared'] ? 4 : 3;
+        let e_cap = global.blood['prepared'] ? 5 : 4;
         for (let i=0; i<e_cap; i++){
             let equip = ``;
             ['shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val){
@@ -3243,7 +3243,7 @@ export function drawMechLab(){
                 build(){
                     let cost = 10000000;
                     let size = 25;
-                    let soul = 10;
+                    let soul = 100;
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
                             cost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
@@ -3253,17 +3253,17 @@ export function drawMechLab(){
                         case 'medium':
                             cost = 180000;
                             size = mechSize('medium');
-                            soul = 2;
+                            soul = 5;
                             break;
                         case 'large':
                             cost = 375000;
                             size = mechSize('large');
-                            soul = 5;
+                            soul = 25;
                             break;
                         case 'titan':
                             cost = 750000;
                             size = mechSize('titan');
-                            soul = 10;
+                            soul = 100;
                             break;
                     }
 
@@ -3284,13 +3284,22 @@ export function drawMechLab(){
                     }
                     else {
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
-                            global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint[0]);
+                            global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
+                        }
+                        if (s === 'titan'){
+                            if (global.portal.mechbay.blueprint.hardpoint.length === 2){
+                                global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'shotgun' : 'laser');
+                                global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser')  ? 'kinetic' : 'laser');
+                            }
+                        }
+                        else {
+                            global.portal.mechbay.blueprint.hardpoint.length = 2;
                         }
                     }
                     switch (s){
                         case 'small':
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                                global.portal.mechbay.blueprint.equip.push('shields');
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 1 : 0;
                             break;
@@ -3311,7 +3320,7 @@ export function drawMechLab(){
                                 global.portal.mechbay.blueprint.equip.push('sonar');
                             }
                             if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                                global.portal.mechbay.blueprint.equip.push('grapple');
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 3 : 2;
                             break;
@@ -3325,10 +3334,13 @@ export function drawMechLab(){
                             if (global.portal.mechbay.blueprint.equip.length < 3){
                                 global.portal.mechbay.blueprint.equip.push('grapple');
                             }
-                            if (global.blood['prepared']){
-                                global.portal.mechbay.blueprint.equip.push('infrared');
+                            if (global.portal.mechbay.blueprint.equip.length < 4){
+                                global.portal.mechbay.blueprint.equip.push('seals');
                             }
-                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 4 : 3;
+                            if (global.blood['prepared']){
+                                global.portal.mechbay.blueprint.equip.push('stabilizer');
+                            }
+                            global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 5 : 4;
                             break;
                     }
                 },
@@ -3344,7 +3356,7 @@ export function drawMechLab(){
                     vBind({el: `#mechAssembly`},'update');
                 },
                 vis(hp){
-                    if (hp === 0 || global.portal.mechbay.blueprint.size === 'large' || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp <= 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
                     }
                     return false;
@@ -3384,11 +3396,11 @@ export function drawMechLab(){
                         case 'small':
                             return 1
                         case 'medium':
-                            return 2;
-                        case 'large':
                             return 5;
+                        case 'large':
+                            return 25;
                         case 'titan':
-                            return 10;
+                            return 100;
                     }
                 },
                 slabel(s){
@@ -3456,12 +3468,18 @@ function drawMechs(){
         let mech = global.portal.mechbay.mechs[i];
         used += mechSize(mech.size);
         let inactive = used > global.portal.mechbay.max ? true : false;
-        let desc = $(`<div${inactive ? ` class="inactive-row"` : ``}><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        let desc = $(`<div class="mechRow${inactive ? ` inactive-row` : ``}"><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        let gear_list = $(`<div class="gearList ${mech.size}"></div>`);
+        desc.append(gear_list);
+        let wep_list = $(`<div></div>`);
+        gear_list.append(wep_list);
         mech.hardpoint.forEach(function(hp){
-            desc.append(` | <span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+            wep_list.append(`<span> | </span><span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
         });
+        let eqp_list = $(`<div></div>`);
+        gear_list.append(eqp_list);
         mech.equip.forEach(function(eq){
-            desc.append(` | <span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
+            eqp_list.append(`<span> | </span><span class="has-text-warning">${loc(`portal_mech_equip_${eq}`)}</span>`);
         });
         list.append(desc);
     }
@@ -3618,7 +3636,7 @@ export function mechRating(mech,boss){
             rating = 0.01;
             break;
         case 'titan':
-            rating = 0.0238;
+            rating = 0.012;
             break;
     }
 
@@ -3660,7 +3678,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
                             break;
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.35 : 0.25;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
                             break;
                         case 'jungle':
                             rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
@@ -3672,7 +3690,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.65;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
                             break;
                         case 'grass':
                             rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
@@ -3690,7 +3708,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
                             break;
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.45;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
                             break;
                         case 'forest':
                             rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
@@ -3705,7 +3723,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.88 : 0.75;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
                             break;
                     }
                 }
@@ -3717,7 +3735,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
                             break;
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
                             break;
                         case 'forest':
                             rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
@@ -3729,7 +3747,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.75;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
                             break;
                         case 'grass':
                             rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
@@ -3747,7 +3765,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
                             break;
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.58 : 0.45;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
                             break;
                         case 'forest':
                             rating *= ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
@@ -3759,7 +3777,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.55;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
                             break;
                         case 'grass':
                             rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
@@ -3777,7 +3795,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
                             break;
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
                             break;
                         case 'forest':
                             rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
@@ -3792,7 +3810,7 @@ export function mechRating(mech,boss){
                             rating *= ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
                             break;
                         case 'brush':
                             rating *= ['small','medium'].includes(mech.size) ? 1 : 0.95;
@@ -3804,19 +3822,19 @@ export function mechRating(mech,boss){
                 {
                     switch (global.portal.spire.type){
                         case 'swamp':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                            rating *= ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
                             break;
                         case 'forest':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.74 : 0.65;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
                             break;
                         case 'jungle':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.6 : 0.5;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
                             break;
                         case 'rocky':
-                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                            rating *= ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
                             break;
                         case 'muddy':
-                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                            rating *= ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
                             break;
                         case 'brush':
                             rating *= ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
