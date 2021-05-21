@@ -4,7 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
-import { checkHellRequirements, mechSize, drawMechList } from './portal.js';
+import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
 import { loc } from './locale.js';
 
 const gmen = {
@@ -603,10 +603,11 @@ const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                let cost = 375000;
-                let size = mechSize('large');
-                let soul = 25;
                 let ctype = 'large';
+                let mCosts = mechCost(ctype,false);
+                let cost = mCosts.c;
+                let soul = mCosts.s;
+                let size = mechSize(ctype);
 
                 let mechs = {
                     type: {},
@@ -640,10 +641,11 @@ const gov_tasks = {
                 });
 
                 if (mechs.type.large >= 12 && mechs.type.medium < 18){
-                    cost = 180000;
-                    size = mechSize('medium');
-                    soul = 5;
                     ctype = 'medium';
+                    mCosts = mechCost(ctype,false);
+                    cost = mCosts.c;
+                    soul = mCosts.s;
+                    size = mechSize(ctype);
                 }
 
                 let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
