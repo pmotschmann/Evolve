@@ -1247,6 +1247,26 @@ export const bloodPool = {
             return false;
         }
     },
+    infernal: {
+        id: 'blood-infernal',
+        title: loc('arpa_blood_infernal_title'),
+        desc: loc('arpa_blood_infernal_desc'),
+        reqs: { prepared: 2 },
+        grant: ['prepared',3],
+        condition(){
+            return global.genes['blood'] && global.genes.blood >= 3 ? true : false;
+        },
+        cost: {
+            Blood_Stone(){ return 125; },
+            Artifact(){ return 1; }
+        },
+        action(){
+            if (payBloodPrice($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        }
+    },
     unbound: {
         id: 'blood-unbound',
         title: loc('arpa_blood_unbound_title'),

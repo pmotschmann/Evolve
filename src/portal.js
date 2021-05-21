@@ -3158,7 +3158,8 @@ export function drawMechLab(){
                 size: 'small',
                 hardpoint: ['laser'],
                 chassis: 'tread',
-                equip: []
+                equip: [],
+                infernal: false
             };
         }
 
@@ -3171,7 +3172,8 @@ export function drawMechLab(){
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
 
-        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span></div>`)
+        let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
+        assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
         assemble.append(`<div>{{ b.size | desc }}</div>`);
 
         let options = $(`<div class="bayOptions"></div>`);
@@ -3244,26 +3246,36 @@ export function drawMechLab(){
                     let cost = 10000000;
                     let size = 25;
                     let soul = 100;
+
                     switch (global.portal.mechbay.blueprint.size){
                         case 'small':
-                            cost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
-                            size = mechSize('small');
-                            soul = 1;
+                            {
+                                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
+                                cost = global.portal.mechbay.blueprint.infernal ? baseCost * 2.5 : baseCost;
+                                size = mechSize('small');
+                                soul = global.portal.mechbay.blueprint.infernal ? 25 : 1;
+                            }
                             break;
                         case 'medium':
-                            cost = 180000;
-                            size = mechSize('medium');
-                            soul = 5;
+                            {
+                                cost = global.portal.mechbay.blueprint.infernal ? 450000 : 180000;
+                                size = mechSize('medium');
+                                soul = global.portal.mechbay.blueprint.infernal ? 125 : 5;
+                            }
                             break;
                         case 'large':
-                            cost = 375000;
-                            size = mechSize('large');
-                            soul = 25;
+                            {
+                                cost = global.portal.mechbay.blueprint.infernal ? 925000 : 375000;
+                                size = mechSize('large');
+                                soul = global.portal.mechbay.blueprint.infernal ? 625 : 25;
+                            }
                             break;
                         case 'titan':
-                            cost = 750000;
-                            size = mechSize('titan');
-                            soul = 100;
+                            {
+                                cost = global.portal.mechbay.blueprint.infernal ? 1500000 : 750000;
+                                size = mechSize('titan');
+                                soul = global.portal.mechbay.blueprint.infernal ? 2500 : 100;
+                            }
                             break;
                     }
 
@@ -3382,25 +3394,26 @@ export function drawMechLab(){
                 price(s){
                     switch (s){
                         case 'small':
-                            return global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
+                            let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 50000 : 75000;
+                            return global.portal.mechbay.blueprint.infernal ? baseCost * 2.5 : baseCost;
                         case 'medium':
-                            return 180000;
+                            return global.portal.mechbay.blueprint.infernal ? 450000 : 180000;
                         case 'large':
-                            return 375000;
+                            return global.portal.mechbay.blueprint.infernal ? 925000 : 375000;
                         case 'titan':
-                            return 750000;
+                            return global.portal.mechbay.blueprint.infernal ? 1500000 : 750000;
                     }
                 },
                 soul(s){
                     switch (s){
                         case 'small':
-                            return 1
+                            return global.portal.mechbay.blueprint.infernal ? 25 : 1;
                         case 'medium':
-                            return 5;
+                            return global.portal.mechbay.blueprint.infernal ? 125 : 5;
                         case 'large':
-                            return 25;
+                            return global.portal.mechbay.blueprint.infernal ? 625 : 25;
                         case 'titan':
-                            return 100;
+                            return global.portal.mechbay.blueprint.infernal ? 2500 :100;
                     }
                 },
                 slabel(s){
@@ -3468,7 +3481,8 @@ function drawMechs(){
         let mech = global.portal.mechbay.mechs[i];
         used += mechSize(mech.size);
         let inactive = used > global.portal.mechbay.max ? true : false;
-        let desc = $(`<div class="mechRow${inactive ? ` inactive-row` : ``}"><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
+        let infernal = mech.infernal ? `${loc('portal_mech_infernal')} ` : ``;
+        let desc = $(`<div class="mechRow${inactive ? ` inactive-row` : ``}"><a${inactive ? ` class="has-text-danger"` : ``} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${infernal}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
         let gear_list = $(`<div class="gearList ${mech.size}"></div>`);
         desc.append(gear_list);
         let wep_list = $(`<div></div>`);
@@ -3492,16 +3506,28 @@ function drawMechs(){
                 if (global.portal.mechbay.mechs[id]){
                     switch (global.portal.mechbay.mechs[id].size){
                         case 'small':
-                            global.portal.purifier.supply += 25000;
+                            {
+                                global.portal.purifier.supply += global.portal.mechbay.mechs[id].infernal ? 62500 : 25000;
+                                global.resource.Soul_Gem.amount += global.portal.mechbay.mechs[id].infernal ? 12 : 0;
+                            }
                             break;
                         case 'medium':
-                            global.portal.purifier.supply += 60000;
+                            {
+                                global.portal.purifier.supply += global.portal.mechbay.mechs[id].infernal ? 150000 : 60000;
+                                global.resource.Soul_Gem.amount += global.portal.mechbay.mechs[id].infernal ? 62 : 2;
+                            }
                             break;
                         case 'large':
-                            global.portal.purifier.supply += 125000;
+                            {
+                                global.portal.purifier.supply += global.portal.mechbay.mechs[id].infernal ? 300000 : 125000;
+                                global.resource.Soul_Gem.amount += global.portal.mechbay.mechs[id].infernal ? 312 : 12;
+                            }
                             break;
                         case 'titan':
-                            global.portal.purifier.supply += 250000;
+                            {
+                                global.portal.purifier.supply += global.portal.mechbay.mechs[id].infernal ? 500000 : 250000;
+                                global.resource.Soul_Gem.amount += global.portal.mechbay.mechs[id].infernal ? 1250 : 50;
+                            }
                             break;
                     }
                     if (global.portal.purifier.supply > global.portal.purifier.sup_max){
@@ -3638,6 +3664,10 @@ export function mechRating(mech,boss){
         case 'titan':
             rating = 0.012;
             break;
+    }
+
+    if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
+        rating *= 1.25;
     }
 
     if (boss){

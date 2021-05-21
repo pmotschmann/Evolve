@@ -639,7 +639,7 @@ const gov_tasks = {
                     });
                 });
 
-                if (mechs.type.large >= 12 && mechs.type.medium < 24){
+                if (mechs.type.large >= 12 && mechs.type.medium < 18){
                     cost = 180000;
                     size = mechSize('medium');
                     soul = 5;
@@ -689,7 +689,8 @@ const gov_tasks = {
                         chassis: chassis,
                         size: ctype,
                         equip: equipment,
-                        hardpoint: weapons
+                        hardpoint: weapons,
+                        infernal: false
                     });
                     global.portal.mechbay.bay += size;
                     drawMechList();
