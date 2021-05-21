@@ -180,7 +180,7 @@
   "gene_therapy": "Gene therapy has resulted in an improvement to your species. Gained %0 trait, %1 Genes, and %2 %3.",
   "gene_gene_level": "You have spent %0 genes on improving minor trait %1 to rank %2.",
   "gene_phage_level": "You have spent %0 phage on improving minor trait %1 to rank %2.",
-  "gene_remove_trait": "You have spent %0 plasmid on removing genetic trait %1.",
+  "gene_purge_trait": "You have spent %0 plasmid on purging genetic trait %1.",
   "gene_gain_trait": "You have spent %0 plasmid on gaining genetic trait %1.",
   "discover_elerium": "Your asteroid miners have discovered an unknown rare element in the belt. A sample has been retrieved for analysis.",
   "discover_oil": "Oil has unexpectedly been discovered on %0.",
