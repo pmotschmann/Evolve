@@ -610,68 +610,134 @@ const gov_tasks = {
                 let size = mechSize(ctype);
 
                 let mechs = {
-                    type: {},
-                    chassis: {},
-                    weapon: {},
-                    equip: {}
+                    type: {}
                 };
 
-                ['hover','spider','wheel','tread','biped','quad'].forEach(function(chassis){
-                    mechs.chassis[chassis] = 0;
-                });
                 ['small','medium','large','titan'].forEach(function(type){
                     mechs.type[type] = 0;
-                });
-                ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'].map((a) => ({sort: Math.random(), value: a})).sort((a, b) => a.sort - b.sort).map((a) => a.value).forEach(function(weapon){
-                    mechs.weapon[weapon] = 0;
-                });
-                ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer',].forEach(function(equip){
-                    mechs.equip[equip] = 0;
+                    mechs[type] = {
+                        chassis: {},
+                        weapon: {},
+                        equip: {}
+                    };
+                    ['hover','spider','wheel','tread','biped','quad'].forEach(function(chassis){
+                        mechs[type].chassis[chassis] = 0;
+                    });
+                    ['plasma','laser','kinetic','shotgun','missile','flame','sonic','tesla'].map((a) => ({sort: Math.random(), value: a})).sort((a, b) => a.sort - b.sort).map((a) => a.value).forEach(function(weapon){
+                        mechs[type].weapon[weapon] = 0;
+                    });
+                    ['shields','flare','seals','grapple','sonar','ablative','radiator','infrared','coolant','stabilizer'].forEach(function(equip){
+                        mechs[type].equip[equip] = 0;
+                    });
                 });
 
                 global.portal.mechbay.mechs.forEach(function(mech){
                     mechs.type[mech.size]++;
-                    mechs.chassis[mech.chassis]++;
+                    mechs[mech.size].chassis[mech.chassis]++;
                     mech.hardpoint.forEach(function(wep){
-                        mechs.weapon[wep]++;
+                        mechs[mech.size].weapon[wep]++;
                     });
                     mech.equip.forEach(function(equip){
-                        mechs.equip[equip]++;
+                        mechs[mech.size].equip[equip]++;
                     });
                 });
 
-                if (mechs.type.large >= 12 && mechs.type.medium < 18){
+                if ((mechs.type.large >= 6 && mechs.type.small < 12) || (mechs.type.large >= 12 && mechs.type.titan >= 2 && mechs.type.small < 24)){
+                    ctype = 'small';
+                    mCosts = mechCost(ctype,false);
+                    cost = mCosts.c;
+                    soul = mCosts.s;
+                    size = mechSize(ctype);
+                }
+                else if (mechs.type.large >= 6 && mechs.type.medium < 12){
                     ctype = 'medium';
                     mCosts = mechCost(ctype,false);
                     cost = mCosts.c;
                     soul = mCosts.s;
                     size = mechSize(ctype);
                 }
+                else if (mechs.type.large >= 12 && mechs.type.titan < 2){
+                    mCosts = mechCost('titan',false);
+                    if (mCosts.c <= global.portal.purifier.sup_max){
+                        ctype = 'titan';
+                        cost = mCosts.c;
+                        soul = mCosts.s;
+                        size = mechSize(ctype);
+                    }
+                }
 
                 let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
-                if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
+                if (avail < size && global.blood['prepared'] && global.blood.prepared >= 3){
+                    for (let i=0; i<global.portal.mechbay.mechs.length; i++){
+                        if (!global.portal.mechbay.mechs[i]['infernal']){
+                            let pattern = global.portal.mechbay.mechs[i];
+                            ctype = pattern.size;
+                            mCosts = mechCost(ctype,true);
+                            cost = mCosts.c;
+                            soul = mCosts.s;
+
+                            let gems = Math.floor(soul / 2);
+                            let supply = global.portal.purifier.supply + Math.floor(cost / 3);
+                            if (supply > global.portal.purifier.sup_max){
+                                supply = global.portal.purifier.sup_max;
+                            }
+
+                            if (supply >= cost && global.resource.Soul_Gem.amount + gems >= soul){
+                                global.resource.Soul_Gem.amount += gems;
+                                global.resource.Soul_Gem.amount -= soul;
+                                global.portal.purifier.supply = supply;
+                                global.portal.purifier.supply -= cost;
+                                global.portal.mechbay.mechs[i]['infernal'] = true;
+
+                                if (pattern.size === 'small' && pattern.equip.length === 0){
+                                    global.portal.mechbay.mechs[i].equip.push('special');
+                                }
+                                else if ((pattern.size === 'medium' && pattern.equip.length === 1) || (pattern.size === 'large' && pattern.equip.length === 2) || (pattern.size === 'titan' && pattern.equip.length < 5)){
+                                    let equip = '???';
+                                    Object.keys(mechs[ctype].equip).forEach(function(val){
+                                        if (equip === '???' || mechs[ctype].equip[val] < mechs[ctype].equip[equip]){
+                                            if (equip !== val){
+                                                equip = val;
+                                            }
+                                        }
+                                    });
+                                    if (!pattern.equip.includes('special')){
+                                        global.portal.mechbay.mechs[i].equip.push('special');
+                                    }
+                                    else {
+                                        global.portal.mechbay.mechs[i].equip.push(equip);
+                                    }
+                                }
+                                drawMechList();
+                            }
+                            break;
+                        }
+                    }
+                }
+                else if (global.portal.purifier.supply >= cost && avail >= size && global.resource.Soul_Gem.amount >= soul){
                     let c_val = 99;
                     let chassis = 'hover';
-                    Object.keys(mechs.chassis).forEach(function(val){
-                        if (mechs.chassis[val] < c_val){
-                            c_val = mechs.chassis[val];
+                    Object.keys(mechs[ctype].chassis).forEach(function(val){
+                        if (mechs[ctype].chassis[val] < c_val){
+                            c_val = mechs[ctype].chassis[val];
                             chassis = val;
                         }
                     });
-                    let weapons = ['???','???'];
-                    for (let i=0; i<2; i++){
-                        Object.keys(mechs.weapon).forEach(function(val){
-                            if (weapons[i] === '???' || mechs.weapon[val] < mechs.weapon[weapons[i]]){
+                    let weapons = ctype === 'titan' ? ['???','???','???','???'] : ['???','???'];
+                    let wCap = ctype === 'titan' ? 4 : 2;
+                    for (let i=0; i<wCap; i++){
+                        Object.keys(mechs[ctype].weapon).forEach(function(val){
+                            if (weapons[i] === '???' || mechs[ctype].weapon[val] < mechs[ctype].weapon[weapons[i]]){
                                 if (!weapons.includes(val)){
                                     weapons[i] = val;
                                 }
                             }
                         });
                     }
-                    let equip = ['???','???','???'];
-                    for (let i=0; i<3; i++){
-                        Object.keys(mechs.equip).forEach(function(val){
-                            if (equip[i] === '???' || mechs.equip[val] < mechs.equip[equip[i]]){
+                    let equip = ['???','???','???','???'];
+                    for (let i=0; i<4; i++){
+                        Object.keys(mechs[ctype].equip).forEach(function(val){
+                            if (equip[i] === '???' || mechs[ctype].equip[val] < mechs[ctype].equip[equip[i]]){
                                 if (!equip.includes(val)){
                                     equip[i] = val;
                                 }
@@ -680,9 +746,19 @@ const gov_tasks = {
                     }
 
                     let equipment = global.blood['prepared'] ? equip : [equip[0],equip[1]];
-                    if (ctype === 'medium'){
+                    if (ctype === 'small'){
                         weapons = [weapons[0]];
-                        equipment = global.blood['prepared'] ? [equip[0],equip[1]] : [equip[0]];
+                        equipment = global.blood['prepared'] ? ['special'] : [];
+                    }
+                    else if (ctype === 'medium'){
+                        weapons = [weapons[0]];
+                        equipment = global.blood['prepared'] ? ['special',equip[0]] : ['special'];
+                    }
+                    else if (ctype === 'large'){
+                        equipment = global.blood['prepared'] ? ['special',equip[0],equip[1]] : ['special',equip[0]];
+                    }
+                    else if (ctype === 'titan'){
+                        equipment = global.blood['prepared'] ? ['special',equip[0],equip[1],equip[2],equip[3]] : ['special',equip[0],equip[1],equip[2]];
                     }
 
                     global.portal.purifier.supply -= cost;

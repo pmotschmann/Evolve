@@ -764,6 +764,13 @@ if (convertVersion(global['version']) < 101000){
     if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('genus') && global.custom.race0.genus === 'animal'){
         global.custom.race0.genus = 'omnivore';
     }
+    if (global.portal.hasOwnProperty('mechbay')){
+        for (let i=0; i<global.portal.mechbay.mechs.length; i++){
+            if (!global.portal.mechbay.mechs[i].hasOwnProperty('infernal')){
+                global.portal.mechbay.mechs[i]['infernal'] = false;
+            }
+        }
+    }
 }
 
 global['version'] = '1.1.0';
