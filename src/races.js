@@ -452,6 +452,13 @@ export const traits = {
         val: -4,
         vars: [10]
     },
+    curious: { // University cap boosted by citizen count, curious random events
+        name: loc('trait_curious_name'),
+        desc: loc('trait_curious'),
+        type: 'major',
+        val: 4,
+        vars: [0.1]
+    },
     pack_mentality: { // Cabins cost more, but cottages cost less.
         name: loc('trait_pack_mentality_name'),
         desc: loc('trait_pack_mentality'),
@@ -1177,7 +1184,8 @@ export const races = {
         home: loc('race_cath_home'),
         entity: loc('race_cath_entity'),
         traits: {
-            lazy: 1
+            lazy: 1,
+            curious: 1
         },
         solar: {
             red: loc('race_cath_solar_red'),
@@ -1186,7 +1194,7 @@ export const races = {
             gas_moon: loc('race_cath_solar_gas_moon'),
             dwarf: loc('race_cath_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: 'curious'
     },
     wolven: {
         name: altRace('wolven') ? loc('race_rabbit') : loc('race_wolven'),

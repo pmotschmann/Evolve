@@ -2330,6 +2330,14 @@ function fastLoop(){
             breakdown.p['Global'][loc('trait_lazy_bd')] = '-10%';
             global_multiplier *= 1 - (traits.lazy.vars[0] / 100);
         }
+        if (global.race['distracted']){
+            breakdown.p['Global'][loc('event_m_curious3_bd')] = '-5%';
+            global_multiplier *= 0.95;
+        }
+        if (global.race['stimulated']){
+            breakdown.p['Global'][loc('event_m_curious4_bd')] = '+10%';
+            global_multiplier *= 1.1;
+        }
 
         if (global.race['selenophobia']){
             let moon = global.city.calendar.moon > 14 ? 28 - global.city.calendar.moon : global.city.calendar.moon;
@@ -6021,6 +6029,9 @@ function midLoop(){
             if (global.race['hard_of_hearing']){
                 multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
             }
+            if (global.race['curious']){
+                multiplier *= 1 + (traits.curious.vars[0] / 100 * global.resource[global.race.species].amount);
+            }
             if (p_on['s_gate'] && gal_on['scavenger']){
                 let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
                 multiplier *= 1 + uni;
@@ -6474,12 +6485,14 @@ function midLoop(){
             lCaps['crew'] += global.portal.transport.on * actions.portal.prtl_lake.transport.ship.civ;
         }
 
-        if (global.race['inspired']){
-            global.race['inspired']--;
-            if (global.race['inspired'] <= 0){
-                delete global.race['inspired'];
+        ['inspired','distracted','stimulated'].forEach(function(t){
+            if (global.race[t]){
+                global.race[t]--;
+                if (global.race[t] <= 0){
+                    delete global.race[t];
+                }
             }
-        }
+        });
 
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];
         if (pop_loss > 0){

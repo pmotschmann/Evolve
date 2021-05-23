@@ -445,6 +445,116 @@ export const events = {
             return loc('event_mine_collapse');
         }
     },
+    m_curious: {
+        reqs: {
+            tech: 'primitive',
+            trait: 'curious',
+        },
+        condition(){
+            if (global.resource[global.race.species].amount >= 40){
+                return true;
+            }
+            return false;
+        },
+        type: 'major',
+        effect(){
+            switch (Math.rand(0,5)){
+                case 0:
+                    {
+                        let res = 'Money';
+                        let vol = Math.rand(50000,5000000);
+                        switch (Math.rand(0,5)){
+                            case 0:
+                                if (global.resource.Steel.display){
+                                    res = 'Steel';
+                                    vol = Math.rand(100,100000);
+                                }
+                                break;
+                            case 1:
+                                if (global.resource.Bolognium.display){
+                                    res = 'Bolognium';
+                                    vol = Math.rand(500,50000);
+                                }
+                                break;
+                            case 2:
+                                if (global.resource.Alloy.display){
+                                    res = 'Alloy';
+                                    vol = Math.rand(250,1000000);
+                                }
+                                break;
+                            case 3:
+                                if (global.resource.Adamantite.display){
+                                    res = 'Adamantite';
+                                    vol = Math.rand(1000,250000);
+                                }
+                                break;
+                            case 4:
+                                if (global.resource.Soul_Gem.display){
+                                    res = 'Soul_Gem';
+                                    vol = 1;
+                                }
+                                break;
+                        }
+                        global.resource[res].amount += vol;
+                        if (global.resource[res].max >= 0 && global.resource[res].amount > global.resource[res].max){
+                            global.resource[res].amount = global.resource[res].max;
+                        }
+                        return loc(`event_m_curious0`,[races[global.race.species].name,vol.toLocaleString(),global.resource[res].name]);
+                    }
+                case 1:
+                    {
+                        global.resource[global.race.species].amount -= 10;
+                        global.civic[global.civic.d_job].workers -= 10;
+                        if (global.civic[global.civic.d_job].workers < 0){
+                            global.civic[global.civic.d_job].workers = 0;
+                        }
+                        return loc(`event_m_curious1`,[races[global.race.species].name]);
+                    }
+                case 2:
+                    {
+                        global.race['inspired'] = Math.rand(600,1200);
+                        return loc(`event_m_curious2`,[races[global.race.species].name]);
+                    }
+                case 3:
+                    {
+                        global.race['distracted'] = Math.rand(200,600);
+                        return loc(`event_m_curious3`,[races[global.race.species].name]);
+                    }
+                case 4:
+                    {
+                        if (global.race.species === 'cath'){
+                            global.race['stimulated'] = Math.rand(500,1000);
+                            return loc(`event_m_curious4a`,[races[global.race.species].name]);
+                        }
+                        else {
+                            return loc(`event_m_curious4b`,[races[global.race.species].name]);
+                        }
+                    }
+            }
+        }
+    },
+    curious1: {
+        reqs: {
+            tech: 'primitive',
+            trait: 'curious',
+        },
+        type: 'minor',
+        effect(){
+            let num = Math.rand(0,5);
+            return loc(`event_curious${num}`,[races[global.race.species].name]);
+        }
+    },
+    curious2: {
+        reqs: {
+            tech: 'primitive',
+            trait: 'curious',
+        },
+        type: 'minor',
+        effect(){
+            let num = Math.rand(5,10);
+            return loc(`event_curious${num}`,[races[global.race.species].name]);
+        }
+    },
     slave_escape1: slaveLoss('minor','escape1'),
     slave_escape2: slaveLoss('minor','escape2'),
     slave_escape3: slaveLoss('minor','death4'),

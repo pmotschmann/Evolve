@@ -4067,6 +4067,9 @@ export const actions = {
                 if (global.race['hard_of_hearing']){
                     multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
                 }
+                if (global.race['curious']){
+                    multiplier *= 1 + (traits.curious.vars[0] / 100 * global.resource[global.race.species].amount);
+                }
                 if (p_on['s_gate'] && gal_on['scavenger']){
                     let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
                     multiplier *= 1 + uni;
