@@ -613,7 +613,7 @@ const gov_tasks = {
                     type: {}
                 };
 
-                ['small','medium','large','titan'].forEach(function(type){
+                ['small','medium','large','titan','collector'].forEach(function(type){
                     mechs.type[type] = 0;
                     mechs[type] = {
                         chassis: {},

@@ -9,7 +9,7 @@ import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industr
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -2400,6 +2400,16 @@ function fastLoop(){
 
                     modRes(res, -(time_multiplier * volume));
                     supply += Number(shipped * supplyValue[res].in * time_multiplier * bireme);
+                }
+            });
+            let space = 0;
+            global.portal.mechbay.mechs.forEach(function(mech){
+                let size = mechSize(mech.size);
+                if (space + size <= global.portal.mechbay.max){
+                    space += size;
+                    if (mech.size === 'collector'){
+                        supply += mechCollect(mech) * time_multiplier;
+                    }
                 }
             });
             global.portal.purifier.supply += supply;

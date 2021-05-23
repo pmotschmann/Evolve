@@ -5023,6 +5023,8 @@
   "portal_mech_size_large_desc": "Heavy mechs are often deployed to counter serious threats, they are costly and slow moving but powerful.",
   "portal_mech_size_titan": "Titan",
   "portal_mech_size_titan_desc": "Titan class mechs are gigantic, although often considered impractical their massive size allows them to dominate the field.",
+  "portal_mech_size_collector": "Collector",
+  "portal_mech_size_collector_desc": "Collector mechs search for usable resources. They do not aid in combat.",
   "portal_mech_weapon_none": "None",
   "portal_mech_weapon_laser": "Laser",
   "portal_mech_weapon_laser_desc": "Laser weapons fire intense bursts of light to burn targets at long distances.",

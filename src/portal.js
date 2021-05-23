@@ -3155,6 +3155,13 @@ export function mechCost(size,infernal){
                 soul = infernal ? 1500 : 75;
             }
             break;
+        case 'collector':
+            {
+                let baseCost = global.blood['prepared'] && global.blood.prepared >= 2 ? 8000 : 10000;
+                cost = infernal ? baseCost * 2.5 : baseCost;
+                soul = 1;
+            }
+            break;
     }
     return { s: soul, c: cost };
 };
@@ -3213,7 +3220,7 @@ export function drawMechLab(){
         assemble.append(options);
 
         let sizes = ``;
-        ['small','medium','large','titan'].forEach(function(size){
+        ['small','medium','large','titan','collector'].forEach(function(size){
             sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
@@ -3294,7 +3301,10 @@ export function drawMechLab(){
                 },
                 setSize(s){
                     global.portal.mechbay.blueprint.size = s;
-                    if (s === 'small' || s === 'medium'){
+                    if (s === 'collector'){
+                        global.portal.mechbay.blueprint.hardpoint.length = 0;
+                    }
+                    else if (s === 'small' || s === 'medium'){
                         global.portal.mechbay.blueprint.hardpoint.length = 1;
                     }
                     else {
@@ -3327,6 +3337,7 @@ export function drawMechLab(){
                             }
                             global.portal.mechbay.blueprint.equip.length = global.blood['prepared'] ? 2 : 1;
                             break;
+                        case 'collector':
                         case 'large':
                             if (global.portal.mechbay.blueprint.equip.length < 1){
                                 global.portal.mechbay.blueprint.equip.push('special');
@@ -3371,6 +3382,9 @@ export function drawMechLab(){
                     vBind({el: `#mechAssembly`},'update');
                 },
                 vis(hp){
+                    if (global.portal.mechbay.blueprint.size === 'collector'){
+                        return false;
+                    }
                     if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp <= 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
                     }
@@ -3383,6 +3397,7 @@ export function drawMechLab(){
                             return prep === 1 && es === 0 ? true : false;
                         case 'medium':
                             return es <= (0 + prep) ? true : false;
+                        case 'collector':
                         case 'large':
                             return es <= (1 + prep) ? true : false;
                         case 'titan':
@@ -3577,6 +3592,8 @@ export function mechSize(s){
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 8 : 10;
         case 'titan':
             return global.blood['prepared'] && global.blood.prepared >= 2 ? 20 : 25;
+        case 'collector':
+            return 1;
         case 'default':
             return 25;
     }
@@ -3667,14 +3684,14 @@ function assignValidStatus(effect){
 }
 
 function terrainRating(mech,rating,effects){
-    if (mech.equip.includes('special') && (mech.size === 'small' || mech.size === 'medium')){
+    if (mech.equip.includes('special') && (mech.size === 'small' || mech.size === 'medium' || mech.size === 'collector')){
         if (rating < 1){
             rating += (1 - rating) * (effects.includes('gravity') ? 0.1 : 0.2);
         }
     }
     if (mech.size !== 'small' && rating < 1){
         let space = 0;
-        let sizes = { small: 0, medium: 0, large: 0, titan: 0 };
+        let sizes = { small: 0, medium: 0, large: 0, titan: 0, collector: 0 };
         global.portal.mechbay.mechs.forEach(function(m){
             let size = mechSize(m.size);
             if (space + size <= global.portal.mechbay.max){
@@ -3702,6 +3719,354 @@ function weaponPower(mech,power){
     return power;
 }
 
+function statusEffect(mech,effect){
+    let rating = 1;
+    switch (effect){
+        case 'freeze':
+            {
+                if (!mech.equip.includes('radiator')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'hot':
+            {
+                if (!mech.equip.includes('coolant')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'corrosive':
+            {
+                if (!mech.equip.includes('ablative')){
+                    rating = mech.equip.includes('shields') ? 0.75 : 0.25;
+                }
+            }
+            break;
+        case 'humid':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'windy':
+            {
+                if (mech.chassis === 'hover'){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'hilly':
+            {
+                if (mech.chassis !== 'spider'){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'mountain':
+            {
+                if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
+                    rating = mech.equip.includes('flare') ? 0.75 : 0.5;
+                }
+            }
+            break;
+        case 'radioactive':
+            {
+                if (!mech.equip.includes('shields')){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'quake':
+            {
+                if (!mech.equip.includes('stabilizer')){
+                    rating = 0.25;
+                }
+            }
+            break;
+        case 'dust':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.5;
+                }
+            }
+            break;
+        case 'river':
+            {
+                if (mech.chassis !== 'hover'){
+                    rating = 0.65;
+                }
+            }
+            break;
+        case 'tar':
+            {
+                if (mech.chassis !== 'quad'){
+                    rating = mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
+                }
+            }
+            break;
+        case 'steam':
+            {
+                if (!mech.equip.includes('shields')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'flooded':
+            {
+                if (mech.chassis !== 'hover'){
+                    rating = 0.35;
+                }
+            }
+            break;
+        case 'fog':
+            {
+                if (!mech.equip.includes('sonar')){
+                    rating = 0.2;
+                }
+            }
+            break;
+        case 'rain':
+            {
+                if (!mech.equip.includes('seals')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'hail':
+            {
+                if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
+                    rating = 0.75;
+                }
+            }
+            break;
+        case 'chasm':
+            {
+                if (!mech.equip.includes('grapple')){
+                    rating = 0.1;
+                }
+            }
+            break;
+        case 'dark':
+            {
+                if (!mech.equip.includes('infrared')){
+                    rating = mech.equip.includes('flare') ? 0.25 : 0.1;
+                }
+            }
+            break;
+        case 'gravity':
+            {
+                switch (mech.size){
+                    case 'medium':
+                        rating = 0.8;
+                        break;
+                    case 'large':
+                        rating = 0.45;
+                        break;
+                    case 'titan':
+                        rating = 0.25;
+                        break;
+                }
+            }
+            break;
+    }
+    return rating;
+}
+
+function terrainEffect(mech){
+    let terrainFactor = 1;
+    switch (mech.chassis){
+        case 'wheel':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        break;
+                    case 'concrete':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.1 : 1;
+                        break;
+                }
+            }
+            break;
+        case 'tread':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
+                        break;
+                }
+            }
+            break;
+        case 'biped':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
+                        break;
+                }
+            }
+            break;
+        case 'quad':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
+                        break;
+                    case 'grass':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
+                        break;
+                }
+            }
+            break;
+        case 'spider':
+            {
+                switch (global.portal.spire.type){
+                    case 'sand':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
+                        break;
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
+                        break;
+                    case 'gravel':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
+                        break;
+                }
+            }
+            break;
+        case 'hover':
+            {
+                switch (global.portal.spire.type){
+                    case 'swamp':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
+                        break;
+                    case 'forest':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
+                        break;
+                    case 'jungle':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
+                        break;
+                    case 'rocky':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
+                        break;
+                    case 'muddy':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
+                        break;
+                    case 'brush':
+                        terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
+                        break;
+                }
+            }
+            break;
+    }
+    return terrainFactor;
+}
+
+export function mechCollect(mech){
+    let rating = mech.infernal ? 31.25 : 25;
+    let terrainFactor = terrainEffect(mech);
+    let effects = [];
+    Object.keys(global.portal.spire.status).forEach(function(effect){
+        effects.push(effect);
+        rating *= statusEffect(mech,effect);
+    });
+    rating *= terrainRating(mech,terrainFactor,effects);
+    return rating;
+}
+
 export function mechRating(mech,boss){
     let rating = 0;
     switch (mech.size){
@@ -3717,6 +4082,10 @@ export function mechRating(mech,boss){
         case 'titan':
             rating = 0.012;
             break;
+    }
+
+    if (rating === 0){
+        return 0;
     }
 
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
@@ -3770,337 +4139,12 @@ export function mechRating(mech,boss){
             }
         }
 
-        let terrainFactor = 1;
-        switch (mech.chassis){
-            case 'wheel':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
-                            break;
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.35 : 0.18;
-                            break;
-                        case 'jungle':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                            break;
-                        case 'gravel':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.58;
-                            break;
-                        case 'grass':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                            break;
-                        case 'brush':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                            break;
-                        case 'concrete':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.1 : 1;
-                            break;
-                    }
-                }
-                break;
-            case 'tread':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
-                            break;
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.4;
-                            break;
-                        case 'forest':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'jungle':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.5;
-                            break;
-                        case 'gravel':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.3 : 1.2;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.88 : 0.72;
-                            break;
-                    }
-                }
-                break;
-            case 'biped':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
-                            break;
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
-                            break;
-                        case 'forest':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'jungle':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.7;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.48 : 0.4;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.85 : 0.7;
-                            break;
-                        case 'grass':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'brush':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.85;
-                            break;
-                    }
-                }
-                break;
-            case 'quad':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                            break;
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.58 : 0.42;
-                            break;
-                        case 'forest':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                        case 'gravel':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.8;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.68 : 0.5;
-                            break;
-                        case 'grass':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                        case 'brush':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.95 : 0.9;
-                            break;
-                    }
-                }
-                break;
-            case 'spider':
-                {
-                    switch (global.portal.spire.type){
-                        case 'sand':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
-                            break;
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.78;
-                            break;
-                        case 'forest':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.75;
-                            break;
-                        case 'jungle':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.77 : 0.65;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.25 : 1.2;
-                            break;
-                        case 'gravel':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.92 : 0.82;
-                            break;
-                        case 'brush':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1 : 0.95;
-                            break;
-                    }
-                }
-                break;
-            case 'hover':
-                {
-                    switch (global.portal.spire.type){
-                        case 'swamp':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
-                            break;
-                        case 'forest':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.65 : 0.48;
-                            break;
-                        case 'jungle':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.55 : 0.35;
-                            break;
-                        case 'rocky':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.82 : 0.68;
-                            break;
-                        case 'muddy':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.08;
-                            break;
-                        case 'brush':
-                            terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.7;
-                            break;
-                    }
-                }
-                break;
-        }
+        let terrainFactor = terrainEffect(mech);
 
         let effects = [];
         Object.keys(global.portal.spire.status).forEach(function(effect){
             effects.push(effect);
-            switch (effect){
-                case 'freeze':
-                    {
-                        if (!mech.equip.includes('radiator')){
-                            rating *= 0.25;
-                        }
-                    }
-                    break;
-                case 'hot':
-                    {
-                        if (!mech.equip.includes('coolant')){
-                            rating *= 0.25;
-                        }
-                    }
-                    break;
-                case 'corrosive':
-                    {
-                        if (!mech.equip.includes('ablative')){
-                            rating *= mech.equip.includes('shields') ? 0.75 : 0.25;
-                        }
-                    }
-                    break;
-                case 'humid':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'windy':
-                    {
-                        if (mech.chassis === 'hover'){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'hilly':
-                    {
-                        if (mech.chassis !== 'spider'){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'mountain':
-                    {
-                        if (mech.chassis !== 'spider' && !mech.equip.includes('grapple')){
-                            rating *= mech.equip.includes('flare') ? 0.75 : 0.5;
-                        }
-                    }
-                    break;
-                case 'radioactive':
-                    {
-                        if (!mech.equip.includes('shields')){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'quake':
-                    {
-                        if (!mech.equip.includes('stabilizer')){
-                            rating *= 0.25;
-                        }
-                    }
-                    break;
-                case 'dust':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.5;
-                        }
-                    }
-                    break;
-                case 'river':
-                    {
-                        if (mech.chassis !== 'hover'){
-                            rating *= 0.65;
-                        }
-                    }
-                    break;
-                case 'tar':
-                    {
-                        if (mech.chassis !== 'quad'){
-                            rating *= mech.chassis === 'tread' || mech.chassis === 'wheel' ? 0.5 : 0.75;
-                        }
-                    }
-                    break;
-                case 'steam':
-                    {
-                        if (!mech.equip.includes('shields')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'flooded':
-                    {
-                        if (mech.chassis !== 'hover'){
-                            rating *= 0.35;
-                        }
-                    }
-                    break;
-                case 'fog':
-                    {
-                        if (!mech.equip.includes('sonar')){
-                            rating *= 0.2;
-                        }
-                    }
-                    break;
-                case 'rain':
-                    {
-                        if (!mech.equip.includes('seals')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'hail':
-                    {
-                        if (!mech.equip.includes('ablative') && !mech.equip.includes('shields')){
-                            rating *= 0.75;
-                        }
-                    }
-                    break;
-                case 'chasm':
-                    {
-                        if (!mech.equip.includes('grapple')){
-                            rating *= 0.1;
-                        }
-                    }
-                    break;
-                case 'dark':
-                    {
-                        if (!mech.equip.includes('infrared')){
-                            rating *= mech.equip.includes('flare') ? 0.25 : 0.1;
-                        }
-                    }
-                    break;
-                case 'gravity':
-                    {
-                        switch (mech.size){
-                            case 'medium':
-                                rating *= 0.8;
-                                break;
-                            case 'large':
-                                rating *= 0.45;
-                                break;
-                            case 'titan':
-                                rating *= 0.25;
-                                break;
-                        }
-                    }
-                    break;
-            }
+            rating *= statusEffect(mech,effect);
         });
 
         rating *= terrainRating(mech,terrainFactor,effects);
