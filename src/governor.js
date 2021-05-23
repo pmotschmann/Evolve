@@ -668,6 +668,10 @@ const gov_tasks = {
 
                 let avail = global.portal.mechbay.max - global.portal.mechbay.bay;
                 if (avail < size && global.blood['prepared'] && global.blood.prepared >= 3){
+                    if (global.queue.queue.some(q => ['portal-purifier','portal-port','portal-base_camp','portal-mechbay'].includes(q.id))){
+                        return;
+                    }
+
                     for (let i=0; i<global.portal.mechbay.mechs.length; i++){
                         if (!global.portal.mechbay.mechs[i]['infernal']){
                             let pattern = global.portal.mechbay.mechs[i];
