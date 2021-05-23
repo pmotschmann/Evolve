@@ -3385,7 +3385,7 @@ export function drawMechLab(){
                     if (global.portal.mechbay.blueprint.size === 'collector'){
                         return false;
                     }
-                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp <= 2) || global.portal.mechbay.blueprint.size === 'titan'){
+                    if (hp === 0 || (global.portal.mechbay.blueprint.size === 'large' && hp < 2) || global.portal.mechbay.blueprint.size === 'titan'){
                         return true;
                     }
                     return false;
@@ -3512,11 +3512,13 @@ function drawMechs(){
         let desc = $(`<div class="mechRow${inactive ? ` inactive-row` : ``}"><a ${inactive ? `class="scrap${i} has-text-danger"` : `class="scrap${i}"`} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${infernal}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
         let gear_list = $(`<div class="gearList ${mech.size}"></div>`);
         desc.append(gear_list);
-        let wep_list = $(`<div></div>`);
-        gear_list.append(wep_list);
-        mech.hardpoint.forEach(function(hp){
-            wep_list.append(`<span> | </span><span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
-        });
+        if (mech.hardpoint.length > 0){
+            let wep_list = $(`<div></div>`);
+            gear_list.append(wep_list);
+            mech.hardpoint.forEach(function(hp){
+                wep_list.append(`<span> | </span><span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
+            });
+        }
         let eqp_list = $(`<div></div>`);
         gear_list.append(eqp_list);
         mech.equip.forEach(function(eq){

@@ -484,8 +484,7 @@ export const traits = {
         name: loc('trait_freespirit_name'),
         desc: loc('trait_freespirit'),
         type: 'major',
-        val: -4,
-        vars: [20]
+        val: -4
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
@@ -1277,7 +1276,7 @@ export const races = {
         home: loc('race_capybara_home'),
         entity: loc('race_capybara_entity'),
         traits: {
-            
+            //friendly: 1,
         },
         solar: {
             red: loc('race_capybara_solar_red'),
