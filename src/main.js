@@ -2412,12 +2412,9 @@ function fastLoop(){
             });
             let space = 0;
             global.portal.mechbay.mechs.forEach(function(mech){
-                let size = mechSize(mech.size);
-                if (space + size <= global.portal.mechbay.max){
-                    space += size;
-                    if (mech.size === 'collector'){
-                        supply += mechCollect(mech) * time_multiplier;
-                    }
+                space += mechSize(mech.size);
+                if (space <= global.portal.mechbay.max && mech.size === 'collector'){
+                    supply += mechCollect(mech) * time_multiplier;
                 }
             });
             global.portal.purifier.supply += supply;
@@ -6997,9 +6994,8 @@ function midLoop(){
             let space = 0;
             let progress = 0;
             global.portal.mechbay.mechs.forEach(function(mech){
-                let size = mechSize(mech.size);
-                if (space + size <= global.portal.mechbay.max){
-                    space += size;
+                space += mechSize(mech.size);
+                if (space <= global.portal.mechbay.max){
                     if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
                         progress += mechRating(mech,true);
                     }

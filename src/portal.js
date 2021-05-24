@@ -3695,9 +3695,8 @@ function terrainRating(mech,rating,effects){
         let space = 0;
         let sizes = { small: 0, medium: 0, large: 0, titan: 0, collector: 0 };
         global.portal.mechbay.mechs.forEach(function(m){
-            let size = mechSize(m.size);
-            if (space + size <= global.portal.mechbay.max){
-                space += size;
+            space += mechSize(m.size);
+            if (space <= global.portal.mechbay.max){
                 sizes[m.size]++;
             }
         });
