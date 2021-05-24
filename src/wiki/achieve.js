@@ -204,11 +204,12 @@ function achieveDesc(achievement,showFlair,universe){
         }
         let checked = `<div class="flexed">`;    
         Object.keys(genus_traits).sort().forEach(function (key){
+            let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
             if (genus[key] && genus[key] >= 1){
-                checked = checked + `<span class="wide iclr${genus[key]}">${loc(`genelab_genus_${key}`)}</span>`;
+                checked = checked + `<span class="wide iclr${genus[key]}">${label}</span>`;
             }
             else {
-                checked = checked + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+                checked = checked + `<span class="wide has-text-danger">${label}</span>`;
             }
         });
         checked = checked + `</div>`;
