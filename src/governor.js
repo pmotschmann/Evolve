@@ -283,7 +283,7 @@ export function defineGovernor(){
 }
 
 function drawnGovernOffice(){
-    let govern = $(`<div id="govOffice"><div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div></div>`);
+    let govern = $(`<div id="govOffice" class="govOffice"><div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div></div>`);
     $('#r_govern1').append(govern);
 
     govern.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span><div>`));
@@ -300,19 +300,55 @@ function drawnGovernOffice(){
 
         govern.append(`<div class="govTask"><span>${loc(`gov_task`,[num+1])}</span><b-dropdown hoverable>
             <button class="button is-primary" slot="trigger">
-                <span>{{ t${num} | label }}</span>
+                <span>{{ t.t${num} | label }}</span>
                 <i class="fas fa-sort-down"></i>
             </button>
             ${options}
         </b-dropdown></div>`);
     });
 
+    if (!global.race.governor.hasOwnProperty('config')){
+        global.race.governor['config'] = {};
+    }
+
+    let options = $(`<div class="options"><div>`);
+    govern.append(options);
+
+    {
+        if (!global.race.governor.config.hasOwnProperty('storage')){
+            global.race.governor.config['storage'] = {
+                crt: 1000,
+                cnt: 1000
+            };
+        }
+
+        let storeContain = $(`<div v-show="showTask('storage')"><div class="has-text-warning">${loc(`gov_task_storage`)}</div></div>`);
+        options.append(storeContain);
+        let storage = $(`<div class="storage"></div>`);
+        storeContain.append(storage);
+
+        let crt_mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+        let cnt_mat = 'Steel';
+
+        storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[crt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.crt" :controls="false"></b-numberinput></b-field>`));
+        storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[cnt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.cnt" :controls="false"></b-numberinput></b-field>`));
+    }
+
     vBind({
         el: '#govOffice',
-        data: global.race.governor.tasks,
+        data: { 
+            t: global.race.governor.tasks,
+            c: global.race.governor.config
+        },
         methods: {
             setTask(t,n){
                 global.race.governor.tasks[`t${n}`] = t;
+            },
+            showTask(t){
+                return Object.values(global.race.governor.tasks).includes(t);
+            },
+            storageReserve(){
+                return 1000;
             }
         },
         filters: {
@@ -422,8 +458,7 @@ const gov_tasks = {
                 if (global.resource.Crates.amount < global.resource.Crates.max){
                     let mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
                     let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
-                    let reserve = global.resource[mat].max === -1 ? 1000 : global.resource[mat].max / 2;
-                    if (reserve > 100000){ reserve = 100000; }
+                    let reserve = global.race.governor.config.storage.crt;
                     if (global.resource[mat].amount + cost > reserve){
                         let build = Math.floor((global.resource[mat].amount - reserve) / cost);
                         crateGovHook('crate',build);
@@ -431,8 +466,7 @@ const gov_tasks = {
                 }
                 if (checkCityRequirements('warehouse') && global.resource.Containers.display && global.resource.Containers.amount < global.resource.Containers.max){
                     let cost = 125;
-                    let reserve = global.resource.Steel.max / 2;
-                    if (reserve > 100000){ reserve = 100000; }
+                    let reserve = global.race.governor.config.storage.cnt;
                     if (global.resource.Steel.amount + cost > reserve){
                         let build = Math.floor((global.resource.Steel.amount - reserve) / cost);
                         crateGovHook('container',build);

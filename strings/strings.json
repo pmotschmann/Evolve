@@ -4226,6 +4226,7 @@
   "gov_task_none": "None",
   "gov_task_tax": "Tax-Morale Balance",
   "gov_task_storage": "Crate/Container Construction",
+  "gov_task_storage_reserve": "%0 Reserve",
   "gov_task_bal_storage": "Crate/Container Management",
   "gov_task_merc": "Merc Recruitment",
   "gov_task_spy": "Spy Recruitment",

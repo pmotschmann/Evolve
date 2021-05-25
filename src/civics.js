@@ -391,9 +391,9 @@ export function foreignGov(){
             foreign.append(gov);
 
             let actions = $(`<div></div>`);
-            actions.append($(`<b-tooltip :label="battleAssessment(${i})" position="is-bottom" multilined animated><button class="button gaction" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button></b-tooltip>`));
-            actions.append($(`<b-tooltip v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :label="spyDesc(${i})" position="is-bottom" animated multilined><button :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></b-tooltip>`));
-            actions.append($(`<b-tooltip v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :label="espDesc()" position="is-bottom" animated multilined><button :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></b-tooltip>`));
+            actions.append($(`<button :label="battleAssessment(${i})" class="button gaction attack" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button>`));
+            actions.append($(`<span class="tspy inline"><button :label="spyDesc(${i})" v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></span>`));
+            actions.append($(`<span class="sspy inline"><button :label="espDesc()" v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></span>`));
             gov.append(actions);
 
             gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
@@ -537,21 +537,56 @@ export function foreignGov(){
                     trainSpy(i);
                 },
                 spyDesc(i){
-                    if (global.civic.foreign[`gov${i}`].trn > 0){
-                        return loc('civics_progress');
-                    }
-                    let cost = sizeApproximation(spyCost(i));
-                    return loc('civics_gov_spy_desc',[cost]);
+                    return spyDesc(i);
                 },
                 espDesc(){
-                    return loc('civics_gov_esp_desc');
+                    return espDesc();
                 },
                 vis(){
                     return global.civic.garrison.display && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
                 }
             }
         });
+
+        for (let i=0; i<3; i++){
+            popover(`gov${i}a`,
+                function(){
+                    return battleAssessment(i);
+                },
+                {
+                    elm: `#gov${i} .attack`
+                }
+            );
+            popover(`gov${i}ts`,
+                function(){
+                    return spyDesc(i);
+                },
+                {
+                    elm: `#gov${i} .tspy`
+                }
+            );
+            popover(`gov${i}s`,
+                function(){
+                    return espDesc();
+                },
+                {
+                    elm: `#gov${i} .sspy`
+                }
+            );
+        }
     }
+}
+
+function spyDesc(i){
+    if (global.civic.foreign[`gov${i}`].trn > 0){
+        return loc('civics_progress');
+    }
+    let cost = sizeApproximation(spyCost(i));
+    return loc('civics_gov_spy_desc',[cost]);
+}
+
+function espDesc(){
+    return loc('civics_gov_esp_desc');
 }
 
 function spyCost(i){
