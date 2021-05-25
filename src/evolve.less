@@ -923,6 +923,10 @@ Misc ---------> Main template
             color: @button;
         }
 
+        .button.is-light {
+            background-color: @primary-color;
+        }
+
         .button.is-hovered,
         .button:hover {
             background-color: @button-hover-background;
@@ -2888,6 +2892,27 @@ a {
                     margin-right: 1rem;
                     input {
                         height: 1.5rem;
+                    }
+                }
+            }
+            .bal_storage {
+                display: flex;
+                flex-wrap: wrap;
+                > div {
+                    display: flex;
+                    justify-content: space-between;
+                    position: relative;
+                    width: 50%;
+                    .field-body {
+                        margin-right: .5rem;
+                        .control {
+                            width: .5625rem;
+                            margin-right: 1rem;
+                            label {
+                                height: 1.5rem;
+                                padding: 0 .75rem
+                            }
+                        }
                     }
                 }
             }

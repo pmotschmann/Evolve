@@ -334,11 +334,39 @@ function drawnGovernOffice(){
         storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[cnt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.cnt" :controls="false"></b-numberinput></b-field>`));
     }
 
+    {
+        if (!global.race.governor.config.hasOwnProperty('bal_storage')){
+            global.race.governor.config['bal_storage'] = {};
+        }
+
+        let storeContain = $(`<div v-show="showTask('bal_storage')"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div></div>`);
+        options.append(storeContain);
+        let storage = $(`<div class="bal_storage"></div>`);
+        storeContain.append(storage);
+
+        Object.keys(global.resource).forEach(function(res){
+            if (global.resource[res].stackable){
+                if (!global.race.governor.config.bal_storage.hasOwnProperty(res)){
+                    global.race.governor.config.bal_storage[res] = "1";
+                }
+
+                storage.append($(`<div class="ccmOption" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
+                <b-field>
+                    <b-radio-button v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1x</b-radio-button>
+                    <b-radio-button v-model="c.bal_storage.${res}" :disabled="BalStrRto('${res}',2)" native-value="2" type="is-danger is-light">2x</b-radio-button>
+                    <b-radio-button v-model="c.bal_storage.${res}" :disabled="BalStrRto('${res}',3)" native-value="3" type="is-danger is-light">3x</b-radio-button>
+                </b-field>
+                </div>`));
+            }
+        });
+    }
+
     vBind({
         el: '#govOffice',
         data: { 
             t: global.race.governor.tasks,
-            c: global.race.governor.config
+            c: global.race.governor.config,
+            r: global.resource
         },
         methods: {
             setTask(t,n){
@@ -347,8 +375,23 @@ function drawnGovernOffice(){
             showTask(t){
                 return Object.values(global.race.governor.tasks).includes(t);
             },
-            storageReserve(){
-                return 1000;
+            showStrRes(r){
+                return global.resource[r].display;
+            },
+            BalStrRto(res,n){
+                let num = Number(global.race.governor.config.bal_storage[res]);
+                if (num >= n){
+                    return false;
+                }
+                let total = 0;
+                let active = 0;
+                Object.keys(global.race.governor.config.bal_storage).forEach(function(r){
+                    if (global.resource[r].display){
+                        active++;
+                        total += Number(global.race.governor.config.bal_storage[r]);
+                    }
+                });
+                return total + n - num > active * 1.5 ? true : false;
             }
         },
         filters: {
@@ -485,7 +528,7 @@ const gov_tasks = {
                 let crates = global.resource.Crates.amount;
                 let containers = global.resource.Containers.amount;
                 let active = 0;
-                
+
                 Object.keys(global.resource).forEach(function(res){
                     if (global.resource[res].display && global.resource[res].stackable){
                         crates += global.resource[res].crates;
@@ -500,12 +543,26 @@ const gov_tasks = {
                 let dist = {
                     Food: { m: 0.1, cap: 100 },
                     Coal: { m: 0.25 },
-                    Stanene: { m: 2, check(){ return global.tech['science'] && global.tech.science >= 19 ? true : false; } },
                 };
+
+                Object.keys(global.race.governor.config.bal_storage).forEach(function(res){
+                    if (global.race.governor.config.bal_storage[res] !== "1"){
+                        let val = Number(global.race.governor.config.bal_storage[res]);
+                        if (res === 'Coal'){
+                            dist[res] = { m: 0.25 * val };
+                        }
+                        else if (res === 'Food'){
+                            dist[res] = { m: 0.1 * val, cap: 100 * val };
+                        }
+                        else if (global.resource[res]){
+                            dist[res] = { m: val };
+                        }
+                    }
+                });
 
                 Object.keys(dist).forEach(function(r){
                     if (global.resource[r].display){
-                        if (!dist[r].hasOwnProperty('check') || dist[r].check()){
+                        if (dist[r].m < 1){
                             active--;
                             {
                                 let set = Math.floor(crateSet * dist[r].m);
@@ -520,33 +577,38 @@ const gov_tasks = {
                                 containers -= set;
                             }
                         }
+                        else {
+                            active += dist[r].m - 1;
+                        }
                     }
                 });
 
                 crateSet = Math.floor(crates / active);
                 containerSet = Math.floor(containers / active);
-
                 let crtRemain = crates - (crateSet * active);
                 let cntRemain = containers - (containerSet * active);
 
                 Object.keys(global.resource).forEach(function(res){
-                    if (Object.keys(dist).includes(res)){
-                        if (!dist[res].hasOwnProperty('check') || dist[res].check()){
-                            return;
-                        }
+                    if (dist[res] && dist[res].m < 1){
+                        return;
                     }
                     if (global.resource[res].display && global.resource[res].stackable){
-                        global.resource[res].crates = crateSet;
+                        let multiplier = dist[res] && dist[res].m >= 1 ? dist[res].m : 1;
+                        global.resource[res].crates = crateSet > 0 ? crateSet * multiplier : 0;
                         if (global.resource.Containers.display){
-                            global.resource[res].containers = containerSet;
+                            global.resource[res].containers = containerSet > 0 ? containerSet * multiplier : 0;
                         }
                         if (crtRemain > 0){
-                            global.resource[res].crates++;
-                            crtRemain--;
+                            let adjust = crtRemain > multiplier ? multiplier : 1;
+                            if (crtRemain < adjust){ adjust = crtRemain; }
+                            global.resource[res].crates += adjust;
+                            crtRemain -= adjust;
                         }
                         if (cntRemain > 0){
-                            global.resource[res].containers++;
-                            cntRemain--;
+                            let adjust = cntRemain > multiplier ? multiplier : 1;
+                            if (cntRemain < adjust){ adjust = cntRemain; }
+                            global.resource[res].containers += adjust;
+                            cntRemain -= adjust;
                         }
                     }
                 });

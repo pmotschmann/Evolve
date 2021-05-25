@@ -499,6 +499,9 @@ export const events = {
                         if (global.resource[res].max >= 0 && global.resource[res].amount > global.resource[res].max){
                             global.resource[res].amount = global.resource[res].max;
                         }
+                        if (res === 'Money'){
+                            return loc(`event_m_curious0`,[races[global.race.species].name,'$',vol.toLocaleString()]);
+                        }
                         return loc(`event_m_curious0`,[races[global.race.species].name,vol.toLocaleString(),global.resource[res].name]);
                     }
                 case 1:

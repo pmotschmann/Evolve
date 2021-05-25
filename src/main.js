@@ -2410,13 +2410,15 @@ function fastLoop(){
                     supply += Number(shipped * supplyValue[res].in * time_multiplier * bireme);
                 }
             });
-            let space = 0;
-            global.portal.mechbay.mechs.forEach(function(mech){
-                space += mechSize(mech.size);
-                if (space <= global.portal.mechbay.max && mech.size === 'collector'){
-                    supply += mechCollect(mech) * time_multiplier;
-                }
-            });
+            if (global.portal['mechbay']){
+                let space = 0;
+                global.portal.mechbay.mechs.forEach(function(mech){
+                    space += mechSize(mech.size);
+                    if (space <= global.portal.mechbay.max && mech.size === 'collector'){
+                        supply += mechCollect(mech) * time_multiplier;
+                    }
+                });
+            }
             global.portal.purifier.supply += supply;
             global.portal.purifier.diff = supply / time_multiplier;
             if (global.portal.purifier.supply > global.portal.purifier.sup_max){
