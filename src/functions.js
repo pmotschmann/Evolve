@@ -1189,7 +1189,7 @@ function scienceAdjust(costs){
                         cost *= 1 + (traits.dumb.vars[0] / 100);
                     }
                     if (pragVal){
-                        rate *= 1 + (pragVal / 100);
+                        cost *= 1 + (pragVal / 100);
                     }
                     return Math.round(cost);
                 }

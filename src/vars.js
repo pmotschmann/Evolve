@@ -1943,6 +1943,7 @@ export function clearStates(){
     global.settings.arpa = false;
     global.settings.civTabs = 0;
     global.settings.govTabs = 0;
+    global.settings.govTabs2 = 0;
     global.settings.resTabs = 0;
     global.settings.spaceTabs = 0;
     global.settings.marketTabs = 0
