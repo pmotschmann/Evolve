@@ -511,7 +511,9 @@ const gov_tasks = {
         task(){
             if ( $(this)[0].req() ){
                 let crates = global.resource.Crates.amount;
+                let sCrate = crates;
                 let containers = global.resource.Containers.amount;
+                let sCon = containers;
                 let active = 0;
 
                 Object.keys(global.resource).forEach(function(res){
@@ -597,6 +599,11 @@ const gov_tasks = {
                         }
                     }
                 });
+
+                global.resource.Crates.amount = crtRemain;
+                global.resource.Containers.amount = cntRemain;
+                global.resource.Crates.max -= sCrate;
+                global.resource.Containers.max -= sCon;
             }
         }
     },
