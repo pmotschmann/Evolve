@@ -353,8 +353,8 @@ function drawnGovernOffice(){
                 storage.append($(`<div class="ccmOption" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
                 <b-field>
                     <b-radio-button v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1x</b-radio-button>
-                    <b-radio-button v-model="c.bal_storage.${res}" :disabled="BalStrRto('${res}',2)" native-value="2" type="is-danger is-light">2x</b-radio-button>
-                    <b-radio-button v-model="c.bal_storage.${res}" :disabled="BalStrRto('${res}',3)" native-value="3" type="is-danger is-light">3x</b-radio-button>
+                    <b-radio-button v-model="c.bal_storage.${res}" native-value="2" type="is-danger is-light">2x</b-radio-button>
+                    <b-radio-button v-model="c.bal_storage.${res}" native-value="3" type="is-danger is-light">3x</b-radio-button>
                 </b-field>
                 </div>`));
             }
@@ -377,21 +377,6 @@ function drawnGovernOffice(){
             },
             showStrRes(r){
                 return global.resource[r].display;
-            },
-            BalStrRto(res,n){
-                let num = Number(global.race.governor.config.bal_storage[res]);
-                if (num >= n){
-                    return false;
-                }
-                let total = 0;
-                let active = 0;
-                Object.keys(global.race.governor.config.bal_storage).forEach(function(r){
-                    if (global.resource[r].display){
-                        active++;
-                        total += Number(global.race.governor.config.bal_storage[r]);
-                    }
-                });
-                return total + n - num > active * 1.5 ? true : false;
             }
         },
         filters: {
