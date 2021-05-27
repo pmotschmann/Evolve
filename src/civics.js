@@ -1830,7 +1830,7 @@ export function armyRating(val,type,wound){
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy'){
         if (global.race['rage']){
-            army *= 1 + (traits.rage.vars[0] / 100 * wound);
+            army *= 1 + (traits.rage.vars[0] / 100 * (wound || 0));
         }
         if (global.race['puny']){
             army *= 1 - (traits.puny.vars[0] / 100);
