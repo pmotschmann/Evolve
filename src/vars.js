@@ -779,7 +779,7 @@ if (convertVersion(global['version']) < 100041){
 //}
 
 global['version'] = '1.1.0';
-global['beta'] = 9;
+global['beta'] = 10;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       

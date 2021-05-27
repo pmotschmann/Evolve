@@ -81,6 +81,11 @@ export function traitsPage(){
     }
 }
 
+function rName(r){
+    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
+    return `<span class="has-text-warning">${res}</span>`;
+}
+
 const traitExtra = {
     infiltrator: [
         loc(`wiki_trait_effect_infiltrator_ex1`),
@@ -92,6 +97,9 @@ const traitExtra = {
                 `<span class="has-text-warning">${loc('tech_nanoweave')}</span>`, `<span class="has-text-warning">${loc('tech_orichalcum_analysis')}</span>`, `<span class="has-text-warning">${loc('tech_infernium_fuel')}</span>`
             ].join(', ')
         ])
+    ],
+    heavy: [
+        loc(`wiki_trait_effect_heavy_ex1`,[rName('Stone'),rName('Cement'),rName('Wrought_Iron')])
     ]
 };
 

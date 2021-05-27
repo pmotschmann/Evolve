@@ -492,6 +492,20 @@ export const traits = {
         type: 'major',
         val: 3
     },
+    rage: { // Wounded soldiers rage with extra power
+        name: loc('trait_rage_name'),
+        desc: loc('trait_rage'),
+        type: 'major',
+        val: 4,
+        vars: [1,50]
+    },
+    heavy: { // Some costs increased
+        name: loc('trait_heavy_name'),
+        desc: loc('trait_heavy'),
+        type: 'major',
+        val: -3,
+        vars: [10,5]
+    },
     pack_rat: { // Storage space is increased
         name: loc('trait_pack_rat_name'),
         desc: loc('trait_pack_rat'),
@@ -1258,7 +1272,8 @@ export const races = {
         home: loc('race_rhinotaur_home'),
         entity: loc('race_rhinotaur_entity'),
         traits: {
-            
+            rage: 1,
+            heavy: 1
         },
         solar: {
             red: loc('race_rhinotaur_solar_red'),

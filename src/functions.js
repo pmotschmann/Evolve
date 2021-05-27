@@ -1133,6 +1133,7 @@ export function adjustCosts(costs, wiki){
     costs = scienceAdjust(costs);
     costs = rebarAdjust(costs, wiki);
     costs = extraAdjust(costs, wiki);
+    costs = heavyAdjust(costs, wiki);
     return craftAdjust(costs, wiki);
 }
 
@@ -1252,6 +1253,22 @@ function craftAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function heavyAdjust(costs, wiki){
+    if (global.race['heavy']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars[1] / 100))); }
             }
             else {
                 newCosts[res] = function(){ return Math.round(costs[res](wiki)); }

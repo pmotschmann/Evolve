@@ -5554,6 +5554,9 @@ export function fuel_adjust(fuel){
     if (global.race['cataclysm']){
         fuel *= 0.2;
     }
+    if (global.race['heavy']){
+        fuel *= 1 + (traits.heavy.vars[0] / 100);
+    }
     if (eventActive('launch_day')){
         fuel *= 0.95;
     }
@@ -5566,6 +5569,9 @@ export function int_fuel_adjust(fuel){
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
+    }
+    if (global.race['heavy']){
+        fuel *= 1 + (traits.heavy.vars[0] / 100);
     }
     if (eventActive('launch_day')){
         fuel *= 0.95;
