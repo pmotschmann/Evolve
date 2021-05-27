@@ -1282,7 +1282,7 @@ export const races = {
             gas_moon: loc('race_rhinotaur_solar_gas_moon'),
             dwarf: loc('race_rhinotaur_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: 'rage'
     },
     capybara: {
         name: loc('race_capybara'),
@@ -2055,7 +2055,9 @@ export const races = {
             atrophy: 1,
             invertebrate: 1,
             pathetic: 1,
-            hibernator: 1
+            hibernator: 1,
+            freespirit: 1,
+            heavy: 1
         },
         solar: {
             red: altRace('junker') ? loc('race_ghoul_solar_red') : loc('race_junker_solar_red'),
