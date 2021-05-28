@@ -182,7 +182,7 @@ export const traits = {
         desc: loc('trait_instinct'),
         type: 'genus',
         val: 5,
-        vars: [10]
+        vars: [10,50]
     },
     forager: { // Will eat just about anything
         name: loc('trait_forager_name'),

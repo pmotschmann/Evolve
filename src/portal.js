@@ -2129,6 +2129,11 @@ function casualties(demons,pat_armor,ambush){
         casualties = Math.rand(ambush ? 1 : 0,casualties + 1);
         dead = Math.rand(0,casualties + 1);
         let wounded = casualties - dead;
+        if (global.race['instinct']){
+            let reduction = Math.floor(dead * (traits.instinct.vars[1] / 100));
+            dead -= reduction;
+            wounded += reduction;
+        }
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
@@ -2245,7 +2250,7 @@ export function bloodwar(){
                 }
             }
 
-            if (Math.rand(0,global.race['instinct'] || global.race['chameleon'] || global.race['elusive'] ? 50 : 30) === 0){
+            if (Math.rand(0,global.race['chameleon'] || global.race['elusive'] ? 50 : 30) === 0){
                 dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
                 let remain = demons - Math.round(pat_rating / 2);
                 if (remain > 0){

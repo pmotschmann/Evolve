@@ -1410,7 +1410,9 @@ function war_campaign(gov){
             death = global.civic.garrison.raid;
         }
         if (global.race['instinct']){
-            death = Math.round(death / 1.5);
+            let reduction = Math.floor(death * (traits.instinct.vars[1] / 100));
+            death -= reduction;
+            wounded += reduction;
         }
         global.civic.garrison.workers -= death;
         global.stats.died += death;
@@ -1702,9 +1704,10 @@ function war_campaign(gov){
             death -= armor;
         }
         if (global.race['instinct']){
-            death = Math.round(death / 1.25);
+            let reduction = Math.floor(death * (traits.instinct.vars[1] / 100));
+            death -= reduction;
+            wounded += reduction;
         }
-
         if (death < 1){
             death = 1;
         }
@@ -1830,7 +1833,7 @@ export function armyRating(val,type,wound){
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy'){
         if (global.race['rage']){
-            army *= 1 + (traits.rage.vars[0] / 100 * (wound || 0));
+            army *= 1 + (traits.rage.vars[0] / 100 * (global.civic.garrison.wounded || 0));
         }
         if (global.race['puny']){
             army *= 1 - (traits.puny.vars[0] / 100);
