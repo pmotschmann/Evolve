@@ -1255,7 +1255,7 @@ function craftAdjust(costs, wiki){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;
@@ -1271,7 +1271,7 @@ function heavyAdjust(costs, wiki){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;
@@ -1288,7 +1288,7 @@ function rebarAdjust(costs, wiki){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki)); }
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;

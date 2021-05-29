@@ -484,7 +484,7 @@ export const traits = {
         name: loc('trait_freespirit_name'),
         desc: loc('trait_freespirit'),
         type: 'major',
-        val: -4
+        val: -3
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
@@ -503,7 +503,7 @@ export const traits = {
         name: loc('trait_heavy_name'),
         desc: loc('trait_heavy'),
         type: 'major',
-        val: -3,
+        val: -4,
         vars: [10,5]
     },
     pack_rat: { // Storage space is increased

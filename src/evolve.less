@@ -2059,7 +2059,7 @@ a {
     }
 
     .govTabs2>section {
-        height: ~"calc(100vh - 17.5rem)";
+        height: ~"calc(100vh - 15rem)";
     }
 
     .resources {
@@ -2319,6 +2319,7 @@ a {
         margin-left: 1rem;
         display: flex;
         min-width: 18rem;
+        align-items: center;
 
         .controls {
             margin-bottom: 1px;
@@ -2330,6 +2331,8 @@ a {
 
         .job_label {
             cursor: default;
+            display: flex;
+            align-items: center;
 
             span {
                 display: inline-block;
@@ -2368,6 +2371,7 @@ a {
 
     .civics {
         padding-top: 0;
+        padding-bottom: 0;
 
         .revolution {
             margin-left: .375rem;
@@ -2375,7 +2379,7 @@ a {
     }
 
     .government {
-        margin-bottom: 1rem;
+        margin-bottom: 0;
 
         .header {
             margin-bottom: .5rem;
@@ -2895,23 +2899,79 @@ a {
                     }
                 }
             }
+            .hRow {
+                > :first-child,
+                > :nth-child(2) {
+                    display: inline-block;
+                }
+                > :nth-child(2) {
+                    float: right;
+                }
+            }
             .bal_storage {
-                display: flex;
+                display: inline-flex;
                 flex-wrap: wrap;
-                > div {
+                .ccmOption {
                     display: flex;
                     justify-content: space-between;
+                    align-items: center;
                     position: relative;
                     width: 50%;
+                    > span {
+                        display: inline-block;
+                        width: 7.5rem;
+                        overflow-wrap: anywhere;
+                        line-height: 1rem;
+                    }
                     .field-body {
-                        margin-right: .5rem;
+                        .field {
+                            display: flex;
+                            flex-wrap: wrap;
+                            width: 5rem;
+                        }
                         .control {
                             width: .5625rem;
                             margin-right: 1rem;
                             label {
                                 height: 1.5rem;
-                                padding: 0 .75rem
+                                padding: 0 .75rem;
                             }
+                        }
+                    }
+                }
+                .ccmOption:not(.m) {
+                    .field-body {
+                        .b3 label {
+                            border-top-left-radius: 4px !important;
+                            border-bottom-left-radius: 4px !important;
+                        }
+                        .b5 label {
+                            border-top-right-radius: 4px !important;
+                            border-bottom-right-radius: 4px !important;
+                        }
+                    }
+                }
+                .ccmOption.m {
+                    height: 2.125rem;
+                    line-height: 2.125rem;
+                    .field-body {
+                        .control {
+                            label {
+                                height: 1rem;
+                                font-size: 0.75rem;
+                            }
+                        }
+                        .b1 label {
+                            border-bottom-left-radius: 0 !important;
+                        }
+                        .b3 label {
+                            border-top-right-radius: 4px !important;
+                        }
+                        .b4 label {
+                            border-bottom-left-radius: 4px !important;
+                        }
+                        .b6 label {
+                            border-top-right-radius: 0 !important;
                         }
                     }
                 }

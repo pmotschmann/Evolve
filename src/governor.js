@@ -338,8 +338,11 @@ function drawnGovernOffice(){
         if (!global.race.governor.config.hasOwnProperty('bal_storage')){
             global.race.governor.config['bal_storage'] = {};
         }
+        if (!global.race.governor.config.bal_storage.hasOwnProperty('adv')){
+            global.race.governor.config.bal_storage['adv'] = false;
+        }
 
-        let storeContain = $(`<div v-show="showTask('bal_storage')"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div></div>`);
+        let storeContain = $(`<div v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="bal_storage"></div>`);
         storeContain.append(storage);
@@ -347,14 +350,17 @@ function drawnGovernOffice(){
         Object.keys(global.resource).forEach(function(res){
             if (global.resource[res].stackable){
                 if (!global.race.governor.config.bal_storage.hasOwnProperty(res)){
-                    global.race.governor.config.bal_storage[res] = "1";
+                    global.race.governor.config.bal_storage[res] = "2";
                 }
 
-                storage.append($(`<div class="ccmOption" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
+                storage.append($(`<div class="ccmOption" :class="bStrEx()" v-show="showStrRes('${res}')"><span>${global.resource[res].name}</span>
                 <b-field>
-                    <b-radio-button v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1x</b-radio-button>
-                    <b-radio-button v-model="c.bal_storage.${res}" native-value="2" type="is-danger is-light">2x</b-radio-button>
-                    <b-radio-button v-model="c.bal_storage.${res}" native-value="3" type="is-danger is-light">3x</b-radio-button>
+                    <b-radio-button class="b1" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="0" type="is-danger is-light">0x</b-radio-button>
+                    <b-radio-button class="b2" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="1" type="is-danger is-light">1/2</b-radio-button>
+                    <b-radio-button class="b3" v-model="c.bal_storage.${res}" native-value="2" type="is-danger is-light">1x</b-radio-button>
+                    <b-radio-button class="b4" v-model="c.bal_storage.${res}" native-value="4" type="is-danger is-light">2x</b-radio-button>
+                    <b-radio-button class="b5" v-model="c.bal_storage.${res}" native-value="6" type="is-danger is-light">3x</b-radio-button>
+                    <b-radio-button class="b6" v-show="c.bal_storage.adv" v-model="c.bal_storage.${res}" native-value="8" type="is-danger is-light">4x</b-radio-button>
                 </b-field>
                 </div>`));
             }
@@ -377,6 +383,9 @@ function drawnGovernOffice(){
             },
             showStrRes(r){
                 return global.resource[r].display;
+            },
+            bStrEx(){
+                return global.race.governor.config.bal_storage.adv ? 'm' : '';
             }
         },
         filters: {
@@ -533,23 +542,21 @@ const gov_tasks = {
                 };
 
                 Object.keys(global.race.governor.config.bal_storage).forEach(function(res){
-                    if (global.race.governor.config.bal_storage[res] !== "1"){
-                        let val = Number(global.race.governor.config.bal_storage[res]);
-                        if (res === 'Coal'){
-                            dist[res] = { m: 0.25 * val };
-                        }
-                        else if (res === 'Food'){
-                            dist[res] = { m: 0.1 * val, cap: 100 * val };
-                        }
-                        else if (global.resource[res]){
-                            dist[res] = { m: val };
-                        }
+                    let val = Number(global.race.governor.config.bal_storage[res]);
+                    if (res === 'Coal'){
+                        dist[res] = { m: 0.125 * val };
+                    }
+                    else if (res === 'Food'){
+                        dist[res] = { m: 0.05 * val, cap: 50 * val };
+                    }
+                    else if (global.resource[res]){
+                        dist[res] = { m: val };
                     }
                 });
 
                 Object.keys(dist).forEach(function(r){
                     if (global.resource[r].display){
-                        if (dist[r].m < 1){
+                        if (dist[r].hasOwnProperty('cap')){
                             active--;
                             {
                                 let set = Math.floor(crateSet * dist[r].m);
@@ -569,41 +576,65 @@ const gov_tasks = {
                         }
                     }
                 });
-
-                crateSet = Math.floor(crates / active);
-                containerSet = Math.floor(containers / active);
-                let crtRemain = crates - (crateSet * active);
-                let cntRemain = containers - (containerSet * active);
+                
+                crateSet = active !== 0 ? Math.floor(crates / active) : 0;
+                containerSet = active !== 0 ? Math.floor(containers / active): 0;
+                crates -= Math.floor(crateSet * active);
+                containers -= Math.floor(containerSet * active);
 
                 Object.keys(global.resource).forEach(function(res){
-                    if (dist[res] && dist[res].m < 1){
+                    if (dist[res] && dist[res].hasOwnProperty('cap')){
                         return;
                     }
                     if (global.resource[res].display && global.resource[res].stackable){
-                        let multiplier = dist[res] && dist[res].m >= 1 ? dist[res].m : 1;
-                        global.resource[res].crates = crateSet > 0 ? crateSet * multiplier : 0;
+                        let multiplier = dist[res] ? dist[res].m : 1;
+                        let crtAssign = Math.floor(crateSet > 0 ? crateSet * multiplier : 0);
+                        global.resource[res].crates = crtAssign;
                         if (global.resource.Containers.display){
-                            global.resource[res].containers = containerSet > 0 ? containerSet * multiplier : 0;
+                            let cntAssign = Math.floor(containerSet > 0 ? containerSet * multiplier : 0);
+                            global.resource[res].containers = cntAssign;
                         }
-                        if (crtRemain > 0){
-                            let adjust = crtRemain > multiplier ? multiplier : 1;
-                            if (crtRemain < adjust){ adjust = crtRemain; }
+                        if (crates > 0 && multiplier >= 1){
+                            let adjust = Math.ceil(multiplier / 2);
+                            if (crates < adjust){ adjust = crates; }
                             global.resource[res].crates += adjust;
-                            crtRemain -= adjust;
+                            crates -= adjust;
                         }
-                        if (cntRemain > 0){
-                            let adjust = cntRemain > multiplier ? multiplier : 1;
-                            if (cntRemain < adjust){ adjust = cntRemain; }
+                        if (containers > 0 && multiplier >= 1){
+                            let adjust = Math.ceil(multiplier / 2);
+                            if (containers < adjust){ adjust = containers; }
                             global.resource[res].containers += adjust;
-                            cntRemain -= adjust;
+                            containers -= adjust;
                         }
                     }
                 });
 
-                global.resource.Crates.amount = crtRemain;
-                global.resource.Containers.amount = cntRemain;
-                global.resource.Crates.max -= sCrate;
-                global.resource.Containers.max -= sCon;
+                let max = 3;
+                while (max > 0 && (crates > 0 || containers > 0)){
+                    max--;
+                    Object.keys(global.resource).forEach(function(res){
+                        if (dist[res] && dist[res].hasOwnProperty('cap')){
+                            return;
+                        }
+                        if (global.resource[res].display && global.resource[res].stackable){
+                            if (crates > 0){
+                                global.resource[res].crates++;
+                                crates--;
+                            }
+                            if (containers > 0){
+                                global.resource[res].containers++;
+                                containers--;
+                            }
+                        }
+                    });
+                }
+
+                global.resource.Crates.amount = crates;
+                global.resource.Containers.amount = containers;
+                if (active){
+                    global.resource.Crates.max -= sCrate;
+                    global.resource.Containers.max -= sCon;
+                }
             }
         }
     },
