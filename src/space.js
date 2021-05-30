@@ -454,7 +454,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(38000), 1.28); },
                 Steel(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(15000), 1.28); },
                 Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); },
-                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
+                Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
                 let gain = global.race['cataclysm'] ? 2 : 1;
@@ -4301,7 +4301,8 @@ const galaxyProjects = {
                 Money(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
                 Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
                 Furs(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
-                Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; }
+                Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
+                Horseshoe(){ return global.race['hooved'] ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);

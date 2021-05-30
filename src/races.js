@@ -2537,11 +2537,25 @@ export function cleanRemoveTrait(trait){
             global.resource.Slave.amount = 0;
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
+            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+                for (let i=0; i<global.race.governor.tasks.length; i++){
+                    if (global.race.governor.tasks[`t${i}`] === 'slave'){
+                        global.race.governor.tasks[`t${i}`] = 'none';
+                    }
+                }
+            }
             break;
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
             removeFromRQueue(['sacrifice']);
             delete global.city['s_alter'];
+            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+                for (let i=0; i<global.race.governor.tasks.length; i++){
+                    if (global.race.governor.tasks[`t${i}`] === 'sacrifice'){
+                        global.race.governor.tasks[`t${i}`] = 'none';
+                    }
+                }
+            }
             break;
         case 'magnificent':
             delete global.city['shrine'];
@@ -2553,6 +2567,13 @@ export function cleanRemoveTrait(trait){
             break;
         case 'hooved':
             global.resource.Horseshoe.display = false;
+            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+                for (let i=0; i<global.race.governor.tasks.length; i++){
+                    if (global.race.governor.tasks[`t${i}`] === 'horseshoe'){
+                        global.race.governor.tasks[`t${i}`] = 'none';
+                    }
+                }
+            }
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

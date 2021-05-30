@@ -1,7 +1,7 @@
 import { global, p_on } from './vars.js';
-import { vBind, popover, tagEvent, clearElement } from './functions.js';
+import { vBind, popover, tagEvent, clearElement, adjustCosts } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel, wardenLabel } from './actions.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel, checkAffordable } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
 import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
@@ -645,7 +645,7 @@ const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                while (global.civic.garrison.max > global.civic.garrison.workers + 1 && global.resource.Money.amount + govCivics('m_cost') + global.resource.Money.diff >= global.resource.Money.max){
+                while (global.civic.garrison.max > global.civic.garrison.workers + 1 && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max || global.resource.Money.diff >= govCivics('m_cost')) ){
                     govCivics('m_buy');
                 }
             }
@@ -660,7 +660,7 @@ const gov_tasks = {
             if ( $(this)[0].req() ){
                 for (let i=0; i<3; i++){
                     let cost = govCivics('s_cost',i);
-                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount + cost + global.resource.Money.diff >= global.resource.Money.max){
+                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max)){
                         govCivics('t_spy',i);
                     }
                 }
@@ -696,7 +696,7 @@ const gov_tasks = {
             return checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() && global.resource.Money.amount + 25000 + global.resource.Money.diff >= global.resource.Money.max ){
+            if ( $(this)[0].req() && global.resource.Money.amount >= 25000 && (global.resource.Money.diff >= 25000 || global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max) ){
                 let max = global.city.slave_pen.count * 4;
                 if (max > global.city.slave_pen.slaves){
                     actions.city.slave_market.action();
@@ -712,6 +712,29 @@ const gov_tasks = {
         task(){
             if ( $(this)[0].req() && global.resource[global.race.species].amount === global.resource[global.race.species].max ){
                 actions.city.s_alter.action();
+            }
+        }
+    },
+    horseshoe: { // Forge horseshoes
+        name: loc(`gov_task_horseshoe`),
+        req(){
+            return global.race['hooved'] ? true : false;
+        },
+        task(){
+            let cost = actions.city.horseshoe.cost;
+            if ( $(this)[0].req() && checkAffordable(cost)){
+                cost = adjustCosts(cost);
+                let res = 'Copper';
+                let amount = 10;
+                Object.keys(cost).forEach(function(r){
+                    if (cost[r]() > 0){
+                        res = r;
+                        amount = cost[r]();
+                    }
+                });
+                if (global.resource[res].amount > amount && (global.resource[res].diff >= amount || global.resource[res].amount + global.resource[res].diff >= global.resource[res].max) ){
+                    actions.city.horseshoe.action();
+                }
             }
         }
     },

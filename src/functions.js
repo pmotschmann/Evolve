@@ -137,7 +137,7 @@ window.importGame = function importGame(data,utf16){
         if (saveState.hasOwnProperty('tech') && utf16){
             if (saveState.tech.hasOwnProperty('whitehole') && saveState.tech.whitehole >= 4){
                 saveState.tech.whitehole = 3;
-                saveState.resource.Soul_Gem.amount += saveState.race['smoldering'] ? 9 : 10;
+                saveState.resource.Soul_Gem.amount += 10;
                 saveState.resource.Knowledge.amount += 1500000;
                 saveState.stats.know -= 1500000;
             }
