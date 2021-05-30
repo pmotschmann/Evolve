@@ -16,7 +16,10 @@ const changeList = [
             `Major event messages are now shown in a different color from minor ones.`,
             `Decreased frequency of minor events.`,
             `Smoldering no longer applies to a variety of special resources.`,
-            `Rebalance of Spire Mechs.`
+            `Spire Mech Combat rebalanced.`,
+            `Titan mechs now have 4 weapon slots and an extra equipment slot.`,
+            `New Equipment: Jump Jet (All but Heavy & Titan), Battery (Heavy Only), and Targeting Computer (Titan Only).`,
+            `New Scavenger mech type`
         ]
     },
     {

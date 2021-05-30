@@ -5805,6 +5805,12 @@ function ascendLab(){
         traitlist: []
     };
 
+    for (let i=genome.traitlist.length - 1; i >= 0; i--){
+        if (!traits.hasOwnProperty(genome.traitlist[i]) || traits[genome.traitlist[i]].type !== 'major'){
+            genome.traitlist.splice(i,1);
+        }
+    }
+
     genome.genes = calcGenomeScore(genome);
 
     vBind({

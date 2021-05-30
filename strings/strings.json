@@ -5562,7 +5562,7 @@
   "wiki_trait_effect_pack_mentality": "+%0 Basic Housing cost creep, -%1 Medium/Large Housing cost creep.",
   "wiki_trait_effect_tracker": "+%0% hunting production.",
   "wiki_trait_effect_playful": "Hunters increase morale by %0% and cause no stress.",
-  "wiki_trait_effect_freespirit": "Non-Basic jobs are slightly more stressful.",
+  "wiki_trait_effect_freespirit": "Non-Basic jobs are more stressful.",
   "wiki_trait_effect_beast_of_burden": "Make an extra loot roll on successful attack.",
   "wiki_trait_effect_rage": "Wounded soldiers fight %1% harder instead of taking a penalty. Your army fights %0% harder for every wounded soldier.",
   "wiki_trait_effect_heavy": "Fuel costs are %0% higher. Some material costs %1% higher.",
