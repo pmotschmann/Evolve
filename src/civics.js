@@ -1829,6 +1829,11 @@ export function armyRating(val,type,wound){
     }
 
     let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
+    if (global.tech['military'] && global.tech.military > 1 && global.race['sniper']){
+        weapon_tech -= global.tech.military >= 11 ? 2 : 1;
+        weapon_tech *= 1 + (traits.sniper.vars[0] / 100);
+        weapon_tech += global.tech.military >= 11 ? 2 : 1;
+    }
     let adjusted_val = global.race['rage'] ? (val + (wounded * traits.rage.vars[1] / 100)) : (val - (wounded / 2));
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy'){

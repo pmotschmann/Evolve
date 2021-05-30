@@ -709,10 +709,10 @@ export const actions = {
                     global.evolution['final'] = 95;
                     global.evolution['carnivore'] = { count: 0 };
                     global.evolution['herbivore'] = { count: 0 };
-                    global.evolution['omnivore'] = { count: 0 };
+                    //global.evolution['omnivore'] = { count: 0 };
                     addAction('evolution','carnivore');
                     addAction('evolution','herbivore');
-                    addAction('evolution','omnivore');
+                    //addAction('evolution','omnivore');
                     evoProgress();
                 }
                 return false;
@@ -2329,6 +2329,34 @@ export const actions = {
                 return false;
             }
         },
+        horseshoe: {
+            id: 'city-horseshoe',
+            title: loc('city_horseshoe'),
+            desc(){
+                return loc(`city_horseshoe_desc`);
+            },
+            category: 'outskirts',
+            reqs: { mining: 2 },
+            trait: ['hooved'],
+            not_trait: ['cataclysm'],
+            cost: {
+                Copper(){ return global.race['shoecnt'] && global.race.shoecnt <= 50 ? 10 * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
+                Iron(){ return global.race['shoecnt'] && global.race.shoecnt > 50 && global.race.shoecnt <= 100 ? 25 * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 50 * global.race.shoecnt : 0; },
+                Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 75 * global.race.shoecnt : 0; }
+            },
+            no_queue(){ return true },
+            action(){
+                let keyMult = keyMultiplier();
+                for (var i=0; i<keyMult; i++){
+                    if (global.resource.Horseshoe.display && payCosts($(this)[0].cost)){
+                        global.resource.Horseshoe.amount++;
+                        global.race.shoecnt++;
+                    }
+                }
+                return false;
+            }
+        },
         slave_market: {
             id: 'city-slave_market',
             title: loc('city_slave_market'),
@@ -2471,7 +2499,8 @@ export const actions = {
                 },
                 Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : costMultiplier('basic_housing', offset, 10, 1.23); },
                 Stone(offset){ return global.race['kindling_kindred'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; },
-                Chrysotile(offset){ return global.race['smoldering'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; }
+                Chrysotile(offset){ return global.race['smoldering'] ? costMultiplier('basic_housing', offset, 10, 1.23) : 0; },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
                 return global.race['sappy'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
@@ -2501,7 +2530,8 @@ export const actions = {
                 Plywood(offset){ return costMultiplier('cottage', offset, 25, 1.25); },
                 Brick(offset){ return costMultiplier('cottage', offset, 20, 1.25); },
                 Wrought_Iron(offset){ return costMultiplier('cottage', offset, 15, 1.25); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cottage', offset, 5, 1.25) : 0; }
+                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cottage', offset, 5, 1.25) : 0; },
+                Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
                 if (global.tech['home_safe']){
@@ -2536,7 +2566,8 @@ export const actions = {
                 Furs(offset){ return costMultiplier('apartment', offset, 725, 1.32) - 500; },
                 Copper(offset){ return costMultiplier('apartment', offset, 650, 1.32) - 500; },
                 Cement(offset){ return costMultiplier('apartment', offset, 700, 1.32) - 500; },
-                Steel(offset){ return costMultiplier('apartment', offset, 800, 1.32) - 500; }
+                Steel(offset){ return costMultiplier('apartment', offset, 800, 1.32) - 500; },
+                Horseshoe(){ return global.race['hooved'] ? 5 : 0; }
             },
             effect(){
                 let extraVal = govActive('extravagant',2);
@@ -2578,7 +2609,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
                 Lumber(offset){ return costMultiplier('lodge', offset, 20, 1.36); },
-                Stone(offset){ return costMultiplier('lodge', offset, 10, 1.36); }
+                Stone(offset){ return costMultiplier('lodge', offset, 10, 1.36); },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
                 return global.race['carnivore'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
@@ -2684,7 +2716,8 @@ export const actions = {
             cost: {
                 Money(offset){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', offset, 50, 1.32);} else { return 0; } },
                 Lumber(offset){ return costMultiplier('farm', offset, 20, 1.36); },
-                Stone(offset){ return costMultiplier('farm', offset, 10, 1.36); }
+                Stone(offset){ return costMultiplier('farm', offset, 10, 1.36); },
+                Horseshoe(){ return global.race['hooved'] && global.city['farm'] && global.city['farm'].count >= 2 ? 1 : 0; }
             },
             effect(){
                 return global.tech['farm'] ? `<div>${loc('city_farm_effect')}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect');
@@ -2844,7 +2877,8 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('garrison', offset, 240, 1.5); },
                 Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); },
-                Iron(offset){ return global.city['garrison'] && global.city.garrison.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; }
+                Iron(offset){ return global.city['garrison'] && global.city.garrison.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; },
+                Horseshoe(){ return global.race['hooved'] ? (global.race['chameleon'] ? 1 : 2) : 0; }
             },
             effect(){
                 let bunks = global.tech['military'] >= 5 ? 3 : 2;
@@ -4605,7 +4639,8 @@ export const actions = {
     portal: fortressTech()
 };
 
-export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
+export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
+//export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 raceList.forEach(race => actions.evolution[race] = {
     id: `evolution-${race}`,
     title(){ return races[race].name; },
@@ -6496,7 +6531,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','heavy'];
+        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if (global.race['smart'] && trait === 'dumb') {
@@ -6726,6 +6761,12 @@ function sentience(){
         'species': global.race.species,
         'challenge': alevel() - 1
     });
+
+    if (global.race['hooved']){
+        global.resource.Horseshoe.display = true;
+        global.resource.Horseshoe.amount = 5;
+        global.race['shoecnt'] = 5;
+    }
 
     if (global.race['cataclysm']){
         cataclysm();

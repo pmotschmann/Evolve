@@ -453,7 +453,8 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(38000), 1.28); },
                 Steel(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(15000), 1.28); },
-                Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); }
+                Polymer(offset){ return spaceCostMultiplier('living_quarters', offset, house_adjust(9500), 1.28); },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
                 let gain = global.race['cataclysm'] ? 2 : 1;
@@ -909,7 +910,8 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('space_barracks', offset, 350000, 1.28); },
                 Alloy(offset){ return spaceCostMultiplier('space_barracks', offset, 65000, 1.28); },
                 Iridium(offset){ return spaceCostMultiplier('space_barracks', offset, 22500, 1.28); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('space_barracks', offset, 12500, 1.28); }
+                Wrought_Iron(offset){ return spaceCostMultiplier('space_barracks', offset, 12500, 1.28); },
+                Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
                 let oil = +fuel_adjust(2).toFixed(2);
@@ -928,6 +930,32 @@ const spaceProjects = {
             },
             flair(){
                 return loc('space_red_space_barracks_flair');
+            }
+        },
+        horseshoe: {
+            id: 'city-horseshoe',
+            title: loc('city_horseshoe'),
+            desc(){
+                return loc(`city_horseshoe_desc`);
+            },
+            reqs: { mining: 2 },
+            trait: ['hooved','cataclysm'],
+            cost: {
+                Copper(){ return global.race['shoecnt'] && global.race.shoecnt <= 50 ? 10 * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
+                Iron(){ return global.race['shoecnt'] && global.race.shoecnt > 50 && global.race.shoecnt <= 100 ? 25 * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 50 * global.race.shoecnt : 0; },
+                Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 75 * global.race.shoecnt : 0; }
+            },
+            no_queue(){ return true },
+            action(){
+                let keyMult = keyMultiplier();
+                for (var i=0; i<keyMult; i++){
+                    if (global.resource.Horseshoe.display && payCosts($(this)[0].cost)){
+                        global.resource.Horseshoe.amount++;
+                        global.race.shoecnt++;
+                    }
+                }
+                return false;
             }
         },
     },
@@ -1869,6 +1897,7 @@ const interstellarProjects = {
                 Furs(offset){ return spaceCostMultiplier('habitat', offset, 38000, 1.25, 'interstellar'); },
                 Adamantite(offset){ return spaceCostMultiplier('habitat', offset, 3200, 1.25, 'interstellar'); },
                 Plywood(offset){ return spaceCostMultiplier('habitat', offset, 10000, 1.25, 'interstellar'); },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
                 let citizens = 1;
@@ -2154,6 +2183,7 @@ const interstellarProjects = {
                 Stanene(offset){ return spaceCostMultiplier('luxury_condo', offset, 230000, 1.25, 'interstellar'); },
                 Orichalcum(offset){ return spaceCostMultiplier('luxury_condo', offset, 65000, 1.25, 'interstellar'); },
                 Nanoweave(offset){ return spaceCostMultiplier('luxury_condo', offset, 12500, 1.25, 'interstellar'); },
+                Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
                 let citizens = 2;
@@ -2435,6 +2465,7 @@ const interstellarProjects = {
                 Deuterium(offset){ return spaceCostMultiplier('cruiser', offset, +int_fuel_adjust(1500).toFixed(0), 1.28, 'interstellar'); },
                 Neutronium(offset){ return spaceCostMultiplier('cruiser', offset, 2000, 1.28, 'interstellar'); },
                 Aerogel(offset){ return spaceCostMultiplier('cruiser', offset, 250, 1.28, 'interstellar'); },
+                Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             powered(){ return powerCostMod(1); },
             effect(){
@@ -3577,6 +3608,7 @@ const galaxyProjects = {
                 Elerium(offset){ return spaceCostMultiplier('starbase', offset, 1000, 1.25, 'galaxy'); },
                 Mythril(offset){ return spaceCostMultiplier('starbase', offset, 90000, 1.25, 'galaxy'); },
                 Graphene(offset){ return spaceCostMultiplier('starbase', offset, 320000, 1.25, 'galaxy'); },
+                Horseshoe(){ return global.race['hooved'] ? 5 : 0; }
             },
             effect(){
                 let helium = +(int_fuel_adjust(25)).toFixed(2);
@@ -4152,6 +4184,7 @@ const galaxyProjects = {
                 Furs(offset){ return spaceCostMultiplier('dormitory', offset, 700000, 1.25, 'galaxy'); },
                 Cement(offset){ return spaceCostMultiplier('dormitory', offset, 1200000, 1.25, 'galaxy'); },
                 Plywood(offset){ return spaceCostMultiplier('dormitory', offset, 85000, 1.25, 'galaxy'); },
+                Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             effect(){
                 return `<div>${loc('plus_max_citizens',[3])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;

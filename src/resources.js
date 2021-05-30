@@ -36,6 +36,7 @@ export const resource_values = {
     Bolognium: 9000,
     Vitreloy: 10200,
     Orichalcum: 99000,
+    Horseshoe: 0,
     Genes: 0,
     Soul_Gem: 0,
     Corrupt_Gem: 0,
@@ -529,6 +530,7 @@ export function defineResources(){
     loadResource('Bolognium',0,1,false,true,'advanced');
     loadResource('Vitreloy',0,1,false,true,'advanced');
     loadResource('Orichalcum',0,1,false,true,'advanced');
+    loadResource('Horseshoe',-2,0,false,false,'advanced');
     loadResource('Genes',-2,0,false,false,'advanced');
     loadResource('Soul_Gem',-2,0,false,false,'advanced');
     loadResource('Plywood',-1,0,false,false,'danger');

@@ -492,6 +492,19 @@ export const traits = {
         type: 'major',
         val: 3
     },
+    sniper: { // Weapon upgrades are more impactful
+        name: loc('trait_sniper_name'),
+        desc: loc('trait_sniper'),
+        type: 'major',
+        val: 6,
+        vars: [8]
+    },
+    hooved: { // You require special footwear
+        name: loc('trait_hooved_name'),
+        desc: loc('trait_hooved'),
+        type: 'major',
+        val: -2
+    },
     rage: { // Wounded soldiers rage with extra power
         name: loc('trait_rage_name'),
         desc: loc('trait_rage'),
@@ -1254,7 +1267,8 @@ export const races = {
         home: loc('race_centaur_home'),
         entity: loc('race_centaur_entity'),
         traits: {
-            beast_of_burden: 1
+            sniper: 1,
+            hooved: 1
         },
         solar: {
             red: loc('race_centaur_solar_red'),
@@ -1263,7 +1277,7 @@ export const races = {
             gas_moon: loc('race_centaur_solar_gas_moon'),
             dwarf: loc('race_centaur_solar_dwarf'),
         },
-        fanaticism: 'beast_of_burden'
+        fanaticism: 'sniper'
     },
     rhinotaur: {
         name: loc('race_rhinotaur'),
@@ -2427,6 +2441,12 @@ export function cleanAddTrait(trait){
             removeFromRQueue(['wharf']);
             delete global.city['wharf'];
             break;
+        case 'hooved':
+            global.resource.Horseshoe.display = true;
+            if (!global.race.hasOwnProperty('shoecnt')){
+                global.race['shoecnt'] = 0;
+            }
+            break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
@@ -2530,6 +2550,9 @@ export function cleanRemoveTrait(trait){
             if (global.tech['wharf']){
                 global.city['wharf'] = { count: 0 };
             }
+            break;
+        case 'hooved':
+            global.resource.Horseshoe.display = false;
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
