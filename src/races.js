@@ -74,9 +74,9 @@ export const genus_traits = {
         herbivore: 1,
         instinct: 1
     },
-    omnivore: {
+    /*omnivore: {
         forager: 1
-    },
+    },*/
     small: {
         small: 1,
         weak: 1
@@ -1316,7 +1316,7 @@ export const races = {
         },
         fanaticism: ''
     },
-    bearkin: {
+    /*bearkin: {
         name: loc('race_bearkin'),
         desc: loc('race_bearkin_desc'),
         type: 'omnivore',
@@ -1369,7 +1369,7 @@ export const races = {
             dwarf: loc('race_hedgeoken_solar_dwarf'),
         },
         fanaticism: ''
-    },
+    },*/
     kobold: {
         name: loc('race_kobold'),
         desc: loc('race_kobold_desc'),
