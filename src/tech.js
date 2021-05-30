@@ -2791,9 +2791,8 @@ const techs = {
         category: 'banking',
         era: 'industrialized',
         reqs: { currency: 4, high_tech: 3 },
-        not_trait: ['terrifying'],
+        not_trait: ['terrifying','noble'],
         grant: ['currency',5],
-        not_trait: ['noble'],
         cost: {
             Knowledge(){ return 36000; }
         },
