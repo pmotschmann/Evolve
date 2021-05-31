@@ -4069,6 +4069,31 @@ export const actions = {
                 return false;
             }
         },
+        meditation: {
+            id: 'city-meditation',
+            title: loc('city_meditation'),
+            desc: loc('city_meditation'),
+            category: 'commercial',
+            reqs: { primitive: 3 },
+            trait: ['calm'],
+            not_trait: ['cataclysm'],
+            cost: {
+                Money(offset){ return costMultiplier('meditation', offset, 50, 1.2); },
+                Stone(offset){ return costMultiplier('meditation', offset, 25, 1.2); },
+                Furs(offset){ return costMultiplier('meditation', offset, 8, 1.2); }
+            },
+            effect(){
+                return `<div>${loc(`city_meditation_effect`,[10])}</div><div>${loc(`city_meditation_effect2`,[2])}</div><div>${loc(`city_meditation_effect3`,[1])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0].cost)){
+                    global.city['meditation'].count++;
+                    global.resource.Zen.max += 10;
+                    return true;
+                }
+                return false;
+            }
+        },
         university: {
             id: 'city-university',
             title: loc('city_university'),
@@ -6531,7 +6556,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr']){
-        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy'];
+        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
         for (let i=0; i<10; i++){
             let trait = bad[Math.rand(0,bad.length)];
             if (global.race['smart'] && trait === 'dumb') {
@@ -6744,6 +6769,12 @@ function sentience(){
         global.civic.unemployed.display = true;
     }
 
+    if (global.race['hooved']){
+        global.resource.Horseshoe.display = true;
+        global.resource.Horseshoe.amount = 5;
+        global.race['shoecnt'] = 5;
+    }
+
     calc_mastery(true);
     if (global.settings.tabLoad){
         drawCity();
@@ -6761,12 +6792,6 @@ function sentience(){
         'species': global.race.species,
         'challenge': alevel() - 1
     });
-
-    if (global.race['hooved']){
-        global.resource.Horseshoe.display = true;
-        global.resource.Horseshoe.amount = 5;
-        global.race['shoecnt'] = 5;
-    }
 
     if (global.race['cataclysm']){
         cataclysm();

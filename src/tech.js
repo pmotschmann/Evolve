@@ -116,6 +116,10 @@ const techs = {
                     global.city.market.active = true;
                     global.tech['currency'] = 2;
                 }
+                if (global.race['calm']){
+                    global.resource.Zen.display = true;
+                    global.city['meditation'] = { count: 0 };
+                }
                 return true;
             }
             return false;

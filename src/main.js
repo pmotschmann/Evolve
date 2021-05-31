@@ -816,7 +816,11 @@ function fastLoop(){
             global_multiplier *= 1 - (muckVal / 100);
         }
     }
-
+    if (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display) {
+        let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
+        breakdown.p['Global'][loc('trait_calm_bd')] = `+${(zen * 100).toFixed(2)}%`;
+        global_multiplier *= 1 + zen;
+    }
     if (global.city['firestorm'] && global.city.firestorm > 0){
         global.city.firestorm--;
         breakdown.p['Global'][loc('event_flare_bd')] = `-${20}%`;
@@ -2434,6 +2438,16 @@ function fastLoop(){
                 }
                 modRes('Food', -(rot * time_multiplier));
                 breakdown.p.consume['Food'][loc('spoilage')] = -(rot);
+            }
+        }
+
+        if (global.race['gnawer']){
+            let res = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
+            if (global.resource[res].display){
+                let pop = global.resource[global.race.species].amount + global.civic.garrison.workers;
+                let res_cost = pop * traits.gnawer.vars[0];
+                breakdown.p.consume[res][loc('trait_gnawer_bd')] = -(res_cost);
+                modRes(res, -(res_cost * time_multiplier));
             }
         }
 
@@ -5222,8 +5236,10 @@ function midLoop(){
         // Resource caps
         var caps = {
             Money: 1000,
+            Slave: 0,
             Mana: 0,
             Knowledge: global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1 ? 1000 : 100,
+            Zen: 0,
             Food: 1000,
             Crates: 0,
             Containers: 0,
@@ -5308,6 +5324,7 @@ function midLoop(){
         var bd_Slave = {};
         var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
         var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
+        var bd_Zen = {};
         var bd_Food = { [loc('base')]: caps['Food']+'v' };
         var bd_Lumber = { [loc('base')]: caps['Lumber']+'v' };
         var bd_Stone = { [loc('base')]: caps['Stone']+'v' };
@@ -5340,7 +5357,6 @@ function midLoop(){
         var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
 
         caps[global.race.species] = 0;
-        caps['Slave'] = 0;
 
         if (global.city['pylon']){
             let gain = global.city.pylon.count * spatialReasoning(5);
@@ -5498,6 +5514,14 @@ function midLoop(){
 
             if (caps['Slave'] < global.city.slave_pen.slaves){
                 global.city.slave_pen.slaves = caps['Slave'];
+            }
+        }
+        if (global.race['calm'] && global.city['meditation']) {
+            caps['Zen'] = global.city.meditation.count * 10;
+            bd_Zen[loc('city_meditation')] = global.city.meditation.count * 10 + 'v';
+            global.resource.Zen.amount = (global.resource[global.race.species].amount * 2) + global.civic.garrison.workers;
+            if (global.resource.Zen.amount > global.resource.Zen.max){
+                global.resource.Zen.amount = global.resource.Zen.max;
             }
         }
         if (global.city['basic_housing']){
@@ -6522,6 +6546,7 @@ function midLoop(){
             Slave: bd_Slave,
             Mana: bd_Mana,
             Knowledge: bd_Knowledge,
+            Zen: bd_Zen,
             Food: bd_Food,
             Lumber: bd_Lumber,
             Stone: bd_Stone,

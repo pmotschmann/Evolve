@@ -498,6 +498,7 @@ export function defineResources(){
     loadResource('Slave',0,0,false,false,'warning');
     loadResource('Mana',0,1,false,false,'warning');
     loadResource('Knowledge',100,1,false,false,'warning');
+    loadResource('Zen',0,0,false,false,'warning');
     loadResource('Crates',0,0,false,false,'warning');
     loadResource('Containers',0,0,false,false,'warning');
     loadResource('Food',250,1,true,true);

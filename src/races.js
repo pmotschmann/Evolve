@@ -519,6 +519,19 @@ export const traits = {
         val: -4,
         vars: [10,5]
     },
+    gnawer: { // Population destroys lumber by chewing on it
+        name: loc('trait_gnawer_name'),
+        desc: loc('trait_gnawer'),
+        type: 'major',
+        val: -1,
+        vars: [0.25]
+    },
+    calm: { // Your are very calm, almost zen like
+        name: loc('trait_calm_name'),
+        desc: loc('trait_calm'),
+        type: 'major',
+        val: 6
+    },
     pack_rat: { // Storage space is increased
         name: loc('trait_pack_rat_name'),
         desc: loc('trait_pack_rat'),
@@ -1305,7 +1318,8 @@ export const races = {
         home: loc('race_capybara_home'),
         entity: loc('race_capybara_entity'),
         traits: {
-            //friendly: 1,
+            gnawer: 1,
+            calm: 1
         },
         solar: {
             red: loc('race_capybara_solar_red'),
@@ -2071,7 +2085,9 @@ export const races = {
             pathetic: 1,
             hibernator: 1,
             freespirit: 1,
-            heavy: 1
+            heavy: 1,
+            gnawer: 1,
+            hooved: 1
         },
         solar: {
             red: altRace('junker') ? loc('race_ghoul_solar_red') : loc('race_junker_solar_red'),
@@ -2459,6 +2475,10 @@ export function cleanAddTrait(trait){
                 webWorker.w.terminate();
             }
             window.location.reload();
+        case 'calm':
+            global.resource.Zen.display = true;
+            global.city['meditation'] = { count: 0 };
+            break;
         default:
             break;
     }
@@ -2587,6 +2607,10 @@ export function cleanRemoveTrait(trait){
                 webWorker.w.terminate();
             }
             window.location.reload();
+        case 'calm':
+            global.resource.Zen.display = false;
+            delete global.city['meditation'];
+            break;
         default:
             break;
     }
