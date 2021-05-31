@@ -525,7 +525,9 @@ const gov_tasks = {
                 let sCon = containers;
                 let active = 0;
 
-                Object.keys(global.resource).forEach(function(res){
+                let res_list = Object.keys(global.resource).slice().reverse();
+
+                res_list.forEach(function(res){
                     if (global.resource[res].display && global.resource[res].stackable){
                         crates += global.resource[res].crates;
                         containers += global.resource[res].containers;
@@ -582,7 +584,7 @@ const gov_tasks = {
                 crates -= Math.floor(crateSet * active);
                 containers -= Math.floor(containerSet * active);
 
-                Object.keys(global.resource).forEach(function(res){
+                res_list.forEach(function(res){
                     if (dist[res] && dist[res].hasOwnProperty('cap')){
                         return;
                     }
@@ -612,7 +614,7 @@ const gov_tasks = {
                 let max = 3;
                 while (max > 0 && (crates > 0 || containers > 0)){
                     max--;
-                    Object.keys(global.resource).forEach(function(res){
+                    res_list.forEach(function(res){
                         if (dist[res] && dist[res].hasOwnProperty('cap')){
                             return;
                         }

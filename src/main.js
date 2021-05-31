@@ -2170,7 +2170,7 @@ function fastLoop(){
                         stress_level -= planetTraits.dense.vars[1];
                     }
                     if (global.race['freespirit'] && job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
-                        stress_level /= 2;
+                        stress_level /= 1.5;
                     }
 
                     stress -= global.civic[job].workers / stress_level;
