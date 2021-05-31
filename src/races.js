@@ -1328,7 +1328,7 @@ export const races = {
             gas_moon: loc('race_capybara_solar_gas_moon'),
             dwarf: loc('race_capybara_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: 'calm'
     },
     /*bearkin: {
         name: loc('race_bearkin'),
