@@ -20,6 +20,8 @@ const changeList = [
             `Major event messages are now shown in a different color from minor ones.`,
             `Decreased frequency of minor events.`,
             `Smoldering no longer applies to a variety of special resources.`,
+            `Frenzy renamed to Blood Thirst.`,
+            `Madagascar Tree achievement now requires inheriting Blood Thirst instead of Carnivore.`
         ]
     },
     {

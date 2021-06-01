@@ -7096,9 +7096,6 @@ export function fanaticism(god){
             }
             else {
                 fanaticTrait('carnivore');
-                if (global.race.species === 'entish'){
-                    unlockAchieve(`madagascar_tree`);
-                }
             }
             break;
         case 'smart':
@@ -7114,6 +7111,12 @@ export function fanaticism(god){
             fanaticTrait('infectious');
             if (global.race.species === 'human'){
                 unlockAchieve(`infested`);
+            }
+            break;
+        case 'frenzy':
+            fanaticTrait('frenzy');
+            if (global.race.species === 'entish'){
+                unlockAchieve(`madagascar_tree`);
             }
             break;
         case 'none':
