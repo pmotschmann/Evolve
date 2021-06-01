@@ -309,7 +309,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            let threshold = global.civic.govern.type === 'oligarchy' ? global.civic.taxes.tax_rate > 45 : global.civic.taxes.tax_rate > 25;
+            let threshold = global.civic.govern.type === 'oligarchy' ? 45 : 25;
             let aristoVal = govActive('aristocrat',2);
             if (aristoVal){
                 threshold -= aristoVal;

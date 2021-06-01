@@ -184,12 +184,12 @@ export const traits = {
         val: 5,
         vars: [10,50]
     },
-    forager: { // Will eat just about anything
+    /*forager: { // Will eat just about anything
         name: loc('trait_forager_name'),
         desc: loc('trait_forager'),
         type: 'genus',
         val: 2,
-    },
+    },*/
     cautious: { // Rain reduces combat rating
         name: loc('trait_cautious_name'),
         desc: loc('trait_cautious'),
