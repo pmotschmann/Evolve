@@ -47,7 +47,7 @@ export function racesPage(){
             let id = `raceTrait${race}${traitList[i]}`;
             let desc = $(`<div></div>`);
             traitDesc(desc,traitList[i],traitList[i] === races[race].fanaticism ? races[race].name : false);
-            popover(id,desc);
+            popover(id,desc,{ wide: true, classes: 'w25' });
         }
     });
 }

@@ -283,10 +283,18 @@ export function defineGovernor(){
 }
 
 function drawnGovernOffice(){
-    let govern = $(`<div id="govOffice" class="govOffice"><div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div></div>`);
+    let govern = $(`<div id="govOffice" class="govOffice"></div>`);
     $('#r_govern1').append(govern);
 
-    govern.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span><div>`));
+    let govHeader = $(`<div class="head"></div>`);
+    govern.append(govHeader);
+
+    let govTitle = $(`<div></div>`);
+    govTitle.append($(`<div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
+    govTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
+
+    govHeader.append(govTitle);
+    govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
 
     let cnt = [0,1,2];
     if (govActive('organizer',0)){ cnt.push(3); }
@@ -386,6 +394,29 @@ function drawnGovernOffice(){
             },
             bStrEx(){
                 return global.race.governor.config.bal_storage.adv ? 'm' : '';
+            },
+            fire(){
+                let inc = global.race.governor.hasOwnProperty('f') ? global.race.governor.f : 0;
+                let cost = ((10 + inc) ** 2) - 50;
+                let affix = global.race.universe === 'antimatter' ? 'anti' : 'count';
+                if (global.race.Plasmid[affix] >= cost){
+                    global.race.Plasmid[affix] -= cost;
+                    global.race.governor['candidates'] = genGovernor(10);
+                    if (global.race.governor.hasOwnProperty('f')){
+                        global.race.governor.f++;
+                    }
+                    else {
+                        global.race.governor['f'] = 1;
+                    }
+                    delete global.race.governor.g;
+                    delete global.race.governor.tasks;
+                    defineGovernor();
+                }
+            },
+            fireText(){
+                let inc = global.race.governor.hasOwnProperty('f') ? global.race.governor.f : 0;
+                let cost = ((10 + inc) ** 2) - 50;
+                return `<div>${loc(`governor_fire`)}</div><div>${cost} ${loc(global.race.universe === 'antimatter' ? `resource_AntiPlasmid_plural_name` : `resource_Plasmid_plural_name`)}</div>`
             }
         },
         filters: {

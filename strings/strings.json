@@ -4184,6 +4184,7 @@
   "governor_bureaucrat_t2f": "Alderwoman",
   "governor_bureaucrat_t3": "Councillor",
   "governor_office": "Office of Governor %0",
+  "governor_fire": "Fire Governor",
   "gov_trait_tactician": "Tactician",
   "gov_trait_tactician_desc": "Tactical experience helps improve your forces combat performance.",
   "gov_trait_tactician_effect": "+%0% Combat Effectiveness.",
