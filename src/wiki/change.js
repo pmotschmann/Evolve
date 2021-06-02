@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.0`,
-        date: `5/??/2021`,
+        date: `6/??/2021`,
         changes: [
             `Appoint a Governor to help run the everyday tasks, unlock in the CRISPR lab.`,
             `Animal genus split into 2 new beast genus: Carnivore & Herbivore.`,

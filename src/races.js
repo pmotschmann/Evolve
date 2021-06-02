@@ -503,7 +503,7 @@ export const traits = {
         name: loc('trait_hooved_name'),
         desc: loc('trait_hooved'),
         type: 'major',
-        val: -2
+        val: -4
     },
     rage: { // Wounded soldiers rage with extra power
         name: loc('trait_rage_name'),

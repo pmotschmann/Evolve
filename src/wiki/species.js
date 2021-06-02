@@ -7,6 +7,7 @@ import { sideMenu } from './functions.js';
 export function racesPage(){
     let content = sideMenu('create');
 
+    let list = [];
     Object.keys(races).forEach(function (race){
         if ((race === 'custom' && !global.hasOwnProperty('custom')) || race === 'protoplasm'){
             return;
@@ -41,14 +42,18 @@ export function racesPage(){
             traitList.push(extraTraits[i]);
         }
         info.append(genes);
-        sideMenu('add',`races-species`,race,races[race].name);
-
+        list.push(race);
+        
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i]}`;
             let desc = $(`<div></div>`);
             traitDesc(desc,traitList[i],traitList[i] === races[race].fanaticism ? races[race].name : false);
             popover(id,desc,{ wide: true, classes: 'w25' });
         }
+    });
+
+    list.sort((a,b) => races[a].name < races[b].name ? -1 : 1).forEach(function(race){
+        sideMenu('add',`races-species`,race,races[race].name);
     });
 }
 

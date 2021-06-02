@@ -1576,8 +1576,9 @@ const fortressModules = {
             mscan(){
                 let level = 0;
                 Object.keys(global.stats.spire).forEach(function(uni){
-                    if (global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(global.portal.spire.boss) && global.stats.spire[uni][global.portal.spire.boss] > level){
-                        level = global.stats.spire[uni][global.portal.spire.boss];
+                    let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
+                    if (global.stats.spire.hasOwnProperty(uni) && global.stats.spire[uni].hasOwnProperty(boss) && global.stats.spire[uni][boss] > level){
+                        level = global.stats.spire[uni][boss];
                     }
                 });
                 return level;
@@ -4074,23 +4075,23 @@ export function mechCollect(mech){
     return rating;
 }
 
-export function mechRating(mech,boss){
-    let rating = 0;
-    switch (mech.size){
+export function mechWeaponPower(size){
+    switch (size){
         case 'small':
-            rating = 0.0025;
-            break;
+            return 0.0025;
         case 'medium':
-            rating = 0.0075;
-            break;
+            return 0.0075;
         case 'large':
-            rating = 0.01;
-            break;
+            return 0.01;
         case 'titan':
-            rating = 0.012;
-            break;
+            return 0.012;
+        default:
+            return 0;
     }
+}
 
+export function mechRating(mech,boss){
+    let rating = mechWeaponPower(mech.size);
     if (rating === 0){
         return 0;
     }

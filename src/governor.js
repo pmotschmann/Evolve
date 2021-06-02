@@ -774,7 +774,7 @@ const gov_tasks = {
     mech: { // Mech Builder
         name: loc(`gov_task_mech`),
         req(){
-            return checkHellRequirements('prtl_spire','mechbay') && global.portal.hasOwnProperty('mechbay') ? true : false;
+            return global.stats.achieve.hasOwnProperty('corrupted') && global.stats.achieve.corrupted.l > 0 && checkHellRequirements('prtl_spire','mechbay') && global.portal.hasOwnProperty('mechbay') ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){

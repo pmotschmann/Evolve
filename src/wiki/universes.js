@@ -2,15 +2,18 @@ import { loc } from './../locale.js';
 import { universe_types } from './../space.js';
 import { darkEffect } from './../functions.js';
 import { infoBoxBuilder } from './functions.js';
+import { sideMenu } from './functions.js';
 
 export function universePage(content){
+    let mainContent = sideMenu('create',content);
+
     let universes = [];
     Object.keys(universe_types).forEach(function (universe){
         universes.push(universe);
     });
     let universe_labels = universes.map(x => `<span class="has-text-caution">${loc(`universe_${x}`)}</span>`);
 
-    infoBoxBuilder(content,{ name: 'intro', template: 'universe', paragraphs: 3, break: [2], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'intro', template: 'universe', paragraphs: 3, break: [2], h_level: 2,
         para_data: {
             1: [universes.length, universe_labels.slice(0, -1).join(', ') + `, ${loc('or')} ${universe_labels[universe_labels.length - 1]}`],
             2: [loc(`universe_standard`)],
@@ -24,8 +27,9 @@ export function universePage(content){
             3: ['wiki.html#resets-gameplay-blackhole']
         }
     });
+    sideMenu('add',`universes-gameplay`,'intro',loc('wiki_menu_intro'));
 
-    infoBoxBuilder(content,{ name: 'standard', template: 'universe', paragraphs: 3, break: [2], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'standard', template: 'universe', paragraphs: 3, break: [2], h_level: 2,
         para_data: {
             1: [loc(`universe_standard`)],
             2: [loc('wiki_p_res_dark')],
@@ -35,10 +39,11 @@ export function universePage(content){
             1: ['caution']
         }
     });
+    sideMenu('add',`universes-gameplay`,'standard',loc('wiki_universe_standard'));
 
     let heavy_space = +((1.25 + (0.5 * darkEffect('heavy',false,true)) - 1) * 100).toFixed(3) + '%';
     let heavy_int = +((1.2 + (0.3 * darkEffect('heavy',false,true)) - 1) * 100).toFixed(3) + '%';
-    infoBoxBuilder(content,{ name: 'heavy', template: 'universe', paragraphs: 9, break: [5,8], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'heavy', template: 'universe', paragraphs: 9, break: [5,8], h_level: 2,
         para_data: {
             1: [universe_types.heavy.desc],
             2: [loc('resource_Oil_name'),loc('resource_Helium_3_name'),loc('resource_Deuterium_name')],
@@ -58,8 +63,9 @@ export function universePage(content){
             7: ['wiki.html#resources-prestige-harmony','plain']
         }
     });
+    sideMenu('add',`universes-gameplay`,'heavy',loc('wiki_universe_heavy'));
 
-    infoBoxBuilder(content,{ name: 'antimatter', template: 'universe', paragraphs: 9, break: [3,6,8], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'antimatter', template: 'universe', paragraphs: 9, break: [3,6,8], h_level: 2,
         para_data: {
             1: [loc(`universe_antimatter`)],
             2: [loc('resource_AntiPlasmid_plural_name'),loc('resource_Plasmid_plural_name')],
@@ -77,8 +83,9 @@ export function universePage(content){
             2: ['wiki.html#resources-prestige-antiplasmids','wiki.html#resources-prestige-plasmids']
         }
     });
+    sideMenu('add',`universes-gameplay`,'antimatter',loc('wiki_universe_antimatter'));
 
-    infoBoxBuilder(content,{ name: 'evil', template: 'universe', paragraphs: 7, break: [2,5], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'evil', template: 'universe', paragraphs: 7, break: [2,5], h_level: 2,
         para_data: {
             2: [loc('trait_evil_name')],
             3: [loc('trait_evil_name')],
@@ -87,8 +94,9 @@ export function universePage(content){
             7: [loc('wiki_p_res_dark'),+((darkEffect('evil',false,true) - 1) * 100).toFixed(3) + '%']
         }
     });
+    sideMenu('add',`universes-gameplay`,'evil',loc('wiki_universe_evil'));
 
-    infoBoxBuilder(content,{ name: 'micro', template: 'universe', paragraphs: 6, break: [2,4], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'micro', template: 'universe', paragraphs: 6, break: [2,4], h_level: 2,
         para_data: {
             1: ['75%'],
             4: [loc('wiki_p_res_dark')],
@@ -96,12 +104,14 @@ export function universePage(content){
             6: ['1.005']
         }
     });
+    sideMenu('add',`universes-gameplay`,'micro',loc('wiki_universe_micro'));
 
-    infoBoxBuilder(content,{ name: 'magic', template: 'universe', paragraphs: 8, break: [4,7], h_level: 2,
+    infoBoxBuilder(mainContent,{ name: 'magic', template: 'universe', paragraphs: 8, break: [4,7], h_level: 2,
         para_data: {
             6: [80],
             7: [loc('wiki_p_res_dark')],
             8: [loc('wiki_p_res_dark'),+((darkEffect('magic',false,true) - 1) * 100).toFixed(3) + '%'],
         }
     });
+    sideMenu('add',`universes-gameplay`,'magic',loc('wiki_universe_magic'));
 }
