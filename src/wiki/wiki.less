@@ -180,6 +180,26 @@ span, div {
             line-height: 1.3125rem;
             margin-right: 1rem;
         }
+
+        &.col2 {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: space-between;
+            > h2,
+            > h3,
+            > h4 {
+                width: 100%;
+            }
+            > div {
+                width: 50%;
+            }
+        }
+
+        &.sk1 {
+            div:first-of-type {
+                width: 100%;
+            }
+        }
     }
 
     .question {

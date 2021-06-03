@@ -21,7 +21,8 @@ const changeList = [
             `Decreased frequency of minor events.`,
             `Smoldering no longer applies to a variety of special resources.`,
             `Frenzy renamed to Blood Thirst.`,
-            `Madagascar Tree achievement now requires inheriting Blood Thirst instead of Carnivore.`
+            `Madagascar Tree achievement now requires inheriting Blood Thirst instead of Carnivore.`,
+            `Expanded Hell section of Wiki`
         ]
     },
     {

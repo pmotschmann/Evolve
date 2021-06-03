@@ -16,6 +16,7 @@ export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('template')){ return; }
     if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
     if (!args.hasOwnProperty('text')){ args['text'] = {}; }
+    if (!args.hasOwnProperty('rawtext')){ args['rawtext'] = {}; }
     if (!args.hasOwnProperty('para_data')){ args['para_data'] = {}; }
     if (!args.hasOwnProperty('data_color')){ args['data_color'] = {}; }
     if (!args.hasOwnProperty('data_link')){ args['data_link'] = {}; }
@@ -30,7 +31,7 @@ export function infoBoxBuilder(parent,args,box){
         info = box;
     }
     else {
-        info = $(`<div class="infoBox${args.full ? ` wide` : ``}"></div>`);
+        info = $(`<div class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
         info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
     }
 
@@ -46,7 +47,7 @@ export function infoBoxBuilder(parent,args,box){
     ranges.forEach(function(range){
         let para = $(`<div class="para"></div>`);
         for (let i=range.s; i<=range.e; i++){
-            if ((args.text[i] || args.para_data[i]) && Array.isArray(args.para_data[i])){
+            if ((args.text[i] || args.rawtext[i] || args.para_data[i]) && Array.isArray(args.para_data[i])){
                 let inputs = args.para_data[i];
                 if (args.data_link[i] && Array.isArray(args.data_link[i])){
                     for (let j=0; j<args.data_link[i].length; j++){
@@ -61,10 +62,12 @@ export function infoBoxBuilder(parent,args,box){
                         inputs[j] = `<span class="has-text-${color_list[j]}">${inputs[j]}</span>`;
                     }
                 }
-                para.append(`<span>${loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`,inputs)}</span>`);
+                let string = args.rawtext[i] ? args.rawtext[i] : (loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`,inputs));
+                para.append(`<span>${string}</span>`);
             }
             else {
-                para.append(`<span>${loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`)}</span>`);
+                let string = args.rawtext[i] ? args.rawtext[i] : (loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`));
+                para.append(`<span>${string}</span>`);
             }        
         }
         info.append(para);

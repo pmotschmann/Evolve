@@ -3882,12 +3882,13 @@ function statusEffect(mech,effect){
     return rating;
 }
 
-function terrainEffect(mech){
+export function terrainEffect(mech,type){
+    let terrain = type || global.portal.spire.type;
     let terrainFactor = 1;
     switch (mech.chassis){
         case 'wheel':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'sand':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 0.9 : 0.85;
                         break;
@@ -3920,7 +3921,7 @@ function terrainEffect(mech){
             break;
         case 'tread':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'sand':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 1.15 : 1.1;
                         break;
@@ -3947,7 +3948,7 @@ function terrainEffect(mech){
             break;
         case 'biped':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'sand':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 0.78 : 0.65;
                         break;
@@ -3977,7 +3978,7 @@ function terrainEffect(mech){
             break;
         case 'quad':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'sand':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 0.86 : 0.75;
                         break;
@@ -4007,7 +4008,7 @@ function terrainEffect(mech){
             break;
         case 'spider':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'sand':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 0.75 : 0.65;
                         break;
@@ -4037,7 +4038,7 @@ function terrainEffect(mech){
             break;
         case 'hover':
             {
-                switch (global.portal.spire.type){
+                switch (terrain){
                     case 'swamp':
                         terrainFactor = ['small','medium'].includes(mech.size) ? 1.35 : 1.2;
                         break;
