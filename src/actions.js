@@ -4083,7 +4083,8 @@ export const actions = {
                 Furs(offset){ return costMultiplier('meditation', offset, 8, 1.2); }
             },
             effect(){
-                return `<div>${loc(`city_meditation_effect`,[10])}</div><div>${loc(`city_meditation_effect2`,[2])}</div><div>${loc(`city_meditation_effect3`,[1])}</div>`;
+                let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
+                return `<div>${loc(`city_meditation_effect`,[10])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

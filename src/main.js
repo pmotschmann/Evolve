@@ -5523,6 +5523,8 @@ function midLoop(){
             if (global.resource.Zen.amount > global.resource.Zen.max){
                 global.resource.Zen.amount = global.resource.Zen.max;
             }
+            let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
+            bd_Zen[loc('trait_calm_desc')] = `+${(zen * 100).toFixed(2)}%`;
         }
         if (global.city['basic_housing']){
             caps[global.race.species] += global.city['basic_housing'].count;
