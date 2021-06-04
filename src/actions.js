@@ -2340,9 +2340,9 @@ export const actions = {
             trait: ['hooved'],
             not_trait: ['cataclysm'],
             cost: {
-                Copper(){ return global.race['shoecnt'] && global.race.shoecnt <= 50 ? 10 * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
-                Iron(){ return global.race['shoecnt'] && global.race.shoecnt > 50 && global.race.shoecnt <= 100 ? 25 * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 50 * global.race.shoecnt : 0; },
+                Copper(){ return global.race['shoecnt'] && global.race.shoecnt <= 50 ? 5 * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
+                Iron(){ return global.race['shoecnt'] && global.race.shoecnt > 50 && global.race.shoecnt <= 100 ? 18 * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 40 * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 75 * global.race.shoecnt : 0; }
             },
             no_queue(){ return true },

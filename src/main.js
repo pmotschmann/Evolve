@@ -6803,7 +6803,11 @@ function midLoop(){
             }
         }
 
-        Object.keys(global.city).forEach(function (action){
+        let cityList = Object.keys(global.city);
+        if (global.race['hooved']){
+            cityList.push('horseshoe');
+        }
+        cityList.forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
                 let element = $('#'+c_action.id);
