@@ -330,7 +330,7 @@ function drawnGovernOffice(){
             };
         }
 
-        let storeContain = $(`<div v-show="showTask('storage')"><div class="has-text-warning">${loc(`gov_task_storage`)}</div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('storage')"><div class="has-text-warning">${loc(`gov_task_storage`)}</div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="storage"></div>`);
         storeContain.append(storage);
@@ -350,7 +350,7 @@ function drawnGovernOffice(){
             global.race.governor.config.bal_storage['adv'] = false;
         }
 
-        let storeContain = $(`<div v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
+        let storeContain = $(`<div class="tConfig" v-show="showTask('bal_storage')"><div class="hRow"><div class="has-text-warning">${loc(`gov_task_bal_storage`)}</div><div class="chk"><b-checkbox v-model="c.bal_storage.adv">${loc(`advanced`)}</b-checkbox></div></div></div>`);
         options.append(storeContain);
         let storage = $(`<div class="bal_storage"></div>`);
         storeContain.append(storage);
@@ -373,6 +373,36 @@ function drawnGovernOffice(){
                 </div>`));
             }
         });
+    }
+
+    {
+        if (!global.race.governor.config.hasOwnProperty('merc')){
+            global.race.governor.config['merc'] = {
+                buffer: 1
+            };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('merc')"><div class="has-text-warning">${loc(`gov_task_merc`)}</div></div>`);
+        options.append(contain);
+        let merc = $(`<div class="storage"></div>`);
+        contain.append(merc);
+
+        merc.append($(`<b-field>${loc(`gov_task_merc_buffer`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.merc.buffer" :controls="false"></b-numberinput></b-field>`));
+    }
+
+    {
+        if (!global.race.governor.config.hasOwnProperty('tax')){
+            global.race.governor.config['tax'] = {
+                min: 20
+            };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning">${loc(`gov_task_tax`)}</div></div>`);
+        options.append(contain);
+        let merc = $(`<div class="storage"></div>`);
+        contain.append(merc);
+
+        merc.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
     }
 
     vBind({
@@ -510,7 +540,7 @@ const gov_tasks = {
                 else if (global.city.morale.potential > global.city.morale.cap + 1 && global.civic.taxes.tax_rate < max){
                     govCivics('adj_tax','add');
                 }
-                else if (global.city.morale.current < global.city.morale.cap + 1 && global.civic.taxes.tax_rate > 20){
+                else if (global.city.morale.current < global.city.morale.cap + 1 && global.civic.taxes.tax_rate > global.race.governor.config.tax.min){
                     govCivics('adj_tax','sub');
                 }
             }
@@ -678,7 +708,7 @@ const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                while (global.civic.garrison.max > global.civic.garrison.workers + 1 && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max || global.resource.Money.diff >= govCivics('m_cost')) ){
+                while (global.civic.garrison.max > global.civic.garrison.workers + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max || global.resource.Money.diff >= govCivics('m_cost')) ){
                     govCivics('m_buy');
                 }
             }
