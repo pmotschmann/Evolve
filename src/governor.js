@@ -415,6 +415,9 @@ function drawnGovernOffice(){
         methods: {
             setTask(t,n){
                 global.race.governor.tasks[`t${n}`] = t;
+                tagEvent('governor',{
+                    'task': t
+                });
             },
             showTask(t){
                 return Object.values(global.race.governor.tasks).includes(t);
@@ -497,6 +500,9 @@ function appointGovernor(){
                         t0: 'none', t1: 'none', t2: 'none', t3: 'none'
                     };
                     defineGovernor();
+                    tagEvent('governor',{
+                        'appoint': global.race.governor.g.bg
+                    });
                 }
             }
         }

@@ -6583,7 +6583,7 @@
   "wiki_hell_hazard_not_chassis": "Mech effectiveness reduced by %0 if not using %1 mech.",
   "wiki_hell_hazard_either": "Mech effectiveness reduced by %0 if not using %1 mech or %2.",
   "wiki_hell_hazard_worse": "Mech effectiveness reduced by %0 if using %1 or %2 mech.",
-  "wiki_hell_hazard_either2": "Mech effectiveness reduced by %0 if not using %1 mech or %2.",
+  "wiki_hell_hazard_either2": "Mech effectiveness reduced by %0 if not using %1 or %2.",
   "wiki_hell_hazard_gravity": "%0 mech effectiveness reduced by %1.",
   "wiki_planet_planet": "Planets",
   "wiki_planet_planet_para1": "Each planet has a biome that alters its base properties. The starter planet is always a Grassland biome.",

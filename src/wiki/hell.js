@@ -242,8 +242,6 @@ export function hellPage(content){
     }
 
     { // Hazards
-        let hazards = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
-
         let hazard = infoBoxBuilder(mainContent,{ name: 'hazard', template: 'hell', paragraphs: 2 });
 
         let counter_text = {
