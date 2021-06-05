@@ -780,7 +780,9 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() && global.resource[global.race.species].amount === global.resource[global.race.species].max ){
-                actions.city.s_alter.action();
+                if (global.city.s_alter.harvest <= 10000 || global.city.s_alter.mind <= 10000 || global.city.s_alter.mine <= 10000 || global.city.s_alter.rage <= 10000 || global.city.s_alter.regen <= 10000){
+                    actions.city.s_alter.action();
+                }
             }
         }
     },
