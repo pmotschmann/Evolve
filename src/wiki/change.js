@@ -14,6 +14,7 @@ const changeList = [
             `Added Money Reserve % config values to Merc and Spy recruiter tasks.`,
             `Horseshoes can now be queued.`,
             `Adamantite Horseshoes are now much cheaper.`,
+            `Changed progression system for Horseshoe costs, will not change to next resource unless it's unlocked.`
         ]
     },
     {

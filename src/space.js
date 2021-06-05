@@ -941,10 +941,11 @@ const spaceProjects = {
             reqs: { mining: 2 },
             trait: ['hooved','cataclysm'],
             cost: {
-                Copper(){ return global.race['shoecnt'] && global.race.shoecnt <= 50 ? 5 * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
-                Iron(){ return global.race['shoecnt'] && global.race.shoecnt > 50 && global.race.shoecnt <= 100 ? 18 * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 40 * global.race.shoecnt : 0; },
-                Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 5 * global.race.shoecnt : 0; }
+                Copper(){ return global.race['shoecnt'] && !global.resource.Iron.display || global.race.shoecnt <= 50 ? (global.race.shoecnt > 50 ? 20 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
+                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 50 && (!global.resource.Steel.display || global.race.shoecnt <= 100) ? (global.race.shoecnt <= 100 ? 18 : 30) * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 100 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
+                Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
+                Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
             },
             action(n){
                 let keyMult = n || keyMultiplier();
