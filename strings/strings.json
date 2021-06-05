@@ -6286,7 +6286,7 @@
   "wiki_governor_task_horseshoe1": "The horseshoe Forger will automatically create horseshoes for you when you have spare materials.",
   "wiki_governor_task_mech1": "The Mech Constructor will automatically build a variety of mech types for your spire needs.",
   "wiki_governor_task_mech2": "It will attempt to field a wide variety of mech classes, weapons, chassis, and equipment to hedge bets against any floor type.",
-  "wiki_governor_task_mech3": "It will not scrap mechs or attempt to optimize them for the current floor but instead try to build an assortment of mechs are are effective on average.",
+  "wiki_governor_task_mech3": "It will not scrap mechs or attempt to optimize them for the current floor but instead try to build an assortment of mechs that are effective on average.",
   "wiki_governor_task_mech4": "Requires having completed at least %0 %1 and to have access to %2.",
   "wiki_combat_basics": "Combat Basics",
   "wiki_combat_basics_para1": "Once you build a barracks and get some soldiers you can attack rival cities for resources.",
