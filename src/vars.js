@@ -777,6 +777,12 @@ if (convertVersion(global['version']) < 101000){
     }
 }
 
+if (convertVersion(global['version']) < 101001){
+    if (global.hasOwnProperty('race') && global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('config') && global.race.governor.config.hasOwnProperty('merc')){
+        global.race.governor.config.merc['reserve'] = 100;
+    }
+}
+
 global['version'] = '1.1.1';
 delete global['beta'];
 

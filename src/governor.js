@@ -378,7 +378,8 @@ function drawnGovernOffice(){
     {
         if (!global.race.governor.config.hasOwnProperty('merc')){
             global.race.governor.config['merc'] = {
-                buffer: 1
+                buffer: 1,
+                reserve: 100
             };
         }
 
@@ -388,6 +389,22 @@ function drawnGovernOffice(){
         contain.append(merc);
 
         merc.append($(`<b-field>${loc(`gov_task_merc_buffer`)}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.merc.buffer" :controls="false"></b-numberinput></b-field>`));
+        merc.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.merc.reserve" :controls="false"></b-numberinput></b-field>`));
+    }
+
+    {
+        if (!global.race.governor.config.hasOwnProperty('spy')){
+            global.race.governor.config['spy'] = {
+                reserve: 100
+            };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('spy')"><div class="has-text-warning">${loc(`gov_task_spy`)}</div></div>`);
+        options.append(contain);
+        let spy = $(`<div class="storage"></div>`);
+        contain.append(spy);
+
+        spy.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.spy.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
     {
@@ -399,10 +416,10 @@ function drawnGovernOffice(){
 
         let contain = $(`<div class="tConfig" v-show="showTask('tax')"><div class="has-text-warning">${loc(`gov_task_tax`)}</div></div>`);
         options.append(contain);
-        let merc = $(`<div class="storage"></div>`);
-        contain.append(merc);
+        let tax = $(`<div class="storage"></div>`);
+        contain.append(tax);
 
-        merc.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
+        tax.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
     }
 
     vBind({
@@ -714,7 +731,8 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
-                while (global.civic.garrison.max > global.civic.garrison.workers + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max || global.resource.Money.diff >= govCivics('m_cost')) ){
+                let cashCap = global.resource.Money.max * (global.race.governor.config.merc.reserve / 100);
+                while (global.civic.garrison.max > global.civic.garrison.workers + global.race.governor.config.merc.buffer && global.resource.Money.amount >= govCivics('m_cost') && (global.resource.Money.amount + global.resource.Money.diff >= cashCap || global.resource.Money.diff >= govCivics('m_cost')) ){
                     govCivics('m_buy');
                 }
             }
@@ -727,9 +745,10 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
+                let cashCap = global.resource.Money.max * (global.race.governor.config.spy.reserve / 100);
                 for (let i=0; i<3; i++){
                     let cost = govCivics('s_cost',i);
-                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max)){
+                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
                         govCivics('t_spy',i);
                     }
                 }

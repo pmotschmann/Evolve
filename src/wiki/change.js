@@ -11,7 +11,8 @@ const changeList = [
             `Holding a key multiplier with the queue key will now queue mulitple of a building.`,
             `Dealmaker import bonus buffed from 40% to 75%.`,
             `Nerfed Besat trait to 8% hunting / 15% windy hunting / 10% soldier training.`,
-            `Restored Cautious trait to Carnivore genus.`
+            `Restored Cautious trait to Carnivore genus.`,
+            `Added Money Reserve % config values to Merc and Spy recruiter tasks.`
         ]
     },
     {
