@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.1`,
+        date: `6/5/2021`,
+        changes: [
+            `Unifying during banana republic now triggers an automatic backup save.`
+        ]
+    },
+    {
         version: `1.1.0`,
         date: `6/4/2021`,
         changes: [

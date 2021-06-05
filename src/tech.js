@@ -8304,6 +8304,9 @@ const techs = {
         },
         action(){
             if (payCosts($(this)[0].cost)){
+                if (global.race['banana']){
+                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                }
                 global.tech['world_control'] = 1;
                 clearElement($('#garrison'));
                 clearElement($('#c_garrison'));
