@@ -2345,16 +2345,17 @@ export const actions = {
                 Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 40 * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 75 * global.race.shoecnt : 0; }
             },
-            no_queue(){ return true },
-            action(){
-                let keyMult = keyMultiplier();
+            action(n){
+                let keyMult = n || keyMultiplier();
+                let shoed = false;
                 for (var i=0; i<keyMult; i++){
                     if (global.resource.Horseshoe.display && payCosts($(this)[0].cost)){
                         global.resource.Horseshoe.amount++;
                         global.race.shoecnt++;
+                        shoed = true;
                     }
                 }
-                return false;
+                return shoed;
             }
         },
         slave_market: {
@@ -5369,9 +5370,10 @@ export function setAction(c_action,action,type,old){
                                 let grant = false;
                                 let add_queue = false;
                                 let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
-                                for (let i=0; i<keyMult; i++){
-                                    if ((global.settings.qKey && keyMap.q) || !c_action.action()){
-                                        if (!no_queue && global.tech['queue'] && keyMult === 1){
+                                let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
+                                for (let i=0; i<loopNum; i++){
+                                    if ((global.settings.qKey && keyMap.q) || !c_action.action(1)){
+                                        if (!no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
                                                 max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
@@ -5388,12 +5390,16 @@ export function setAction(c_action,action,type,old){
                                                 used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                             }
                                             if (used < max_queue){
+                                                let repeat = global.settings.qKey ? keyMult : 1;
+                                                if (repeat > max_queue - used){
+                                                    repeat = max_queue - used;
+                                                }
                                                 let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
                                                 if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
-                                                    global.queue.queue[global.queue.queue.length-1].q += q_size;
+                                                    global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
                                                 }
                                                 else {
-                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
+                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
                                                 }
                                                 add_queue = true;
                                             }

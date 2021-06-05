@@ -6,7 +6,9 @@ const changeList = [
         version: `1.1.1`,
         date: `6/5/2021`,
         changes: [
-            `Unifying during banana republic now triggers an automatic backup save.`
+            `Unifying during banana republic now triggers an automatic backup save.`,
+            `Horseshoes can now be queued.`,
+            `Holding a key multiplier with the queue key will now queue mulitple of a building.`
         ]
     },
     {

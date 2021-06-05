@@ -933,7 +933,7 @@ const spaceProjects = {
             }
         },
         horseshoe: {
-            id: 'city-horseshoe',
+            id: 'space-horseshoe',
             title: loc('city_horseshoe'),
             desc(){
                 return loc(`city_horseshoe_desc`);
@@ -946,16 +946,17 @@ const spaceProjects = {
                 Steel(){ return global.race['shoecnt'] && global.race.shoecnt > 100 && global.race.shoecnt <= 500 ? 40 * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.race.shoecnt > 500 ? 75 * global.race.shoecnt : 0; }
             },
-            no_queue(){ return true },
-            action(){
-                let keyMult = keyMultiplier();
+            action(n){
+                let keyMult = n || keyMultiplier();
+                let shoed = false;
                 for (var i=0; i<keyMult; i++){
                     if (global.resource.Horseshoe.display && payCosts($(this)[0].cost)){
                         global.resource.Horseshoe.amount++;
                         global.race.shoecnt++;
+                        shoed = true;
                     }
                 }
-                return false;
+                return shoed;
             }
         },
     },
