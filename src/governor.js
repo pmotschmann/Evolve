@@ -123,7 +123,7 @@ export const gov_traits = {
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
         effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars[0]]); },
-        vars: [40]
+        vars: [75]
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),

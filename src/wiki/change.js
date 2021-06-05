@@ -8,7 +8,10 @@ const changeList = [
         changes: [
             `Unifying during banana republic now triggers an automatic backup save.`,
             `Horseshoes can now be queued.`,
-            `Holding a key multiplier with the queue key will now queue mulitple of a building.`
+            `Holding a key multiplier with the queue key will now queue mulitple of a building.`,
+            `Dealmaker import bonus buffed from 40% to 75%.`,
+            `Nerfed Besat trait to 8% hunting / 15% windy hunting / 10% soldier training.`,
+            `Restored Cautious trait to Carnivore genus.`
         ]
     },
     {

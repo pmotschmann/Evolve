@@ -68,7 +68,8 @@ export const genus_traits = {
     },
     carnivore: {
         carnivore: 1,
-        beast: 1
+        beast: 1,
+        cautious: 1
     },
     herbivore: {
         herbivore: 1,
@@ -168,8 +169,15 @@ export const traits = {
         name: loc('trait_beast_name'),
         desc: loc('trait_beast'),
         type: 'genus',
-        val: 3,
-        vars: [10,20,20]
+        val: 2,
+        vars: [8,15,10]
+    },
+    cautious: { // Rain reduces combat rating
+        name: loc('trait_cautious_name'),
+        desc: loc('trait_cautious'),
+        type: 'genus',
+        val: -2,
+        vars: [10]
     },
     herbivore: { // No food is gained from hunting
         name: loc('trait_herbivore_name'),
@@ -190,13 +198,6 @@ export const traits = {
         type: 'genus',
         val: 2,
     },*/
-    cautious: { // Rain reduces combat rating
-        name: loc('trait_cautious_name'),
-        desc: loc('trait_cautious'),
-        type: 'genus',
-        val: -2,
-        vars: [10]
-    },
     small: { // Reduces cost creep multipliers by 0.01
         name: loc('trait_small_name'),
         desc: loc('trait_small'),
