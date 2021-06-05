@@ -437,4 +437,35 @@ export function hellPage(content){
 
         sideMenu('add',`hell-gameplay`,'hazard',loc('wiki_hell_hazard'));
     }
+
+    { // Special Equipment
+        let special = infoBoxBuilder(mainContent,{ name: 'equipment', template: 'hell', paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`portal_mech_equip_jumpjet`),loc(`portal_mech_equip_battery`),loc(`portal_mech_equip_target`)]
+            }
+        });
+        sideMenu('add',`hell-gameplay`,'equipment',loc('wiki_hell_equipment'));
+
+        infoBoxBuilder(special,{ name: `eq_jump`, template: 'hell', label: loc(`portal_mech_equip_jumpjet`), paragraphs: 4, break: [4], h_level: 3, header: true,
+            para_data: {
+                1: [loc(`portal_mech_equip_jumpjet`),loc(`wiki_hell_scout`),loc(`wiki_hell_standard`),loc(`wiki_hell_collector`)],
+                2: [`20%`],
+                3: [`10%`,loc(`portal_spire_status_gravity`)]
+            }
+        });
+
+        infoBoxBuilder(special,{ name: `eq_battery`, template: 'hell', label: loc(`portal_mech_equip_battery`), paragraphs: 2, h_level: 3, header: true,
+            para_data: {
+                1: [loc(`portal_mech_equip_battery`),loc(`wiki_hell_heavy`)],
+                2: [`2%`]
+            }
+        });
+
+        infoBoxBuilder(special,{ name: `eq_target`, template: 'hell', label: loc(`portal_mech_equip_target`), paragraphs: 3, h_level: 3, header: true,
+            para_data: {
+                1: [loc(`portal_mech_equip_target`),loc(`wiki_hell_titan`)],
+                2: [`25%`]
+            }
+        });
+    }
 }
