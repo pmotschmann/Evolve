@@ -4202,7 +4202,7 @@
   "gov_trait_racketeer_effect": "-%0% income lost to corruption. Casinos +%1% Profit.",
   "gov_trait_dealmaker": "Deal Maker",
   "gov_trait_dealmaker_desc": "An expert in the art of the deal will help you get things you need.",
-  "gov_trait_dealmaker_effect": "Trade Route Imports +%0% goods. Can not have more Imports then Exports.",
+  "gov_trait_dealmaker_effect": "Trade Route Imports +%0% goods. Can not have more Imports than Exports.",
   "gov_trait_risktaker": "Risk Taker",
   "gov_trait_risktaker_desc": "High risk, high reward.",
   "gov_trait_risktaker_effect": "Commodity market price drift rate increased. Banks +%0% Money Capacity.",
