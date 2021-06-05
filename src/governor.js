@@ -7,7 +7,7 @@ import { crateGovHook } from './resources.js';
 import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
 import { loc } from './locale.js';
 
-const gmen = {
+export const gmen = {
     soldier: {
         name: loc('governor_soldier'),
         desc: loc('governor_soldier_desc'),
@@ -99,7 +99,7 @@ const gmen = {
     }
 };
 
-const gov_traits = {
+export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
         effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars[0]]); },
@@ -415,7 +415,7 @@ function drawnGovernOffice(){
         methods: {
             setTask(t,n){
                 global.race.governor.tasks[`t${n}`] = t;
-                tagEvent('governor',{
+                tagEvent('govtask',{
                     'task': t
                 });
             },
@@ -529,7 +529,7 @@ export function govActive(trait,val){
     return false;
 }
 
-const gov_tasks = {
+export const gov_tasks = {
     tax: { // Dynamic Taxes
         name: loc(`gov_task_tax`),
         req(){

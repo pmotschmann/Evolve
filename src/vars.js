@@ -757,8 +757,7 @@ if (convertVersion(global['version']) < 100041){
     };
 }
 
-// Run always until beta period is over
-//if (convertVersion(global['version']) < 101000){
+if (convertVersion(global['version']) < 101000){
     if (global.race['jtype'] && global.race['jtype'] === 'animal'){
         global.race['jtype'] = 'omnivore';
     }
@@ -776,10 +775,10 @@ if (convertVersion(global['version']) < 100041){
         global.stats.achieve['genus_carnivore'] = global.stats.achieve.genus_animal;
         delete global.stats.achieve.genus_animal;
     }
-//}
+}
 
 global['version'] = '1.1.0';
-global['beta'] = 15;
+global['beta'] = 16;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       

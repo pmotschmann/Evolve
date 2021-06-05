@@ -39,6 +39,7 @@ function initPage(){
                 { key: 'basics' },
                 { key: 'mechanics' },
                 { key: 'government' },
+                { key: 'governor' },
                 { key: 'combat' },
                 { key: 'resets' },
                 { key: 'planets' },
