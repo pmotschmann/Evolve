@@ -154,16 +154,14 @@ export const arpaProjects = {
         reqs: { high_tech: 6, trade: 3 },
         grant: 'railway',
         effect(){
+            let routes = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? 1 : 0;
+            let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
             if (global.race['cataclysm']){
-                let routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
-                return loc('arpa_projects_railway_cataclysm1',[routes,2,3,1]);
+                routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
+                return loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
             else {
-                let routes = global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
-                let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
-                if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2){
-                    routes++;
-                }
+                routes += global.city['storage_yard'] ? Math.floor(global.city.storage_yard.count / 6) : 0;
                 return loc('arpa_projects_railway_effect1',[routes,profit,6,1]);
             }
         },
@@ -2279,6 +2277,10 @@ export function buildArpa(pro,num,update){
                     global.arpa['m_type'] = pick_monument();
                     $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
                     updateQueueNames(false, ['arpamonument']);
+                }
+                if (pro === 'roid_eject'){
+                    $(`#arpa${pro} .head .desc`).html(arpaProjects[pro].title());
+                    updateQueueNames(false, ['arparoid_eject']);
                 }
                 if (pro === 'launch_facility'){
                     removeFromQueue(['arpalaunch_facility']);

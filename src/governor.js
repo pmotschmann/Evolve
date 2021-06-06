@@ -1,7 +1,7 @@
 import { global, p_on } from './vars.js';
 import { vBind, popover, tagEvent, clearElement, adjustCosts } from './functions.js';
 import { races } from './races.js';
-import { actions, checkCityRequirements, housingLabel, wardenLabel, checkAffordable } from './actions.js';
+import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics } from './civics.js';
 import { crateGovHook } from './resources.js';
 import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
@@ -460,6 +460,7 @@ function drawnGovernOffice(){
                     }
                     delete global.race.governor.g;
                     delete global.race.governor.tasks;
+                    updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
                     defineGovernor();
                 }
             },
@@ -516,6 +517,7 @@ function appointGovernor(){
                     global.race.governor['tasks'] = {
                         t0: 'none', t1: 'none', t2: 'none', t3: 'none'
                     };
+                    updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
                     defineGovernor();
                     tagEvent('governor',{
                         'appoint': global.race.governor.g.bg
@@ -763,7 +765,7 @@ export const gov_tasks = {
         task(){
             if ( $(this)[0].req() ){
                 [0,1,2].forEach(function(gov){
-                    if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0){
+                    if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
                         if (global.civic.foreign[`gov${gov}`].mil > 50){
                             govCivics('s_sabotage',gov)
                         }

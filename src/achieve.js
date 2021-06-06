@@ -2057,14 +2057,28 @@ export const perkList = {
     },
     harmonic: {
         name: loc(`harmonic`),
-        desc(wiki){
-            let harmonic = calcPillar();
-            return loc("perks_harmonic",[wiki ? "1-46" : +((harmonic[0] - 1) * 100).toFixed(0), wiki ? "2-92" : +((harmonic[1] - 1) * 100).toFixed(0)]);
-        },
-        active(){
-            let harmonic = calcPillar();
-            return global['pillars'] && harmonic[0] > 1 ? true : false;
-        },
+        group: [
+            {
+                desc(wiki){
+                    let harmonic = calcPillar();
+                    return loc("perks_harmonic",[wiki ? "1-49" : +((harmonic[0] - 1) * 100).toFixed(0), wiki ? "2-98" : +((harmonic[1] - 1) * 100).toFixed(0)]);
+                },
+                active(){
+                    let harmonic = calcPillar();
+                    return global['pillars'] && harmonic[0] > 1 ? true : false;
+                }
+            },
+            {
+                desc(wiki){
+                    let harmonic = calcPillar();
+                    return loc("perks_harmonic2",[loc("portal_west_tower"), loc("portal_east_tower"), wiki ? "12-552" : +(Object.keys(global.pillars).length * 12)]);
+                },
+                active(){
+                    let harmonic = calcPillar();
+                    return global['pillars'] && harmonic[0] > 1 ? true : false;
+                }
+            },
+        ],
         notes: [
             loc(`wiki_perks_harmonic_note1`),
             loc(`wiki_perks_harmonic_note2`)

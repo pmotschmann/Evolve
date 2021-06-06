@@ -2395,6 +2395,7 @@ export function cleanAddTrait(trait){
             if (global.settings.marketTabs === 0) {
                 global.settings.marketTabs = 1;
             }
+            removeFromQueue(['city-trade']);
             delete global.city['trade'];
             break;
         case 'slaver':
@@ -2579,6 +2580,7 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'magnificent':
+            removeFromQueue(['city-shrine']);
             delete global.city['shrine'];
             break;
         case 'thalassophobia':
@@ -2587,6 +2589,7 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'hooved':
+            removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
             if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
                 for (let i=0; i<global.race.governor.tasks.length; i++){
@@ -2609,6 +2612,7 @@ export function cleanRemoveTrait(trait){
             }
             window.location.reload();
         case 'calm':
+            removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
             delete global.city['meditation'];
             break;

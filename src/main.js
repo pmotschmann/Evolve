@@ -6807,6 +6807,9 @@ function midLoop(){
         if (global.race['hooved']){
             cityList.push('horseshoe');
         }
+        if (global.tech['slaves'] && global.tech['slaves'] >= 2){
+            cityList.push('slave_market');
+        }
         cityList.forEach(function (action){
             if (actions.city[action] && actions.city[action].cost){
                 let c_action = actions.city[action];
