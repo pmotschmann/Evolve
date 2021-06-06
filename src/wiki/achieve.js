@@ -181,11 +181,12 @@ function achieveDesc(achievement,showFlair,universe){
     else if (achievement === 'creator' || achievement === 'heavyweight'){
         let genus = `<div class="flexed">`;
         Object.keys(genus_traits).sort().forEach(function (key){
+            let label = ['carnivore','herbivore','omnivore'].includes(key) ? loc(`evo_${key}_title`) : loc(`genelab_genus_${key}`);
             if (achievement === 'creator' ? global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`][uAffix] >= 0 : global.stats.achieve[`genus_${key}`] && global.stats.achieve[`genus_${key}`].h >= 0){
-                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${loc(`genelab_genus_${key}`)}</span>`;
+                genus = genus + `<span class="wide iclr${achievement === 'creator' ? global.stats.achieve[`genus_${key}`][uAffix] : global.stats.achieve[`genus_${key}`].h}">${label}</span>`;
             }
             else {
-                    genus = genus + `<span class="wide has-text-danger">${loc(`genelab_genus_${key}`)}</span>`;
+                genus = genus + `<span class="wide has-text-danger">${label}</span>`;
             }
         });
         genus = genus + `</div>`;

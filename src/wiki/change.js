@@ -9,7 +9,7 @@ const changeList = [
             `Added Money Reserve % config value to Slave replacement task.`,
             `Various special buildings are now dropped from the queue if you remove their required trait.`,
             `Spy Operator will no longer attempt espionage against controlled cities.`,
-            `Lots of small bug fixes with tooltips.`
+            `Fixed many issues with labels not updating`
         ]
     },
     {

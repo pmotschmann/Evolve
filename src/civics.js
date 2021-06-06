@@ -550,19 +550,43 @@ export function foreignGov(){
 
         for (let i=0; i<3; i++){
             popover(`gov${i}a`,
-                function(){
-                    return battleAssessment(i);
-                },
+                function(){ return '<span>{{ label() }}</span>'; },
                 {
-                    elm: `#gov${i} .attack`
+                    elm: `#gov${i} .attack`,
+                    in: function(obj){
+                        vBind({
+                            el: `#${obj.id} > span`,
+                            data: { test: 'val' },
+                            methods: {
+                                label(){
+                                    return battleAssessment(i);
+                                }
+                            }
+                        });
+                    },
+                    out: function(obj){
+                        vBind({el: obj.id},'destroy');
+                    },
                 }
             );
             popover(`gov${i}ts`,
-                function(){
-                    return spyDesc(i);
-                },
+                function(){ return '<span>{{ label() }}</span>'; },
                 {
-                    elm: `#gov${i} .tspy`
+                    elm: `#gov${i} .tspy`,
+                    in: function(obj){
+                        vBind({
+                            el: `#${obj.id} > span`,
+                            data: { test: 'val' },
+                            methods: {
+                                label(){
+                                    return spyDesc(i);
+                                }
+                            }
+                        });
+                    },
+                    out: function(obj){
+                        vBind({el: obj.id},'destroy');
+                    },
                 }
             );
             popover(`gov${i}s`,
@@ -1199,11 +1223,23 @@ export function buildGarrison(garrison,full){
     if (full){
         for (let i=0; i<3; i++){
             popover(`garrison${i}`,
-                function(){
-                    return battleAssessment(i);
-                },
+                function(){ return '<span>{{ label() }}</span>'; },
                 {
-                    elm: `#garrison .gov${i}`
+                    elm: `#garrison .gov${i}`,
+                    in: function(obj){
+                        vBind({
+                            el: `#${obj.id} > span`,
+                            data: { test: 'val' },
+                            methods: {
+                                label(){
+                                    return battleAssessment(i);
+                                }
+                            }
+                        });
+                    },
+                    out: function(obj){
+                        vBind({el: obj.id},'destroy');
+                    },
                 }
             );
         }
