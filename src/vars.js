@@ -792,9 +792,16 @@ if (convertVersion(global['version']) < 101002){
             delete global.city.morale['frenzy'];
         }
     }
+    
+    if (global.race['jtype'] && global.race['jtype'] === 'omnivore'){
+        global.race['jtype'] = 'carnivore';
+    }
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('genus') && global.custom.race0.genus === 'omnivore'){
+        global.custom.race0.genus = 'carnivore';
+    }
 }
 
-global['version'] = '1.1.1';
+global['version'] = '1.1.2';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
