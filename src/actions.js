@@ -2379,7 +2379,9 @@ export const actions = {
             title(){
                 return housingLabel('large');
             },
-            desc: `<div>${loc('city_apartment_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc(){
+                return `<div>${loc('city_apartment_desc',[govActive('extravagant',0) ? 6 : 5])}</div><div class="has-text-special">${loc('requires_power')}</div>`
+            },
             category: 'residential',
             reqs: { housing: 3 },
             not_trait: ['cataclysm'],
@@ -6628,6 +6630,14 @@ function sentience(){
     Object.keys(global.genes.minor).forEach(function (trait){
         global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
+    
+    let tempMTOrder = [];
+    global.settings.mtorder.forEach(function(trait){
+       if (global.genes.minor[trait] || trait === 'mastery'){
+           tempMTOrder.push(trait);
+       }
+    });
+    global.settings.mtorder = tempMTOrder;
 
     if (global.genes['evolve'] && global.genes['evolve'] >= 2){
         for (let i=1; i<8; i++){
@@ -7096,8 +7106,8 @@ export function fanaticism(god){
                 unlockAchieve(`infested`);
             }
             break;
-        case 'frenzy':
-            fanaticTrait('frenzy');
+        case 'blood_thirst':
+            fanaticTrait('blood_thirst');
             if (global.race.species === 'entish'){
                 unlockAchieve(`madagascar_tree`);
             }

@@ -39,10 +39,11 @@ export function hellPage(content){
 
     infoBoxBuilder(mainContent,{ name: 'pit', template: 'hell', paragraphs: 3,
         para_data: {
-            1: ['1,000,000'],
+            1: ['1,000,000',loc(`galaxy_telemetry_beacon`)],
             2: [loc('portal_soul_forge_title')]
         },
         data_link: {
+            1: [false,'wiki.html#intergalactic-structures-telemetry_beacon'],
             2: ['wiki.html#hell-structures-soul_forge']
         }
     });
@@ -204,7 +205,7 @@ export function hellPage(content){
             }
 
             infoBoxBuilder(mechs,{ name: `t_${t}`, template: 'hell', label: loc(`portal_spire_type_${t}`), paragraphs: 7, break: [2,3,4,5,6,7], h_level: 4, header: true,
-                text: { 1: loc(`portal_spire_type_${t}_desc`) },
+                text: { 1: `portal_spire_type_${t}_desc` },
                 rawtext: ratings,
                 pclass: 'col2 sk1'
             });

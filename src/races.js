@@ -824,9 +824,9 @@ export const traits = {
         val: 2,
         vars: [0.01]
     },
-    frenzy: { // Combat causes a temporary increase in morale
-        name: loc('trait_frenzy_name'),
-        desc: loc('trait_frenzy'),
+    blood_thirst: { // Combat causes a temporary increase in morale
+        name: loc('trait_blood_thirst_name'),
+        desc: loc('trait_blood_thirst'),
         type: 'major',
         val: 5,
     },
@@ -1791,7 +1791,7 @@ export const races = {
         home: loc('race_sharkin_home'),
         entity: loc('race_sharkin_entity'),
         traits: {
-            frenzy: 1,
+            blood_thirst: 1,
             apex_predator: 1
         },
         solar: {
@@ -1801,7 +1801,7 @@ export const races = {
             gas_moon: loc('race_sharkin_solar_gas_moon'),
             dwarf: loc('race_sharkin_solar_dwarf'),
         },
-        fanaticism: 'frenzy'
+        fanaticism: 'blood_thirst'
     },
     octigoran: {
         name: loc('race_octigoran'),
@@ -2395,6 +2395,7 @@ export function cleanAddTrait(trait){
             if (global.settings.marketTabs === 0) {
                 global.settings.marketTabs = 1;
             }
+            removeFromQueue(['city-trade']);
             delete global.city['trade'];
             break;
         case 'slaver':
@@ -2579,6 +2580,7 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'magnificent':
+            removeFromQueue(['city-shrine']);
             delete global.city['shrine'];
             break;
         case 'thalassophobia':
@@ -2587,6 +2589,7 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'hooved':
+            removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
             if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
                 for (let i=0; i<global.race.governor.tasks.length; i++){
@@ -2609,6 +2612,7 @@ export function cleanRemoveTrait(trait){
             }
             window.location.reload();
         case 'calm':
+            removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
             delete global.city['meditation'];
             break;

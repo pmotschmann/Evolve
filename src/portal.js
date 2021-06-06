@@ -2245,10 +2245,10 @@ export function bloodwar(){
 
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
-            if (global.race['frenzy']){
-                global.race['frenzy'] += Math.rand(0,Math.ceil(demons / 10));
-                if (global.race['frenzy'] > 1000000){
-                    global.race['frenzy'] = 1000000;
+            if (global.race['blood_thirst']){
+                global.race['blood_thirst'] += Math.rand(0,Math.ceil(demons / 10));
+                if (global.race['blood_thirst'] > 1000000){
+                    global.race['blood_thirst'] = 1000000;
                 }
             }
 
