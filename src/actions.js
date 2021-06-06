@@ -1574,60 +1574,7 @@ export const actions = {
             effect: loc('evo_bunker_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    global.evolution['bunker'] = { count: 1 };
-                    removeAction(actions.evolution.bunker.id);
-                    evoProgress();
-                    if (global.race.universe === 'antimatter'){
-                        global.evolution['mastery'] = { count: 0 };
-                    }
-                    else {
-                        global.evolution['plasmid'] = { count: 0 };
-                    }
-                    global.evolution['trade'] = { count: 0 };
-                    global.evolution['craft'] = { count: 0 };
-                    global.evolution['crispr'] = { count: 0 };
-                    global.evolution['junker'] = { count: 0 };
-                    global.evolution['joyless'] = { count: 0 };
-                    global.evolution['steelen'] = { count: 0 };
-                    if (global.stats.achieve['whitehole']){
-                        global.evolution['decay'] = { count: 0 };
-                    }
-                    if (global.stats.achieve['ascended']){
-                        global.evolution['emfield'] = { count: 0 };
-                    }
-                    if (global.stats.achieve['shaken']){
-                        global.evolution['cataclysm'] = { count: 0 };
-                    }
-                    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
-                        global.evolution['banana'] = { count: 0 };
-                    }
-                    challengeGeneHeader();
-                    if (global.race.universe === 'antimatter'){
-                        addAction('evolution','mastery');
-                    }
-                    else {
-                        addAction('evolution','plasmid');
-                    }
-                    addAction('evolution','trade');
-                    addAction('evolution','craft');
-                    addAction('evolution','crispr');
-                    challengeActionHeader();
-                    addAction('evolution','joyless');
-                    addAction('evolution','steelen');
-                    if (global.stats.achieve['whitehole']){
-                        addAction('evolution','decay');
-                    }
-                    if (global.stats.achieve['ascended']){
-                        addAction('evolution','emfield');
-                    }
-                    scenarioActionHeader();
-                    addAction('evolution','junker');
-                    if (global.stats.achieve['shaken']){
-                        addAction('evolution','cataclysm');
-                    }
-                    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
-                        addAction('evolution','banana');
-                    }
+                    setChallengeScreen();
                 }
                 return false;
             },
@@ -1638,150 +1585,6 @@ export const actions = {
             queue_complete(){ return 1; },
             queueable: true,
             flair: loc('evo_bunker_flair')
-        },
-        plasmid: {
-            id: 'evolution-plasmid',
-            title: loc('evo_challenge_plasmid'),
-            desc: loc('evo_challenge_plasmid'),
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_challenge_plasmid_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.race['no_plasmid']){
-                        delete global.race['no_plasmid'];
-                        $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm','banana'].forEach(function(s){
-                            delete global.race[s];
-                            $(`#evolution-${s}`).removeClass('hl');
-                        });
-                    }
-                    else {
-                        global.race['no_plasmid'] = 1;
-                        $(`#${$(this)[0].id}`).addClass('hl');
-                    }
-                    challengeIcon();
-                }
-                return false;
-            },
-            highlight(){ return global.race['no_plasmid'] ? true : false; }
-        },
-        mastery: {
-            id: 'evolution-mastery',
-            title: loc('evo_challenge_mastery'),
-            desc: loc('evo_challenge_mastery'),
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_challenge_mastery_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.race['weak_mastery']){
-                        delete global.race['weak_mastery'];
-                        $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm','banana'].forEach(function(s){
-                            delete global.race[s];
-                            $(`#evolution-${s}`).removeClass('hl');
-                        });
-                    }
-                    else {
-                        global.race['weak_mastery'] = 1;
-                        $(`#${$(this)[0].id}`).addClass('hl');
-                    }
-                    calc_mastery(true);
-                    challengeIcon();
-                }
-                return false;
-            },
-            highlight(){ return global.race['weak_mastery'] ? true : false; }
-        },
-        trade: {
-            id: 'evolution-trade',
-            title: loc('evo_challenge_trade'),
-            desc: loc('evo_challenge_trade'),
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_challenge_trade_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.race['no_trade']){
-                        delete global.race['no_trade'];
-                        $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm','banana'].forEach(function(s){
-                            delete global.race[s];
-                            $(`#evolution-${s}`).removeClass('hl');
-                        });
-                    }
-                    else {
-                        global.race['no_trade'] = 1;
-                        $(`#${$(this)[0].id}`).addClass('hl');
-                    }
-                    challengeIcon();
-                }
-                return false;
-            },
-            highlight(){ return global.race['no_trade'] ? true : false; }
-        },
-        craft: {
-            id: 'evolution-craft',
-            title: loc('evo_challenge_craft'),
-            desc: loc('evo_challenge_craft'),
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_challenge_craft_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    if (global.race['no_craft']){
-                        delete global.race['no_craft'];
-                        $(`#${$(this)[0].id}`).removeClass('hl');
-                        ['junker','cataclysm','banana'].forEach(function(s){
-                            delete global.race[s];
-                            $(`#evolution-${s}`).removeClass('hl');
-                        });
-                    }
-                    else {
-                        global.race['no_craft'] = 1;
-                        $(`#${$(this)[0].id}`).addClass('hl');
-                    }
-                    challengeIcon();
-                }
-                return false;
-            },
-            highlight(){ return global.race['no_craft'] ? true : false; }
-        },
-        crispr: {
-            id: 'evolution-crispr',
-            title: loc('evo_challenge_crispr'),
-            desc: loc('evo_challenge_crispr_desc'),
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_challenge_crispr_effect'),
-            action(){
-                if (payCosts($(this)[0].cost)){
-                    if (payCosts($(this)[0].cost)){
-                        if (global.race['no_crispr']){
-                            delete global.race['no_crispr'];
-                            $(`#${$(this)[0].id}`).removeClass('hl');
-                            ['junker','cataclysm','banana'].forEach(function(s){
-                                delete global.race[s];
-                                $(`#evolution-${s}`).removeClass('hl');
-                            });
-                        }
-                        else {
-                            global.race['no_crispr'] = 1;
-                            $(`#${$(this)[0].id}`).addClass('hl');
-                        }
-                        challengeIcon();
-                    }
-                    challengeIcon();
-                }
-                return false;
-            },
-            highlight(){ return global.race['no_crispr'] ? true : false; }
         },
         joyless: {
             id: 'evolution-joyless',
@@ -1956,6 +1759,24 @@ export const actions = {
             emblem(){ return format_emblem('banana'); },
             flair: loc('evo_challenge_banana_flair'),
             highlight(){ return global.race['banana'] ? true : false; }
+        },
+        truepath: {
+            id: 'evolution-truepath',
+            title: loc('evo_challenge_truepath'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_truepath_desc')}</div>` : loc('evo_challenge_truepath_desc'); },
+            cost: {
+                DNA(){ return 50; }
+            },
+            effect: loc('evo_challenge_truepath_effect'),
+            action(){
+                if (payCosts(actions.evolution.truepath.cost)){
+                    setScenario('truepath');
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('truepath'); },
+            flair: loc('evo_challenge_truepath_flair'),
+            highlight(){ return global.race['truepath'] ? true : false; }
         },
     },
     city: {
@@ -4667,6 +4488,90 @@ export const actions = {
     portal: fortressTech()
 };
 
+export function setChallengeScreen(){
+    let list = $(`#evolution .evolving`).nextAll();
+    Object.values(list).forEach(function(elm){
+        clearElement($(elm),true);
+    });
+    clearElement($(`#evolution .evolving`),true);
+    global.evolution['bunker'] = { count: 1 };
+    removeAction(actions.evolution.bunker.id);
+    evoProgress();
+    if (global.race['truepath']){
+        global.evolution['nerfed'] = { count: 0 };
+        global.evolution['badgenes'] = { count: 0 };
+    }
+    else {
+        if (global.race.universe === 'antimatter'){
+            global.evolution['mastery'] = { count: 0 };
+        }
+        else {
+            global.evolution['plasmid'] = { count: 0 };
+        }
+        global.evolution['crispr'] = { count: 0 };
+    }
+    global.evolution['trade'] = { count: 0 };
+    global.evolution['craft'] = { count: 0 };
+    global.evolution['junker'] = { count: 0 };
+    global.evolution['joyless'] = { count: 0 };
+    global.evolution['steelen'] = { count: 0 };
+    if (global.stats.achieve['whitehole']){
+        global.evolution['decay'] = { count: 0 };
+    }
+    if (global.stats.achieve['ascended']){
+        global.evolution['emfield'] = { count: 0 };
+    }
+    if (global.stats.achieve['shaken']){
+        global.evolution['cataclysm'] = { count: 0 };
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+        global.evolution['banana'] = { count: 0 };
+    }
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
+        global.evolution['truepath'] = { count: 0 };
+    }
+    challengeGeneHeader();
+    if (global.race['truepath']){
+        addAction('evolution','nerfed');
+    }
+    else {
+        if (global.race.universe === 'antimatter'){
+            addAction('evolution','mastery');
+        }
+        else {
+            addAction('evolution','plasmid');
+        }
+    }
+    addAction('evolution','trade');
+    addAction('evolution','craft');
+    if (global.race['truepath']){
+        addAction('evolution','badgenes');
+    }
+    else {
+        addAction('evolution','crispr');
+    }
+    challengeActionHeader();
+    addAction('evolution','joyless');
+    addAction('evolution','steelen');
+    if (global.stats.achieve['whitehole']){
+        addAction('evolution','decay');
+    }
+    if (global.stats.achieve['ascended']){
+        addAction('evolution','emfield');
+    }
+    scenarioActionHeader();
+    addAction('evolution','junker');
+    if (global.stats.achieve['shaken']){
+        addAction('evolution','cataclysm');
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+        addAction('evolution','banana');
+    }
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
+        addAction('evolution','truepath');
+    }
+}
+
 export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 raceList.forEach(race => actions.evolution[race] = {
@@ -4696,6 +4601,60 @@ raceList.forEach(race => actions.evolution[race] = {
     queueable: true,
     emblem(){ return format_emblem(`extinct_${race}`); }
 });
+
+const challengeList = {
+    'plasmid': 'no_plasmid',
+    'mastery': 'weak_mastery',
+    'trade': 'no_trade',
+    'craft': 'no_craft',
+    'crispr': 'no_crispr',
+    'nerfed': 'nerfed',
+    'badgenes': 'badgenes',
+};
+Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
+    id: `evolution-${challenge}`,
+    title: loc(`evo_challenge_${challenge}`),
+    desc: loc(`evo_challenge_${challenge}`),
+    cost: {
+        DNA(){ return 10; }
+    },
+    effect: challengeEffect(challenge),
+    action(){
+        if (payCosts($(this)[0].cost)){
+            if (global.race[challengeList[challenge]]){
+                delete global.race[challengeList[challenge]];
+                $(`#${$(this)[0].id}`).removeClass('hl');
+                if (global.race['truepath']){
+                    delete global.race['nerfed'];
+                    delete global.race['badgenes'];
+                }
+                ['junker','cataclysm','banana','truepath'].forEach(function(s){
+                    delete global.race[s];
+                    $(`#evolution-${s}`).removeClass('hl');
+                });
+            }
+            else {
+                global.race[challengeList[challenge]] = 1;
+                $(`#${$(this)[0].id}`).addClass('hl');
+            }
+            setChallengeScreen();
+        }
+        return false;
+    },
+    highlight(){ return global.race[challengeList[challenge]] ? true : false; }
+});
+
+function challengeEffect(c){
+    switch (c){
+        case 'nerfed':
+            let nVal = global.race.universe === 'antimatter' ? [`20%`,`50%`] : [`50%`,`20%`];
+            return loc(`evo_challenge_${c}_effect`,nVal);
+        case 'badgenes':
+            return loc(`evo_challenge_${c}_effect`,[2]);
+        default:
+            return loc(`evo_challenge_${c}_effect`);
+    }
+}
 
 function cleanEvolution(id){
     ['humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
@@ -4831,7 +4790,7 @@ function setScenario(scenario){
         $(`#evolution-${scenario}`).removeClass('hl');
     }
     else {
-        ['junker','cataclysm','banana'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -4846,27 +4805,40 @@ function setScenario(scenario){
             });
         }
 
-        if (global.race.universe === 'antimatter') {
-            global.race['weak_mastery'] = 1;
-            if (!$(`#evolution-mastery`).hasClass('hl')){
-                $(`#evolution-mastery`).addClass('hl');
-            }
+        if (scenario === 'truepath'){
+            global.race['nerfed'] = 1;
+            ['crispr','plasmid','mastery'].forEach(function(gene){
+                delete global.race[challengeList[gene]];
+            });
         }
         else {
-            global.race['no_plasmid'] = 1;
-            if (!$(`#evolution-plasmid`).hasClass('hl')){
-                $(`#evolution-plasmid`).addClass('hl');
+            ['nerfed','badgenes'].forEach(function(gene){
+                delete global.race[challengeList[gene]];
+            });
+
+            if (global.race.universe === 'antimatter'){
+                global.race['weak_mastery'] = 1;
+                if (!$(`#evolution-mastery`).hasClass('hl')){
+                    $(`#evolution-mastery`).addClass('hl');
+                }
+            }
+            else {
+                global.race['no_plasmid'] = 1;
+                if (!$(`#evolution-plasmid`).hasClass('hl')){
+                    $(`#evolution-plasmid`).addClass('hl');
+                }
             }
         }
 
-        let genes = ['crispr','trade','craft'];
+        let genes = scenario === 'truepath' ? ['badgenes','trade','craft'] : ['crispr','trade','craft'];
         for (let i=0; i<genes.length; i++){
-            global.race[`no_${genes[i]}`] = 1;
+            global.race[challengeList[genes[i]]] = 1;
             if (!$(`#evolution-${genes[i]}`).hasClass('hl')){
                 $(`#evolution-${genes[i]}`).addClass('hl');
             }
         }
     }
+    setChallengeScreen();
     challengeIcon();
 }
 
@@ -6256,7 +6228,7 @@ function dirt_adjust(creep){
     return creep;
 }
 
-export function challengeGeneHeader(){
+function challengeGeneHeader(){
     let challenge = $(`<div class="challenge"></div>`);
     $('#evolution').append(challenge);
     challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_genes')}</h2></div>`));
@@ -6266,14 +6238,14 @@ export function challengeGeneHeader(){
     }
 }
 
-export function challengeActionHeader(){
+function challengeActionHeader(){
     let challenge = $(`<div class="challenge"></div>`);
     $('#evolution').append(challenge);
     challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_run')}</h2></div>`));
     challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_run_desc')}</div>`));
 }
 
-export function scenarioActionHeader(){
+function scenarioActionHeader(){
     let challenge = $(`<div class="challenge"></div>`);
     $('#evolution').append(challenge);
     challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_scenario')}</h2></div>`));
@@ -6563,16 +6535,19 @@ function sentience(){
         global.race['optimistic'] = 1;
     }
 
-    if (global.race['no_crispr']){
+    if (global.race['no_crispr'] || global.race['badgenes']){
         let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
-        for (let i=0; i<10; i++){
-            let trait = bad[Math.rand(0,bad.length)];
-            if (global.race['smart'] && trait === 'dumb') {
-                continue;
-            }
-            if (!global.race[trait]){
-                global.race[trait] = 1;
-                break;
+        let repeat = global.race['badgenes'] ? 2 : 1;
+        for (let j=0; j<repeat; j++){
+            for (let i=0; i<10; i++){
+                let trait = bad[Math.rand(0,bad.length)];
+                if ((global.race['smart'] && trait === 'dumb') || global.race[trait]) {
+                    continue;
+                }
+                if (!global.race[trait]){
+                    global.race[trait] = 1;
+                    break;
+                }
             }
         }
     }

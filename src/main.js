@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, challengeGeneHeader, challengeActionHeader, scenarioActionHeader, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
+import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -594,29 +594,7 @@ if (global.race.species === 'protoplasm'){
     }
 
     if (global.evolution['bunker'] && global.evolution['bunker'].count >= 1){
-        challengeGeneHeader();
-        var challenge_genes = ['plasmid','mastery','trade','craft','crispr'];
-        for (var i = 0; i < challenge_genes.length; i++){
-            if (global.evolution[challenge_genes[i]] && global.evolution[challenge_genes[i]].count == 0){
-                addAction('evolution',challenge_genes[i]);
-            }
-        }
-
-        challengeActionHeader();
-        var challenge_actions = ['joyless','steelen','decay','emfield'];
-        for (var i = 0; i < challenge_actions.length; i++){
-            if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
-                addAction('evolution',challenge_actions[i]);
-            }
-        }
-
-        scenarioActionHeader();
-        var challenge_actions = ['junker','cataclysm','banana'];
-        for (var i = 0; i < challenge_actions.length; i++){
-            if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
-                addAction('evolution',challenge_actions[i]);
-            }
-        }
+        setChallengeScreen();
     }
 }
 else {

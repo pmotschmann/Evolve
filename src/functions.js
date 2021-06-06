@@ -931,6 +931,10 @@ export function masteryType(universe,detailed){
             m_rate /= 10;
             u_rate /= 10;
         }
+        if (global.race['nerfed']){
+            m_rate /= universe === 'antimatter' ? 5 : 2;
+            u_rate /= universe === 'antimatter' ? 5 : 2;
+        }
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){
@@ -975,6 +979,8 @@ function challenge_multiplier(value,type,decimals){
     if (global.race['no_craft']){ challenge_level++; }
     if (global.race['no_crispr']){ challenge_level++; }
     if (global.race['weak_mastery']){ challenge_level++; }
+    if (global.race['nerfed']){ challenge_level++; }
+    if (global.race['badgenes']){ challenge_level++; }
     if (challenge_level > 4){
         challenge_level = 4;
     }
@@ -1095,6 +1101,8 @@ export function calcPrestige(type){
         if (global.race['no_craft']){ harmony++; }
         if (global.race['no_crispr']){ harmony++; }
         if (global.race['weak_mastery']){ harmony++; }
+        if (global.race['nerfed']){ challenge_level++; }
+        if (global.race['badgenes']){ challenge_level++; }
         if (harmony > 5){
             harmony = 5;
         }
@@ -1127,6 +1135,7 @@ export function adjustCosts(costs, wiki){
         });
         return newCosts;
     }
+    costs = truthAdjust(costs, wiki);
     costs = technoAdjust(costs, wiki);
     costs = kindlingAdjust(costs, wiki);
     costs = smolderAdjust(costs, wiki);
@@ -1135,6 +1144,22 @@ export function adjustCosts(costs, wiki){
     costs = extraAdjust(costs, wiki);
     costs = heavyAdjust(costs, wiki);
     return craftAdjust(costs, wiki);
+}
+
+function truthAdjust(costs, wiki){
+    if (global.race['truepath']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+                newCosts[res] = function(){ return costs[res](wiki); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 2); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function extraAdjust(costs, wiki){
@@ -1212,7 +1237,7 @@ function smolderAdjust(costs, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
             }
-            else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence'].includes(res)){
+            else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {

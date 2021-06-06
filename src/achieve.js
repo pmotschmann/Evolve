@@ -459,6 +459,8 @@ export function challengeIcon(){
                 if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
                 if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
                 if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
+                if (global.race['nerfed']){ popper.append($(`<div>${loc('evo_challenge_nerfed')}</div>`)); }
+                if (global.race['badgenes']){ popper.append($(`<div>${loc('evo_challenge_badgenes')}</div>`)); }
 
                 return undefined;
             },
@@ -477,6 +479,8 @@ export function alevel(){
     if (global.race['no_craft']){ a_level++; }
     if (global.race['no_crispr']){ a_level++; }
     if (global.race['weak_mastery']){ a_level++; }
+    if (global.race['nerfed']){ a_level++; }
+    if (global.race['badgenes']){ a_level++; }
     if (a_level > 5){
         a_level = 5;
     }

@@ -2471,6 +2471,7 @@ export const spatialReasoning = (function(){
             global.race.Phage.count,
             global.race['no_plasmid'] || '0',
             global.race['p_mutation'] || '0',
+            global.race['nerfed'] || '0',
             global.genes['store'] || '0',
             global.genes['bleed'] || '0',
             global.city['temple'] ? global.city.temple.count : '0',
@@ -2491,6 +2492,9 @@ export const spatialReasoning = (function(){
                     plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
                     if (global.race['no_plasmid']){
                         plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+                    }
+                    if (global.race['nerfed']){
+                        plasmids = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
                     }
                 }
                 if (!type || (type && type === 'phage')){
@@ -2534,7 +2538,7 @@ export const spatialReasoning = (function(){
 })();
 
 export function faithBonus(){
-    if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
+    if (global.race['no_plasmid'] || global.race.universe === 'antimatter' || global.race['nerfed']){
         if ((global.race['cataclysm'] && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
@@ -2545,6 +2549,9 @@ export function faithBonus(){
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race.universe === 'antimatter'){
+                temple_bonus /= (global.race['nerfed'] ? 3 : 2);
+            }
+            else if (global.race['nerfed']){
                 temple_bonus /= 2;
             }
             if (global.race['spiritual']){
@@ -2573,6 +2580,7 @@ export const plasmidBonus = (function (){
             global.race['gene_fortify'] || '0',
             global.tech['anthropology'] || '0',
             global.tech['fanaticism'] || '0',
+            global.race['nerfed'] || '0',
             global.race['no_plasmid'] || '0',
             global.genes['ancients'] || '0',
             global.city['temple'] ? global.city.temple.count : '0',
@@ -2605,7 +2613,7 @@ export const plasmidBonus = (function (){
                     standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
                 }
 
-                if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+                if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter' && !global.race['nerfed']){
                     let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         temple_bonus += global.civic.professor.workers * 0.002;
@@ -2646,6 +2654,17 @@ export const plasmidBonus = (function (){
                     anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
                 }
                 anti /= 3;
+            }
+
+            if (global.race['nerfed']){
+                if (global.race.universe === 'antimatter'){
+                    standard /= 2;
+                    anti /= 2;
+                }
+                else {
+                    standard /= 5;
+                    anti /= 5;
+                }
             }
 
             plasma = {};
