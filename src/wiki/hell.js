@@ -205,7 +205,7 @@ export function hellPage(content){
             }
 
             infoBoxBuilder(mechs,{ name: `t_${t}`, template: 'hell', label: loc(`portal_spire_type_${t}`), paragraphs: 7, break: [2,3,4,5,6,7], h_level: 4, header: true,
-                text: { 1: loc(`portal_spire_type_${t}_desc`) },
+                text: { 1: `portal_spire_type_${t}_desc` },
                 rawtext: ratings,
                 pclass: 'col2 sk1'
             });
