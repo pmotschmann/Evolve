@@ -792,6 +792,14 @@ if (convertVersion(global['version']) < 101002){
             delete global.city.morale['frenzy'];
         }
     }
+
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') && global.custom.race0.hasOwnProperty('traits')){
+        for (let i=0; i<global.custom.race0.traits.length; i++){
+            if (global.custom.race0.traits[i] === 'frenzy'){
+                global.custom.race0.traits[i] = 'blood_thirst';
+            }
+        }
+    }
     
     if (global.race['jtype'] && global.race['jtype'] === 'omnivore'){
         global.race['jtype'] = 'carnivore';
