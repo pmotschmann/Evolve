@@ -3,6 +3,16 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.2`,
+        date: `6/6/2021`,
+        changes: [
+            `Added Money Reserve % config value to Slave replacement task.`,
+            `Various special buildings are now dropped from the queue if you remove their required trait.`,
+            `Spy Operator will no longer attempt espionage against controlled cities.`,
+            `Lots of small bug fixes with tooltips.`
+        ]
+    },
+    {
         version: `1.1.1`,
         date: `6/5/2021`,
         changes: [

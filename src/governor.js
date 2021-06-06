@@ -422,6 +422,21 @@ function drawnGovernOffice(){
         tax.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
     }
 
+    {
+        if (!global.race.governor.config.hasOwnProperty('slave')){
+            global.race.governor.config['slave'] = {
+                reserve: 100
+            };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('slave')"><div class="has-text-warning">${loc(`gov_task_slave`)}</div></div>`);
+        options.append(contain);
+        let slave = $(`<div class="storage"></div>`);
+        contain.append(slave);
+
+        slave.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.slave.reserve" :controls="false"></b-numberinput></b-field>`));
+    }
+
     vBind({
         el: '#govOffice',
         data: { 
@@ -786,7 +801,8 @@ export const gov_tasks = {
             return checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
         },
         task(){
-            if ( $(this)[0].req() && global.resource.Money.amount >= 25000 && (global.resource.Money.diff >= 25000 || global.resource.Money.amount + global.resource.Money.diff >= global.resource.Money.max) ){
+            let cashCap = global.resource.Money.max * (global.race.governor.config.slave.reserve / 100);
+            if ( $(this)[0].req() && global.resource.Money.amount >= 25000 && (global.resource.Money.diff >= 25000 || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
                 let max = global.city.slave_pen.count * 4;
                 if (max > global.city.slave_pen.slaves){
                     actions.city.slave_market.action();

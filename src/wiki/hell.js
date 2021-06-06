@@ -39,10 +39,11 @@ export function hellPage(content){
 
     infoBoxBuilder(mainContent,{ name: 'pit', template: 'hell', paragraphs: 3,
         para_data: {
-            1: ['1,000,000'],
+            1: ['1,000,000',loc(`galaxy_telemetry_beacon`)],
             2: [loc('portal_soul_forge_title')]
         },
         data_link: {
+            1: [false,'wiki.html#intergalactic-structures-telemetry_beacon'],
             2: ['wiki.html#hell-structures-soul_forge']
         }
     });
