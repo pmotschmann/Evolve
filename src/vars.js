@@ -783,6 +783,17 @@ if (convertVersion(global['version']) < 101001){
     }
 }
 
+if (convertVersion(global['version']) < 101002){
+    if (global.race.hasOwnProperty('frenzy')){
+        global.race['blood_thirst'] = global.race['frenzy'];
+        delete global.race['frenzy'];
+        if (global.city.hasOwnProperty('morale') && global.city.morale.hasOwnProperty('frenzy')){
+            global.city.morale['blood_thirst'] = global.city.morale['frenzy'];
+            delete global.city.morale['frenzy'];
+        }
+    }
+}
+
 global['version'] = '1.1.1';
 delete global['beta'];
 

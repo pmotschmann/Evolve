@@ -1358,10 +1358,10 @@ function war_campaign(gov){
         global.civic.foreign[`gov${gov}`].hstl = 100;
     }
 
-    if (global.race['frenzy']){
-        global.race['frenzy'] += Math.ceil(enemy / 5);
-        if (global.race['frenzy'] > 1000000){
-            global.race['frenzy'] = 1000000;
+    if (global.race['blood_thirst']){
+        global.race['blood_thirst'] += Math.ceil(enemy / 5);
+        if (global.race['blood_thirst'] > 1000000){
+            global.race['blood_thirst'] = 1000000;
         }
     }
 

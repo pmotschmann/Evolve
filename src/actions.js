@@ -7131,8 +7131,8 @@ export function fanaticism(god){
                 unlockAchieve(`infested`);
             }
             break;
-        case 'frenzy':
-            fanaticTrait('frenzy');
+        case 'blood_thirst':
+            fanaticTrait('blood_thirst');
             if (global.race.species === 'entish'){
                 unlockAchieve(`madagascar_tree`);
             }

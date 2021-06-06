@@ -1032,15 +1032,15 @@ function fastLoop(){
             morale += 10;
         }
 
-        if (global.race['frenzy']){
-            if (!global.city.morale['frenzy']){
-                global.city.morale['frenzy'] = 0;
+        if (global.race['blood_thirst']){
+            if (!global.city.morale['blood_thirst']){
+                global.city.morale['blood_thirst'] = 0;
             }
 
-            if (global.race.frenzy >= 1){
-                let frenzy = Math.ceil(Math.log2(global.race.frenzy));
-                global.city.morale.frenzy = frenzy;
-                morale += frenzy;
+            if (global.race.blood_thirst >= 1){
+                let blood_thirst = Math.ceil(Math.log2(global.race.blood_thirst));
+                global.city.morale.blood_thirst = blood_thirst;
+                morale += blood_thirst;
             }
         }
 
@@ -2248,7 +2248,7 @@ function fastLoop(){
             morale += high_tax * 0.5;
         }
 
-        if (((global.civic.govern.type !== 'autocracy' && !global.race['frenzy']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
+        if (((global.civic.govern.type !== 'autocracy' && !global.race['blood_thirst']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
             let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
             global.city.morale.warmonger = global.race['immoral'] ? warmonger : -(warmonger);
             morale += global.city.morale.warmonger;
@@ -7551,13 +7551,13 @@ function longLoop(){
             });
         }
 
-        if (global.race['frenzy']){
-            if (!global.city.morale['frenzy']){
-                global.city.morale['frenzy'] = 0;
+        if (global.race['blood_thirst']){
+            if (!global.city.morale['blood_thirst']){
+                global.city.morale['blood_thirst'] = 0;
             }
 
-            if (global.race.frenzy > 1){
-                global.race.frenzy--;
+            if (global.race.blood_thirst > 1){
+                global.race.blood_thirst--;
             }
         }
 

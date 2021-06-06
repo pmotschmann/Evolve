@@ -824,9 +824,9 @@ export const traits = {
         val: 2,
         vars: [0.01]
     },
-    frenzy: { // Combat causes a temporary increase in morale
-        name: loc('trait_frenzy_name'),
-        desc: loc('trait_frenzy'),
+    blood_thirst: { // Combat causes a temporary increase in morale
+        name: loc('trait_blood_thirst_name'),
+        desc: loc('trait_blood_thirst'),
         type: 'major',
         val: 5,
     },
@@ -1791,7 +1791,7 @@ export const races = {
         home: loc('race_sharkin_home'),
         entity: loc('race_sharkin_entity'),
         traits: {
-            frenzy: 1,
+            blood_thirst: 1,
             apex_predator: 1
         },
         solar: {
@@ -1801,7 +1801,7 @@ export const races = {
             gas_moon: loc('race_sharkin_solar_gas_moon'),
             dwarf: loc('race_sharkin_solar_dwarf'),
         },
-        fanaticism: 'frenzy'
+        fanaticism: 'blood_thirst'
     },
     octigoran: {
         name: loc('race_octigoran'),
