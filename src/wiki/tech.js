@@ -373,6 +373,9 @@ const extraInformation = {
     magocracy: [
         loc(`wiki_tech_gov_unlock`,[loc(`govern_magocracy`)])
     ],
+    governor: [
+        loc(`wiki_tech_governor`)
+    ],
     spy: [
         loc(`wiki_tech_spy`)
     ],
@@ -1635,6 +1638,16 @@ const specialRequirements = {
         [
             loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
             global.race.universe === 'magic'
+        ]
+    ],
+    governor: [
+        [
+            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_governance_title`)]),
+            global.genes['governor'] && global.genes['governor'] >= 1
+        ],
+        [
+            loc(`wiki_tech_special_government_not`,[loc(`govern_anarchy`)]),
+            global.civic['govern'] && global.civic.govern['type'] && global.civic.govern.type !== 'anarchy'
         ]
     ],
     market: [

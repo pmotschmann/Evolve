@@ -131,10 +131,10 @@ export const events = {
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
 
-            if (global.race['frenzy']){
-                global.race['frenzy'] += Math.ceil(enemy / 5);
-                if (global.race['frenzy'] > 1000000){
-                    global.race['frenzy'] = 1000000;
+            if (global.race['blood_thirst']){
+                global.race['blood_thirst'] += Math.ceil(enemy / 5);
+                if (global.race['blood_thirst'] > 1000000){
+                    global.race['blood_thirst'] = 1000000;
                 }
             }
 
@@ -184,10 +184,10 @@ export const events = {
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
 
-            if (global.race['frenzy']){
-                global.race['frenzy'] += Math.ceil(enemy / 5);
-                if (global.race['frenzy'] > 1000000){
-                    global.race['frenzy'] = 1000000;
+            if (global.race['blood_thirst']){
+                global.race['blood_thirst'] += Math.ceil(enemy / 5);
+                if (global.race['blood_thirst'] > 1000000){
+                    global.race['blood_thirst'] = 1000000;
                 }
             }
 
@@ -222,10 +222,10 @@ export const events = {
                 global.civic.garrison.wounded = global.civic.garrison.workers;
             }
 
-            if (global.race['frenzy']){
-                global.race['frenzy'] += 1000;
-                if (global.race['frenzy'] > 1000000){
-                    global.race['frenzy'] = 1000000;
+            if (global.race['blood_thirst']){
+                global.race['blood_thirst'] += 1000;
+                if (global.race['blood_thirst'] > 1000000){
+                    global.race['blood_thirst'] = 1000000;
                 }
             }
 
