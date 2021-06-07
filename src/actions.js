@@ -1,6 +1,6 @@
-import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -5698,11 +5698,7 @@ export function setPlanet(hell){
         global.city.geology = geology;
         global.city.ptrait = trait;
         clearElement($('#evolution'));
-        $(`#pop${id}`).hide();
-        if (poppers[id]){
-            poppers[id].destroy();
-        }
-        clearElement($(`#pop${id}`),true);
+        clearPopper();
         addAction('evolution','rna');
     });
 
@@ -6035,7 +6031,7 @@ export function updateDesc(c_action,category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#pop'+id),c_action,global[category][action]);
+    actionDesc($('#popper'),c_action,global[category][action]);
 }
 
 export function payCosts(costs){
@@ -7242,12 +7238,9 @@ function attachQueuePopovers(){
 }
 
 export function cleanTechPopOver(id){
-    $(`#pop${id}`).hide();
+    $(`#popper`).hide();
     vBind({el: `#popTimer`},'destroy');
-    if (poppers[id]){
-        poppers[id].destroy();
-    }
-    clearElement($(`#pop${id}`),true);
+    clearPopper();
 }
 
 function bananaPerk(val){

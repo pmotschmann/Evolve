@@ -29,7 +29,6 @@ export var global = {
 };
 export var tmp_vars = {};
 export var vues = {};
-export var poppers = {};
 export var breakdown = {
     c: {},
     p: {}
@@ -809,7 +808,7 @@ if (convertVersion(global['version']) < 101002){
     }
 }
 
-global['version'] = '1.1.2';
+global['version'] = '1.1.3';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

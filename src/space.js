@@ -1,5 +1,5 @@
-import { save, global, webWorker, clearStates, poppers, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
+import { save, global, webWorker, clearStates, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -1780,12 +1780,7 @@ const spaceProjects = {
                                 global.stats.banana.b2.l = true;
                             }
                         }
-                        var id = $(this)[0].id;
-                        $(`#pop${id}`).hide();
-                        if (poppers[id]){
-                            poppers[id].destroy();
-                        }
-                        clearElement($(`#pop${id}`),true);
+                        clearPopper();
                     }
                     return true;
                 }
@@ -3173,12 +3168,7 @@ const interstellarProjects = {
                                 global.interstellar['s_gate'].on++;
                             }
                             deepSpace();
-                            var id = $(this)[0].id;
-                            $(`#pop${id}`).hide();
-                            if (poppers[id]){
-                                poppers[id].destroy();
-                            }
-                            clearElement($(`#pop${id}`),true);
+                            clearPopper();
                         }
                     }
                     return true;
@@ -3293,12 +3283,7 @@ const interstellarProjects = {
                             global.tech['ascension'] = 5;
                             global.interstellar['gravity_dome'] = { count: 0 };
                             deepSpace();
-                            var id = $(this)[0].id;
-                            $(`#pop${id}`).hide();
-                            if (poppers[id]){
-                                poppers[id].destroy();
-                            }
-                            clearElement($(`#pop${id}`),true);
+                            clearPopper();
                         }
                     }
                     return true;
@@ -3347,12 +3332,7 @@ const interstellarProjects = {
                             global.interstellar['ascension_machine'] = { count: 0 };
                             global.interstellar['thermal_collector'] = { count: 0 };
                             deepSpace();
-                            var id = $(this)[0].id;
-                            $(`#pop${id}`).hide();
-                            if (poppers[id]){
-                                poppers[id].destroy();
-                            }
-                            clearElement($(`#pop${id}`),true);
+                            clearPopper();
                         }
                     }
                     return true;
@@ -3403,12 +3383,7 @@ const interstellarProjects = {
                             global.tech['ascension'] = 7;
                             global.interstellar['ascension_trigger'] = { count: 1, on: 0 };
                             deepSpace();
-                            var id = $(this)[0].id;
-                            $(`#pop${id}`).hide();
-                            if (poppers[id]){
-                                poppers[id].destroy();
-                            }
-                            clearElement($(`#pop${id}`),true);
+                            clearPopper();
                         }
                     }
                     return true;
@@ -5695,11 +5670,7 @@ export function setUniverse(){
                 }
             }
 
-            $(`#pop${id}`).hide();
-            if (poppers[id]){
-                poppers[id].destroy();
-            }
-            clearElement($(`#pop${id}`),true);
+            clearPopper();
         });
 
         popover(id,function(obj){

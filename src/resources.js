@@ -1644,7 +1644,7 @@ export function craftingPopover(id,res,type,extra){
     },{
         in: function(){
             vBind({
-                el: `#pop${id} > div`,
+                el: `#popper > div`,
                 data: {
                     [res]: breakdown.p[res],
                     res: global['resource'][res],
@@ -1696,7 +1696,7 @@ export function craftingPopover(id,res,type,extra){
             });
         },
         out: function(){
-            vBind({el: `#pop${id} > div`},'destroy');
+            vBind({el: `#popper > div`},'destroy');
         },
         classes: `breakdown has-background-light has-text-dark`,
         prop: {
@@ -1764,7 +1764,7 @@ function breakdownPopover(id,name,type){
     },{
         in: function(){
             vBind({
-                el: `#pop${id} > div`,
+                el: `#popper > div`,
                 data: {
                     'Global': breakdown[type]['Global'],
                     [name]: breakdown[type][name],
@@ -1830,7 +1830,7 @@ function breakdownPopover(id,name,type){
             });
         },
         out: function(){
-            vBind({el: `#pop${id} > div`},'destroy');
+            vBind({el: `#popper > div`},'destroy');
         },
         classes: `breakdown has-background-light has-text-dark`,
         prop: {

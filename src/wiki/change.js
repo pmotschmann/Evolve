@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.3`,
+        date: `6/7/2021`,
+        changes: [
+            `Improvements to Popper reliability.`,
+        ]
+    },
+    {
         version: `1.1.2`,
         date: `6/6/2021`,
         changes: [
