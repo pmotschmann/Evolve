@@ -10,15 +10,15 @@ import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './a
 
 var popperRef = false;
 export function popover(id,content,opts){
-    if (popperRef){
-        clearPopper();
-    }
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
     if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
     if (opts['bind']){
         $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
+            if (popperRef || $(`#popper`).length > 0){
+                clearPopper();
+            }
             $('.popper').hide();
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
@@ -358,7 +358,6 @@ function dragQueue(){
     attachQueuePopovers();
 }
 
-var pop_lock = false;
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
         let pop_target = '#main';
@@ -381,37 +380,24 @@ function attachQueuePopovers(){
         }
 
         $('#'+id).on('mouseover',function(){
-            if (pop_lock !== id){
-                cleanBuildPopOver(pop_lock);
-                let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
+            clearPopper();
+            let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
 
-                var popper = $(`<div id="popper" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-                $(pop_target).append(popper);
-                if (segments[0].substring(0,4) === 'arpa'){
-                    popper.append(arpaProjectCosts(100,c_action));
-                }
-                else {
-                    actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-                }
-                popper.show();
-                popperRef = new Popper($('#buildQueue'),popper);
-                pop_lock = id;
+            var popper = $(`<div id="popper" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+            $(pop_target).append(popper);
+            if (segments[0].substring(0,4) === 'arpa'){
+                popper.append(arpaProjectCosts(100,c_action));
             }
+            else {
+                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
+            }
+            popper.show();
+            popperRef = new Popper($('#buildQueue'),popper);
         });
     }
     $('#buildQueue').on('mouseout',function(){
-        cleanBuildPopOver(pop_lock);
-        pop_lock = false;
+        clearPopper();
     });
-}
-
-export function cleanBuildPopOver(id){
-    $(`#popper`).hide();
-    vBind({el: `#popTimer`},'destroy');
-    if (popperRef){
-        popperRef.destroy();
-    }
-    clearElement($(`#popper`),true);
 }
 
 const tagDebug = false;
