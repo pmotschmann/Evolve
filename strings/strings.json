@@ -5604,7 +5604,7 @@
   "wiki_trait_effect_hooved_ex1": "Horseshoe materials change at various breakpoints for total acquired shoes.",
   "wiki_trait_effect_hooved_ex2": "%0 --%6-> %1 --%7-> %2 --%8-> %3 --%9-> %4 --%10-> %5",
   "wiki_trait_effect_hooved_ex3": "If the next resource is not unlocked by the time you reach the breakpoint it will keep charging the current resource but at a greatly inflated price.",
-  "wiki_trait_effect_hooved_ex4": "Note that you start with %0 horseshoes which count againt the total.",
+  "wiki_trait_effect_hooved_ex4": "Note that you start with %0 horseshoes which count against the total.",
   "wiki_trait_effect_hooved_ex5": "If %0 is not available as a resource then %1 will be charged from the beginning.",
   "wiki_trait_effect_rage": "Wounded soldiers fight %1% harder instead of taking a penalty. Your army fights %0% harder for every wounded soldier.",
   "wiki_trait_effect_heavy": "Fuel costs are %0% higher. Some material costs %1% higher.",
