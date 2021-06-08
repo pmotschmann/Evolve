@@ -2336,13 +2336,23 @@ export const actions = {
                 return loc(`city_horseshoe_desc`);
             },
             category: 'outskirts',
-            reqs: { mining: 2 },
+            reqs: { primitive: 3 },
             trait: ['hooved'],
             not_trait: ['cataclysm'],
             cost: {
-                Copper(){ return global.race['shoecnt'] && !global.resource.Iron.display || global.race.shoecnt <= 50 ? (global.race.shoecnt > 50 ? 20 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 50 && (!global.resource.Steel.display || global.race.shoecnt <= 100) ? (global.race.shoecnt <= 100 ? 18 : 30) * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 100 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
+                Lumber(){ 
+                    let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
+                        && (!global.resource.Copper.display || global.race.shoecnt <= 12) ? true : false;
+                    return active ? (global.race.shoecnt > 12 ? 25 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0;
+                },
+                Copper(){
+                    let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
+                    let active = global.race['shoecnt'] && (!lum || (lum && global.race.shoecnt > 12 && global.resource.Copper.display))
+                        && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
+                    return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
+                },
+                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 18 : 30) * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
                 Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
             },

@@ -105,6 +105,27 @@ const traitExtra = {
     ],
     heavy: [
         loc(`wiki_trait_effect_heavy_ex1`,[rName('Stone'),rName('Cement'),rName('Wrought_Iron')])
+    ],
+    sniper: [
+        loc(`wiki_trait_effect_sniper_ex1`),
+    ],
+    hooved: [
+        loc(`wiki_trait_effect_hooved_ex1`),
+        loc(`wiki_trait_effect_hooved_ex2`,[
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Iron') ? global.resource.Iron.name : loc('resource_Iron_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Steel') ? global.resource.Steel.name : loc('resource_Steel_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Adamantite') ? global.resource.Adamantite.name : loc('resource_Adamantite_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Orichalcum') ? global.resource.Orichalcum.name : loc('resource_Orichalcum_name')}</span>`,
+            12,75,150,500,5000
+        ]),
+        loc(`wiki_trait_effect_hooved_ex3`),
+        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`]),
+        loc(`wiki_trait_effect_hooved_ex5`,[
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
+        ]),
     ]
 };
 
