@@ -1,5 +1,5 @@
-import { global, poppers, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
+import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -2286,11 +2286,7 @@ export function buildArpa(pro,num,update){
                     removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
-                    $(`#popArpa${pro}`).hide();
-                    if (poppers[`popArpa${pro}`]){
-                        poppers[`popArpa${pro}`].destroy();
-                    }
-                    clearElement($(`#popArpa${pro}`),true);
+                    clearPopper();
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info');

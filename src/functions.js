@@ -1,4 +1,4 @@
-import { global, save, poppers, webWorker, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, webWorker, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -8,7 +8,11 @@ import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './achieve.js';
 
+var popperRef = false;
 export function popover(id,content,opts){
+    if (popperRef){
+        clearPopper();
+    }
     if (!opts){ opts = {}; }
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
@@ -18,7 +22,7 @@ export function popover(id,content,opts){
             $('.popper').hide();
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
-            var popper = $(`<div id="pop${id}" class="popper${wide} ${classes}"></div>`);
+            var popper = $(`<div id="popper" class="popper${wide} ${classes}"></div>`);
             if (opts['attach']){
                 $(opts['attach']).append(popper);
             }
@@ -28,30 +32,34 @@ export function popover(id,content,opts){
             if (content){
                 popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
             }
-            poppers[id] = new Popper(
+            popperRef = new Popper(
                 opts['self'] ? this : $(opts.elm),
                 popper,
                 opts.hasOwnProperty('prop') ? opts['prop'] : {}
             );
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
-                opts['in']({ this: this, popper: popper, id: `pop${id}` });
+                opts['in']({ this: this, popper: popper, id: `popper` });
             }
         });
     }
     if (opts['unbind']){
         $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
-            $(`#pop${id}`).hide();
-            if (poppers[id]){
-                poppers[id].destroy();
-                delete poppers[id];
-            }
-            clearElement($(`#pop${id}`),true);
+            clearPopper();
             if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                opts['out']({ this: this, popper: $(`#pop${id}`), id: `pop${id}`});
+                opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
             }
         });
     }
+}
+
+export function clearPopper(){
+    $(`#popper`).hide();
+    if (popperRef){
+        popperRef.destroy();
+        popperRef = false;
+    }
+    clearElement($(`#popper`),true);
 }
 
 export function gameLoop(act){
@@ -377,7 +385,7 @@ function attachQueuePopovers(){
                 cleanBuildPopOver(pop_lock);
                 let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
 
-                var popper = $(`<div id="pop${id}" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
+                var popper = $(`<div id="popper" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
                 $(pop_target).append(popper);
                 if (segments[0].substring(0,4) === 'arpa'){
                     popper.append(arpaProjectCosts(100,c_action));
@@ -386,7 +394,7 @@ function attachQueuePopovers(){
                     actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
                 }
                 popper.show();
-                poppers[id] = new Popper($('#buildQueue'),popper);
+                popperRef = new Popper($('#buildQueue'),popper);
                 pop_lock = id;
             }
         });
@@ -398,12 +406,12 @@ function attachQueuePopovers(){
 }
 
 export function cleanBuildPopOver(id){
-    $(`#pop${id}`).hide();
+    $(`#popper`).hide();
     vBind({el: `#popTimer`},'destroy');
-    if (poppers[id]){
-        poppers[id].destroy();
+    if (popperRef){
+        popperRef.destroy();
     }
-    clearElement($(`#pop${id}`),true);
+    clearElement($(`#popper`),true);
 }
 
 const tagDebug = false;

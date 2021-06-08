@@ -1,6 +1,6 @@
-import { global, save, poppers, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
@@ -2157,13 +2157,23 @@ export const actions = {
                 return loc(`city_horseshoe_desc`);
             },
             category: 'outskirts',
-            reqs: { mining: 2 },
+            reqs: { primitive: 3 },
             trait: ['hooved'],
             not_trait: ['cataclysm'],
             cost: {
-                Copper(){ return global.race['shoecnt'] && !global.resource.Iron.display || global.race.shoecnt <= 50 ? (global.race.shoecnt > 50 ? 20 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0; },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 50 && (!global.resource.Steel.display || global.race.shoecnt <= 100) ? (global.race.shoecnt <= 100 ? 18 : 30) * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 100 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
+                Lumber(){ 
+                    let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
+                        && (!global.resource.Copper.display || global.race.shoecnt <= 12) ? true : false;
+                    return active ? (global.race.shoecnt > 12 ? 25 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0;
+                },
+                Copper(){
+                    let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
+                    let active = global.race['shoecnt'] && (!lum || (lum && global.race.shoecnt > 12 && global.resource.Copper.display))
+                        && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
+                    return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
+                },
+                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 18 : 30) * global.race.shoecnt : 0; },
+                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
                 Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
             },
@@ -5670,11 +5680,7 @@ export function setPlanet(hell){
         global.city.geology = geology;
         global.city.ptrait = trait;
         clearElement($('#evolution'));
-        $(`#pop${id}`).hide();
-        if (poppers[id]){
-            poppers[id].destroy();
-        }
-        clearElement($(`#pop${id}`),true);
+        clearPopper();
         addAction('evolution','rna');
     });
 
@@ -6007,7 +6013,7 @@ export function updateDesc(c_action,category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#pop'+id),c_action,global[category][action]);
+    actionDesc($('#popper'),c_action,global[category][action]);
 }
 
 export function payCosts(costs){
@@ -7217,12 +7223,9 @@ function attachQueuePopovers(){
 }
 
 export function cleanTechPopOver(id){
-    $(`#pop${id}`).hide();
+    $(`#popper`).hide();
     vBind({el: `#popTimer`},'destroy');
-    if (poppers[id]){
-        poppers[id].destroy();
-    }
-    clearElement($(`#pop${id}`),true);
+    clearPopper();
 }
 
 function bananaPerk(val){

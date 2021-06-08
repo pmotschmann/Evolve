@@ -1,6 +1,6 @@
-import { global, poppers, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, vBind, tagEvent, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -344,17 +344,7 @@ function drawGovModal(){
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGovPop').hide();
-                    poppers['GovPop'].destroy();
-                    clearElement($(`#popGovPop`),true);
-
-                    setTimeout(function(){
-                        $('#popGovPop').hide();
-                        if (poppers['GovPop']){
-                            poppers['GovPop'].destroy();
-                        }                        
-                        clearElement($(`#popGovPop`),true);
-                    },250);
+                    clearPopper();
                 }
             }
         }
@@ -714,15 +704,7 @@ function drawEspModal(gov){
                     spyAction('influence',g);
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGovLabel').hide();
-                    poppers['GovLabel'].destroy();
-                    clearElement($('#popGovLabel'),true);
-
-                    setTimeout(function(){
-                        $('#popGovLabel').hide();
-                        poppers['GovLabel'].destroy();
-                        clearElement($('#popGovLabel'),true);
-                    },250);
+                    clearPopper();
                 }
             },
             sabotage(g){
@@ -731,15 +713,7 @@ function drawEspModal(gov){
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
                     $('#popGov').hide();
-                    $('#popGovLabel').hide();
-                    poppers['GovLabel'].destroy();
-                    clearElement($('#popGovLabel'),true);
-
-                    setTimeout(function(){
-                        $('#popGovLabel').hide();
-                        poppers['GovLabel'].destroy();
-                        clearElement($('#popGovLabel'),true);
-                    },250);
+                    clearPopper();
                 }
             },
             incite(g){
@@ -747,15 +721,7 @@ function drawEspModal(gov){
                     spyAction('incite',g);
                     vBind({el: '#espModal'},'destroy');
                     $('.modal-background').click();
-                    $('#popGovLabel').hide();
-                    poppers['GovLabel'].destroy();
-                    clearElement($('#popGovLabel'),true);
-
-                    setTimeout(function(){
-                        $('#popGovLabel').hide();
-                        poppers['GovLabel'].destroy();
-                        clearElement($('#popGovLabel'),true);
-                    },250);
+                    clearPopper();
                 }
             },
             annex(g){
@@ -766,15 +732,7 @@ function drawEspModal(gov){
                         global.civic.foreign[`gov${g}`].act = 'annex';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
-                        $('#popGovLabel').hide();
-                        poppers['GovLabel'].destroy();
-                        clearElement($('#popGovLabel'),true);
-
-                        setTimeout(function(){
-                            $('#popGovLabel').hide();
-                            poppers['GovLabel'].destroy();
-                            clearElement($('#popGovLabel'),true);
-                        },250);
+                        clearPopper();
                     }
                 }
             },
@@ -788,15 +746,7 @@ function drawEspModal(gov){
                         global.civic.foreign[`gov${g}`].act = 'purchase';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
-                        $('#popGovLabel').hide();
-                        poppers['GovLabel'].destroy();
-                        clearElement($('#popGovLabel'),true);
-
-                        setTimeout(function(){
-                            $('#popGovLabel').hide();
-                            poppers['GovLabel'].destroy();
-                            clearElement($('#popGovLabel'),true);
-                        },250);
+                        clearPopper();
                     }
                 }
             }

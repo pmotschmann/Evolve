@@ -1,5 +1,5 @@
-import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, poppers, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, tagEvent, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearStates } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, tagEvent, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -531,14 +531,7 @@ const fortressModules = {
                 if (global.portal.vault.count === 2){
                     drawTech();
                     renderFortress();
-                    setTimeout(function(){
-                        let id = 'portal-vault';
-                        $(`#pop${id}`).hide();
-                        if (poppers[id]){
-                            poppers[id].destroy();
-                        }
-                        clearElement($(`#pop${id}`),true);
-                    },250);
+                    clearPopper();
                 }
             }
         },
