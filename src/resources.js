@@ -571,7 +571,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         global['resource'][name] = {
             name: name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`)),
             display: false,
-            value: resource_values[name],
+            value: global.race['truepath'] ? resource_values[name] * 2 : resource_values[name],
             amount: 0,
             crates: 0,
             diff: 0,

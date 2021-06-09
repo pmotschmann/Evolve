@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
 import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -2409,6 +2409,9 @@ export const actions = {
                 let pop = extraVal ? 5 + extraVal : 5;
                 if (global.tech['home_safe']){
                     let safe = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 10000 : 5000) : 2000);
+                    if (extraVal){
+                        safe *= 2;
+                    }
                     return `<div>${loc('plus_max_citizens',[pop])}. <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
                 }
                 else {
@@ -4747,6 +4750,9 @@ export function casinoEffect(){
     if (global.tech['world_control']){
         money = money * 1.25;
     }
+    if (global.race['truepath']){
+        money = money * 1.5;
+    }
     if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
         money *= 1 + (global.tech['stock_exchange'] * 0.05);
     }
@@ -6785,6 +6791,14 @@ function sentience(){
         loadTab('mTabCivil');
     }
 
+    if (global.race['truepath']){
+        Object.keys(resource_values).forEach(function(res){
+            if (global.resource.hasOwnProperty(res)){
+                global.resource[res].value = resource_values[res] * 2;
+            }
+        });
+    }
+
     altRace(global.race.species,true);
 
     tagEvent('sentience',{
@@ -7262,6 +7276,9 @@ export function bank_vault(){
         vault *= 1 + (global.tech['stock_exchange'] * 0.1);
     }
     if (global.tech['world_control']){
+        vault *= 1.25;
+    }
+    if (global.race['truepath']){
         vault *= 1.25;
     }
     if (global.blood['greed']){

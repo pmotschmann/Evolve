@@ -1144,7 +1144,10 @@ function truthAdjust(costs, wiki){
     if (global.race['truepath']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            if (res === 'Money'){
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 3); }
+            }
+            else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](wiki); }
             }
             else {

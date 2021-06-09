@@ -6,7 +6,7 @@ const changeList = [
         version: `1.1.3`,
         date: `6/7/2021`,
         changes: [
-            `Improvements to Popper reliability.`,
+            `Improvements to tooltip reliability.`,
             `The first Horseshoes can now be constructed out of Lumber if available as a resource.`,
             `Horseshoe pacing updated, see Hooved entry in wiki for expanded information.`
         ]

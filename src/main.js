@@ -4799,7 +4799,7 @@ function fastLoop(){
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
-            income_base *= 0.4;
+            income_base *= global.race['truepath'] ? 0.2 : 0.4;
             if (global.race['greedy']){
                 income_base *= 1 - (traits.greedy.vars[0] / 100);
             }
@@ -7501,7 +7501,7 @@ function longLoop(){
         if (global.tech['currency'] && global.tech['currency'] >= 2){
             let fluxVal = govActive('risktaker',0) ? 2 : 4;
             Object.keys(resource_values).forEach(function (res) {
-                let r_val = resource_values[res];
+                let r_val = global.race['truepath'] ? resource_values[res] * 2 : resource_values[res];
                 if (res === 'Copper' && global.tech['high_tech'] && global.tech['high_tech'] >= 2){
                     r_val *= 2;
                 }
