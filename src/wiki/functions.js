@@ -25,6 +25,7 @@ export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('full')){ args['full'] = false; }
     if (!args.hasOwnProperty('break')){ args['break'] = false; }
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
+    if (!args.hasOwnProperty('examples')){ args['examples'] = false; }
 
     let info = false;
     if (box){
@@ -72,6 +73,14 @@ export function infoBoxBuilder(parent,args,box){
         }
         info.append(para);
     });
+    
+    if (args.examples){
+        info.append($(`<div class="para"><span>${loc(`wiki_examples`)}</span></div>`));
+        
+        args.examples.forEach(function(example){
+            info.append($(`<div class="para"><span> - ${example}</span></div>`));
+        });
+    }
     
     if (!box){
         parent.append(info);

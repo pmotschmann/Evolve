@@ -77,7 +77,8 @@ export const events = {
                 at_risk += global.city.cottage.count * 2;
             }
             if (global.city.hasOwnProperty('apartment')){
-                at_risk += p_on['apartment'] * 5;
+                let extraVal = govActive('extravagant',2);
+                at_risk += p_on['apartment'] * (extraVal ? 5 + extraVal : 5);
             }
             if (at_risk > global.resource[global.race.species].amount){
                 at_risk = global.resource[global.race.species].amount;
@@ -846,6 +847,10 @@ export function eventList(type){
 function tax_revolt(){
     let special_res = ['Soul_Gem', 'Corrupt_Gem', 'Codex', 'Demonic_Essence', 'Blood_Stone', 'Artifact']
     let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
+    let aristoVal = govActive('aristocrat',2);
+    if (aristoVal){
+        ramp -= aristoVal;
+    }
     let risk = (global.civic.taxes.tax_rate - ramp) * 0.04;
     Object.keys(global.resource).forEach(function (res) {
         if (!special_res.includes(res)){
