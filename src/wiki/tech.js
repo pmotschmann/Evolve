@@ -2,12 +2,14 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { universeAffix } from './../achieve.js';
 import { actions, housingLabel } from './../actions.js';
+import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races } from './../races.js';
 import { getHalloween } from './../functions.js';
 import { actionDesc, sideMenu } from './functions.js';
 
 const isHalloween = getHalloween();
+const standard_tech = techList('standard');
 
 const extraInformation = {
     club: global.race['soul_eater'] ? [
@@ -2103,12 +2105,12 @@ const extraTechPositions = {
 };
 
 var techTrees = {};
-Object.keys(actions.tech).forEach(function (actionName){
-    let action = actions.tech[actionName];
+Object.keys(standard_tech).forEach(function (actionName){
+    let action = standard_tech[actionName];
     if (!techTrees[action.grant[0]]){
         techTrees[action.grant[0]] = {};
     }
-    techTrees[action.grant[0]][action.grant[1]] = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
+    techTrees[action.grant[0]][action.grant[1]] = typeof standard_tech[actionName].title === 'string' ? standard_tech[actionName].title : standard_tech[actionName].title();
 });
 //Anomalies
 techTrees['primitive'][2] = loc('wiki_tech_req_or',[loc('tech_bone_tools'),loc('tech_wooden_tools')]);
@@ -2191,30 +2193,30 @@ function addRequirements(parent,key,keyName){
 
 export function renderTechPage(era){
     let content = sideMenu('create');;
-    let techList = [];
+    let techListing = [];
     let otherTechs = [];
 
-    Object.keys(actions.tech).forEach(function (actionName){
-        let action = actions.tech[actionName];
+    Object.keys(standard_tech).forEach(function (actionName){
+        let action = standard_tech[actionName];
         if (action.hasOwnProperty('era') && action.era === era && (!action.hasOwnProperty('wiki') || action.wiki)){
-            let id = actions.tech[actionName].id.split('-');
+            let id = standard_tech[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName);
             addRequirements(info, action, actionName);
             if (action.cost['Knowledge']){
-                if (techList.length === 0){
-                    techList[0] = [action, info];
+                if (techListing.length === 0){
+                    techListing[0] = [action, info];
                 }
                 else {
                     let knowledgeCost = action.cost.Knowledge();
-                    let insertPos = techList.length - 1;
+                    let insertPos = techListing.length - 1;
                     
-                    while (insertPos >= 0 && techList[insertPos][0].cost.Knowledge() > knowledgeCost) { 
-                        techList[insertPos + 1] = techList[insertPos]; 
+                    while (insertPos >= 0 && techListing[insertPos][0].cost.Knowledge() > knowledgeCost) { 
+                        techListing[insertPos + 1] = techListing[insertPos]; 
                         insertPos--; 
                     } 
-                    techList[insertPos + 1] = [action, info]; 
+                    techListing[insertPos + 1] = [action, info]; 
                 }
             }
             else {
@@ -2228,26 +2230,26 @@ export function renderTechPage(era){
             Object.keys(extraTechPositions).forEach(function (extraTech){
                 if (!sorted && otherTechs[i][0].id === 'tech-' + extraTech) {
                     let insertPos = -1;
-                    for (let i=0; i<techList.length; i++) {
-                        if (techList[i][0].id === 'tech-' + extraTechPositions[extraTech]) {
+                    for (let i=0; i<techListing.length; i++) {
+                        if (techListing[i][0].id === 'tech-' + extraTechPositions[extraTech]) {
                             insertPos = i + 1;
                             break;
                         }
                     }
-                    let tempArray = techList.slice(0, insertPos);
+                    let tempArray = techListing.slice(0, insertPos);
                     tempArray.push(otherTechs[i]);
-                    techList = tempArray.concat(techList.slice(insertPos));
+                    techListing = tempArray.concat(techListing.slice(insertPos));
                     sorted = true;
                 }
             });
             if (!sorted){
-                techList.push(otherTechs[i]);
+                techListing.push(otherTechs[i]);
             }
         }
     }
-    for (let i=0; i<techList.length; i++) {
-        content.append(techList[i][1]);
-        let id = techList[i][0].id.split('-');
-        sideMenu('add',`${techList[i][0].era}-tech`,id[1],typeof techList[i][0].title === 'function' ? techList[i][0].title() : techList[i][0].title);
+    for (let i=0; i<techListing.length; i++) {
+        content.append(techListing[i][1]);
+        let id = techListing[i][0].id.split('-');
+        sideMenu('add',`${techListing[i][0].era}-tech`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
     }
 }

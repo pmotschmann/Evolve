@@ -1095,8 +1095,8 @@ export function calcPrestige(type){
         if (global.race['no_craft']){ harmony++; }
         if (global.race['no_crispr']){ harmony++; }
         if (global.race['weak_mastery']){ harmony++; }
-        if (global.race['nerfed']){ challenge_level++; }
-        if (global.race['badgenes']){ challenge_level++; }
+        if (global.race['nerfed']){ harmony++; }
+        if (global.race['badgenes']){ harmony++; }
         if (harmony > 5){
             harmony = 5;
         }

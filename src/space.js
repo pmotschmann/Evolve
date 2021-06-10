@@ -5106,6 +5106,9 @@ export function checkSpaceRequirements(era,region,action){
 }
 
 export function checkRequirements(action_set,region,action){
+    if (action_set[region][action].hasOwnProperty('path') && action_set[region][action] !== (global.race['truepath'] ? 'truepath' : 'standard')){
+        return false;
+    }
     var isMet = true;
     Object.keys(action_set[region][action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < action_set[region][action].reqs[req]){

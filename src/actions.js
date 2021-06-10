@@ -10,7 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commis
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
-import { techList } from './tech.js';
+import { techList, techPath } from './tech.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 
@@ -4901,6 +4901,9 @@ export function checkCityRequirements(action){
     else if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'stone'){
         return true;
     }
+    if (actions.city[action].hasOwnProperty('path') && actions.city[action].path !== (global.race['truepath'] ? 'truepath' : 'standard')){
+        return false;
+    }
     var isMet = true;
     Object.keys(actions.city[action].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.city[action].reqs[req]){
@@ -4912,6 +4915,12 @@ export function checkCityRequirements(action){
 
 export function checkTechRequirements(tech){
     let isMet = true;
+
+    let path = global.race['truepath'] ? 'truepath' : 'standard';
+    if (!techPath[path].includes(actions.tech[tech].era) || (actions.tech[tech].hasOwnProperty('path') && actions.tech[tech].path !== path)){
+        return false;
+    }
+
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;

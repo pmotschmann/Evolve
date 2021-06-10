@@ -10177,6 +10177,22 @@ export function swissKnife(cheeseOnly,cheeseList){
     return cheeseOnly ? loc(`cheese_${cheeses[type]}`) : loc(`tech_swiss_bank`,[loc(`cheese_${cheeses[type]}`)]);
 }
 
-export function techList(){
+export const techPath = {
+    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional'],
+    truepath: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'solar', 'tauceti'],
+};
+
+export function techList(path){
+    if (path){
+        let techList = {};
+        Object.keys(techs).forEach(function(t){
+            if (techPath[path].includes(techs[t].era) || techs[t].hasOwnProperty('path')){
+                if (!techs[t].hasOwnProperty('path') || (techs[t].hasOwnProperty('path') && techs[t].path === path)){
+                    techList[t] = techs[t];
+                }
+            }
+        });
+        return techList;
+    }
     return techs;
 }
