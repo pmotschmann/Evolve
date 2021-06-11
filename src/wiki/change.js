@@ -3,10 +3,18 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.4`,
+        date: `6/11/2021`,
+        changes: [
+            `Fixed a bug that would sometimes cause mechs to be constructed without weapons.`,
+            `Fixed a bug that would cause an open tooltip to change descriptions when a queue item completes.`
+        ]
+    },
+    {
         version: `1.1.3`,
         date: `6/7/2021`,
         changes: [
-            `Improvements to Popper reliability.`,
+            `Improvements to tooltip reliability.`,
             `The first Horseshoes can now be constructed out of Lumber if available as a resource.`,
             `Horseshoe pacing updated, see Hooved entry in wiki for expanded information.`
         ]

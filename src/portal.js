@@ -3305,9 +3305,15 @@ export function drawMechLab(){
                         global.portal.mechbay.blueprint.hardpoint.length = 0;
                     }
                     else if (s === 'small' || s === 'medium'){
+                        if (global.portal.mechbay.blueprint.hardpoint.length === 0){
+                            global.portal.mechbay.blueprint.hardpoint.push('laser');
+                        }
                         global.portal.mechbay.blueprint.hardpoint.length = 1;
                     }
                     else {
+                        if (global.portal.mechbay.blueprint.hardpoint.length === 0){
+                            global.portal.mechbay.blueprint.hardpoint.push('laser');
+                        }
                         if (global.portal.mechbay.blueprint.hardpoint.length === 1){
                             global.portal.mechbay.blueprint.hardpoint.push(global.portal.mechbay.blueprint.hardpoint.includes('laser') ? 'plasma' : 'laser');
                         }
