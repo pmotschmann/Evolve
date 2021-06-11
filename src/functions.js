@@ -22,7 +22,7 @@ export function popover(id,content,opts){
             $('.popper').hide();
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
-            var popper = $(`<div id="popper" class="popper${wide} ${classes}"></div>`);
+            var popper = $(`<div id="popper" class="popper${wide} ${classes}" data-id="${id}"></div>`);
             if (opts['attach']){
                 $(opts['attach']).append(popper);
             }
@@ -53,7 +53,10 @@ export function popover(id,content,opts){
     }
 }
 
-export function clearPopper(){
+export function clearPopper(id){
+    if (id && $(`#popper`).data('id') !== id){
+        return;
+    }
     $(`#popper`).hide();
     if (popperRef){
         popperRef.destroy();
@@ -360,7 +363,6 @@ function dragQueue(){
 
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
-        let pop_target = '#main';
         let id = `q${global.queue.queue[i].id}${i}`;
 
         let c_action;
@@ -379,25 +381,27 @@ function attachQueuePopovers(){
             });
         }
 
-        $('#'+id).on('mouseover',function(){
-            clearPopper();
-            let wide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? ' wide' : '';
-
-            var popper = $(`<div id="popper" class="popper${wide} has-background-light has-text-dark pop-desc"></div>`);
-            $(pop_target).append(popper);
-            if (segments[0].substring(0,4) === 'arpa'){
-                popper.append(arpaProjectCosts(100,c_action));
+        let isWide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? true : false;
+        popover(id,
+            function(obj){
+                if (segments[0].substring(0,4) === 'arpa'){
+                    obj.popper.append(arpaProjectCosts(100,c_action));
+                }
+                else {
+                    actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
+                }
+            },
+            {
+                wide: isWide,
+                prop: {
+                    modifiers: {
+                        preventOverflow: { enabled: false },
+                        hide: { enabled: false }
+                    }
+                }
             }
-            else {
-                actionDesc(popper,c_action,global[segments[0]][segments[1]],false);
-            }
-            popper.show();
-            popperRef = new Popper($('#buildQueue'),popper);
-        });
+        );
     }
-    $('#buildQueue').on('mouseout',function(){
-        clearPopper();
-    });
 }
 
 const tagDebug = false;
