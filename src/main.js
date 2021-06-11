@@ -7210,7 +7210,7 @@ function midLoop(){
             }
 
             if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
-                clearPopper();
+                clearPopper(`q${t_action.id}${i}`);
                 global.queue.queue.splice(i,1);
                 buildQueue();
                 break;
@@ -7225,7 +7225,7 @@ function midLoop(){
                 }
                 if (t_action['queue_complete']){
                     if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
-                        clearPopper();
+                        clearPopper(`q${t_action.id}${i}`);
                         global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
                         if (global.queue.queue[i].q <= 0){
                             global.queue.queue.splice(i,1);
@@ -7271,7 +7271,7 @@ function midLoop(){
                 }
             }
             else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
-                clearPopper();
+                clearPopper(`q${t_action.id}${i}`);
                 global.queue.queue.splice(i,1);
                 buildQueue();
                 break;
@@ -7313,7 +7313,7 @@ function midLoop(){
                             global.queue.queue[idx].q--;
                         }
                         else {
-                            clearPopper();
+                            clearPopper(`q${c_action.id}${idx}`);
                             global.queue.queue.splice(idx,1);
                             buildQueue();
                         }
@@ -7339,7 +7339,7 @@ function midLoop(){
                             global.queue.queue[idx].q--;
                         }
                         else {
-                            clearPopper();
+                            clearPopper(`q${c_action.id}${idx}`);
                             global.queue.queue.splice(idx,1);
                             buildQueue();
                         }
@@ -7378,7 +7378,7 @@ function midLoop(){
         let last = false;
         for (let i=0; i<global.queue.queue.length; i++){
             if (last === global.queue.queue[i].id){
-                clearPopper();
+                clearPopper(`q${global.queue.queue[i].id}${i}`);
                 global.queue.queue[i-1].q += global.queue.queue[i].q;
                 global.queue.queue.splice(i,1);
                 break;

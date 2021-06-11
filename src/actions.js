@@ -6028,7 +6028,9 @@ export function updateDesc(c_action,category,action){
             $(`#${id} .off`).css('display','block');
         }
     }
-    actionDesc($('#popper'),c_action,global[category][action]);
+    if ($('#popper').data('id') === id){
+        actionDesc($('#popper'),c_action,global[category][action]);
+    }
 }
 
 export function payCosts(costs){
