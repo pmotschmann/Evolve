@@ -14,12 +14,12 @@ export function popover(id,content,opts){
     if (!opts.hasOwnProperty('elm')){ opts['elm'] = '#'+id; }
     if (!opts.hasOwnProperty('bind')){ opts['bind'] = true; }
     if (!opts.hasOwnProperty('unbind')){ opts['unbind'] = true; }
+    if (!opts.hasOwnProperty('placement')){ opts['placement'] = 'bottom'; }
     if (opts['bind']){
         $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseenter' : 'mouseover',function(){
             if (popperRef || $(`#popper`).length > 0){
                 clearPopper();
             }
-            $('.popper').hide();
             let wide = opts['wide'] ? ' wide' : '';
             let classes = opts['classes'] ? opts['classes'] : `has-background-light has-text-dark pop-desc`;
             var popper = $(`<div id="popper" class="popper${wide} ${classes}" data-id="${id}"></div>`);
@@ -32,11 +32,26 @@ export function popover(id,content,opts){
             if (content){
                 popper.append(typeof content === 'function' ? content({ this: this, popper: popper }) : content);
             }
-            popperRef = new Popper(
-                opts['self'] ? this : $(opts.elm),
-                popper,
-                opts.hasOwnProperty('prop') ? opts['prop'] : {}
+
+            popperRef = Popper.createPopper(opts['self'] ? this : $(opts.elm)[0],
+                document.querySelector(`#popper`),
+                {
+                    placement: opts['placement'],
+                    modifiers: [
+                        {
+                            name: 'flip',
+                            enabled: true,
+                        },
+                        {
+                            name: 'offset',
+                            options: {
+                                offset: opts['offset'] ? opts['offset'] : [0, 0],
+                            },
+                        }
+                    ],
+                }
             );
+
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });

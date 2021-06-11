@@ -4123,6 +4123,9 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 arpa('Physics');
+                if (global.race['truepath']){
+                    global.tech['unify'] = 1;
+                }
                 return true;
             }
             return false;
@@ -8266,6 +8269,7 @@ const techs = {
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
+        path: 'standard',
         reqs: { mars: 2 },
         grant: ['unify',1],
         cost: {
@@ -8285,6 +8289,7 @@ const techs = {
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
+        path: 'standard',
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
@@ -8306,12 +8311,8 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 if (global.race['banana']){
                     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    delete global.race['banana'];
                 }
-                global.tech['world_control'] = 1;
-                clearElement($('#garrison'));
-                clearElement($('#c_garrison'));
-                buildGarrison($('#garrison'),true);
-                buildGarrison($('#c_garrison'),false);
                 if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
                     unlockAchieve(`world_domination`);
                 }
@@ -8324,26 +8325,36 @@ const techs = {
                 if (global.stats.attacks === 0){
                     unlockAchieve(`pacifist`);
                 }
+                uniteEffect();
+                return true;
+            }
+            return false;
+        }
+    },
+    unite: {
+        id: 'tech-unite',
+        title: loc('tech_unite'),
+        desc(){ return loc('tech_unite_desc'); },
+        category: 'special',
+        era: 'globalized',
+        path: 'truepath',
+        reqs: { unify: 1 },
+        grant: ['unify',2],
+        cost: {
+            Bool(){
+                let owned = 0;
                 for (let i=0; i<3; i++){
-                    if (global.civic.foreign[`gov${i}`].occ){
-                        let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
-                        global.civic['garrison'].max += occ_amount;
-                        global.civic['garrison'].workers += occ_amount;
-                        global.civic.foreign[`gov${i}`].occ = false;
-                    }
-                    global.civic.foreign[`gov${i}`].buy = false;
-                    global.civic.foreign[`gov${i}`].anx = false;
-                    global.civic.foreign[`gov${i}`].sab = 0;
-                    global.civic.foreign[`gov${i}`].act = 'none';
-                }
-                if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                    for (let i=0; i<global.race.governor.tasks.length; i++){
-                        if (global.race.governor.tasks[`t${i}`] === 'spy' || global.race.governor.tasks[`t${i}`] === 'spyop'){
-                            global.race.governor.tasks[`t${i}`] = 'none';
-                        }
+                    if (global.civic.foreign[`gov${i}`].occ || global.civic.foreign[`gov${i}`].buy || global.civic.foreign[`gov${i}`].anx){
+                        owned++;
                     }
                 }
-                delete global.race['banana'];
+                return owned === 3 ? true : false;
+            }
+        },
+        effect: loc('tech_unite_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                uniteEffect();
                 return true;
             }
             return false;
@@ -10155,6 +10166,33 @@ const techs = {
         }
     },
 };
+
+function uniteEffect(){
+    global.tech['world_control'] = 1;
+    clearElement($('#garrison'));
+    clearElement($('#c_garrison'));
+    buildGarrison($('#garrison'),true);
+    buildGarrison($('#c_garrison'),false);
+    for (let i=0; i<3; i++){
+        if (global.civic.foreign[`gov${i}`].occ){
+            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+            global.civic['garrison'].max += occ_amount;
+            global.civic['garrison'].workers += occ_amount;
+            global.civic.foreign[`gov${i}`].occ = false;
+        }
+        global.civic.foreign[`gov${i}`].buy = false;
+        global.civic.foreign[`gov${i}`].anx = false;
+        global.civic.foreign[`gov${i}`].sab = 0;
+        global.civic.foreign[`gov${i}`].act = 'none';
+    }
+    if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+        for (let i=0; i<global.race.governor.tasks.length; i++){
+            if (global.race.governor.tasks[`t${i}`] === 'spy' || global.race.governor.tasks[`t${i}`] === 'spyop'){
+                global.race.governor.tasks[`t${i}`] = 'none';
+            }
+        }
+    }
+}
 
 export function swissKnife(cheeseOnly,cheeseList){
     let cheeses = [

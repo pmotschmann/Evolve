@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.0`,
+        date: `??/??/2021`,
+        changes: [
+            `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
+        ]
+    },
+    {
         version: `1.1.4`,
         date: `6/11/2021`,
         changes: [

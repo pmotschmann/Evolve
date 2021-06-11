@@ -1501,6 +1501,7 @@ const fortressModules = {
                 if (!global.settings.tabLoad){
                     loadTab('mTabCivic');
                     clearElement($('#popportal-mechbay'),true);
+                    clearPopper(`portal-mechbay`);
                 }
             },
             effect(){
@@ -3220,8 +3221,8 @@ export function drawMechLab(){
         assemble.append(options);
 
         let sizes = ``;
-        ['small','medium','large','titan','collector'].forEach(function(size){
-            sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
+        ['small','medium','large','titan','collector'].forEach(function(size,idx){
+            sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
         options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
@@ -3232,8 +3233,8 @@ export function drawMechLab(){
         </b-dropdown>`);
 
         let chassis = ``;
-        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val){
-            chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
+        ['wheel','tread','biped','quad','spider','hover'].forEach(function(val,idx){
+            chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
         options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
@@ -3245,8 +3246,8 @@ export function drawMechLab(){
 
         for (let i=0; i<4; i++){
             let weapons = ``;
-            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val){
-                weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
+            ['laser','kinetic','shotgun','missile','flame','plasma','sonic','tesla'].forEach(function(val,idx){
+                weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
@@ -3260,8 +3261,8 @@ export function drawMechLab(){
         let e_cap = global.blood['prepared'] ? 5 : 4;
         for (let i=0; i<e_cap; i++){
             let equip = ``;
-            ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val){
-                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
+            ['special','shields','sonar','grapple','infrared','flare','radiator','coolant','ablative','stabilizer','seals'].forEach(function(val,idx){
+                equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
@@ -3466,36 +3467,29 @@ export function drawMechLab(){
             }
 
             for (let idx=0; idx<range; idx++){
-                popover(`mechAssembly${type}${idx}`, function(obj){
-                    let val = $(obj.this).attr(`data-val`);
-                    if (val === 'special'){
-                        switch (global.portal.mechbay.blueprint.size){
-                            case 'large':
-                                val = 'battery';
-                                break;
-                            case 'titan':
-                                val = 'target';
-                                break;
-                            default:
-                                val = 'jumpjet';
-                                break;
-                        }
-                    }
-                    return loc(`portal_mech_${type}_${val}_desc`);
-                },
-                {
-                    elm: `#mechAssembly .${type}.r${idx}`,
-                    prop: {
-                        modifiers: {
-                            preventOverflow: { enabled: false },
-                            hide: { enabled: false },
-                            flip: {
-                                behavior: ['left','right']
+                for (let i=0; i<$(`#mechAssembly .${type}.r${idx}`).length; i++){
+                    popover(`mechAssembly${type}${idx}${i}`, function(obj){
+                        let val = $(obj.this).attr(`data-val`);
+                        if (val === 'special'){
+                            switch (global.portal.mechbay.blueprint.size){
+                                case 'large':
+                                    val = 'battery';
+                                    break;
+                                case 'titan':
+                                    val = 'target';
+                                    break;
+                                default:
+                                    val = 'jumpjet';
+                                    break;
                             }
-                        },
+                        }
+                        return loc(`portal_mech_${type}_${val}_desc`);
+                    },
+                    {
+                        elm: `#mechAssembly .${type}.r${idx}.a${i}`,
                         placement: 'right'
-                    }
-                });
+                    });
+                }
             }
         });
 

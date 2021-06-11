@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -704,6 +704,9 @@ export function loadTab(tab){
                 tagEvent('page_view',{ page_title: `Evolve - Settings` });
             }
             break;
+    }
+    if ($(`#popper`).length > 0 && $(`#${$(`#popper`).data('id')}`).length === 0){
+        clearPopper();
     }
 }
 
