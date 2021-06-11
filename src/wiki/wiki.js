@@ -61,6 +61,7 @@ function initPage(){
             key: 'events',
             submenu: [
                 { key: 'major' },
+                { key: 'minor' },
                 { key: 'special' }              
             ]
         },
