@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.4`,
+        date: `6/7/2021`,
+        changes: [
+            `Fixed a bug that would sometimes cause mechs to be constructed without weapons.`,
+        ]
+    },
+    {
         version: `1.1.3`,
         date: `6/7/2021`,
         changes: [
