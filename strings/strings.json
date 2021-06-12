@@ -439,6 +439,8 @@
   "event_raid2": "Your city was raided, $%0 was stolen, %1 soldiers were killed and %2 soldiers were wounded.",
   "event_siege1": "Rival cities have joined forces to destroy your city. You repelled the attack, but %0 soldiers were killed and %1 soldiers were wounded.",
   "event_siege2": "Your city was sacked by a coalition of enemy forces. $%0 was stolen, %1 soldiers were killed and %2 soldiers were wounded.",
+  "event_pillaged1": "You have repelled an attack by the %0. %1 soldiers were killed and %2 soldiers were wounded defending your city.",
+  "event_pillaged2": "Your city was sacked by the %0. %1 soldiers were killed and %2 soldiers were wounded. Lost %3.",
   "event_terrorist1": "%0 soldiers were wounded by a terrorist attack against your security forces.",
   "event_terrorist2": "%0 soldiers were wounded and %1 soldiers were killed by a terrorist attack against your security forces.",
   "event_quake": "A powerful earthquake has been detected on %0, fortunately it hit an uninhabited region. Some of your scientists are concerned about the increase in quakes occurring since the World Collider was constructed.",

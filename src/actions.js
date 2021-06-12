@@ -6692,6 +6692,12 @@ function sentience(){
         s1: civ2name.s1
     };
 
+    if (global.race['truepath']){
+        global.civic.foreign.gov0.mil = Math.round(global.civic.foreign.gov0.mil * 1.5);
+        global.civic.foreign.gov1.mil = Math.round(global.civic.foreign.gov1.mil * 1.4);
+        global.civic.foreign.gov2.mil = Math.round(global.civic.foreign.gov2.mil * 1.25);
+    }
+
     if (global.race['cataclysm']){
         messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info');
     }

@@ -1,14 +1,15 @@
 import { global, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { races } from './races.js';
-import { govTitle } from './civics.js';
+import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech } from './actions.js';
+import { tradeRatio } from './resources.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 
 export const events = {
     dna_replication: {
-        reqs: { 
+        reqs: {
             race: 'protoplasm',
             resource: 'DNA'
         },
@@ -22,7 +23,7 @@ export const events = {
         }
     },
     rna_meteor: {
-        reqs: { 
+        reqs: {
             race: 'protoplasm',
             resource: 'RNA'
         },
@@ -36,7 +37,7 @@ export const events = {
         }
     },
     inspiration: {
-        reqs: { 
+        reqs: {
             resource: 'Knowledge'
         },
         type: 'major',
@@ -46,7 +47,7 @@ export const events = {
         }
     },
     fire: {
-        reqs: { 
+        reqs: {
             resource: 'Lumber',
             nogenus: 'aquatic',
             notrait: 'evil'
@@ -107,20 +108,22 @@ export const events = {
         }
     },
     raid: {
-        reqs: { 
+        reqs: {
             tech: 'military',
             notech: 'world_control'
         },
         type: 'major',
         condition(){
-            return !global.race['cataclysm'] && (global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60) ? true : false;
+            return !global.race['truepath'] && !global.race['cataclysm'] && (global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60) ? true : false;
         },
         effect(){
-            let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
-            let enemy = global['resource'][global.race.species].amount / Math.rand(1,4);
-            
-            let killed =  Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
+            let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
+            let enemy = Math.rand(25,50) * eAdv;
+
+            let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
+            let killed =  Math.floor(Math.seededRandom(0,injured));
+            let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
             if (global.race['instinct']){
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
@@ -157,7 +160,7 @@ export const events = {
         }
     },
     siege: {
-        reqs: { 
+        reqs: {
             tech: 'military',
             notech: 'world_control'
         },
@@ -166,14 +169,17 @@ export const events = {
             if (global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ){
                 return false;
             }
-            return global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
+            return !global.race['truepath'] && global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
         },
         effect(){
-            let army = (global.civic.garrison.workers - (global.civic.garrison.wounded / 2)) * global.tech.military;
-            let enemy = global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil;
+            let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
+            let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
+            let enemy = (global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil) * eAdv;
 
-            let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
+            let killed =  Math.floor(Math.seededRandom(0,injured));
+            let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
+
             if (global.race['instinct']){
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
@@ -202,6 +208,45 @@ export const events = {
                 global.resource.Money.amount = res;
                 return loc('event_siege2',[loss.toLocaleString(),killed.toLocaleString(),wounded.toLocaleString()]);
             }
+        }
+    },
+    pillage0: {
+        reqs: {
+            tech: 'military',
+            notech: 'world_control'
+        },
+        type: 'major',
+        condition(){
+            return global.race['truepath'] && !global.civic.foreign.gov0.occ && global.civic.foreign.gov0.hstl > 60 ? true : false;
+        },
+        effect(){
+            return pillaged(`gov0`);
+        }
+    },
+    pillage1: {
+        reqs: {
+            tech: 'military',
+            notech: 'world_control'
+        },
+        type: 'major',
+        condition(){
+            return global.race['truepath'] && !global.civic.foreign.gov1.occ && global.civic.foreign.gov1.hstl > 60 ? true : false;
+        },
+        effect(){
+            return pillaged(`gov1`);
+        }
+    },
+    pillage2: {
+        reqs: {
+            tech: 'military',
+            notech: 'world_control'
+        },
+        type: 'major',
+        condition(){
+            return global.race['truepath'] && !global.civic.foreign.gov2.occ && global.civic.foreign.gov2.hstl > 60 ? true : false;
+        },
+        effect(){
+            return pillaged(`gov2`);
         }
     },
     terrorist: {
@@ -280,7 +325,7 @@ export const events = {
         }
     },
     ruins: {
-        reqs: { 
+        reqs: {
             trait: 'ancient_ruins',
             resource: 'Knowledge'
         },
@@ -758,6 +803,57 @@ function slaveLoss(type,string){
             }
         }
     };
+}
+
+function pillaged(gov){
+    let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
+    let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
+    let enemy = global.civic.foreign[gov].mil * (1 + Math.floor(Math.seededRandom(0,10) - 5) / 10) * eAdv;
+
+    let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
+    let killed = garrisonSize() > 0 ? Math.floor(Math.seededRandom(1,injured)) : 0;
+    let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
+    if (global.race['instinct']){
+        killed = Math.round(killed / 2);
+        wounded = Math.round(wounded / 2);
+    }
+    global.civic.garrison.workers -= killed;
+    global.civic.garrison.wounded += wounded;
+    global.stats.died += killed;
+    if (global.civic.garrison.wounded > global.civic.garrison.workers){
+        global.civic.garrison.wounded = global.civic.garrison.workers;
+    }
+
+    if (global.race['blood_thirst']){
+        global.race['blood_thirst'] += Math.ceil(enemy / 5);
+        if (global.race['blood_thirst'] > 1000000){
+            global.race['blood_thirst'] = 1000000;
+        }
+    }
+
+    let enemy_name = loc(`civics_gov${global.civic.foreign[gov].name.s0}`,[global.civic.foreign[gov].name.s1]);
+
+    if (army > enemy){
+        return loc('event_pillaged1',[enemy_name,killed.toLocaleString(),wounded.toLocaleString()]);
+    }
+    else {
+        let stolen = [];
+        Object.keys(tradeRatio).forEach(function(res){
+            if (global.resource[res] && global.resource[res].display && global.resource[res].amount > 0){
+                let loss = Math.rand(1,Math.round(global.resource[res].amount / 4));
+                let remain = global.resource[res].amount - loss;
+                if (remain < 0){ remain = 0; }
+                global.resource[res].amount = remain;
+                if (res === 'Money'){
+                    stolen.push(`$${loss}`);
+                }
+                else {
+                    stolen.push(`${loss} ${global.resource[res].name}`);
+                }
+            }
+        });
+        return loc('event_pillaged2',[enemy_name,killed.toLocaleString(),wounded.toLocaleString(),stolen.join(', ')]);
+    }
 }
 
 export function eventList(type){
