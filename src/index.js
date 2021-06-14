@@ -46,6 +46,63 @@ export function mainVue(){
                 const date = new Date();
                 downloadToFile(exportGame(), `evolve-${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}.txt`, 'text/plain');
             },
+            importStringFile(){ 
+                let file = document.getElementById("stringPackFile").files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    let fileName = document.getElementById("stringPackFile").files[0].name;
+                    reader.readAsText(file, "UTF-8");
+                    reader.onload = function (evt) {
+                        try {
+                            JSON.parse(evt.target.result);
+                        }
+                        catch {
+                            global.settings.sPackMsg = loc(`string_pack_error`,[fileName]);
+                            return;
+                        }
+                       
+                        global.settings.sPackMsg = loc(`string_pack_using`,[fileName]);
+                        save.setItem('string_pack_name',fileName); save.setItem('string_pack',LZString.compressToUTF16(evt.target.result));
+                        if (global.settings.sPackOn){
+                            global.queue.rename = true;
+                            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                            if (webWorker.w){
+                                webWorker.w.terminate();
+                            }
+                            window.location.reload();
+                        }
+                       
+                    }
+                    reader.onerror = function (evt) {
+                        console.error("error reading file");
+                    }
+                }
+            },
+            clearStringFile(){
+                if (save.getItem('string_pack')){
+                    global.settings.sPackMsg = loc(`string_pack_none`);
+                    save.removeItem('string_pack_name');
+                    save.removeItem('string_pack');
+                    if (global.settings.sPackOn){
+                        global.queue.rename = true;
+                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                        if (webWorker.w){
+                            webWorker.w.terminate();
+                        }
+                        window.location.reload();
+                    }
+                }
+            },
+            stringPackOn(){
+                if (save.getItem('string_pack')){
+                    global.queue.rename = true;
+                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    if (webWorker.w){
+                        webWorker.w.terminate();
+                    }
+                    window.location.reload();
+                }
+            },
             restoreGame(){
                 let restore_data = save.getItem('evolveBak') || false;
                 if (restore_data){
@@ -114,6 +171,9 @@ export function mainVue(){
             label(lbl){
                 return tabLabel(lbl);
             },
+            sPack(){
+                return global.settings.sPackMsg;
+            },
             notation(n){
                 switch (n){
                     case 'si':
@@ -127,7 +187,7 @@ export function mainVue(){
         }
     });
 
-    ['settings1','settings3','settings4','settings5','settings6','settings7','settings8','settings9','settings10','settings11','settings12'].forEach(function(k){
+    ['settings1','settings3','settings4','settings5','settings6','settings7','settings8','settings9','settings10','settings11','settings12','settings13'].forEach(function(k){
         popover(`${k}`, function(){
                 return loc(k);
             },
@@ -951,6 +1011,7 @@ export function index(){
         <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ 'c_cat' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.qKey"><span class="settings6" aria-label="${loc('settings6')}">{{ 'q_key' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.qAny"><span class="settings7" aria-label="${loc('settings7')}">{{ 'q_any' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.sPackOn" @input="stringPackOn"><span class="settings13" aria-label="${loc('settings13')}">{{ 's_pack_on' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.expose"><span class="settings8" aria-label="${loc('settings8')}">{{ 'expose' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ 'tabLoad' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.boring"><span class="settings10" aria-label="${loc('settings10')}">{{ 'boring' | label }}</span></b-switch>
@@ -970,6 +1031,14 @@ export function index(){
             <div class="keyMap"><span>${loc('tech_arpa')}</span> <b-input v-model="s.keyMap.showGenetics" id="showGeneticsKey"></b-input></div>
             <div class="keyMap"><span>${loc('tab_stats')}</span> <b-input v-model="s.keyMap.showAchieve" id="showAchieveKey"></b-input></div>
             <div class="keyMap"><span>${loc('tab_settings')}</span> <b-input v-model="s.keyMap.settings" id="settingshKey"></b-input></div>
+        </div>
+        <div class="stringPack setting">
+            <button class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
+            <input type="file" class="fileImport" id="stringPackFile" accept=".txt">
+            <button class="button right" @click="clearStringFile">{{ 'clear_string_pack' | label }}</button>
+        </div>
+        <div class="stringPack setting">
+            <span>{{  | sPack}}</span>
         </div>
         <div class="importExport">
             <b-field label="${loc('import_export')}">

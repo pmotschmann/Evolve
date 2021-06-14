@@ -129,6 +129,8 @@ if (global.queue.rename === true){
     global.queue.rename = false;
 }
 
+global.settings.sPackMsg = save.getItem('string_pack_name') ? loc(`string_pack_using`,[save.getItem('string_pack_name')]) : loc(`string_pack_none`);
+
 mainVue();
 
 if (global['new']){
