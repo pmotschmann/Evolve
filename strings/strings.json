@@ -124,6 +124,7 @@
   "string_pack_none": "No string pack chosen",
   "string_pack_using": "Using %0",
   "string_pack_error": "%0 incorrectly formatted",
+  "string_example": "String pack files must be formatted as valid JSON. See github strings.json file for a complete list of all keys and default strings. The file must be formatted like this: %0",
   "import": "Import Game",
   "export": "Export Game",
   "export_file": "Save as File",

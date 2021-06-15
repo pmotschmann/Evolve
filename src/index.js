@@ -187,15 +187,25 @@ export function mainVue(){
         }
     });
 
-    ['settings1','settings3','settings4','settings5','settings6','settings7','settings8','settings9','settings10','settings11','settings12','settings13','settings14'].forEach(function(k){
-        popover(`${k}`, function(){
-                return loc(k);
+    ['1','3','4','5','6','7','8','9','10','11','12','13','14'].forEach(function(k){
+        popover(`settings${k}`, function(){
+                return loc(`settings${k}`);
             },
             {
-                elm: `#settings span.${k}`
+                elm: `#settings span.settings${k}`
             }
         );
     });
+
+    let example = `<div class="example">{
+  "year": "Galactic Standard Year",
+  "resource_Food_name": "Nom Noms"
+}</div>`;
+
+    popover(`stringPack`, function(){
+            return loc(`string_example`,[example]);
+        }
+    );
 }
 
 function tabLabel(lbl){
@@ -1034,7 +1044,7 @@ export function index(){
             <div class="keyMap"><span>${loc('tab_settings')}</span> <b-input v-model="s.keyMap.settings" id="settingshKey"></b-input></div>
         </div>
         <div class="stringPack setting">
-            <button class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
+            <button id="stringPack" class="button" @click="importStringFile">{{ 'load_string_pack' | label }}</button>
             <input type="file" class="fileImport" id="stringPackFile" accept=".txt">
             <button class="button right" @click="clearStringFile">{{ 'clear_string_pack' | label }}</button>
         </div>
