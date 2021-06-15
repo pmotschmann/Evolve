@@ -1066,6 +1066,9 @@ export function marketItem(mount,market_item,name,color,full){
                     if (rank > 5){ rank = 5; }
                     rate *= 1 + (rank / 50);
                 }
+                if (global.race['truepath']){
+                    rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
+                }
                 rate = +(rate).toFixed(3);
                 let unit = rate === 1 ? loc('resource_market_unit') : loc('resource_market_units');
                 let price = tradeBuyPrice(res);
@@ -1535,6 +1538,9 @@ export function tradeSellPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
         price = price * (1 + (global.tech['railway'] * boost));
     }
+    if (global.race['truepath']){
+        price *= 1 - (global.civic.foreign.gov3.hstl / 101);
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -1557,6 +1563,9 @@ export function tradeBuyPrice(res){
     if (global.tech['railway']){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
         price = price * (boost ** global.tech['railway']);
+    }
+    if (global.race['truepath']){
+        price *= 1 + (global.civic.foreign.gov3.hstl / 101);
     }
     price = +(price).toFixed(1);
     return price;
@@ -2490,16 +2499,18 @@ export const spatialReasoning = (function(){
                 let plasmids = 0;
                 if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
                     plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
+                    let raw = 0;
                     if (global.race['no_plasmid']){
-                        plasmids = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+                        raw = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
                     }
                     if (global.race['nerfed']){
-                        plasmids = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
+                        raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
                     }
+                    plasmids = Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
                 }
                 if (!type || (type && type === 'phage')){
                     if (global.genes['store'] >= 4){
-                        plasmids += global.race.Phage.count;
+                        plasmids += Math.round(global.race.Phage.count * (global.race['nerfed'] ? (1/3) : 1));
                     }
                 }
                 let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
@@ -2508,7 +2519,8 @@ export const spatialReasoning = (function(){
                 }
                 if (global.genes['bleed'] && global.genes['bleed'] >= 3){
                     if (!type || (type && ((type === 'plasmid' && global.race.universe === 'antimatter') || (type === 'anti' && global.race.universe !== 'antimatter')))){
-                        plasmids += global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+                        let raw = global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+                        plasmids += Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
                     }
                 }
                 modifier *= 1 + (plasmids / divisor);

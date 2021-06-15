@@ -4662,7 +4662,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
 function challengeEffect(c){
     switch (c){
         case 'nerfed':
-            let nVal = global.race.universe === 'antimatter' ? [`20%`,`50%`] : [`50%`,`20%`];
+            let nVal = global.race.universe === 'antimatter' ? [`20%`,`50%`,`50%`,`33%`] : [`50%`,`20%`,`50%`,`33%`];
             return loc(`evo_challenge_${c}_effect`,nVal);
         case 'badgenes':
             return loc(`evo_challenge_${c}_effect`,[2]);
@@ -6696,6 +6696,48 @@ function sentience(){
         global.civic.foreign.gov0.mil = Math.round(global.civic.foreign.gov0.mil * 1.5);
         global.civic.foreign.gov1.mil = Math.round(global.civic.foreign.gov1.mil * 1.4);
         global.civic.foreign.gov2.mil = Math.round(global.civic.foreign.gov2.mil * 1.25);
+    
+        global.civic.foreign['gov3'] = {
+            unrest: 0,
+            hstl: Math.floor(Math.seededRandom(20,40)),
+            mil: Math.floor(Math.seededRandom(650,750)),
+            eco: Math.floor(Math.seededRandom(250,300)),
+            spy: 0,
+            esp: 0,
+            trn: 0,
+            sab: 0,
+            act: 'none'
+        };
+
+        global.civic.foreign.gov3.mil = Math.floor(Math.seededRandom(650,750));
+        global.civic.foreign.gov3.eco = Math.floor(Math.seededRandom(250,300));
+
+        let civAltName = genCivName(true);
+        global.civic.foreign.gov3['name'] = {
+            s0: civAltName.s0,
+            s1: civAltName.s1
+        };
+
+        global.civic.foreign['gov4'] = {
+            unrest: 0,
+            hstl: 100,
+            mil: 300,
+            eco: 100,
+            spy: 0,
+            esp: 0,
+            trn: 0,
+            sab: 0,
+            act: 'none'
+        };
+
+        let civAltName2 = genCivName(true);
+        while (civAltName2.s1 === civAltName.s1){
+            civAltName2 = genCivName(true);
+        }
+        global.civic.foreign.gov4['name'] = {
+            s0: 99,
+            s1: civAltName2.s1
+        };
     }
 
     if (global.race['cataclysm']){

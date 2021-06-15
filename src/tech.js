@@ -7,7 +7,7 @@ import { descension } from './portal.js';
 import { races } from './races.js';
 import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineIndustry, buildGarrison, checkControlling } from './civics.js';
+import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace } from './space.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
@@ -4149,6 +4149,10 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 arpa('Physics');
+                if (global.race['truepath'] && !global.tech['rival']){
+                    global.tech['rival'] = 1;
+                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]));
+                }
                 return true;
             }
             return false;
@@ -6884,6 +6888,9 @@ const techs = {
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
         not_trait: ['cataclysm'],
         grant: ['mad',1],
+        condition(){
+            return global.race['truepath'] ? (global.tech['world_control'] ? true : false ) : true;
+        },
         cost: {
             Knowledge(){ return 120000; },
             Oil(){ return global.city.ptrait === 'dense' ? 10000 : 8500; },
@@ -8355,6 +8362,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 uniteEffect();
+                if (global.race['truepath'] && !global.tech['rival']){
+                    global.tech['rival'] = 1;
+                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]));
+                }
                 return true;
             }
             return false;

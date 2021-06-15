@@ -1133,6 +1133,9 @@ function fastLoop(){
                             if (rank > 10){ rank = 10; }
                             rate *= 1 + (rank / 100);
                         }
+                        if (global.race['truepath']){
+                            rate *= 1 - (global.civic.foreign.gov3.hstl / 101);
+                        }
                         modRes(res,global.resource[res].trade * time_multiplier * rate);
                         modRes('Money', -(price * time_multiplier));
                         breakdown.p.consume.Money[loc('trade')] -= price;
@@ -6656,7 +6659,8 @@ function midLoop(){
             global.portal.purifier.sup_max = Math.round(max);
         }
 
-        for (let i=0; i<3; i++){
+        let espEnd = global.race['truepath'] ? 5 : 3;
+        for (let i=0; i<espEnd; i++){
             if (global.civic.foreign[`gov${i}`].trn > 0){
                 global.civic.foreign[`gov${i}`].trn--;
                 if (global.civic.foreign[`gov${i}`].trn === 0){
@@ -6707,6 +6711,7 @@ function midLoop(){
                             }
                             break;
                         case 'annex':
+                            if (i >= 3){ break; }
                             let drawTechs = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].anx = true;
                             messageQueue(loc('civics_spy_annex_success',[govTitle(i)]),'success');
@@ -6715,6 +6720,7 @@ function midLoop(){
                             }
                             break;
                         case 'purchase':
+                            if (i >= 3){ break; }
                             let drawTechsAlt = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].buy = true;
                             messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success');

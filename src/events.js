@@ -4,6 +4,7 @@ import { races } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech } from './actions.js';
 import { tradeRatio } from './resources.js';
+import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -114,6 +115,9 @@ export const events = {
         },
         type: 'major',
         condition(){
+            if (checkControlling(`gov0`) && checkControlling(`gov1`) && checkControlling(`gov2`)){
+                return false;
+            }
             return !global.race['truepath'] && !global.race['cataclysm'] && (global.civic.foreign.gov0.hstl > 60 || global.civic.foreign.gov1.hstl > 60 || global.civic.foreign.gov2.hstl > 60) ? true : false;
         },
         effect(){
@@ -166,7 +170,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            if (global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ){
+            if (checkControlling(`gov0`) || checkControlling(`gov1`) || checkControlling(`gov2`)){
                 return false;
             }
             return !global.race['truepath'] && global.civic.foreign.gov0.hstl > 80 && global.civic.foreign.gov1.hstl > 80 && global.civic.foreign.gov2.hstl > 80 ? true : false;
@@ -217,7 +221,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !global.civic.foreign.gov0.occ && global.civic.foreign.gov0.hstl > 60 ? true : false;
+            return global.race['truepath'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov0`);
@@ -230,7 +234,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !global.civic.foreign.gov1.occ && global.civic.foreign.gov1.hstl > 60 ? true : false;
+            return global.race['truepath'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov1`);
@@ -243,15 +247,28 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !global.civic.foreign.gov2.occ && global.civic.foreign.gov2.hstl > 60 ? true : false;
+            return global.race['truepath'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov2`);
         }
     },
+    pillage3: {
+        reqs: {
+            tech: 'military',
+        },
+        type: 'major',
+        condition(){
+            return global.race['truepath'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
+        },
+        effect(){
+            return pillaged(`gov3`,true);
+        }
+    },
     terrorist: {
         reqs: {
-            tech: 'world_control'
+            tech: 'world_control',
+            notrait: 'truepath'
         },
         type: 'major',
         effect(){            
@@ -805,7 +822,7 @@ function slaveLoss(type,string){
     };
 }
 
-function pillaged(gov){
+function pillaged(gov,serious){
     let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
     let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
     let enemy = global.civic.foreign[gov].mil * (1 + Math.floor(Math.seededRandom(0,10) - 5) / 10) * eAdv;
@@ -837,10 +854,13 @@ function pillaged(gov){
         return loc('event_pillaged1',[enemy_name,killed.toLocaleString(),wounded.toLocaleString()]);
     }
     else {
+        let limiter = serious ? 2 : 4;
         let stolen = [];
-        Object.keys(tradeRatio).forEach(function(res){
+        let targets = Object.keys(tradeRatio);
+        targets.push('Money');
+        targets.forEach(function(res){
             if (global.resource[res] && global.resource[res].display && global.resource[res].amount > 0){
-                let loss = Math.rand(1,Math.round(global.resource[res].amount / 4));
+                let loss = Math.rand(1,Math.round(global.resource[res].amount / limiter));
                 let remain = global.resource[res].amount - loss;
                 if (remain < 0){ remain = 0; }
                 global.resource[res].amount = remain;

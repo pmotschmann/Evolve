@@ -451,7 +451,7 @@ export function modRes(res,val,notrack,buffer){
     return success;
 }
 
-export function genCivName(){
+export function genCivName(alt){
     let genus = races[global.race.species].type;
     switch (genus){
         case 'animal':
@@ -481,7 +481,18 @@ export function genCivName(){
             break;
     }
 
-    const filler = [
+    const filler = alt ? [
+        loc(`civics_gov_tp_name0`),
+        loc(`civics_gov_tp_name1`),
+        loc(`civics_gov_tp_name2`),
+        loc(`civics_gov_tp_name3`),
+        loc(`civics_gov_tp_name4`),
+        loc(`civics_gov_tp_name5`),
+        loc(`civics_gov_tp_name6`),
+        loc(`civics_gov_tp_name7`),
+        loc(`civics_gov_tp_name8`),
+        loc(`civics_gov_tp_name9`),
+    ] : [
         races[global.race.species].name,
         races[global.race.species].home,
         loc(`biome_${global.city.biome}_name`),
@@ -502,7 +513,7 @@ export function genCivName(){
 
     return {
         s0: Math.rand(0,14),
-        s1: filler[Math.rand(0,16)]
+        s1: filler[Math.rand(0,filler.length)]
     };
 }
 
@@ -1017,6 +1028,9 @@ function challenge_multiplier(value,type,decimals){
                 value = value * 1.05;
                 break;
         }
+    }
+    if (global.race['truepath']){
+        value = value * 1.5;
     }
     switch (challenge_level){
         case 1:

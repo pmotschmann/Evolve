@@ -47,7 +47,7 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history','banana'],    
+    challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history','banana','ashanddust'],    
 };
 
 const flairData = {
