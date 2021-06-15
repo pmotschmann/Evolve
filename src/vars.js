@@ -1092,6 +1092,9 @@ delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
 }
+if (typeof global.settings.qAny_res === 'undefined'){
+    global.settings['qAny_res'] = false;
+}
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
 }
