@@ -1095,6 +1095,9 @@ if (typeof global.settings.qAny === 'undefined'){
 if (typeof global.settings.sPackOn === 'undefined'){
     global.settings['sPackOn'] = true;
 }
+if (typeof global.settings.qAny_res === 'undefined'){
+    global.settings['qAny_res'] = false;
+}
 if (typeof global.settings.sPackMsg === 'undefined'){
     global.settings['sPackMsg'] = false;
 }

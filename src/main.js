@@ -7146,7 +7146,7 @@ function midLoop(){
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
-                time = global.settings.qAny ? 0 : time;
+                time = global.settings.qAny_res ? 0 : time;
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
@@ -7161,17 +7161,17 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            time += global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.r_queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny ? false : true;
+                        stop = global.settings.qAny_res ? false : true;
                     }
                     else {
                         global.r_queue.queue[i].cna = true;
                         global.r_queue.queue[i]['time'] = -1;
                     }
                 }
-                global.r_queue.queue[i].qa = global.settings.qAny ? true : false;
+                global.r_queue.queue[i].qa = global.settings.qAny_res ? true : false;
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
