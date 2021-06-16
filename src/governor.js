@@ -567,7 +567,7 @@ export const gov_tasks = {
     tax: { // Dynamic Taxes
         name: loc(`gov_task_tax`),
         req(){
-            return global.tech['currency'] && global.tech.currency >= 3 && global.civic.taxes.display ? true : false;
+            return (global.race['terrifying'] || (global.tech['currency'] && global.tech.currency >= 3)) && global.civic.taxes.display ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
