@@ -1220,6 +1220,18 @@ function specialEventsPage(content){
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
 
+    {   // Solstice
+        let event = 'solstice';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 4, break: [2,3,4], h_level: 2,
+            para_data: {
+                1: [(1000000).toLocaleString(),loc(`wiki_events_${event}`)],
+                2: [loc('feat_solstice_name')]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+    }
+
     {   // Halloween
         let event = 'halloween';
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,

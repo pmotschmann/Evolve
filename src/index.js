@@ -912,6 +912,7 @@ export function index(){
         {i: 'bunny',        f: 'easter',        r: 1 },
         {i: 'egg',          f: 'egghunt',       r: 1 },
         {i: 'rocket',       f: 'launch_day',    r: 1 },
+        {i: 'sun',          f: 'solstice',      r: 1 },
         {i: 'ghost',        f: 'halloween',     r: 1 },
         {i: 'candy',        f: 'trickortreat',  r: 1 },
         {i: 'turkey',       f: 'thanksgiving',  r: 1 },

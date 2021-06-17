@@ -209,6 +209,11 @@ export const feats = {
         desc: loc("feat_launch_day_desc"),
         flair: loc("feat_launch_day_flair")
     },
+    solstice: {
+        name: loc("feat_solstice_name"),
+        desc: loc("feat_solstice_desc"),
+        flair: loc("feat_solstice_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
@@ -521,6 +526,10 @@ export function checkAchievements(){
         if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && piracy('gxy_chthonian') === 1){
             unlockAchieve('neutralized');
         }
+    }
+
+    if (eventActive('summer') && global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 1000000){
+        unlockFeat('solstice');
     }
 
     if (global.city.morale.current >= 200){
@@ -2159,69 +2168,75 @@ export function drawStats(){
 
     // Overall Stats
     stats.append(`<div><span class="has-text-success">${loc("achieve_stats_overall")}</span></div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ plasmid | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_plasmid_earned")}</span> {{ s.plasmid | format }}</div>`);
     if (global.stats.antiplasmid > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_antiplasmid_earned")}</span> {{ antiplasmid | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_antiplasmid_earned")}</span> {{ s.antiplasmid | format }}</div>`);
     }
     if (global.stats.phage > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_phage_earned")}</span> {{ phage | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_phage_earned")}</span> {{ s.phage | format }}</div>`);
     }
     if (global.stats.dark > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_dark_earned")}</span> {{ dark | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_dark_earned")}</span> {{ s.dark | format }}</div>`);
     }
     if (global.stats.harmony > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_harmony_earned")}</span> {{ harmony | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_harmony_earned")}</span> {{ s.harmony | format }}</div>`);
     }
     if (global.stats.blood > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blood_earned")}</span> {{ blood | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blood_earned")}</span> {{ s.blood | format }}</div>`);
     }
     if (global.stats.artifact > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_artifact_earned")}</span> {{ artifact | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_artifact_earned")}</span> {{ s.artifact | format }}</div>`);
     }
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | t_know | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | t_starved | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | t_died | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | played | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ reset | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ s.know | t_know | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ s.starved | t_starved | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ s.died | t_died | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ s.days | played | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ s.reset | format }}</div>`);
     if (global.stats.mad > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ mad | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ s.mad | format }}</div>`);
     }
     if (global.stats.bioseed > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ bioseed | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_bioseed_resets")}</span> {{ s.bioseed | format }}</div>`);
     }
     if (global.stats.cataclysm > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_cataclysm_resets")}</span> {{ cataclysm | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_cataclysm_resets")}</span> {{ s.cataclysm | format }}</div>`);
     }
     if (global.stats.blackhole > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ blackhole | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_blackhole_resets")}</span> {{ s.blackhole | format }}</div>`);
     }
     if (global.stats.ascend > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_ascension_resets")}</span> {{ ascend | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_ascension_resets")}</span> {{ s.ascend | format }}</div>`);
     }
     if (global.stats.descend > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ descend | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ s.descend | format }}</div>`);
     }
     if (global.stats.portals > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ portals | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ s.portals | format }}</div>`);
     }
 
     // Current Run Stats
     stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ know | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ starved | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ died | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ attacks | format }}</div>`);
-    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ days | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_knowledge_spent")}</span> {{ s.know | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ s.starved | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ s.died | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_attacks_made")}</span> {{ s.attacks | format }}</div>`);
+    stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ s.days | format }}</div>`);
     if (global.stats.dkills > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_demons_kills")}</span> {{ dkills | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_demons_kills")}</span> {{ s.dkills | format }}</div>`);
     }
     if (global.stats.sac > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_sacrificed")}</span> {{ sac | format }}</div>`);
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_sacrificed")}</span> {{ s.sac | format }}</div>`);
+    }
+    if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ r.Thermite.amount | res }}</div>`);
     }
 
     vBind({
         el: '#statsPanel',
-        data: global.stats,
+        data: {
+            s: global.stats,
+            r: global.resource,
+        },
         filters: {
             played(d){
                 return d + global.stats.tdays;
@@ -2237,6 +2252,9 @@ export function drawStats(){
             },
             format(s){
                 return s.toLocaleString();
+            },
+            res(r){
+                return (+(r).toFixed(2)).toLocaleString();
             }
         }
     });

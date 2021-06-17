@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.5`,
-        date: `6/15/2021`,
+        date: `6/16/2021`,
         changes: [
             `Support for String Packs.`,
             `Seperate research queue behavior option.`

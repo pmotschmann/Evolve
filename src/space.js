@@ -932,6 +932,7 @@ const spaceProjects = {
                 return loc('space_red_space_barracks_flair');
             }
         },
+        bonfire: eventActive(`summer`,'space'),
         horseshoe: {
             id: 'space-horseshoe',
             title: loc('city_horseshoe'),

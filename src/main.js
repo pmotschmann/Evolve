@@ -2218,6 +2218,10 @@ function fastLoop(){
             global.city.morale.zoo = int_on['zoo'] * 5;
             morale += int_on['zoo'] * 5;
         }
+        if (eventActive('summer')){
+            global.city.morale['bonfire'] = global.resource.Thermite.diff * 2.5;
+            morale += global.resource.Thermite.diff * 2.5;
+        }
 
         if (global.civic.govern.type === 'anarchy'){
             stress /= 2;
@@ -4988,6 +4992,9 @@ function fastLoop(){
 
             craftingRatio('','',true); //Recalculation
             Object.keys(crafting_costs).forEach(function (craft){
+                if (craft === 'Thermite' && !eventActive('summer')){
+                    return;
+                }
                 breakdown.p[craft] = {};
                 let num = global.city.foundry[craft];
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
