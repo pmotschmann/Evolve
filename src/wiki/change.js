@@ -7,7 +7,8 @@ const changeList = [
         date: `6/16/2021`,
         changes: [
             `Support for String Packs.`,
-            `Seperate research queue behavior option.`
+            `Seperate research queue behavior option.`,
+            `Balorg can now use the governor tax task.`
         ]
     },
     {
