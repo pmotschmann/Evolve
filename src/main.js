@@ -2219,8 +2219,9 @@ function fastLoop(){
             morale += int_on['zoo'] * 5;
         }
         if (eventActive('summer')){
-            global.city.morale['bonfire'] = global.resource.Thermite.diff * 2.5;
-            morale += global.resource.Thermite.diff * 2.5;
+            let boost = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
+            global.city.morale['bonfire'] = boost;
+            morale += boost;
         }
 
         if (global.civic.govern.type === 'anarchy'){

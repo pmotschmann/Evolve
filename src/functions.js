@@ -1885,7 +1885,7 @@ export function eventActive(event,val){
                         [tKey]: ['cataclysm'],
                         no_queue(){ return true },
                         effect(){
-                            let morale = global.resource.Thermite.diff * 2.5;
+                            let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
                             let goal = global.resource.Thermite.amount < 1000000 ? `<div class="has-text-warning">${loc('city_bonfire_effect3')}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(1000000).toLocaleString()])}</div>` : ``;
                             return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
                         },
