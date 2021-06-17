@@ -2190,6 +2190,7 @@ export const actions = {
                 return shoed;
             }
         },
+        bonfire: eventActive(`summer`,'city'),
         slave_market: {
             id: 'city-slave_market',
             title: loc('city_slave_market'),

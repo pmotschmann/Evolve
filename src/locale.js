@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, save } from './vars.js';
 
 let strings;
 getString(global.settings.locale);
@@ -61,6 +61,25 @@ function getString(locale) {
 
         if(defaultString.length != defSize && global.settings.expose){
             console.error(`string.${locale}.json has extra keys.`);
+        }
+    }
+    let string_pack = save.getItem('string_pack') || false;
+    if (string_pack && global.settings.sPackOn){
+        let themeString;
+        try {
+            themeString = JSON.parse(LZString.decompressFromUTF16(string_pack));
+        }
+        catch (e) {
+            console.error(e,e.stack);
+        }
+        const defSize = defaultString.length;
+        
+        if (themeString) {
+            Object.assign(defaultString, themeString);
+        }
+        
+        if (defaultString.length != defSize && global.settings.expose){
+            console.error(`string pack has extra keys.`);
         }
     }
 

@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on } from './vars.js';
-import { vBind, clearElement, popover, darkEffect, easterEgg } from './functions.js';
+import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { armyRating } from './civics.js';
@@ -403,10 +403,14 @@ export function loadFoundry(){
         var foundry = $(`<div class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('craftsman_assigned')}</h3><span :class="level()">{{ f.crafting }} / {{ c.max }}</span></div></div>`);
         $('#foundry').append(foundry);
 
+        let summer = eventActive('summer');
         let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'];
+        if (summer){
+            list.push('Thermite');
+        }
         for (let i=0; i<list.length; i++){
             let res = list[i];
-            if (global.resource[res].display){
+            if (global.resource[res].display || (summer && res === 'Thermite')){
                 let name = global.resource[res].name;
                 let resource = $(`<div class="job"></div>`);
                 $('#foundry').append(resource);
@@ -502,7 +506,7 @@ export function loadFoundry(){
 
         for (let i=0; i<list.length; i++){
             let res = list[i];
-            if (global.resource[res].display){
+            if (global.resource[res].display || (summer && res === 'Thermite')){
                 let extra = function(){
                     let total = $(`<div></div>`);
                     let name = global.resource[res].name;

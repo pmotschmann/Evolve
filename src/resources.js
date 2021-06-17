@@ -171,6 +171,7 @@ export function craftCost(){
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
             Scarletite: [{ r: 'Iron', a: 275000 },{ r: 'Adamantite', a: 8250 },{ r: 'Orichalcum', a: 550 }],
+            Thermite: [{ r: 'Iron', a: 198 },{ r: 'Aluminium', a: 66 }],
         }
         : {
             Plywood: [{ r: 'Lumber', a: 100 }],
@@ -181,6 +182,7 @@ export function craftCost(){
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
             Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
+            Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
         };
 }
 
@@ -223,6 +225,10 @@ export const craftingRatio = (function(){
                     multi: []
                 },
                 Scarletite: {
+                    add: [],
+                    multi: []
+                },
+                Thermite: {
                     add: [],
                     multi: []
                 }

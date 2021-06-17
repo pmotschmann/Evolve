@@ -808,7 +808,7 @@ if (convertVersion(global['version']) < 101002){
     }
 }
 
-global['version'] = '1.1.4';
+global['version'] = '1.1.5';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1091,6 +1091,15 @@ if (typeof global.settings.keyMap.showCiv === 'undefined'){
 delete global.settings.keyMap['d'];
 if (typeof global.settings.qAny === 'undefined'){
     global.settings['qAny'] = false;
+}
+if (typeof global.settings.sPackOn === 'undefined'){
+    global.settings['sPackOn'] = true;
+}
+if (typeof global.settings.qAny_res === 'undefined'){
+    global.settings['qAny_res'] = false;
+}
+if (typeof global.settings.sPackMsg === 'undefined'){
+    global.settings['sPackMsg'] = false;
 }
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;

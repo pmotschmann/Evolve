@@ -129,6 +129,8 @@ if (global.queue.rename === true){
     global.queue.rename = false;
 }
 
+global.settings.sPackMsg = save.getItem('string_pack_name') ? loc(`string_pack_using`,[save.getItem('string_pack_name')]) : loc(`string_pack_none`);
+
 mainVue();
 
 if (global['new']){
@@ -2196,6 +2198,11 @@ function fastLoop(){
         if (int_on['zoo']){
             global.city.morale.zoo = int_on['zoo'] * 5;
             morale += int_on['zoo'] * 5;
+        }
+        if (eventActive('summer')){
+            let boost = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
+            global.city.morale['bonfire'] = boost;
+            morale += boost;
         }
 
         if (global.civic.govern.type === 'anarchy'){
@@ -4967,6 +4974,9 @@ function fastLoop(){
 
             craftingRatio('','',true); //Recalculation
             Object.keys(crafting_costs).forEach(function (craft){
+                if (craft === 'Thermite' && !eventActive('summer')){
+                    return;
+                }
                 breakdown.p[craft] = {};
                 let num = global.city.foundry[craft];
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
@@ -7128,7 +7138,7 @@ function midLoop(){
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
-                time = global.settings.qAny ? 0 : time;
+                time = global.settings.qAny_res ? 0 : time;
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
@@ -7143,17 +7153,17 @@ function midLoop(){
                             idx = i;
                         }
                         else {
-                            time += global.settings.qAny ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            time += global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
                         }
                         global.r_queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny ? false : true;
+                        stop = global.settings.qAny_res ? false : true;
                     }
                     else {
                         global.r_queue.queue[i].cna = true;
                         global.r_queue.queue[i]['time'] = -1;
                     }
                 }
-                global.r_queue.queue[i].qa = global.settings.qAny ? true : false;
+                global.r_queue.queue[i].qa = global.settings.qAny_res ? true : false;
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){

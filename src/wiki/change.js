@@ -10,6 +10,15 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.5`,
+        date: `6/16/2021`,
+        changes: [
+            `Support for String Packs.`,
+            `Separate research queue behavior option.`,
+            `Balorg can now use the governor tax task.`
+        ]
+    },
+    {
         version: `1.1.4`,
         date: `6/11/2021`,
         changes: [
