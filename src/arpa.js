@@ -2165,32 +2165,41 @@ function addProject(parent,project){
             data: global.arpa[project],
             methods: {
                 queue(pro){
+                    let keyMult = keyMultiplier();
                     if (global.tech['queue']){
-                        if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
-                            let arpaId = `arpa${pro}`;
-                            let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-                                max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-                            }
-                            if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                max_queue *= 2;
-                            }
-                            let pragVal = govActive('pragmatist',0);
-                            if (pragVal){
-                                max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
-                            }
-                            let used = 0;
-                            for (var j=0; j<global.queue.queue.length; j++){
-                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
-                            }
-                            if (used < max_queue){
-                                if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
-                                    global.queue.queue[global.queue.queue.length-1].q++;
+                        for (let i=0; i<keyMult; i++){
+                            if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
+                                let arpaId = `arpa${pro}`;
+                                let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                                if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                                    max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                                }
+                                if (global.genes['queue'] && global.genes['queue'] >= 2){
+                                    max_queue *= 2;
+                                }
+                                let pragVal = govActive('pragmatist',0);
+                                if (pragVal){
+                                    max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
+                                }
+                                let used = 0;
+                                for (var j=0; j<global.queue.queue.length; j++){
+                                    used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                }
+                                if (used < max_queue){
+                                    if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                        global.queue.queue[global.queue.queue.length-1].q++;
+                                    }
+                                    else {
+                                        global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                                    }
+                                    buildQueue();
                                 }
                                 else {
-                                    global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
+                                    break;
                                 }
-                                buildQueue();
+                            }
+                            else {
+                                break;
                             }
                         }
                     }
@@ -2247,7 +2256,7 @@ function addProject(parent,project){
         let classes = [1,10,25,100];
         for (let i=0; i<classes.length; i++){
             let id = classes[i];
-            popover(`popArpa${project}`, function(){
+            popover(`popArpa${project}${id}`, function(){
                     return arpaProjectCosts(id,project);
                 },
                 {
@@ -2286,7 +2295,10 @@ export function buildArpa(pro,num,update){
                     removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
-                    clearPopper();
+                    clearPopper('popArpalaunch_facility');
+                    [1,10,25,100].forEach(function(amount){
+                        clearPopper(`popArpalaunch_facility${amount}`);
+                    });
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info');
@@ -2295,9 +2307,15 @@ export function buildArpa(pro,num,update){
             }
         }
     }
-    if (update && $(`#popArpa${pro}`).length > 0){
-        clearElement($(`#popArpa${pro}`));
-        $(`#popArpa${pro}`).append(arpaProjectCosts(oNum,pro));
+    if (update){
+        let amounts = [1,10,25,100];
+        for (let i=0; i<amounts.length; i++){
+            if ($('#popper').data('id') === `popArpa${pro}${amounts[i]}`){
+                clearElement($(`#popper`));
+                $(`#popper`).append(arpaProjectCosts(amounts[i],pro));
+                break;
+            }
+        }
     }
     return completed;
 }

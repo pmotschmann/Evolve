@@ -4290,7 +4290,7 @@ const galaxyProjects = {
                 Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
                 Furs(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
                 Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
-                Horseshoe(){ return global.race['hooved'] ? 10 : 0; }
+                Horseshoe(wiki){ return global.race['hooved'] && (!global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki) ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);

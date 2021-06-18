@@ -30,7 +30,7 @@ export function pResPage(content){
     dark_list.append(`<li>${loc('wiki_p_res_dark_antimatter')}</li>`);
     dark_list.append(`<li>${loc('wiki_p_res_dark_micro')}</li>`);
     dark_list.append(`<li>${loc('wiki_p_res_dark_magic')}</li>`);
-    sideMenu('add',`crispr-prestige`,'dark',loc('wiki_p_res_dark'));
+    sideMenu('add',`resources-prestige`,'dark',loc('wiki_p_res_dark'));
 
     infoBoxBuilder(mainContent,{ name: 'harmony', template: 'p_res', paragraphs: 3, h_level: 2 });
     sideMenu('add',`resources-prestige`,'harmony',loc('wiki_p_res_harmony'));

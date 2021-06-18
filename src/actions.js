@@ -18,7 +18,7 @@ export const actions = {
     evolution: {
         rna: {
             id: 'evolution-rna',
-            title: 'RNA',
+            title: loc('resource_RNA_name'),
             desc(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
@@ -3836,12 +3836,11 @@ export const actions = {
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
             effect(){
-                let routes = global.race['xenophobic'] ? 1 : 2;
                 let containers = global.tech['world_control'] ? 15 : 10;
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_effect',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
+                return `<div>${loc('city_trade_effect',[2])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

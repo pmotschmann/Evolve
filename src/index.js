@@ -1036,7 +1036,7 @@ export function index(){
         </div>
         <div class="importExport">
             <div>${loc('tab_mappings')}</div>
-            <div class="keyMap"><span>${loc('tab_city5')}</span> <b-input v-model="s.keyMap.showCiv" id="showCivKey"></b-input></div>
+            <div class="keyMap"><span>${loc('tab_civil')}</span> <b-input v-model="s.keyMap.showCiv" id="showCivKey"></b-input></div>
             <div class="keyMap"><span>${loc('tab_civics')}</span> <b-input v-model="s.keyMap.showCivic" id="showCivicKey"></b-input></div>
             <div class="keyMap"><span>${loc('tab_research')}</span> <b-input v-model="s.keyMap.showResearch" id="showResearchKey"></b-input></div>
             <div class="keyMap"><span>${loc('tab_resources')}</span> <b-input v-model="s.keyMap.showResources" id="showResourcesKey"></b-input></div>

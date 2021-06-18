@@ -314,6 +314,7 @@ function drawGovModal(){
         methods: {
             setGov(g){
                 if (global.civic.govern.rev === 0){
+                    let drawTechs = global.genes['governor'] && global.civic.govern.type === 'anarchy';
                     global.civic.govern.type = g;
                     let time = 1000;
                     if (global.tech['high_tech']){
@@ -342,6 +343,9 @@ function drawGovModal(){
                         time = Math.round(time * (1 - (aristoVal / 100)));
                     }
                     global.civic.govern.rev = time + global.civic.govern.fr;
+                    if (drawTechs){
+                        drawTech();
+                    }
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
                     clearPopper();

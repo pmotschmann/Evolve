@@ -1,4 +1,4 @@
-import { global, save, webWorker, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -272,15 +272,16 @@ export function buildQueue(){
             data: global.queue,
             methods: {
                 remove(index){
-                    if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q -= global.queue.queue[index].qs;
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i< keyMult; i++){
+                        if (global.queue.queue[index].q > 0){
+                            global.queue.queue[index].q -= global.queue.queue[index].qs;
+                        }
                         if (global.queue.queue[index].q <= 0){
                             global.queue.queue.splice(index,1);
+                            buildQueue();
+                            break;
                         }
-                    }
-                    else {
-                        global.queue.queue.splice(index,1);
-                        buildQueue();
                     }
                 },
                 setID(index){

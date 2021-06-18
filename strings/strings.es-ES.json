@@ -428,7 +428,7 @@
   "city_apartment_title2": "Nexo espora",
   "city_apartment_title3": "Ciudadela",
   "city_apartment_title4": "Torre de marfil",
-  "city_apartment_desc": "Complejo de viviendas para 5 ciudadanos",
+  "city_apartment_desc": "Complejo de viviendas para %0 ciudadanos",
   "city_lodge": "Casa de guarda",
   "city_lodge_desc": "Aumenta la capacidad del cazador",
   "city_smokehouse": "Ahumador",
