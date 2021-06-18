@@ -2114,7 +2114,7 @@ function warhead(){
             unlockFeat('take_no_advice');
         }
         if (global.race['truepath']){
-            unlockFeat('ashanddust');
+            unlockAchieve('ashanddust');
         }
         checkAchievements();
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;

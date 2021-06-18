@@ -4,7 +4,7 @@ import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './a
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
+import { defineIndustry, garrisonSize, describeSoldier, checkControlling } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel } from './actions.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -32,6 +32,16 @@ const spaceProjects = {
             effect: loc('space_home_test_launch_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.race['truepath']){
+                        let sabotage = 1;
+                        if (!checkControlling('gov0')){ sabotage += 1; }
+                        if (!checkControlling('gov1')){ sabotage += 1; }
+                        if (!checkControlling('gov2')){ sabotage += 1; }
+                        if (Math.floor(Math.seededRandom(0,sabotage)) !== 0){
+                            messageQueue(loc('space_home_test_launch_action_fail'),'danger');
+                            return 0;
+                        }
+                    }
                     global.space['satellite'] = { count: 0 };
                     messageQueue(loc('space_home_test_launch_action'),'info');
                     return true;

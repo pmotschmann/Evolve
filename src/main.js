@@ -7555,6 +7555,12 @@ function longLoop(){
             }
         }
 
+        if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
+            if (Math.rand(0, 100) === 0){
+                global.civic.foreign.gov3.mil++;
+            }
+        }
+
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars[0] : 1;

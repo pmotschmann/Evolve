@@ -8358,7 +8358,7 @@ const techs = {
                 return owned === 3 ? true : false;
             }
         },
-        effect: loc('tech_unite_effect'),
+        effect(){ return `<div>${loc('tech_unite_effect')}</div><div class="has-text-warning">${loc('tech_unification_effect2')}</div>`; },
         action(){
             if (payCosts($(this)[0].cost)){
                 uniteEffect();

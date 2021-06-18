@@ -5373,8 +5373,9 @@ export function setAction(c_action,action,type,old){
                                 let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                                 let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
                                 for (let i=0; i<loopNum; i++){
-                                    if ((global.settings.qKey && keyMap.q) || !c_action.action(1)){
-                                        if (!no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
+                                    let res = false;
+                                    if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action(1)))){
+                                        if (res !== 0 && !no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
                                             let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
                                             if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
                                                 max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
@@ -6709,9 +6710,6 @@ function sentience(){
             sab: 0,
             act: 'none'
         };
-
-        global.civic.foreign.gov3.mil = Math.floor(Math.seededRandom(650,750));
-        global.civic.foreign.gov3.eco = Math.floor(Math.seededRandom(250,300));
 
         let civAltName = genCivName(true);
         global.civic.foreign.gov3['name'] = {

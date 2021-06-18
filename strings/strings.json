@@ -4481,6 +4481,7 @@
   "space_home_test_launch_desc": "Launch a test rocket",
   "space_home_test_launch_effect": "Launch an experimental test rocket into space.",
   "space_home_test_launch_action": "You have successfully launched your first rocket into space",
+  "space_home_test_launch_action_fail": "Your rocket launch test was a failure, you suspect sabotage.",
   "space_home_satellite_title": "Satellite",
   "space_home_satellite_desc": "Launch a scientific satellite",
   "space_home_satellite_effect2": "+%1% %0 Max Knowledge",
