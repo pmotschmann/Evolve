@@ -1902,7 +1902,7 @@ export function eventActive(event,val){
                 }
                 else {
                     const date = new Date();
-                    if (!global.settings.boring && date.getMonth() === 5 && [19,20,21,22].includes(date.getDate())){
+                    if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
                         if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
                             global.city.foundry['Thermite'] = 0;
                         }
