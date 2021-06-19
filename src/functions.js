@@ -1887,7 +1887,9 @@ export function eventActive(event,val){
                         no_queue(){ return true },
                         effect(){
                             let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
-                            let goal = global.resource.Thermite.amount < 1000000 ? `<div class="has-text-warning">${loc('city_bonfire_effect3')}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(1000000).toLocaleString()])}</div>` : ``;
+                            let thermite = 100000 + global.stats.reset * 9000;
+                            if (thermite > 1000000){ thermite = 1000000; }
+                            let goal = global.resource.Thermite.amount < thermite ? `<div class="has-text-warning">${loc('city_bonfire_effect3',[(thermite).toLocaleString()])}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(thermite).toLocaleString()])}</div>` : ``;
                             return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
                         },
                         action(){
@@ -1900,7 +1902,7 @@ export function eventActive(event,val){
                 }
                 else {
                     const date = new Date();
-                    if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
+                    if (!global.settings.boring && date.getMonth() === 5 && [19,20,21,22].includes(date.getDate())){
                         if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
                             global.city.foundry['Thermite'] = 0;
                         }

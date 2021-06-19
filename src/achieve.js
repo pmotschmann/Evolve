@@ -528,8 +528,12 @@ export function checkAchievements(){
         }
     }
 
-    if (eventActive('summer') && global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 1000000){
-        unlockFeat('solstice');
+    if (eventActive('summer') && global.resource.hasOwnProperty('Thermite')){
+        let thermite = 100000 + global.stats.reset * 9000;
+        if (thermite > 1000000){ thermite = 1000000; }
+        if (global.resource.Thermite.amount > thermite){
+            unlockFeat('solstice');
+        }
     }
 
     if (global.city.morale.current >= 200){

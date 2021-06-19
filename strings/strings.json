@@ -834,7 +834,7 @@
   "city_bonfire_desc": "Brighten the spirits of your people with a big bonfire.",
   "city_bonfire_effect": "Thermite ignited per second: %0",
   "city_bonfire_effect2": "Morale Boosted: %0%",
-  "city_bonfire_effect3": "Goal: Burn 1 Million Total Thermite",
+  "city_bonfire_effect3": "Goal: Burn %0 Total Thermite",
   "city_bonfire_effect4": "%0 / %1",
   "city_bonfire_flair": "Burn baby burn!",
   "city_garrison": "Barracks",
