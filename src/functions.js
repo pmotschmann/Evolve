@@ -1,4 +1,4 @@
-import { global, save, webWorker, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -287,15 +287,16 @@ export function buildQueue(){
             data: global.queue,
             methods: {
                 remove(index){
-                    if (global.queue.queue[index].q > 1){
-                        global.queue.queue[index].q -= global.queue.queue[index].qs;
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i< keyMult; i++){
+                        if (global.queue.queue[index].q > 0){
+                            global.queue.queue[index].q -= global.queue.queue[index].qs;
+                        }
                         if (global.queue.queue[index].q <= 0){
                             global.queue.queue.splice(index,1);
+                            buildQueue();
+                            break;
                         }
-                    }
-                    else {
-                        global.queue.queue.splice(index,1);
-                        buildQueue();
                     }
                 },
                 setID(index){
@@ -1943,7 +1944,9 @@ export function eventActive(event,val){
                         no_queue(){ return true },
                         effect(){
                             let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
-                            let goal = global.resource.Thermite.amount < 1000000 ? `<div class="has-text-warning">${loc('city_bonfire_effect3')}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(1000000).toLocaleString()])}</div>` : ``;
+                            let thermite = 100000 + global.stats.reset * 9000;
+                            if (thermite > 1000000){ thermite = 1000000; }
+                            let goal = global.resource.Thermite.amount < thermite ? `<div class="has-text-warning">${loc('city_bonfire_effect3',[(thermite).toLocaleString()])}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(thermite).toLocaleString()])}</div>` : ``;
                             return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
                         },
                         action(){

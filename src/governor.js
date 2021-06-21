@@ -246,7 +246,7 @@ function genGovernor(setSize){
         let nameIdx = Math.floor(Math.seededRandom(0,nameList.length));
 
         let bg = backgrounds.splice(bgIdx,1)[0];
-        let name = nameList.splice(nameIdx,1)[0];
+        let name = loc("gov_name_" + nameList.splice(nameIdx,1)[0]);
 
         let title = gmen[bg].title[Math.floor(Math.seededRandom(0,gmen[bg].title.length))];
         if (typeof title === 'object'){

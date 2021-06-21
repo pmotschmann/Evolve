@@ -18,7 +18,7 @@ export const actions = {
     evolution: {
         rna: {
             id: 'evolution-rna',
-            title: 'RNA',
+            title: loc('resource_RNA_name'),
             desc(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
@@ -2172,7 +2172,7 @@ export const actions = {
                         && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
                     return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
                 },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 18 : 30) * global.race.shoecnt : 0; },
+                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 12 : 28) * global.race.shoecnt : 0; },
                 Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
                 Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
@@ -3660,12 +3660,11 @@ export const actions = {
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
             effect(){
-                let routes = global.race['xenophobic'] ? 1 : 2;
                 let containers = global.tech['world_control'] ? 15 : 10;
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     containers *= 2;
                 }
-                return `<div>${loc('city_trade_effect',[routes])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
+                return `<div>${loc('city_trade_effect',[2])}</div><div>${loc('city_wharf_effect')}</div><div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0].cost)){

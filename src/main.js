@@ -6432,7 +6432,7 @@ function midLoop(){
             }
         }
         if (global.city['wharf']){
-            let r_count = global.city.wharf.count * (global.race['nomadic'] || global.race['xenophobic'] ? 1 : 2);
+            let r_count = global.city.wharf.count * 2;
             global.city.market.mtrade += r_count;
             breakdown.t_route[loc('city_wharf')] = r_count;
         }
@@ -7273,7 +7273,7 @@ function midLoop(){
                     }
                     else {
                         if (!stop){
-                            buildArpa(global.queue.queue[i].type,100);
+                            buildArpa(global.queue.queue[i].type,100,true);
                         }
                     }
                 }
@@ -7322,9 +7322,10 @@ function midLoop(){
         if (idx >= 0 && c_action){
             if (arpa){
                 let label = global.queue.queue[idx].label;
-                if (buildArpa(global.queue.queue[idx].type,100)){
+                let id = global.queue.queue[idx].id;
+                if (buildArpa(global.queue.queue[idx].type,100,true)){
                     messageQueue(loc('build_success',[label]),'success');
-                    if (label !== 'Launch Facility') {
+                    if (id !== 'arpalaunch_facility') {
                         if (global.queue.queue[idx].q > 1){
                             global.queue.queue[idx].q--;
                         }
@@ -7397,6 +7398,7 @@ function midLoop(){
                 clearPopper(`q${global.queue.queue[i].id}${i}`);
                 global.queue.queue[i-1].q += global.queue.queue[i].q;
                 global.queue.queue.splice(i,1);
+                buildQueue();
                 break;
             }
             last = global.queue.queue[i].id;

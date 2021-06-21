@@ -504,7 +504,7 @@
   "city_apartment_title2": "Complexo Esporádico",
   "city_apartment_title3": "Cidadela",
   "city_apartment_title4": "Torre de Marfim",
-  "city_apartment_desc": "Complexo habitacional para 5 cidadãos",
+  "city_apartment_desc": "Complexo habitacional para %0 cidadãos",
   "city_lodge": "Alojamento",
   "city_lodge_desc": "Aumenta a capacidade de caçadores",
   "city_lodge_desc_alt": "Fornece habitação",

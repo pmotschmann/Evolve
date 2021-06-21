@@ -963,7 +963,7 @@ const spaceProjects = {
                         && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
                     return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
                 },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 18 : 30) * global.race.shoecnt : 0; },
+                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 12 : 28) * global.race.shoecnt : 0; },
                 Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
                 Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
                 Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
@@ -4300,7 +4300,7 @@ const galaxyProjects = {
                 Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
                 Furs(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
                 Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
-                Horseshoe(){ return global.race['hooved'] ? 10 : 0; }
+                Horseshoe(wiki){ return global.race['hooved'] && (!global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki) ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);

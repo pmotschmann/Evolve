@@ -1221,10 +1221,13 @@ function specialEventsPage(content){
     }
 
     {   // Solstice
+        let thermite = global.hasOwnProperty('stats') ? 100000 + global.stats.reset * 9000 : 100000;
+        if (thermite > 1000000){ thermite = 1000000; }
+
         let event = 'solstice';
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 4, break: [2,3,4], h_level: 2,
             para_data: {
-                1: [(1000000).toLocaleString(),loc(`wiki_events_${event}`)],
+                1: [(thermite).toLocaleString(),loc(`wiki_events_${event}`)],
                 2: [loc('feat_solstice_name')]
             }
         });

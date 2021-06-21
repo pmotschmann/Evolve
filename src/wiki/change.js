@@ -10,6 +10,15 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.6`,
+        date: `6/19/2021`,
+        changes: [
+            `Solstice event is now easier for less seasoned players.`,
+            `Wharves are no longer affected by the Nomadic trait.`,
+            `Decreased cost of Iron Horseshoes.`
+        ]
+    },
+    {
         version: `1.1.5`,
         date: `6/16/2021`,
         changes: [

@@ -1266,9 +1266,6 @@ const extraInformation = {
     mana_syphon: [
         loc(`wiki_tech_project_unlock`,[loc(`arpa_syphon_title`)])
     ],
-    gravitational_waves: [
-        loc(`wiki_tech_gravitational_waves`)
-    ],
     gravity_convection: [
         loc(`wiki_tech_gravitational_convection`)
     ],
