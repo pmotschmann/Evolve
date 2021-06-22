@@ -675,7 +675,7 @@ function govPrice(gov){
     
 export function checkControlling(gov){
     if (gov){
-        return global.civic.foreign[gov].occ || global.civic.foreign[gov].anx || global.civic.foreign[gov].buy;
+        return global.tech['world_control'] || global.civic.foreign[gov].occ || global.civic.foreign[gov].anx || global.civic.foreign[gov].buy;
     }
     return global.civic.foreign.gov0.occ || global.civic.foreign.gov1.occ || global.civic.foreign.gov2.occ || global.civic.foreign.gov0.anx || global.civic.foreign.gov1.anx || global.civic.foreign.gov2.anx || global.civic.foreign.gov0.buy || global.civic.foreign.gov1.buy || global.civic.foreign.gov2.buy;
 }

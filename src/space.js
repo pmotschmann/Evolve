@@ -34,9 +34,9 @@ const spaceProjects = {
                 if (payCosts($(this)[0].cost)){
                     if (global.race['truepath']){
                         let sabotage = 1;
-                        if (!checkControlling('gov0')){ sabotage += 1; }
-                        if (!checkControlling('gov1')){ sabotage += 1; }
-                        if (!checkControlling('gov2')){ sabotage += 1; }
+                        if (!checkControlling('gov0')){ sabotage++; }
+                        if (!checkControlling('gov1')){ sabotage++; }
+                        if (!checkControlling('gov2')){ sabotage++; }
                         if (Math.floor(Math.seededRandom(0,sabotage)) !== 0){
                             messageQueue(loc('space_home_test_launch_action_fail'),'danger');
                             return 0;
