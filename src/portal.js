@@ -1879,6 +1879,7 @@ export function buildFortress(parent,full){
     station.append(reports);
     reports.append($(`<b-checkbox class="patrol" v-model="f.notify" true-value="Yes" false-value="No"${color}>${loc('fortress_patrol_reports')}</b-checkbox>`));
     reports.append($(`<b-checkbox class="patrol" v-model="f.s_ntfy" true-value="Yes" false-value="No"${color}>${loc('fortress_surv_reports')}</b-checkbox>`));
+    reports.append($(`<b-checkbox class="patrol" v-model="f.nocrew"${color} v-show="s.showGalactic">${loc('fortress_nocrew')}</b-checkbox>`));
 
     if (full){
         fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
@@ -1888,7 +1889,8 @@ export function buildFortress(parent,full){
         el: `#${id}`,
         data: {
             f: global.portal.fortress,
-            g: global.civic.garrison
+            g: global.civic.garrison,
+            s: global.settings
         },
         methods: {
             defense(){
@@ -2306,8 +2308,9 @@ export function bloodwar(){
     if (global.civic.garrison.wounded > global.civic.garrison.workers){
         global.civic.garrison.wounded = global.civic.garrison.workers;
     }
-    if (global.civic.garrison.workers < global.portal.fortress.garrison){
-        global.portal.fortress.garrison = global.civic.garrison.workers;
+    let garrison_size = global.portal.fortress.nocrew ? global.civic.garrison.workers - global.civic.garrison.crew : global.civic.garrison.workers;
+    if (garrison_size < global.portal.fortress.garrison){
+        global.portal.fortress.garrison = garrison_size;
     }
     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);

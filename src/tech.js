@@ -8998,6 +8998,7 @@ const techs = {
                     siege: 999,
                     notify: 'Yes',
                     s_ntfy: 'Yes',
+                    nocrew: false,
                 };
                 global.portal['turret'] = { count: 0, on: 0 };
                 global.portal['carport'] = { count: 0, damaged: 0, repair: 0 };

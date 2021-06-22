@@ -808,6 +808,12 @@ if (convertVersion(global['version']) < 101002){
     }
 }
 
+if (convertVersion(global['version']) < 102000){
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('fortress') && !global.portal.fortress.hasOwnProperty('nocrew')){
+        global.portal.fortress['nocrew'] = false;
+    }
+}
+
 global['version'] = '1.1.6';
 delete global['beta'];
 

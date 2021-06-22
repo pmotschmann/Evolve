@@ -5425,6 +5425,7 @@
   "fortress_troops": "Fortress Troops",
   "fortress_patrol_reports": "Patrol Reports",
   "fortress_surv_reports": "Surveyor Reports",
+  "fortress_nocrew": "No Crew Transfers",
   "fortress_spotted": "Demonic Creatures Spotted:",
   "fortress_threat": "%0 demonic creatures have been spotted in the vicinity.",
   "fortress_threat_high": "Surveyors will not live long with this much activity.",
