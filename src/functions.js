@@ -966,20 +966,25 @@ export const calcPillar = (function(){
     }
 })();
 
-function challenge_multiplier(value,type,decimals){
+export function challenge_multiplier(value,type,decimals,challenge,universe){
     decimals = decimals || 0;
-    let challenge_level = 0;
-    if (global.race['no_plasmid']){ challenge_level++; }
-    if (global.race['no_trade']){ challenge_level++; }
-    if (global.race['no_craft']){ challenge_level++; }
-    if (global.race['no_crispr']){ challenge_level++; }
-    if (global.race['weak_mastery']){ challenge_level++; }
-    if (challenge_level > 4){
-        challenge_level = 4;
+    let challenge_level = challenge;
+    if (challenge === undefined){
+        challenge_level = 0;
+        if (global.race['no_plasmid']){ challenge_level++; }
+        if (global.race['no_trade']){ challenge_level++; }
+        if (global.race['no_craft']){ challenge_level++; }
+        if (global.race['no_crispr']){ challenge_level++; }
+        if (global.race['weak_mastery']){ challenge_level++; }
+        if (challenge_level > 4){
+            challenge_level = 4;
+        }
     }
-    if (global.race.universe === 'micro'){ value = value * 0.25; }
-    if (global.race.universe === 'antimatter' && type !== 'mad'){ value = value * 1.1; }
-    if (global.race.universe === 'heavy' && type !== 'mad'){
+    universe = universe || global.race.universe;
+
+    if (universe === 'micro'){ value = value * 0.25; }
+    if (universe === 'antimatter'){ value = value * 1.1; }
+    if (universe === 'heavy' && type !== 'mad'){
         switch (challenge_level){
             case 1:
                 value = value * 1.1;
@@ -1012,19 +1017,31 @@ function challenge_multiplier(value,type,decimals){
     }
 }
 
-export function calcPrestige(type){
+export function calcPrestige(type,inputs){
     let gains = {
         plasmid: 0,
         phage: 0,
         dark: 0,
-        harmony: 0
+        harmony: 0,
+        artifact: 0
     };
-
-    let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
-    for (let i=0; i<3; i++){
-        if (global.civic.foreign[`gov${i}`].occ){
-            garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
+    
+    if (!inputs) { inputs = {}; }
+    let challenge = inputs.genes;
+    let universe = inputs.uni;
+    
+    let pop = 0;
+    if (inputs.cit === undefined){
+        let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
+        for (let i=0; i<3; i++){
+            if (global.civic.foreign[`gov${i}`].occ){
+                garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
+            }
         }
+        pop = global.resource[global.race.species].amount + garrisoned;
+    }
+    else {
+        pop = inputs.cit + inputs.sol;
     }
 
     let pop_divisor = 999;
@@ -1038,6 +1055,7 @@ export function calcPrestige(type){
             k_inc = 100000;
             k_mult = 1.1;
             break;
+        case 'cataclysm':
         case 'bioseed':
             pop_divisor = 3;
             k_inc = 50000;
@@ -1059,58 +1077,95 @@ export function calcPrestige(type){
             break;
     }
 
-    let pop = global.resource[global.race.species].amount + garrisoned;
-    let new_plasmid = Math.round(pop / pop_divisor);
-    let k_base = global.stats.know;
-    while (k_base > k_inc){
-        new_plasmid++;
-        k_base -= k_inc;
-        k_inc *= k_mult;
-    }
+    if (inputs.plas === undefined){
+        let k_base = inputs.know || global.stats.know;
+        let new_plasmid = Math.round(pop / pop_divisor);
+        while (k_base > k_inc){
+            new_plasmid++;
+            k_base -= k_inc;
+            k_inc *= k_mult;
+        }
 
-    if (global.race['cataclysm']){
-        new_plasmid += 300;
-    }
+        if (global.race['cataclysm']){
+            new_plasmid += 300;
+        }
 
-    gains.plasmid = challenge_multiplier(new_plasmid,type);
-    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type) : 0;
+        gains.plasmid = challenge_multiplier(new_plasmid,type,false,challenge,universe);
+    }
+    else {
+        gains.plasmid = inputs.plas;
+    }
+    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type,false,challenge,universe) : 0;
 
     if (type === 'bigbang'){
-        let new_dark = +(Math.log(1 + (global.interstellar.stellar_engine.exotic * 40))).toFixed(3);
-        new_dark += +(Math.log2(global.interstellar.stellar_engine.mass - 7)/2.5).toFixed(3);
-        new_dark = challenge_multiplier(new_dark,'bigbang',3);
+        let exotic = inputs.exotic;
+        let mass = inputs.mass - inputs.exotic;
+        if (exotic === undefined && global['interstellar'] && global.interstellar['stellar_engine']){
+            exotic = global.interstellar.stellar_engine.exotic;
+            mass = global.interstellar.stellar_engine.mass
+        }
+        
+        let new_dark = +(Math.log(1 + (exotic * 40))).toFixed(3);
+        new_dark += +(Math.log2(mass - 7)/2.5).toFixed(3);
+        new_dark = challenge_multiplier(new_dark,'bigbang',3,challenge,universe);
         gains.dark = new_dark;
     }
     else if (type === 'vacuum'){
-        let new_dark = +(Math.log2(global.resource.Mana.gen)/5).toFixed(3);
-        new_dark = challenge_multiplier(new_dark,'vacuum',3);
+        let mana = inputs.mana || global.resource.Mana.gen;
+        let new_dark = +(Math.log2(mana)/5).toFixed(3);
+        new_dark = challenge_multiplier(new_dark,'vacuum',3,challenge,universe);
         gains.dark = new_dark;
     }
 
-    if (type === 'ascend'){
+    universe = universe || global.race.universe;
+    if (type === 'ascend' || type === 'descend'){
         let harmony = 1;
-        if (global.race['no_plasmid']){ harmony++; }
-        if (global.race['no_trade']){ harmony++; }
-        if (global.race['no_craft']){ harmony++; }
-        if (global.race['no_crispr']){ harmony++; }
-        if (global.race['weak_mastery']){ harmony++; }
-        if (harmony > 5){
-            harmony = 5;
+        if (challenge === undefined){
+            if (global.race['no_plasmid']){ harmony++; }
+            if (global.race['no_trade']){ harmony++; }
+            if (global.race['no_craft']){ harmony++; }
+            if (global.race['no_crispr']){ harmony++; }
+            if (global.race['weak_mastery']){ harmony++; }
+            if (harmony > 5){
+                harmony = 5;
+            }
         }
-        switch (global.race.universe){
-            case 'micro':
-                harmony *= 0.25;
-                break;
-            case 'heavy':
-                harmony *= 1.2;
-                break;
-            case 'antimatter':
-                harmony *= 1.1;
-                break;
-            default:
-                break;
+        else {
+            harmony = challenge + 1;
         }
-        gains.harmony = parseFloat(harmony.toFixed(2));
+        
+        if (type === 'ascend'){
+            switch (universe){
+                case 'micro':
+                    harmony *= 0.25;
+                    break;
+                case 'heavy':
+                    harmony *= 1.2;
+                    break;
+                case 'antimatter':
+                    harmony *= 1.1;
+                    break;
+                default:
+                    break;
+            }
+            gains.harmony = parseFloat(harmony.toFixed(2));
+        }
+        else if (type === 'descend'){
+            let artifact = universe === 'micro' ? 1 : harmony;
+            let spire = inputs.floor;
+            if (spire !== undefined){
+                spire++;
+            }
+            else {
+                spire = global.portal.spire.count;
+            }
+            [50,100].forEach(function(x){
+                if (spire > x){
+                    artifact++;
+                }
+            });
+            gains.artifact = artifact;
+        }
     }
 
     return gains;
