@@ -158,6 +158,18 @@ export function commisionGarrison(){
     }
 }
 
+export function govRelationFactor(id){
+    if (global.race['truepath']){
+        if (global.civic.foreign[`gov${id}`].hstl < 10){
+            return 1 + (10 - global.civic.foreign[`gov${id}`].hstl) / 40;
+        }
+        else if (global.civic.foreign[`gov${id}`].hstl > 60){
+            return 1 - (-60 + global.civic.foreign[`gov${id}`].hstl) / 160;
+        }
+    }
+    return 1;
+}
+
 export function govTitle(id){
     if (typeof global.civic.foreign[`gov${id}`]['name'] == "undefined"){
         let nameFrags = genCivName();

@@ -13,6 +13,7 @@ import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFl
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
+import { production } from './prod.js';
 import { swissKnife } from './tech.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
@@ -4435,7 +4436,7 @@ function fastLoop(){
             }
 
             if (global.race['cataclysm'] && moon_on['iridium_mine']){
-                coal_base = moon_on['iridium_mine'] * 0.55 * zigguratBonus();
+                coal_base = moon_on['iridium_mine'] * production('iridium_mine','coal');
                 coal_bd[loc('space_moon_iridium_mine_title')] = coal_base + 'v';
                 power_mult = 1;
             }
@@ -4478,25 +4479,8 @@ function fastLoop(){
 
         // Oil
         if (global.city['oil_well']){
-            let oil_base = global.tech['oil'] >= 4 ? 0.48 : 0.4;
-            if (global.tech['oil'] >= 7){
-                oil_base *= 2;
-            }
-            else if (global.tech['oil'] >= 5){
-                oil_base *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
-            }
-            let oil_extractor = oil_base * p_on['oil_extractor'] * zigguratBonus();
-
-            if (global.city.geology['Oil']){
-                oil_base *= global.city.geology['Oil'] + 1;
-            }
-            let oil_well = oil_base * global.city.oil_well.count;
-            if (global.city.biome === 'desert'){
-                oil_well *= biomes.desert.vars[1];
-            }
-            else if (global.city.biome === 'tundra'){
-                oil_well *= biomes.tundra.vars[1];
-            }
+            let oil_extractor = p_on['oil_extractor'] * production('oil_extractor');
+            let oil_well = production('oil_well') * global.city.oil_well.count;
 
             let delta = oil_well + oil_extractor;
             delta *= hunger * global_multiplier;
@@ -4512,7 +4496,7 @@ function fastLoop(){
         // Iridium
         let iridium_bd = {};
         if (moon_on['iridium_mine']){
-            let iridium_base = moon_on['iridium_mine'] * 0.035 * zigguratBonus();
+            let iridium_base = moon_on['iridium_mine'] * production('iridium_mine','iridium');
             if (global.city.geology['Iridium']){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
@@ -4549,7 +4533,7 @@ function fastLoop(){
         // Helium 3
         let helium_bd = {};
         if (global.space['moon_base'] && moon_on['helium_mine']){
-            let helium_base = moon_on['helium_mine'] * 0.18 * zigguratBonus();
+            let helium_base = moon_on['helium_mine'] * production('helium_mine');
             let delta = helium_base * hunger * global_multiplier;
 
             helium_bd[loc('space_moon_helium_mine_title')] = helium_base + 'v';

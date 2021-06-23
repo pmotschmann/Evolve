@@ -10,6 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commis
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
+import { production } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -3428,7 +3429,7 @@ export const actions = {
             },
             powered(){ return powerCostMod(2); },
             power_reqs: { alumina: 2 },
-            effect() {
+            effect(){
                 let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
                 if (global.tech['alumina'] >= 2){
                     return `<span>${loc(label,[6])}</span> <span class="has-text-caution">${loc('city_metal_refinery_effect2',[6,12,$(this)[0].powered()])}</span>`;
@@ -3463,7 +3464,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('mine', offset, 60, dirt_adjust(1.6)); },
                 Lumber(offset){ return costMultiplier('mine', offset, 175, dirt_adjust(1.38)); }
             },
-            effect() {
+            effect(){
                 if (global.tech['mine_conveyor']){
                     return `<div>${loc('city_mine_effect1')}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
@@ -3500,7 +3501,7 @@ export const actions = {
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_mine', offset, 28, dirt_adjust(1.36)) : 0; },
                 Wrought_Iron(offset){ return costMultiplier('coal_mine', offset, 18, dirt_adjust(1.36)); }
             },
-            effect() {
+            effect(){
                 if (global.tech['mine_conveyor']){
                     return `<div>${loc('city_coal_mine_effect1')}</div><div class="has-text-caution">${loc('city_coal_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
@@ -3537,18 +3538,8 @@ export const actions = {
                 Cement(offset){ return costMultiplier('oil_well', offset, 5250, dirt_adjust(1.5)); },
                 Steel(offset){ return costMultiplier('oil_well', offset, 6000, dirt_adjust(1.5)); }
             },
-            effect() {
-                let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;
-                if (global.tech['oil'] >= 7){
-                    oil *= 2;
-                }
-                else if (global.tech['oil'] >= 5){
-                    oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
-                }
-                if (global.city.geology['Oil']){
-                    oil *= global.city.geology['Oil'] + 1;
-                }
-                oil = +oil.toFixed(2);
+            effect(){
+                let oil = +(production('oil_well')).toFixed(2);
                 let oc = spatialReasoning(500);
                 return loc('city_oil_well_effect',[oil,oc]);
             },

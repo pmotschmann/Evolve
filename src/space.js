@@ -4,8 +4,9 @@ import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './a
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { defineIndustry, garrisonSize, describeSoldier, checkControlling } from './civics.js';
+import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel } from './actions.js';
+import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
@@ -217,7 +218,7 @@ const spaceProjects = {
             effect(){
                 let iridium = spatialReasoning(500);
                 let oil = +(fuel_adjust(2)).toFixed(2);
-                return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div  class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
             powered(){ return powerCostMod(4); },
@@ -233,6 +234,16 @@ const spaceProjects = {
                     }
                     if (!global.tech['luna']){
                         global.tech['luna'] = 1;
+                        if (global.race['truepath']){
+                            let msg = loc('space_moon_base_msg',[govTitle(3)]);
+                            if (global.civic.foreign.gov3.hstl < 10){
+                                msg = `${msg} ${loc('space_moon_base_msg_ally')}`;
+                            }
+                            else if (global.civic.foreign.gov3.hstl > 60){
+                                msg = `${msg} ${loc('space_moon_base_msg_hstl')}`;
+                            }
+                            messageQueue(msg,'info');
+                        }
                     }
                     return true;
                 }
@@ -250,14 +261,9 @@ const spaceProjects = {
                 Titanium(offset){ return spaceCostMultiplier('iridium_mine', offset, 17500, 1.35); }
             },
             effect(){
-                let iridium = 0.035;
-                if (global.city.geology['Iridium']){
-                    iridium *= global.city.geology['Iridium'] + 1;
-                }
-                iridium = +(iridium * zigguratBonus()).toFixed(3);
-
-                let cat_coal = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.55 * zigguratBonus()).toFixed(2),global.resource.Coal.name])}</div>` : ``;
-                let cat_uran = global.race['cataclysm'] ? `<div>${loc('produce',[+(0.011 * zigguratBonus()).toFixed(3),global.resource.Uranium.name])}</div>` : ``;
+                let iridium = +(production('iridium_mine','iridium')).toFixed(3);
+                let cat_coal = global.race['cataclysm'] ? `<div>${loc('produce',[+(production('iridium_mine','coal')).toFixed(2),global.resource.Coal.name])}</div>` : ``;
+                let cat_uran = global.race['cataclysm'] ? `<div>${loc('produce',[+(production('iridium_mine','coal') / 48).toFixed(3),global.resource.Uranium.name])}</div>` : ``;
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_iridium_mine_effect',[iridium])}</div>${cat_coal}${cat_uran}`;
             },
             support(){ return -1; },
@@ -290,7 +296,7 @@ const spaceProjects = {
             },
             effect(){
                 let storage = spatialReasoning(100);
-                let helium = +(0.18 * zigguratBonus()).toFixed(3);
+                let helium = +(production('helium_mine')).toFixed(3);
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('space_moon_info_name')])}</div><div>${loc('space_moon_helium_mine_effect',[helium])}</div><div>${loc('plus_max_resource',[storage,loc('resource_Helium_3_name')])}</div>`;
             },
             support(){ return -1; },
