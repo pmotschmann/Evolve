@@ -3587,6 +3587,7 @@ const techs = {
         desc: loc('tech_world_collider'),
         category: 'science',
         era: 'deep_space',
+        path: 'standard',
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
         cost: {

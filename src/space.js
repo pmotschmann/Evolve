@@ -217,7 +217,7 @@ const spaceProjects = {
             },
             effect(){
                 let iridium = spatialReasoning(500);
-                let oil = +(fuel_adjust(2)).toFixed(2);
+                let oil = +(fuel_adjust(2,true)).toFixed(2);
                 return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
@@ -402,7 +402,7 @@ const spaceProjects = {
                 Titanium(offset){ return spaceCostMultiplier('spaceport', offset, 22500, 1.32); }
             },
             effect(){
-                let helium = +(fuel_adjust(1.25)).toFixed(2);
+                let helium = +(fuel_adjust(1.25,true)).toFixed(2);
                 let bank = ``;
                 if (global.race['cataclysm']){
                     let vault = spatialReasoning(bank_vault() * 4);
@@ -669,11 +669,11 @@ const spaceProjects = {
                 Iron(offset){ return spaceCostMultiplier('red_mine', offset, 33000, 1.32); }
             },
             effect(){
-                let copper = +(production('iridium_mine','copper')).toFixed(3);
-                let titanium = +(production('iridium_mine','titanium')).toFixed(3);
-                let cat_stone = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(production('iridium_mine','stone')).toFixed(2),global.resource.Stone.name])}</div>` : ``;
-                let cat_asbestos = global.race['cataclysm'] && global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[+(production('iridium_mine','asbestos')).toFixed(2),global.resource.Chrysotile.name])}</div>` : ``;
-                let cat_alum = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(production('iridium_mine','aluminium')).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
+                let copper = +(production('red_mine','copper')).toFixed(3);
+                let titanium = +(production('red_mine','titanium')).toFixed(3);
+                let cat_stone = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','stone')).toFixed(2),global.resource.Stone.name])}</div>` : ``;
+                let cat_asbestos = global.race['cataclysm'] && global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','asbestos')).toFixed(2),global.resource.Chrysotile.name])}</div>` : ``;
+                let cat_alum = global.race['cataclysm'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','aluminium')).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${cat_asbestos}${cat_stone}${cat_alum}`;
             },
             support(){ return -1; },
@@ -737,7 +737,7 @@ const spaceProjects = {
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
                 }
-                let helium = +(fuel_adjust(1)).toFixed(2);
+                let helium = +(fuel_adjust(1,true)).toFixed(2);
                 desc = desc + `<div class="has-text-caution">${loc('space_red_factory_effect3',[helium,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -930,7 +930,7 @@ const spaceProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
-                let oil = +fuel_adjust(2).toFixed(2);
+                let oil = +fuel_adjust(2,true).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? 4 : 2;
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
@@ -1036,7 +1036,7 @@ const spaceProjects = {
                 Polymer(offset){ return spaceCostMultiplier('geothermal', offset, 9500, 1.35); }
             },
             effect(){
-                let helium = +(fuel_adjust(0.5)).toFixed(2);
+                let helium = +(fuel_adjust(0.5,true)).toFixed(2);
                 let smelter = global.race['cataclysm'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
                 return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
@@ -1402,7 +1402,7 @@ const spaceProjects = {
             effect(){
                 let neutronium = +(production('outpost')).toFixed(3);
                 let max = spatialReasoning(500);
-                let oil = +(fuel_adjust(2)).toFixed(2);
+                let oil = +(fuel_adjust(2,true)).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('space_gas_moon_outpost_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
@@ -1528,7 +1528,7 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('space_station', offset, 75, 1.25); }
             },
             effect(){
-                let helium = +(fuel_adjust(2.5)).toFixed(2);
+                let helium = +(fuel_adjust(2.5,true)).toFixed(2);
                 let food = global.race['cataclysm'] ? 1 : 10;
                 let elerium_cap = spatialReasoning(5);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
@@ -1757,6 +1757,7 @@ const spaceProjects = {
                 }
             },
             reqs: { science: 10 },
+            path: 'standard',
             condition(){
                 return global.space.world_collider.count < 1859 ? true : false;
             },
@@ -1811,6 +1812,7 @@ const spaceProjects = {
             },
             wiki: false,
             reqs: { science: 11 },
+            path: 'standard',
             condition(){
                 return global.space.world_collider.count < 1859 ? false : true;
             },
@@ -5566,9 +5568,12 @@ export function swarm_adjust(res){
     return res;
 }
 
-export function fuel_adjust(fuel){
+export function fuel_adjust(fuel,drain){
     if (global.race.universe === 'heavy'){
         fuel *= 1.25 + (0.5 * darkEffect('heavy'));
+    }
+    if (drain && global.race['truepath']){
+        fuel *= 2;
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];

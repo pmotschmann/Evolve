@@ -1427,7 +1427,7 @@ function fastLoop(){
 
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
             let output = actions.space.spc_hell.geothermal.powered();
-            let increment = fuel_adjust(0.5);
+            let increment = fuel_adjust(0.5,true);
             let power = global.space.geothermal.on * output;
             let consume = (global.space.geothermal.on * increment);
             while (consume * time_multiplier > global.resource['Helium_3'].amount && consume > 0){
@@ -1560,7 +1560,7 @@ function fastLoop(){
 
         // Moon Bases
         if (global.space['moon_base'] && global.space['moon_base'].count > 0){
-            let oil_cost = +fuel_adjust(2);
+            let oil_cost = +fuel_adjust(2,true);
             let mb_consume = p_on['moon_base'] * oil_cost;
             breakdown.p.consume.Oil[loc('space_moon_base_title')] = -(mb_consume);
             for (let i=0; i<p_on['moon_base']; i++){
@@ -1600,7 +1600,7 @@ function fastLoop(){
 
         // Space Marines
         if (global.space['space_barracks']){
-            let oil_cost = +fuel_adjust(2);
+            let oil_cost = +fuel_adjust(2,true);
             let sm_consume = global.space.space_barracks.on * oil_cost;
             breakdown.p.consume.Oil[loc('tech_space_marines_bd')] = -(sm_consume);
             for (let i=0; i<global.space.space_barracks.on; i++){
@@ -1613,7 +1613,7 @@ function fastLoop(){
         }
 
         if (p_on['red_factory'] && p_on['red_factory'] > 0){
-            let h_consume = p_on['red_factory'] * fuel_adjust(1);
+            let h_consume = p_on['red_factory'] * fuel_adjust(1,true);
             modRes('Helium_3',-(h_consume * time_multiplier));
             breakdown.p.consume.Helium_3[loc('space_red_factory_title')] = -(h_consume);
         }
@@ -1626,7 +1626,7 @@ function fastLoop(){
 
         // spaceports
         if (global.space['spaceport'] && global.space['spaceport'].count > 0){
-            let fuel_cost = +fuel_adjust(1.25);
+            let fuel_cost = +fuel_adjust(1.25,true);
             let mb_consume = p_on['spaceport'] * fuel_cost;
             breakdown.p.consume.Helium_3[loc('space_red_spaceport_title')] = -(mb_consume);
             for (let i=0; i<p_on['spaceport']; i++){
@@ -1881,7 +1881,7 @@ function fastLoop(){
 
         // Space Station
         if (global.space['space_station'] && global.space['space_station'].count > 0){
-            let fuel_cost = +fuel_adjust(2.5);
+            let fuel_cost = +fuel_adjust(2.5,true);
             let ss_consume = p_on['space_station'] * fuel_cost;
             breakdown.p.consume.Helium_3[loc('space_belt_station_title')] = -(ss_consume);
             for (let i=0; i<p_on['space_station']; i++){
@@ -1972,7 +1972,7 @@ function fastLoop(){
 
         // Outpost
         if (p_on['outpost'] && p_on['outpost'] > 0){
-            let fuel_cost = +fuel_adjust(2);
+            let fuel_cost = +fuel_adjust(2,true);
             let out_consume = p_on['outpost'] * fuel_cost;
             breakdown.p.consume.Oil[loc('space_gas_moon_outpost_bd')] = -(out_consume);
             for (let i=0; i<p_on['outpost']; i++){
@@ -4015,10 +4015,10 @@ function fastLoop(){
 
             if (global.race['cataclysm']){
                 if (global.tech['mars'] && red_on['red_mine']){
-                    stone_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','stone');
+                    stone_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','stone');
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                        asbestos_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','asbestos');
+                        asbestos_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','asbestos');
                         chrysotile_bd[loc('space_red_mine_title')] = asbestos_base + 'v';
                     }
                 }
@@ -4323,7 +4323,7 @@ function fastLoop(){
                     let base = 0;
                     if (global.race['cataclysm']){
                         if (global.tech['mars'] && red_on['red_mine']){
-                            base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','aluminium');
+                            base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','aluminium');
                         }
                     }
                     else {
@@ -4371,12 +4371,12 @@ function fastLoop(){
 
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0) {
-            let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','copper');
+            let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper');
             copper_base *= shrineMetal.mult;
             copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
-            let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('iridium_mine','titanium');
+            let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium');
             titanium_base *= shrineMetal.mult;
             titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
