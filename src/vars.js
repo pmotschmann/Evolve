@@ -861,7 +861,7 @@ if (!global['settings']){
         disableReset: false,
         font: 'standard',
         cLabels: true,
-        theme: 'dark',
+        theme: 'gruvboxDark',
         locale: 'en-US',
         icon: 'star'
     };

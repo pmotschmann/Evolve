@@ -2543,9 +2543,9 @@ function fastLoop(){
 
             let biodome = 0;
             if (global.tech['mars']){
-                biodome = red_on['biodome'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
+                biodome = red_on['biodome'] * global.civic.colonist.workers * production('biodome','food');
                 if (global.race['cataclysm']){
-                    biodome += red_on['biodome'] * 2 * zigguratBonus();
+                    biodome += red_on['biodome'] * production('biodome','cat_food');
                 }
             }
 
@@ -3793,7 +3793,7 @@ function fastLoop(){
             }
 
             if (vitreloy_production > 0){
-                vitreloy_production *= 0.18;
+                vitreloy_production *= production('vitreloy_plant');
 
                 breakdown.p.consume.Money[loc('galaxy_vitreloy_plant_bd')] = -(consume_money);
                 breakdown.p.consume.Bolognium[loc('galaxy_vitreloy_plant_bd')] = -(consume_bolognium);
@@ -3803,17 +3803,9 @@ function fastLoop(){
                 modRes('Bolognium', -(consume_bolognium * time_multiplier));
                 modRes('Stanene', -(consume_stanene * time_multiplier));
 
-                if (global.civic.govern.type === 'corpocracy'){
-                    vitreloy_production *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    vitreloy_production *= 1.1;
-                }
-
-                let zig = zigguratBonus();
                 let pirate = piracy('gxy_alien1');
 
-                vitreloy_bd[loc('galaxy_vitreloy_plant_bd')] = (vitreloy_production * zig) + 'v';
+                vitreloy_bd[loc('galaxy_vitreloy_plant_bd')] = (vitreloy_production) + 'v';
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     vitreloy_production *= 0.5;
@@ -3822,7 +3814,7 @@ function fastLoop(){
 
                 vitreloy_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 vitreloy_bd[`ᄂ${loc('galaxy_piracy')}+0`] = -((1 - pirate) * 100) + '%';
-                modRes('Vitreloy', vitreloy_production * hunger * global_multiplier * zig * pirate * time_multiplier);
+                modRes('Vitreloy', vitreloy_production * hunger * global_multiplier * pirate * time_multiplier);
             }
         }
 
@@ -3842,7 +3834,7 @@ function fastLoop(){
             if (global.race['cataclysm']){
                 if (global.tech['mars'] && red_on['biodome'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
                     let lumber_bd = {};
-                    let lumber = red_on['biodome'] * 1.5 * global.civic.colonist.workers * zigguratBonus();
+                    let lumber = red_on['biodome'] * global.civic.colonist.workers * production('biodome','lumber');
 
                     lumber_bd[loc('space_red_biodome_title')] = lumber  + 'v';
                     lumber_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -4023,10 +4015,10 @@ function fastLoop(){
 
             if (global.race['cataclysm']){
                 if (global.tech['mars'] && red_on['red_mine']){
-                    stone_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
+                    stone_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','stone');
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                        asbestos_base = red_on['red_mine'] * 1.25 * global.civic.colonist.workers * zigguratBonus();
+                        asbestos_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','asbestos');
                         chrysotile_bd[loc('space_red_mine_title')] = asbestos_base + 'v';
                     }
                 }
@@ -4268,7 +4260,7 @@ function fastLoop(){
                 let space_iron = 0;
 
                 if (belt_on['iron_ship']){
-                    space_iron = belt_on['iron_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus();
+                    space_iron = belt_on['iron_ship'] * production('iron_ship');
                 }
 
                 let iron_power = power_mult;
@@ -4328,14 +4320,16 @@ function fastLoop(){
             if (global.race['sappy']){
                 // Alt Aluminium
                 if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
+                    let base = 0;
                     if (global.race['cataclysm']){
                         if (global.tech['mars'] && red_on['red_mine']){
-                            miner_base = red_on['red_mine'] * 0.75 * global.civic.colonist.workers * zigguratBonus();
+                            base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','aluminium');
                         }
-                        power_mult = 1;
+                    }
+                    else {
+                        base = miner_base * power_mult * 0.088;
                     }
 
-                    let base = miner_base * power_mult * 0.088;
                     if (global.city.geology['Aluminium']){
                         base *= global.city.geology['Aluminium'] + 1;
                     }
@@ -4377,12 +4371,12 @@ function fastLoop(){
 
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0) {
-            let copper_base = red_on['red_mine'] * 0.25 * global.civic.colonist.workers * zigguratBonus();
+            let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('iridium_mine','copper');
             copper_base *= shrineMetal.mult;
             copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
-            let titanium_base = red_on['red_mine'] * 0.02 * global.civic.colonist.workers * hunger * zigguratBonus();
+            let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('iridium_mine','titanium');
             titanium_base *= shrineMetal.mult;
             titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
@@ -4506,7 +4500,7 @@ function fastLoop(){
         }
 
         if (belt_on['iridium_ship']){
-            let iridium_base = belt_on['iridium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus();
+            let iridium_base = belt_on['iridium_ship'] * production('iridium_ship');
             let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier;
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
             modRes('Iridium', delta * time_multiplier);
@@ -4541,7 +4535,7 @@ function fastLoop(){
         }
 
         if (global.space['gas_mining'] && p_on['gas_mining']){
-            let gas_mining = p_on['gas_mining'] * (global.tech['helium'] ? 0.65 : 0.5) * zigguratBonus();
+            let gas_mining = p_on['gas_mining'] * production('gas_mining');
             let delta = gas_mining * hunger * global_multiplier;
 
             helium_bd[loc('space_gas_mining_title')] = gas_mining + 'v';
@@ -4550,7 +4544,7 @@ function fastLoop(){
 
         let deuterium_bd = {};
         if (global.interstellar['harvester'] && int_on['harvester']){
-            let gas_mining = int_on['harvester'] * 0.85 * zigguratBonus();
+            let gas_mining = int_on['harvester'] * production('harvester','helium');
             let delta = gas_mining * hunger * global_multiplier;
 
             helium_bd[loc('interstellar_harvester_title')] = gas_mining + 'v';
@@ -4562,7 +4556,7 @@ function fastLoop(){
             modRes('Helium_3', delta * time_multiplier);
 
             if (global.tech['ram_scoop']){
-                let deut_mining = int_on['harvester'] * 0.15 * zigguratBonus();
+                let deut_mining = int_on['harvester'] * production('harvester','deuterium');
                 let deut_delta = deut_mining * hunger * global_multiplier;
 
                 deuterium_bd[loc('interstellar_harvester_title')] = deut_mining + 'v';
@@ -4589,16 +4583,13 @@ function fastLoop(){
         // Neutronium
         let neutronium_bd = {};
         if (p_on['outpost']){
-            let n_base = p_on['outpost'] * 0.025 * zigguratBonus();
-            neutronium_bd[loc('space_gas_moon_outpost_bd')] = n_base + 'v';
+            let p_values = production('outpost',true);
 
+            neutronium_bd[loc('space_gas_moon_outpost_bd')] = (p_values.b * p_on['outpost']) + 'v';
             if (global.tech['drone']){
-                let rate = global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 3 ? 0.12 : 0.06;
-                let drones = global.space.drone.count * rate;
-                n_base *= 1 + (drones);
-                neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (drones * 100) + '%';
+                neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (p_values.d * 100) + '%';
             }
-            let delta = n_base * hunger * global_multiplier;
+            let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier;
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;
@@ -4609,7 +4600,7 @@ function fastLoop(){
         }
 
         if (p_on['neutron_miner']){
-            let n_base = p_on['neutron_miner'] * 0.055 * zigguratBonus();
+            let n_base = p_on['neutron_miner'] * production('neutron_miner');
             let delta = n_base * hunger * global_multiplier;
             neutronium_bd[loc('interstellar_neutron_miner_bd')] = n_base + 'v';
 
@@ -4637,7 +4628,7 @@ function fastLoop(){
         // Elerium
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
-            let elerium_base = belt_on['elerium_ship'] * (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus();
+            let elerium_base = belt_on['elerium_ship'] * production('elerium_ship');
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd[loc('job_space_miner')] = elerium_base + 'v';
 
@@ -4651,7 +4642,7 @@ function fastLoop(){
 
         // Prospector
         if (int_on['elerium_prospector']){
-            let elerium_base = int_on['elerium_prospector'] * 0.014 * zigguratBonus();
+            let elerium_base = int_on['elerium_prospector'] * production('elerium_prospector');
             let delta = elerium_base * hunger * global_multiplier;
             elerium_bd[loc('interstellar_elerium_prospector_bd')] = elerium_base + 'v';
             modRes('Elerium', delta * time_multiplier);
@@ -4736,7 +4727,7 @@ function fastLoop(){
         // Bolognium
         let bolognium_bd = {};
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['bolognium_ship'] && gal_on['bolognium_ship'] > 0){
-            let base = gal_on['bolognium_ship'] * 0.008 * zigguratBonus();
+            let base = gal_on['bolognium_ship'] * production('bolognium_ship');
             let pirate = piracy('gxy_gateway');
             let delta = base * global_multiplier * pirate;
 
