@@ -1904,6 +1904,7 @@ const spaceProjects = {
             },
             reqs: { titan: 1 },
             grant: ['titan',2],
+            path: 'truepath',
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(22000).toFixed(0); }
@@ -1924,6 +1925,7 @@ const spaceProjects = {
             title: loc('space_red_spaceport_title'),
             desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
             reqs: { titan: 2 },
+            path: 'truepath',
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_spaceport', offset, 47500, 1.32); },
                 Iridium(offset){ return spaceCostMultiplier('titan_spaceport', offset, 1750, 1.32); },
@@ -1979,6 +1981,7 @@ const spaceProjects = {
             },
             reqs: { enceladus: 1 },
             grant: ['enceladus',2],
+            path: 'truepath',
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
                 Helium_3(){ return +fuel_adjust(22000).toFixed(0); }

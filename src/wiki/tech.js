@@ -10,6 +10,7 @@ import { actionDesc, sideMenu } from './functions.js';
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');
+const truepath_tech = techList('truepath');
 
 const extraInformation = {
     club: global.race['soul_eater'] ? [
@@ -2101,20 +2102,26 @@ const extraTechPositions = {
     bribe_sphinx: 'miasma'
 };
 
-var techTrees = {};
-Object.keys(standard_tech).forEach(function (actionName){
-    let action = standard_tech[actionName];
-    if (!techTrees[action.grant[0]]){
-        techTrees[action.grant[0]] = {};
-    }
-    techTrees[action.grant[0]][action.grant[1]] = typeof standard_tech[actionName].title === 'string' ? standard_tech[actionName].title : standard_tech[actionName].title();
-});
-//Anomalies
-techTrees['primitive'][2] = loc('wiki_tech_req_or',[loc('tech_bone_tools'),loc('tech_wooden_tools')]);
-techTrees['theology'][3] = loc('wiki_tech_req_or',[loc('tech_fanaticism'),loc('tech_anthropology')]);
-techTrees['theology'][5] = loc('wiki_tech_req_or',[loc('tech_deify'),loc('tech_study')]);
-techTrees['ancient_study'][1] = loc('tech_study');
-techTrees['ancient_deify'][1] = loc('tech_deify');
+
+
+function getTechTrees(path){
+    let techTrees = {};
+    let techs = path === 'truepath' ? truepath_tech : standard_tech;
+    Object.keys(techs).forEach(function (actionName){
+        let action = techs[actionName];
+        if (!techTrees[action.grant[0]]){
+            techTrees[action.grant[0]] = {};
+        }
+        techTrees[action.grant[0]][action.grant[1]] = typeof techs[actionName].title === 'string' ? techs[actionName].title : techs[actionName].title();
+    });
+    //Anomalies
+    techTrees['primitive'][2] = loc('wiki_tech_req_or',[loc('tech_bone_tools'),loc('tech_wooden_tools')]);
+    techTrees['theology'][3] = loc('wiki_tech_req_or',[loc('tech_fanaticism'),loc('tech_anthropology')]);
+    techTrees['theology'][5] = loc('wiki_tech_req_or',[loc('tech_deify'),loc('tech_study')]);
+    techTrees['ancient_study'][1] = loc('tech_study');
+    techTrees['ancient_deify'][1] = loc('tech_deify');
+    return techTrees;
+}
 
 function getSolarName(planet) {
     if (global.race.species === 'protoplasm'){
@@ -2141,7 +2148,8 @@ function addInformation(parent,key){
     }
 }
 
-function addRequirements(parent,key,keyName){
+function addRequirements(parent,key,keyName,path){
+    let techTrees = getTechTrees(path);
     if (Object.keys(key.reqs).length > 0){
         let techReqs = {};
         let otherReqs = {};
@@ -2188,19 +2196,20 @@ function addRequirements(parent,key,keyName){
     }
 }
 
-export function renderTechPage(era){
+export function renderTechPage(era,path){
     let content = sideMenu('create');;
     let techListing = [];
     let otherTechs = [];
+    let techs = path === 'truepath' ? truepath_tech : standard_tech;
 
-    Object.keys(standard_tech).forEach(function (actionName){
-        let action = standard_tech[actionName];
+    Object.keys(techs).forEach(function (actionName){
+        let action = techs[actionName];
         if (action.hasOwnProperty('era') && action.era === era && (!action.hasOwnProperty('wiki') || action.wiki)){
-            let id = standard_tech[actionName].id.split('-');
+            let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
             addInformation(info, actionName);
-            addRequirements(info, action, actionName);
+            addRequirements(info, action, actionName, path);
             if (action.cost['Knowledge']){
                 if (techListing.length === 0){
                     techListing[0] = [action, info];

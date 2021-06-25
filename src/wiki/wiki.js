@@ -99,6 +99,27 @@ function initPage(){
             ]
         },
         {
+            key: 'tp_structures',
+            submenu: [
+                { key: 'prehistoric' },
+                { key: 'planetary' },
+                { key: 'space' }
+            ]
+        },
+        {
+            key: 'tp_tech',
+            submenu: [
+                { key: 'primitive' },
+                { key: 'civilized' },
+                { key: 'discovery' },
+                { key: 'industrialized' },
+                { key: 'globalized' },
+                { key: 'early_space' },
+                { key: 'deep_space' },
+                { key: 'solar' }
+            ]
+        },
+        {
             key: 'arpa',
             submenu: [
                 { key: 'projects' },
@@ -204,12 +225,22 @@ function menuDispatch(main,sub,frag){
             break;
 
         case 'structures':
-            renderStructurePage(sub);
+            renderStructurePage(sub,'standard');
             setWindowHash(main,sub,frag);
             break;
 
         case 'tech':
-            renderTechPage(sub);
+            renderTechPage(sub,'standard');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_structures':
+            renderStructurePage(sub,'truepath');
+            setWindowHash(main,sub,frag);
+            break;
+
+        case 'tp_tech':
+            renderTechPage(sub,'truepath');
             setWindowHash(main,sub,frag);
             break;
 

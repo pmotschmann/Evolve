@@ -4,7 +4,7 @@ import { popover } from './../functions.js';
 import { actions } from './../actions.js';
 import { actionDesc, sideMenu } from './functions.js';
 
-export function renderStructurePage(zone){
+export function renderStructurePage(zone,path){
     let content = sideMenu('create');
 
     switch (zone){
@@ -12,10 +12,10 @@ export function renderStructurePage(zone){
             prehistoricPage(content);
             break;
         case 'planetary':
-            planetaryPage(content);
+            planetaryPage(content,path);
             break;
         case 'space':
-            spacePage(content);
+            spacePage(content,path);
             break;
         case 'interstellar':
             interstellarPage(content);
@@ -65,7 +65,8 @@ function prehistoricPage(content){
 
 function planetaryPage(content){
     Object.keys(actions.city).forEach(function (action){
-        if (!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki){
+        if ((!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki) &&
+            (!actions.city[action].hasOwnProperty('path') || actions.city[action].path === path) ){
             let id = actions.city[action].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
@@ -76,13 +77,15 @@ function planetaryPage(content){
     });
 }
 
-function spacePage(content){
+function spacePage(content,path){
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();
         let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
 
         Object.keys(actions.space[region]).forEach(function (struct){
-            if (struct !== 'info' && (!actions.space[region][struct].hasOwnProperty('wiki') || actions.space[region][struct].wiki)){
+            if (struct !== 'info' && 
+                (!actions.space[region][struct].hasOwnProperty('wiki') || actions.space[region][struct].wiki) && 
+                (!actions.space[region][struct].hasOwnProperty('path') || actions.space[region][struct].path === path) ){
                 let id = actions.space[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
