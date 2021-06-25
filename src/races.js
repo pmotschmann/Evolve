@@ -2102,6 +2102,36 @@ export const races = {
     custom: customRace()
 };
 
+export const genusVars = {
+    humanoid: {},
+    carnivore: {},
+    herbivore: {},
+    omnivore: {},
+    small: {},
+    giant: {},
+    reptilian: {},
+    avian: {},
+    insectoid: {},
+    plant: {},
+    fungi: {},
+    aquatic: {},
+    fey: {},
+    heat: {},
+    polar: {},
+    sand: {},
+    demonic: {},
+    angelic: {}
+};
+
+Object.keys(genusVars).forEach(function(k){
+    genusVars[k]['solar'] = {
+        titan: loc(`genus_${k}_solar_titan`),
+        enceladus: loc(`genus_${k}_solar_enceladus`),
+        triton: loc(`genus_${k}_solar_triton`),
+        eris: loc(`genus_${k}_solar_eris`),
+    }
+});
+
 export function setJType(){
     races.junker.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
 }

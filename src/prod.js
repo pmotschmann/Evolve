@@ -34,7 +34,13 @@ export function production(id,val){
                     if (global.city.geology['Iridium']){
                         iridium *= global.city.geology['Iridium'] + 1;
                     }
-                    return iridium * govRelationFactor(3) * zigguratBonus();
+                    let base = iridium * zigguratBonus();
+                    let gov = govRelationFactor(3);
+                    return {
+                        b: base,
+                        g: gov - 1,
+                        f: base * gov
+                    };
                 }
                 case 'coal':
                     return 0.55 * zigguratBonus();
@@ -42,15 +48,37 @@ export function production(id,val){
         }
         case 'helium_mine':
         {
-            return 0.18 * govRelationFactor(3) * zigguratBonus();
+            let base = 0.18 * zigguratBonus();
+            let gov = govRelationFactor(3);
+            return {
+                b: base,
+                g: gov - 1,
+                f: base * gov
+            };
         }
         case 'red_mine':
         {
             switch (val){
                 case 'copper':
-                    return 0.25 * govRelationFactor(3) * zigguratBonus();
+                {
+                    let base = 0.25 * zigguratBonus();
+                    let gov = govRelationFactor(3);
+                    return {
+                        b: base,
+                        g: gov - 1,
+                        f: base * gov
+                    };
+                }
                 case 'titanium':
-                    return 0.02 * govRelationFactor(3) * zigguratBonus();
+                {
+                    let base = 0.02 * zigguratBonus();
+                    let gov = govRelationFactor(3);
+                    return {
+                        b: base,
+                        g: gov - 1,
+                        f: base * gov
+                    };
+                }
                 case 'stone':
                     return 0.75 * zigguratBonus();
                 case 'asbestos':

@@ -4371,12 +4371,12 @@ function fastLoop(){
 
         // Mars Mining
         if (red_on['red_mine'] && red_on['red_mine'] > 0) {
-            let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper');
+            let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper').f;
             copper_base *= shrineMetal.mult;
             copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
             modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
 
-            let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium');
+            let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium').f;
             titanium_base *= shrineMetal.mult;
             titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
             modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
@@ -4490,7 +4490,7 @@ function fastLoop(){
         // Iridium
         let iridium_bd = {};
         if (moon_on['iridium_mine']){
-            let iridium_base = moon_on['iridium_mine'] * production('iridium_mine','iridium');
+            let iridium_base = moon_on['iridium_mine'] * production('iridium_mine','iridium').f;
             if (global.city.geology['Iridium']){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
@@ -4527,7 +4527,7 @@ function fastLoop(){
         // Helium 3
         let helium_bd = {};
         if (global.space['moon_base'] && moon_on['helium_mine']){
-            let helium_base = moon_on['helium_mine'] * production('helium_mine');
+            let helium_base = moon_on['helium_mine'] * production('helium_mine').f;
             let delta = helium_base * hunger * global_multiplier;
 
             helium_bd[loc('space_moon_helium_mine_title')] = helium_base + 'v';

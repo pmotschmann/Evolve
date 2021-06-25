@@ -6,6 +6,7 @@ import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEj
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
+import { races } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
@@ -241,7 +242,9 @@ function tabLabel(lbl){
                 return loc('tab_city1');
             }
         case 'local_space':
-            return loc('sol_system',[flib('name')]);
+            return loc('sol_system',[global.race['truepath'] ? races[global.race.species].home : flib('name')]);
+        case 'outer_local_space':
+            return loc('outer_sol_system',[global.race['truepath'] ? races[global.race.species].home : flib('name')])
         case 'old':
             return loc('tab_old_res');
         case 'new':
@@ -328,6 +331,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="outerSol" :visible="s.showOuter">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'outer_local_space' | label }}</h2>
+                            <span aria-hidden="true">{{ 'outer_local_space' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -349,6 +358,7 @@ export function loadTab(tab){
                                     case 1:
                                     case 2:
                                     case 3:
+                                    case 5:
                                         renderSpace();
                                         break;
                                     case 4:

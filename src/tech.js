@@ -7617,6 +7617,9 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.settings.space.gas = true;
                 global.settings.space.sun = true;
+                if (global.race['truepath']){
+                    global.settings.showOuter = true;
+                }
                 global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
                 return true;
             }
@@ -8158,7 +8161,7 @@ const techs = {
         grant: ['asteroid',5],
         cost: {
             Knowledge(){ return 235000; },
-            Elerium(){ return 1; }
+            Elerium(){ return global.race['truepath'] ? 0.5 : 1; }
         },
         effect: loc('tech_elerium_mining_effect'),
         action(){

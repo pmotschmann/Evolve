@@ -952,6 +952,14 @@ if (typeof global.settings.space['sirius'] === 'undefined'){
     global.settings.space['sirius'] = false;
 }
 
+if (!global.settings.space.hasOwnProperty('titan')){
+    global.settings.space['titan'] = false;
+    global.settings.space['enceladus'] = false;
+    global.settings.space['triton'] = false;
+    global.settings.space['eris'] = false;
+    global.settings.space['kuiper'] = false;
+}
+
 if (!global.settings['showDeep']){
     global.settings['showDeep'] = false;
 }
@@ -962,6 +970,10 @@ if (!global.settings['showGalactic']){
 
 if (!global.settings['showPortal']){
     global.settings['showPortal'] = false;
+}
+
+if (!global.settings['showOuter']){
+    global.settings['showOuter'] = false;
 }
 
 if (!global.settings['portal']){
@@ -1953,6 +1965,7 @@ export function clearStates(){
     global.settings.showDeep = false;
     global.settings.showGalactic = false;
     global.settings.showPortal = false;
+    global.settings.showOuter = false;
     global.settings.showEjector = false;
     global.settings.showCargo = false;
     global.settings.showAlchemy  = false;
@@ -1978,6 +1991,13 @@ export function clearStates(){
     global.settings.space.alien1 = false;
     global.settings.space.alien2 = false;
     global.settings.space.chthonian = false;
+
+    global.settings.space.titan = false;
+    global.settings.space.enceladus = false;
+    global.settings.space.triton = false;
+    global.settings.space.eris = false;
+    global.settings.space.kuiper = false;
+
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;

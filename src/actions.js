@@ -4351,7 +4351,7 @@ export const actions = {
             },
             effect(){
                 let exo = global.tech.mass >= 2 ? `<div>${loc('city_mass_driver_effect2',[1,global.civic.scientist.name])}</div>` : '';
-                return `${exo}<span>${loc('city_mass_driver_effect',[5,flib('name')])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
+                return `${exo}<span>${loc('city_mass_driver_effect',[global.race['truepath'] ? 6 : 5,flib('name')])}</span> <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){
                 let power = global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 4 ? 4 : 5;
@@ -5196,6 +5196,10 @@ export function setAction(c_action,action,type,old){
     if (checkTechQualifications(c_action,type) === false) {
         return;
     }
+    let tab = action;
+    if (action === 'outerSol'){
+        action = 'space';
+    }
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
     }
@@ -5267,7 +5271,7 @@ export function setAction(c_action,action,type,old){
         $('#oldTech').append(parent);
     }
     else {
-        $('#'+action).append(parent);
+        $('#'+tab).append(parent);
     }
     if (action !== 'tech' && global[action] && global[action][type] && global[action][type].count === 0){
         $(`#${id} .count`).css('display','none');
