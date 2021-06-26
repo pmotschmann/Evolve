@@ -351,6 +351,7 @@ export function loadTab(tab){
                                 clearElement($(`#interstellar`));
                                 clearElement($(`#galaxy`));
                                 clearElement($(`#portal`));
+                                clearElement($(`#outerSol`));
                                 switch (tab){
                                     case 0:
                                         drawCity();

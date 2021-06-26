@@ -5294,7 +5294,10 @@ export function renderSpace(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 1){
         return;
     }
-    space();
+    space('inner');
+    if (global.race['truepath']){
+        space('outer');
+    }
     deepSpace();
     galaxySpace();
 }
@@ -5303,8 +5306,10 @@ function space(zone){
     if (!zone){
         zone = global.settings.spaceTabs === 5 ? 'outer' : 'inner';
     }
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || ![1,5].includes(global.settings.spaceTabs))){
-        return;
+    if (!global.settings.tabLoad){
+        if (global.settings.civTabs !== 1 || ![1,5].includes(global.settings.spaceTabs) || (global.settings.civTabs === 1 && (global.settings.spaceTabs === 1 && zone !== 'inner') || (global.settings.spaceTabs === 5 && zone !== 'outer'))){
+            return;
+        }
     }
     let parent = zone === 'inner' ? $('#space') : $('#outerSol');
     clearElement(parent);
@@ -5354,10 +5359,6 @@ function space(zone){
             });
         }
     });
-
-    if (global.race['truepath'] && zone === 'inner' && global.settings.tabLoad){
-        space('outer');
-    }
 }
 
 function deepSpace(){
