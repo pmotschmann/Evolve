@@ -174,34 +174,34 @@ function prestigeCalc(info,resource,extraType){
     switch (prestigeType){
         case 'plasmid':
             universes.antimatter.use = false;
-            equation += `<span>((({{ i.cit.val | citizens }} + {{ i.sol.val | soldiers }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val | knowledge }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span>`;
+            equation += `<span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * {{ i.uni.val | universe }}</span>`;
             break;
         case 'anti':
             resets.vacuum.use = false;
-            equation += `<span>((({{ i.cit.val | citizens }} + {{ i.sol.val | soldiers }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val | knowledge }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge}} * 1.1</span>`;
+            equation += `<span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * 1.1</span>`;
             break;
         case 'phage':
             resets.mad.use = false;
             resets.descend.use = false;
-            equation += `<span>log2({{ i.plas.val | plasmids }}) * {{ i.reset.val | phageMulti }} * e * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span>`;
+            equation += `<span>log2({{ i.plas.val, 'plasmids' | generic }}) * {{ i.reset.val | phageMulti }} * e * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span>`;
             break;
         case 'dark':
             inputs.reset.val = 'bigbang';
             universes.magic.use = false;
-            equation += `<span>(ln(1 + ({{ i.exotic.val | exotic }} * 40)) + (log2({{ i.mass.val | mass }} - {{ i.exotic.val | exotic }} - 7) / 2.5)) * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span>`;
+            equation += `<span>(ln(1 + ({{ i.exotic.val, 'exotic' | generic }} * 40)) + (log2({{ i.mass.val, 'mass' | generic }} - {{ i.exotic.val, 'exotic' | generic }} - 7) / 2.5)) * {{ i.genes.val | challenge }} * {{ i.uni.val | universe }}</span>`;
             break;
         case 'vacuum':
             inputs.reset.val = 'vacuum';
             inputs.uni.val = 'magic';
-            equation += `<span>(log2({{ i.mana.val | mana }}) / 5) * {{ i.genes.val | challenge}}</span>`;
+            equation += `<span>(log2({{ i.mana.val, 'mana' | generic }}) / 5) * {{ i.genes.val | challenge }}</span>`;
             break;
         case 'harmony':
             inputs.reset.val = 'ascend';
-            equation += `<span>(1 + {{ i.genes.val | genes}}) * {{ i.uni.val | universe }}</span>`;
+            equation += `<span>(1 + {{ i.genes.val, 'genes' | generic }}) * {{ i.uni.val | universe }}</span>`;
             break;
         case 'artifact':
             inputs.reset.val = 'descend';
-            equation += `<span>1 + </span><span v-show="!i.uni.micro">{{ i.genes.val | genes}} + </span><span>{{ i.floor.val | floor }}</span>`;
+            equation += `<span>1 + </span><span v-show="!i.uni.micro">{{ i.genes.val, 'genes' | generic }} + </span><span>{{ i.floor.val | floor }}</span>`;
             break;
     }
     
@@ -329,26 +329,8 @@ function prestigeCalc(info,resource,extraType){
             }
         },
         filters: {
-            citizens(num){
-                return num !== undefined ? num : loc('wiki_calc_citizens');
-            },
-            soldiers(num){
-                return num !== undefined ? num : loc('wiki_calc_soldiers');
-            },
-            knowledge(num){
-                return num !== undefined ? num : loc('wiki_calc_knowledge');
-            },
-            plasmids(num){
-                return num !== undefined ? num : loc('wiki_calc_plasmids');
-            },
-            mass(num){
-                return num !== undefined ? num : loc('wiki_calc_mass');
-            },
-            exotic(num){
-                return num !== undefined ? num : loc('wiki_calc_exotic');
-            },
-            mana(num){
-                return num !== undefined ? num : loc('wiki_calc_mana');
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_' + type);
             },
             floor(num){
                 if (num === undefined){
@@ -361,9 +343,6 @@ function prestigeCalc(info,resource,extraType){
                     }
                 });
                 return bonus;
-            },
-            genes(num){
-                return num !== undefined ? num : loc('wiki_calc_genes');
             },
             popDivisor(type){
                 switch (type){

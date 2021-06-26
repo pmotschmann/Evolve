@@ -1078,7 +1078,7 @@ export function calcPrestige(type,inputs){
     }
 
     if (inputs.plas === undefined){
-        let k_base = inputs.know || global.stats.know;
+        let k_base = inputs.know !== undefined ? inputs.know : global.stats.know;
         let new_plasmid = Math.round(pop / pop_divisor);
         while (k_base > k_inc){
             new_plasmid++;
@@ -1111,7 +1111,7 @@ export function calcPrestige(type,inputs){
         gains.dark = new_dark;
     }
     else if (type === 'vacuum'){
-        let mana = inputs.mana || global.resource.Mana.gen;
+        let mana = inputs.mana !== undefined ? inputs.mana : global.resource.Mana.gen;
         let new_dark = +(Math.log2(mana)/5).toFixed(3);
         new_dark = challenge_multiplier(new_dark,'vacuum',3,challenge,universe);
         gains.dark = new_dark;
