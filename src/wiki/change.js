@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.7`,
+        date: `6/28/2021`,
+        changes: [
+            `Fixed percision error with Tech Scavangers.`,
+        ]
+    },
+    {
         version: `1.1.6`,
         date: `6/19/2021`,
         changes: [

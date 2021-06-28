@@ -6068,7 +6068,7 @@ function midLoop(){
                 multiplier *= 1 + (traits.curious.vars[0] / 100 * global.resource[global.race.species].amount);
             }
             if (p_on['s_gate'] && gal_on['scavenger']){
-                let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
+                let uni = gal_on['scavenger'] * pirate_alien2 / 4;
                 multiplier *= 1 + uni;
             }
             let teachVal = govActive('teacher',0);
