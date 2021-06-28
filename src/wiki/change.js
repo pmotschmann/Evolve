@@ -7,6 +7,9 @@ const changeList = [
         date: `6/28/2021`,
         changes: [
             `Fixed percision error with Tech Scavangers.`,
+            `Prestige calcualors added to wiki.`,
+            `Progress related event section added to wiki.`,
+            `Anti-plasmids gained from MAD in antimatter universe is now correctly calculated.`
         ]
     },
     {
