@@ -2114,7 +2114,7 @@ techTrees['theology'][5] = loc('wiki_tech_req_or',[loc('tech_deify'),loc('tech_s
 techTrees['ancient_study'][1] = loc('tech_study');
 techTrees['ancient_deify'][1] = loc('tech_deify');
 
-function getSolarName(planet) {
+export function getSolarName(planet) {
     if (global.race.species === 'protoplasm'){
         return loc(`race_human_solar_${planet}`);
     }

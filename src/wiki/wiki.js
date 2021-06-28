@@ -62,6 +62,7 @@ function initPage(){
             submenu: [
                 { key: 'major' },
                 { key: 'minor' },
+                { key: 'progress' },
                 { key: 'special' }              
             ]
         },
