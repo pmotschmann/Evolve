@@ -8083,7 +8083,7 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) >= gal_on['scavenger']){
+        if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) <= gal_on['scavenger']){
             global.tech['conflict'] = 5;
             messageQueue(loc('galaxy_scavenger_find'),'info');
             drawTech();

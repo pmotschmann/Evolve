@@ -11,6 +11,10 @@ Evolve combines elements of a clicker with an idler and has lots of micromanagem
 
 What will you evolve into?
 
+## Submitting Issues
+If you think you have discovered a bug or have some other issue with the game then you can open an issue here on Github.
+Please do not open Github issues to ask gameplay questions, use Reddit or Discord for that.
+Links for both can be found in the footer of the game.
 
 ## Contributing a Language file
 If you are interested in a contributing a new language for Evolve the process is fairly straight forward (although a bit tedious).
