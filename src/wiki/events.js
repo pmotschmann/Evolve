@@ -6,6 +6,7 @@ import { clearElement, eventActive } from './../functions.js';
 import { loc } from './../locale.js';
 import { swissKnife } from './../tech.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
+import { getSolarName } from './tech.js';
 
 export function eventsPage(zone){
     let content = $(`#content`);
@@ -18,6 +19,9 @@ export function eventsPage(zone){
         case 'minor':
             minorEventsPage(content);
             break;
+        case 'progress':
+            progressEventsPage(content);
+            break;
         case 'special':
             specialEventsPage(content);
             break;     
@@ -26,6 +30,17 @@ export function eventsPage(zone){
 
 function mainEventsPage(content){
     let mainContent = sideMenu('create',content);
+    
+    {   // Intro
+        infoBoxBuilder(mainContent,{ name: 'major_intro', template: 'events', paragraphs: 3, h_level: 2,
+            para_data: {
+                1: [loc(`wiki_menu_major`),999,83],
+                2: [loc(`wiki_menu_major`)],
+                3: [loc(`wiki_menu_major`)]
+            }
+        });
+        sideMenu('add',`major-events`,'major_intro',loc('wiki_menu_intro'));
+    }
     
     {   // DNA Replication
         let section = infoBoxBuilder(mainContent,{ name: 'replication', template: 'events', label: loc('wiki_events_replication'), paragraphs: 1, h_level: 2,
@@ -352,6 +367,18 @@ function mainEventsPage(content){
 
 function minorEventsPage(content){
     let mainContent = sideMenu('create',content);
+    
+    {   // Intro
+        let section = infoBoxBuilder(mainContent,{ name: 'minor_intro', template: 'events', paragraphs: 1, h_level: 2});
+        infoBoxBuilder(mainContent,{ name: 'major_intro', template: 'events', paragraphs: 3, h_level: 2,
+            para_data: {
+                1: [loc(`wiki_menu_minor`),850,71],
+                2: [loc(`wiki_menu_minor`)],
+                3: [loc(`wiki_menu_minor`)]
+            }
+        }, section);
+        sideMenu('add',`minor-events`,'minor_intro',loc('wiki_menu_intro'));
+    }
     
     {   // Curious
         let section = infoBoxBuilder(mainContent,{ name: 'curious', template: 'events', label: loc('wiki_events_curious'), paragraphs: 2, break: [2], h_level: 2});
@@ -1059,8 +1086,159 @@ function minorEventsPage(content){
     }
 }
 
+function progressEventsPage(content){
+    let mainContent = sideMenu('create',content);
+    
+    {   // Intro
+        infoBoxBuilder(mainContent,{ name: 'progress_intro', template: 'events', paragraphs: 3, h_level: 2});
+        sideMenu('add',`progress-events`,'progress_intro',loc('wiki_menu_intro'));
+    }
+    
+    {   // Steel Discovery Trade
+        let section = infoBoxBuilder(mainContent,{ name: 'steel', template: 'events', label: loc('wiki_events_steel'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`resource_Steel_name`)],
+                2: [`0.08%`]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'steel_condition', template: 'events', label: loc('wiki_events_steel'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`resource_Steel_name`)]
+            }, 
+            examples: [
+                loc(`steel_sample`)
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`steel`,loc('wiki_events_steel'));
+    }
+    
+    {   // Elerium Discovery
+        let section = infoBoxBuilder(mainContent,{ name: 'elerium', template: 'events', label: loc('wiki_events_elerium'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`resource_Elerium_name`),loc(`tech_elerium_mining`)],
+                2: [loc(`space_belt_iron_ship_title`),loc(`space_belt_iridium_ship_title`),`0.4%`]
+            }, 
+            examples: [
+                loc(`discover_elerium`)
+            ]
+        });
+        sideMenu('add',`progress-events`,`elerium`,loc('wiki_events_elerium'));
+    }
+    
+    {   // Gas Moon Oil
+        let section = infoBoxBuilder(mainContent,{ name: 'oil', template: 'events', label: loc('wiki_events_oil'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`resource_Oil_name`),getSolarName('gas_moon'),loc(`space_gas_moon_oil_extractor_title`)],
+                2: [loc(`space_gas_moon_outpost_title`),`1%`]
+            }, 
+            examples: [
+                loc(`discover_oil`,[getSolarName('gas_moon')])
+            ]
+        });
+        sideMenu('add',`progress-events`,`oil`,loc('wiki_events_oil'));
+    }
+    
+    {   // Pit Discovery
+        let section = infoBoxBuilder(mainContent,{ name: 'pit', template: 'events', label: loc('wiki_events_pit'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`portal_pit_name`),loc(`tab_portal`),loc(`portal_pit_mission_title`)]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'pit_condition', template: 'events', label: loc('wiki_events_pit'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [(1000000).toLocaleString(),loc(`galaxy_telemetry_beacon`)]
+            }, 
+            examples: [
+                loc(`portal_hell_pit_found`)
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`pit`,loc('wiki_events_pit'));
+    }
+    
+    {   // Alien Encounter
+        let section = infoBoxBuilder(mainContent,{ name: 'alien_encounter', template: 'events', label: loc('wiki_events_alien_encounter'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`galaxy_scout_ship`),loc(`tech_xeno_linguistics`),loc(`galaxy_corvette_ship`)],
+                2: [`10%`]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'alien_encounter_condition', template: 'events', label: loc('wiki_events_alien_encounter'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`galaxy_scout_ship`)]
+            }, 
+            examples: [
+                loc(`galaxy_encounter`)
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`alien_encounter`,loc('wiki_events_alien_encounter'));
+    }
+    
+    {   // Piracy Unlock
+        let section = infoBoxBuilder(mainContent,{ name: 'piracy', template: 'events', label: loc('wiki_events_piracy'), paragraphs: 3, break: [3], h_level: 2,
+            para_data: {
+                2: [loc(`galaxy_piracy`),loc(`tech_xeno_linguistics`),loc(`galaxy_corvette_ship`)],
+                3: [`20%`]
+            },
+            data_link: {
+                2: ['wiki.html#mechanics-gameplay-piracy']
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'piracy_condition', template: 'events', label: loc('wiki_events_piracy'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`galaxy_embassy`)]
+            }, 
+            examples: [
+                loc(`galaxy_piracy_msg`,[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`piracy`,loc('wiki_events_piracy'));
+    }
+    
+    {   // Alien Database
+        let section = infoBoxBuilder(mainContent,{ name: 'alien_database', template: 'events', label: loc('wiki_events_alien_database'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`galaxy_scavenger`),loc(`tech_alien_database`)],
+                2: [loc(`galaxy_scavenger`),`2%`]
+            }, 
+            examples: [
+                loc(`galaxy_scavenger_find`)
+            ]
+        });
+        sideMenu('add',`progress-events`,`alien_database`,loc('wiki_events_alien_database'));
+    }
+    
+    {   // Corrupt Soul Gem
+        let section = infoBoxBuilder(mainContent,{ name: 'corrupt_gem', template: 'events', label: loc('wiki_events_corrupt_gem'), paragraphs: 4, break: [2], h_level: 2,
+            para_data: {
+                1: [loc(`resource_Corrupt_Gem_name`),loc(`portal_soul_forge_title`)],
+                2: [loc(`resource_Soul_Gem_name`),loc(`portal_soul_forge_title`),loc(`portal_soul_attractor_title`)],
+                3: [`1/(11-X)`,`X`,loc(`portal_soul_attractor_title`)],
+                4: [9,loc(`portal_soul_attractor_title`),`9.09%`,0,`50%`]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'corrupt_gem_condition', template: 'events', label: loc('wiki_events_corrupt_gem'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`tech_metaphysics`)]
+            }, 
+            examples: [
+                loc(`portal_corrupt_gem`)
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`corrupt_gem`,loc('wiki_events_corrupt_gem'));
+    }
+}
+
 function specialEventsPage(content){
     let mainContent = sideMenu('create',content);
+    
+    {   // Intro
+        infoBoxBuilder(mainContent,{ name: 'special_intro', template: 'events', paragraphs: 3, h_level: 2,
+            para_data: {
+                3: [loc('boring')],
+            }
+        });
+        sideMenu('add',`special-events`,'special_intro',loc('wiki_menu_intro'));
+    }
     
     {   // Friday the 13th
         let event = 'crystal';

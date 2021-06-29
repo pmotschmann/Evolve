@@ -2123,7 +2123,7 @@ function getTechTrees(path){
     return techTrees;
 }
 
-function getSolarName(planet) {
+export function getSolarName(planet) {
     if (global.race.species === 'protoplasm'){
         return loc(`race_human_solar_${planet}`);
     }

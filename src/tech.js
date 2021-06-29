@@ -4476,21 +4476,7 @@ const techs = {
             Demonic_Essence(){ return 1; }
         },
         effect(){
-            let artifacts = 0;
-            switch (global.race.universe){
-                case 'micro':
-                    artifacts = 1;
-                    break;
-                default:
-                    artifacts = alevel();
-                    break;
-            }
-            [50,100].forEach(function(x){
-                if (global.portal.hasOwnProperty('spire') && global.portal.spire.count > x){
-                    artifacts++;
-                }
-            });
-            return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[artifacts])}</div>`;
+            return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
             save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
@@ -9795,7 +9781,7 @@ const techs = {
             Knowledge(){ return 500000; }
         },
         effect(){
-            let gains = calcPrestige('bioseed');
+            let gains = calcPrestige('cataclysm');
             let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
             return `<div>${loc('tech_dial_it_to_11_effect',[races[global.race.species].solar.dwarf,global.race['cataclysm'] ? races[global.race.species].solar.red : races[global.race.species].home])}</div><div class="has-text-danger">${loc('tech_dial_it_to_11_effect2')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`; },
         action(){

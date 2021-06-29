@@ -2205,6 +2205,9 @@ function fastLoop(){
             global.city.morale['bonfire'] = boost;
             morale += boost;
         }
+        else {
+            delete global.city.morale['bonfire'];
+        }
 
         if (global.civic.govern.type === 'anarchy'){
             stress /= 2;
@@ -6024,7 +6027,7 @@ function midLoop(){
                 multiplier *= 1 + (traits.curious.vars[0] / 100 * global.resource[global.race.species].amount);
             }
             if (p_on['s_gate'] && gal_on['scavenger']){
-                let uni = gal_on['scavenger'] * +(pirate_alien2 / 4).toFixed(1);
+                let uni = gal_on['scavenger'] * pirate_alien2 / 4;
                 multiplier *= 1 + uni;
             }
             let teachVal = govActive('teacher',0);
@@ -6149,7 +6152,7 @@ function midLoop(){
                 gain *= 1 + ((global.race['cataclysm'] ? red_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
             }
             if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
-                gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
+                gain *= 1 + (gal_on['scavenger'] * piracy('gxy_alien2') * 0.75);
             }
             if (global.tech['science'] >= 21){
                 gain *= 1.45;
@@ -8048,7 +8051,7 @@ function longLoop(){
             drawTech();
         }
 
-        if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) >= gal_on['scavenger']){
+        if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) <= gal_on['scavenger']){
             global.tech['conflict'] = 5;
             messageQueue(loc('galaxy_scavenger_find'),'info');
             drawTech();

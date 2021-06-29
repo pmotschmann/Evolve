@@ -62,6 +62,7 @@ function initPage(){
             submenu: [
                 { key: 'major' },
                 { key: 'minor' },
+                { key: 'progress' },
                 { key: 'special' }              
             ]
         },
@@ -306,12 +307,14 @@ function mainPage(){
     let content = $(`#content`);
     clearElement(content);
 
+    let contribute = `<span class="has-text-caution">${['Beorseder','Rodrigodd'].join('</span> & <span class="has-text-caution">')}</span>`;
+
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
     content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`,['Demagorddon'])}</div>`);
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
-    content.append(`<div class="paragraph has-text-caution">${loc(`wiki_main_construction`)}</div>`);
+    content.append(`<div class="paragraph has-text-warning">${loc(`wiki_main_contribution`,[contribute])}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_resources`)}</div>`);
     
     let list = $(`<ul class="paragraph"></ul>`);

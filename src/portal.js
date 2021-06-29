@@ -1,5 +1,5 @@
 import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, tagEvent, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, tagEvent, powerCostMod, spaceCostMultiplier, calcPrestige, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -4190,22 +4190,7 @@ export function descension(){
         unlockFeat(`finish_line`);
     }
 
-    let artifacts = 0;
-    switch (global.race.universe){
-        case 'micro':
-            artifacts = 1;
-            break;
-        default:
-            artifacts = alevel();
-            break;
-    }
-
-    [50,100].forEach(function(x){
-        if (global.portal.spire.count > x){
-            artifacts++;
-        }
-    });
-
+    let artifacts = calcPrestige('descend').artifact;
     global.resource.Artifact.amount += artifacts;
     global.resource.Artifact.display = true;
 

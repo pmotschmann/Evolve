@@ -12,6 +12,17 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.7`,
+        date: `6/29/2021`,
+        changes: [
+            `Added a Mass Ejector Optimizer governor task.`,
+            `Fixed precision error with Tech Scavengers.`,
+            `Prestige calculators added to wiki.`,
+            `Progress related event section added to wiki.`,
+            `Anti-plasmids gained from MAD in antimatter universe are now correctly calculated.`
+        ]
+    },
+    {
         version: `1.1.6`,
         date: `6/19/2021`,
         changes: [

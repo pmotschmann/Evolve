@@ -536,7 +536,7 @@ export function checkAchievements(){
         let thermite = 100000 + global.stats.reset * 9000;
         if (thermite > 1000000){ thermite = 1000000; }
         if (global.resource.Thermite.amount > thermite){
-            unlockFeat('solstice');
+            unlockFeat('solstice',global.race.universe === 'micro' ? true : false);
         }
     }
 

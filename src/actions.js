@@ -7498,7 +7498,7 @@ export function cataclysm_end(){
         let antiplasmid = global.race.Plasmid.anti;
         let phage = global.race.Phage.count;
 
-        let gains = calcPrestige('bioseed');
+        let gains = calcPrestige('cataclysm');
         let new_plasmid = gains.plasmid;
         let new_phage = gains.phage;
 
