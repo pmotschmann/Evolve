@@ -51,8 +51,8 @@ export function pResPage(content){
         },
         data_link: {
             2: ['wiki.html#blood-prestige'],
-            4: ['wiki.htmll#crispr-prestige-blood_sacrifice'],
-            5: ['wiki.htmll#crispr-prestige-blood_remembrance']
+            4: ['wiki.html#crispr-prestige-blood_sacrifice'],
+            5: ['wiki.html#crispr-prestige-blood_remembrance']
         }
     });
     sideMenu('add',`resources-prestige`,'blood',loc('wiki_p_res_blood'));
