@@ -4,12 +4,13 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.7`,
-        date: `6/28/2021`,
+        date: `6/29/2021`,
         changes: [
-            `Fixed percision error with Tech Scavangers.`,
-            `Prestige calcualors added to wiki.`,
+            `Added a Mass Ejector Optimizer governor task.`,
+            `Fixed precision error with Tech Scavengers.`,
+            `Prestige calculators added to wiki.`,
             `Progress related event section added to wiki.`,
-            `Anti-plasmids gained from MAD in antimatter universe is now correctly calculated.`
+            `Anti-plasmids gained from MAD in antimatter universe are now correctly calculated.`
         ]
     },
     {

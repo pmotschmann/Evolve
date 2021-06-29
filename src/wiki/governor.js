@@ -217,6 +217,25 @@ export function governPage(content){
         }
 
         {
+            let task = 'trash';
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 4, break: [3,4], h_level: 3,
+                text: {
+                    1: `wiki_governor_task_${task}1`,
+                    2: `wiki_governor_task_${task}2`,
+                    3: `wiki_governor_task_${task}3`,
+                    4: `wiki_governor_task_${task}4`
+                },
+                para_data: {
+                    4: [loc(`interstellar_mass_ejector`)],
+                },
+                data_link: {
+                    4: ['wiki.html#interstellar-structures-mass_ejector']
+                }
+            });
+            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+        }
+
+        {
             let task = 'mech';
             infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 4, break: [4], h_level: 3,
                 text: {

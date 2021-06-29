@@ -2223,6 +2223,9 @@ function fastLoop(){
             global.city.morale['bonfire'] = boost;
             morale += boost;
         }
+        else {
+            delete global.city.morale['bonfire'];
+        }
 
         if (global.civic.govern.type === 'anarchy'){
             stress /= 2;

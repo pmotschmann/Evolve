@@ -1,9 +1,9 @@
-import { global, p_on } from './vars.js';
+import { global, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, clearElement, adjustCosts } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics } from './civics.js';
-import { crateGovHook } from './resources.js';
+import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
 import { loc } from './locale.js';
 
@@ -437,6 +437,24 @@ function drawnGovernOffice(){
         slave.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.slave.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
+    {
+        if (!global.race.governor.config.hasOwnProperty('trash')){
+            global.race.governor.config['trash'] = {
+                Infernite: 0,
+                Elerium: 0
+            };
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="has-text-warning">${loc(`gov_task_trash`)}</div></div>`);
+        options.append(contain);
+        let trash = $(`<div class="storage"></div>`);
+        contain.append(trash);
+
+        Object.keys(global.race.governor.config.trash).forEach(function(res){
+            trash.append($(`<b-field>${loc(`gov_task_trash_min`,[global.resource[res].name])}<b-numberinput min="0" :max="1000000" v-model="c.trash.${res}" :controls="false"></b-numberinput></b-field>`));
+        });
+    }
+
     vBind({
         el: '#govOffice',
         data: { 
@@ -844,6 +862,38 @@ export const gov_tasks = {
                     actions.city.horseshoe.action();
                 }
             }
+        }
+    },
+    trash: {
+        name: loc(`gov_task_trash`),
+        req(){
+            return global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1 ? true : false;
+        },
+        task(){
+            let remain = global.interstellar.mass_ejector.on * 1000;
+            Object.keys(atomic_mass).sort((a,b) => (atomic_mass[a] < atomic_mass[b]) ? 1 : -1).forEach(function(res){
+                let trade = breakdown.p.consume[res].hasOwnProperty(loc('trade')) ? breakdown.p.consume[res][loc('trade')]: 0;
+                let craft = breakdown.p.consume[res].hasOwnProperty(loc('job_craftsman')) ? breakdown.p.consume[res][loc('job_craftsman')]: 0;
+                if (trade < 0){ trade = 0; }
+                if (craft > 0){ craft = 0; }
+
+                if (global.race.governor.config.trash[res] || global.interstellar.mass_ejector.hasOwnProperty(res) && global.resource[res].display && global.resource[res].max > 0 && global.interstellar.mass_ejector[res] + global.resource[res].diff > 0 && global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1){
+                    let set = (global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) 
+                        ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
+                        : 0;
+                    if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res]){
+                        set = global.race.governor.config.trash[res];
+                    }
+                    if (set > remain){ set = remain; }
+                    if (set < 0){ set = 0; }
+                    global.interstellar.mass_ejector[res] = set;
+                    remain -= set;
+                }
+                else {
+                    global.interstellar.mass_ejector[res] = 0;
+                }
+            });
+            global.interstellar.mass_ejector.total = global.interstellar.mass_ejector.on * 1000 - remain;
         }
     },
     mech: { // Mech Builder
