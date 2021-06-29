@@ -6196,7 +6196,7 @@ function midLoop(){
                 gain *= 1 + ((global.race['cataclysm'] ? red_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
             }
             if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
-                gain *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
+                gain *= 1 + (gal_on['scavenger'] * piracy('gxy_alien2') * 0.75);
             }
             if (global.tech['science'] >= 21){
                 gain *= 1.45;
