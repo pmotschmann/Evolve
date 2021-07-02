@@ -819,47 +819,47 @@ export function powerCostMod(energy){
     return energy;
 }
 
-export function darkEffect(universe, flag, info){
+export function darkEffect(universe, flag, info, inputs){
+    if (!inputs) { inputs = {}; }
+    let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
+    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
+    
     switch (universe){
         case 'standard':
             if (global.race.universe === 'standard' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.001);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.001);
                 }
-                return 1 + (de / 200);
+                return 1 + (dark / 200);
             }
             return 0;
 
         case 'evil':
             if (global.race.universe === 'evil' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
+                return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / 5));
             }
             return 1;
 
         case 'micro':
             if (global.race.universe === 'micro' || info){
                 if (flag){
-                    let de = global.race.Dark.count;
-                    if (global.race.Harmony.count > 0){
-                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    if (harmony > 0){
+                        dark *= 1 + (harmony * 0.01);
                     }
-                    let dark = 0.01 + (Math.log(100 + de) - 4.605170185988092) / 35;
+                    dark = 0.01 + (Math.log(100 + dark) - 4.605170185988092) / 35;
                     if (dark > 0.04){
                         dark = 0.04;
                     }
                     return +(dark).toFixed(5);
                 }
                 else {
-                    let de = global.race.Dark.count;
-                    if (global.race.Harmony.count > 0){
-                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    if (harmony > 0){
+                        dark *= 1 + (harmony * 0.01);
                     }
-                    let dark = 0.02 + (Math.log(100 + de) - 4.605170185988092) / 20;
+                    dark = 0.02 + (Math.log(100 + dark) - 4.605170185988092) / 20;
                     if (dark > 0.06){
                         dark = 0.06;
                     }
@@ -870,31 +870,28 @@ export function darkEffect(universe, flag, info){
 
         case 'heavy':
             if (global.race.universe === 'heavy' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 0.995 ** de;
+                return 0.995 ** dark;
             }
             return 1;
 
         case 'antimatter':
             if (global.race.universe === 'antimatter' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+                return 1 + (Math.log(50 + dark) - 3.912023005428146) / 5;
             }
             return 0;
 
         case 'magic':
             if (global.race.universe === 'magic' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 1 + (Math.log(50 + de) - 3.912023005428146) / 3;
+                return 1 + (Math.log(50 + dark) - 3.912023005428146) / 3;
             }
             return 0;
     }
@@ -1099,10 +1096,10 @@ export function calcPrestige(type,inputs){
 
     if (type === 'bigbang'){
         let exotic = inputs.exotic;
-        let mass = inputs.mass - inputs.exotic;
+        let mass = inputs.mass;
         if (exotic === undefined && global['interstellar'] && global.interstellar['stellar_engine']){
             exotic = global.interstellar.stellar_engine.exotic;
-            mass = global.interstellar.stellar_engine.mass
+            mass = global.interstellar.stellar_engine.mass;
         }
         
         let new_dark = +(Math.log(1 + (exotic * 40))).toFixed(3);
