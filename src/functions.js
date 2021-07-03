@@ -1157,7 +1157,7 @@ export function calcPrestige(type,inputs){
                 spire++;
             }
             else {
-                spire = global.portal.spire.count;
+                spire = global.portal.hasOwnProperty('spire') ? global.portal.spire.count : 0;
             }
             [50,100].forEach(function(x){
                 if (spire > x){
