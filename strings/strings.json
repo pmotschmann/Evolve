@@ -4451,7 +4451,7 @@
   "gov_task_merc": "Merc Recruitment",
   "gov_task_merc_buffer": "Recruitment Buffer",
   "gov_task_merc_reserve": "Money Reserve % (0-100)",
-  "gov_task_trash_min": "Eject %0 >=",
+  "gov_task_trash_min": "%0 >=",
   "gov_task_spy": "Spy Recruitment",
   "gov_task_spyop": "Spy Operator",
   "gov_task_slave": "Slave Replenishment",

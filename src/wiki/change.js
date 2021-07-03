@@ -7,6 +7,7 @@ const changeList = [
         date: `7/3/2021`,
         changes: [
             `Added firework feastival event (July 4th - July 10th).`,
+            `Added Copper and Iron settings to Mass Ejector Optimizer task.`,
             `Updated wiki prestige calculators.`
         ]
     },

@@ -439,11 +439,13 @@ function drawnGovernOffice(){
 
     {
         if (!global.race.governor.config.hasOwnProperty('trash')){
-            global.race.governor.config['trash'] = {
-                Infernite: 0,
-                Elerium: 0
-            };
+            global.race.governor.config['trash'] = {};
         }
+        ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
+            if (!global.race.governor.config.trash.hasOwnProperty(res)){
+                global.race.governor.config.trash[res] = 0;
+            }
+        })
 
         let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="has-text-warning">${loc(`gov_task_trash`)}</div></div>`);
         options.append(contain);

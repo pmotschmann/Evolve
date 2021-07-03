@@ -4448,7 +4448,7 @@
   "gov_task_merc": "Ercmay Ecruitmentray",
   "gov_task_merc_buffer": "Ecruitmentray Ufferbay",
   "gov_task_merc_reserve": "Oneymay Eserveray % (0-100)",
-  "gov_task_trash_min": "Ejectway %0 >=",
+  "gov_task_trash_min": "%0 >=",
   "gov_task_spy": "Yspay Ecruitmentray",
   "gov_task_spyop": "Yspay Operatorway",
   "gov_task_slave": "Aveslay Eplenishmentray",
