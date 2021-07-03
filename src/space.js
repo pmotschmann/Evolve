@@ -5,7 +5,7 @@ import { races, traits, genus_traits, planetTraits, genusVars } from './races.js
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -983,7 +983,8 @@ const spaceProjects = {
                 return loc('space_red_space_barracks_flair');
             }
         },
-        bonfire: eventActive(`summer`,'space'),
+        bonfire: buildTemplate(`bonfire`,'space'),
+        firework: buildTemplate(`firework`,'space'),
         horseshoe: {
             id: 'space-horseshoe',
             title: loc('city_horseshoe'),
@@ -2997,7 +2998,7 @@ const interstellarProjects = {
             },
             wide: true,
             effect(){
-                let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
+                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[5])}</div>`;
                 if (global.tech['ai_core']){
                     let cement = +(quantum_level / 1.75).toFixed(1);
                     desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
@@ -3077,7 +3078,7 @@ const interstellarProjects = {
             desc(){
                 let home = races[global.race.species].home;
                 if (global.tech['blackhole'] >= 5){
-                    let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
+                    let mass = +(global.interstellar.stellar_engine.mass).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['roid_eject']){
                         mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
@@ -3186,9 +3187,8 @@ const interstellarProjects = {
                     }
                     let output = powerModifier(+(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2));
                     if (global.tech['blackhole'] >= 5){
-                        let mass = +(r_mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
-                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[mass,exotic]) : loc('interstellar_stellar_engine_effect2',[mass]);
+                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
                         return `<div>${loc('interstellar_stellar_engine_complete',[output])}</div><div>${blackhole}</div>`;
                     }
                     else {

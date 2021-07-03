@@ -12,6 +12,17 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.8`,
+        date: `7/3/2021`,
+        changes: [
+            `Added firework festival event (July 4th - July 8th).`,
+            `Added Copper and Iron settings to Mass Ejector Optimizer task.`,
+            `Current Quantum Level now shown on Citadel Stations.`,
+            `Updated wiki prestige calculators.`,
+            `Added a Quantum Level section to wiki.`
+        ]
+    },
+    {
         version: `1.1.7`,
         date: `6/29/2021`,
         changes: [

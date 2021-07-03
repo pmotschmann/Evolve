@@ -56,6 +56,9 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
+            if (eventActive('firework') && global.city.firework.on > 0){
+                $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
+            }
         });
     }
     if (opts['unbind']){
@@ -845,47 +848,47 @@ export function powerCostMod(energy){
     return energy;
 }
 
-export function darkEffect(universe, flag, info){
+export function darkEffect(universe, flag, info, inputs){
+    if (!inputs) { inputs = {}; }
+    let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
+    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
+    
     switch (universe){
         case 'standard':
             if (global.race.universe === 'standard' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.001);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.001);
                 }
-                return 1 + (de / 200);
+                return 1 + (dark / 200);
             }
             return 0;
 
         case 'evil':
             if (global.race.universe === 'evil' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return (1 + ((Math.log2(10 + de) - 3.321928094887362) / 5));
+                return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / 5));
             }
             return 1;
 
         case 'micro':
             if (global.race.universe === 'micro' || info){
                 if (flag){
-                    let de = global.race.Dark.count;
-                    if (global.race.Harmony.count > 0){
-                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    if (harmony > 0){
+                        dark *= 1 + (harmony * 0.01);
                     }
-                    let dark = 0.01 + (Math.log(100 + de) - 4.605170185988092) / 35;
+                    dark = 0.01 + (Math.log(100 + dark) - 4.605170185988092) / 35;
                     if (dark > 0.04){
                         dark = 0.04;
                     }
                     return +(dark).toFixed(5);
                 }
                 else {
-                    let de = global.race.Dark.count;
-                    if (global.race.Harmony.count > 0){
-                        de *= 1 + (global.race.Harmony.count * 0.01);
+                    if (harmony > 0){
+                        dark *= 1 + (harmony * 0.01);
                     }
-                    let dark = 0.02 + (Math.log(100 + de) - 4.605170185988092) / 20;
+                    dark = 0.02 + (Math.log(100 + dark) - 4.605170185988092) / 20;
                     if (dark > 0.06){
                         dark = 0.06;
                     }
@@ -896,31 +899,28 @@ export function darkEffect(universe, flag, info){
 
         case 'heavy':
             if (global.race.universe === 'heavy' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 0.995 ** de;
+                return 0.995 ** dark;
             }
             return 1;
 
         case 'antimatter':
             if (global.race.universe === 'antimatter' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 1 + (Math.log(50 + de) - 3.912023005428146) / 5;
+                return 1 + (Math.log(50 + dark) - 3.912023005428146) / 5;
             }
             return 0;
 
         case 'magic':
             if (global.race.universe === 'magic' || info){
-                let de = global.race.Dark.count;
-                if (global.race.Harmony.count > 0){
-                    de *= 1 + (global.race.Harmony.count * 0.01);
+                if (harmony > 0){
+                    dark *= 1 + (harmony * 0.01);
                 }
-                return 1 + (Math.log(50 + de) - 3.912023005428146) / 3;
+                return 1 + (Math.log(50 + dark) - 3.912023005428146) / 3;
             }
             return 0;
     }
@@ -1134,10 +1134,10 @@ export function calcPrestige(type,inputs){
 
     if (type === 'bigbang'){
         let exotic = inputs.exotic;
-        let mass = inputs.mass - inputs.exotic;
+        let mass = inputs.mass;
         if (exotic === undefined && global['interstellar'] && global.interstellar['stellar_engine']){
             exotic = global.interstellar.stellar_engine.exotic;
-            mass = global.interstellar.stellar_engine.mass
+            mass = global.interstellar.stellar_engine.mass;
         }
         
         let new_dark = +(Math.log(1 + (exotic * 40))).toFixed(3);
@@ -1194,7 +1194,7 @@ export function calcPrestige(type,inputs){
                 spire++;
             }
             else {
-                spire = global.portal.spire.count;
+                spire = global.portal.hasOwnProperty('spire') ? global.portal.spire.count : 0;
             }
             [50,100].forEach(function(x){
                 if (spire > x){
@@ -1472,6 +1472,8 @@ export function svgIcons(icon){
                     <path style="opacity:1;fill:#ffe087;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 43.531734,46.706886 c 0,0 -2.697149,3.393429 -3.5,5.375 -1.960779,4.839519 -1.889603,9.24467 -2.4375,14.4375 -0.249242,2.362249 0.523972,6.02359 0.1875,8.375 -0.841013,5.87737 -1.6875,14.1875 -0.375,16.5625 l 2.625,2.125 c -0.471336,-1.945331 -1.66309,-3.170241 -1.375,-5.875 l -0.5,-3.625 1.1875,-8.625 -0.0625,-10.625 c 0.376119,-3.542231 0.546909,-6.981791 1.875,-11 0.733372,-2.23796 1.897938,-4.42801 4.125,-6.5 z"/><path style="opacity:0.18999999;fill:url(#pattern5902);fill-opacity:1;fill-rule:evenodd;stroke:#ff00ff;stroke-width:0.30419779;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 60.372835,43.757715 c 0,-0.654355 0.130871,-3.795259 0.130871,-3.795259 l 4.187872,-3.533517 c 1.163506,-0.522858 2.685829,0.03073 4.187872,0.523484 1.868974,0.83687 2.226157,1.913483 1.30871,3.795259 l 7.328776,-0.523484 c 3.018859,0.418584 5.697568,1.51747 8.375744,2.61742 l 8.244873,6.543551 8.768357,10.46968 c 0.8417,2.099007 2.20306,2.639023 2.09393,7.590522 l -3.1409,1.046968 -2.74829,-7.32878 -10.077066,-6.805292 c -6.549895,-4.210871 -11.068933,-5.713931 -15.573649,-7.197905 3.562769,6.457057 7.714615,10.853605 9.291841,13.0871 L 79.610872,62.210531 74.506903,57.3683 c -3.77121,-0.734052 -6.998437,-2.284086 -10.077067,-4.057001 l 0.523484,6.674421 6.020066,25.65072 c 0.857624,3.627953 0.930451,7.059715 0.392613,10.338808 -0.194841,2.142641 -1.026866,4.444572 -2.61742,6.936172 l -5.496582,-0.13088 c -2.18118,0.64057 -4.36237,-1.44843 -6.54355,-2.74829 -2.748291,-3.254364 -5.496582,-5.547926 -8.244873,-12.432745 -1.963065,-4.919064 -3.92613,-8.858962 -5.889195,-17.405843 l -2.224807,-9.9462 -0.785226,7.852264 -0.392613,10.338809 c -0.438302,5.30061 -0.813441,8.780323 0.785226,13.741455 0.166929,3.717532 -1.639625,3.093413 -3.140904,3.140903 L 33.020796,87.861247 C 30.839617,84.322066 28.658426,80.72795 26.477247,75.821115 24.37238,69.505197 24.230903,65.398088 24.906795,62.210531 c -0.567164,-4.464193 1.023034,-7.490147 2.486549,-10.600555 2.933761,-4.678125 6.290759,-6.393639 9.553582,-8.768358 -0.496304,-2.029574 -2.428986,-3.771873 -6.412679,-5.103969 -2.237621,0.188778 -2.778516,-0.9878 -8.768356,2.355678 -2.926663,3.230092 -4.529519,5.798277 -5.365711,7.983132 L 12.212308,58.67701 6.1922414,66.791016 c -0.567111,1.340789 -1.1342116,2.314647 -1.7013228,4.973098 l -0.261742,5.23484 -3.66438788,-1.701323 1.04696788,-8.899228 5.6274538,-8.899232 c 1.177839,-3.457957 2.355678,-6.559147 3.5335166,-10.993164 1.570452,-4.685292 3.140904,-6.826056 4.711356,-8.768358 3.62767,-4.148953 6.897467,-4.614964 10.207938,-6.54355 l 7.721388,0.130871 c 3.94194,1.361993 6.482889,3.524557 7.983131,6.281808 l -0.130871,7.72139 c 1.831577,1.089347 3.354339,1.561083 4.842227,1.963065 l 4.187872,1.177839 c 2.985555,4.080225 3.280831,5.918557 4.318743,8.375744 0.607053,-2.104191 0.571037,-3.458123 3.140904,-7.85226 l 4.057001,-2.61742"/><path style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#dbb911;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" d="m 38.331171,44.953363 c 0,0 -1.603792,2.030437 -3.380153,4.666369 -1.776361,2.635932 -4.160365,5.926758 -4.888834,8.465305 -1.636188,5.701745 -1.083835,11.648827 -0.245794,17.417303 0.305447,2.102488 1.664431,5.614306 2.730697,8.152018 1.066267,2.537711 3.553501,9.913282 3.553501,9.913282 1.385361,-0.133229 2.616421,-0.729366 3.622576,-2.000219 0,0 -1.679605,-3.422505 -2.930476,-5.757109 -0.540178,-1.008181 -0.733846,-1.092281 -0.79232,-1.71148 -0.248544,-2.631905 -1.152981,-6.195081 -1.063664,-8.102459 0.180681,-3.858498 -0.08153,-7.186778 0.100195,-10.968626 0.141791,-2.950719 0.634481,-6.010882 1.488657,-8.829703 0.296317,-0.977859 1.111885,-2.462327 1.850598,-3.660297 0.738713,-1.197972 2.250116,-3.99478 2.250116,-3.99478 0,0 -2.382301,2.216554 -3.13963,3.444712 -0.757328,1.228158 -1.601751,2.713329 -1.963064,3.905682 -0.882759,2.913138 -1.385917,6.051537 -1.531601,9.083265 -0.18542,3.858643 0.07692,7.188234 -0.100194,10.97067 -0.109813,2.345061 0.195567,5.827095 0.470318,8.518884 -0.311027,-0.689314 -0.340741,-0.701605 -0.707522,-1.574542 -1.053846,-2.50815 -2.530344,-5.532241 -2.801444,-7.398301 -0.830858,-5.719047 -1.279403,-11.804193 0.286281,-17.260246 0.653638,-2.277779 2.572382,-5.641488 4.324877,-8.242005 1.752495,-2.600517 3.404279,-4.745294 3.404279,-4.745294 z"/><path style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#c7a387;fill-opacity:0.35686275;fill-rule:evenodd;stroke:none;stroke-width:1.0629921;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" d="M 71.316797,3.4774811 C 67.047325,4.6244747 62.593159,5.9428696 59.35181,9.1528228 54.329152,14.12683 50.640422,20.398713 48.498467,27.09255 c -1.819145,5.685018 -3.173623,13.413582 -3.614641,19.332464 0.359814,0.247789 0.785229,0.469736 1.453432,0.440217 -0.05902,-4.193435 0.81212,-8.331946 1.505733,-12.448774 1.414105,-8.393188 4.992296,-16.508153 10.706798,-22.869079 2.123105,-2.3632687 4.650959,-4.4810703 7.751861,-5.3655841 1.054471,-0.3007814 3.734878,-1.5973613 3.905922,-0.9758281 -2.559554,4.5767485 -5.587062,8.8728612 -8.162222,13.4359262 -3.407746,6.03837 -5.476854,12.804594 -6.562281,19.636282 -0.932424,5.868687 -1.305062,11.811989 -1.598699,17.744013 1.664835,0.580691 1.069836,-1.310954 1.24209,-2.379933 0.569126,-8.428146 1.202344,-16.956386 3.874114,-25.042128 C 60.72296,23.387563 63.252266,18.510225 66.262478,13.937128 68.32143,10.809181 70.150327,7.5357797 72.030453,4.2974698 71.6526,4.0938687 71.31453,3.9731361 71.316797,3.4774811 Z"/><path style="opacity:0.38699999;fill:url(#pattern6043);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 43.875,47.04921 c 0,0 -2.697149,3.393432 -3.5,5.375 -1.960779,4.839522 -1.889603,9.244675 -2.4375,14.4375 -0.249242,2.362253 0.523972,6.023586 0.1875,8.375 -0.841013,5.877366 -1.6875,14.1875 -0.375,16.5625 l 2.625,2.125 C 39.903664,91.978879 38.71191,90.753967 39,88.04921 l -0.5,-3.625 1.1875,-8.625 -0.0625,-10.625 c 0.376119,-3.542226 0.546909,-6.981788 1.875,-11 0.733372,-2.237959 1.897938,-4.428007 4.125,-6.5 z"/><path style="opacity:1;fill:#ffe087;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 54.500001,52.299208 c 0,0 3.500855,-5.287585 6.030331,-7.021445 2.176322,-1.491787 4.457736,-2.570163 7.094669,-2.478553 4.728287,0.164267 9.40195,2.028614 13.640168,4.131283 6.335779,3.143316 18.63388,12.066945 18.63388,12.066945 l 4.475951,4.05177 0.5,5.25 -3.125,0.375 -1.750001,-4.75 -2,-3.375 c 0,0 -6.96766,-5.17101 -11.37239,-7.64644 -3.70375,-2.08149 -8.87427,-4.681009 -12.877607,-6.103557 -2.210188,-0.785369 -4.530817,-1.580882 -6.875,-1.500001 -2.082094,0.07184 -4.312285,0.52857 -6,1.750001 -2.74325,1.985344 -4.866117,4.397527 -5.75,8.374997 -0.53033,-1.41421 -0.625,-3.125 -0.625,-3.125 z"/><path style="opacity:0.29600004;fill:url(#pattern6317);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 54.5,52.29921 c 0,0 3.500855,-5.287588 6.03033,-7.021448 2.176322,-1.491787 4.457737,-2.570163 7.09467,-2.478553 4.728287,0.164267 9.40195,2.028614 13.640165,4.131283 6.335782,3.143316 18.633884,12.066941 18.633884,12.066941 l 4.475951,4.051777 0.5,5.25 -3.125,0.375 -1.75,-4.75 -2,-3.375 c 0,0 -6.96766,-5.171009 -11.372398,-7.646447 C 82.923852,50.821277 77.753337,48.221758 73.75,46.79921 c -2.210188,-0.785369 -4.530817,-1.580882 -6.875,-1.500001 -2.082094,0.07184 -4.312285,0.528569 -6,1.750001 -2.74325,1.985344 -4.866117,4.397524 -5.75,8.375 -0.53033,-1.414214 -0.625,-3.125 -0.625,-3.125 z"/><path style="opacity:0.23500001;fill:url(#pattern6501);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 45.75,47.79921 c 0,0 2.812216,0.02299 5.439928,1.747524 -3.524163,5.42308 -4.59352,19.087505 -3.939928,25.127476 0.490624,4.533951 4.287142,11.097042 6.919962,16.223515 3.349975,6.522874 7.809924,11.511505 6.830038,11.651485 0,0 -4.581764,-2.43554 -8.125,-7 -3.543236,-4.564462 -7.524391,-14.701297 -9.25,-21 -1.725609,-6.298703 -2.651035,-11.872546 -2.625,-15.75 0.02604,-3.877454 1.132451,-6.144374 2.125,-8 0.992549,-1.855626 2.625,-3 2.625,-3 z"/><path style="opacity:0.32000002;fill:url(#pattern6685);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 41.625,37.174209 -0.5,8.125 c 0,0 -2.875,-0.875 -3.25,-1.75 -0.375,-0.875 -4.5,-4.625 -4.5,-4.625 0.691155,-2.206156 6.142113,1.001498 6.5,-2.75 z"/><path style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ad9000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" d="M 29.000477,30.445086 C 20.876,30.598055 13.759447,36.646431 11.03565,44.358219 9.5359084,48.604383 8.4882494,52.939299 6.6767474,57.028257 5.158888,60.454401 1.8823878,63.148701 0.74106742,66.618268 c -0.5961304,3.59706 -0.8007937,6.646065 -0.7264711,9.30449 1.39247768,2.05745 3.66944518,2.123434 5.59294238,1.791297 0.2046117,-2.490116 0.00988,-4.675018 0.5673122,-7.081402 1.2102949,-2.48079 2.3753389,-4.349618 4.3027471,-6.45673 4.222004,-4.615647 5.071886,-11.018973 7.983631,-16.487769 2.083431,-3.913072 5.276246,-8.43674 9.867868,-8.506465 2.52621,-0.03836 7.982503,1.290202 7.56423,3.829863 -4.72158,2.439767 -8.775026,6.217912 -10.506038,11.447176 -3.177132,9.597889 -1.763101,20.312712 3.715841,28.741486 2.78377,4.282536 5.559401,8.643837 7.076848,13.576019 3.495874,0.635608 6.756199,-2.871873 3.989145,-5.893726 -1.729125,-4.738285 -0.292296,-9.780605 0.18109,-14.61697 0.241789,-2.470246 0.329184,-10.146749 0.356954,-13.288481 1.987937,11.68344 6.230782,27.425258 13.99796,36.480202 1.23882,1.444212 2.32948,2.880462 4.812582,3.644112 2.615186,0.80427 4.151681,2.51437 5.078292,2.40886 1.754337,-2.03212 2.308276,-1.0897 4.248752,-0.68612 1.978299,-3.65627 4.183807,-8.978941 3.889985,-13.387361 -0.706177,-10.595283 -4.902434,-19.737328 -6.310492,-30.687715 -0.279254,-2.171749 -2.944499,-7.846471 0.989994,-4.903762 2.479902,1.854784 6.126146,1.196235 8.413155,3.549991 l 3.593179,3.698047 c 1.955704,0.142937 3.87387,0.154495 5.30232,-1.547959 -3.319875,-4.260968 -7.292194,-8.138284 -9.747844,-12.972587 8.607084,3.207289 16.766138,7.758964 23.76321,13.717959 1.47706,1.933899 1.59746,4.644375 2.48809,6.913954 0.1118,2.267727 5.01428,0.10627 5.07286,-0.987984 -0.87384,-3.979319 -1.81382,-8.053161 -4.49059,-11.357601 C 97.38589,51.399286 92.748569,45.99904 86.445066,42.654776 82.256972,40.432823 76.590418,38.801137 71.789332,40.258932 c -0.216438,-6.470757 -10.23734,-5.686258 -11.439247,0.0977 -0.704606,2.781538 2.839055,1.178943 2.633756,-1.149205 1.249082,-3.37385 8.67858,-1.528609 6.953573,0.247842 -3.350946,-1.354464 -3.01398,1.934305 -2.932987,3.120419 2.831777,-1.17979 6.42991,-1.419567 9.919052,-1.473438 5.73277,-0.08851 10.795295,4.004404 15.136371,7.517542 4.1943,3.394351 7.22955,8.066623 10.34909,12.455668 0.8304,1.168323 1.73726,2.410366 1.65834,4.035473 -0.0822,1.691517 -1.42677,1.095296 -2.71561,0.233526 -0.70986,-2.21413 -1.00491,-2.990615 -2.36222,-5.376263 C 91.433869,54.0052 80.915984,48.717918 73.879005,45.703321 c -7.03698,-3.014597 -11.268224,-1.38356 -15.770273,2.435525 -2.200719,1.866869 -3.464687,7.364689 -3.810016,7.294307 -0.670545,-4.398046 -3.258964,-9.168365 -8.320632,-9.050438 -2.361843,0.05503 -5.980655,-1.468726 -5.985859,-3.10078 -0.870584,-0.842706 -1.644491,-1.278319 -2.326949,-2.38802 -1.87099,-3.042297 -6.59147,-4.198696 -10.252615,-3.787392 -5.670562,0.637048 -9.028961,5.406553 -11.426349,10.303247 -2.876514,5.875318 -4.277975,13.02155 -9.4337996,17.492932 -0.9533652,2.59411 -2.818346,3.704467 -2.5093961,6.59826 0.4276106,1.601322 -1.4409925,3.211885 -2.3791122,1.010396 l 0.9496085,-6.027672 c 3.4901198,-4.756104 6.5091928,-9.814818 8.0309784,-15.670051 1.552047,-5.971661 3.86057,-12.716749 9.608182,-16.116881 4.544676,-2.688507 9.793405,-3.494474 14.830315,-1.769735 3.469838,1.188141 4.224443,5.507124 6.543777,6.201419 0.01727,-3.042094 -2.086042,-5.11619 -4.22603,-6.361606 -2.523957,-1.468875 -5.472507,-2.376872 -8.400358,-2.321746 z m 8.171259,13.95412 c 1.584112,2.05726 6.525713,1.413758 6.913232,3.961315 -4.038843,3.841503 -4.055657,9.58503 -4.75922,14.715051 -0.687722,5.014507 -0.113079,9.997866 -0.71446,15.032415 -0.588738,4.928719 -1.747015,8.413387 0.689205,13.112272 -0.433615,1.626392 -2.40233,1.969038 -2.944783,1.426719 -1.121234,-1.120956 -1.427095,-3.616808 -2.449898,-4.822119 -4.34672,-6.659775 -8.63449,-14.002538 -8.491768,-22.24801 0.122037,-7.050398 1.89523,-15.283712 8.472863,-19.155711 1.108336,-0.652435 2.163848,-1.391643 3.284829,-2.021932 z m 28.092277,1.924213 c -2.432411,2.799611 -5.886362,9.916656 -5.429076,13.150048 1.071928,-1.744588 1.761969,-4.00852 3.143987,-6.50987 0.862478,8.362844 3.174389,19.176848 5.513926,27.253982 1.689449,5.832741 3.13903,12.326704 1.256274,18.266497 -0.768984,2.426024 -1.215926,2.278674 -3.025876,1.067858 -1.085154,3.548856 -6.74367,1.942096 -9.060677,0.0091 C 51.54892,94.460706 49.538481,88.86995 46.66325,81.676472 43.706004,74.277801 41.7394,66.310921 41.620398,58.367977 c -0.05634,-3.759982 2.648492,-11.155018 7.112971,-9.513022 4.135054,1.520836 4.367717,7.204245 5.260186,11.088719 2.169067,9.44086 3.285166,17.07881 5.874996,26.145602 1.401446,4.906346 2.318596,8.609666 3.922095,13.517632 0.452092,-0.330709 -1.054134,-6.877249 -1.603188,-9.102646 -2.687639,-10.893388 -4.744596,-18.663004 -6.342866,-29.734515 -0.687352,-4.761409 0.08532,-8.963721 4.467606,-12.086405 1.490982,-1.062428 3.115683,-2.09387 4.951815,-2.359923 z m 2.868937,-0.09655 c 1.967652,-0.179259 4.147166,0.580439 5.131518,1.700774 0.892668,2.428483 2.685325,4.045682 4.00297,6.235143 1.292379,2.147478 1.902028,2.883099 3.478008,4.830987 -0.798044,2.379098 -1.413919,1.559286 -2.194885,1.072703 -0.740469,-0.710735 -0.976462,-0.959494 -2.37556,-2.055581 -1.417567,-1.110555 -2.894103,-1.406438 -4.066636,-1.874897 -2.716784,-1.085431 -6.520631,-2.498267 -8.500805,-4.094493 0.869625,-2.430106 2.809157,-5.127579 4.52539,-5.814636 z"/><path style="opacity:0.32000002;fill:url(#radialGradient7026);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29055119;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 41.625,37.174209 -0.5,8.125 c 0,0 -2.875,-0.875 -3.25,-1.75 -0.375,-0.875 -4.5,-4.625 -4.5,-4.625 0.691155,-2.20616 6.142113,1.00149 6.5,-2.75 z"/><path style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#c6a287;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.77165353;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" d="M 64.767113,0.87233039 C 60.765898,1.1214747 56.656598,3.3982205 53.711609,5.9487044 48.524785,10.440711 44.793771,17.383001 42.972595,23.889647 c -1.391883,4.972877 -1.773919,9.451223 -2.559538,14.570343 -0.368099,2.398555 -0.282185,3.095702 0.05071,5.686569 0.300281,0.551848 1.119069,1.201981 1.710353,1.216718 -0.163634,-6.174203 0.294767,-13.249047 1.862914,-19.043196 1.873619,-6.922834 5.488258,-13.238957 10.922262,-18.2103535 2.69096,-2.4618736 5.841242,-4.9950919 9.578102,-5.3435807 2.266616,-0.2113781 4.394955,-0.00152 5.949634,2.0719597 1.077347,1.4368566 0.380142,3.313059 -0.177267,4.7336438 -2.524451,6.4336947 -5.592478,11.8841527 -7.842774,18.4179687 -1.289877,3.745206 -2.156438,7.870978 -2.576244,11.83392 -0.25195,2.378402 -0.577253,3.530409 0.192554,5.737206 0.51182,-0.397532 2.010028,-0.11286 1.41805,-1.023063 -1.678314,-1.481649 -0.434942,-3.841164 -0.08168,-6.363293 1.139577,-8.135983 4.845286,-15.814655 8.046119,-23.094828 C 70.84017,11.953707 72.466748,9.2184216 73.422018,5.9296355 73.975038,4.0256553 72.217515,2.2382669 70.627641,1.4810001 68.818842,0.61945779 66.708786,0.75142789 64.767113,0.87233039 Z"/></g>`;
         case 'sun':
             return `<path d="m24 2.5l-2.375 6.6875c0.774-0.1234 1.566-0.1875 2.375-0.1875s1.601 0.0641 2.375 0.1875l-2.375-6.6875zm-15.188 6.2812l3.0315 6.4378c0.935-1.29 2.085-2.44 3.375-3.375l-6.4065-3.0628zm30.406 0l-6.438 3.0628c1.29 0.935 2.44 2.085 3.375 3.375l3.063-6.4378zm-30.032 12.813l-6.6875 2.375 6.6875 2.375c-0.1202-0.764-0.1875-1.546-0.1875-2.344 0-0.819 0.0609-1.622 0.1875-2.406zm29.624 0.031c0.124 0.774 0.188 1.566 0.188 2.375s-0.064 1.601-0.188 2.375l6.688-2.375-6.688-2.375zm-26.968 11.156l-3.0315 6.407 6.4065-3.032c-1.29-0.935-2.44-2.085-3.375-3.375zm24.312 0c-0.926 1.278-2.068 2.414-3.344 3.344l6.407 3.063-3.063-6.407zm-14.531 6.031l2.375 6.688 2.375-6.688c-0.774 0.124-1.566 0.188-2.375 0.188s-1.601-0.064-2.375-0.188z"/><path d="m24 5.25l-1.344 3.8125c0.443-0.0394 0.891-0.0625 1.344-0.0625s0.901 0.0231 1.344 0.0625l-1.344-3.8125zm-13.219 5.5l1.719 3.625c0.572-0.681 1.224-1.336 1.906-1.906l-3.625-1.719zm26.469 0l-3.625 1.719c0.68 0.569 1.337 1.226 1.906 1.906l1.719-3.625zm-28.188 11.875l-3.7813 1.344 3.7813 1.343c-0.0375-0.432-0.0625-0.87-0.0625-1.312 0-0.464 0.0213-0.922 0.0625-1.375zm29.876 0.031c0.039 0.443 0.062 0.891 0.062 1.344s-0.023 0.901-0.062 1.344l3.781-1.344-3.781-1.344zm-3.407 10.938c-0.573 0.686-1.221 1.363-1.906 1.937l3.625 1.719-1.719-3.656zm-23.031 0.031l-1.719 3.594 3.594-1.719c-0.672-0.564-1.311-1.203-1.875-1.875zm10.156 5.313l1.344 3.781 1.344-3.781c-0.443 0.039-0.891 0.062-1.344 0.062s-0.901-0.023-1.344-0.062z"/><path d="m-22.5-17.5a9.5 9.5 0 1 1 -19 0 9.5 9.5 0 1 1 19 0z" transform="matrix(.77806 -1.0613 1.0613 .77806 67.48 3.6413)"/><path d="m-22.5-17.5a9.5 9.5 0 1 1 -19 0 9.5 9.5 0 1 1 19 0z" transform="matrix(1.2443 -.16771 .21664 1.2518 67.616 40.527)"/><path d="m-22.5-17.5a9.5 9.5 0 1 1 -19 0 9.5 9.5 0 1 1 19 0z" transform="matrix(.71579 -.97635 .97635 .71579 64 5.2695)"/>`;
+        case 'firework':
+            return `<defs><linearGradient id="lg1"><stop style="stop-color:#ffd73b" offset="0"/><stop style="stop-color:#ee8400" offset="1"/></linearGradient><radialGradient id="rg1" xlink:href="#lg1" gradientUnits="userSpaceOnUse" cy="5.4103" cx="6.8633" gradientTransform="matrix(2.9713 .76566 -.43392 1.6839 -11.182 -8.949)" r="7.4938"/><filter id="f1"><feGaussianBlur stdDeviation="0.1874122"/></filter><filter id="f2" height="1.4599" width="1.2095" y="-.22993" x="-.10474"><feGaussianBlur stdDeviation="0.18425117"/></filter></defs><g transform="rotate(25)"><g transform="translate(0 -1004.4)"><g transform="matrix(.96824 .25003 -.25003 .96824 261.98 28.943)"><path d="m4.8515 1021.1c2.2196-2.3727 8.9482-2.5884 12.79 0v18.23c-4.6353-0.054-8.7325 0.073-12.79 0v-18.23z"/><path d="m4.8515 1021.1c3.6818 1.7448 7.7427 2.3524 12.79 0v23.155c-4.6232 2.7464-10.845 2.1081-12.79 0v-23.155z"/><path style="fill:#aa0000" d="m4.8515 1023.8c3.6818 1.7448 7.7427 2.3524 12.79 0v1.3967c-4.3025 2.9151-11.359 1.8495-12.79 0v-1.3967z"/><path style="fill:#aa0000" d="m4.8515 1040.9c3.6818 1.7448 7.7427 2.3524 12.79 0v1.3967c-4.3025 2.9151-10.551 1.6657-12.79 0v-1.3967z"/><path style="fill:#000000;" d="m11.532 1013.7c0.23305 0.9512-0.1845 2.2498-0.59925 2.9502-0.70598 1.468-0.64652 2.4533-0.31604 3.9744 0.6051 0.3974 1.172 0.4004 1.1893-0.182-0.45969-1.2664-0.49139-2.3558-0.35476-3.4927 0.51677-1.9847 0.31739-2.2127 0.31446-3.27l-0.23368 0.02z" /></g><path style="fill-rule:evenodd;fill:url(#rg1)" d="m15.069 7.3507-5.2438 0.5091 2.9058 4.1512-4.3446-2.9806-0.4427 5.0476-1.4119-5.0757-3.5836 3.5817 2.181-4.7953-5.0478 0.4405 4.7534-2.2718-4.15-2.9072 5.1016 1.3151-1.3104-4.8946 3.0628 4.2866 2.1423-4.5917-0.4092 5.2524 4.5931-2.1404-3.69 3.7606 4.894 1.3125z" transform="matrix(.66944 .049369 -.049369 .66944 15.923 1007.3)"/><path style="fill-opacity:.49554;color:#000000;filter:url(#f1);fill:#ffffff" transform="translate(0 1004.4)" d="m6.2481 34.842c0.3675-0.882 5.2189-19.479 5.2189-19.479s-2.8668 19.553-5.219 19.479z"/><path style="fill-opacity:.71429;color:#000000;filter:url(#f2);fill:#ffffff" transform="translate(0 1004.4)" d="m16.319 14.334c-2.9288-0.09923-4.5208 0.2293-2.5727 1.6907 0 0-5.072-2.7198 2.5727-1.6907z"/></g></g>`;
     }
 }
 
@@ -1539,6 +1541,8 @@ export function svgViewBox(icon){
             return `0 0 325 449.98`;
         case 'banana':
             return `0 0 113.38582 111.81719`;
+        case 'firework':
+            return `0 10 12 35`;
     }
 }
 
@@ -1599,6 +1603,7 @@ export function drawIcon(icon,size,shade,id,inject){
     if (id){
         select = `id="${id}" `;
     }
+    inject = inject ?? '';
     return `<span ${inject}${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
 }
 
@@ -1982,65 +1987,51 @@ export function eventActive(event,val){
             }
         case 'summer':
             {
-                if (val){
-                    let id = val === 'space' ? 'space-bonfire' : 'city-bonfire';
-                    let tKey = val === 'space' ? 'trait' : 'not_trait';
-                    return {
-                        id: id,
-                        title: loc('city_bonfire'),
-                        desc: loc('city_bonfire_desc'),
-                        category: 'outskirts',
-                        wiki: false,
-                        reqs: { primitive: 3  },
-                        condition(){
-                            return eventActive(`summer`);
-                        },
-                        [tKey]: ['cataclysm'],
-                        no_queue(){ return true },
-                        effect(){
-                            let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
-                            let thermite = 100000 + global.stats.reset * 9000;
-                            if (thermite > 1000000){ thermite = 1000000; }
-                            let goal = global.resource.Thermite.amount < thermite ? `<div class="has-text-warning">${loc('city_bonfire_effect3',[(thermite).toLocaleString()])}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(thermite).toLocaleString()])}</div>` : ``;
-                            return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
-                        },
-                        action(){
-                            return false;
-                        },
-                        flair(){
-                            return loc(`city_bonfire_flair`);
-                        }
-                    };
-                }
-                else {
-                    const date = new Date();
-                    if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
-                        if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
-                            global.city.foundry['Thermite'] = 0;
-                        }
-                        if (!global.resource.hasOwnProperty('Thermite')){
-                            global.resource['Thermite'] = {
-                                name: loc(`resource_Thermite_name`),
-                                display: false,
-                                value: 0,
-                                amount: 0,
-                                crates: 0,
-                                diff: 0,
-                                delta: 0,
-                                max: -1,
-                                rate: 0
-                            };
-                        }
-                        return true;
+                const date = new Date();
+                if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
+                    if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
+                        global.city.foundry['Thermite'] = 0;
                     }
-                    else if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty('Thermite')){
-                        global.city.foundry.crafting -= global.city.foundry['Thermite'];
-                        global.civic.craftsman.workers -= global.city.foundry['Thermite'];
-                        global.civic[global.civic.d_job].workers += global.city.foundry['Thermite'];
-                        delete global.city.foundry['Thermite'];
+                    if (!global.resource.hasOwnProperty('Thermite')){
+                        global.resource['Thermite'] = {
+                            name: loc(`resource_Thermite_name`),
+                            display: false,
+                            value: 0,
+                            amount: 0,
+                            crates: 0,
+                            diff: 0,
+                            delta: 0,
+                            max: -1,
+                            rate: 0
+                        };
                     }
-                    return false;
+                    return true;
                 }
+                else if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty('Thermite')){
+                    global.city.foundry.crafting -= global.city.foundry['Thermite'];
+                    global.civic.craftsman.workers -= global.city.foundry['Thermite'];
+                    global.civic[global.civic.d_job].workers += global.city.foundry['Thermite'];
+                    delete global.city.foundry['Thermite'];
+                }
+                return false;
+            }
+        case 'firework':
+            {
+                const date = new Date();
+                if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8].includes(date.getDate()) ){
+                    if (!global.city.hasOwnProperty('firework')){
+                        global.city['firework'] = {
+                            count: 0,
+                            on: 0
+                        };
+                    }
+                    
+                    return true;
+                }
+                else if (global.city.hasOwnProperty('firework')){
+                    delete global.city.firework;
+                }
+                return false;
             }
     }
     return false;

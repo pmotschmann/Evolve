@@ -3903,3 +3903,68 @@ div.bigbang {
 
 .popper { pointer-events: none }
 #powerStatus { white-space: nowrap; }
+
+.pyro > .before, .pyro > .after {
+    position: absolute;
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    box-shadow: 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff, 0 0 #fff;
+    -moz-animation: 1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards;
+    -webkit-animation: 1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards;
+    -o-animation: 1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards;
+    -ms-animation: 1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards;
+    animation: 1s bang ease-out infinite backwards, 1s gravity ease-in infinite backwards, 5s position linear infinite backwards;
+}
+  
+.pyro > .after {
+    -moz-animation-delay: 1.25s, 1.25s, 1.25s;
+    -webkit-animation-delay: 1.25s, 1.25s, 1.25s;
+    -o-animation-delay: 1.25s, 1.25s, 1.25s;
+    -ms-animation-delay: 1.25s, 1.25s, 1.25s;
+    animation-delay: 1.25s, 1.25s, 1.25s;
+    -moz-animation-duration: 1.25s, 1.25s, 6.25s;
+    -webkit-animation-duration: 1.25s, 1.25s, 6.25s;
+    -o-animation-duration: 1.25s, 1.25s, 6.25s;
+    -ms-animation-duration: 1.25s, 1.25s, 6.25s;
+    animation-duration: 1.25s, 1.25s, 6.25s;
+}
+  
+@keyframes bang {
+    to {
+      box-shadow: -154px -131.6666666667px #00ffcc, -243px -325.6666666667px #ff0d00, 71px -294.6666666667px #77ff00, 154px 7.3333333333px #00ff73, 159px 65.3333333333px #ff00f7, 191px -207.6666666667px #ffd000, 123px -232.6666666667px #0059ff, -96px 18.3333333333px #2600ff, 93px 76.3333333333px #00eaff, -94px -388.6666666667px #00ff59, -92px -107.6666666667px #ff8400, -7px -20.6666666667px #3c00ff, 37px -197.6666666667px #ea00ff, 249px -148.6666666667px #ff0022, -112px -249.6666666667px #ff0040, -191px -374.6666666667px #ff7300, 249px -12.6666666667px #3300ff, -238px -366.6666666667px #00fffb, -76px -186.6666666667px #00ffe6, 242px 60.3333333333px #00d5ff, -69px -217.6666666667px #0095ff, 222px -155.6666666667px #0037ff, 164px -410.6666666667px #ff004d, -228px 2.3333333333px #ff9d00, -201px -352.6666666667px #ff00dd, 75px -378.6666666667px #00ff6a, -141px -375.6666666667px #ff0077, -75px -362.6666666667px #8000ff, -162px -287.6666666667px #00ff88, -152px -260.6666666667px #00b3ff, 180px -205.6666666667px #005eff, -110px -16.6666666667px #ff00d5, -128px -298.6666666667px #00ffc4, 141px -197.6666666667px #00f7ff, 73px -109.6666666667px #ff6600, 164px -347.6666666667px #00c8ff, -178px -307.6666666667px #0026ff, 133px 0.3333333333px #bbff00, 13px 37.3333333333px #7bff00, -168px -198.6666666667px #00ddff, -155px -70.6666666667px #8800ff, 167px -111.6666666667px #ffc800, 98px -353.6666666667px #00fffb, 65px -235.6666666667px #ff0059, 186px -122.6666666667px #ff0009, -124px -385.6666666667px #ff007b, 6px -251.6666666667px #ff00bf, 66px -309.6666666667px #0dff00, 169px -119.6666666667px #ff4800, -232px -137.6666666667px #5eff00, 171px -173.6666666667px #ff0055;
+    }
+}
+@keyframes gravity {
+    to {
+        transform: translateY(200px);
+        -moz-transform: translateY(200px);
+        -webkit-transform: translateY(200px);
+        -o-transform: translateY(200px);
+        -ms-transform: translateY(200px);
+        opacity: 0;
+    }
+}
+@keyframes position {
+    0%, 19.9% {
+        margin-top: 10%;
+        margin-left: 40%;
+    }
+    20%, 39.9% {
+        margin-top: 40%;
+        margin-left: 30%;
+    }
+    40%, 59.9% {
+        margin-top: 20%;
+        margin-left: 70%;
+    }
+    60%, 79.9% {
+        margin-top: 30%;
+        margin-left: 20%;
+    }
+    80%, 99.9% {
+        margin-top: 30%;
+        margin-left: 80%;
+    }
+}
