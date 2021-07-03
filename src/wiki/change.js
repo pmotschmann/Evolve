@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.8`,
+        date: `7/2/2021`,
+        changes: [
+            `Updated wiki prestige calculators.`
+        ]
+    },
+    {
         version: `1.1.7`,
         date: `6/29/2021`,
         changes: [
