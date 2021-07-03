@@ -283,7 +283,7 @@ export function mechanicsPage(content){
             }
         });
 
-        infoBoxBuilder(quantum,{ name: 'quantum_graph_processing', template: 'mechanics', label: loc('tech_cement_processing'), paragraphs: 2, break: [2], h_level: 2,
+        infoBoxBuilder(quantum,{ name: 'quantum_graph_processing', template: 'mechanics', label: loc('tech_graphene_processing'), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
                 1: [loc('tech_graphene_processing'),loc('interstellar_citadel_title')],
                 2: ['(Q Level / 5) %'],
