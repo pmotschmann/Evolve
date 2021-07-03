@@ -2909,7 +2909,7 @@ const interstellarProjects = {
             desc(){
                 let home = races[global.race.species].home;
                 if (global.tech['blackhole'] >= 5){
-                    let mass = +(global.interstellar.stellar_engine.mass + global.interstellar.stellar_engine.exotic).toFixed(10);
+                    let mass = +(global.interstellar.stellar_engine.mass).toFixed(10);
                     let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                     if (global.tech['roid_eject']){
                         mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
@@ -3018,9 +3018,8 @@ const interstellarProjects = {
                     }
                     let output = powerModifier(+(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2));
                     if (global.tech['blackhole'] >= 5){
-                        let mass = +(r_mass + global.interstellar.stellar_engine.exotic).toFixed(10);
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
-                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[mass,exotic]) : loc('interstellar_stellar_engine_effect2',[mass]);
+                        let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
                         return `<div>${loc('interstellar_stellar_engine_complete',[output])}</div><div>${blackhole}</div>`;
                     }
                     else {
