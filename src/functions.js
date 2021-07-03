@@ -1,7 +1,7 @@
 import { global, save, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
-import { actions, actionDesc } from './actions.js';
+import { actions, actionDesc, buildTemplate } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
@@ -40,6 +40,9 @@ export function popover(id,content,opts){
             popper.show();
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
+            }
+            if (eventActive('firework') && global.city.firework.on > 0){
+                $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
         });
     }
@@ -1922,65 +1925,51 @@ export function eventActive(event,val){
             }
         case 'summer':
             {
-                if (val){
-                    let id = val === 'space' ? 'space-bonfire' : 'city-bonfire';
-                    let tKey = val === 'space' ? 'trait' : 'not_trait';
-                    return {
-                        id: id,
-                        title: loc('city_bonfire'),
-                        desc: loc('city_bonfire_desc'),
-                        category: 'outskirts',
-                        wiki: false,
-                        reqs: { primitive: 3  },
-                        condition(){
-                            return eventActive(`summer`);
-                        },
-                        [tKey]: ['cataclysm'],
-                        no_queue(){ return true },
-                        effect(){
-                            let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
-                            let thermite = 100000 + global.stats.reset * 9000;
-                            if (thermite > 1000000){ thermite = 1000000; }
-                            let goal = global.resource.Thermite.amount < thermite ? `<div class="has-text-warning">${loc('city_bonfire_effect3',[(thermite).toLocaleString()])}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(thermite).toLocaleString()])}</div>` : ``;
-                            return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
-                        },
-                        action(){
-                            return false;
-                        },
-                        flair(){
-                            return loc(`city_bonfire_flair`);
-                        }
-                    };
-                }
-                else {
-                    const date = new Date();
-                    if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
-                        if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
-                            global.city.foundry['Thermite'] = 0;
-                        }
-                        if (!global.resource.hasOwnProperty('Thermite')){
-                            global.resource['Thermite'] = {
-                                name: loc(`resource_Thermite_name`),
-                                display: false,
-                                value: 0,
-                                amount: 0,
-                                crates: 0,
-                                diff: 0,
-                                delta: 0,
-                                max: -1,
-                                rate: 0
-                            };
-                        }
-                        return true;
+                const date = new Date();
+                if (!global.settings.boring && date.getMonth() === 5 && [20,21,22].includes(date.getDate())){
+                    if (global.city.hasOwnProperty('foundry') && !global.city.foundry.hasOwnProperty('Thermite')){
+                        global.city.foundry['Thermite'] = 0;
                     }
-                    else if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty('Thermite')){
-                        global.city.foundry.crafting -= global.city.foundry['Thermite'];
-                        global.civic.craftsman.workers -= global.city.foundry['Thermite'];
-                        global.civic[global.civic.d_job].workers += global.city.foundry['Thermite'];
-                        delete global.city.foundry['Thermite'];
+                    if (!global.resource.hasOwnProperty('Thermite')){
+                        global.resource['Thermite'] = {
+                            name: loc(`resource_Thermite_name`),
+                            display: false,
+                            value: 0,
+                            amount: 0,
+                            crates: 0,
+                            diff: 0,
+                            delta: 0,
+                            max: -1,
+                            rate: 0
+                        };
                     }
-                    return false;
+                    return true;
                 }
+                else if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty('Thermite')){
+                    global.city.foundry.crafting -= global.city.foundry['Thermite'];
+                    global.civic.craftsman.workers -= global.city.foundry['Thermite'];
+                    global.civic[global.civic.d_job].workers += global.city.foundry['Thermite'];
+                    delete global.city.foundry['Thermite'];
+                }
+                return false;
+            }
+        case 'firework':
+            {
+                const date = new Date();
+                if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8,9,10].includes(date.getDate()) ){
+                    if (!global.city.hasOwnProperty('firework')){
+                        global.city['firework'] = {
+                            count: 0,
+                            on: 0
+                        };
+                    }
+                    
+                    return true;
+                }
+                else if (global.city.hasOwnProperty('firework')){
+                    delete global.city.firework;
+                }
+                return false;
             }
     }
     return false;

@@ -2369,7 +2369,8 @@ export const actions = {
                 return shoed;
             }
         },
-        bonfire: eventActive(`summer`,'city'),
+        bonfire: buildTemplate(`bonfire`,'city'),
+        firework: buildTemplate(`firework`,'city'),
         slave_market: {
             id: 'city-slave_market',
             title: loc('city_slave_market'),
@@ -4678,6 +4679,74 @@ export const actions = {
     },
     portal: fortressTech()
 };
+
+export function buildTemplate(key, region){
+    let tKey = region === 'space' ? 'trait' : 'not_trait';
+    switch (key){
+        case 'bonfire':
+        {
+            let id = region === 'space' ? 'space-bonfire' : 'city-bonfire';
+            return {
+                id: id,
+                title: loc('city_bonfire'),
+                desc: loc('city_bonfire_desc'),
+                category: 'outskirts',
+                wiki: false,
+                reqs: { primitive: 3  },
+                condition(){
+                    return eventActive(`summer`);
+                },
+                [tKey]: ['cataclysm'],
+                no_queue(){ return true },
+                effect(){
+                    let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
+                    let thermite = 100000 + global.stats.reset * 9000;
+                    if (thermite > 1000000){ thermite = 1000000; }
+                    let goal = global.resource.Thermite.amount < thermite ? `<div class="has-text-warning">${loc('city_bonfire_effect3',[(thermite).toLocaleString()])}</div><div class="has-text-caution">${loc('city_bonfire_effect4',[(+(global.resource.Thermite.amount).toFixed(0)).toLocaleString(),(thermite).toLocaleString()])}</div>` : ``;
+                    return `<div>${loc(`city_bonfire_effect`,[global.resource.Thermite.diff])}</div><div>${loc(`city_bonfire_effect2`,[+(morale).toFixed(1)])}</div>${goal}`;
+                },
+                action(){
+                    return false;
+                },
+                flair(){
+                    return loc(`city_bonfire_flair`);
+                }
+            };
+        }
+        case 'firework':
+        {
+            let id = region === 'space' ? 'space-firework' : 'city-firework';
+            return {
+                id: id,
+                title: loc('city_firework'),
+                desc: loc('city_firework'),
+                category: 'outskirts',
+                wiki: false,
+                reqs: { mining: 3, cement: 1 },
+                condition(){
+                    return eventActive(`firework`);
+                },
+                [tKey]: ['cataclysm'],
+                cost: {
+                    Money(){ return global.city.firework.count === 0 ? 50000 : 0; },
+                    Iron(){ return global.city.firework.count === 0 ? 7500 : 0; },
+                    Cement(){ return global.city.firework.count === 0 ? 10000 : 0; }
+                },
+                no_queue(){ return true },
+                switchable(){ return true; },
+                effect(){
+                    return global.city.firework.count === 0 ? loc(`city_firework_build`) : loc(`city_firework_effect`);
+                },
+                action(){
+                    if (global.city.firework.count === 0 && payCosts($(this)[0].cost)){
+                        global.city.firework.count = 1;
+                    }
+                    return false;
+                }
+            };
+        }
+    }
+}
 
 export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];

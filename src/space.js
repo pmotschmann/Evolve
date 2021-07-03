@@ -5,7 +5,7 @@ import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel } from './actions.js';
+import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
@@ -932,7 +932,8 @@ const spaceProjects = {
                 return loc('space_red_space_barracks_flair');
             }
         },
-        bonfire: eventActive(`summer`,'space'),
+        bonfire: buildTemplate(`bonfire`,'space'),
+        firework: buildTemplate(`firework`,'space'),
         horseshoe: {
             id: 'space-horseshoe',
             title: loc('city_horseshoe'),

@@ -4,8 +4,9 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.8`,
-        date: `7/2/2021`,
+        date: `7/3/2021`,
         changes: [
+            `Added firework feastival event (July 4th - July 10th).`,
             `Updated wiki prestige calculators.`
         ]
     },
