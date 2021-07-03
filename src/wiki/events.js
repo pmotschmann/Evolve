@@ -1413,6 +1413,20 @@ function specialEventsPage(content){
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
 
+    {   // Firework
+        let thermite = global.hasOwnProperty('stats') ? 100000 + global.stats.reset * 9000 : 100000;
+        if (thermite > 1000000){ thermite = 1000000; }
+
+        let event = 'firework';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                2: [loc('feat_firework_name')]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+    }
+
     {   // Halloween
         let event = 'halloween';
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,

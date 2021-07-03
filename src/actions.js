@@ -4740,6 +4740,7 @@ export function buildTemplate(key, region){
                 action(){
                     if (global.city.firework.count === 0 && payCosts($(this)[0].cost)){
                         global.city.firework.count = 1;
+                        return true;
                     }
                     return false;
                 }

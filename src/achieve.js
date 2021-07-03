@@ -214,6 +214,11 @@ export const feats = {
         desc: loc("feat_solstice_desc"),
         flair: loc("feat_solstice_flair")
     },
+    firework: {
+        name: loc("feat_firework_name"),
+        desc: loc("feat_firework_desc"),
+        flair: loc("feat_firework_flair")
+    },
     halloween: {
         name: loc("feat_boo_name"),
         desc: loc("feat_boo_desc"),
@@ -534,6 +539,10 @@ export function checkAchievements(){
         if (global.resource.Thermite.amount > thermite){
             unlockFeat('solstice',global.race.universe === 'micro' ? true : false);
         }
+    }
+
+    if (eventActive('firework') && global.city.firework.on > 0){
+        unlockFeat('firework',global.race.universe === 'micro' ? true : false);
     }
 
     if (global.city.morale.current >= 200){

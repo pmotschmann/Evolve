@@ -1,7 +1,7 @@
 import { global, tmp_vars, save, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -10,6 +10,7 @@ import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
+import { alevel } from './achieve.js';
 
 export function mainVue(){
     vBind({
@@ -913,15 +914,18 @@ export function index(){
         {i: 'egg',          f: 'egghunt',       r: 1 },
         {i: 'rocket',       f: 'launch_day',    r: 1 },
         {i: 'sun',          f: 'solstice',      r: 1 },
+        {i: 'firework',     f: 'firework',      r: 1 },
         {i: 'ghost',        f: 'halloween',     r: 1 },
         {i: 'candy',        f: 'trickortreat',  r: 1 },
         {i: 'turkey',       f: 'thanksgiving',  r: 1 },
         {i: 'present',      f: 'xmas',          r: 1 }
     ];
 
+    let irank = alevel();
+    if (irank < 2){ irank = 2; }
     for (let i=0; i<icons.length; i++){
         if (global.stats.feat[icons[i].f] && global.stats.feat[icons[i].f] >= icons[i].r){
-            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">{{ '${icons[i].i}' | label }}</b-dropdown-item>`;
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">${drawIcon(icons[i].i,16,irank)} {{ '${icons[i].i}' | label }}</b-dropdown-item>`;
         }
         else if (global.settings.icon === icons[i].i){
             global.settings.icon = 'star';
@@ -992,7 +996,7 @@ export function index(){
                     <span>{{ s.icon | label }}</span>
                     <i class="fas fa-sort-down"></i>
                 </button>
-                <b-dropdown-item v-on:click="icon('star')">{{ 'star' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ 'star' | label }}</b-dropdown-item>
                 ${iconlist}
             </b-dropdown>
         </div>
