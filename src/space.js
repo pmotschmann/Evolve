@@ -2830,7 +2830,7 @@ const interstellarProjects = {
             },
             wide: true,
             effect(){
-                let desc = `<div>${loc('interstellar_citadel_effect',[5])}</div>`;
+                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[5])}</div>`;
                 if (global.tech['ai_core']){
                     let cement = +(quantum_level / 1.75).toFixed(1);
                     desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
