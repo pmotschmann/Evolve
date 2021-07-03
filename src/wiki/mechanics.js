@@ -8,7 +8,7 @@ import { sideMenu, infoBoxBuilder } from './functions.js';
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
 
-    {
+    { // Saving
         infoBoxBuilder(mainContent,{ name: 'save', template: 'mechanics', label: loc('wiki_mechanics_save'), paragraphs: 8, break: [3,5], h_level: 2,
             para_data: {
                 1: [`~5`],
@@ -21,7 +21,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`save`,loc('wiki_mechanics_save'));
     }
 
-    {
+    { // Accelerated Time
         infoBoxBuilder(mainContent,{ name: 'atime', template: 'mechanics', label: loc('wiki_mechanics_atime'), paragraphs: 6, break: [4,6], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_atime')],
@@ -35,7 +35,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`atime`,loc('wiki_mechanics_atime'));
     }
 
-    {
+    { // String Packs
         infoBoxBuilder(mainContent,{ name: 'spack', template: 'mechanics', label: loc('wiki_mechanics_spack'), paragraphs: 10, break: [4,6,7,8,9,10], h_level: 2,
             para_data: {
                 1: ['UTF-8','JSON','.txt'],
@@ -46,7 +46,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`spack`,loc('wiki_mechanics_spack'));
     }
     
-    {
+    { // Default Job
         infoBoxBuilder(mainContent,{ name: 'job', template: 'mechanics', label: loc('wiki_mechanics_job'), paragraphs: 9, break: [5], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_job')],
@@ -57,7 +57,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
     }
 
-    {
+    { // Multiplier Keys
         infoBoxBuilder(mainContent,{ name: 'multiplier', template: 'mechanics', label: loc('wiki_mechanics_multiplier'), paragraphs: 5, break: [4], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_multiplier')],
@@ -72,7 +72,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
     }
 
-    {
+    { // Queue
         infoBoxBuilder(mainContent,{ name: 'queue', template: 'mechanics', label: loc('wiki_mechanics_queue'), paragraphs: 10, break: [4,6,9,10], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_queue'),loc('tech_urban_planning')],
@@ -89,7 +89,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
     }
 
-    {
+    { // Religion
         infoBoxBuilder(mainContent,{ name: 'religion', template: 'mechanics', label: loc('wiki_mechanics_religion'), paragraphs: 20, break: [3,6,8,15,20], h_level: 2,
             para_data: {
                 1: [loc('wiki_mechanics_religion')],
@@ -119,7 +119,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`religion`,loc('wiki_mechanics_religion'));
     }
 
-    {
+    { // Challenge Genes
         let p_star = `<span class="flair" aria-label="star"><svg class="star2" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
         let b_star = `<span class="flair" aria-label="star"><svg class="star3" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
         let s_star = `<span class="flair" aria-label="star"><svg class="star4" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span>`;
@@ -156,7 +156,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`challenge`,loc('wiki_mechanics_challenge'));
     }
 
-    {
+    { // Mastery
         infoBoxBuilder(mainContent,{ name: 'mastery', template: 'mechanics', label: loc('mastery'), paragraphs: 15, break: [3,8,10,13], h_level: 2,
             para_data: {
                 1: [loc('mastery'),loc('tab_arpa_crispr'),loc('arpa_genepool_unlocked_title')],
@@ -192,7 +192,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'));
     }
 
-    {
+    { // Planets 
         let planets = infoBoxBuilder(mainContent,{ name: 'planet', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
             para_data: {
                 2: [365,'25%'],
@@ -226,7 +226,95 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`soul_gem`,loc('wiki_hell_soul_gem'));
     }
 
-    {
+    { // Quantum Level
+        let quantum = infoBoxBuilder(mainContent,{ name: 'quantum', template: 'mechanics', label: loc('wiki_mechanics_quantum'), paragraphs: 4, h_level: 2,
+            para_data: {
+                1: [loc('wiki_mechanics_quantum')],
+                2: [loc('tech_quantum_computing')],
+                4: [loc('interstellar_citadel_title')]
+            },
+            data_link: {
+                2: ['wiki.html#deep_space-tech-quantum_computing'],
+                4: ['wiki.html#interstellar-structures-citadel']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`quantum`,loc('wiki_mechanics_quantum'));
+
+        infoBoxBuilder(quantum,{ name: 'quantum_swarm_ai', template: 'mechanics', label: loc('tech_swarm_control_ai'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('tech_swarm_control_ai'),loc('space_sun_swarm_satellite_title'),loc('space_sun_swarm_control_title')],
+                2: [loc('space_sun_swarm_control_title'),11,loc('wiki_mechanics_quantum')]
+            },
+            data_link: {
+                1: ['wiki.html#deep_space-tech-swarm_control_ai','wiki.html#space-structures-swarm_satellite','wiki.html#space-structures-swarm_control']
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_swarm', template: 'mechanics', label: loc('tech_quantum_swarm'), paragraphs: 3, h_level: 2,
+            para_data: {
+                1: [loc('tech_quantum_swarm'),loc('space_hell_swarm_plant_title')],
+                2: ['1%'],
+                3: ['95%']
+            },
+            data_link: {
+                1: ['wiki.html#deep_space-tech-quantum_swarm','wiki.html#space-structures-swarm_plant']
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_manufacture', template: 'mechanics', label: loc('tech_quantum_manufacturing'), paragraphs: 4, break: [2,3,4], h_level: 2,
+            para_data: {
+                1: [loc('tech_quantum_manufacturing'),loc('city_factory'),loc('wiki_mechanics_quantum')],
+                2: [loc(`modal_factory_lux`)],
+                3: [loc(`resource_Furs_name`),'(Q Level - 1) * 12.5'],
+                4: ['(Q Level - 1) * 50'],
+            },
+            data_link: {
+                1: ['wiki.html#deep_space-tech-quantum_manufacturing','wiki.html#planetary-structures-factory',false]
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_cement_processing', template: 'mechanics', label: loc('tech_cement_processing'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc('tech_cement_processing'),loc('interstellar_citadel_title')],
+                2: ['(Q Level / 1.75) %'],
+            },
+            data_link: {
+                1: ['wiki.html#interstellar-tech-cement_processing','wiki.html#interstellar-structures-citadel']
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_graph_processing', template: 'mechanics', label: loc('tech_cement_processing'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc('tech_graphene_processing'),loc('interstellar_citadel_title')],
+                2: ['(Q Level / 5) %'],
+            },
+            data_link: {
+                1: ['wiki.html#intergalactic-tech-graphene_processing','wiki.html#interstellar-structures-citadel']
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_ai_logistics', template: 'mechanics', label: loc('tech_ai_logistics'), paragraphs: 3, break: [3], h_level: 2,
+            para_data: {
+                1: [loc('tech_ai_logistics'),loc('interstellar_cargo_yard_title'),loc('city_shed_title3')],
+                2: [loc('city_shed_title3')],
+                3: [loc('wiki_mechanics_quantum')]
+            },
+            data_link: {
+                1: ['wiki.html#interstellar-tech-ai_logistics','wiki.html#interstellar-structures-cargo_yard','wiki.html#interstellar-structures-warehouse']
+            }
+        });
+
+        infoBoxBuilder(quantum,{ name: 'quantum_arcology', template: 'mechanics', label: loc('portal_arcology_title'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc('portal_arcology_title'),10]
+            },
+            data_link: {
+                1: ['wiki.html#hell-structures-arcology',false]
+            }
+        });
+    }
+
+    { // Piracy
         let pirates = infoBoxBuilder(mainContent,{ name: 'piracy', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 6, break: [4], h_level: 2,
             para_data: {
                 1: [loc('galaxy_piracy'),loc('wiki_menu_intergalactic')],
@@ -264,7 +352,7 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`piracy`,loc('galaxy_piracy'));
     }
 
-    {
+    { // Cheese Level
         let cheeselevel = swissKnife(true);
         let cheeseList = swissKnife(false,true);
         let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
