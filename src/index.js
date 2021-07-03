@@ -925,7 +925,7 @@ export function index(){
     if (irank < 2){ irank = 2; }
     for (let i=0; i<icons.length; i++){
         if (global.stats.feat[icons[i].f] && global.stats.feat[icons[i].f] >= icons[i].r){
-            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">${drawIcon(icons[i].i,16,irank)} {{ '${icons[i].i}' | label }}</b-dropdown-item>`;
+            iconlist = iconlist + `<b-dropdown-item v-on:click="icon('${icons[i].i}')">${drawIcon(icons[i].i, 16, irank)} {{ '${icons[i].i}' | label }}</b-dropdown-item>`;
         }
         else if (global.settings.icon === icons[i].i){
             global.settings.icon = 'star';
