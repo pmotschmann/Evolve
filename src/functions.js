@@ -1546,7 +1546,7 @@ export function drawIcon(icon,size,shade,id,inject){
     if (id){
         select = `id="${id}" `;
     }
-    inject = inject ?? '';
+    inject = inject || '';
     return `<span ${inject}${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
 }
 
