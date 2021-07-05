@@ -1522,6 +1522,8 @@ export function getBaseIcon(name,type){
                 return 'rocket';
             case 'solstice':
                 return 'sun';
+            case 'firework':
+                return 'firework';
             case 'egghunt':
                 return 'egg';
             case 'halloween':
