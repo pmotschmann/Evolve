@@ -4728,18 +4728,18 @@ export function buildTemplate(key, region){
                 },
                 [tKey]: ['cataclysm'],
                 cost: {
-                    Money(){ return global.city.firework.count === 0 ? 50000 : 0; },
-                    Iron(){ return global.city.firework.count === 0 ? 7500 : 0; },
-                    Cement(){ return global.city.firework.count === 0 ? 10000 : 0; }
+                    Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
+                    Iron(){ return global[region].firework.count === 0 ? 7500 : 0; },
+                    Cement(){ return global[region].firework.count === 0 ? 10000 : 0; }
                 },
                 no_queue(){ return true },
                 switchable(){ return true; },
                 effect(){
-                    return global.city.firework.count === 0 ? loc(`city_firework_build`) : loc(`city_firework_effect`);
+                    return global[region].firework.count === 0 ? loc(`city_firework_build`) : loc(`city_firework_effect`);
                 },
                 action(){
-                    if (global.city.firework.count === 0 && payCosts($(this)[0].cost)){
-                        global.city.firework.count = 1;
+                    if (global[region].firework.count === 0 && payCosts($(this)[0].cost)){
+                        global[region].firework.count = 1;
                         return true;
                     }
                     return false;

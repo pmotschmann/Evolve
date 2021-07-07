@@ -41,7 +41,10 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
-            if (eventActive('firework') && global.city.firework.on > 0){
+            if (eventActive('firework') && ( 
+                (!global.race['cataclysm'] && global.city.firework.on > 0) || 
+                (global.race['cataclysm'] && global.space.firework.on > 0) 
+                )){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
         });
@@ -1964,17 +1967,18 @@ export function eventActive(event,val){
             {
                 const date = new Date();
                 if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8].includes(date.getDate()) ){
-                    if (!global.city.hasOwnProperty('firework')){
-                        global.city['firework'] = {
+                    let region = global.race['cataclysm'] ? 'space' : 'city';
+                    if (!global[region].hasOwnProperty('firework')){
+                        global[region]['firework'] = {
                             count: 0,
                             on: 0
                         };
                     }
-                    
                     return true;
                 }
-                else if (global.city.hasOwnProperty('firework')){
-                    delete global.city.firework;
+                else if (global.city.hasOwnProperty('firework') || global.space.hasOwnProperty('firework')){
+                    delete global.city['firework'];
+                    delete global.space['firework'];
                 }
                 return false;
             }
