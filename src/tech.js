@@ -10167,6 +10167,49 @@ const techs = {
             return false;
         }
     },
+    long_range_probes: {
+        id: 'tech-long_range_probes',
+        title: loc('tech_long_range_probes'),
+        desc: loc('tech_long_range_probes'),
+        category: 'space_exploration',
+        era: 'solar',
+        reqs: { high_tech: 10, elerium: 1 },
+        grant: ['outer',1],
+        cost: {
+            Knowledge(){ return 400000; },
+            Uranium(){ return 10000; },
+            Iridium(){ return 125000; },
+            Neutronium(){ return 1500; },
+            Elerium(){ return 175; }
+        },
+        effect: loc('tech_long_range_probes_effect'),
+        action(){
+            if (payCosts($(this)[0].cost)){
+                return true;
+            }
+            return false;
+        },
+    },
+    shipyard: {
+        id: 'tech-shipyard',
+        title(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
+        desc(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
+        category: 'space_militarization',
+        era: 'solar',
+        reqs: { outer: 1, piracy: 1 },
+        grant: ['shipyard',1],
+        cost: {
+            Knowledge(){ return 420000; }
+        },
+        effect(){ return loc('tech_shipyard_effect',[races[global.race.species].solar.dwarf]); },
+        action(){
+            if (payCosts($(this)[0].cost)){
+                global.space['shipyard'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        },
+    },
 };
 
 function uniteEffect(){

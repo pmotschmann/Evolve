@@ -7865,14 +7865,21 @@ function longLoop(){
         }
 
         if (global.tech['piracy']){
-            if (global.tech.piracy < 1000){
-                global.tech.piracy++;
+            if (global.race['truepath']){
+                if (global.tech.piracy < 2500 && Math.rand(0, 3) === 0){
+                    global.tech.piracy++;
+                }
             }
-            else if (global.tech.xeno >= 8 && global.tech.piracy < 2500){
-                global.tech.piracy++;
-            }
-            else if (global.tech['conflict'] && global.tech.piracy < 5000){
-                global.tech.piracy++;
+            else {
+                if (global.tech.piracy < 1000){
+                    global.tech.piracy++;
+                }
+                else if (global.tech.xeno >= 8 && global.tech.piracy < 2500){
+                    global.tech.piracy++;
+                }
+                else if (global.tech['conflict'] && global.tech.piracy < 5000){
+                    global.tech.piracy++;
+                }
             }
         }
 
@@ -8055,6 +8062,11 @@ function longLoop(){
             global.tech['conflict'] = 5;
             messageQueue(loc('galaxy_scavenger_find'),'info');
             drawTech();
+        }
+
+        if (!global.tech['piracy'] && global.tech['outer'] && Math.rand(0, 20) === 0){
+            messageQueue(loc('outer_syndicate',[govTitle(4)]),'info');
+            global.tech['piracy'] = 1;
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
