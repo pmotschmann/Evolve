@@ -1,5 +1,5 @@
 import { global, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, clearElement, adjustCosts } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics } from './civics.js';
@@ -496,6 +496,8 @@ function drawnGovernOffice(){
                     delete global.race.governor.g;
                     delete global.race.governor.tasks;
                     updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
+                    calcQueueMax();
+                    calcRQueueMax();
                     defineGovernor();
                 }
             },
@@ -553,6 +555,8 @@ function appointGovernor(){
                         t0: 'none', t1: 'none', t2: 'none', t3: 'none'
                     };
                     updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
+                    calcQueueMax();
+                    calcRQueueMax();
                     defineGovernor();
                     tagEvent('governor',{
                         'appoint': global.race.governor.g.bg

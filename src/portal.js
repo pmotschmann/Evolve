@@ -1354,7 +1354,7 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
-                [global.race.species](wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
+                Species(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
                 Money(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
                 Supply(wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 100000 : 0; },
             },
@@ -1597,7 +1597,7 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return global.tech['waygate'] && global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
             cost: {
-                [global.race.species](wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 25 : 0; },
+                Species(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 25 : 0; },
                 Money(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 1000000000 : 0; },
                 Supply(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 500000 : 0; },
                 Blood_Stone(wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 5 : 0; },

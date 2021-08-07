@@ -1,7 +1,7 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -130,6 +130,13 @@ if (global.queue.rename === true){
 }
 
 global.settings.sPackMsg = save.getItem('string_pack_name') ? loc(`string_pack_using`,[save.getItem('string_pack_name')]) : loc(`string_pack_none`);
+
+if (global.queue.display){
+    calcQueueMax();
+}
+if (global.r_queue.display){
+    calcRQueueMax();
+}
 
 mainVue();
 
@@ -1192,6 +1199,8 @@ function fastLoop(){
 
         // alchemy
         if (global.tech['alchemy']){
+            let totMana = 0;
+            let totCrystal = 0;
             Object.keys(global.race.alchemy).forEach(function (res){
                 if (global.race.alchemy[res] > 0){
                     let trasmute = Number(global.race.alchemy[res]);
@@ -1207,8 +1216,8 @@ function fastLoop(){
                         modRes(res,trasmute * time_multiplier * rate);
                         modRes('Mana', -(trasmute * time_multiplier));
                         modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
-                        breakdown.p.consume.Mana[loc('tab_alchemy')] = -(trasmute);
-                        breakdown.p.consume.Crystal[loc('tab_alchemy')] = -(trasmute * 0.5);
+                        totMana -= trasmute;
+                        totCrystal -= trasmute * 0.5;
                         breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
                         if (global.race.universe === 'magic' && !global.resource[res].basic && global.tech.alchemy >= 2){
                             unlockAchieve('fullmetal');
@@ -1216,6 +1225,8 @@ function fastLoop(){
                     }
                 }
             });
+            breakdown.p.consume.Mana[loc('tab_alchemy')] = totMana;
+            breakdown.p.consume.Crystal[loc('tab_alchemy')] = totCrystal;
         }
 
         if (global.galaxy['trade'] && (gal_on.hasOwnProperty('freighter') || gal_on.hasOwnProperty('super_freighter'))){
@@ -7196,6 +7207,9 @@ function midLoop(){
                     resQueue();
                 }
             }
+            if (global.r_queue.queue.length > global.r_queue.max){
+                global.r_queue.queue.splice(global.r_queue.max);
+            }
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] >= 8){
@@ -7412,15 +7426,54 @@ function midLoop(){
         }
 
         let last = false;
+        let used_slots = 0;
+        let merged_queue = [];
+        let update_queue = false;
         for (let i=0; i<global.queue.queue.length; i++){
-            if (last === global.queue.queue[i].id){
-                clearPopper(`q${global.queue.queue[i].id}${i}`);
-                global.queue.queue[i-1].q += global.queue.queue[i].q;
-                global.queue.queue.splice(i,1);
-                buildQueue();
-                break;
+            used_slots += Math.ceil(global.queue.queue[i].q / global.queue.queue[i].qs);
+            if (used_slots > global.queue.max){
+                let remaining = (Math.ceil(global.queue.queue[i].q / global.queue.queue[i].qs)) - (used_slots - global.queue.max);
+                if (remaining === 0){
+                    global.queue.queue.splice(i);
+                }
+                else {
+                    global.queue.queue[i].q = remaining * global.queue.queue[i].qs;
+                    global.queue.queue.splice(i+1);
+                }
             }
-            last = global.queue.queue[i].id;
+            
+            if (global.settings.q_merge === 'merge_nearby'){
+                if (last === global.queue.queue[i].id){
+                    clearPopper(`q${global.queue.queue[i].id}${i}`);
+                    global.queue.queue[i-1].q += global.queue.queue[i].q;
+                    global.queue.queue.splice(i,1);
+                    buildQueue();
+                    break;
+                }
+                last = global.queue.queue[i].id;
+            }
+            else if (global.settings.q_merge === 'merge_all'){
+                let found = false;
+                for (let k=0; k<merged_queue.length; k++){
+                    if (merged_queue[k].id === global.queue.queue[i].id){
+                        found = true;
+                        update_queue = true;
+                        merged_queue[k].q += global.queue.queue[i].q;
+                        clearPopper(`q${global.queue.queue[i].id}${i}`);
+                        break;
+                    }
+                }
+                if (!found){
+                    merged_queue.push(global.queue.queue[i]);
+                }
+            }
+        }
+        if (update_queue){
+            for (let i=merged_queue.length; i<global.queue.queue.length; i++){
+                clearPopper(`q${global.queue.queue[i].id}${i}`);
+            }
+            global.queue.queue = merged_queue;
+            buildQueue();
         }
     }
 
