@@ -808,7 +808,13 @@ if (convertVersion(global['version']) < 101002){
     }
 }
 
-global['version'] = '1.1.9';
+if (convertVersion(global['version']) < 101010){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('q_merge')){
+        global.settings['q_merge'] = 'merge_nearby';
+    }
+}
+
+global['version'] = '1.1.10';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -854,6 +860,7 @@ if (!global['settings']){
         animated: true,
         disableReset: false,
         font: 'standard',
+        q_merge: 'merge_nearby',
         cLabels: true,
         theme: 'dark',
         locale: 'en-US',
@@ -989,6 +996,14 @@ if (!global['r_queue']){
 
 if (!global['queue']['rename']){
     global.queue['rename'] = false;
+}
+
+if (!global['queue']['max']){
+    global.queue['max'] = 0;
+}
+
+if (!global['r_queue']['max']){
+    global.r_queue['max'] = 0;
 }
 
 if (!global['space']){

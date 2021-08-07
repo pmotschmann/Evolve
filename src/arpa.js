@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
+import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
 import { renderSpace } from './space.js';
@@ -712,6 +712,8 @@ export const genePool = {
         cost: { Plasmid(){ return 160; } },
         action(){
             if (payCrispr('architect')){
+                calcQueueMax();
+                calcRQueueMax();
                 return true;
             }
             return false;
@@ -2170,23 +2172,12 @@ function addProject(parent,project){
                         for (let i=0; i<keyMult; i++){
                             if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
                                 let arpaId = `arpa${pro}`;
-                                let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                                if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-                                    max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-                                }
-                                if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                    max_queue *= 2;
-                                }
-                                let pragVal = govActive('pragmatist',0);
-                                if (pragVal){
-                                    max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
-                                }
                                 let used = 0;
                                 for (var j=0; j<global.queue.queue.length; j++){
                                     used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                 }
-                                if (used < max_queue){
-                                    if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                if (used < global.queue.max){
+                                    if (global.settings.q_merge !== 'merge_never' && global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
                                         global.queue.queue[global.queue.queue.length-1].q++;
                                     }
                                     else {

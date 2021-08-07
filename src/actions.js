@@ -5401,18 +5401,7 @@ export function setAction(c_action,action,type,old){
                             }
                             else {
                                 if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
-                                    let max_queue = 3;
-                                    if (global.stats.feat['journeyman']){
-                                        max_queue += global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
-                                    }
-                                    if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                        max_queue *= 2;
-                                    }
-                                    let theoryVal = govActive('theorist',0);
-                                    if (theoryVal){
-                                        max_queue = Math.round(max_queue * (1 + (theoryVal / 100)));
-                                    }
-                                    if (global.r_queue.queue.length < max_queue){
+                                    if (global.r_queue.queue.length < global.r_queue.max){
                                         let queued = false;
                                         for (let tech in global.r_queue.queue){
                                             if (global.r_queue.queue[tech].id === c_action.id){
@@ -5457,32 +5446,28 @@ export function setAction(c_action,action,type,old){
                                 for (let i=0; i<loopNum; i++){
                                     if ((global.settings.qKey && keyMap.q) || !c_action.action(1)){
                                         if (!no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
-                                            let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                                            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-                                                max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-                                            }
-                                            if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                                max_queue *= 2;
-                                            }
-                                            let pragVal = govActive('pragmatist',0);
-                                            if (pragVal){
-                                                max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
-                                            }
                                             let used = 0;
                                             for (let j=0; j<global.queue.queue.length; j++){
                                                 used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
                                             }
-                                            if (used < max_queue){
+                                            if (used < global.queue.max){
                                                 let repeat = global.settings.qKey ? keyMult : 1;
-                                                if (repeat > max_queue - used){
-                                                    repeat = max_queue - used;
+                                                if (repeat > global.queue.max - used){
+                                                    repeat = global.queue.max - used;
                                                 }
                                                 let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
-                                                if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
-                                                    global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
+                                                if (global.settings.q_merge !== 'merge_never'){
+                                                    if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
+                                                        global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
+                                                    }
+                                                    else {
+                                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
+                                                    }
                                                 }
                                                 else {
-                                                    global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
+                                                    for (let k=0; k<repeat; k++){
+                                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
+                                                    }
                                                 }
                                                 add_queue = true;
                                             }
@@ -7242,6 +7227,7 @@ export function resQueue(){
     }
     clearResDrag();
     clearElement($('#resQueue'));
+    $('#resQueue').append($(`<h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>`));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
@@ -7250,7 +7236,7 @@ export function resQueue(){
 
     try {
         vBind({
-            el: '#resQueue .buildList',
+            el: '#resQueue',
             data: global.r_queue,
             methods: {
                 remove(index){

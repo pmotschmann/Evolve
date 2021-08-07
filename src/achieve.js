@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -735,13 +735,15 @@ export function checkAchievements(){
                 {c: 100, f: 'grandmaster'}
             ];
             for (let i=0; i<5; i++){
-                if (total >= progress[i].c){
+                if (total >= progress[i].c && (!global.stats.feat[progress[i].f] || global.stats.feat[progress[i].f] < t_level)){
                     if (global.race.universe === 'micro'){
                         unlockFeat(progress[i].f,true,t_level);
                     }
                     else {
                         unlockFeat(progress[i].f,false,t_level);
                     }
+                    calcQueueMax();
+                    calcRQueueMax();
                 }
             }
         }
