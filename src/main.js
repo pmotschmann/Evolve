@@ -1199,6 +1199,8 @@ function fastLoop(){
 
         // alchemy
         if (global.tech['alchemy']){
+            let totMana = 0;
+            let totCrystal = 0;
             Object.keys(global.race.alchemy).forEach(function (res){
                 if (global.race.alchemy[res] > 0){
                     let trasmute = Number(global.race.alchemy[res]);
@@ -1214,8 +1216,8 @@ function fastLoop(){
                         modRes(res,trasmute * time_multiplier * rate);
                         modRes('Mana', -(trasmute * time_multiplier));
                         modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
-                        breakdown.p.consume.Mana[loc('tab_alchemy')] = -(trasmute);
-                        breakdown.p.consume.Crystal[loc('tab_alchemy')] = -(trasmute * 0.5);
+                        totMana -= trasmute;
+                        totCrystal -= trasmute * 0.5;
                         breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
                         if (global.race.universe === 'magic' && !global.resource[res].basic && global.tech.alchemy >= 2){
                             unlockAchieve('fullmetal');
@@ -1223,6 +1225,8 @@ function fastLoop(){
                     }
                 }
             });
+            breakdown.p.consume.Mana[loc('tab_alchemy')] = totMana;
+            breakdown.p.consume.Crystal[loc('tab_alchemy')] = totCrystal;
         }
 
         if (global.galaxy['trade'] && (gal_on.hasOwnProperty('freighter') || gal_on.hasOwnProperty('super_freighter'))){
