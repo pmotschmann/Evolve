@@ -1,9 +1,11 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { svgIcons, svgViewBox} from './../functions.js';
+import { vBind, svgIcons, svgViewBox} from './../functions.js';
 import { races } from './../races.js';
+import { atomic_mass } from './../resources.js';
 import { swissKnife } from './../tech.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
+import { createCalcSection } from './p_res.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -314,6 +316,34 @@ export function mechanicsPage(content){
         });
     }
 
+    { // Mass & Ejecting
+        let mass = infoBoxBuilder(mainContent,{ name: 'mass', template: 'mechanics', label: loc('wiki_mechanics_mass'), paragraphs: 11, break: [5,9], h_level: 2,
+            para_data: {
+                1: [loc('tab_interstellar')],
+                2: [loc('tech_mass_ejector'),loc('interstellar_mass_ejector'),loc('tab_ejector')],
+                4: [(10000000000).toLocaleString()],
+                5: [loc('universe_magic'),loc('resource_Infernite_name'),loc('resource_Elerium_name')],
+                6: [0.025,loc('tech_stabilize_blackhole'),loc('tech_exotic_infusion')],
+                7: [loc('tech_stabilize_blackhole'),0,40,loc('tech_exotic_infusion'),loc('wiki_resets_blackhole')],
+                8: [loc('tech_stabilize_blackhole'),0.025],
+                9: [loc('interstellar_stellar_engine'),20,8],
+                10: [1,7.5,loc('interstellar_stellar_engine'),13.5,loc('tech_gravity_convection')],
+                11: [10]
+            },
+            data_link: {
+                2: ['wiki.html#interstellar-tech-mass_ejector','wiki.html#interstellar-structures-mass_ejector'],
+                6: [false,'wiki.html#interstellar-tech-stabilize_blackhole','wiki.html#interstellar-tech-infusion_confirm'],
+                7: ['wiki.html#interstellar-tech-stabilize_blackhole',false,false,'wiki.html#interstellar-tech-infusion_confirm','wiki.html#resets-prestige-blackhole'],
+                8: ['wiki.html#interstellar-tech-stabilize_blackhole'],
+                9: ['wiki.html#interstellar-structures-stellar_engine'],
+                10: [false,false,'wiki.html#interstellar-structures-stellar_engine',false,'wiki.html#interstellar-tech-gravity_convection']
+            }
+        });
+        let subSection = createCalcSection(mass,'eject','mass');
+        massCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`mass`,loc('wiki_mechanics_mass'));
+    }
+
     { // Piracy
         let pirates = infoBoxBuilder(mainContent,{ name: 'piracy', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 6, break: [4], h_level: 2,
             para_data: {
@@ -410,4 +440,217 @@ export function mechanicsPage(content){
         });
         sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
     }
+}
+
+function massCalc(info){
+    let calc = $(`<div class="calc" id="massCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let resources = ['Food','Lumber','Chrysotile','Stone','Crystal','Furs','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube','Graphene','Stanene','Bolognium','Vitreloy','Orichalcum','Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'];
+    
+    let show = {
+        result: {
+            vis: false, kt: undefined, solar: undefined, MW: undefined,
+            exoVis: false, exotic: undefined,
+            MWVis: false, MWTot: undefined
+        }
+    }
+    
+    let inputs = {
+        solar_tot: { val: undefined },
+        exotic_tot: { val: undefined },
+        grav: { val: true }
+    }
+    let resVariables = $(`<div></div>`);
+    let ktFormula = $(`<div></div>`);
+    
+    let isFirst = true;
+    variables.append(resVariables);
+    resources.forEach(function(res){
+        if (!isFirst){
+            ktFormula.append(`<span> + </span>`);
+        }
+        isFirst = false;
+        
+        inputs[res] = { val: undefined };
+        resVariables.append(`
+            <div class="calcInput"><span>${loc('resource_' + res + '_name')}</span> <b-numberinput :input="val('${res}')" min="0" v-model="i.${res}.val" :controls="false"></b-numberinput></div>
+        `);
+        ktFormula.append(`<span>({{ i.${res}.val, '${res}' | generic }} * ${atomic_mass[res]})`);
+    });
+    ktFormula.append(`<span v-show="s.result.vis"> = {{ true, 'kt' | calc }}</span>`);
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_kt')}</h2>
+        </div>
+    `);
+    formula.append(ktFormula);
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_solar')}</h2>
+        </div>
+        <div>
+            <span>{{ s.result.kt, 'kt' | generic }} / 10000000000</span><span v-show="s.result.vis"> = {{ false, 'solar' | calc }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_exotic')}</h2>
+        </div>
+        <div>
+            <span>(({{ i.Infernite.val, 'Infernite' | generic }} * 222.666) + ({{ i.Elerium.val, 'Elerium' | generic }} * 297.115)) / 10000000000</span><span v-show="s.result.exoVis"> = {{ | calcExotic }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_MW')}</h2>
+        </div>
+        <div>
+            <span>({{ s.result.solar, 'solar' | generic }} * {{ false | amountMW }}) + ({{ s.result.exotic, 'exotic' | generic }} * {{ true | amountMW }})</span><span v-show="s.result.vis"> = {{ false, 'MW' | calc }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_MW_tot')}</h2>
+        </div>
+        <div>
+            <span>20 + (({{ i.solar_tot.val, 'solar_tot' | generic }} - 8) * {{ false | amountMW }}) + ({{ i.exotic_tot.val, 'exotic_tot' | generic }} * {{ true | amountMW }})</span><span v-show="s.result.MWVis"> = {{ | calcMW }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_mass_solar_tot')}</span> <b-numberinput :input="val('solar_tot')" min="8" v-model="i.solar_tot.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_mass_exotic_tot')}</span> <b-numberinput :input="val('exotic_tot')" min="0" v-model="i.exotic_tot.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><b-checkbox class="patrol" v-model="i.grav.val">${loc('tech_gravity_convection')}</b-checkbox></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#massCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (type === 'solar_tot'){
+                    if (inputs[type].val && inputs[type].val < 8){
+                        inputs[type].val = 8;
+                    }
+                }
+                else {
+                    if (inputs[type].val && inputs[type].val < 0){
+                        inputs[type].val = 0;
+                    }
+                }
+            },
+            resetInputs(){
+                resources.forEach(function(res){
+                    inputs[res].val = undefined;
+                });
+                inputs.solar_tot.val = undefined;
+                inputs.exotic_tot.val = undefined;
+                inputs.grav.val = true;
+            },
+            importInputs(){
+                if (global.interstellar['mass_ejector']){
+                    resources.forEach(function(res){
+                        inputs[res].val = global.interstellar.mass_ejector[res];
+                    });
+                }
+                else {
+                    resources.forEach(function(res){
+                        inputs[res].val = 0;
+                    });
+                }
+                inputs.solar_tot.val = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.mass : 8;
+                if (global.tech['roid_eject']){
+                    inputs.solar_tot.val += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
+                }
+                inputs.exotic_tot.val = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0;
+                inputs.grav.val = global.tech['gravity'] && global.tech.gravity >= 2;
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'kt':
+                    case 'solar':
+                    case 'solar_tot':
+                    case 'exotic':
+                    case 'exotic_tot':
+                    case 'MW':
+                        return loc('wiki_calc_mass_' + type);
+                    default:
+                        return loc('resource_' + type + '_name') + '/s';
+                }
+            },
+            amountMW(exotic){
+                return (inputs.grav.val ? 13.5 : 7.5) * (exotic ? 10 : 1);
+            },
+            calc(recalc, type){
+                if (recalc){
+                    let vis = true;
+                    resources.forEach(function(res){
+                        if (vis && inputs[res].val === undefined){
+                            vis = false;
+                        }
+                    });
+                    show.result.vis = vis;
+                
+                    if (show.result.vis){
+                        let total = 0;
+                        let exotic = 0;
+                        resources.forEach(function(res){
+                            total += inputs[res].val * atomic_mass[res];
+                        });
+                        show.result.kt = +(total).toFixed(4);
+                        show.result.solar = +(total / 10000000000).toFixed(10);
+                        show.result.MW = +(show.result.solar * (inputs.grav.val ? 13.5 : 7.5) + show.result.exotic * (inputs.grav.val ? 135 : 75)).toFixed(10);
+                    }
+                    else {
+                        show.result.kt = undefined;
+                        show.result.solar = undefined;
+                        show.result.mw = undefined;
+                    }
+                }
+                return show.result[type];
+            },
+            calcExotic(){
+                if (inputs.Infernite.val !== undefined && inputs.Elerium.val !== undefined){
+                    show.result.exoVis = true;
+                    
+                    show.result.exotic = +((inputs.Infernite.val * atomic_mass.Infernite + inputs.Elerium.val * atomic_mass.Elerium) / 10000000000).toFixed(10);
+                    
+                    return show.result.exotic;
+                }
+                else {
+                    show.result.exoVis = false;
+                    show.result.exotic = undefined;
+                }
+            },
+            calcMW(){
+                if (inputs.solar_tot.val !== undefined && inputs.exotic_tot.val !== undefined){
+                    show.result.MWVis = true;
+                    
+                    show.result.MWTot = +(20 + ((inputs.solar_tot.val - 8) * (inputs.grav.val ? 13.5 : 7.5) + inputs.exotic_tot.val * (inputs.grav.val ? 135 : 75))).toFixed(10);
+                    
+                    return show.result.MWTot;
+                }
+                else {
+                    show.result.MWVis = false;
+                    show.result.MWTot = undefined;
+                }
+            }
+        }
+    });
 }

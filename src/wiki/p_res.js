@@ -126,7 +126,7 @@ export function createCalcSection(info,id,type){
         },
         filters: {
             label(vis){
-                return vis ? loc(`wiki_calc_` + type + `_hide`) : loc(`wiki_calc_` + type + `_show`);
+                return vis ? loc(`wiki_calc_hide`,[loc(`wiki_calc_insert_` + type)]) : loc(`wiki_calc_show`,[loc(`wiki_calc_insert_` + type)]);
             }
         }
     });
