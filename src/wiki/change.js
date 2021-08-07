@@ -3,6 +3,18 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.10`,
+        date: `8/7/2021`,
+        changes: [
+            `Import/Export race feature added to Ascension lab.`,
+            `Added merge options for queue.`,
+            `Available space in queue is now shown.`,
+            `Added Blackhole + Mass Ejector mechancic entry to wiki.`,
+            `Fixed some display bugs with Alchemy.`,
+            `Fixed bug where Protoplasm could be required by some structures late in hell phase.`
+        ]
+    },
+    {
         version: `1.1.9`,
         date: `7/7/2021`,
         changes: [
