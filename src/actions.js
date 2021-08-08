@@ -1923,7 +1923,7 @@ export const actions = {
                 }
                 return false;
             },
-            emblem(){ return format_emblem('inflation'); },
+            emblem(){ return format_emblem('wheelbarrow'); },
             flair: loc('evo_challenge_inflation_flair'),
             highlight(){ return global.race['inflation'] ? true : false; }
         },
