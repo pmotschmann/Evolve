@@ -1224,6 +1224,7 @@ export function adjustCosts(costs, wiki){
         });
         return newCosts;
     }
+    costs = inflationAdjust(costs, wiki);
     costs = technoAdjust(costs, wiki);
     costs = kindlingAdjust(costs, wiki);
     costs = smolderAdjust(costs, wiki);
@@ -1232,6 +1233,23 @@ export function adjustCosts(costs, wiki){
     costs = extraAdjust(costs, wiki);
     costs = heavyAdjust(costs, wiki);
     return craftAdjust(costs, wiki);
+}
+
+function inflationAdjust(costs, wiki){
+    if (global.race['inflation']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Money'){
+                let rate = 1 + (global.race.inflation / 100);
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function extraAdjust(costs, wiki){

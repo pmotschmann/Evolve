@@ -826,7 +826,15 @@ export const gov_tasks = {
         },
         task(){
             let cashCap = global.resource.Money.max * (global.race.governor.config.slave.reserve / 100);
-            if ( $(this)[0].req() && global.resource.Money.amount >= 25000 && (global.resource.Money.diff >= 25000 || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
+            let slaveCost = 25000;
+            if (global.race['inflation']){
+                slaveCost *= 1 + (global.race.inflation / 100);
+            }
+            let extraVal = govActive('extravagant',0);
+            if (extraVal){
+                slaveCost *= 1 + (extraVal / 100);
+            }
+            if ( $(this)[0].req() && global.resource.Money.amount >= slaveCost && (global.resource.Money.diff >= slaveCost || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
                 let max = global.city.slave_pen.count * 4;
                 if (max > global.city.slave_pen.slaves){
                     actions.city.slave_market.action();

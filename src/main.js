@@ -483,6 +483,9 @@ popover('topBarPlanet',
             if (global.race['emfield']){
                 challenges = challenges + `<div>${loc('evo_challenge_emfield_desc')} ${loc('evo_challenge_emfield_conditions')}</div>`;
             }
+            if (global.race['inflation']){
+                challenges = challenges + `<div>${loc('evo_challenge_inflation_desc')} ${loc('evo_challenge_inflation_conditions')}</div>`;
+            }
             if (global.race['banana']){
                 challenges = challenges + `<div>${loc('evo_challenge_banana_desc')} ${loc('wiki_achieve_banana1')}. ${loc('wiki_achieve_banana2')}. ${loc('wiki_achieve_banana3')}. ${loc('wiki_achieve_banana4',[500])}. ${loc('wiki_achieve_banana5',[50])}.</div>`;
             }
@@ -612,7 +615,7 @@ if (global.race.species === 'protoplasm'){
         }
 
         challengeActionHeader();
-        var challenge_actions = ['joyless','steelen','decay','emfield'];
+        var challenge_actions = ['joyless','steelen','decay','emfield','inflation'];
         for (var i = 0; i < challenge_actions.length; i++){
             if (global.evolution[challenge_actions[i]] && global.evolution[challenge_actions[i]].count == 0){
                 addAction('evolution',challenge_actions[i]);
@@ -6314,6 +6317,9 @@ function midLoop(){
             if (global.tech['stock_exchange'] && global.tech['gambling'] >= 4){
                 vault *= 1 + (global.tech['stock_exchange'] * 0.05);
             }
+            if (global.race['inflation']){
+                vault *= 1 + (global.race.inflation / 100);
+            }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';
         }
@@ -7393,6 +7399,9 @@ function midLoop(){
                             global.queue.queue.splice(idx,1);
                             buildQueue();
                         }
+                        if (global.race['inflation'] && global.tech['primitive']){
+                            global.race.inflation++;
+                        }
                     }
                     else {
                         break;
@@ -8091,6 +8100,13 @@ function longLoop(){
             else if (global.civic.taxes.tax_rate < tax_min){
                 global.civic.taxes.tax_rate = tax_min;
             }
+        }
+
+        if (global.queue.display){
+            calcQueueMax();
+        }
+        if (global.r_queue.display){
+            calcRQueueMax();
         }
 
         if (global.race.mutation > 0){

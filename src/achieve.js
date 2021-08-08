@@ -47,7 +47,7 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history','banana'],    
+    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana'],    
 };
 
 const flairData = {
@@ -558,6 +558,9 @@ export function checkAchievements(){
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
     }
+    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 100000000000){
+        unlockAchieve('wheelbarrow');
+    }
 
     if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 750 && global.civic.govern.type === 'federation'){
         unlockAchieve('trade');
@@ -1023,6 +1026,20 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`])
+        ]
+    },
+    wheelbarrow: {
+        name: loc(`achieve_wheelbarrow_name`),
+        desc(wiki){
+            let bonus = wiki ? "2/4/6/8/10" : global.stats.achieve['wheelbarrow'] ? global.stats.achieve['wheelbarrow'].l * 2 : 2;
+            return loc("achieve_perks_wheelbarrow",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['wheelbarrow'] && global.stats.achieve.wheelbarrow.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_wheelbarrow_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_wheelbarrow_name`)}</span>`])
         ]
     },
     whitehole: {
