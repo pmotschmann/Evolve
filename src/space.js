@@ -941,6 +941,7 @@ const spaceProjects = {
             },
             reqs: { primitive: 3 },
             trait: ['hooved','cataclysm'],
+            inflation: false,
             cost: {
                 Lumber(){ 
                     let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
