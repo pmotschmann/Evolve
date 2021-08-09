@@ -2371,6 +2371,7 @@ export const actions = {
             reqs: { primitive: 3 },
             trait: ['hooved'],
             not_trait: ['cataclysm'],
+            inflation: false,
             cost: {
                 Lumber(){ 
                     let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
@@ -2399,7 +2400,7 @@ export const actions = {
                     }
                 }
                 return shoed;
-            }
+            },
         },
         bonfire: buildTemplate(`bonfire`,'city'),
         firework: buildTemplate(`firework`,'city'),
@@ -2447,6 +2448,7 @@ export const actions = {
             reqs: { mining: 1 },
             trait: ['cannibalize'],
             not_trait: ['cataclysm'],
+            inflation: false,
             cost: {
                 Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
             },
@@ -5511,7 +5513,9 @@ export function setAction(c_action,action,type,old){
                                     }
                                     else if (!(global.settings.qKey && keyMap.q)){
                                         if (global.race['inflation'] && global.tech['primitive']){
-                                            global.race.inflation++;
+                                            if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
+                                                global.race.inflation++;
+                                            }
                                         }
                                     }
                                     grant = true;

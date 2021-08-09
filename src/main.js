@@ -7400,7 +7400,9 @@ function midLoop(){
                             buildQueue();
                         }
                         if (global.race['inflation'] && global.tech['primitive']){
-                            global.race.inflation++;
+                            if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
+                                global.race.inflation++;
+                            }
                         }
                     }
                     else {
