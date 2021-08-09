@@ -984,7 +984,6 @@ const spaceProjects = {
             }
         },
         bonfire: buildTemplate(`bonfire`,'space'),
-        firework: buildTemplate(`firework`,'space'),
         horseshoe: {
             id: 'space-horseshoe',
             title: loc('city_horseshoe'),
@@ -1165,6 +1164,7 @@ const spaceProjects = {
                 return false;
             }
         },
+        firework: buildTemplate(`firework`,'space'),
     },
     spc_sun: {
         info: {
@@ -5941,17 +5941,17 @@ function ascendLab(){
     let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
     $(`#city`).append(lab);
 
-    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ genes }}</span></div>`);
+    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span></div>`);
     
-    let name = $(`<div class="fields"><div class="name">${loc('genelab_name')} <b-input v-model="name" maxlength="20"></b-input></div><div class="entity">${loc('genelab_entity')} <b-input v-model="entity" maxlength="40"></b-input></div><div class="name">${loc('genelab_home')} <b-input v-model="home" maxlength="20"></b-input></div> <div>${loc('genelab_desc')} <b-input v-model="desc" maxlength="255"></b-input></div></div>`);
+    let name = $(`<div class="fields"><div class="name">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div>${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
     lab.append(name);
 
     let planets = $(`<div class="fields">
-        <div class="name">${loc('genelab_red')} <b-input v-model="red" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_hell')} <b-input v-model="hell" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_gas')} <b-input v-model="gas" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_gas_moon')} <b-input v-model="gas_moon" maxlength="20"></b-input></div>
-        <div class="name">${loc('genelab_dwarf')} <b-input v-model="dwarf" maxlength="20"></b-input></div></div>`);
+        <div class="name">${loc('genelab_red')} <b-input v-model="g.red" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_hell')} <b-input v-model="g.hell" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_gas')} <b-input v-model="g.gas" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_gas_moon')} <b-input v-model="g.gas_moon" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
     lab.append(planets);
 
     let genes = $(`<div class="sequence"></div>`);
@@ -5962,7 +5962,7 @@ function ascendLab(){
     Object.keys(genus_traits).forEach(function (type){
         if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
             if (!dGenus){ dGenus = type; }
-            genus = genus + `<div class="field ${type}"><b-radio v-model="genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
+            genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
     });
     genus = genus + `</section></template></div>`;
@@ -5989,17 +5989,33 @@ function ascendLab(){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             if (traits[trait].val >= 0){
-                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
             else {
-                negative = negative + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                negative = negative + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
         }
     });
     trait_list = trait_list + negative + `</section></template></div>`;
     genes.append($(trait_list));
 
-    lab.append($(`<hr><div class="create"><button class="button" @click="setRace()">${loc('genelab_create')}</button></div>`));
+    lab.append($(`
+        <div class="reset">
+            <button class="button" @click="reset()">${loc('genelab_reset')}</button>
+        </div>
+        <hr>
+        <div class="importExport">
+            <button class="button" @click="customImport">${loc('genelab_import')}</button>
+            <input type="file" class="fileImport" id="customFile" accept=".txt">
+            <button class="button right" @click="customExport">${loc('genelab_export')}</button>
+        </div>
+        <div class="importExport">
+            <span>{{ err.msg }}</span>
+        </div>
+        <div class="create">
+            <button class="button" @click="setRace()">${loc('genelab_create')}</button>
+        </div>
+    `));
 
     var genome = global.hasOwnProperty('custom') ? {
         name: global.custom.race0.name,
@@ -6036,10 +6052,14 @@ function ascendLab(){
     }
 
     genome.genes = calcGenomeScore(genome);
+    let error = { msg: "" }
 
     vBind({
         el: '#celestialLab',
-        data: genome,
+        data: {
+            g: genome,
+            err: error
+        },
         methods: {
             geneEdit(){
                 genome.genes = calcGenomeScore(genome);
@@ -6064,6 +6084,92 @@ function ascendLab(){
                     }
                     ascend();
                 }
+            },
+            reset(){
+                genome.name = "";
+                genome.desc = "";
+                genome.entity = "";
+                genome.home = "";
+                genome.red = "";
+                genome.hell = "";
+                genome.gas = "";
+                genome.gas_moon = "";
+                genome.dwarf = "";
+                genome.genus = dGenus;
+                genome.traitlist = [];
+                genome.genes = calcGenomeScore(genome);
+            },
+            customImport(){
+                let file = document.getElementById("customFile").files[0];
+                if (file){
+                    let reader = new FileReader();
+                    reader.readAsText(file, "UTF-8");
+                    reader.onload = function (evt) {
+                        let importCustom = "";
+                        try {
+                            importCustom = JSON.parse(evt.target.result);
+                        }
+                        catch {
+                            error.msg = loc(`string_pack_error`,[file.name]);
+                            return;
+                        }
+                        let formatError = false;
+                        Object.keys(genome).forEach(function (type){
+                            if (typeof genome[type] !== typeof importCustom[type]){
+                                formatError = true;
+                                return;
+                            }
+                        });
+                        if (formatError){
+                            error.msg = loc(`string_pack_error`,[file.name]);
+                            return;
+                        }
+                    
+                        Object.keys(genome).forEach(function (type){
+                            if (importCustom[type]){
+                                genome[type] = importCustom[type];
+                            }
+                        });
+                        ['name','home','red','hell','gas','gas_moon','dwarf'].forEach(function(field){
+                            if (genome[field].length > 20){
+                                genome[field] = genome[field].substring(0, 20);
+                            }
+                        });
+                        if (genome.entity.length > 40){
+                            genome.entity = genome.entity.substring(0, 40);
+                        }
+                        if (genome.desc.length > 255){
+                            genome.desc = genome.desc.substring(0, 255);
+                        }
+                        if (!(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
+                            genome.genus = dGenus;
+                        }
+                        let fixTraitlist = [];
+                        for (let i=0; i < genome.traitlist.length; i++){
+                            if (traits.hasOwnProperty(genome.traitlist[i]) && traits[genome.traitlist[i]].type === 'major' && !fixTraitlist.includes(genome.traitlist[i])){
+                                fixTraitlist.push(genome.traitlist[i]);
+                            }
+                        }
+                        genome.traitlist = fixTraitlist;
+                        genome.genes = calcGenomeScore(genome);
+                    
+                        error.msg = "";
+                    }
+                    reader.onerror = function (evt) {
+                        console.error("error reading file");
+                    }
+                }
+            },
+            customExport(){
+                const downloadToFile = (content, filename, contentType) => {
+                    const a = document.createElement('a');
+                    const file = new Blob([content], {type: contentType});
+                    a.href= URL.createObjectURL(file);
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                };
+                downloadToFile(JSON.stringify(genome, null, 4), `evolve-custom-${genome.name}.txt`, 'text/plain');
             }
         },
         filters: {

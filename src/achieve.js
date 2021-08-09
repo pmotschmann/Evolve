@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -47,7 +47,7 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','iron_will','failed_history','banana','ashanddust'],    
+    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','ashanddust'],    
 };
 
 const flairData = {
@@ -545,7 +545,10 @@ export function checkAchievements(){
         }
     }
 
-    if (eventActive('firework') && global.city.firework.on > 0){
+    if (eventActive('firework') && ( 
+        (!global.race['cataclysm'] && global.city.firework.on > 0) || 
+        (global.race['cataclysm'] && global.space.firework.on > 0) 
+        )){
         unlockFeat('firework',global.race.universe === 'micro' ? true : false);
     }
 
@@ -558,6 +561,9 @@ export function checkAchievements(){
 
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
+    }
+    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 100000000000){
+        unlockAchieve('wheelbarrow');
     }
 
     if (global.civic.hasOwnProperty('govern') && global.galaxy.hasOwnProperty('trade') && global.city.hasOwnProperty('market') && global.galaxy.trade.cur >= 50 && global.city.market.trade >= 750 && global.civic.govern.type === 'federation'){
@@ -736,13 +742,15 @@ export function checkAchievements(){
                 {c: 100, f: 'grandmaster'}
             ];
             for (let i=0; i<5; i++){
-                if (total >= progress[i].c){
+                if (total >= progress[i].c && (!global.stats.feat[progress[i].f] || global.stats.feat[progress[i].f] < t_level)){
                     if (global.race.universe === 'micro'){
                         unlockFeat(progress[i].f,true,t_level);
                     }
                     else {
                         unlockFeat(progress[i].f,false,t_level);
                     }
+                    calcQueueMax();
+                    calcRQueueMax();
                 }
             }
         }
@@ -1022,6 +1030,20 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_steelen_name`)}</span>`])
+        ]
+    },
+    wheelbarrow: {
+        name: loc(`achieve_wheelbarrow_name`),
+        desc(wiki){
+            let bonus = wiki ? "2/4/6/8/10" : global.stats.achieve['wheelbarrow'] ? global.stats.achieve['wheelbarrow'].l * 2 : 2;
+            return loc("achieve_perks_wheelbarrow",[bonus]);
+        },
+        active(){
+            return global.stats.achieve['wheelbarrow'] && global.stats.achieve.wheelbarrow.l >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_wheelbarrow_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_wheelbarrow_name`)}</span>`])
         ]
     },
     whitehole: {

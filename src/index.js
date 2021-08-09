@@ -147,6 +147,9 @@ export function mainVue(){
                 $(`html`).removeClass('large_all');
                 $('html').addClass(f);
             },
+            q_merge(merge){
+                global.settings.q_merge = merge;
+            },
             toggleTabLoad(){
                 initTabs();
             },
@@ -189,7 +192,7 @@ export function mainVue(){
         }
     });
 
-    ['1','3','4','5','6','7','8','9','10','11','12','13','14'].forEach(function(k){
+    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15'].forEach(function(k){
         popover(`settings${k}`, function(){
                 return loc(`settings${k}`);
             },
@@ -1033,6 +1036,17 @@ export function index(){
                 <b-dropdown-item v-on:click="font('standard')">{{ 'standard' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="font('large_log')">{{ 'large_log' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
+            </b-dropdown>
+
+            <span class="settings15" aria-label="${loc('settings15')}">{{ 'q_merge' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.q_merge | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="q_merge('merge_never')">{{ 'merge_never' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="q_merge('merge_nearby')">{{ 'merge_nearby' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="q_merge('merge_all')">{{ 'merge_all' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>
         <b-switch class="setting" v-model="s.pause" @input="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ 'pause' | label }}</span></b-switch>

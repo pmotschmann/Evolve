@@ -922,7 +922,8 @@ function minorEventsPage(content){
                 loc(`event_theft`,[loc('event_theft_type5')]),
                 loc(`event_theft`,[loc('event_theft_type6')]),
                 loc(`event_theft`,[loc('event_theft_type7')]),
-                loc(`event_theft`,[loc('event_theft_type8')])
+                loc(`event_theft`,[loc('event_theft_type8')]),
+                loc(`event_theft`,[loc('event_theft_type9')])
             ]
         }, section);
         sideMenu('add',`minor-events`,`theft`,loc('wiki_events_theft'));

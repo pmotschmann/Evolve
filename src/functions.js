@@ -56,7 +56,10 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
-            if (eventActive('firework') && global.city.firework.on > 0){
+            if (eventActive('firework') && ( 
+                (!global.race['cataclysm'] && global.city.firework.on > 0) || 
+                (global.race['cataclysm'] && global.space.firework.on > 0) 
+                )){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
         });
@@ -274,10 +277,42 @@ export function removeFromRQueue(tech_trees){
     }
 }
 
+export function calcQueueMax(){
+    let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+    if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+        max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+    }
+    if (global.genes['queue'] && global.genes['queue'] >= 2){
+        max_queue *= 2;
+    }
+    let pragVal = govActive('pragmatist',0);
+    if (pragVal){
+        max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
+    }
+    
+    global.queue.max = max_queue;
+}
+
+export function calcRQueueMax(){
+    let max_queue = 3;
+    if (global.stats.feat['journeyman']){
+        max_queue += global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+    }
+    if (global.genes['queue'] && global.genes['queue'] >= 2){
+        max_queue *= 2;
+    }
+    let theoryVal = govActive('theorist',0);
+    if (theoryVal){
+        max_queue = Math.round(max_queue * (1 + (theoryVal / 100)));
+    }
+    
+    global.r_queue.max = max_queue;
+}
+
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')}</h2>`));
+    $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -345,6 +380,14 @@ export function buildQueue(){
                 },
                 max_t(max,time){
                     return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
+                },
+                used_q(){
+                    let used = 0;
+                    for (let i=0; i<global.queue.queue.length; i++){
+                        used += Math.ceil(global.queue.queue[i].q / global.queue.queue[i].qs);
+                    }
+                    
+                    return used;
                 }
             }
         });
@@ -1219,6 +1262,7 @@ export function adjustCosts(costs, wiki){
         return newCosts;
     }
     costs = truthAdjust(costs, wiki);
+    costs = inflationAdjust(costs, wiki);
     costs = technoAdjust(costs, wiki);
     costs = kindlingAdjust(costs, wiki);
     costs = smolderAdjust(costs, wiki);
@@ -1241,6 +1285,23 @@ function truthAdjust(costs, wiki){
             }
             else {
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * 2); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+                
+function inflationAdjust(costs, wiki){
+    if (global.race['inflation']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Money'){
+                let rate = 1 + (global.race.inflation / 100);
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](wiki); }
             }
         });
         return newCosts;
@@ -1579,6 +1640,8 @@ export function getBaseIcon(name,type){
                 return 'rocket';
             case 'solstice':
                 return 'sun';
+            case 'firework':
+                return 'firework';
             case 'egghunt':
                 return 'egg';
             case 'halloween':
@@ -1603,7 +1666,7 @@ export function drawIcon(icon,size,shade,id,inject){
     if (id){
         select = `id="${id}" `;
     }
-    inject = inject ?? '';
+    inject = inject || '';
     return `<span ${inject}${select}class="flair drawnIcon"><svg class="star${shade}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></span>`;
 }
 
@@ -2019,17 +2082,18 @@ export function eventActive(event,val){
             {
                 const date = new Date();
                 if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8].includes(date.getDate()) ){
-                    if (!global.city.hasOwnProperty('firework')){
-                        global.city['firework'] = {
+                    let region = global.race['cataclysm'] ? 'space' : 'city';
+                    if (!global[region].hasOwnProperty('firework')){
+                        global[region]['firework'] = {
                             count: 0,
                             on: 0
                         };
                     }
-                    
                     return true;
                 }
-                else if (global.city.hasOwnProperty('firework')){
-                    delete global.city.firework;
+                else if (global.city.hasOwnProperty('firework') || global.space.hasOwnProperty('firework')){
+                    delete global.city['firework'];
+                    delete global.space['firework'];
                 }
                 return false;
             }

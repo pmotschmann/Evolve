@@ -12,6 +12,26 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.10`,
+        date: `8/8/2021`,
+        changes: [
+            `Added Inflation Challenge Mode. Requires Scrooge achievement to unlock.`,
+            `Import/Export race feature added to Ascension lab.`,
+            `Added merge options for queue.`,
+            `Available space in queue is now shown.`,
+            `Added Blackhole + Mass Ejector mechanic entry to wiki.`,
+            `Fixed some display bugs with Alchemy.`,
+            `Fixed bug where Protoplasm could be required by some structures late in hell phase.`
+        ]
+    },
+    {
+        version: `1.1.9`,
+        date: `7/7/2021`,
+        changes: [
+            `Firework festival bug fix for cataclysm mode.`,
+        ]
+    },
+    {
         version: `1.1.8`,
         date: `7/3/2021`,
         changes: [

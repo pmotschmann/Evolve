@@ -1,6 +1,6 @@
 import { global, save } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcPrestige, messageQueue } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
@@ -2316,6 +2316,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calcQueueMax();
         }
     },
     urban_planning: {
@@ -2338,6 +2341,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calcQueueMax();
         }
     },
     zoning_permits: {
@@ -2359,6 +2365,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calcQueueMax();
         }
     },
     urbanization: {
@@ -2380,6 +2389,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calcQueueMax();
         }
     },
     assistant: {
@@ -2400,6 +2412,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            calcRQueueMax();
         }
     },
     government: {
