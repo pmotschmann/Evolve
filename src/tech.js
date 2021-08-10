@@ -101,7 +101,7 @@ const techs = {
         effect: loc('tech_sundial_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_sundial_msg'),'info');
+                messageQueue(loc('tech_sundial_msg'),'info',false,['progress']);
                 global.resource.Knowledge.display = true;
                 global.city.calendar.day++;
                 if (global.race['infectious']){
@@ -2338,6 +2338,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.queue.display = true;
+                if (!global.settings.msgFilters.queue){
+                    global.settings.msgFilters.queue = true;
+                    document.getElementById(`msgQueueFilter-queue`).style.display = 'inline';
+                }
                 return true;
             }
             return false;
@@ -2409,6 +2413,12 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.r_queue.display = true;
+                if (!global.settings.msgFilters.building_queue){
+                    global.settings.msgFilters.building_queue = true;
+                    global.settings.msgFilters.research_queue = true;
+                    document.getElementById(`msgQueueFilter-building_queue`).style.display = 'inline';
+                    document.getElementById(`msgQueueFilter-research_queue`).style.display = 'inline';
+                }
                 return true;
             }
             return false;
@@ -2645,6 +2655,10 @@ const techs = {
         effect: loc('tech_espionage_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
+                if (!global.settings.msgFilters.spy){
+                    global.settings.msgFilters.spy = true;
+                    document.getElementById(`msgQueueFilter-spy`).style.display = 'inline';
+                }
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 vBind({el: '#foreign'},'update');
@@ -4027,7 +4041,7 @@ const techs = {
         effect: loc('tech_electricity_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_electricity_msg'),'info');
+                messageQueue(loc('tech_electricity_msg'),'info',false,['progress']);
                 global.city['power'] = 0;
                 global.city['powered'] = true;
                 global.city['coal_power'] = {
@@ -4110,7 +4124,7 @@ const techs = {
         effect: loc('tech_fission_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_fission_msg'),'info');
+                messageQueue(loc('tech_fission_msg'),'info',false,['progress']);
                 global.city['fission_power'] = {
                     count: 0,
                     on: 0
@@ -4376,7 +4390,7 @@ const techs = {
         effect(){ return loc('tech_orichalcum_analysis_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_orichalcum_analysis_result'),'info');
+                messageQueue(loc('tech_orichalcum_analysis_result'),'info',false,['progress']);
                 return true;
             }
             return false;
@@ -4570,7 +4584,7 @@ const techs = {
         effect(){ return loc('tech_corrupt_gem_analysis_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_corrupt_gem_analysis_result'),'info');
+                messageQueue(loc('tech_corrupt_gem_analysis_result'),'info',false,['progress','hell']);
                 global.resource.Corrupt_Gem.display = false;
                 return true;
             }
@@ -4598,7 +4612,7 @@ const techs = {
         effect(){ return loc('tech_hell_search_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_hell_search_result'),'info');
+                messageQueue(loc('tech_hell_search_result'),'info',false,['progress','hell']);
                 global.settings.portal.ruins = true;
                 global.settings.portal.gate = true;
                 global.portal['guard_post'] = { count: 0, on: 0, support: 0, s_max: 0 };
@@ -4662,7 +4676,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.portal['bireme'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                messageQueue(loc('tech_lake_threat_result'),'info');
+                messageQueue(loc('tech_lake_threat_result'),'info',false,['progress','hell']);
                 return true;
             }
             return false;
@@ -5255,7 +5269,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 global.resource.Polymer.display = true;
-                messageQueue(loc('tech_polymer_avail'),'info');
+                messageQueue(loc('tech_polymer_avail'),'info',false,['progress']);
                 defineIndustry();
                 return true;
             }
@@ -5321,7 +5335,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0].cost)){
                 global.resource.Nanoweave.display = true;
-                messageQueue(loc('tech_nanoweave_avail'),'info');
+                messageQueue(loc('tech_nanoweave_avail'),'info',false,['progress']);
                 loadFoundry();
                 return true;
             }
@@ -5347,7 +5361,7 @@ const techs = {
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 global.resource.Stanene.display = true;
-                messageQueue(loc('tech_stanene_avail'),'info');
+                messageQueue(loc('tech_stanene_avail'),'info',false,['progress']);
                 defineIndustry();
                 return true;
             }
@@ -5374,7 +5388,7 @@ const techs = {
                 global.tech[tech] = $(this)[0].grant[1];
                 global.resource.Nano_Tube.display = true;
                 global.city.factory['Nano'] = 0;
-                messageQueue(loc('tech_nano_tubes_msg'),'info');
+                messageQueue(loc('tech_nano_tubes_msg'),'info',false,['progress']);
                 defineIndustry();
                 return true;
             }
@@ -5400,7 +5414,7 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.resource.Scarletite.display = true;
                 global.portal['hell_forge'] = { count: 0, on: 0 };
-                messageQueue(loc('tech_scarletite_avail'),'info');
+                messageQueue(loc('tech_scarletite_avail'),'info',false,['progress']);
                 loadFoundry();
                 if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
                     global.tech['fusable'] = 1;
@@ -5431,7 +5445,7 @@ const techs = {
         effect: loc('tech_pillars_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_pillars_msg',[races[global.race.species].entity]),'info');
+                messageQueue(loc('tech_pillars_msg',[races[global.race.species].entity]),'info',false,['progress','hell']);
                 return true;
             }
             return false;
@@ -6890,7 +6904,7 @@ const techs = {
         effect: loc('tech_mad_effect'),
         action(){
             if (payCosts($(this)[0].cost)){
-                messageQueue(loc('tech_mad_info'),'info');
+                messageQueue(loc('tech_mad_info'),'info',false,['progress']);
                 global.civic.mad.display = true;
                 return true;
             }
@@ -8965,6 +8979,10 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.settings.showPortal = true;
                 global.settings.portal.fortress = true;
+                if (!global.settings.msgFilters.hell){
+                    global.settings.msgFilters.hell = true;
+                    document.getElementById(`msgQueueFilter-hell`).style.display = 'inline';
+                }
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
                 global.portal['fortress'] = {
@@ -9320,7 +9338,7 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.galaxy['consulate'] = { count: 0 };
                 global.settings.space.alien1 = true;
-                messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info');
+                messageQueue(loc('tech_xeno_gift_msg',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name]),'info',false,['progress']);
                 return true;
             }
             return false;
@@ -9610,7 +9628,7 @@ const techs = {
                 global.resource.Orichalcum.display = true;
                 global.galaxy['excavator'] = { count: 0, on: 0 };
                 global.galaxy['raider'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                messageQueue(loc('tech_chthonian_survey_result'),'info');
+                messageQueue(loc('tech_chthonian_survey_result'),'info',false,['progress']);
                 return true;
             }
             return false;
@@ -10149,7 +10167,7 @@ const techs = {
             if (payCosts($(this)[0].cost)){
                 global.resource.Codex.display = true;
                 global.resource.Codex.amount = 1;
-                messageQueue(loc('tech_bribe_sphinx_msg'),'info');
+                messageQueue(loc('tech_bribe_sphinx_msg'),'info',false,['progress','hell']);
                 return true;
             }
             return false;

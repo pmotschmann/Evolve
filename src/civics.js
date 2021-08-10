@@ -1303,7 +1303,7 @@ function war_campaign(gov){
     }
     
     if (global.civic.garrison.raid === 0){
-        messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
+        messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning',false,['combat']);
         return;
     }
     global.stats.attacks++;
@@ -1565,7 +1565,7 @@ function war_campaign(gov){
 
         loot = loot.slice(0,-2);
         loot = loot + '.';
-        messageQueue(loot,'warning');
+        messageQueue(loot,'warning',false,['combat']);
         
         let revive = 0;
         if (global.race['revive']){
@@ -1583,10 +1583,10 @@ function war_campaign(gov){
             global.civic.garrison.workers += revive;
         }
         if (revive > 0){
-            messageQueue(loc('civics_garrison_victorious_revive',[death,revive]),'success');
+            messageQueue(loc('civics_garrison_victorious_revive',[death,revive]),'success',false,['combat']);
         }
         else {
-            messageQueue(loc('civics_garrison_victorious',[death]),'success');
+            messageQueue(loc('civics_garrison_victorious',[death]),'success',false,['combat']);
         }
 
 
@@ -1600,7 +1600,7 @@ function war_campaign(gov){
                 if (slaves > 0){
                     global.city.slave_pen.slaves += slaves;
                     global.resource.Slave.amount = global.city.slave_pen.slaves;
-                    messageQueue(loc('civics_garrison_capture',[slaves]),'success');
+                    messageQueue(loc('civics_garrison_capture',[slaves]),'success',false,['combat']);
                 }
             }
         }
@@ -1633,10 +1633,10 @@ function war_campaign(gov){
                     global.civic[global.civic.d_job].workers += infected;
                 }
                 if (infected === 1){
-                    messageQueue(loc('civics_garrison_soldier_infected'),'special');
+                    messageQueue(loc('civics_garrison_soldier_infected'),'special',false,['combat']);
                 }
                 else {
-                    messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
+                    messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special',false,['combat']);
                 }
             }
         }
@@ -1733,10 +1733,10 @@ function war_campaign(gov){
             global.civic.garrison.workers += revive;
         }
         if (revive > 0){
-            messageQueue(loc('civics_garrison_defeat_revive',[death,revive]),'danger');
+            messageQueue(loc('civics_garrison_defeat_revive',[death,revive]),'danger',false,['combat']);
         }
         else {
-            messageQueue(loc('civics_garrison_defeat',[death]),'danger');
+            messageQueue(loc('civics_garrison_defeat',[death]),'danger',false,['combat']);
         }
     }
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.civic.garrison.crew){
