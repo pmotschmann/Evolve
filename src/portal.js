@@ -351,8 +351,8 @@ const fortressModules = {
                         if (global.city.powered && global.city.power >= $(this)[0].powered()){
                             global.portal.soul_forge.on++;
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }

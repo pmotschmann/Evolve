@@ -2533,8 +2533,8 @@ const interstellarProjects = {
                         if (global.interstellar.dyson.count >= 100){
                             drawTech();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -2579,9 +2579,9 @@ const interstellarProjects = {
                         incrementStruct('dyson_sphere','interstellar');
                         if (global.interstellar.dyson_sphere.count >= 100){
                             drawTech();
-                        }                        
+                        }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -2625,8 +2625,8 @@ const interstellarProjects = {
                         if (global.interstellar.orichalcum_sphere.count >= 100){
                             unlockAchieve('blacken_the_sun');
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -3037,8 +3037,8 @@ const interstellarProjects = {
                             global.tech['blackhole'] = 4;
                             drawTech();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -3297,8 +3297,8 @@ const interstellarProjects = {
                             deepSpace();
                             clearPopper();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -3346,8 +3346,8 @@ const interstellarProjects = {
                             deepSpace();
                             clearPopper();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -3397,8 +3397,8 @@ const interstellarProjects = {
                             deepSpace();
                             clearPopper();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -4304,8 +4304,8 @@ const galaxyProjects = {
                         global.galaxy['resort'] = { count: 0, on: 0 };
                         global.galaxy['super_freighter'] = { count: 0, on: 0, crew: 0 };
                         global.tech.xeno = 9;
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
