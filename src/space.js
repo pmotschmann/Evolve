@@ -3182,8 +3182,8 @@ const interstellarProjects = {
                             deepSpace();
                             clearPopper();
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
