@@ -3043,7 +3043,7 @@ function fastLoop(){
                     delta *= 1.1;
                 }
                 if (global.race['inflation']){
-                    delta *= 1 + (global.race.inflation / 1000);
+                    delta *= 1 + (global.race.inflation / 1250);
                 }
 
                 FactoryMoney = delta * hunger;
@@ -4948,7 +4948,7 @@ function fastLoop(){
                 cash *= 0.8;
             }
             if (global.race['inflation']){
-                cash *= 1 + (global.race.inflation / 1000);
+                cash *= 1 + (global.race.inflation / 1250);
             }
             let racVal = govActive('racketeer',1);
             if (racVal){

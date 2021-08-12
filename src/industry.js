@@ -562,7 +562,7 @@ function loadFactory(parent,bind){
                     demand *= 1.1;
                 }
                 if (global.race['inflation']){
-                    demand *= 1 + (global.race.inflation / 1000);
+                    demand *= 1 + (global.race.inflation / 1250);
                 }
                 demand = demand.toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
