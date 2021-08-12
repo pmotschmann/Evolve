@@ -1,7 +1,7 @@
-import { global, tmp_vars, save, webWorker } from './vars.js';
+import { global, tmp_vars, save, message_logs, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
 import { setupStats } from './achieve.js';
-import { vBind, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
+import { vBind, message_filters, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -820,11 +820,55 @@ export function index(){
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
-            <h2 class="is-sr-only">Message Queue</h2>
-            <div id="msgQueue" class="msgQueue sticky has-text-info" aria-live="polite"></div>
+            <div id="msgQueue" class="msgQueue sticky has-text-info" aria-live="polite">
+                <div id="msgQueueHeader">
+                    <h2 class="has-text-success">${loc('message_log')}</h2>
+                    <span role="button" class="zero has-text-advanced" @click="clearLog(m.view)">${loc('message_log_clear')}</span>
+                    <span role="button" class="zero has-text-advanced" @click="clearLog()">${loc('message_log_clear_all')}</span>
+                </div>
+                <h2 class="is-sr-only">${loc('message_filters')}</h2>
+                <div id="msgQueueFilters" class="hscroll msgQueueFilters"></div>
+                <h2 class="is-sr-only">${loc('messages')}</h2>
+                <div id="msgQueueLog" aria-live="polite"></div>
+            </div>
         </div>
         <div id="resources" class="resources sticky"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);
+    message_filters.forEach(function (filter){
+        $(`#msgQueueFilters`).append(`
+            <span id="msgQueueFilter-${filter}" class="${filter === 'all' ? 'is-active' : ''}" @click="swapFilter('${filter}')">${loc('message_log_' + filter)}</span>
+        `);
+        if (!global.settings.msgFilters[filter]){
+            document.getElementById(`msgQueueFilter-${filter}`).style.display = 'none';
+        }
+    });
+    vBind({
+        el: `#msgQueue`,
+        data: {
+            m: message_logs,
+            s: global.settings.msgFilters
+        },
+        methods: {
+            swapFilter(filter){
+                if (message_logs.view !== filter){
+                    $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
+                    $(`#msgQueueFilter-${filter}`).addClass('is-active');
+                    message_logs.view = filter;
+                    let queue = $(`#msgQueueLog`);
+                    clearElement(queue);
+                    message_logs[filter].forEach(function (msg){
+                        queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
+                    });
+                    $(`#msgQueueFilter-${filter}`).removeClass
+                }
+            },
+            clearLog(filter){
+                filter = filter ? [filter] : filter;
+                initMessageQueue(filter);
+                clearElement($(`#msgQueueLog`));
+            }
+        }
+    });
 
     // Center Column
     let mainColumn = $(`<div id="mainColumn" class="column is-three-quarters"></div>`);

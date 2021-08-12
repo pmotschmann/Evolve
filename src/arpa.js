@@ -2292,7 +2292,7 @@ export function buildArpa(pro,num,update){
                     });
                     physics();
                     renderSpace();
-                    messageQueue(loc('arpa_projects_launch_facility_msg'),'info');
+                    messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);
                 }
                 drawTech();
             }

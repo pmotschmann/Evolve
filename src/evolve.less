@@ -903,16 +903,19 @@ Misc ---------> Main template
         */
 
         // .tabs
-        .tabs a {
+        .tabs a,
+        .msgQueueFilters span {
             color: @primary-color;
         }
 
-        .tabs li.is-active a {
+        .tabs li.is-active a,
+        .msgQueueFilters span.is-active {
             border-bottom-color: @tabs-li-is-active-link-border;
             color: @tabs-li-is-active-link;
         }
 
-        .tabs a:hover {
+        .tabs a:hover,
+        .msgQueueFilters span:hover {
             border-bottom-color: @link-hover;
             color: @link-hover;
         }
@@ -1986,7 +1989,7 @@ a {
     }
 
     .queueCol {
-        div:first-child {
+        div.bldQueue:first-child {
             margin-top: 2.625rem;
         }
     }
@@ -2010,6 +2013,31 @@ a {
 
         &.right {
             height: ~"calc(100vh - 9rem)";
+        }
+    }
+        
+    #msgQueueHeader {
+        h2 {
+            border-bottom: solid .0625rem;
+        }
+        
+        span {
+            font-size: 1rem;
+            margin-left: 1rem;
+        }
+    }
+
+    #msgQueueFilters {
+        padding: .25rem 0;
+        border-bottom: solid .0625rem;
+        font-size: .875rem;
+
+        span {
+            cursor: pointer;
+        }
+
+        span:not(:last-child) {
+            margin-right: 2rem;
         }
     }
 
@@ -3887,6 +3915,8 @@ div.bigbang {
 
 .hscroll {
     overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
     scrollbar-width: thin;
 }
 

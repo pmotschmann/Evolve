@@ -52,6 +52,9 @@ export function set_alevel(a_level){
 export function set_ulevel(u_level){
     universe_level = u_level;
 }
+export var message_logs = {
+    view: 'all'
+};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -814,6 +817,25 @@ if (convertVersion(global['version']) < 101010){
     }
 }
 
+if (convertVersion(global['version']) < 101011){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('msgFilters')){
+        global.settings['msgFilters'] = {
+            all: true,
+            progress: true,
+            queue: global['queue'] && global.queue.display,
+            building_queue: global['r_queue'] && global.r_queue.display,
+            research_queue: global['r_queue'] && global.r_queue.display,
+            combat: global.civic['garrison'] && global.civic.garrison.display,
+            spy: global.tech['spy'] && global.tech.spy >= 2,
+            events: true,
+            major_events: true,
+            minor_events: true,
+            achievements: (global.stats['achieve'] && Object.keys(global.stats.achieve).length > 0) || (global.stats['feat'] && Object.keys(global.stats.feat).length > 0),
+            hell: global.settings.showPortal || global.stats.blackhole || global.stats.ascend || global.stats.descend
+        }
+    }
+}
+
 global['version'] = '1.1.10';
 delete global['beta'];
 
@@ -1004,6 +1026,23 @@ if (!global['queue']['max']){
 
 if (!global['r_queue']['max']){
     global.r_queue['max'] = 0;
+}
+
+if (!global.settings['msgFilters']){
+    global.settings['msgFilters'] = {
+        all: true,
+        progress: true,
+        queue: false,
+        building_queue: false,
+        research_queue: false,
+        combat: false,
+        spy: false,
+        events: true,
+        major_events: true,
+        minor_events: true,
+        achievements: false,
+        hell: false
+    }
 }
 
 if (!global['space']){
