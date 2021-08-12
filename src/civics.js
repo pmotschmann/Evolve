@@ -939,6 +939,9 @@ function mercCost(){
     if (global.race['brute']){
         cost *= 1 - (traits.brute.vars[0] / 100);
     }
+    if (global.race['inflation']){
+        cost *= 1 + (global.race.inflation / 500);
+    }
     return Math.round(cost);
 }
 
@@ -1145,17 +1148,7 @@ export function buildGarrison(garrison,full){
                                         return loc('civics_garrison_wounded_desc');
                                     case 'hmerc':
                                         {
-                                            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                                            if (cost > 25000){
-                                                cost = 25000;
-                                            }
-                                            if (global.civic.garrison.m_use > 0){
-                                                cost *= 1.1 ** global.civic.garrison.m_use;
-                                            }
-                                            if (global.race['brute']){
-                                                cost *= 1 - (traits.brute.vars[0] / 100);
-                                            }
-                                            cost = Math.round(cost).toLocaleString();
+                                            let cost = Math.round(mercCost()).toLocaleString();
                                             return loc('civics_garrison_hire_mercenary_cost',[cost]);
                                         }
                                     case 'defenseRating':

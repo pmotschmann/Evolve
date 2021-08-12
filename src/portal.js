@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } f
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { armyRating } from './civics.js';
+import { armyRating, govCivics } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
@@ -1795,7 +1795,7 @@ function fortressData(dt){
                 if (global.race['brute']){
                     cost = cost / 2;
                 }
-                cost = Math.round(cost).toLocaleString();
+                cost = Math.round(govCivics('m_cost')).toLocaleString();
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
     }

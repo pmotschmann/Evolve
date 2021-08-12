@@ -2090,6 +2090,9 @@ const interstellarProjects = {
                 let banks = global.race['cataclysm'] ? p_on['spaceport'] : (global.city['bank'] ? global.city.bank.count : 0);
                 let b_vault = global.race['cataclysm'] ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
+                if (global.race['inflation']){
+                    vault *= 2;
+                }
                 if (global.tech.banking >= 13){
                     if (global.galaxy['freighter']){
                         vault *= 1 + (gal_on['freighter'] * 0.03);

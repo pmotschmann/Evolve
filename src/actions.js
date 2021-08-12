@@ -4916,6 +4916,9 @@ export function casinoEffect(){
     if (global.civic.govern.type === 'socialist'){
         cash *= 0.8;
     }
+    if (global.race['inflation']){
+        cash *= 1 + (global.race.inflation / 1000);
+    }
     cash = +(cash).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
     return desc;
@@ -7400,7 +7403,7 @@ export function bank_vault(){
         vault *= 1 + (global.stats.achieve.wheelbarrow.l / 50);
     }
     if (global.race['inflation']){
-        vault *= 1 + (global.race.inflation / 150);
+        vault *= 1 + (global.race.inflation / 125);
     }
     let rskVal = govActive('risktaker',0);
     if (rskVal){

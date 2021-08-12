@@ -834,9 +834,16 @@ if (convertVersion(global['version']) < 101011){
             hell: global.settings.showPortal || global.stats.blackhole || global.stats.ascend || global.stats.descend
         }
     }
+    if (global.race.hasOwnProperty('inflation')){
+        ['supercollider','stock_exchange','launch_facility','monuments','railway','roid_eject','nexus','syphon'].forEach(function(arpa){
+            if (global.tech.hasOwnProperty(arpa)){
+                global.race.inflation += global.tech[arpa] * 10;
+            }
+        });
+    }
 }
 
-global['version'] = '1.1.10';
+global['version'] = '1.1.11';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

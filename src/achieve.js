@@ -566,7 +566,7 @@ export function checkAchievements(){
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
     }
-    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 100000000000){
+    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 250000000000){
         unlockAchieve('wheelbarrow');
     }
 

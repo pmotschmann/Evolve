@@ -1541,6 +1541,9 @@ export function tradeSellPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
         price = price * (1 + (global.tech['railway'] * boost));
     }
+    if (global.race['inflation']){
+        price *= 1 + (global.race.inflation / 500);
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -1563,6 +1566,9 @@ export function tradeBuyPrice(res){
     if (global.tech['railway']){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
         price = price * (boost ** global.tech['railway']);
+    }
+    if (global.race['inflation']){
+        price *= 1 + (global.race.inflation / 300);
     }
     price = +(price).toFixed(1);
     return price;

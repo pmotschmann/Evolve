@@ -1262,7 +1262,7 @@ function inflationAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
-                let rate = 1 + (global.race.inflation / 100);
+                let rate = 1 + (global.race.inflation / 75);
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
             }
             else {

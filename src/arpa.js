@@ -2260,7 +2260,6 @@ function addProject(parent,project){
 }
 
 export function buildArpa(pro,num,update){
-    let oNum = num;
     let completed = false;
     if (num === 100){
         num = 100 - global.arpa[pro].complete;
@@ -2293,6 +2292,9 @@ export function buildArpa(pro,num,update){
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);
+                }
+                if (global.race['inflation']){
+                    global.race.inflation += 10;
                 }
                 drawTech();
             }

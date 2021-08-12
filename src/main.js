@@ -3039,6 +3039,9 @@ function fastLoop(){
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     delta *= 1.1;
                 }
+                if (global.race['inflation']){
+                    delta *= 1 + (global.race.inflation / 1000);
+                }
 
                 FactoryMoney = delta * hunger;
 
@@ -4941,6 +4944,9 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 cash *= 0.8;
             }
+            if (global.race['inflation']){
+                cash *= 1 + (global.race.inflation / 1000);
+            }
             let racVal = govActive('racketeer',1);
             if (racVal){
                 cash *= 1 + (racVal / 100);
@@ -6284,6 +6290,9 @@ function midLoop(){
 
             if (global.interstellar['exchange']){
                 let g_vault = spatialReasoning(int_on['exchange'] * (vault * banks / 18));
+                if (global.race['inflation']){
+                    g_vault *= 2;
+                }
                 if (global.tech.banking >= 13){
                     if (global.galaxy['freighter']){
                         g_vault *= 1 + (gal_on['freighter'] * 0.03);
