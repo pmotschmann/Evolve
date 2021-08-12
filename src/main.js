@@ -7529,26 +7529,46 @@ function midLoop(){
         });
     });
 
-    let msgHeight = $(`#msgQueue`).outerHeight();
-    let buildHeight = $(`#buildQueue`).outerHeight();
-    let totHeight = $(`.leftColumn`).height();
-    
-    if (msgHeight + buildHeight > totHeight - 100){
-        msgHeight -= (msgHeight + buildHeight) - (totHeight - 100);
-        if (msgHeight < 10) {
-            msgHeight = 10;
-        }
+    {
+        let msgHeight = $(`#msgQueue`).height();
+        let buildHeight = $(`#buildQueue`).height();
+        let totHeight = $(`.leftColumn`).height();
+        
         if (msgHeight + buildHeight > totHeight - 100){
-            buildHeight -= (msgHeight + buildHeight) - (totHeight - 100);
-            if (buildHeight < 10) {
-                buildHeight = 10;
+            msgHeight -= (msgHeight + buildHeight) - (totHeight - 100);
+            if (msgHeight < 10) {
+                msgHeight = 10;
             }
-            $(`#buildQueue`).height(buildHeight);
+            if (msgHeight + buildHeight > totHeight - 100){
+                buildHeight -= (msgHeight + buildHeight) - (totHeight - 100);
+                if (buildHeight < 10) {
+                    buildHeight = 10;
+                }
+                $(`#buildQueue`).height(buildHeight);
+            }
         }
+
+        if ($(`#msgQueue`).hasClass('right')){
+            $(`#resources`).height(`calc(100vh - 5rem)`);
+            if ($(`#msgQueue`).hasClass('vscroll')){
+                $(`#msgQueue`).removeClass('vscroll');
+                $(`#msgQueue`).addClass('sticky');
+            }
+            msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
+        }
+        else {
+            $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
+            if ($(`#msgQueue`).hasClass('sticky')){
+                $(`#msgQueue`).removeClass('sticky');
+                $(`#msgQueue`).addClass('vscroll');
+                msgHeight = 100;
+            }
+        }
+
         $(`#msgQueue`).height(msgHeight);
+        global.settings.msgQueueHeight = msgHeight;
+        global.settings.buildQueueHeight = buildHeight;
     }
-    global.settings.msgQueueHeight = msgHeight;
-    global.settings.buildQueueHeight = buildHeight;
 
     if ($(`#mechList`).length > 0){
         $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
