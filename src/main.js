@@ -126,6 +126,9 @@ if (global.lastMsg){
     });
 }
 
+$(`#msgQueue`).height(global.settings.msgQueueHeight);
+$(`#buildQueue`).height(global.settings.buildQueueHeight);
+
 if (global.queue.rename === true){
     updateQueueNames(true);
     global.queue.rename = false;
@@ -7374,8 +7377,8 @@ function midLoop(){
                 let label = global.queue.queue[idx].label;
                 let id = global.queue.queue[idx].id;
                 if (buildArpa(global.queue.queue[idx].type,100,true)){
-                    messageQueue(loc('build_success',[label]),'success');
-                    if (id !== 'arpalaunch_facility',false,['queue','building_queue']) {
+                    messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
+                    if (id !== 'arpalaunch_facility') {
                         if (global.queue.queue[idx].q > 1){
                             global.queue.queue[idx].q--;
                         }
@@ -7526,12 +7529,26 @@ function midLoop(){
         });
     });
 
-    if ($(`#buildQueue.right`).length > 0){
-        $(`#msgQueue.right`).css('height',`calc(100vh - 6.5rem - ${$(`#buildQueue.right`).height()}px)`);
+    let msgHeight = $(`#msgQueue`).outerHeight();
+    let buildHeight = $(`#buildQueue`).outerHeight();
+    let totHeight = $(`.leftColumn`).height();
+    
+    if (msgHeight + buildHeight > totHeight - 100){
+        msgHeight -= (msgHeight + buildHeight) - (totHeight - 100);
+        if (msgHeight < 10) {
+            msgHeight = 10;
+        }
+        if (msgHeight + buildHeight > totHeight - 100){
+            buildHeight -= (msgHeight + buildHeight) - (totHeight - 100);
+            if (buildHeight < 10) {
+                buildHeight = 10;
+            }
+            $(`#buildQueue`).height(buildHeight);
+        }
+        $(`#msgQueue`).height(msgHeight);
     }
-    else {
-        $(`#msgQueue`).css('height',`5rem`);
-    }
+    global.settings.msgQueueHeight = msgHeight;
+    global.settings.buildQueueHeight = buildHeight;
 
     if ($(`#mechList`).length > 0){
         $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);

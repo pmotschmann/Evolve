@@ -1353,6 +1353,7 @@ Misc ---------> Main template
 
         // -webkit-scrollbar
         .hscroll::-webkit-scrollbar-track,
+        .vscroll::-webkit-scrollbar-track,
         .sticky::-webkit-scrollbar-track,
         .resTabs>section::-webkit-scrollbar-track,
         .bldQueue::-webkit-scrollbar-track {
@@ -1361,6 +1362,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-background;
         }
 
+        .vscroll::-webkit-scrollbar,
         .sticky::-webkit-scrollbar,
         .resTabs>section::-webkit-scrollbar,
         .bldQueue::-webkit-scrollbar {
@@ -1373,6 +1375,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-background;
         }
 
+        .vscroll::-webkit-scrollbar-thumb,
         .hscroll::-webkit-scrollbar-thumb,
         .sticky::-webkit-scrollbar-thumb,
         .resTabs>section::-webkit-scrollbar-thumb,
@@ -1380,6 +1383,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-thumb-background;
         }
 
+        .vscroll,
         .hscroll,
         .sticky,
         .resTabs>section,
@@ -1996,7 +2000,8 @@ a {
 
     .bldQueue,
     .msgQueue {
-        height: 5rem;
+        resize: vertical;
+        height: 7rem;
         border-top: solid .0625rem;
         border-bottom: solid .0625rem;
         overflow-y: auto;
@@ -3911,6 +3916,14 @@ div.bigbang {
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: thin;
+}
+
+.vscroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    top: 1rem;
+    bottom: 0;
 }
 
 .hscroll {

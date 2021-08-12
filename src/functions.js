@@ -319,7 +319,7 @@ export function calcRQueueMax(){
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
+    $('#buildQueue').append($(`<h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);

@@ -820,7 +820,7 @@ export function index(){
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
-            <div id="msgQueue" class="msgQueue sticky has-text-info" aria-live="polite">
+            <div id="msgQueue" class="msgQueue vscroll has-text-info" aria-live="polite">
                 <div id="msgQueueHeader">
                     <h2 class="has-text-success">${loc('message_log')}</h2>
                     <span role="button" class="zero has-text-advanced" @click="clearLog(m.view)">${loc('message_log_clear')}</span>
@@ -832,7 +832,7 @@ export function index(){
                 <div id="msgQueueLog" aria-live="polite"></div>
             </div>
         </div>
-        <div id="resources" class="resources sticky"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
+        <div id="resources" class="resources vscroll"><h2 class="is-sr-only">${loc('tab_resources')}</h2></div>
     </div>`);
     message_filters.forEach(function (filter){
         $(`#msgQueueFilters`).append(`
