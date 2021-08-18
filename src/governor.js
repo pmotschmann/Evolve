@@ -322,7 +322,8 @@ function drawnGovernOffice(){
     let options = $(`<div class="options"><div>`);
     govern.append(options);
 
-    {
+    //Configs
+    { // Crate/Container Construction
         if (!global.race.governor.config.hasOwnProperty('storage')){
             global.race.governor.config['storage'] = {
                 crt: 1000,
@@ -342,7 +343,7 @@ function drawnGovernOffice(){
         storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[cnt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.cnt" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Crate/Container Management
         if (!global.race.governor.config.hasOwnProperty('bal_storage')){
             global.race.governor.config['bal_storage'] = {};
         }
@@ -375,7 +376,7 @@ function drawnGovernOffice(){
         });
     }
 
-    {
+    { // Mercenary Recruitment
         if (!global.race.governor.config.hasOwnProperty('merc')){
             global.race.governor.config['merc'] = {
                 buffer: 1,
@@ -392,7 +393,7 @@ function drawnGovernOffice(){
         merc.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.merc.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Spy Recruitment
         if (!global.race.governor.config.hasOwnProperty('spy')){
             global.race.governor.config['spy'] = {
                 reserve: 100
@@ -407,7 +408,7 @@ function drawnGovernOffice(){
         spy.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.spy.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Tax-Morale Balance
         if (!global.race.governor.config.hasOwnProperty('tax')){
             global.race.governor.config['tax'] = {
                 min: 20
@@ -422,7 +423,7 @@ function drawnGovernOffice(){
         tax.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Slave Replenishment
         if (!global.race.governor.config.hasOwnProperty('slave')){
             global.race.governor.config['slave'] = {
                 reserve: 100
@@ -437,7 +438,7 @@ function drawnGovernOffice(){
         slave.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.slave.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Mass Ejector Optimizer
         if (!global.race.governor.config.hasOwnProperty('trash')){
             global.race.governor.config['trash'] = {};
         }
@@ -782,7 +783,7 @@ export const gov_tasks = {
     spy: { // Spy Recruiter
         name: loc(`gov_task_spy`),
         req(){
-            return global.tech['spy'] && !global.tech['world_control'] ? true : false;
+            return global.tech['spy'] && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
@@ -799,7 +800,7 @@ export const gov_tasks = {
     spyop: { // Spy Operator
         name: loc(`gov_task_spyop`),
         req(){
-            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] ? true : false;
+            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){

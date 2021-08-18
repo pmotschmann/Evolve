@@ -433,7 +433,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 inputs.floor.val = global.portal['spire'] ? global.portal.spire.count - 1 : 0;
                 inputs.genes.val = alevel() - 1;
                 let uni = global.race.universe;
-                if (!(prestigeType === 'dark' && uni === 'magic') && resetType !== 'vacuum'){
+                if (!(prestigeType === 'dark' && uni === 'magic') && resetType !== 'vacuum' && uni !== 'bigbang'){
                     inputs.uni.val = uni;
                     if (uni === 'magic'){
                         if (inputs.reset.val === 'bigbang'){
@@ -1101,9 +1101,11 @@ function darkBonusCalc(info){
             importInputs(){
                 inputs.dark.val = global.race.Dark.count;
                 inputs.harmony.val = global.race.Harmony.count;
-                show[inputs.uni.val].vis = false;
-                inputs.uni.val = global.race.universe;
-                show[inputs.uni.val].vis = true;
+                if (global.race.universe !== 'bigbang'){
+                    show[inputs.uni.val].vis = false;
+                    inputs.uni.val = global.race.universe;
+                    show[inputs.uni.val].vis = true;
+                }
             }
         },
         filters: {
