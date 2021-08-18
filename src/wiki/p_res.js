@@ -99,7 +99,8 @@ export function pResPage(content){
     sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
 }
 
-export function createCalcSection(info,id,type){
+export function createCalcSection(info,id,type,insert){
+    insert = insert || loc(`wiki_calc_insert_` + type);
     let calc = $(`<div></div>`);
     info.append(calc);
     calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info calcReveal" @click="show()">{{ vis | label }}</span>`);
@@ -126,7 +127,7 @@ export function createCalcSection(info,id,type){
         },
         filters: {
             label(vis){
-                return vis ? loc(`wiki_calc_hide`,[loc(`wiki_calc_insert_` + type)]) : loc(`wiki_calc_show`,[loc(`wiki_calc_insert_` + type)]);
+                return vis ? loc(`wiki_calc_hide`,[insert]) : loc(`wiki_calc_show`,[insert]);
             }
         }
     });
