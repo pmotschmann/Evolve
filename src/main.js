@@ -5153,10 +5153,11 @@ function fastLoop(){
         if (global.race['beast']){
             rate *= 1 + (traits.beast.vars[2] / 100);
         }
-        global.civic.garrison.progress += rate * time_multiplier;
+        global.civic.garrison.rate = rate * time_multiplier;
         if (global.race['brute']){
-            global.civic.garrison.progress += traits.brute.vars[1] / 40 * time_multiplier;
+            global.civic.garrison.rate += traits.brute.vars[1] / 40 * time_multiplier;
         }
+        global.civic.garrison.progress += global.civic.garrison.rate;
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
             global.civic.garrison.workers++;

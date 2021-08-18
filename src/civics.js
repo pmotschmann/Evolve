@@ -1,6 +1,6 @@
 import { global, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -125,6 +125,7 @@ export function commisionGarrison(){
         global.civic['garrison'] = {
             display: false,
             disabled: false,
+            rate: 0,
             progress: 0,
             tactic: 0,
             workers: 0,
@@ -987,7 +988,7 @@ export function buildGarrison(garrison,full){
     barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
     
     if (full){
-        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
@@ -1107,6 +1108,9 @@ export function buildGarrison(garrison,full){
                     return egg;
                 }
                 return eventActive('fool',2021) ? garrisonSize() - w : w;
+            },
+            trainTime(r,p){
+                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
             }
         }
     });
