@@ -239,7 +239,10 @@ export function initMessageQueue(filters){
 
 export function messageQueue(msg,color,dnr,tags){
     tags = tags || [];
-    tags.push('all');
+    if (!tags.includes('all')){
+        tags.push('all');
+    }
+    
     color = color || 'warning';
     
     if (tags.includes(message_logs.view)){
@@ -257,7 +260,6 @@ export function messageQueue(msg,color,dnr,tags){
     });
     
     if (!dnr){
-        tags.pop();
         if (!global.lastMsg){
             global.lastMsg = [];
         }

@@ -8352,11 +8352,11 @@ const techs = {
                     global.civic.foreign[`gov${i}`].act = 'none';
                 }
                 if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                    for (let i=0; i<global.race.governor.tasks.length; i++){
-                        if (global.race.governor.tasks[`t${i}`] === 'spy' || global.race.governor.tasks[`t${i}`] === 'spyop'){
-                            global.race.governor.tasks[`t${i}`] = 'none';
+                    Object.keys(global.race.governor.tasks).forEach(function (task){
+                        if (global.race.governor.tasks[task] === 'spy' || global.race.governor.tasks[task] === 'spyop'){
+                            global.race.governor.tasks[task] = 'none';
                         }
-                    }
+                    });
                 }
                 delete global.race['banana'];
                 return true;

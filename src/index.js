@@ -4,6 +4,7 @@ import { setupStats } from './achieve.js';
 import { vBind, message_filters, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
+import { clearSpyopDrag } from './governor.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
@@ -279,6 +280,7 @@ export function loadTab(tab){
         clearGrids();
         clearMechDrag();
         clearGeneticsDrag();
+        clearSpyopDrag();
         clearElement($(`#mTabCivil`));
         clearElement($(`#mTabCivic`));
         clearElement($(`#mTabResearch`));
@@ -423,6 +425,7 @@ export function loadTab(tab){
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearGrids();
+                                clearSpyopDrag();
                                 clearMechDrag();
                                 clearElement($(`#civic`));
                                 clearElement($(`#industry`));

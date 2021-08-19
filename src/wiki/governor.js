@@ -140,22 +140,24 @@ export function governPage(content){
 
         {
             let task = 'spyop';
-            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 7, break: [2,3,4,5,6,7], h_level: 3,
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 8, break: [2,3,4,5,6,7,8], h_level: 3,
                 text: {
                     1: `wiki_governor_task_${task}1`,
                     2: `wiki_governor_task_${task}2`,
                     3: `wiki_governor_task_${task}3`,
                     4: `wiki_governor_task_${task}3`,
                     5: `wiki_governor_task_${task}4`,
-                    6: `wiki_governor_task_unlock`,
-                    7: `wiki_governor_task_disabled`
+                    6: `wiki_governor_task_${task}5`,
+                    7: `wiki_governor_task_unlock`,
+                    8: `wiki_governor_task_disabled`
                 },
                 para_data: {
                     2: [1,loc(`civics_spy_sabotage`)],
                     3: [2,loc(`civics_spy_influence`)],
                     4: [3,loc(`civics_spy_incite`)],
-                    6: [loc(`tech_spy`)],
-                    7: [loc(`tech_unification`)],
+                    6: [loc(`civics_spy_sabotage`),loc(`civics_spy_incite`),loc(`civics_spy_influence`)],
+                    7: [loc(`tech_spy`)],
+                    8: [loc(`tech_unification`)],
                 },
                 data_link: {
                     6: ['wiki.html#civilized-tech-spy'],

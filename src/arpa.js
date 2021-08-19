@@ -712,11 +712,13 @@ export const genePool = {
         cost: { Plasmid(){ return 160; } },
         action(){
             if (payCrispr('architect')){
-                calcQueueMax();
-                calcRQueueMax();
                 return true;
             }
             return false;
+        },
+        post(){
+            calcQueueMax();
+            calcRQueueMax();
         }
     },
     governance: {
