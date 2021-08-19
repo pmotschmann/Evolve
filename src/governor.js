@@ -2,7 +2,7 @@ import { global, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
-import { govCivics } from './civics.js';
+import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
 import { loc } from './locale.js';
@@ -282,18 +282,45 @@ export function defineGovernor(){
     }
 }
 
-function drawnGovernOffice(){
+export function clearSpyopDrag(){
+    Object.keys(global.civic.foreign).forEach(function (gov){
+        let el = $(`#spyopConfig${gov}`)[0];
+        if (el){
+            let sort = Sortable.get(el);
+            if (sort){
+                sort.destroy();
+            }
+        }
+    });
+}
+
+function dragSpyopList(gov){
+    let el = $(`#spyopConfig${gov}`)[0];
+    if (el){
+        Sortable.create(el,{
+            onEnd(e){
+                let order = global.race.governor.config.spyop[gov];
+                order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+                global.race.governor.config.spyop[gov] = order;
+                defineGovernor();
+            }
+        });
+    }
+}
+
+export function drawnGovernOffice(){
+    clearSpyopDrag();
     let govern = $(`<div id="govOffice" class="govOffice"></div>`);
     $('#r_govern1').append(govern);
 
     let govHeader = $(`<div class="head"></div>`);
     govern.append(govHeader);
 
-    let govTitle = $(`<div></div>`);
-    govTitle.append($(`<div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
-    govTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
+    let governorTitle = $(`<div></div>`);
+    governorTitle.append($(`<div class="has-text-caution">${loc(`governor_office`,[global.race.governor.g.n])}</div>`));
+    governorTitle.append($(`<div><span class="has-text-warning">${loc(`governor_background`)}:</span> <span class="bg">${gmen[global.race.governor.g.bg].name}</span></div>`));
 
-    govHeader.append(govTitle);
+    govHeader.append(governorTitle);
     govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
 
     let cnt = [0,1,2];
@@ -322,7 +349,8 @@ function drawnGovernOffice(){
     let options = $(`<div class="options"><div>`);
     govern.append(options);
 
-    {
+    //Configs
+    { // Crate/Container Construction
         if (!global.race.governor.config.hasOwnProperty('storage')){
             global.race.governor.config['storage'] = {
                 crt: 1000,
@@ -342,7 +370,7 @@ function drawnGovernOffice(){
         storage.append($(`<b-field>${loc(`gov_task_storage_reserve`,[global.resource[cnt_mat].name])}<b-numberinput min="0" :max="Number.MAX_SAFE_INTEGER" v-model="c.storage.cnt" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Crate/Container Management
         if (!global.race.governor.config.hasOwnProperty('bal_storage')){
             global.race.governor.config['bal_storage'] = {};
         }
@@ -375,7 +403,7 @@ function drawnGovernOffice(){
         });
     }
 
-    {
+    { // Mercenary Recruitment
         if (!global.race.governor.config.hasOwnProperty('merc')){
             global.race.governor.config['merc'] = {
                 buffer: 1,
@@ -392,7 +420,7 @@ function drawnGovernOffice(){
         merc.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.merc.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Spy Recruitment
         if (!global.race.governor.config.hasOwnProperty('spy')){
             global.race.governor.config['spy'] = {
                 reserve: 100
@@ -407,7 +435,33 @@ function drawnGovernOffice(){
         spy.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.spy.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Spy Operator
+        if (!global.race.governor.config.hasOwnProperty('spyop')){
+            global.race.governor.config['spyop'] = {};
+            Object.keys(global.civic.foreign).forEach(function (gov){
+                global.race.governor.config.spyop[gov] = ['sabotage','incite','influence'];
+            });
+        }
+        
+        let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning">${loc(`gov_task_spyop`)}</div></div>`);
+        options.append(contain);
+        Object.keys(global.civic.foreign).forEach(function (gov){
+            let spyop = $(`<div></div>`);
+            contain.append(spyop);
+            spyop.append(`
+                <h2 class="has-text-caution">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
+                <ul id="spyopConfig${gov}" class="spyopConfig"></ul>
+            `);
+            let missions = $(`#spyopConfig${gov}`);
+            global.race.governor.config.spyop[gov].forEach(function (mission){
+                missions.append(`
+                    <li>${loc('civics_spy_' + mission)}</li>
+                `);
+            });
+        });
+    }
+
+    { // Tax-Morale Balance
         if (!global.race.governor.config.hasOwnProperty('tax')){
             global.race.governor.config['tax'] = {
                 min: 20
@@ -422,7 +476,7 @@ function drawnGovernOffice(){
         tax.append($(`<b-field>${loc(`gov_task_tax_min`)}<b-numberinput min="0" :max="20" v-model="c.tax.min" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Slave Replenishment
         if (!global.race.governor.config.hasOwnProperty('slave')){
             global.race.governor.config['slave'] = {
                 reserve: 100
@@ -437,7 +491,7 @@ function drawnGovernOffice(){
         slave.append($(`<b-field>${loc(`gov_task_merc_reserve`)}<b-numberinput min="0" :max="100" v-model="c.slave.reserve" :controls="false"></b-numberinput></b-field>`));
     }
 
-    {
+    { // Mass Ejector Optimizer
         if (!global.race.governor.config.hasOwnProperty('trash')){
             global.race.governor.config['trash'] = {};
         }
@@ -523,6 +577,10 @@ function drawnGovernOffice(){
     },
     {
         elm: `#govOffice .bg`,
+    });
+    
+    Object.keys(global.civic.foreign).forEach(function (gov){
+        dragSpyopList(gov);
     });
 }
 
@@ -782,7 +840,7 @@ export const gov_tasks = {
     spy: { // Spy Recruiter
         name: loc(`gov_task_spy`),
         req(){
-            return global.tech['spy'] && !global.tech['world_control'] ? true : false;
+            return global.tech['spy'] && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
@@ -799,21 +857,35 @@ export const gov_tasks = {
     spyop: { // Spy Operator
         name: loc(`gov_task_spyop`),
         req(){
-            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] ? true : false;
+            return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
                 [0,1,2].forEach(function(gov){
                     if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
-                        if (global.civic.foreign[`gov${gov}`].mil > 50){
-                            govCivics('s_sabotage',gov)
-                        }
-                        else if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2){
-                            govCivics('s_incite',gov)
-                        }
-                        else if (global.civic.foreign[`gov${gov}`].hstl > 0 && global.civic.foreign[`gov${gov}`].spy > 1){
-                            govCivics('s_influence',gov)
-                        }
+                        global.race.governor.config.spyop[`gov${gov}`].every(function (mission){
+                            switch (mission){
+                                case 'influence':
+                                    if (global.civic.foreign[`gov${gov}`].hstl > 0 && global.civic.foreign[`gov${gov}`].spy > 1){
+                                        govCivics('s_influence',gov);
+                                        return false;
+                                    }
+                                    break;
+                                case 'sabotage':
+                                    if (global.civic.foreign[`gov${gov}`].mil > 50){
+                                        govCivics('s_sabotage',gov);
+                                        return false;
+                                    }
+                                    break;
+                                case 'incite':
+                                    if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2){
+                                        govCivics('s_incite',gov);
+                                        return false;
+                                    }
+                                    break;
+                            }
+                            return true;
+                        });
                     }
                 });
             }

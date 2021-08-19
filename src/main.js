@@ -1,7 +1,7 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, moon_on, red_on, belt_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -119,11 +119,16 @@ else {
     $('#topBar .version > a').html('v'+global.version);
 }
 
+initMessageQueue();
+
 if (global.lastMsg){
     global.lastMsg.reverse().forEach(function(msg){
-        messageQueue(msg.m, msg.c, true);
+        messageQueue(msg.m, msg.c, true, msg.t);
     });
 }
+
+$(`#msgQueue`).height(global.settings.msgQueueHeight);
+$(`#buildQueue`).height(global.settings.buildQueueHeight);
 
 if (global.queue.rename === true){
     updateQueueNames(true);
@@ -142,7 +147,7 @@ if (global.r_queue.display){
 mainVue();
 
 if (global['new']){
-    messageQueue(loc('new'), 'warning');
+    messageQueue(loc('new'), 'warning',false,['progress']);
     global['new'] = false;
 }
 if (global.city['mass_driver']){
@@ -3019,6 +3024,9 @@ function fastLoop(){
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     delta *= 1.1;
                 }
+                if (global.race['inflation']){
+                    delta *= 1 + (global.race.inflation / 1250);
+                }
 
                 FactoryMoney = delta * hunger;
 
@@ -4895,6 +4903,9 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 cash *= 0.8;
             }
+            if (global.race['inflation']){
+                cash *= 1 + (global.race.inflation / 1250);
+            }
             let racVal = govActive('racketeer',1);
             if (racVal){
                 cash *= 1 + (racVal / 100);
@@ -5098,10 +5109,11 @@ function fastLoop(){
         if (global.race['beast']){
             rate *= 1 + (traits.beast.vars[2] / 100);
         }
-        global.civic.garrison.progress += rate * time_multiplier;
+        global.civic.garrison.rate = rate * time_multiplier;
         if (global.race['brute']){
-            global.civic.garrison.progress += traits.brute.vars[1] / 40 * time_multiplier;
+            global.civic.garrison.rate += traits.brute.vars[1] / 40 * time_multiplier;
         }
+        global.civic.garrison.progress += global.civic.garrison.rate;
         if (global.civic.garrison.progress >= 100){
             global.civic.garrison.progress = 0;
             global.civic.garrison.workers++;
@@ -5486,7 +5498,7 @@ function midLoop(){
                         global.civic.foreign[`gov${i}`].occ = false;
                         lCaps['garrison'] += occ_amount;
                         global.civic.garrison.workers += occ_amount;
-                        messageQueue(loc('civics_garrison_autodeoccupy_desc',[govTitle(i)]),'danger');
+                        messageQueue(loc('civics_garrison_autodeoccupy_desc',[govTitle(i)]),'danger',false,['spy']);
                     }
                 }
             }
@@ -6238,6 +6250,9 @@ function midLoop(){
 
             if (global.interstellar['exchange']){
                 let g_vault = spatialReasoning(int_on['exchange'] * (vault * banks / 18));
+                if (global.race['inflation']){
+                    g_vault *= 2;
+                }
                 if (global.tech.banking >= 13){
                     if (global.galaxy['freighter']){
                         g_vault *= 1 + (gal_on['freighter'] * 0.03);
@@ -6686,7 +6701,7 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
                                 }
-                                messageQueue(loc('civics_spy_influence_success',[govTitle(i),covert]),'success');
+                                messageQueue(loc('civics_spy_influence_success',[govTitle(i),covert]),'success',false,['spy']);
                             }
                             break;
                         case 'sabotage':
@@ -6699,7 +6714,7 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
                                 }
-                                messageQueue(loc('civics_spy_sabotage_success',[govTitle(i),covert]),'success');
+                                messageQueue(loc('civics_spy_sabotage_success',[govTitle(i),covert]),'success',false,['spy']);
                             }
                             break;
                         case 'incite':
@@ -6712,14 +6727,14 @@ function midLoop(){
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;
                                 }
-                                messageQueue(loc('civics_spy_incite_success',[govTitle(i),covert]),'success');
+                                messageQueue(loc('civics_spy_incite_success',[govTitle(i),covert]),'success',false,['spy']);
                             }
                             break;
                         case 'annex':
                             if (i >= 3){ break; }
                             let drawTechs = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].anx = true;
-                            messageQueue(loc('civics_spy_annex_success',[govTitle(i)]),'success');
+                            messageQueue(loc('civics_spy_annex_success',[govTitle(i)]),'success',false,['spy']);
                             if (drawTechs){
                                 drawTech();
                             }
@@ -6728,7 +6743,7 @@ function midLoop(){
                             if (i >= 3){ break; }
                             let drawTechsAlt = !global.tech['gov_fed'] && !checkControlling();
                             global.civic.foreign[`gov${i}`].buy = true;
-                            messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success');
+                            messageQueue(loc('civics_spy_purchase_success',[govTitle(i)]),'success',false,['spy']);
                             if (drawTechsAlt){
                                 drawTech();
                             }
@@ -6905,7 +6920,7 @@ function midLoop(){
                 global.arpa.sequence.progress = 0;
                 global.arpa.sequence.time = global.arpa.sequence.max;
                 if (global.tech['genetics'] === 2){
-                    messageQueue(loc('genome',[flib('name')]),'success');
+                    messageQueue(loc('genome',[flib('name')]),'success',false,['progress']);
                     global.tech['genetics'] = 3;
                 }
                 else {
@@ -6939,7 +6954,7 @@ function midLoop(){
                         global.stats.plasmid += plasma;
                         global.race.Plasmid.count += plasma;
                     }
-                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success');
+                    messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success',false,['progress']);
                 }
                 arpa('Genetics');
                 drawTech();
@@ -6991,7 +7006,7 @@ function midLoop(){
                 global.resource.Elerium.display = true;
                 modRes('Elerium',1);
                 drawTech();
-                messageQueue(loc('discover_elerium'),'info');
+                messageQueue(loc('discover_elerium'),'info',false,['progress']);
             }
         }
 
@@ -7003,7 +7018,7 @@ function midLoop(){
             if (Math.rand(0,100) <= p_on['outpost']){
                 global.space['oil_extractor'] = { count: 0, on: 0 };
                 global.tech['gas_moon'] = 2;
-                messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]),'info');
+                messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]),'info',false,['progress']);
                 renderSpace();
             }
         }
@@ -7068,7 +7083,7 @@ function midLoop(){
 
                 messageQueue(
                     `${loc('portal_spire_conquest',[loc(`portal_mech_boss_${global.portal.spire.boss}`),global.portal.spire.count])} ${loc(stones === 1 ? 'portal_spire_conquest_stone' : 'portal_spire_conquest_stones',[stones])}`
-                ,'info');
+                ,'info',false,['progress','hell']);
 
                 global.portal.spire.count++;
                 if (global.portal.spire.count > 10){
@@ -7162,7 +7177,7 @@ function midLoop(){
             }
             if (idx >= 0 && c_action){
                 if (c_action.action()){
-                    messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success');
+                    messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success',false,['queue','research_queue']);
                     gainTech(global.r_queue.queue[idx].type);
                     if (c_action['post']) {
                         c_action.post();
@@ -7322,7 +7337,7 @@ function midLoop(){
                 let label = global.queue.queue[idx].label;
                 let id = global.queue.queue[idx].id;
                 if (buildArpa(global.queue.queue[idx].type,100,true)){
-                    messageQueue(loc('build_success',[label]),'success');
+                    messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
                     if (id !== 'arpalaunch_facility') {
                         if (global.queue.queue[idx].q > 1){
                             global.queue.queue[idx].q--;
@@ -7344,11 +7359,11 @@ function midLoop(){
                         triggerd = true;
                         if (c_action['queue_complete']){
                             if (c_action.queue_complete() <= 0){
-                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
                             }
                         }
                         else {
-                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success');
+                            messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
                         }
                         if (global.queue.queue[idx].q > 1){
                             global.queue.queue[idx].q--;
@@ -7474,11 +7489,57 @@ function midLoop(){
         });
     });
 
-    if ($(`#buildQueue.right`).length > 0){
-        $(`#msgQueue.right`).css('height',`calc(100vh - 6.5rem - ${$(`#buildQueue.right`).height()}px)`);
-    }
-    else {
-        $(`#msgQueue`).css('height',`5rem`);
+    {
+        let msgHeight = $(`#msgQueue`).height();
+        let buildHeight = $(`#buildQueue`).height();
+        let totHeight = $(`.leftColumn`).height();
+        let rem = $(`#topBar`).height();
+        let min = rem * 5;
+        let max = totHeight - (5 * rem);
+        
+        if (msgHeight < min) {
+            if (buildHeight > min){
+                buildHeight -= (min - msgHeight);
+            }
+            msgHeight = min;
+        }
+        if (buildHeight < min) {
+            buildHeight = min;
+        }
+        if (msgHeight + buildHeight > max){
+            msgHeight -= (msgHeight + buildHeight) - max;
+            if (msgHeight < rem) {
+                msgHeight = rem;
+            }
+            if (msgHeight + buildHeight > max){
+                buildHeight -= (msgHeight + buildHeight) - max;
+                if (buildHeight < rem) {
+                    buildHeight = rem;
+                }
+            }
+        }
+
+        if ($(`#msgQueue`).hasClass('right')){
+            $(`#resources`).height(`calc(100vh - 5rem)`);
+            if ($(`#msgQueue`).hasClass('vscroll')){
+                $(`#msgQueue`).removeClass('vscroll');
+                $(`#msgQueue`).addClass('sticky');
+            }
+            msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
+        }
+        else {
+            $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
+            if ($(`#msgQueue`).hasClass('sticky')){
+                $(`#msgQueue`).removeClass('sticky');
+                $(`#msgQueue`).addClass('vscroll');
+                msgHeight = 100;
+            }
+        }
+
+        $(`#msgQueue`).height(msgHeight);
+        $(`#buildQueue`).height(buildHeight);
+        global.settings.msgQueueHeight = msgHeight;
+        global.settings.buildQueueHeight = buildHeight;
     }
 
     if ($(`#mechList`).length > 0){
@@ -7857,28 +7918,28 @@ function longLoop(){
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration1',[flib('name'),death_clock]),'danger');
+                messageQueue(loc('deterioration1',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 1 && deterioration < 20000000){
                 global.race.deterioration = 2;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration2',[flib('name'),death_clock]),'danger');
+                messageQueue(loc('deterioration2',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 2 && deterioration < 5000000){
                 global.race.deterioration = 3;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration3',[flib('name'),death_clock]),'danger');
+                messageQueue(loc('deterioration3',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 3 && deterioration < 1000000){
                 global.race.deterioration = 4;
                 let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
-                messageQueue(loc('deterioration4',[flib('name'),death_clock]),'danger');
+                messageQueue(loc('deterioration4',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 4 && deterioration <= 0){
                 global.race.deterioration = 5;
                 global.race['decayed'] = global.stats.days;
                 global.tech['decay'] = 1;
-                messageQueue(loc('deterioration5',[flib('name')]),'danger');
+                messageQueue(loc('deterioration5',[flib('name')]),'danger',false,['progress']);
                 drawTech();
             }
         }
@@ -7902,7 +7963,7 @@ function longLoop(){
 
         if (!global.tech['genesis'] && global.race.deterioration >= 1 && global.tech['high_tech'] && global.tech['high_tech'] >= 10){
             global.tech['genesis'] = 1;
-            messageQueue(loc('genesis'),'special');
+            messageQueue(loc('genesis'),'special',false,['progress']);
             drawTech();
         }
 
@@ -7916,7 +7977,7 @@ function longLoop(){
         if (global.tech['xeno'] && global.tech['xeno'] >= 5 && !global.tech['piracy']){
             if (Math.rand(0,5) === 0){
                 global.tech['piracy'] = 1;
-                messageQueue(loc('galaxy_piracy_msg',[races[global.galaxy.alien2.id].name]),'info');
+                messageQueue(loc('galaxy_piracy_msg',[races[global.galaxy.alien2.id].name]),'info',false,['progress']);
                 renderSpace();
             }
         }
@@ -7950,14 +8011,14 @@ function longLoop(){
         if (global.race['infiltrator']){
             let tech_source = global.tech['world_control'] ? `trait_infiltrator_steal_alt` : `trait_infiltrator_steal`;
             if (global.resource.Knowledge.max >= 4000 && !global.race['steelen'] && global.tech['smelting'] && global.tech.smelting === 1){
-                messageQueue(loc(tech_source,[loc('tech_steel')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_steel')]),'info',false,['progress']);
                 global.resource.Steel.display = true;
                 global.tech.smelting = 2;
                 defineIndustry();
                 drawTech();
             }
             if (global.resource.Knowledge.max >= 10000 && global.tech['high_tech'] && global.tech.high_tech === 1){
-                messageQueue(loc(tech_source,[loc('tech_electricity')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_electricity')]),'info',false,['progress']);
                 global.tech.high_tech = 2;
                 global.city['power'] = 0;
                 global.city['powered'] = true;
@@ -7971,7 +8032,7 @@ function longLoop(){
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 40000 && global.tech['high_tech'] && global.tech.high_tech === 3 && global.tech['titanium']){
-                messageQueue(loc(tech_source,[loc('tech_electronics')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_electronics')]),'info',false,['progress']);
                 global.tech.high_tech = 4;
                 if (global.race['terrifying']){
                     global.tech['gambling'] = 1;
@@ -7982,7 +8043,7 @@ function longLoop(){
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 72000 && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
-                messageQueue(loc(tech_source,[loc('tech_fission')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_fission')]),'info',false,['progress']);
                 global.tech.high_tech = 5;
                 global.city['fission_power'] = {
                     count: 0,
@@ -7992,32 +8053,32 @@ function longLoop(){
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 105000 && global.tech['high_tech'] && global.tech.high_tech === 6){
-                messageQueue(loc(tech_source,[loc('tech_rocketry')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_rocketry')]),'info',false,['progress']);
                 global.tech.high_tech = 7;
                 arpa('Physics');
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 310000 && global.tech['high_tech'] && global.tech.high_tech === 9){
-                messageQueue(loc(tech_source,[loc('tech_artificial_intelligence')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_artificial_intelligence')]),'info',false,['progress']);
                 global.tech.high_tech = 10;
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 420000 && global.tech['high_tech'] && global.tech.high_tech === 10 && global.tech['nano']){
-                messageQueue(loc(tech_source,[loc('tech_quantum_computing')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_quantum_computing')]),'info',false,['progress']);
                 global.tech.high_tech = 11;
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 580000 && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['infernite'] && global.tech['stanene'] && global.tech['alpha'] && global.tech['alpha'] >= 2){
-                messageQueue(loc(tech_source,[loc('tech_virtual_reality')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_virtual_reality')]),'info',false,['progress']);
                 global.tech.high_tech = 12;
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 835000 && global.tech['high_tech'] && global.tech.high_tech === 13){
-                messageQueue(loc(tech_source,[loc('tech_shields')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_shields')]),'info',false,['progress']);
                 global.tech.high_tech = 14;
                 global.settings.space.neutron = true;
                 global.settings.space.blackhole = true;
@@ -8025,19 +8086,19 @@ function longLoop(){
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 1420000 && global.tech['high_tech'] && global.tech.high_tech === 14 && global.tech['blackhole'] && global.tech['blackhole'] >= 3){
-                messageQueue(loc(tech_source,[loc('tech_ai_core')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_ai_core')]),'info',false,['progress']);
                 global.tech.high_tech = 15;
                 global.interstellar['citadel'] = { count: 0, on: 0 };
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 2250000 && global.tech['ai_core'] && global.tech.ai_core === 2){
-                messageQueue(loc(tech_source,[loc('tech_graphene_processing')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_graphene_processing')]),'info',false,['progress']);
                 global.tech.ai_core = 3;
                 drawTech();
             }
             if (global.resource.Knowledge.max >= 8075000 && global.tech['science'] && global.tech.science >= 18 && !global.tech['nanoweave']){
-                messageQueue(loc(tech_source,[loc('tech_nanoweave')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_nanoweave')]),'info',false,['progress']);
                 global.tech['nanoweave'] = 1;
                 global.resource.Nanoweave.display = true;
                 drawTech();
@@ -8045,13 +8106,13 @@ function longLoop(){
             }
             if (global.resource.Knowledge.max >= 11590000 && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
                 messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info');
-                messageQueue(loc('tech_orichalcum_analysis_result'),'info');
+                messageQueue(loc('tech_orichalcum_analysis_result'),'info',false,['progress']);
                 global.tech.high_tech = 17;
                 drawTech();
                 drawCity();
             }
             if (global.resource.Knowledge.max >= 24750000 && global.tech['smelting'] && global.tech.smelting === 7 && global.tech['hell_ruins'] && global.tech['hell_ruins'] >= 4){
-                messageQueue(loc(tech_source,[loc('tech_infernium_fuel')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_infernium_fuel')]),'info',false,['progress']);
                 global.tech.smelting = 8;
                 defineIndustry();
                 drawTech();
@@ -8106,7 +8167,7 @@ function longLoop(){
             if (global.tech['stablized']){
                 delete global.tech['stablized'];
             }
-            messageQueue(loc('interstellar_blackhole_unstable'),'danger');
+            messageQueue(loc('interstellar_blackhole_unstable'),'danger',false,['progress']);
             drawTech();
         }
         else if (global.interstellar['stellar_engine'] && global.interstellar.stellar_engine.exotic >= 0.025){
@@ -8125,13 +8186,13 @@ function longLoop(){
             global.resource[global.race.species].amount--;
             global.civic.garrison.workers--;
             global.civic.garrison.crew--;
-            messageQueue(loc('galaxy_encounter'),'info');
+            messageQueue(loc('galaxy_encounter'),'info',false,['progress']);
             drawTech();
         }
 
         if (global.galaxy['scavenger'] && global.tech['conflict'] && global.tech['conflict'] === 4 && gal_on['scavenger'] > 0 && Math.rand(0, 50) <= gal_on['scavenger']){
             global.tech['conflict'] = 5;
-            messageQueue(loc('galaxy_scavenger_find'),'info');
+            messageQueue(loc('galaxy_scavenger_find'),'info',false,['progress']);
             drawTech();
         }
 
@@ -8154,7 +8215,7 @@ function longLoop(){
             if (event_pool.length > 0){
                 let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
                 let msg = events[event].effect();
-                messageQueue(msg,'caution');
+                messageQueue(msg,'caution',false,['events','major_events']);
                 global.event.l = event;
             }
             global.event.t = 999;
@@ -8169,7 +8230,7 @@ function longLoop(){
                 if (event_pool.length > 0){
                     let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
                     let msg = events[event].effect();
-                    messageQueue(msg);
+                    messageQueue(msg,false,false,['events','minor_events']);
                     global.m_event.l = event;
                 }
                 global.m_event.t = 850;
@@ -8302,7 +8363,7 @@ function steelCheck(){
     if (global.resource.Steel.display === false && Math.rand(0,1250) === 0){
         global.resource.Steel.display = true;
         modRes('Steel',1);
-        messageQueue(loc('steel_sample'),'info');
+        messageQueue(loc('steel_sample'),'info',false,['progress']);
     }
 }
 
@@ -8490,13 +8551,13 @@ function spyCaught(i){
     }
     switch (i){
         case 0:
-            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger',false,['spy']);
             break;
         case 1:
-            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger',false,['spy']);
             break;
         case 2:
-            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger');
+            messageQueue(loc(global.race['elusive'] ? 'event_spy_fail' : 'event_spy',[govTitle(i)]),'danger',false,['spy']);
             break;
     }
 }

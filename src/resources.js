@@ -1547,6 +1547,9 @@ export function tradeSellPrice(res){
     if (global.race['truepath']){
         price *= 1 - (global.civic.foreign.gov3.hstl / 101);
     }
+    if (global.race['inflation']){
+        price *= 1 + (global.race.inflation / 500);
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -1572,6 +1575,9 @@ export function tradeBuyPrice(res){
     }
     if (global.race['truepath']){
         price *= 1 + (global.civic.foreign.gov3.hstl / 101);
+    }
+    if (global.race['inflation']){
+        price *= 1 + (global.race.inflation / 300);
     }
     price = +(price).toFixed(1);
     return price;

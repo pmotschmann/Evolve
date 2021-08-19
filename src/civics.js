@@ -1,6 +1,6 @@
 import { global, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
@@ -125,6 +125,7 @@ export function commisionGarrison(){
         global.civic['garrison'] = {
             display: false,
             disabled: false,
+            rate: 0,
             progress: 0,
             tactic: 0,
             workers: 0,
@@ -988,6 +989,9 @@ function mercCost(){
     if (global.race['brute']){
         cost *= 1 - (traits.brute.vars[0] / 100);
     }
+    if (global.race['inflation']){
+        cost *= 1 + (global.race.inflation / 500);
+    }
     return Math.round(cost);
 }
 
@@ -1033,7 +1037,7 @@ export function buildGarrison(garrison,full){
     barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
     
     if (full){
-        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
@@ -1167,6 +1171,9 @@ export function buildGarrison(garrison,full){
                     return egg;
                 }
                 return eventActive('fool',2021) ? garrisonSize() - w : w;
+            },
+            trainTime(r,p){
+                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
             }
         }
     });
@@ -1208,17 +1215,7 @@ export function buildGarrison(garrison,full){
                                         return loc('civics_garrison_wounded_desc');
                                     case 'hmerc':
                                         {
-                                            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                                            if (cost > 25000){
-                                                cost = 25000;
-                                            }
-                                            if (global.civic.garrison.m_use > 0){
-                                                cost *= 1.1 ** global.civic.garrison.m_use;
-                                            }
-                                            if (global.race['brute']){
-                                                cost *= 1 - (traits.brute.vars[0] / 100);
-                                            }
-                                            cost = Math.round(cost).toLocaleString();
+                                            let cost = Math.round(mercCost()).toLocaleString();
                                             return loc('civics_garrison_hire_mercenary_cost',[cost]);
                                         }
                                     case 'defenseRating':
@@ -1375,7 +1372,7 @@ function war_campaign(gov){
     }
     
     if (global.civic.garrison.raid === 0){
-        messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning');
+        messageQueue(loc('civics_garrison_campaign_no_soldier'),'warning',false,['combat']);
         return;
     }
     global.stats.attacks++;
@@ -1637,7 +1634,7 @@ function war_campaign(gov){
 
         loot = loot.slice(0,-2);
         loot = loot + '.';
-        messageQueue(loot,'warning');
+        messageQueue(loot,'warning',false,['combat']);
         
         let revive = 0;
         if (global.race['revive']){
@@ -1655,10 +1652,10 @@ function war_campaign(gov){
             global.civic.garrison.workers += revive;
         }
         if (revive > 0){
-            messageQueue(loc('civics_garrison_victorious_revive',[death,revive]),'success');
+            messageQueue(loc('civics_garrison_victorious_revive',[death,revive]),'success',false,['combat']);
         }
         else {
-            messageQueue(loc('civics_garrison_victorious',[death]),'success');
+            messageQueue(loc('civics_garrison_victorious',[death]),'success',false,['combat']);
         }
 
         if (global.race['slaver'] && global.city['slave_pen']){
@@ -1671,7 +1668,7 @@ function war_campaign(gov){
                 if (slaves > 0){
                     global.city.slave_pen.slaves += slaves;
                     global.resource.Slave.amount = global.city.slave_pen.slaves;
-                    messageQueue(loc('civics_garrison_capture',[slaves]),'success');
+                    messageQueue(loc('civics_garrison_capture',[slaves]),'success',false,['combat']);
                 }
             }
         }
@@ -1704,10 +1701,10 @@ function war_campaign(gov){
                     global.civic[global.civic.d_job].workers += infected;
                 }
                 if (infected === 1){
-                    messageQueue(loc('civics_garrison_soldier_infected'),'special');
+                    messageQueue(loc('civics_garrison_soldier_infected'),'special',false,['combat']);
                 }
                 else {
-                    messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special');
+                    messageQueue(loc('civics_garrison_soldiers_infected',[infected]),'special',false,['combat']);
                 }
             }
         }
@@ -1804,10 +1801,10 @@ function war_campaign(gov){
             global.civic.garrison.workers += revive;
         }
         if (revive > 0){
-            messageQueue(loc('civics_garrison_defeat_revive',[death,revive]),'danger');
+            messageQueue(loc('civics_garrison_defeat_revive',[death,revive]),'danger',false,['combat']);
         }
         else {
-            messageQueue(loc('civics_garrison_defeat',[death]),'danger');
+            messageQueue(loc('civics_garrison_defeat',[death]),'danger',false,['combat']);
         }
     }
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.civic.garrison.crew){

@@ -4,7 +4,7 @@ import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } f
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
-import { armyRating } from './civics.js';
+import { armyRating, govCivics } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
@@ -280,7 +280,7 @@ const fortressModules = {
             effect: loc('portal_pit_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_pit_mission_result'),'info');
+                    messageQueue(loc('portal_pit_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -306,7 +306,7 @@ const fortressModules = {
             effect: loc('portal_assault_forge_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_assault_forge_result'),'info');
+                    messageQueue(loc('portal_assault_forge_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -351,8 +351,8 @@ const fortressModules = {
                         if (global.city.powered && global.city.power >= $(this)[0].powered()){
                             global.portal.soul_forge.on++;
                         }
+                        return true;
                     }
-                    return true;
                 }
                 return false;
             }
@@ -456,7 +456,7 @@ const fortressModules = {
             effect: loc('portal_ruins_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_ruins_mission_result'),'info');
+                    messageQueue(loc('portal_ruins_mission_result'),'info',false,['progress','hell']);
                     global.portal['vault'] = { count: 0 };
                     global.portal['stonehedge'] = { count: 0 };
                     global.portal['archaeology'] = { count: 0, on: 0 };
@@ -521,7 +521,7 @@ const fortressModules = {
                         global.tech.hell_ruins = 3;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_vault_result'),'info');
+                        messageQueue(loc('portal_vault_result'),'info',false,['progress','hell']);
                     }
                     return true;
                 }
@@ -774,7 +774,7 @@ const fortressModules = {
             effect: loc('portal_gate_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_gate_mission_result'),'info');
+                    messageQueue(loc('portal_gate_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -829,7 +829,7 @@ const fortressModules = {
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
                         global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        messageQueue(loc('portal_gate_open'),'info');
+                        messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                 }
@@ -884,7 +884,7 @@ const fortressModules = {
                         global.tech['hell_lake'] = 1;
                         global.settings.portal.lake = true;
                         global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        messageQueue(loc('portal_gate_open'),'info');
+                        messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                 }
@@ -979,7 +979,7 @@ const fortressModules = {
             effect: loc('portal_lake_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_lake_mission_result'),'info');
+                    messageQueue(loc('portal_lake_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -1190,7 +1190,7 @@ const fortressModules = {
                         global.tech['hell_spire'] = 1;
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0, on: 0 };
-                        messageQueue(loc('portal_transport_unlocked'),'info');
+                        messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                     return true;
@@ -1235,7 +1235,7 @@ const fortressModules = {
             effect: loc('portal_spire_mission_effect'),
             action(){
                 if (payCosts($(this)[0].cost)){
-                    messageQueue(loc('portal_spire_mission_result'),'info');
+                    messageQueue(loc('portal_spire_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -1330,7 +1330,7 @@ const fortressModules = {
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
                         global.portal['bridge'] = { count: 0 };
-                        messageQueue(loc('portal_spire_bridge_collapse'),'info');
+                        messageQueue(loc('portal_spire_bridge_collapse'),'info',false,['progress','hell']);
                         renderFortress();
                     }
                     return true;
@@ -1403,14 +1403,14 @@ const fortressModules = {
                 if (payCosts($(this)[0].cost)){
                     if (global.tech.hell_spire === 6){
                         global.tech.hell_spire = 7;
-                        messageQueue(loc('portal_sphinx_msg'),'info');
+                        messageQueue(loc('portal_sphinx_msg'),'info',false,['progress','hell']);
                         renderFortress();
                         return true;
                     }
                     else if (global.tech.hell_spire === 7){
                         global.tech.hell_spire = 8;
                         renderFortress();
-                        messageQueue(loc('portal_sphinx_answer_msg'),'info');  
+                        messageQueue(loc('portal_sphinx_answer_msg'),'info',false,['progress','hell']);  
                         return true;
                     }
                 }
@@ -1438,7 +1438,7 @@ const fortressModules = {
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_sphinx_bribe_msg'),'info');                        
+                        messageQueue(loc('portal_sphinx_bribe_msg'),'info',false,['progress','hell']);                        
                         return true;
                     }
                 }
@@ -1469,7 +1469,7 @@ const fortressModules = {
                     global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: [] };
                     global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
                     genSpireFloor();
-                    messageQueue(loc('portal_spire_survey_msg'),'info');
+                    messageQueue(loc('portal_spire_survey_msg'),'info',false,['progress','hell']);
                     return true;
                 }
                 return false;
@@ -1518,7 +1518,7 @@ const fortressModules = {
                     }
                     global.settings.showMechLab = true;
                     if (global.portal.mechbay.count === 1){
-                        messageQueue(loc('portal_mechbay_unlocked'),'info');
+                        messageQueue(loc('portal_mechbay_unlocked'),'info',false,['progress','hell']);
                         drawMechLab();
                     }
                     return true;
@@ -1796,7 +1796,7 @@ function fortressData(dt){
                 if (global.race['brute']){
                     cost = cost / 2;
                 }
-                cost = Math.round(cost).toLocaleString();
+                cost = Math.round(govCivics('m_cost')).toLocaleString();
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
     }
@@ -2288,7 +2288,7 @@ export function bloodwar(){
                     global.portal.fortress.pity = 0;
                     if (!global.resource.Soul_Gem.display){
                         global.resource.Soul_Gem.display = true;
-                        messageQueue(loc('portal_first_gem'),'info');
+                        messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
                     }
                 }
                 else {
@@ -2318,10 +2318,10 @@ export function bloodwar(){
 
     if (dead > 0 && global.portal.fortress.notify === 'Yes'){
         if (revive > 0){
-            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]));
+            messageQueue(loc('fortress_patrol_casualties_revive',[dead,revive]),false,false,['hell']);
         }
         else {
-            messageQueue(loc('fortress_patrol_casualties',[dead]));
+            messageQueue(loc('fortress_patrol_casualties',[dead]),false,false,['hell']);
         }
     }
     
@@ -2364,7 +2364,7 @@ export function bloodwar(){
         }
 
         if (destroyed){
-            messageQueue(loc('fortress_lost'));
+            messageQueue(loc('fortress_lost'),false,false,['hell']);
             global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
             global.civic.hell_surveyor.workers = 0;
             global.civic.hell_surveyor.assigned = 0;
@@ -2376,7 +2376,7 @@ export function bloodwar(){
             global.portal.fortress['assigned'] = 0;
         }
         else {
-            messageQueue(loc('fortress_sieged',[killed,damage]));
+            messageQueue(loc('fortress_sieged',[killed,damage]),false,false,['hell']);
         }
 
         global.portal.fortress.siege = 999;
@@ -2417,10 +2417,10 @@ export function bloodwar(){
                 dead = global.civic.hell_surveyor.workers;
             }
             if (dead === 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_killed'));
+                messageQueue(loc('fortress_killed'),false,false,['hell']);
             }
             else if (dead > 1 && global.portal.fortress.s_ntfy === 'Yes'){
-                messageQueue(loc('fortress_eviscerated',[dead]));
+                messageQueue(loc('fortress_eviscerated',[dead]),false,false,['hell']);
             }
             if (dead > 0){
                 global.civic.hell_surveyor.workers -= dead;
@@ -2434,7 +2434,7 @@ export function bloodwar(){
     if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
-        messageQueue(loc('portal_hell_pit_found'),'info');
+        messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);
         renderFortress();
     }
 
@@ -2482,7 +2482,7 @@ export function bloodwar(){
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
                 global.resource.Corrupt_Gem.amount++;                  
                 global.resource.Corrupt_Gem.display = true;
-                messageQueue(loc('portal_corrupt_gem'),'info');
+                messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
                 global.tech['corrupt'] = 1;
                 drawTech();
             }

@@ -12,6 +12,31 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.12`,
+        date: `8/19/2021`,
+        changes: [
+            `Training Timer for Military tab.`,
+            `Draggable config options for Spy Operator.`,
+            `Bug fixes for log and queue windows.`
+        ]
+    },
+    {
+        version: `1.1.11`,
+        date: `8/12/2021`,
+        changes: [
+            `ARPA projects now contribute to inflation.`,
+            `Mercenaries costs are now affected by inflation.`,
+            `Trade is now affected by inflation.`,
+            `Casino income is now affected by inflation.`,
+            `Luxury Goods income is now affected by inflation.`,
+            `Rescaled inflation levels.`,
+            `Wheelbarrow achievement now requires $250 billion.`,
+            `Inflation bug fixes.`,
+            `New message log filters.`,
+            `Fixed Luxury Goods tooltip money value.`
+        ]
+    },
+    {
         version: `1.1.10`,
         date: `8/8/2021`,
         changes: [

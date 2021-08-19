@@ -2,7 +2,7 @@ import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
-import { races } from './races.js';
+import { races, traits } from './races.js';
 import { checkRequirements, checkSpaceRequirements } from './space.js';
 import { fortressTech } from './portal.js';
 
@@ -548,15 +548,21 @@ function loadFactory(parent,bind){
         let assembly = global.tech['factory'] ? true : false;
         switch(type){
             case 'Lux':{
-                let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]))
+                let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
                 if (global.race['toxic']){
-                    demand *= 1.20;
+                    demand *= 1 + (traits.toxic.vars[0] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    demand *= 1.5;
+                    demand *= 2.5;
                 }
                 if (global.civic.govern.type === 'socialist'){
                     demand *= 0.8;
+                }
+                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
+                    demand *= 1.1;
+                }
+                if (global.race['inflation']){
+                    demand *= 1 + (global.race.inflation / 1250);
                 }
                 demand = demand.toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];

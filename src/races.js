@@ -2,6 +2,7 @@ import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
+import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 
@@ -2469,6 +2470,13 @@ export function cleanAddTrait(trait){
                 global.civic.foreign[`gov${i}`].anx = false;
                 global.civic.foreign[`gov${i}`].sab = 0;
                 global.civic.foreign[`gov${i}`].act = 'none';
+            }
+            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+                Object.keys(global.race.governor.tasks).forEach(function (task){
+                    if (global.race.governor.tasks[task] === 'spy' || global.race.governor.tasks[task] === 'spyop'){
+                        global.race.governor.tasks[task] = 'none';
+                    }
+                });
             }
             break;
         case 'noble':

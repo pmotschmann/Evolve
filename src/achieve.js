@@ -290,6 +290,10 @@ export function unlockAchieve(achievement,small,rank,universe){
     if (global.race.universe !== 'micro' && small === true){
         return false;
     }
+    if (!global.settings.msgFilters.achievements){
+        global.settings.msgFilters.achievements = true;
+        document.getElementById(`msgQueueFilter-achievements`).style.display = 'inline';
+    }
     let a_level = alevel();
     let unlock = false;
     let redraw = false;
@@ -305,7 +309,7 @@ export function unlockAchieve(achievement,small,rank,universe){
         if (global.stats.achieve[achievement] && global.stats.achieve[achievement].l < rank){
             global.settings.showAchieve = true;
             global.stats.achieve[achievement].l = rank;
-            messageQueue(loc(upgrade ? 'achieve_unlock_achieve_upgrade' : 'achieve_unlock_achieve', [achievements[achievement].name] ),'special');
+            messageQueue(loc(upgrade ? 'achieve_unlock_achieve_upgrade' : 'achieve_unlock_achieve', [achievements[achievement].name] ),'special',false,['achievements']);
             redraw = true;
             unlock = true;
         }
@@ -317,7 +321,7 @@ export function unlockAchieve(achievement,small,rank,universe){
             global.stats.achieve[achievement][u_affix] = rank;
             redraw = true;
             if (!unlock){
-                messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special');
+                messageQueue(loc(i_upgrade ? 'achieve_unlock_achieve_icon_upgrade' : 'achieve_unlock_achieve_icon', [achievements[achievement].name] ),'special',false,['achievements']);
             }
         }
     }
@@ -333,6 +337,10 @@ export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
+    if (!global.settings.msgFilters.achievements){
+        global.settings.msgFilters.achievements = true;
+        document.getElementById(`msgQueueFilter-achievements`).style.display = 'inline';
+    }
     let a_level = alevel();
     if (typeof rank === "undefined" || rank > a_level){
         rank = a_level;
@@ -341,7 +349,7 @@ export function unlockFeat(feat,small,rank){
         let upgrade = global.stats.feat[feat] ? true : false;
         global.settings.showAchieve = true;
         global.stats.feat[feat] = rank;
-        messageQueue(loc(upgrade ? 'feat_upgraded' : 'feat_unlocked', [feats[feat].name] ),'special');
+        messageQueue(loc(upgrade ? 'feat_upgraded' : 'feat_unlocked', [feats[feat].name] ),'special',false,['achievements']);
         drawPerks();
         drawAchieve();
         return true;
@@ -562,7 +570,7 @@ export function checkAchievements(){
     if (global.resource.hasOwnProperty('Money') && global.resource.Money.amount >= 1000000000){
         unlockAchieve('scrooge');
     }
-    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 100000000000){
+    if (global.resource.hasOwnProperty('Money') && global.race['inflation'] && global.resource.Money.amount >= 250000000000){
         unlockAchieve('wheelbarrow');
     }
 

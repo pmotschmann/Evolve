@@ -52,6 +52,9 @@ export function set_alevel(a_level){
 export function set_ulevel(u_level){
     universe_level = u_level;
 }
+export var message_logs = {
+    view: 'all'
+};
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -814,13 +817,45 @@ if (convertVersion(global['version']) < 101010){
     }
 }
 
+if (convertVersion(global['version']) < 101011){
+    if (global.hasOwnProperty('settings') && !global.settings.hasOwnProperty('msgFilters')){
+        global.settings['msgFilters'] = {
+            all: true,
+            progress: true,
+            queue: global['queue'] && global.queue.display,
+            building_queue: global['r_queue'] && global.r_queue.display,
+            research_queue: global['r_queue'] && global.r_queue.display,
+            combat: global.civic['garrison'] && global.civic.garrison.display,
+            spy: global.tech['spy'] && global.tech.spy >= 2,
+            events: true,
+            major_events: true,
+            minor_events: true,
+            achievements: (global.stats['achieve'] && Object.keys(global.stats.achieve).length > 0) || (global.stats['feat'] && Object.keys(global.stats.feat).length > 0),
+            hell: global.settings.showPortal || global.stats.blackhole || global.stats.ascend || global.stats.descend
+        }
+    }
+    if (global.race.hasOwnProperty('inflation')){
+        ['supercollider','stock_exchange','launch_facility','monuments','railway','roid_eject','nexus','syphon'].forEach(function(arpa){
+            if (global.tech.hasOwnProperty(arpa)){
+                global.race.inflation += global.tech[arpa] * 10;
+            }
+        });
+    }
+}
+
+if (convertVersion(global['version']) < 101012){
+    if (global.civic['garrison']){
+        global.civic.garrison['rate'] = 0;
+    }
+}
+
 if (convertVersion(global['version']) < 102000){
     if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('fortress') && !global.portal.fortress.hasOwnProperty('nocrew')){
         global.portal.fortress['nocrew'] = false;
     }
 }
 
-global['version'] = '1.1.10';
+global['version'] = '1.1.12';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1022,6 +1057,28 @@ if (!global['queue']['max']){
 
 if (!global['r_queue']['max']){
     global.r_queue['max'] = 0;
+}
+
+if (!global.settings['msgFilters']){
+    global.settings['msgFilters'] = {
+        all: true,
+        progress: true,
+        queue: false,
+        building_queue: false,
+        research_queue: false,
+        combat: false,
+        spy: false,
+        events: true,
+        major_events: true,
+        minor_events: true,
+        achievements: false,
+        hell: false
+    }
+}
+
+if (!global.settings['msgQueueHeight']){
+    global.settings['msgQueueHeight'] = $(`#msgQueue`).outerHeight();
+    global.settings['buildQueueHeight'] = $(`#buildQueue`).outerHeight();
 }
 
 if (!global['space']){
@@ -1694,7 +1751,6 @@ export function resizeGame(){
         let build = $('#buildQueue').detach();
         build.addClass('right');
         build.removeClass('has-text-info');
-        build.find('h2').removeClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
@@ -1710,7 +1766,6 @@ export function resizeGame(){
         let build = $('#buildQueue').detach();
         build.removeClass('right');
         build.addClass('has-text-info');
-        build.find('h2').addClass('is-sr-only');
 
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');

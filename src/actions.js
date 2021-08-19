@@ -1865,12 +1865,12 @@ export const actions = {
                             if (global.race.universe === 'antimatter'){
                                 global.race.Plasmid.anti += 100;
                                 global.stats.antiplasmid += 100;
-                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info');
+                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info',false,['events']);
                             }
                             else {
                                 global.race.Plasmid.count += 100;
                                 global.stats.plasmid += 100;
-                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info');
+                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
                             }
                             drawCity();
                         }
@@ -1948,7 +1948,7 @@ export const actions = {
                                 }
                             }
     
-                            messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info');
+                            messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
                             drawCity();
                         }
                     }
@@ -2762,6 +2762,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings['showMil'] = true;
+                    global.settings.msgFilters.combat = true;
+                    document.getElementById(`msgQueueFilter-combat`).style.display = 'inline';
                     if (!global.civic.garrison.display){
                         global.civic.garrison.display = true;
                         vBind({el: `#garrison`},'update');
@@ -3000,7 +3002,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Crates.display === false){
-                        messageQueue(loc('city_storage_yard_msg'),'info');
+                        messageQueue(loc('city_storage_yard_msg'),'info',false,['progress']);
                     }
                     global.city['storage_yard'].count++;
                     global.settings.showResources = true;
@@ -3051,7 +3053,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info');
+                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
                     }
                     global.city['warehouse'].count++;
                     global.settings.showResources = true;
@@ -3337,10 +3339,10 @@ export const actions = {
                 if (payCosts($(this)[0].cost)){
                     if (global.city['foundry'].count === 0){
                         if (global.race['no_craft']) {
-                            messageQueue(loc('city_foundry_msg2'),'info');
+                            messageQueue(loc('city_foundry_msg2'),'info',false,['progress']);
                         }
                         else {
-                            messageQueue(loc('city_foundry_msg1'),'info');
+                            messageQueue(loc('city_foundry_msg1'),'info',false,['progress']);
                         }
                     }
                     global.city['foundry'].count++;
@@ -3691,7 +3693,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info');
+                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
                         global.resource.Containers.display = true;
                         clearElement($('#resources'));
                         defineResources();
@@ -4869,6 +4871,9 @@ export function casinoEffect(){
     }
     if (global.civic.govern.type === 'socialist'){
         cash *= 0.8;
+    }
+    if (global.race['inflation']){
+        cash *= 1 + (global.race.inflation / 1250);
     }
     cash = +(cash).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;
@@ -6844,10 +6849,10 @@ function sentience(){
     }
 
     if (global.race['cataclysm']){
-        messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info');
+        messageQueue(loc('cataclysm_sentience',[races[global.race.species].home,flib('name')]),'info',false,['progress']);
     }
     else {
-        messageQueue(loc('sentience',[loc('genelab_genus_' + races[global.race.species].type),races[global.race.species].entity,flib('name')]),'info');
+        messageQueue(loc('sentience',[loc('genelab_genus_' + races[global.race.species].type),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
@@ -7451,7 +7456,7 @@ export function bank_vault(){
         vault *= 1 + (global.stats.achieve.wheelbarrow.l / 50);
     }
     if (global.race['inflation']){
-        vault *= 1 + (global.race.inflation / 150);
+        vault *= 1 + (global.race.inflation / 125);
     }
     let rskVal = govActive('risktaker',0);
     if (rskVal){

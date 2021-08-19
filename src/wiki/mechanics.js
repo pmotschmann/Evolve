@@ -1,8 +1,10 @@
 import { global } from './../vars.js';
+import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
-import { vBind, svgIcons, svgViewBox} from './../functions.js';
+import { vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
 import { races } from './../races.js';
 import { atomic_mass } from './../resources.js';
+import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 import { createCalcSection } from './p_res.js';
@@ -194,6 +196,39 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'));
     }
 
+    { // Genome Decay
+        let genome_decay = infoBoxBuilder(mainContent,{ name: 'genome_decay', template: 'mechanics', label: loc('wiki_mechanics_genome_decay'), paragraphs: 4, break: [3], h_level: 2,
+            para_data: {
+                1: [loc('wiki_mechanics_genome_decay_para1_note1',[loc('wiki_calc_g_decay_mutations')]),loc('wiki_mechanics_genome_decay')],
+                2: ['2-3'],
+                3: [loc('wiki_mechanics_genome_decay'),loc('resource_Plasmid_name'),'+0%'],
+                4: [loc('tech_genetic_decay'),loc('trait_fortify_name'),loc('wiki_mechanics_genome_decay'),loc('resource_Plasmid_name'),'+0%']
+            },
+            data_link: {
+                4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#traits-species-fortify']
+            }
+        });
+        let subSection = createCalcSection(genome_decay,'mechanics','g_decay',loc('wiki_mechanics_genome_decay'));
+        genomeDecayCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`genome_decay`,loc('wiki_mechanics_genome_decay'));
+    }
+
+    { // CRISPR Mutation
+        let crispr_mutation = infoBoxBuilder(mainContent,{ name: 'crispr_mutation', template: 'mechanics', label: loc('wiki_mechanics_crispr_mutation'), paragraphs: 5, break: [3], h_level: 2,
+            para_data: {
+                1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title')],
+                3: [loc('tech_arpa'),loc('tab_arpa_genetics'),],
+                4: ['5x',loc('wiki_mechanics_crispr_mutation_para4_note1')],
+                5: ['10x']
+            },
+            data_link: {
+                1: [false,'wiki.html#crispr-prestige-mutation'],
+                4: [false,'wiki.html#traits-species']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));
+    }
+
     { // Planets 
         let planets = infoBoxBuilder(mainContent,{ name: 'planet', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
             para_data: {
@@ -218,7 +253,9 @@ export function mechanicsPage(content){
             }
         },planets);
         sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'));
-
+    }
+    
+    { // Soul Gem
         infoBoxBuilder(mainContent,{ name: 'soul_gem', template: 'hell', label: loc('wiki_hell_soul_gem'), paragraphs: 4, h_level: 2,
             para_data: {
                 1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
@@ -382,6 +419,101 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`piracy`,loc('galaxy_piracy'));
     }
 
+    { // Customs & Untapped Potential
+        let custom = infoBoxBuilder(mainContent,{ name: 'custom', template: 'mechanics', label: loc('wiki_mechanics_custom'), paragraphs: 12, break: [3,5,9,11], h_level: 2,
+            para_data: {
+                1: [loc('wiki_resets_ascension')],
+                2: [loc('wiki_resets_ascension')],
+                5: [loc('resource_Genes_name')],
+                6: [loc('resource_Genes_name')],
+                7: [2],
+                8: [loc('achieve_technophobe_name'),5,7],
+                9: [loc('tech_fanaticism'),loc('tech_deify')],
+                11: [0,loc('resource_Genes_name')],
+                12: [loc('resource_Genes_name'),loc('trait_untapped_name')]
+            },
+            data_link: {
+                1: ['wiki.html#resets-prestige-ascension'],
+                2: ['wiki.html#resets-prestige-ascension'],
+                8: ['wiki.html#perks-prestige-technophobe'],
+                9: [(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify']
+            }
+        });
+        let subSection = createCalcSection(custom,'mechanics','untapped',loc('trait_untapped_name'));
+        untappedCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`custom`,loc('wiki_mechanics_custom'));
+    }
+
+    { // Pillars
+        let custom = infoBoxBuilder(mainContent,{ name: 'pillar', template: 'hell', label: loc('wiki_mechanics_pillar'), paragraphs: 5, h_level: 2,
+            para_data: {
+                1: [loc(`portal_ruins_name`)],
+                2: ['1%',loc(`harmonic`)],
+                3: ['3%'],
+                4: [loc(`harmonic`),'2%','6%'],
+                5: [loc(`wiki_hell_pillar_para5d1`),12]
+            },
+            data_link: {
+                5: ['wiki.html#hell-structures-west_tower']
+            }
+        });
+        infoBoxBuilder(mainContent,{ name: 'pillar', template: 'mechanics', label: loc('wiki_mechanics_pillar'), paragraphs: 10, break: [4,6,8], h_level: 2,
+            para_data: {
+                1: [loc('tech_pillars'),loc('resource_Harmony_name'),loc('resource_Scarletite_name')],
+                2: [loc('resource_Scarletite_name'),(1000000).toLocaleString(),(125000).toLocaleString()],
+                3: [loc('universe_micro')],
+                4: [loc('evo_challenge_genes'),loc('harmonic')],
+                5: [loc('tech_scarletite'),loc('evo_challenge_genes')],
+                6: [loc('achieve_resonance_name')],
+                7: [loc('achieve_resonance_name'),loc('tech_scarletite')],
+                8: [loc('race_junker'),loc('wiki_mechanics_custom'),loc('achieve_enlightenment_name')],
+                9: [loc('wiki_mechanics_custom')],
+                10: [loc('race_junker'),loc('genelab_genus_humanoid')]
+            },
+            data_link: {
+                1: ['wiki.html#dimensional-tech-pillars'],
+                3: ['wiki.html#universes-gameplay-micro'],
+                5: ['wiki.html#dimensional-tech-scarletite'],
+                7: [false,'wiki.html#dimensional-tech-scarletite'],
+                8: ['wiki.html#races-species-junker','wiki.html#mechanics-gameplay-custom'],
+                9: ['wiki.html#mechanics-gameplay-custom'],
+                10: ['wiki.html#races-species-junker']
+            }
+        },custom);
+        sideMenu('add',`mechanics-gameplay`,`pillar`,loc('wiki_mechanics_pillar'));
+    }
+
+    { // Demon Lord Strength
+        let dlord = infoBoxBuilder(mainContent,{ name: 'dlord', template: 'mechanics', label: loc('wiki_mechanics_dlord'), paragraphs: 5, h_level: 2,
+            para_data: {
+                1: [loc('portal_waygate_title')],
+                2: [loc('resource_Demonic_Essence_name'),loc('wiki_resets_infusion')],
+                3: [loc('wiki_resets_infusion'),'+1'],
+                4: ['+25%',loc('wiki_resets_infusion')],
+                5: [loc('tech_dark_bomb'),loc('wiki_resets_infusion')]
+            },
+            data_link: {
+                1: ['wiki.html#hell-structures-waygate'],
+                2: [false,'wiki.html#resets-prestige-infusion'],
+                3: ['wiki.html#resets-prestige-infusion'],
+                4: [false,'wiki.html#resets-prestige-infusion'],
+                5: ['wiki.html#dimensional-tech-dark_bomb','wiki.html#resets-prestige-infusion']
+            }
+        });
+        dlord.append(`
+            <h2 class="has-text-warning">${loc('wiki_mechanics_dlord_str')}</h2>
+        `);
+        Object.keys(universe_types).forEach(function (uni){
+            let empowered = global.stats.spire[universeAffix(uni)] && global.stats.spire[universeAffix(uni)]['dlstr'] ? loc('wiki_mechanics_dlord_str_empowered',[global.stats.spire[universeAffix(uni)]['dlstr']]) : loc('wiki_mechanics_dlord_str_not_empowered');
+            dlord.append(`
+                <div class="para">
+                    <span>${loc('universe_' + uni)}: ${empowered}</span>
+                </div>
+            `);
+        });
+        sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'));
+    }
+
     { // Cheese Level
         let cheeselevel = swissKnife(true);
         let cheeseList = swissKnife(false,true);
@@ -440,6 +572,99 @@ export function mechanicsPage(content){
         });
         sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
     }
+}
+
+function genomeDecayCalc(info){
+    let calc = $(`<div class="calc" id="genomeDecayCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        mutations: { val: undefined },
+        days: { val: undefined }
+    }
+    
+    let show = {
+        game: { vis: false, val: undefined },
+        real: { vis: false, val: undefined }
+    }
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_g_decay_game')}</h2>
+        </div>
+        <div>
+            <span>(50000000 / (1 + {{ i.mutations.val, 'mutations' | generic }})) - {{ i.days.val, 'days' | generic }}</span><span v-show="s.game.vis"> = {{ false | calc }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_g_decay_real')}</h2>
+        </div>
+        <div>
+            <span>{{ s.game.val, 'game' | generic }} / 17280</span><span v-show="s.real.vis"> = {{ true | calc }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_g_decay_mutations')}</span> <b-numberinput :input="val('mutations')" min="0" v-model="i.mutations.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_g_decay_days')}</span> <b-numberinput :input="val('days')" min="0" v-model="i.days.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#genomeDecayCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.mutations.val = undefined;
+                inputs.days.val = undefined;
+            },
+            importInputs(){
+                inputs.mutations.val = global.race.mutation;
+                inputs.days.val = global.stats.days;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_g_decay_' + type);
+            },
+            calc(real){
+                if (real){
+                    return show.real.val;
+                }
+                show.game.vis = inputs.mutations.val !== undefined && inputs.days.val !== undefined;
+                show.real.vis = show.game.vis;
+                
+                if (show.game.vis){
+                    show.game.val = +((50000000 / (1 + inputs.mutations.val)) - inputs.days.val).toFixed(0);
+                    show.real.val = +(show.game.val / 17280).toFixed(6);
+                    
+                    return show.game.val;
+                }
+                else {
+                    show.game.val = undefined;
+                    show.real.val = undefined;
+                }
+            }
+        }
+    });
 }
 
 function massCalc(info){
@@ -649,6 +874,81 @@ function massCalc(info){
                 else {
                     show.result.MWVis = false;
                     show.result.MWTot = undefined;
+                }
+            }
+        }
+    });
+}
+
+function untappedCalc(info){
+    let calc = $(`<div class="calc" id="untappedPotentialCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_bonuses',[loc('trait_untapped_name')])}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        genes: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    
+    formula.append(`
+        <div>
+            <span>({{ i.genes.val | generic }} / ({{ i.genes.val | generic }} + 20) / 10) + 0.00024</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('resource_Genes_name')}</span> <b-numberinput :input="val('genes')" min="0" v-model="i.genes.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#untappedPotentialCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.genes.val = undefined;
+            },
+            importInputs(){
+                inputs.genes.val = global['custom'] ? calcGenomeScore({ genus: global.custom.race0.genus, traitlist: global.custom.race0.traits }) : 0;
+            }
+        },
+        filters: {
+            generic(num){
+                return num !== undefined ? num : loc('resource_Genes_name');
+            },
+            calc(percent){
+                if (percent){
+                    return (show.result.val * 100).toFixed(3);
+                }
+                show.result.vis = inputs.genes.val;
+                
+                if (show.result.vis){
+                    show.result.val = +(inputs.genes.val / (inputs.genes.val + 20) / 10 + 0.00024).toFixed(5);
+                    
+                    return show.result.val;
                 }
             }
         }

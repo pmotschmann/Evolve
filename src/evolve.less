@@ -903,16 +903,19 @@ Misc ---------> Main template
         */
 
         // .tabs
-        .tabs a {
+        .tabs a,
+        .msgQueueFilters span {
             color: @primary-color;
         }
 
-        .tabs li.is-active a {
+        .tabs li.is-active a,
+        .msgQueueFilters span.is-active {
             border-bottom-color: @tabs-li-is-active-link-border;
             color: @tabs-li-is-active-link;
         }
 
-        .tabs a:hover {
+        .tabs a:hover,
+        .msgQueueFilters span:hover {
             border-bottom-color: @link-hover;
             color: @link-hover;
         }
@@ -1350,6 +1353,7 @@ Misc ---------> Main template
 
         // -webkit-scrollbar
         .hscroll::-webkit-scrollbar-track,
+        .vscroll::-webkit-scrollbar-track,
         .sticky::-webkit-scrollbar-track,
         .resTabs>section::-webkit-scrollbar-track,
         .bldQueue::-webkit-scrollbar-track {
@@ -1358,6 +1362,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-background;
         }
 
+        .vscroll::-webkit-scrollbar,
         .sticky::-webkit-scrollbar,
         .resTabs>section::-webkit-scrollbar,
         .bldQueue::-webkit-scrollbar {
@@ -1370,6 +1375,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-background;
         }
 
+        .vscroll::-webkit-scrollbar-thumb,
         .hscroll::-webkit-scrollbar-thumb,
         .sticky::-webkit-scrollbar-thumb,
         .resTabs>section::-webkit-scrollbar-thumb,
@@ -1377,6 +1383,7 @@ Misc ---------> Main template
             background-color: @webkit-scrollbar-thumb-background;
         }
 
+        .vscroll,
         .hscroll,
         .sticky,
         .resTabs>section,
@@ -1986,14 +1993,15 @@ a {
     }
 
     .queueCol {
-        div:first-child {
+        div.bldQueue:first-child {
             margin-top: 2.625rem;
         }
     }
 
     .bldQueue,
     .msgQueue {
-        height: 5rem;
+        resize: vertical;
+        height: 7rem;
         border-top: solid .0625rem;
         border-bottom: solid .0625rem;
         overflow-y: auto;
@@ -2010,6 +2018,31 @@ a {
 
         &.right {
             height: ~"calc(100vh - 9rem)";
+        }
+    }
+        
+    #msgQueueHeader {
+        h2 {
+            border-bottom: solid .0625rem;
+        }
+        
+        span {
+            font-size: 1rem;
+            margin-left: 1rem;
+        }
+    }
+
+    #msgQueueFilters {
+        padding: .25rem 0;
+        border-bottom: solid .0625rem;
+        font-size: .875rem;
+
+        span {
+            cursor: pointer;
+        }
+
+        span:not(:last-child) {
+            margin-right: 2rem;
         }
     }
 
@@ -2918,6 +2951,20 @@ a {
 
         .tConfig {
             margin-top: .5rem;
+        }
+        
+        .spyopConfig {
+            margin-left: 0;
+            
+            li {
+                display: inline-block;
+                height: 1rem;
+                padding: 0 .25rem 0 0;
+            }
+            
+            li:not(:last-child):after {
+                content: " -> "
+            }
         }
 
         .options {
@@ -3885,8 +3932,18 @@ div.bigbang {
     scrollbar-width: thin;
 }
 
+.vscroll {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    top: 1rem;
+    bottom: 0;
+}
+
 .hscroll {
     overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
     scrollbar-width: thin;
 }
 

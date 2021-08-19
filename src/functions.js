@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, message_logs, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -7,6 +7,8 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './achieve.js';
+
+export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -243,21 +245,43 @@ export function powerGrid(type,reset){
     });
 }
 
-export function messageQueue(msg,color,dnr){
+export function initMessageQueue(filters){
+    filters = filters || message_filters;
+    filters.forEach(function (filter){
+        message_logs[filter] = [];
+    });
+}
+
+export function messageQueue(msg,color,dnr,tags){
+    tags = tags || [];
+    if (!tags.includes('all')){
+        tags.push('all');
+    }
+    
     color = color || 'warning';
-    var new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
-    $('#msgQueue').prepend(new_message);
+    
+    if (tags.includes(message_logs.view)){
+        let new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
+        $('#msgQueueLog').prepend(new_message);
+        if ($('#msgQueueLog').children().length > 60){
+            $('#msgQueueLog').children().last().remove();
+        }
+    }
+    tags.forEach(function (tag){
+        message_logs[tag].unshift({ msg: msg, color: color });
+        if (message_logs[tag].length > 60){
+            message_logs[tag].pop();
+        }
+    });
+    
     if (!dnr){
         if (!global.lastMsg){
             global.lastMsg = [];
         }
-        global.lastMsg.unshift({ m: msg, c: color });
+        global.lastMsg.unshift({ m: msg, c: color, t:tags });
         if (global.lastMsg.length > 3){
             global.lastMsg = global.lastMsg.slice(0,3);
         }
-    }
-    if ($('#msgQueue').children().length > 30){
-        $('#msgQueue').children().last().remove();
     }
 }
 
@@ -312,7 +336,7 @@ export function calcRQueueMax(){
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success is-sr-only">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
+    $('#buildQueue').append($(`<h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -1297,7 +1321,7 @@ function inflationAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
-                let rate = 1 + (global.race.inflation / 100);
+                let rate = 1 + (global.race.inflation / 75);
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
             }
             else {
@@ -1689,18 +1713,18 @@ export function easterEggBind(id){
                 if (global.race.universe === 'antimatter'){
                     global.race.Plasmid.anti += 10;
                     global.stats.antiplasmid += 10;
-                    messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success');
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
                     global.race.Plasmid.count += 10;
                     global.stats.plasmid += 10;
-                    messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success');
+                    messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             else {
                 global.race.Phage.count += 4;
                 global.stats.phage += 4;
-                messageQueue(loc('city_egg_msg',[4,loc('resource_Phage_name')]),'success');
+                messageQueue(loc('city_egg_msg',[4,loc('resource_Phage_name')]),'success',false,['events']);
             }
             $(`#egg${id}`).remove();
             $('.popper').hide();
@@ -1725,18 +1749,18 @@ export function trickOrTreatBind(id){
                 if (global.race.universe === 'antimatter'){
                     global.race.Plasmid.anti += 15;
                     global.stats.antiplasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_AntiPlasmid_plural_name')]),'success');
+                    messageQueue(loc('city_trick_msg',[15,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
                     global.race.Plasmid.count += 15;
                     global.stats.plasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_Plasmid_plural_name')]),'success');
+                    messageQueue(loc('city_trick_msg',[15,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             else {
                 global.race.Phage.count += 2;
                 global.stats.phage += 2;
-                messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success');
+                messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
             }
             $(`#trick${id}`).remove();
             setTimeout(function(){
