@@ -383,7 +383,7 @@ export function buildQueue(){
 
                     let final_costs = {};
                     if (c_action['cost']){
-                        let costs = adjustCosts(c_action.cost);
+                        let costs = adjustCosts(c_action);
                         Object.keys(costs).forEach(function (res){
                             let cost = costs[res]();
                             if (cost > 0){
@@ -723,7 +723,7 @@ export function timeCheck(c_action,track,detailed){
     if (c_action.cost){
         let time = 0;
         let bottleneck = false;
-        let costs = adjustCosts(c_action.cost);
+        let costs = adjustCosts(c_action);
         Object.keys(costs).forEach(function (res){
             if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
@@ -1275,7 +1275,8 @@ export function calcPrestige(type,inputs){
     return gains;
 }
 
-export function adjustCosts(costs, wiki){
+export function adjustCosts(c_action, wiki){
+    let costs = c_action.cost;
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
@@ -1285,7 +1286,7 @@ export function adjustCosts(costs, wiki){
         });
         return newCosts;
     }
-    costs = truthAdjust(costs, wiki);
+    costs = truthAdjust(costs, c_action, wiki);
     costs = inflationAdjust(costs, wiki);
     costs = technoAdjust(costs, wiki);
     costs = kindlingAdjust(costs, wiki);
@@ -1297,8 +1298,8 @@ export function adjustCosts(costs, wiki){
     return craftAdjust(costs, wiki);
 }
 
-function truthAdjust(costs, wiki){
-    if (global.race['truepath']){
+function truthAdjust(costs, c_action, wiki){
+    if (global.race['truepath'] && (!c_action.hasOwnProperty('path') || c_action.path !== 'truepath')){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){

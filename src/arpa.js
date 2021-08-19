@@ -1528,7 +1528,7 @@ function checkArpaCosts(costs){
 
 export function arpaAdjustCosts(costs){
     costs = creativeAdjust(costs);
-    return adjustCosts(costs);
+    return adjustCosts({ 'cost': costs });
 }
 
 function creativeAdjust(costs){

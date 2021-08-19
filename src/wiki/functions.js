@@ -115,7 +115,7 @@ export function actionDesc(info, c_action, extended){
     }
 
     if (c_action.hasOwnProperty('cost')){
-        let costs = adjustCosts(c_action.cost, true);
+        let costs = adjustCosts(c_action, true);
         let cost = hasEffect ? $(`<div class="cost right"></div>`) : $(`<div class="cost"></div>`);
         let render = false;
 

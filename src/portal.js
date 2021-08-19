@@ -55,7 +55,7 @@ const fortressModules = {
                 return `<div>${loc('portal_turret_effect',[rating])}</div><div class="has-text-caution">${loc('minus_power',[power])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('turret','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.turret.on++;
@@ -91,7 +91,7 @@ const fortressModules = {
                 return `${loc('portal_carport_effect')}`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('carport','portal');
                     global.civic.hell_surveyor.display = true;
                     global.resource.Infernite.display = true;
@@ -123,7 +123,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_droid_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('war_droid','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.war_droid.on++;
@@ -153,7 +153,7 @@ const fortressModules = {
                 return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('repair_droid','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.repair_droid.on++;
@@ -189,7 +189,7 @@ const fortressModules = {
                 return `<div>${loc('portal_war_drone_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('war_drone','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.war_drone.on++;
@@ -222,7 +222,7 @@ const fortressModules = {
                 return `<div>${loc('portal_sensor_drone_effect',[bonus])}</div>${sci}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('sensor_drone','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.sensor_drone.on++;
@@ -249,7 +249,7 @@ const fortressModules = {
                 return `<div>${loc('portal_attractor_effect1')}</div><div>${loc('portal_attractor_effect2',[global.resource.Soul_Gem.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('attractor','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.attractor.on++;
@@ -279,7 +279,7 @@ const fortressModules = {
             },
             effect: loc('portal_pit_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_pit_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
@@ -305,7 +305,7 @@ const fortressModules = {
             },
             effect: loc('portal_assault_forge_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_assault_forge_result'),'info',false,['progress','hell']);
                     return true;
                 }
@@ -345,7 +345,7 @@ const fortressModules = {
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.portal.soul_forge.count < 1){
                         incrementStruct('soul_forge','portal');
                         if (global.city.powered && global.city.power >= $(this)[0].powered()){
@@ -378,7 +378,7 @@ const fortressModules = {
                 return `<div>${loc('portal_gun_emplacement_effect',[soldiers])}</div><div>${loc('portal_gun_emplacement_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('gun_emplacement','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.gun_emplacement.on++;
@@ -409,7 +409,7 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_attractor_effect',[40 + attact, 120 + attact])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('soul_attractor','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.soul_attractor.on++;
@@ -455,7 +455,7 @@ const fortressModules = {
             },
             effect: loc('portal_ruins_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_ruins_mission_result'),'info',false,['progress','hell']);
                     global.portal['vault'] = { count: 0 };
                     global.portal['stonehedge'] = { count: 0 };
@@ -485,7 +485,7 @@ const fortressModules = {
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('guard_post','portal');
                     global.portal.guard_post.on++;
                     return true;
@@ -515,7 +515,7 @@ const fortressModules = {
             q_once: true,
             effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
-                if (global.portal.vault.count < 2 && payCosts($(this)[0].cost)){
+                if (global.portal.vault.count < 2 && payCosts($(this)[0])){
                     incrementStruct('vault','portal');
                     if (global.portal.vault.count === 2){
                         global.tech.hell_ruins = 3;
@@ -552,7 +552,7 @@ const fortressModules = {
                 return `<div>${loc('portal_archaeology_effect',[2])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
                     if (global.city.power >= $(this)[0].powered()){
@@ -593,7 +593,7 @@ const fortressModules = {
                 return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('arcology','portal');
                     if (global.city.power >= $(this)[0].powered()){
                         global['resource'][global.race.species].max += 8;
@@ -635,7 +635,7 @@ const fortressModules = {
                 return `<div>${loc('portal_hell_forge_effect',[1])}</div>${reactor}<div>${loc('interstellar_stellar_forge_effect3',[3])}</div><div>${loc('interstellar_stellar_forge_effect',[craft])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('hell_forge','portal');
                     if (global.city.power >= $(this)[0].powered()){
                         global.portal.hell_forge.on++;
@@ -691,7 +691,7 @@ const fortressModules = {
                 return `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div><div class="has-text-caution">${loc('portal_inferno_power_effect',[fuel.Infernite,global.resource.Infernite.name,fuel.Coal,global.resource.Coal.name,fuel.Oil,global.resource.Oil.name])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('inferno_power','portal');
                     global.portal.inferno_power.on++;
                     return true;
@@ -722,7 +722,7 @@ const fortressModules = {
             },
             action(){
                 if (global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro'){
-                    if (payCosts($(this)[0].cost)){
+                    if (payCosts($(this)[0])){
                         global.pillars[global.race.species] = alevel();
                         global.tech.pillars = 2;
                         spatialReasoning(0,false,true);
@@ -773,7 +773,7 @@ const fortressModules = {
             },
             effect: loc('portal_gate_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_gate_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
@@ -816,7 +816,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.west_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                if (global.portal.west_tower.count < towerSize() && payCosts($(this)[0])){
                     incrementStruct('west_tower','portal');
                     return true;
                 }
@@ -871,7 +871,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0].cost)){
+                if (global.portal.east_tower.count < towerSize() && payCosts($(this)[0])){
                     incrementStruct('east_tower','portal');
                     return true;
                 }
@@ -914,7 +914,7 @@ const fortressModules = {
                 return `<div>${loc('portal_gate_turret_effect',[security])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('gate_turret','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.gate_turret.on++;
@@ -947,7 +947,7 @@ const fortressModules = {
                 return `<div>${loc('portal_infernite_mine_effect',[+(mining).toFixed(3)])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('infernite_mine','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.infernite_mine.on++;
@@ -978,7 +978,7 @@ const fortressModules = {
             },
             effect: loc('portal_lake_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_lake_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
@@ -1067,7 +1067,7 @@ const fortressModules = {
                 return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('harbour','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.harbour.on++;
@@ -1095,7 +1095,7 @@ const fortressModules = {
                 return `<div>${loc('portal_cooling_tower_effect',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('cooling_tower','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.cooling_tower.on++;
@@ -1131,7 +1131,7 @@ const fortressModules = {
                 mil: 2
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('bireme','portal');
                     if (global.portal.harbour.support < global.portal.harbour.s_max){
                         global.portal.bireme.on++;
@@ -1177,7 +1177,7 @@ const fortressModules = {
                 mil: 0
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('transport','portal');
                     if (global.portal.harbour.support < global.portal.harbour.s_max){
                         global.portal.transport.on++;
@@ -1234,7 +1234,7 @@ const fortressModules = {
             },
             effect: loc('portal_spire_mission_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     messageQueue(loc('portal_spire_mission_result'),'info',false,['progress','hell']);
                     return true;
                 }
@@ -1259,7 +1259,7 @@ const fortressModules = {
                 return `<div>${loc('portal_purifier_effect',[$(this)[0].support()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('purifier','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.purifier.on++;
@@ -1290,7 +1290,7 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_port_effect2',[Math.round(port_value)])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('port','portal');
                     if (global.portal.purifier.support < global.portal.purifier.s_max){
                         global.portal.port.on++;
@@ -1322,7 +1322,7 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('base_camp','portal');
                     if (global.portal.purifier.support < global.portal.purifier.s_max){
                         global.portal.base_camp.on++;
@@ -1369,7 +1369,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.bridge.count < 10 && payCosts($(this)[0].cost)){
+                if (global.portal.bridge.count < 10 && payCosts($(this)[0])){
                     incrementStruct('bridge','portal');
                     if (global.portal.bridge.count >= 10){
                         global.portal['sphinx'] = { count: 0 };
@@ -1400,7 +1400,7 @@ const fortressModules = {
                 return loc('portal_sphinx_effect');
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.tech.hell_spire === 6){
                         global.tech.hell_spire = 7;
                         messageQueue(loc('portal_sphinx_msg'),'info',false,['progress','hell']);
@@ -1433,7 +1433,7 @@ const fortressModules = {
                 return loc('portal_sphinx_bribe_effect');
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     if (global.tech.hell_spire === 7 && !global.tech['sphinx_bribe']){
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
@@ -1465,7 +1465,7 @@ const fortressModules = {
             },
             effect: loc('portal_spire_survey_effect'),
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: [] };
                     global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
                     genSpireFloor();
@@ -1510,7 +1510,7 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_mechbay_effect')}</div><div>${loc('portal_mechbay_effect2',[bay,max])}</div>`;
             },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     incrementStruct('mechbay','portal');
                     if (global.portal.purifier.support < global.portal.purifier.s_max){
                         global.portal.mechbay.on++;
@@ -1619,7 +1619,7 @@ const fortressModules = {
                 }
             },
             action(){
-                if (global.portal.waygate.count < 10 && global.tech['waygate'] && global.tech.waygate === 1 && payCosts($(this)[0].cost)){
+                if (global.portal.waygate.count < 10 && global.tech['waygate'] && global.tech.waygate === 1 && payCosts($(this)[0])){
                     incrementStruct('waygate','portal');
                     if (global.portal.waygate.count >= 10){
                         global.tech.waygate = 2;

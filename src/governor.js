@@ -935,7 +935,7 @@ export const gov_tasks = {
         task(){
             let cost = actions.city.horseshoe.cost;
             if ( $(this)[0].req() && checkAffordable(cost)){
-                cost = adjustCosts(cost);
+                cost = adjustCosts(actions.city.horseshoe);
                 let res = 'Copper';
                 let amount = 10;
                 Object.keys(cost).forEach(function(r){
