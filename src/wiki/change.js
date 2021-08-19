@@ -3,6 +3,15 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.12`,
+        date: `8/19/2021`,
+        changes: [
+            `Training Timer for Military tab.`,
+            `Draggable config options for Spy Operator.`,
+            `Bug fixes for log and queue windows.`
+        ]
+    },
+    {
         version: `1.1.11`,
         date: `8/12/2021`,
         changes: [
