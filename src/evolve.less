@@ -3971,7 +3971,14 @@ div.bigbang {
     }
 }
 
-.popper { pointer-events: none }
+.popper {
+    pointer-events: none;
+    .touchButton {
+        pointer-events: all;
+        height: 1.25rem;
+        margin-bottom: .25rem;
+    }
+}
 #powerStatus { white-space: nowrap; }
 
 .pyro > .before, .pyro > .after {

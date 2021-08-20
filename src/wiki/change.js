@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
             `Added option to Hell Fortress to prevent using ship crew as reinforcements.`,
-            `GruvBox Dark is now the default theme.`
+            `GruvBox Dark is now the default theme.`,
+            `Improved touch device support.`
         ]
     },
     {

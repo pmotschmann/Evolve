@@ -67,13 +67,32 @@ export function popover(id,content,opts){
         });
     }
     if (opts['unbind']){
-        $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
-            clearPopper();
-            if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
-                opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
-            }
-        });
+        if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+            $(opts.elm).on('touchend',function(e){
+                clearPopper();
+                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
+                }
+            });
+        }
+        else {
+            $(opts.elm).on(opts['bind_mouse_enter'] ? 'mouseleave' : 'mouseout',function(){
+                clearPopper();
+                if (opts.hasOwnProperty('out') && typeof opts['out'] === 'function'){
+                    opts['out']({ this: this, popper: $(`#popper`), id: `popper`});
+                }
+            });
+        }
     }
+}
+
+if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+    $(document).on('touchend',function(e){
+        if ($(`.popper`).length === 1){
+            clearPopper();
+            return;
+        }
+    });
 }
 
 export function clearPopper(id){

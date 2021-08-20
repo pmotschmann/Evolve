@@ -1945,7 +1945,8 @@ export const actions = {
 
                 }
                 return false;
-            }
+            },
+            touchlabel: loc(`open`)
         },
         food: {
             id: 'city-food',
@@ -1993,7 +1994,8 @@ export const actions = {
                     }
                 }
                 return gain;
-            }
+            },
+            touchlabel: loc(`harvest`)
         },
         lumber: {
             id: 'city-lumber',
@@ -2041,7 +2043,8 @@ export const actions = {
                     }
                 }
                 return gain;
-            }
+            },
+            touchlabel: loc(`harvest`)
         },
         stone: {
             id: 'city-stone',
@@ -2087,7 +2090,8 @@ export const actions = {
                     }
                 }
                 return gain;
-            }
+            },
+            touchlabel: loc(`harvest`)
         },
         chrysotile: {
             id: 'city-chrysotile',
@@ -2134,7 +2138,8 @@ export const actions = {
                     }
                 }
                 return gain;
-            }
+            },
+            touchlabel: loc(`harvest`)
         },
         slaughter: {
             id: 'city-slaughter',
@@ -2167,7 +2172,8 @@ export const actions = {
                     modRes('Furs',gain,true);
                 }
                 return false;
-            }
+            },
+            touchlabel: loc(`kill`)
         },
         horseshoe: {
             id: 'city-horseshoe',
@@ -2244,7 +2250,8 @@ export const actions = {
                     }
                 }
                 return false;
-            }
+            },
+            touchlabel: loc(`purchase`)
         },
         s_alter: {
             id: 'city-s_alter',
@@ -2333,7 +2340,8 @@ export const actions = {
                     return true;
                 }
                 return false;
-            }
+            },
+            touchlabel: loc(`tech_dist_sacrifice`)
         },
         basic_housing: {
             id: 'city-basic_housing',
@@ -5399,148 +5407,11 @@ export function setAction(c_action,action,type,old){
         },
         methods: {
             action(){
-                if (c_action.id === 'spcdock-launch_ship'){
-                    c_action.action();
+                if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+                    return;
                 }
                 else {
-                    switch (action){
-                        case 'tech':
-                            if (!(global.settings.qKey && keyMap.q) && c_action.action()){
-                                gainTech(type);
-                                if (c_action['post']){
-                                    setTimeout(function(){
-                                        c_action.post();
-                                    }, 250);
-                                }
-                            }
-                            else {
-                                if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
-                                    if (global.r_queue.queue.length < global.r_queue.max){
-                                        let queued = false;
-                                        for (let tech in global.r_queue.queue){
-                                            if (global.r_queue.queue[tech].id === c_action.id){
-                                                queued = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!queued){
-                                            global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
-                                            resQueue();
-                                        }
-                                    }
-                                }
-                            }
-                            break;
-                        case 'genes':
-                        case 'blood':
-                            if (c_action.action()){
-                                if (action === 'genes'){
-                                    gainGene(type);
-                                }
-                                else {
-                                    gainBlood(type);
-                                }
-                                if (c_action['post']){
-                                    setTimeout(function(){
-                                        c_action.post();
-                                    }, 250);
-                                }
-                            }
-                            break;
-                        default:
-                            {
-                                let keyMult = keyMultiplier();
-                                if (c_action['grant']){
-                                    keyMult = 1;
-                                }
-                                let grant = false;
-                                let add_queue = false;
-                                let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
-                                let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
-                                for (let i=0; i<loopNum; i++){
-                                    let res = false;
-                                    if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action(1)))){
-                                        if (res !== 0 && !no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
-                                            let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                                            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-                                                max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
-                                            }
-                                            if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                                max_queue *= 2;
-                                            }
-                                            let pragVal = govActive('pragmatist',0);
-                                            if (pragVal){
-                                                max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
-                                            }
-                                            let used = 0;
-                                            for (let j=0; j<global.queue.queue.length; j++){
-                                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
-                                            }
-                                            if (used < global.queue.max){
-                                                let repeat = global.settings.qKey ? keyMult : 1;
-                                                if (repeat > global.queue.max - used){
-                                                    repeat = global.queue.max - used;
-                                                }
-                                                let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
-                                                if (global.settings.q_merge !== 'merge_never'){
-                                                    if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
-                                                        global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
-                                                    }
-                                                    else {
-                                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
-                                                    }
-                                                }
-                                                else {
-                                                    for (let k=0; k<repeat; k++){
-                                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
-                                                    }
-                                                }
-                                                add_queue = true;
-                                            }
-                                        }
-                                        break;
-                                    }
-                                    else if (!(global.settings.qKey && keyMap.q)){
-                                        if (global.race['inflation'] && global.tech['primitive']){
-                                            if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
-                                                global.race.inflation++;
-                                            }
-                                        }
-                                    }
-                                    grant = true;
-                                }
-                                if (!checkAffordable(c_action)){
-                                    let id = c_action.id;
-                                    $(`#${id}`).addClass('cna');
-                                }
-                                if (c_action['grant'] && grant){
-                                    let tech = c_action.grant[0];
-                                    global.tech[tech] = c_action.grant[1];
-                                    removeAction(c_action.id);
-                                    drawCity();
-                                    drawTech();
-                                    renderSpace();
-                                    renderFortress();
-                                }
-                                else if (c_action['refresh']){
-                                    removeAction(c_action.id);
-                                    drawCity();
-                                    drawTech();
-                                    renderSpace();
-                                    renderFortress();
-                                }
-                                if (c_action['post']){
-                                    setTimeout(function(){
-                                        c_action.post();
-                                    }, 250);
-                                }
-                                updateDesc(c_action,action,type);
-                                if (add_queue){
-                                    buildQueue();
-                                }
-                                break;
-                            }
-                    }
+                    runAction(c_action,action,type);
                 }
             },
             describe(){
@@ -5641,7 +5512,7 @@ export function setAction(c_action,action,type,old){
 
     popover(id,function(){ return undefined; },{
         in: function(obj){
-            actionDesc(obj.popper,c_action,global[action][type],old);
+            actionDesc(obj.popper,c_action,global[action][type],old,action,type);
         },
         out: function(){
             vBind({el: `#popTimer`},'destroy');
@@ -5649,6 +5520,152 @@ export function setAction(c_action,action,type,old){
         attach: action === 'starDock' ? 'body .modal' : '#main',
         wide: c_action['wide']
     });
+}
+
+function runAction(c_action,action,type){
+    if (c_action.id === 'spcdock-launch_ship'){
+        c_action.action();
+    }
+    else {
+        switch (action){
+            case 'tech':
+                if (!(global.settings.qKey && keyMap.q) && c_action.action()){
+                    gainTech(type);
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 250);
+                    }
+                }
+                else {
+                    if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
+                        if (global.r_queue.queue.length < global.r_queue.max){
+                            let queued = false;
+                            for (let tech in global.r_queue.queue){
+                                if (global.r_queue.queue[tech].id === c_action.id){
+                                    queued = true;
+                                    break;
+                                }
+                            }
+                            if (!queued){
+                                global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
+                                resQueue();
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'genes':
+            case 'blood':
+                if (c_action.action()){
+                    if (action === 'genes'){
+                        gainGene(type);
+                    }
+                    else {
+                        gainBlood(type);
+                    }
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 250);
+                    }
+                }
+                break;
+            default:
+                {
+                    let keyMult = keyMultiplier();
+                    if (c_action['grant']){
+                        keyMult = 1;
+                    }
+                    let grant = false;
+                    let add_queue = false;
+                    let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
+                    let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
+                    for (let i=0; i<loopNum; i++){
+                        let res = false;
+                        if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action(1)))){
+                            if (res !== 0 && !no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
+                                let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
+                                if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
+                                    max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+                                }
+                                if (global.genes['queue'] && global.genes['queue'] >= 2){
+                                    max_queue *= 2;
+                                }
+                                let pragVal = govActive('pragmatist',0);
+                                if (pragVal){
+                                    max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
+                                }
+                                let used = 0;
+                                for (let j=0; j<global.queue.queue.length; j++){
+                                    used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                }
+                                if (used < global.queue.max){
+                                    let repeat = global.settings.qKey ? keyMult : 1;
+                                    if (repeat > global.queue.max - used){
+                                        repeat = global.queue.max - used;
+                                    }
+                                    let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
+                                    if (global.settings.q_merge !== 'merge_never'){
+                                        if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
+                                            global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
+                                        }
+                                        else {
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
+                                        }
+                                    }
+                                    else {
+                                        for (let k=0; k<repeat; k++){
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
+                                        }
+                                    }
+                                    add_queue = true;
+                                }
+                            }
+                            break;
+                        }
+                        else if (!(global.settings.qKey && keyMap.q)){
+                            if (global.race['inflation'] && global.tech['primitive']){
+                                if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
+                                    global.race.inflation++;
+                                }
+                            }
+                        }
+                        grant = true;
+                    }
+                    if (!checkAffordable(c_action)){
+                        let id = c_action.id;
+                        $(`#${id}`).addClass('cna');
+                    }
+                    if (c_action['grant'] && grant){
+                        let tech = c_action.grant[0];
+                        global.tech[tech] = c_action.grant[1];
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    else if (c_action['refresh']){
+                        removeAction(c_action.id);
+                        drawCity();
+                        drawTech();
+                        renderSpace();
+                        renderFortress();
+                    }
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 250);
+                    }
+                    updateDesc(c_action,action,type);
+                    if (add_queue){
+                        buildQueue();
+                    }
+                    break;
+                }
+        }
+    }
 }
 
 export function setPlanet(hell){
@@ -5955,9 +5972,20 @@ function srDesc(c_action,old){
     return desc.replace("..",".");
 }
 
-export function actionDesc(parent,c_action,obj,old){
+export function actionDesc(parent,c_action,obj,old,action,a_type){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
+
+    let touch = false;
+    if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+        touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
+        parent.append(touch);
+
+        $('#touchButton').on('touchstart', function(){
+            runAction(c_action,action,a_type);
+        });
+    }
+
     parent.append($(`<div>${desc}</div>`));
 
     let type = c_action.id.split('-')[0];
@@ -6130,7 +6158,7 @@ export function updateDesc(c_action,category,action){
         }
     }
     if ($('#popper').data('id') === id){
-        actionDesc($('#popper'),c_action,global[category][action]);
+        actionDesc($('#popper'),c_action,global[category][action],false,category,action);
     }
 }
 
