@@ -450,6 +450,7 @@ export function loadTab(tab){
                                 clearElement($(`#powerGrid`));
                                 clearElement($(`#military`));
                                 clearElement($(`#mechLab`));
+                                clearElement($(`#dwarfShipYard`));
                                 switch (tab){
                                     case 0:
                                         {
@@ -518,6 +519,9 @@ export function loadTab(tab){
                     buildFortress($('#fortress'),false);
                     foreignGov();
                     drawMechLab();
+                    if (global.race['truepath']){
+                        drawShipYard();
+                    }
                 }
                 defineIndustry();
             }

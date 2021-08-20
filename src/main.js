@@ -2053,6 +2053,9 @@ function fastLoop(){
         }
         else {
             global.settings.showShipYard = false;
+            if (global.settings.govTabs === 5){
+                global.settings.govTabs = 0;
+            }
         }
 
         var galaxy_ship_types = [

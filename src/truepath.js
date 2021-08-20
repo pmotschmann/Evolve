@@ -1,5 +1,5 @@
 import { global } from './vars.js';
-import { messageQueue, powerCostMod, spaceCostMultiplier } from './functions.js';
+import { vBind, clearElement, messageQueue, powerCostMod, spaceCostMultiplier } from './functions.js';
 import { races, genusVars } from './races.js';
 import { payCosts, spaceTech } from './actions.js';
 import { fuel_adjust } from './space.js';
@@ -125,8 +125,63 @@ export function drawShipYard(){
         return;
     }
     clearElement($('#dwarfShipYard'));
-    if (global.portal.hasOwnProperty('shipyard') && global.settings.showShipYard){
+    if (global.space.hasOwnProperty('shipyard') && global.settings.showShipYard){
         let yard = $(`#dwarfShipYard`);
+
+        if (!global.space.shipyard.hasOwnProperty('blueprint')){
+            global.space.shipyard['blueprint'] = {
+                class: 'corvette',
+                armor: 'steel',
+                weapon: 'railgun',
+                engine: 'ion',
+                power: 'diesel',
+                name: 'Trident'
+            };
+        }
+
+        let plans = $(`<div id="shipPlans"></div>`);
+        yard.append(plans);
+
+        let options = $(`<div class="bayOptions"></div>`);
+        plans.append(options);
+
+        let shipConfig = {
+            class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'],
+            power: ['solar','diesel','fission','fusion','elerium'],
+            weapon: ['railgun','laser','p_laser','plasma','phaser','disrupter'],
+            armor : ['steel','alloy','neutronium']
+        };
+        
+        Object.keys(shipConfig).forEach(function(k){
+            let values = ``;
+            shipConfig[k].forEach(function(v,idx){
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="size r0 a${idx}" data-val="${v}">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
+            });
+
+            options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+                <button class="button is-info" slot="trigger">
+                    <span>${loc(`outer_shipyard_${k}`)}: {{ b.${k} | lbl('${k}') }}</span>
+                    <b-icon icon="menu-down"></b-icon>
+                </button>${values}
+            </b-dropdown>`);
+        });
+
+        vBind({
+            el: '#shipPlans',
+            data: {
+                b: global.space.shipyard.blueprint
+            },
+            methods: {
+                setVal(b,v){
+                    global.space.shipyard.blueprint[b] = v;
+                }
+            },
+            filters: {
+                lbl(l,c){
+                    return loc(`outer_shipyard_${c}_${l}`);
+                },
+            }
+        });
     }
 }
 
