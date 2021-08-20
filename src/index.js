@@ -11,6 +11,7 @@ import { races } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
+import { drawShipYard } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 import { alevel } from './achieve.js';
 
@@ -426,6 +427,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_shipyard' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_shipyard' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivic`,
@@ -477,6 +484,11 @@ export function loadTab(tab){
                                     case 4:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             drawMechLab();
+                                        }
+                                        break;
+                                    case 5:
+                                        if (global.race['truepath'] && global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
+                                            drawShipYard();
                                         }
                                         break;
                                 }

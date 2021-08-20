@@ -913,6 +913,10 @@ if (!global.settings.hasOwnProperty('showMechLab')){
     global.settings['showMechLab'] = false;
 }
 
+if (!global.settings.hasOwnProperty('showShipYard')){
+    global.settings['showShipYard'] = false;
+}
+
 if (!global.settings.hasOwnProperty('showCiv')){
     global.settings['showCiv'] = global.settings['showCity'];
 }
@@ -2024,6 +2028,7 @@ export function clearStates(){
     global.settings.showIndustry = false;
     global.settings.showPowerGrid = false;
     global.settings.showMechLab = false;
+    global.settings.showShipYard = false;
     global.settings.showResearch = false;
     global.settings.showCivic = false;
     global.settings.showMil = false;

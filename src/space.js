@@ -1,11 +1,12 @@
 import { save, global, webWorker, clearStates, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, planetTraits, genusVars } from './races.js';
+import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
+import { outerTruth } from './truepath.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -1893,138 +1894,45 @@ const spaceProjects = {
             cost: {
                 Money(){ return 10000000; },
                 Aluminium(){ return 1000000; },
-                Steel(){ return 750000; },
-                Titanium(){ return 500000; },
+                Titanium(){ return 650000; },
                 Iridium(){ return 250000; },
-                Neutronium(){ return 10000; }
+                Neutronium(){ return 10000; },
+                Mythril(){ return 500000; },
             },
             no_queue(){ return global.space.shipyard.count < 1 ? false : true },
             queue_complete(){ return 1 - global.space.shipyard.count; },
             effect(){
-                return 'builds ships, duh';
+                return loc('outer_shipyard_effect');
             },
             powered(){ return powerCostMod(50); },
+            special: true,
+            sAction(){
+                if (p_on['shipyard']){
+                    global.settings.civTabs = 2;
+                    global.settings.govTabs = 5;
+                    if (!global.settings.tabLoad){
+                        loadTab('mTabCivic');
+                        clearElement($('#popspace-shipyard'),true);
+                        clearPopper(`space-shipyard`);
+                    }
+                }
+            },
             action(){
                 if (global.space.shipyard.count < 1 && payCosts($(this)[0])){
                     incrementStruct('shipyard');
-                    return true;
-                }
-                return false;
-            }
-        },
-    },
-    spc_titan: {
-        info: {
-            name(){
-                return genusVars[races[global.race.species].type].solar.titan;
-            },
-            desc(){
-                return loc('space_titan_info_desc',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]);
-            },
-            support: 'titan_spaceport',
-            zone: 'outer'
-        },
-        titan_mission: {
-            id: 'space-titan_mission',
-            title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.titan]);
-            },
-            desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.titan]);
-            },
-            reqs: { outer: 1 },
-            grant: ['titan',1],
-            path: 'truepath',
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return +fuel_adjust(200000).toFixed(0); },
-                Elerium(){ return 100; }
-            },
-            effect(){
-                return loc('space_titan_mission_effect',[genusVars[races[global.race.species].type].solar.titan]);
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info');
-                    return true;
-                }
-                return false;
-            }
-        },
-        titan_spaceport: {
-            id: 'space-titan_spaceport',
-            title: loc('space_red_spaceport_title'),
-            desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
-            reqs: { titan: 1 },
-            path: 'truepath',
-            cost: {
-                Money(offset){ return spaceCostMultiplier('titan_spaceport', offset, 2500000, 1.32); },
-                Iridium(offset){ return spaceCostMultiplier('titan_spaceport', offset, 3500, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('titan_spaceport', offset, 50, 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('titan_spaceport', offset, 45000, 1.32); }
-            },
-            effect(){
-                let helium = +(fuel_adjust(5,true)).toFixed(2);
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,$(this)[0].support()])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
-            },
-            support(){
-                return 2;
-            },
-            powered(){ return powerCostMod(8); },
-            refresh: true,
-            action(){
-                if (payCosts($(this)[0])){
-                    incrementStruct('titan_spaceport');
                     if (global.city.power >= $(this)[0].powered()){
-                        global.space['titan_spaceport'].on++;
+                        global.settings.showShipYard = true;
+                        global.space.shipyard.on++;
                     }
-                    if (global.tech['titan'] <= 1){
-                        global.tech['titan'] = 2;
-                    }
+                    global.space.shipyard['ships'] = [];
                     return true;
                 }
                 return false;
             }
         },
     },
-    spc_enceladus: {
-        info: {
-            name(){
-                return genusVars[races[global.race.species].type].solar.enceladus;
-            },
-            desc(){
-                return loc('space_enceladus_info_desc',[genusVars[races[global.race.species].type].solar.enceladus, races[global.race.species].home]);
-            },
-            zone: 'outer'
-        },
-        enceladus_mission: {
-            id: 'space-enceladus_mission',
-            title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.enceladus]);
-            },
-            desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.enceladus]);
-            },
-            reqs: { outer: 1 },
-            grant: ['enceladus',1],
-            path: 'truepath',
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
-                Helium_3(){ return +fuel_adjust(200000).toFixed(0); },
-                Elerium(){ return 100; }
-            },
-            effect(){
-                return loc('space_titan_mission_effect',[genusVars[races[global.race.species].type].solar.enceladus]);
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info');
-                    return true;
-                }
-                return false;
-            }
-        },
-    },
+    spc_titan: outerTruth.spc_titan,
+    spc_enceladus: outerTruth.spc_enceladus,
 };
 
 const interstellarProjects = {
@@ -5775,8 +5683,8 @@ export function fuel_adjust(fuel,drain){
     if (global.race.universe === 'heavy'){
         fuel *= 1.25 + (0.5 * darkEffect('heavy'));
     }
-    if (drain && global.race['truepath']){
-        fuel *= 2;
+    if (global.race['truepath']){
+        fuel *= drain ? 2.5 : 1.25;
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         let factor = global.race['truepath'] ? 0.94 : 0.95;

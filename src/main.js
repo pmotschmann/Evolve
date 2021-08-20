@@ -8,8 +8,9 @@ import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
-import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy } from './space.js';
+import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
+import { syndicate } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -2044,6 +2045,14 @@ function fastLoop(){
         else {
             global.settings.showGalactic = false;
             global.settings.space.stargate = false;
+        }
+
+        // Ship Yard
+        if (p_on['shipyard']){
+            global.settings.showShipYard = true;
+        }
+        else {
+            global.settings.showShipYard = false;
         }
 
         var galaxy_ship_types = [
@@ -4284,8 +4293,10 @@ function fastLoop(){
 
                 let space_iron = 0;
 
+                let synd = syndicate('spc_belt');
                 if (belt_on['iron_ship']){
                     space_iron = belt_on['iron_ship'] * production('iron_ship');
+                    space_iron *= synd;
                 }
 
                 let iron_power = power_mult;
@@ -4302,6 +4313,7 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
+                iron_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 iron_bd[loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
 
@@ -4395,16 +4407,20 @@ function fastLoop(){
         }
 
         // Mars Mining
-        if (red_on['red_mine'] && red_on['red_mine'] > 0) {
+        if (red_on['red_mine'] && red_on['red_mine'] > 0){
+            let synd = syndicate('spc_red');
+
             let copper_base = red_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper').f;
             copper_base *= shrineMetal.mult;
             copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
-            modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger);
+            copper_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger * synd);
 
             let titanium_base = red_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium').f;
             titanium_base *= shrineMetal.mult;
             titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
-            modRes('Titanium', titanium_base * time_multiplier * global_multiplier);
+            titanium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            modRes('Titanium', titanium_base * time_multiplier * global_multiplier  * synd);
         }
         if (shrineBonusActive()){
             copper_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
@@ -4519,15 +4535,21 @@ function fastLoop(){
             if (global.city.geology['Iridium']){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier;
+            let synd = syndicate('spc_moon');
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
+
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
+            iridium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
 
         if (belt_on['iridium_ship']){
             let iridium_base = belt_on['iridium_ship'] * production('iridium_ship');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier;
+            let synd = syndicate('spc_belt');
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
+
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
+            iridium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
 
@@ -4553,17 +4575,21 @@ function fastLoop(){
         let helium_bd = {};
         if (global.space['moon_base'] && moon_on['helium_mine']){
             let helium_base = moon_on['helium_mine'] * production('helium_mine').f;
-            let delta = helium_base * hunger * global_multiplier;
+            let synd = syndicate('spc_moon');
+            let delta = helium_base * hunger * global_multiplier * synd;
 
             helium_bd[loc('space_moon_helium_mine_title')] = helium_base + 'v';
+            helium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             modRes('Helium_3', delta * time_multiplier);
         }
 
         if (global.space['gas_mining'] && p_on['gas_mining']){
             let gas_mining = p_on['gas_mining'] * production('gas_mining');
-            let delta = gas_mining * hunger * global_multiplier;
+            let synd = syndicate('spc_gas');
+            let delta = gas_mining * hunger * global_multiplier * synd;
 
             helium_bd[loc('space_gas_mining_title')] = gas_mining + 'v';
+            helium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -4654,8 +4680,10 @@ function fastLoop(){
         let elerium_bd = {};
         if (belt_on['elerium_ship']){
             let elerium_base = belt_on['elerium_ship'] * production('elerium_ship');
-            let delta = elerium_base * hunger * global_multiplier;
+            let synd = syndicate('spc_belt');
+            let delta = elerium_base * hunger * global_multiplier * synd;
             elerium_bd[loc('job_space_miner')] = elerium_base + 'v';
+            elerium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.75;
@@ -7990,22 +8018,27 @@ function longLoop(){
         }
 
         if (global.tech['piracy']){
-            if (global.race['truepath']){
-                if (global.tech.piracy < 2500 && Math.rand(0, 3) === 0){
-                    global.tech.piracy++;
-                }
+            if (global.tech.piracy < 1000){
+                global.tech.piracy++;
             }
-            else {
-                if (global.tech.piracy < 1000){
-                    global.tech.piracy++;
-                }
-                else if (global.tech.xeno >= 8 && global.tech.piracy < 2500){
-                    global.tech.piracy++;
-                }
-                else if (global.tech['conflict'] && global.tech.piracy < 5000){
-                    global.tech.piracy++;
-                }
+            else if (global.tech.xeno >= 8 && global.tech.piracy < 2500){
+                global.tech.piracy++;
             }
+            else if (global.tech['conflict'] && global.tech.piracy < 5000){
+                global.tech.piracy++;
+            }
+        }
+
+        if (global.tech['syndicate'] && global.race['truepath']){
+            let regions = spaceTech();
+            Object.keys(regions).forEach(function(region){
+                if (!global.space.syndicate.hasOwnProperty(region)){
+                    global.space.syndicate[region] = 0;
+                }
+                if (global.space.syndicate[region] < 5000 && Math.rand(0, 10) === 0){
+                    global.space.syndicate[region]++;
+                }
+            });
         }
 
         if (global.race['infiltrator']){
@@ -8196,9 +8229,10 @@ function longLoop(){
             drawTech();
         }
 
-        if (!global.tech['piracy'] && global.tech['outer'] && Math.rand(0, 20) === 0){
+        if (!global.tech['syndicate'] && global.tech['outer'] && Math.rand(0, 20) === 0){
             messageQueue(loc('outer_syndicate',[govTitle(4)]),'info');
-            global.tech['piracy'] = 1;
+            global.tech['syndicate'] = 1;
+            global.space['syndicate'] = {};
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
