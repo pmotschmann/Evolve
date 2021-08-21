@@ -10213,14 +10213,15 @@ const techs = {
         desc: loc('tech_long_range_probes'),
         category: 'space_exploration',
         era: 'solar',
+        path: 'truepath',
         reqs: { high_tech: 10, elerium: 1 },
         grant: ['outer',1],
         cost: {
             Knowledge(){ return 400000; },
-            Uranium(){ return 10000; },
-            Iridium(){ return 125000; },
-            Neutronium(){ return 1500; },
-            Elerium(){ return 175; }
+            Uranium(){ return 20000; },
+            Iridium(){ return 250000; },
+            Neutronium(){ return 3000; },
+            Elerium(){ return 350; }
         },
         effect: loc('tech_long_range_probes_effect'),
         action(){
@@ -10236,6 +10237,7 @@ const techs = {
         desc(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
         category: 'space_militarization',
         era: 'solar',
+        path: 'truepath',
         reqs: { outer: 1, piracy: 1 },
         grant: ['shipyard',1],
         cost: {
@@ -10249,6 +10251,47 @@ const techs = {
             }
             return false;
         },
+    },
+    ship_lasers: {
+        id: 'tech-ship_lasers',
+        title: loc('tech_ship_lasers'),
+        desc: loc('tech_ship_lasers'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: 'truepath',
+        reqs: { military: 7, syard_weapon: 1 },
+        grant: ['syard_weapon',2],
+        cost: {
+            Knowledge(){ return 425000; },
+            Elerium(){ return 500; }
+        },
+        effect: loc('tech_ship_lasers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    destroyer_ship: {
+        id: 'tech-destroyer_ship',
+        title: loc('tech_destroyer_ship'),
+        desc: loc('tech_destroyer_ship'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: 'truepath',
+        reqs: { syard_class: 2 },
+        grant: ['syard_class',3],
+        cost: {
+            Knowledge(){ return 450000; }
+        },
+        effect: loc('tech_destroyer_ship_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     },
 };
 

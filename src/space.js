@@ -1925,6 +1925,12 @@ const spaceProjects = {
                         global.space.shipyard.on++;
                     }
                     global.space.shipyard['ships'] = [];
+                    global.tech['syard_class'] = 2;
+                    global.tech['syard_armor'] = 3;
+                    global.tech['syard_weapon'] = 1;
+                    global.tech['syard_engine'] = 2;
+                    global.tech['syard_power'] = 3;
+                    global.tech['syard_sensor'] = 3;
                     return true;
                 }
                 return false;

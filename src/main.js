@@ -7504,15 +7504,16 @@ function midLoop(){
                     if (global.resource.hasOwnProperty(res)){
                         let res_val = elm.attr(`data-${res}`);
                         let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
+                        let avail = elm.attr(`data-ok`) ? elm.attr(`data-ok`) : 'has-text-dark';
                         if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
-                            if (elm.hasClass('has-text-dark')){
-                                elm.removeClass('has-text-dark');
+                            if (elm.hasClass(avail)){
+                                elm.removeClass(avail);
                                 elm.addClass('has-text-danger');
                             }
                         }
                         else if (elm.hasClass('has-text-danger') || elm.hasClass('has-text-alert')){
                             elm.removeClass('has-text-danger');
-                            elm.addClass('has-text-dark');
+                            elm.addClass(avail);
                         }
                     }
                 }

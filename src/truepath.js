@@ -1,7 +1,7 @@
-import { global } from './vars.js';
-import { vBind, clearElement, messageQueue, powerCostMod, spaceCostMultiplier } from './functions.js';
+import { global, sizeApproximation } from './vars.js';
+import { vBind, clearElement, popover, messageQueue, powerCostMod, spaceCostMultiplier } from './functions.js';
 import { races, genusVars } from './races.js';
-import { payCosts, spaceTech } from './actions.js';
+import { payCosts } from './actions.js';
 import { fuel_adjust } from './space.js';
 import { loc } from './locale.js';
 
@@ -135,6 +135,7 @@ export function drawShipYard(){
                 weapon: 'railgun',
                 engine: 'ion',
                 power: 'diesel',
+                sensor: 'radar',
                 name: 'Trident'
             };
         }
@@ -142,20 +143,33 @@ export function drawShipYard(){
         let plans = $(`<div id="shipPlans"></div>`);
         yard.append(plans);
 
-        let options = $(`<div class="bayOptions"></div>`);
+        let shipStats = $(`<div class="stats"></div>`);
+        plans.append(shipStats);
+
+        shipStats.append(`<div class="registry"><span class="has-text-caution">${loc(`outer_shipyard_registry`)}</span>: <b-input v-model="b.name" maxlength="25" class="nameplate"></b-input></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`power`)}</span> <span v-html="powerText()"></span></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`firepower`)}</span> <span v-html="fireText()"></span></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_sensors`)}</span> <span v-html="sensorText()"></span></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`speed`)}</span> <span v-html="speedText()"></span></div>`);
+
+        plans.append(`<div id="shipYardCosts" class="costList"></div>`);
+
+        let options = $(`<div class="shipBayOptions"></div>`);
         plans.append(options);
 
         let shipConfig = {
             class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'],
             power: ['solar','diesel','fission','fusion','elerium'],
             weapon: ['railgun','laser','p_laser','plasma','phaser','disrupter'],
-            armor : ['steel','alloy','neutronium']
+            armor : ['steel','alloy','neutronium'],
+            engine: ['ion','tie','pulse','photon','vacuum'],
+            sensor: ['visual','radar','lidar','quantum'],
         };
         
         Object.keys(shipConfig).forEach(function(k){
             let values = ``;
             shipConfig[k].forEach(function(v,idx){
-                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="size r0 a${idx}" data-val="${v}">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
@@ -166,6 +180,8 @@ export function drawShipYard(){
             </b-dropdown>`);
         });
 
+        updateCosts();
+
         vBind({
             el: '#shipPlans',
             data: {
@@ -174,15 +190,379 @@ export function drawShipYard(){
             methods: {
                 setVal(b,v){
                     global.space.shipyard.blueprint[b] = v;
+                    updateCosts();
+                },
+                avail(k,i){
+                    return global.tech[`syard_${k}`] > i ? true : false;
+                },
+                powerText(){
+                    let power = shipPower(global.space.shipyard.blueprint);
+                    if (power < 0){
+                        return `<span class="has-text-danger">${power}kW</span>`;
+                    }
+                    return `${power}kW`;
+                },
+                fireText(){
+                    return shipAttackPower(global.space.shipyard.blueprint);
+                },
+                sensorText(){
+                    switch (global.space.shipyard.blueprint.sensor){
+                        case 'visual':
+                            return `0km`;
+                        case 'radar':
+                            return `10km`;
+                        case 'lidar':
+                            return `20km`;
+                        case 'quantum':
+                            return `40km`;
+                    }
+                },
+                speedText(){
+                    let speed = shipSpeed(global.space.shipyard.blueprint);
+                    return +speed.toFixed(2);
                 }
             },
             filters: {
                 lbl(l,c){
                     return loc(`outer_shipyard_${c}_${l}`);
+                }
+            }
+        });
+
+        Object.keys(shipConfig).forEach(function(type){
+            for (let i=0; i<$(`#shipPlans .${type}`).length; i++){
+                popover(`shipPlans${type}${i}`, function(obj){
+                    let val = $(obj.this).attr(`data-val`);
+                    return loc(`outer_shipyard_${type}_${val}_desc`);
                 },
+                {
+                    elm: `#shipPlans .${type}.a${i}`,
+                    placement: 'right'
+                });
             }
         });
     }
+}
+
+function updateCosts(){
+    let costs = shipCosts(global.space.shipyard.blueprint);
+    clearElement($(`#shipYardCosts`));
+
+    Object.keys(costs).forEach(function(k){
+        if (k === 'Money'){
+            $(`#shipYardCosts`).append(`<span class="res-${k} has-text-success" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name}${sizeApproximation(costs[k])}</span>`);
+        }
+        else {
+            $(`#shipYardCosts`).append(`<span> | </span><span class="res-${k} has-text-success" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name} ${sizeApproximation(costs[k])}</span>`);
+        }
+    });
+}
+
+function shipPower(ship){
+    let watts = 0;
+
+    let out_inflate = 1;
+    let use_inflate = 1;
+    switch (ship.class){
+        case 'frigate':
+            out_inflate = 1.1;
+            use_inflate = 1.2;
+            break;
+        case 'destroyer':
+            out_inflate = 1.5;
+            use_inflate = 1.65;
+            break;
+        case 'cruiser':
+            out_inflate = 2;
+            use_inflate = 2.5;
+            break;
+        case 'battlecruiser':
+            out_inflate = 2.5;
+            use_inflate = 3.5;
+            break;
+        case 'dreadnought':
+            out_inflate = 5;
+            use_inflate = 8;
+            break;
+    }
+
+    switch (ship.power){
+        case 'solar':
+            watts = Math.round(50 * out_inflate);
+            break;
+        case 'diesel':
+            watts = Math.round(100 * out_inflate);
+            break;
+        case 'fission':
+            watts = Math.round(150 * out_inflate);
+            break;
+        case 'fusion':
+            watts = Math.round(175 * out_inflate);
+            break;
+        case 'elerium':
+            watts = Math.round(200 * out_inflate);
+            break;
+    }
+
+    switch (ship.weapon){
+        case 'railgun':
+            watts -= Math.round(10 * use_inflate);
+            break;
+        case 'laser':
+            watts -= Math.round(30 * use_inflate);
+            break;
+        case 'p_laser':
+            watts -= Math.round(25 * use_inflate);
+            break;
+        case 'plasma':
+            watts -= Math.round(50 * use_inflate);
+            break;
+        case 'phaser':
+            watts -= Math.round(65 * use_inflate);
+            break;
+        case 'disrupter':
+            watts -= Math.round(100 * use_inflate);
+            break;
+    }
+
+    switch (ship.engine){
+        case 'ion':
+            watts -= Math.round(25 * use_inflate);
+            break;
+        case 'tie':
+            watts -= Math.round(50 * use_inflate);
+            break;
+        case 'pulse':
+            watts -= Math.round(40 * use_inflate);
+            break;
+        case 'photon':
+            watts -= Math.round(100 * use_inflate);
+            break;
+        case 'vacuum':
+            watts -= Math.round(150 * use_inflate);
+            break;
+    }
+
+    switch (ship.sensor){
+        case 'radar':
+            watts -= Math.round(10 * use_inflate);
+            break;
+        case 'lidar':
+            watts -= Math.round(25 * use_inflate);
+            break;
+        case 'quantum':
+            watts -= Math.round(75 * use_inflate);
+            break;
+    }
+
+    return watts;
+}
+
+function shipAttackPower(ship){
+    let rating = 0;
+    switch (ship.weapon){
+        case 'railgun':
+            rating = 8;
+            break;
+        case 'laser':
+            rating = 14;
+            break;
+        case 'p_laser':
+            rating = 12;
+            break;
+        case 'plasma':
+            rating = 20;
+            break;
+        case 'phaser':
+            rating = 25;
+            break;
+        case 'disrupter':
+            rating = 35;
+            break;
+    }
+
+    switch (ship.class){
+        case 'corvette':
+            return rating;
+        case 'frigate':
+            return Math.round(rating * 1.25);
+        case 'destroyer':
+            return Math.round(rating * 2);
+        case 'cruiser':
+            return Math.round(rating * 4.5);
+        case 'battlecruiser':
+            return Math.round(rating * 8);
+        case 'dreadnought':
+            return Math.round(rating * 22);
+    }
+}
+
+function shipSpeed(ship){
+    let mass = 1;
+    switch (ship.class){
+        case 'corvette':
+            mass = ship.armor === 'neutronium' ? 1.1 : 1;
+            break;
+        case 'frigate':
+            mass = ship.armor === 'neutronium' ? 1.35 : 1.25;
+            break;
+        case 'destroyer':
+            mass = ship.armor === 'neutronium' ? 1.95 : 1.8;
+            break;
+        case 'cruiser':
+            mass = ship.armor === 'neutronium' ? 3.5 : 3;
+            break;
+        case 'battlecruiser':
+            mass = ship.armor === 'neutronium' ? 4.8 : 4;
+            break;
+        case 'dreadnought':
+            mass = ship.armor === 'neutronium' ? 7.5 : 6;
+            break;
+    }
+
+    switch (ship.engine){
+        case 'ion':
+            return 10 / mass;
+        case 'tie':
+            return 18 / mass;
+        case 'pulse':
+            return 15 / mass;
+        case 'photon':
+            return 20 / mass;
+        case 'vacuum':
+            return 25 / mass;
+    }
+}
+
+function shipCosts(bp){
+    let costs = {};
+
+    let h_inflate = 1;
+    switch (bp.class){
+        case 'corvette':
+            costs['Money'] = 2500000;
+            costs['Aluminium'] = 500000;
+            h_inflate = 1;
+            break;
+        case 'frigate':
+            costs['Money'] = 5000000;
+            costs['Aluminium'] = 1250000;
+            h_inflate = 1.1;
+            break;
+        case 'destroyer':
+            costs['Money'] = 15000000;
+            costs['Aluminium'] = 3500000;
+            h_inflate = 1.2;
+            break;
+        case 'cruiser':
+            costs['Money'] = 50000000;
+            costs['Aluminium'] = 12000000;
+            h_inflate = 1.3;
+            break;
+        case 'battlecruiser':
+            costs['Money'] = 125000000;
+            costs['Aluminium'] = 32000000;
+            h_inflate = 1.4;
+            break;
+        case 'dreadnought':
+            costs['Money'] = 1000000000;
+            costs['Aluminium'] = 128000000;
+            h_inflate = 1.5;
+            break;
+    }
+
+    switch (bp.armor){
+        case 'steel':
+            costs['Steel'] = Math.round(350000 ** h_inflate);
+            break;
+        case 'alloy':
+            costs['Alloy'] = Math.round(250000 ** h_inflate);
+            break;
+        case 'neutronium':
+            costs['Neutronium'] = Math.round(10000 ** h_inflate);
+            break;
+    }
+
+    switch (bp.engine){
+        case 'ion':
+            costs['Titanium'] = Math.round(75000 ** h_inflate);
+            break;
+        case 'tie':
+            costs['Titanium'] = Math.round(150000 ** h_inflate);
+            break;
+        case 'pulse':
+            costs['Titanium'] = Math.round(125000 ** h_inflate);
+            break;
+        case 'photon':
+            costs['Titanium'] = Math.round(225000 ** h_inflate);
+            break;
+        case 'vacuum':
+            costs['Titanium'] = Math.round(350000 ** h_inflate);
+            break;
+    }
+
+    switch (bp.power){
+        case 'solar':
+            costs['Copper'] = Math.round(40000 ** h_inflate);
+            costs['Iridium'] = Math.round(15000 ** h_inflate);
+            break;
+        case 'diesel':
+            costs['Copper'] = Math.round(40000 ** h_inflate);
+            costs['Iridium'] = Math.round(15000 ** h_inflate);
+            break;
+        case 'fission':
+            costs['Copper'] = Math.round(50000 ** h_inflate);
+            costs['Iridium'] = Math.round(30000 ** h_inflate);
+            break;
+        case 'fusion':
+            costs['Copper'] = Math.round(50000 ** h_inflate);
+            costs['Iridium'] = Math.round(40000 ** h_inflate);
+            break;
+        case 'elerium':
+            costs['Copper'] = Math.round(60000 ** h_inflate);
+            costs['Iridium'] = Math.round(75000 ** h_inflate);
+            break;
+    }
+
+    switch (bp.sensor){
+        case 'radar':
+            costs['Money'] = Math.round(costs['Money'] ** 1.05);
+            break;
+        case 'lidar':
+            costs['Money'] = Math.round(costs['Money'] ** 1.12);
+            break;
+        case 'quantum':
+            costs['Money'] = Math.round(costs['Money'] ** 1.25);
+            break;
+    }
+
+    switch (bp.weapon){
+        case 'railgun':
+            costs['Iron'] = Math.round(25000 ** h_inflate);
+            break;
+        case 'laser':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.05);
+            costs['Nano_Tube'] = Math.round(12000 ** h_inflate);
+            break;
+        case 'p_laser':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.035);
+            costs['Nano_Tube'] = Math.round(12000 ** h_inflate);
+            break;
+        case 'plasma':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.1);
+            costs['Nano_Tube'] = Math.round(20000 ** h_inflate);
+            break;
+        case 'phaser':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.175);
+            costs['Nano_Tube'] = Math.round(35000 ** h_inflate);
+            break;
+        case 'disrupter':
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.25);
+            costs['Nano_Tube'] = Math.round(65000 ** h_inflate);
+            break;
+    }
+
+    return costs;
 }
 
 export function syndicate(region){
