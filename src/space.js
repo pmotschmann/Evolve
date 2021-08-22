@@ -185,7 +185,7 @@ const spaceProjects = {
             },
             support: 'moon_base',
             zone: 'inner',
-            syndicate: true
+            syndicate(){ return true; }
         },
         moon_mission: {
             id: 'space-moon_mission',
@@ -385,7 +385,7 @@ const spaceProjects = {
             },
             support: 'spaceport',
             zone: 'inner',
-            syndicate: true
+            syndicate(){ return true; }
         },
         red_mission: {
             id: 'space-red_mission',
@@ -1277,7 +1277,7 @@ const spaceProjects = {
                 return loc('space_gas_info_desc',[races[global.race.species].solar.gas, races[global.race.species].home]);
             },
             zone: 'outer',
-            syndicate: true
+            syndicate(){ return true; }
         },
         gas_mission: {
             id: 'space-gas_mission',
@@ -1402,7 +1402,7 @@ const spaceProjects = {
                 return loc('space_gas_moon_info_desc',[races[global.race.species].solar.gas_moon,races[global.race.species].solar.gas]);
             },
             zone: 'outer',
-            syndicate: true
+            syndicate(){ return true; }
         },
         gas_moon_mission: {
             id: 'space-gas_moon_mission',
@@ -1532,7 +1532,7 @@ const spaceProjects = {
             },
             support: 'space_station',
             zone: 'inner',
-            syndicate: true
+            syndicate(){ return true; }
         },
         belt_mission: {
             id: 'space-belt_mission',
@@ -5290,7 +5290,7 @@ function space(zone){
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
             }
 
-            if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate && global.tech['syndicate']){
+            if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
                 $(`#${region}`).append(`<div id="${region}synd" v-show="${region}" class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}',${region})"></span></div>`);
                 vBind({
                     el: `#${region}synd`,

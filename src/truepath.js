@@ -136,7 +136,7 @@ export function drawShipYard(){
                 engine: 'ion',
                 power: 'diesel',
                 sensor: 'radar',
-                name: 'Trident'
+                name: getRandomShipName()
             };
         }
 
@@ -239,6 +239,10 @@ export function drawShipYard(){
                             ship['transit'] = 0;
                             ship['damage'] = 0;
 
+                            if (ship.name.length === 0){
+                                ship.name = getRandomShipName();
+                            }
+
                             let num = 1;
                             let name = ship.name;
                             while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
@@ -276,6 +280,19 @@ export function drawShipYard(){
         yard.append($(`<div id="shipList"></div>`));
         drawShips();
     }
+}
+
+function getRandomShipName(){
+    let names = [
+        'Trident','Spacewolf','Excalibur','Neptune','Deimos','Phobos','Enterprise','Intrepid','Daedalus','Odyssey','Endurance','Horizon','Hyperion',
+        'Icarus','Aurora','Axiom','Nemesis','Normandy','Orion','Prometheus','Vanguard','Discovery','Voyager','Defiant','Titan','Liberty','Destiny',
+        'Phoenix','Nautilus','Barracuda','Dolphin','Cuttlefish','Tiger Shark','Stingray','Swordfish','Triton','Dragon','Scorpion','Hagfish','Marlin',
+        'Galileo','Raven','Sarcophagus','Excelsior','Scimitar','Vengeance','Nomad','Nova','Olympus','Aegis','Agamemnon','Charon','Achilles','Apollo',
+        'Hermes','Hydra','Medusa','Talos','Zeus','Heracles','Cerberus','Acheron','Damocles','Juno','Persephone','Solaris','Victory','Hawk','Fury',
+        'Razor','Stinger','Outrider','Falcon','Vulture','Nirvana','Retribution','Swordbreaker','Valkyrie','Athena','Avalon','Merlin','Argonaut','Serenity'
+    ];
+
+    return names[Math.rand(0, names.length)];
 }
 
 function updateCosts(){
@@ -628,7 +645,7 @@ function drawShips(){
         
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
-            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate){
+            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate()){
                 let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
                 values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})">${name}</b-dropdown-item>`;
             }
@@ -753,13 +770,13 @@ export function syndicate(region,extra){
                             sensor++;
                             break;
                         case 'radar':
-                            sensor += 10;
+                            sensor += 25;
                             break;
                         case 'lidar':
-                            sensor += 20;
+                            sensor += 40;
                             break;
                         case 'quantum':
-                            sensor += 40;
+                            sensor += 75;
                             break;
                     }
                 }

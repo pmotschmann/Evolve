@@ -4542,7 +4542,7 @@ function fastLoop(){
             let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
 
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
-            iridium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            iridium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
 
@@ -4552,7 +4552,7 @@ function fastLoop(){
             let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
 
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
-            iridium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            iridium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
 
@@ -4582,7 +4582,7 @@ function fastLoop(){
             let delta = helium_base * hunger * global_multiplier * synd;
 
             helium_bd[loc('space_moon_helium_mine_title')] = helium_base + 'v';
-            helium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            helium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -4592,7 +4592,7 @@ function fastLoop(){
             let delta = gas_mining * hunger * global_multiplier * synd;
 
             helium_bd[loc('space_gas_mining_title')] = gas_mining + 'v';
-            helium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            helium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -8036,11 +8036,13 @@ function longLoop(){
         if (global.tech['syndicate'] && global.race['truepath']){
             let regions = spaceTech();
             Object.keys(regions).forEach(function(region){
-                if (!global.space.syndicate.hasOwnProperty(region)){
-                    global.space.syndicate[region] = 0;
-                }
-                if (global.space.syndicate[region] < 5000 && Math.rand(0, 10) === 0){
-                    global.space.syndicate[region]++;
+                if (regions[region].info.hasOwnProperty('syndicate') && regions[region].info.syndicate()){
+                    if (!global.space.syndicate.hasOwnProperty(region)){
+                        global.space.syndicate[region] = 0;
+                    }
+                    if (global.space.syndicate[region] < 5000 && Math.rand(0, 10) === 0){
+                        global.space.syndicate[region]++;
+                    }
                 }
             });
 
