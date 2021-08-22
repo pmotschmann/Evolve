@@ -6162,8 +6162,8 @@ export function updateDesc(c_action,category,action){
     }
 }
 
-export function payCosts(c_action){
-    let costs = adjustCosts(c_action);
+export function payCosts(c_action, costs){
+    costs = costs || adjustCosts(c_action);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
             if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){

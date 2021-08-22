@@ -8043,6 +8043,12 @@ function longLoop(){
                     global.space.syndicate[region]++;
                 }
             });
+
+            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                global.space.shipyard.ships.forEach(function(ship){
+                    if (ship.transit > 0){ ship.transit--; }
+                });
+            }
         }
 
         if (global.race['infiltrator']){

@@ -6,7 +6,7 @@ import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
-import { outerTruth } from './truepath.js';
+import { outerTruth, syndicate } from './truepath.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -184,7 +184,8 @@ const spaceProjects = {
                 return loc('space_moon_info_desc',[home]);
             },
             support: 'moon_base',
-            zone: 'inner'
+            zone: 'inner',
+            syndicate: true
         },
         moon_mission: {
             id: 'space-moon_mission',
@@ -383,7 +384,8 @@ const spaceProjects = {
                 return loc('space_red_info_desc',[races[global.race.species].solar.red]);
             },
             support: 'spaceport',
-            zone: 'inner'
+            zone: 'inner',
+            syndicate: true
         },
         red_mission: {
             id: 'space-red_mission',
@@ -1274,7 +1276,8 @@ const spaceProjects = {
             desc(){
                 return loc('space_gas_info_desc',[races[global.race.species].solar.gas, races[global.race.species].home]);
             },
-            zone: 'outer'
+            zone: 'outer',
+            syndicate: true
         },
         gas_mission: {
             id: 'space-gas_mission',
@@ -1398,7 +1401,8 @@ const spaceProjects = {
             desc(){
                 return loc('space_gas_moon_info_desc',[races[global.race.species].solar.gas_moon,races[global.race.species].solar.gas]);
             },
-            zone: 'outer'
+            zone: 'outer',
+            syndicate: true
         },
         gas_moon_mission: {
             id: 'space-gas_moon_mission',
@@ -1527,7 +1531,8 @@ const spaceProjects = {
                     : loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas]);
             },
             support: 'space_station',
-            zone: 'inner'
+            zone: 'inner',
+            syndicate: true
         },
         belt_mission: {
             id: 'space-belt_mission',
@@ -5283,6 +5288,25 @@ function space(zone){
             }
             else {
                 parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
+            }
+
+            if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate && global.tech['syndicate']){
+                $(`#${region}`).append(`<div id="${region}synd" v-show="${region}" class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}',${region})"></span></div>`);
+                vBind({
+                    el: `#${region}synd`,
+                    data: global.space.syndicate,
+                    methods: {
+                        threat(r,t){
+                            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                                let synd = syndicate(r,true);
+                                if (synd.s >= 10){
+                                    return synd.s >= 50 ? synd.r : Math.round(synd.r * synd.s * 0.02);
+                                }
+                            }
+                            return '???';
+                        }
+                    }
+                });
             }
 
             popover(region, function(){

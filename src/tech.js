@@ -10273,6 +10273,27 @@ const techs = {
             return false;
         }
     },
+    pulse_lasers: {
+        id: 'tech-pulse_lasers',
+        title: loc('tech_pulse_lasers'),
+        desc: loc('tech_pulse_lasers'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: 'truepath',
+        reqs: { syard_weapon: 2 },
+        grant: ['syard_weapon',3],
+        cost: {
+            Knowledge(){ return 500000; },
+            Elerium(){ return 750; }
+        },
+        effect: loc('tech_pulse_lasers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title: loc('tech_destroyer_ship'),

@@ -3081,6 +3081,13 @@ a {
     .regionSupport {
         margin-left: .5rem;
     }
+
+    .space {
+        display: flex;
+        .syndThreat {
+            margin-left: 1rem;
+        }
+    }
 }
 
 .large_log .main .msgQueue {
@@ -3679,6 +3686,10 @@ span.inline {
 .ShipYardTab {
     margin-left: 1rem;
 
+    .button {
+        height: 2rem;
+    }
+
     .stats {
         display: flex;
         > div {
@@ -3690,7 +3701,7 @@ span.inline {
         line-height: 1.25rem;
         .nameplate {
             display: inline-block;
-            width: 10rem;
+            width: 8rem;
             height: 1.25rem;
             input {
                 height: 1.25rem;
@@ -3707,6 +3718,39 @@ span.inline {
             margin-left: .5rem;
             margin-top: .25rem;
         }
+    }
+
+    #shipList {
+        margin-top: 1rem;
+        .shipRow {
+            display: grid;
+            padding-top: .25rem;
+            margin-top: .25rem;
+            margin-left: .5rem;
+            border-top: 1px solid;
+
+            .row1 {
+                grid-column-start: 1;
+            }
+
+            .row2 {
+                grid-column-start: 1;
+            }
+
+            .location {
+                grid-column-start: 2;
+                grid-row-start: 1;
+                grid-row-end: 3;
+            }
+
+            .pad {
+                margin: 0 .5rem 0 0;
+            }
+        }
+    }
+
+    .assemble {
+        margin: 1rem 0 0 .5rem;
     }
 }
 

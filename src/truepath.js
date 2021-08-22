@@ -1,8 +1,8 @@
 import { global, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, messageQueue, powerCostMod, spaceCostMultiplier } from './functions.js';
+import { vBind, clearElement, popover, messageQueue, powerCostMod, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { payCosts } from './actions.js';
-import { fuel_adjust } from './space.js';
+import { fuel_adjust, spaceTech } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -147,6 +147,7 @@ export function drawShipYard(){
         plans.append(shipStats);
 
         shipStats.append(`<div class="registry"><span class="has-text-caution">${loc(`outer_shipyard_registry`)}</span>: <b-input v-model="b.name" maxlength="25" class="nameplate"></b-input></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`crew`)}</span> <span v-html="crewText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`power`)}</span> <span v-html="powerText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`firepower`)}</span> <span v-html="fireText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_sensors`)}</span> <span v-html="sensorText()"></span></div>`);
@@ -175,10 +176,11 @@ export function drawShipYard(){
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`outer_shipyard_${k}`)}: {{ b.${k} | lbl('${k}') }}</span>
-                    <b-icon icon="menu-down"></b-icon>
                 </button>${values}
             </b-dropdown>`);
         });
+
+        plans.append(`<div class="assemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button></div>`);
 
         updateCosts();
 
@@ -195,6 +197,9 @@ export function drawShipYard(){
                 avail(k,i){
                     return global.tech[`syard_${k}`] > i ? true : false;
                 },
+                crewText(){
+                    return shipCrewSize(global.space.shipyard.blueprint);
+                },
                 powerText(){
                     let power = shipPower(global.space.shipyard.blueprint);
                     if (power < 0){
@@ -208,7 +213,7 @@ export function drawShipYard(){
                 sensorText(){
                     switch (global.space.shipyard.blueprint.sensor){
                         case 'visual':
-                            return `0km`;
+                            return `1km`;
                         case 'radar':
                             return `10km`;
                         case 'lidar':
@@ -220,6 +225,32 @@ export function drawShipYard(){
                 speedText(){
                     let speed = shipSpeed(global.space.shipyard.blueprint);
                     return +speed.toFixed(2);
+                },
+                build(){
+                    if (shipPower(global.space.shipyard.blueprint) >= 0){
+                        let raw = shipCosts(global.space.shipyard.blueprint);
+                        let costs = {};
+                        Object.keys(raw).forEach(function(res){
+                            costs[res] = function(){ return raw[res]; }
+                        });
+                        if (payCosts(false, costs)){
+                            let ship = deepClone(global.space.shipyard.blueprint);
+                            ship['location'] = 'spc_dwarf';
+                            ship['transit'] = 0;
+                            ship['damage'] = 0;
+
+                            let num = 1;
+                            let name = ship.name;
+                            while (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
+                                num++;
+                                name = ship.name + ` ${num}`;
+                            }
+                            ship.name = name;
+
+                            global.space.shipyard.ships.push(ship);
+                            drawShips();
+                        }
+                    }
                 }
             },
             filters: {
@@ -241,6 +272,9 @@ export function drawShipYard(){
                 });
             }
         });
+
+        yard.append($(`<div id="shipList"></div>`));
+        drawShips();
     }
 }
 
@@ -256,6 +290,23 @@ function updateCosts(){
             $(`#shipYardCosts`).append(`<span> | </span><span class="res-${k} has-text-success" data-${k}="${costs[k]}" data-ok="has-text-success">${global.resource[k].name} ${sizeApproximation(costs[k])}</span>`);
         }
     });
+}
+
+function shipCrewSize(ship){
+    switch (ship.class){
+        case 'corvette':
+            return 2;
+        case 'frigate':
+            return 3;
+        case 'destroyer':
+            return 5;
+        case 'cruiser':
+            return 8;
+        case 'battlecruiser':
+            return 12;
+        case 'dreadnought':
+            return 20;
+    }
 }
 
 function shipPower(ship){
@@ -312,7 +363,7 @@ function shipPower(ship){
             watts -= Math.round(30 * use_inflate);
             break;
         case 'p_laser':
-            watts -= Math.round(25 * use_inflate);
+            watts -= Math.round(22 * use_inflate);
             break;
         case 'plasma':
             watts -= Math.round(50 * use_inflate);
@@ -336,10 +387,10 @@ function shipPower(ship){
             watts -= Math.round(40 * use_inflate);
             break;
         case 'photon':
-            watts -= Math.round(100 * use_inflate);
+            watts -= Math.round(75 * use_inflate);
             break;
         case 'vacuum':
-            watts -= Math.round(150 * use_inflate);
+            watts -= Math.round(120 * use_inflate);
             break;
     }
 
@@ -362,22 +413,22 @@ function shipAttackPower(ship){
     let rating = 0;
     switch (ship.weapon){
         case 'railgun':
-            rating = 8;
+            rating = 18;
             break;
         case 'laser':
-            rating = 14;
+            rating = 32;
             break;
         case 'p_laser':
-            rating = 12;
+            rating = 27;
             break;
         case 'plasma':
-            rating = 20;
+            rating = 45;
             break;
         case 'phaser':
-            rating = 25;
+            rating = 57;
             break;
         case 'disrupter':
-            rating = 35;
+            rating = 78;
             break;
     }
 
@@ -565,7 +616,101 @@ function shipCosts(bp){
     return costs;
 }
 
-export function syndicate(region){
+
+function drawShips(){
+    clearElement($('#shipList'));
+    let list = $('#shipList');
+
+    const spaceRegions = spaceTech();
+
+    for (let i=0; i<global.space.shipyard.ships.length; i++){
+        let ship = global.space.shipyard.ships[i];
+        
+        let values = ``;
+        Object.keys(spaceRegions).forEach(function(region){
+            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate){
+                let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})">${name}</b-dropdown-item>`;
+            }
+        });
+
+        let location = typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
+
+        let dispatch = `<b-dropdown :triggers="['hover']" aria-role="list">
+            <button class="button is-info" slot="trigger">
+                <span>${location}</span>
+            </button>${values}
+        </b-dropdown>`;
+        
+        let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
+        let desc = $(`<div class="shipRow ship${i}"></div>`);
+        let row1 = $(`<div class="row1"><span class="has-text-caution">${ship.name}</span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+        let row2 = $(`<div class="row2"><a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | </div>`);
+        let row3 = $(`<div class="location">${dispatch}</div>`);
+        
+        row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
+        row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
+        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
+        row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
+        row2.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+
+        desc.append(row1);
+        desc.append(row2);
+        desc.append(row3); 
+        list.append(desc);
+    }
+
+    vBind({
+        el: `#shipList`,
+        data: global.space.shipyard.ships,
+        methods: {
+            scrap(id){
+                if (global.space.shipyard.ships[id]){
+                    global.space.shipyard.ships.splice(id,1);
+                    drawShips();
+                }
+            },
+            setLoc(l,id){
+                global.space.shipyard.ships[id].location = l;
+                global.space.shipyard.ships[id].transit = Math.round(1000 / shipSpeed(global.space.shipyard.ships[id]));
+                drawShips();
+            },
+            crewText(id){
+                return shipCrewSize(global.space.shipyard.ships[id]);
+            },
+            fireText(id){
+                return shipAttackPower(global.space.shipyard.ships[id]);
+            },
+            sensorText(id){
+                switch (global.space.shipyard.ships[id].sensor){
+                    case 'visual':
+                        return `1km`;
+                    case 'radar':
+                        return `10km`;
+                    case 'lidar':
+                        return `20km`;
+                    case 'quantum':
+                        return `40km`;
+                }
+            },
+            speedText(id){
+                let speed = shipSpeed(global.space.shipyard.ships[id]);
+                return +speed.toFixed(2);
+            },
+            dest(id){
+                return loc(`outer_shipyard_arrive`,[
+                    typeof spaceRegions[global.space.shipyard.ships[id].location].info.name === 'string' ? spaceRegions[global.space.shipyard.ships[id].location].info.name : spaceRegions[global.space.shipyard.ships[id].location].info.name(),
+                    global.space.shipyard.ships[id].transit
+                ]);
+            },
+            show(id){
+                return global.space.shipyard.ships[id].transit > 0 ? true : false;
+            }
+        }
+    });
+}
+
+export function syndicate(region,extra){
     if (global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
         let divisor = 5000;
 
@@ -596,18 +741,46 @@ export function syndicate(region){
         }
 
         let piracy = global.space.syndicate[region];
+        let patrol = 0;
+        let sensor = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.region === region){
-                    piracy -= ship.rating;
+                if (ship.location === region && ship.transit === 0){
+                    let rating = shipAttackPower(ship);
+                    patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
+                    switch (ship.sensor){
+                        case 'visual':
+                            sensor++;
+                            break;
+                        case 'radar':
+                            sensor += 10;
+                            break;
+                        case 'lidar':
+                            sensor += 20;
+                            break;
+                        case 'quantum':
+                            sensor += 40;
+                            break;
+                    }
                 }
             });
-            if (piracy < 0){
-                piracy = 0;
-            }
+            
+            patrol = Math.round(patrol * (sensor / 100));
+            piracy = piracy - patrol > 0 ? piracy - patrol : 0;
         }
 
+        if (extra){
+            return {
+                p: 1 - +(piracy / divisor).toFixed(4),
+                r: piracy,
+                s: sensor
+            };
+        }
         return 1 - +(piracy / divisor).toFixed(4);
+    }
+
+    if (extra){
+        return { p: 1, r: 0, s: 0 };
     }
     return 1;
 }
