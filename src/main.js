@@ -4520,12 +4520,15 @@ function fastLoop(){
             let oil_extractor = p_on['oil_extractor'] * production('oil_extractor');
             let oil_well = production('oil_well') * global.city.oil_well.count;
 
-            let delta = oil_well + oil_extractor;
+            let synd = syndicate('spc_gas_moon');
+
+            let delta = oil_well + (oil_extractor * synd);
             delta *= hunger * global_multiplier;
 
             let oil_bd = {};
             oil_bd[loc('city_oil_well')] = oil_well + 'v';
             oil_bd[loc('space_gas_moon_oil_extractor_title')] = oil_extractor + 'v';
+            oil_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             oil_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
@@ -4643,7 +4646,10 @@ function fastLoop(){
             if (global.tech['drone']){
                 neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (p_values.d * 100) + '%';
             }
-            let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier;
+            let synd = syndicate('spc_gas_moon');
+            neutronium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+
+            let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier * synd;
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.5;
@@ -8050,6 +8056,7 @@ function longLoop(){
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0){ ship.transit--; }
                 });
+                vBind({el: `#shipList`},'update');
             }
         }
 

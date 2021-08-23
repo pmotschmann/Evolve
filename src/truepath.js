@@ -152,6 +152,7 @@ export function drawShipYard(){
         shipStats.append(`<div><span class="has-text-caution">${loc(`firepower`)}</span> <span v-html="fireText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_sensors`)}</span> <span v-html="sensorText()"></span></div>`);
         shipStats.append(`<div><span class="has-text-caution">${loc(`speed`)}</span> <span v-html="speedText()"></span></div>`);
+        shipStats.append(`<div><span class="has-text-caution">${loc(`outer_shipyard_fuel`)}</span> <span v-html="fuelText()"></span></div>`);
 
         plans.append(`<div id="shipYardCosts" class="costList"></div>`);
 
@@ -211,20 +212,20 @@ export function drawShipYard(){
                     return shipAttackPower(global.space.shipyard.blueprint);
                 },
                 sensorText(){
-                    switch (global.space.shipyard.blueprint.sensor){
-                        case 'visual':
-                            return `1km`;
-                        case 'radar':
-                            return `10km`;
-                        case 'lidar':
-                            return `20km`;
-                        case 'quantum':
-                            return `40km`;
-                    }
+                    return sensorRange(global.space.shipyard.blueprint.sensor) + 'km';
                 },
                 speedText(){
                     let speed = shipSpeed(global.space.shipyard.blueprint);
                     return +speed.toFixed(2);
+                },
+                fuelText(){
+                    let fuel = shipFuelUse(global.space.shipyard.blueprint);
+                    if (fuel.res){
+                        return `-${fuel.burn} ${global.resource[fuel.res].name}`;
+                    }
+                    else {
+                        return `N/A`;
+                    }
                 },
                 build(){
                     if (shipPower(global.space.shipyard.blueprint) >= 0){
@@ -380,7 +381,7 @@ function shipPower(ship){
             watts -= Math.round(30 * use_inflate);
             break;
         case 'p_laser':
-            watts -= Math.round(22 * use_inflate);
+            watts -= Math.round(18 * use_inflate);
             break;
         case 'plasma':
             watts -= Math.round(50 * use_inflate);
@@ -430,22 +431,22 @@ function shipAttackPower(ship){
     let rating = 0;
     switch (ship.weapon){
         case 'railgun':
-            rating = 18;
+            rating = 36;
             break;
         case 'laser':
-            rating = 32;
+            rating = 64;
             break;
         case 'p_laser':
-            rating = 27;
+            rating = 54;
             break;
         case 'plasma':
-            rating = 45;
+            rating = 90;
             break;
         case 'phaser':
-            rating = 57;
+            rating = 114;
             break;
         case 'disrupter':
-            rating = 78;
+            rating = 156;
             break;
     }
 
@@ -500,6 +501,53 @@ function shipSpeed(ship){
         case 'vacuum':
             return 25 / mass;
     }
+}
+
+function shipFuelUse(ship){
+    let res = false;
+    let burn = 0;
+
+    switch (ship.power){
+        case 'diesel':
+            res = 'Oil';
+            burn = 10;
+            break;
+        case 'fission':
+            res = 'Uranium';
+            burn = 0.5;
+            break;
+        case 'fusion':
+            res = 'Helium_3';
+            burn = 5;
+            break;
+        case 'elerium':
+            res = 'Elerium';
+            burn = 1;
+            break;
+    }
+
+    switch (ship.class){
+        case 'frigate':
+            burn *= 1.25;
+            break;
+        case 'destroyer':
+            burn *= 1.5;
+            break;
+        case 'cruiser':
+            burn *= 2;
+            break;
+        case 'battlecruiser':
+            burn *= 3;
+            break;
+        case 'dreadnought':
+            burn *= 5;
+            break;
+    }
+
+    return {
+        res: res,
+        burn: burn
+    };
 }
 
 function shipCosts(bp){
@@ -663,17 +711,21 @@ function drawShips(){
         let desc = $(`<div class="shipRow ship${i}"></div>`);
         let row1 = $(`<div class="row1"><span class="has-text-caution">${ship.name}</span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
         let row2 = $(`<div class="row2"><a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | </div>`);
-        let row3 = $(`<div class="location">${dispatch}</div>`);
+        let row3 = $(`<div class="row3"></div>`);
+        let row4 = $(`<div class="location">${dispatch}</div>`);
         
         row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
         row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
         row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
         row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
-        row2.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-html="fuelText(${i})"></span>`);
+        
+        row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
 
         desc.append(row1);
         desc.append(row2);
-        desc.append(row3); 
+        desc.append(row3);
+        desc.append(row4);
         list.append(desc);
     }
 
@@ -699,20 +751,20 @@ function drawShips(){
                 return shipAttackPower(global.space.shipyard.ships[id]);
             },
             sensorText(id){
-                switch (global.space.shipyard.ships[id].sensor){
-                    case 'visual':
-                        return `1km`;
-                    case 'radar':
-                        return `10km`;
-                    case 'lidar':
-                        return `20km`;
-                    case 'quantum':
-                        return `40km`;
-                }
+                return sensorRange(global.space.shipyard.ships[id].sensor) + 'km';
             },
             speedText(id){
                 let speed = shipSpeed(global.space.shipyard.ships[id]);
                 return +speed.toFixed(2);
+            },
+            fuelText(id){
+                let fuel = shipFuelUse(global.space.shipyard.ships[id]);
+                if (fuel.res){
+                    return `${fuel.burn} ${global.resource[fuel.res].name}/s`;
+                }
+                else {
+                    return `N/A`;
+                }
             },
             dest(id){
                 return loc(`outer_shipyard_arrive`,[
@@ -765,20 +817,7 @@ export function syndicate(region,extra){
                 if (ship.location === region && ship.transit === 0){
                     let rating = shipAttackPower(ship);
                     patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
-                    switch (ship.sensor){
-                        case 'visual':
-                            sensor++;
-                            break;
-                        case 'radar':
-                            sensor += 25;
-                            break;
-                        case 'lidar':
-                            sensor += 40;
-                            break;
-                        case 'quantum':
-                            sensor += 75;
-                            break;
-                    }
+                    sensor += sensorRange(ship.sensor);
                 }
             });
             
@@ -800,4 +839,17 @@ export function syndicate(region,extra){
         return { p: 1, r: 0, s: 0 };
     }
     return 1;
+}
+
+function sensorRange(s){
+    switch (s){
+        case 'visual':
+            return 1;
+        case 'radar':
+            return 20;
+        case 'lidar':
+            return 35;
+        case 'quantum':
+            return 60;
+    }
 }

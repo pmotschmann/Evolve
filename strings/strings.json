@@ -5611,6 +5611,7 @@
   "outer_shipyard_sensors": "Sensor Range",
   "outer_shipyard_build": "Construct Ship",
   "outer_shipyard_scrap": "Scrap Ship",
+  "outer_shipyard_fuel": "Fuel",
   "outer_shipyard_arrive": "Arrive at %0 in %1 days",
   "outer_shipyard_class_corvette": "Corvette",
   "outer_shipyard_class_corvette_desc": "Corvette class ships are the smallest and cheapest. They are usually used as scouts.",

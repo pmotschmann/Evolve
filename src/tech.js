@@ -10304,7 +10304,7 @@ const techs = {
         reqs: { syard_class: 2 },
         grant: ['syard_class',3],
         cost: {
-            Knowledge(){ return 450000; }
+            Knowledge(){ return 465000; }
         },
         effect: loc('tech_destroyer_ship_effect'),
         action(){
