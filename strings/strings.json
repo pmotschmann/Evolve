@@ -5632,7 +5632,7 @@
   "outer_shipyard_engine_ion": "Ion Engine",
   "outer_shipyard_engine_ion_desc": "The Ion Engine is a basic propulsion technology that is cheap and efficient at moving space ships.",
   "outer_shipyard_engine_tie": "Twin Ion Engine",
-  "outer_shipyard_engine_tie_desc": "The Twin Ion Engine is a duel mounted version of the basic Ion Engine. Twice the drives, twice the thrust.",
+  "outer_shipyard_engine_tie_desc": "The Twin Ion Engine is a dual mounted version of the basic Ion Engine. Twice the drives, twice the thrust.",
   "outer_shipyard_engine_pulse": "Pulse Drive",
   "outer_shipyard_engine_pulse_desc": "Pulse Drives create a rapid series of tiny explosions to accelerate.",
   "outer_shipyard_engine_photon": "Photon Drive",

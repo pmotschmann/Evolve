@@ -5,10 +5,11 @@ import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
 import { races } from './races.js';
-import { defineResources, loadMarket, resource_values, atomic_mass } from './resources.js';
+import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace } from './space.js';
+import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
 import { defineGovernor } from './governor.js';
@@ -2803,9 +2804,6 @@ const techs = {
         effect: loc('tech_large_trades_effect'),
         action(){
             if (payCosts($(this)[0])){
-                let tech = $(this)[0].grant[0];
-                global.tech[tech] = $(this)[0].grant[1];
-                loadMarket();
                 return true;
             }
             return false;
@@ -2852,9 +2850,6 @@ const techs = {
         effect: loc('tech_massive_trades_effect'),
         action(){
             if (payCosts($(this)[0])){
-                let tech = $(this)[0].grant[0];
-                global.tech[tech] = $(this)[0].grant[1];
-                loadMarket();
                 return true;
             }
             return false;
@@ -7205,6 +7200,9 @@ const techs = {
                         tax: 0
                     };
                 }
+                if (global.genes['ancients'] && global.genes['ancients'] >= 2){
+                    global.civic.priest.display = true;
+                }
                 return true;
             }
             return false;
@@ -10238,7 +10236,7 @@ const techs = {
         category: 'space_militarization',
         era: 'solar',
         path: 'truepath',
-        reqs: { outer: 1, piracy: 1 },
+        reqs: { outer: 1, syndicate: 1 },
         grant: ['shipyard',1],
         cost: {
             Knowledge(){ return 420000; }
@@ -10247,6 +10245,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.space['shipyard'] = { count: 0, on: 0 };
+                setOrbits();
                 return true;
             }
             return false;

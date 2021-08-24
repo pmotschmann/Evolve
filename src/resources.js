@@ -2206,7 +2206,7 @@ function initStorage(){
     }
 }
 
-export function loadMarket(){
+function loadMarket(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }

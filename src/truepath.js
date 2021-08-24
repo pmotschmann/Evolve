@@ -126,6 +126,7 @@ export function drawShipYard(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
+    setOrbits();
     clearShipDrag();
     clearElement($('#dwarfShipYard'));
     if (global.space.hasOwnProperty('shipyard') && global.settings.showShipYard){
@@ -282,7 +283,7 @@ export function drawShipYard(){
             }
         });
 
-        yard.append($(`<div id="shipList"></div>`));
+        yard.append($(`<div id="shipList" class="sticky"></div>`));
         drawShips();
     }
 }
@@ -765,8 +766,9 @@ function drawShips(){
                     }
                 },
                 setLoc(l,id){
+                    let distance = transferWindow(global.space.shipyard.ships[id].location,l);
                     global.space.shipyard.ships[id].location = l;
-                    global.space.shipyard.ships[id].transit = Math.round(1000 / shipSpeed(global.space.shipyard.ships[id]));
+                    global.space.shipyard.ships[id].transit = Math.round(distance / shipSpeed(global.space.shipyard.ships[id]));
                     drawShips();
                 },
                 crewText(id){
@@ -881,4 +883,38 @@ function sensorRange(s){
         case 'quantum':
             return 60;
     }
+}
+
+export const spacePlanetStats = {
+    spc_moon: { dist: 1, orbit: -1, },
+    spc_red: { dist: 1.524, orbit: 687 },
+    spc_gas: { dist: 5.203, orbit: 4330 },
+    spc_gas_moon: { dist: 5.204, orbit: 4330 },
+    spc_belt: { dist: 2.7, orbit: 1642 },
+    spc_dwarf: { dist: 5.203, orbit: 4330 },
+    spc_titan: { dist: 9.539, orbit: 10751 },
+    spc_enceladus: { dist: 9.540, orbit: 10751 },
+};
+
+export function setOrbits(){
+    if (!global.space['position']){
+        global.space['position'] = {};
+    }
+    Object.keys(spacePlanetStats).forEach(function(o){
+        if (!global.space.position.hasOwnProperty(o)){
+            global.space.position[o] = Math.rand(0,360);
+        }
+    });
+    global.space.position.spc_gas_moon = global.space.position.spc_gas;
+    global.space.position.spc_titan = global.space.position.spc_enceladus;
+}
+
+function transferWindow(from,to){
+    let x1 = +(Math.cos(global.space.position[from] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[from].dist;
+    let y1 = +(Math.sin(global.space.position[from] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[from].dist;
+
+    let x2 = +(Math.cos(global.space.position[to] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[to].dist;
+    let y2 = +(Math.sin(global.space.position[to] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[to].dist;
+
+    return Math.ceil(Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2)) * 225);
 }

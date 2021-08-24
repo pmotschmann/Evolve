@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -7622,6 +7622,9 @@ function midLoop(){
     if ($(`#mechList`).length > 0){
         $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
     }
+    if ($(`#shipList`).length > 0){
+        $(`#shipList`).css('height',`calc(100vh - 11.5rem - ${$(`#shipPlans`).height()}px)`);
+    }
 }
 
 let sythMap = {
@@ -8095,7 +8098,17 @@ function longLoop(){
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0 && ship.fueled){ ship.transit--; }
                 });
-                vBind({el: `#shipList`},'update');
+                if (global.space.hasOwnProperty('position')){
+                    Object.keys(spacePlanetStats).forEach(function(planet){
+                        if (global.space.position.hasOwnProperty(planet)){
+                            let orbit = spacePlanetStats[planet].orbit === -1 ? global.city.calendar.orbit : spacePlanetStats[planet].orbit;
+                            global.space.position[planet] += +(360 / orbit).toFixed(4);
+                            if (global.space.position[planet] >= 360){
+                                global.space.position[planet] -= 360;
+                            }
+                        }
+                    });
+                }
             }
         }
 
