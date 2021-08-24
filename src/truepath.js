@@ -15,7 +15,8 @@ export const outerTruth = {
                 return loc('space_titan_info_desc',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]);
             },
             support: 'titan_spaceport',
-            zone: 'outer'
+            zone: 'outer',
+            syndicate(){ return global.tech['titan'] && global.tech.titan >= 2 ? true : false; }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -88,7 +89,8 @@ export const outerTruth = {
             desc(){
                 return loc('space_enceladus_info_desc',[genusVars[races[global.race.species].type].solar.enceladus, races[global.race.species].home]);
             },
-            zone: 'outer'
+            zone: 'outer',
+            syndicate(){ return global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; }
         },
         enceladus_mission: {
             id: 'space-enceladus_mission',
@@ -124,6 +126,7 @@ export function drawShipYard(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 5)){
         return;
     }
+    clearShipDrag();
     clearElement($('#dwarfShipYard'));
     if (global.space.hasOwnProperty('shipyard') && global.settings.showShipYard){
         let yard = $(`#dwarfShipYard`);
@@ -239,6 +242,7 @@ export function drawShipYard(){
                             ship['location'] = 'spc_dwarf';
                             ship['transit'] = 0;
                             ship['damage'] = 0;
+                            ship['fueled'] = false;
 
                             if (ship.name.length === 0){
                                 ship.name = getRandomShipName();
@@ -503,14 +507,14 @@ function shipSpeed(ship){
     }
 }
 
-function shipFuelUse(ship){
+export function shipFuelUse(ship){
     let res = false;
     let burn = 0;
 
     switch (ship.power){
         case 'diesel':
             res = 'Oil';
-            burn = 10;
+            burn = 8;
             break;
         case 'fission':
             res = 'Uranium';
@@ -546,7 +550,7 @@ function shipFuelUse(ship){
 
     return {
         res: res,
-        burn: burn
+        burn: +(burn).toFixed(2)
     };
 }
 
@@ -681,8 +685,30 @@ function shipCosts(bp){
     return costs;
 }
 
+export function clearShipDrag(){
+    let el = $('#shipList')[0];
+    if (el){
+        let sort = Sortable.get(el);
+        if (sort){
+            sort.destroy();
+        }
+    }
+}
+
+function dragShipList(){
+    let el = $('#shipList')[0];
+    Sortable.create(el,{
+        onEnd(e){
+            let order = global.space.shipyard.ships;
+            order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
+            global.space.shipyard.ships = order;
+            drawShips();
+        }
+    });
+}
 
 function drawShips(){
+    clearShipDrag();
     clearElement($('#shipList'));
     let list = $('#shipList');
 
@@ -693,7 +719,7 @@ function drawShips(){
         
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
-            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate()){
+            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
                 let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
                 values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})">${name}</b-dropdown-item>`;
             }
@@ -708,7 +734,7 @@ function drawShips(){
         </b-dropdown>`;
         
         let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
-        let desc = $(`<div class="shipRow ship${i}"></div>`);
+        let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
         let row1 = $(`<div class="row1"><span class="has-text-caution">${ship.name}</span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
         let row2 = $(`<div class="row2"><a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | </div>`);
         let row3 = $(`<div class="row3"></div>`);
@@ -718,7 +744,7 @@ function drawShips(){
         row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
         row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
         row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
-        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-html="fuelText(${i})"></span>`);
+        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
         
         row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
 
@@ -727,85 +753,88 @@ function drawShips(){
         desc.append(row3);
         desc.append(row4);
         list.append(desc);
+    
+        vBind({
+            el: `#shipReg${i}`,
+            data: global.space.shipyard.ships[i],
+            methods: {
+                scrap(id){
+                    if (global.space.shipyard.ships[id]){
+                        global.space.shipyard.ships.splice(id,1);
+                        drawShips();
+                    }
+                },
+                setLoc(l,id){
+                    global.space.shipyard.ships[id].location = l;
+                    global.space.shipyard.ships[id].transit = Math.round(1000 / shipSpeed(global.space.shipyard.ships[id]));
+                    drawShips();
+                },
+                crewText(id){
+                    return shipCrewSize(global.space.shipyard.ships[id]);
+                },
+                fireText(id){
+                    return shipAttackPower(global.space.shipyard.ships[id]);
+                },
+                sensorText(id){
+                    return sensorRange(global.space.shipyard.ships[id].sensor) + 'km';
+                },
+                speedText(id){
+                    let speed = shipSpeed(global.space.shipyard.ships[id]);
+                    return +speed.toFixed(2);
+                },
+                fuelText(id){
+                    let fuel = shipFuelUse(global.space.shipyard.ships[id]);
+                    if (fuel.res){
+                        return `${fuel.burn} ${global.resource[fuel.res].name}/s`;
+                    }
+                    else {
+                        return `N/A`;
+                    }
+                },
+                dest(id){
+                    return loc(`outer_shipyard_arrive`,[
+                        typeof spaceRegions[global.space.shipyard.ships[id].location].info.name === 'string' ? spaceRegions[global.space.shipyard.ships[id].location].info.name : spaceRegions[global.space.shipyard.ships[id].location].info.name(),
+                        global.space.shipyard.ships[id].transit
+                    ]);
+                },
+                show(id){
+                    return global.space.shipyard.ships[id].transit > 0 ? true : false;
+                }
+            }
+        });
     }
 
-    vBind({
-        el: `#shipList`,
-        data: global.space.shipyard.ships,
-        methods: {
-            scrap(id){
-                if (global.space.shipyard.ships[id]){
-                    global.space.shipyard.ships.splice(id,1);
-                    drawShips();
-                }
-            },
-            setLoc(l,id){
-                global.space.shipyard.ships[id].location = l;
-                global.space.shipyard.ships[id].transit = Math.round(1000 / shipSpeed(global.space.shipyard.ships[id]));
-                drawShips();
-            },
-            crewText(id){
-                return shipCrewSize(global.space.shipyard.ships[id]);
-            },
-            fireText(id){
-                return shipAttackPower(global.space.shipyard.ships[id]);
-            },
-            sensorText(id){
-                return sensorRange(global.space.shipyard.ships[id].sensor) + 'km';
-            },
-            speedText(id){
-                let speed = shipSpeed(global.space.shipyard.ships[id]);
-                return +speed.toFixed(2);
-            },
-            fuelText(id){
-                let fuel = shipFuelUse(global.space.shipyard.ships[id]);
-                if (fuel.res){
-                    return `${fuel.burn} ${global.resource[fuel.res].name}/s`;
-                }
-                else {
-                    return `N/A`;
-                }
-            },
-            dest(id){
-                return loc(`outer_shipyard_arrive`,[
-                    typeof spaceRegions[global.space.shipyard.ships[id].location].info.name === 'string' ? spaceRegions[global.space.shipyard.ships[id].location].info.name : spaceRegions[global.space.shipyard.ships[id].location].info.name(),
-                    global.space.shipyard.ships[id].transit
-                ]);
-            },
-            show(id){
-                return global.space.shipyard.ships[id].transit > 0 ? true : false;
-            }
-        }
-    });
+    dragShipList();
 }
 
 export function syndicate(region,extra){
     if (global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
-        let divisor = 5000;
+        let divisor = 1000;
 
         let rival = 0;
         if (global.civic.foreign.gov3.hstl < 10){
-            rival = 2500 - (250 * global.civic.foreign.gov3.hstl);
+            rival = 250 - (25 * global.civic.foreign.gov3.hstl);
         }
         else if (global.civic.foreign.gov3.hstl > 60){
-            rival = (-65 * (global.civic.foreign.gov3.hstl - 60));
+            rival = (-13 * (global.civic.foreign.gov3.hstl - 60));
         }
+        rival *= global.tech.syndicate;
 
         switch (region){
             case 'spc_home':
             case 'spc_moon':
             case 'spc_red':
             case 'spc_hell':
-                divisor = 10000 + rival;
+                divisor = (2000 * global.tech.syndicate) + rival;
                 break;
             case 'spc_gas':
             case 'spc_gas_moon':
             case 'spc_belt':
-                divisor = 7600 + rival;
+                divisor = (1520 * global.tech.syndicate) + rival;
                 break;
             case 'spc_titan':
             case 'spc_enceladus':
-                divisor = 5000;
+                divisor = 1000 * global.tech.syndicate;
                 break;
         }
 
@@ -814,7 +843,7 @@ export function syndicate(region,extra){
         let sensor = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
-                if (ship.location === region && ship.transit === 0){
+                if (ship.location === region && ship.transit === 0 && ship.fueled){
                     let rating = shipAttackPower(ship);
                     patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
                     sensor += sensorRange(ship.sensor);

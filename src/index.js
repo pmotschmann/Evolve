@@ -11,7 +11,7 @@ import { races } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
-import { drawShipYard } from './truepath.js';
+import { drawShipYard, clearShipDrag } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 import { alevel } from './achieve.js';
 
@@ -285,6 +285,7 @@ export function loadTab(tab){
         clearMechDrag();
         clearGeneticsDrag();
         clearSpyopDrag();
+        clearShipDrag();
         clearElement($(`#mTabCivil`));
         clearElement($(`#mTabCivic`));
         clearElement($(`#mTabResearch`));
@@ -445,6 +446,7 @@ export function loadTab(tab){
                                 clearGrids();
                                 clearSpyopDrag();
                                 clearMechDrag();
+                                clearShipDrag();
                                 clearElement($(`#civic`));
                                 clearElement($(`#industry`));
                                 clearElement($(`#powerGrid`));

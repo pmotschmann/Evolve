@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate } from './truepath.js';
+import { syndicate, shipFuelUse } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -2831,6 +2831,38 @@ function fastLoop(){
         breakdown.p.consume.Helium_3[loc('galaxy_fuel_consume')] = -(andromeda_helium);
         breakdown.p.consume.Deuterium[loc('galaxy_fuel_consume')] = -(andromeda_deuterium);
 
+        if (global.space['shipyard'] && global.space.shipyard['ships']){
+            let fuels = {
+                Oil: 0,
+                Helium_3: 0,
+                Uranium: 0,
+                Elerium: 0
+            };
+            global.space.shipyard.ships.forEach(function(ship){
+                if (ship.location !== 'spc_dwarf'){
+                    let fuel = shipFuelUse(ship);
+                    if (fuel.res && fuel.burn > 0){
+                        if (fuel.burn * time_multiplier < global.resource[fuel.res].amount + (global.resource[fuel.res].diff > 0 ? global.resource[fuel.res].diff * time_multiplier : 0)){
+                            modRes(fuel.res, -(fuel.burn * time_multiplier));
+                            ship.fueled = true;
+                            fuels[fuel.res] += fuel.burn;
+                        }
+                        else {
+                            ship.fueled = false;
+                        }
+                    }
+                    else {
+                        ship.fueled = true;
+                    }
+                }
+            });
+
+            breakdown.p.consume.Oil[loc('outer_shipyard_fleet')] = -(fuels.Oil);
+            breakdown.p.consume.Helium_3[loc('outer_shipyard_fleet')] = -(fuels.Helium_3);
+            breakdown.p.consume.Uranium[loc('outer_shipyard_fleet')] = -(fuels.Uranium);
+            breakdown.p.consume.Elerium[loc('outer_shipyard_fleet')] = -(fuels.Elerium);
+        }
+
         if (global.race['emfield']){
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 global.race.discharge--;
@@ -4886,7 +4918,14 @@ function fastLoop(){
 
             let temple_mult = 1;
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-                temple_mult += (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.025;
+                if (global.race['truepath']){
+                    let merchsales = global.resource[global.race.species].amount * global.city.temple.count * 0.08;
+                    money_bd[loc('city_temple')] = (merchsales) + 'v';
+                    modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
+                }
+                else {
+                    temple_mult += (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.025;
+                }
             }
 
             let upkeep = 0;
@@ -8046,7 +8085,7 @@ function longLoop(){
                     if (!global.space.syndicate.hasOwnProperty(region)){
                         global.space.syndicate[region] = 0;
                     }
-                    if (global.space.syndicate[region] < 5000 && Math.rand(0, 10) === 0){
+                    if (global.space.syndicate[region] < (1000 * global.tech.syndicate) && Math.rand(0, 10) === 0){
                         global.space.syndicate[region]++;
                     }
                 }
@@ -8054,7 +8093,7 @@ function longLoop(){
 
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.transit > 0){ ship.transit--; }
+                    if (ship.transit > 0 && ship.fueled){ ship.transit--; }
                 });
                 vBind({el: `#shipList`},'update');
             }

@@ -7528,7 +7528,7 @@ const techs = {
         cost: {
             Knowledge(){ return 25000; }
         },
-        effect: loc('tech_merchandising_effect'),
+        effect(){ return global.race['truepath'] ? loc('tech_merchandising_effect_tp') : loc('tech_merchandising_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

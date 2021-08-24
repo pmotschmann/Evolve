@@ -1786,17 +1786,7 @@ function fortressData(dt){
             }
         case 'hireLabel':
             {
-                let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                if (cost > 25000){
-                    cost = 25000;
-                }
-                if (global.civic.garrison.m_use > 0){
-                    cost *= 1.1 ** global.civic.garrison.m_use;
-                }
-                if (global.race['brute']){
-                    cost = cost / 2;
-                }
-                cost = Math.round(govCivics('m_cost')).toLocaleString();
+                let cost = Math.round(govCivics('m_cost')).toLocaleString();
                 return loc('civics_garrison_hire_mercenary_cost',[cost]);
             }
     }

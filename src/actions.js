@@ -4828,7 +4828,7 @@ export function templeEffect(){
         desc = desc + `<div>${loc('city_temple_effect3')}</div>`;
     }
     if (global.tech['anthropology'] && global.tech['anthropology'] >= 4){
-        desc = desc + `<div>${loc('city_temple_effect4')}</div>`;
+        desc = desc + `<div>${global.race['truepath'] ? loc('city_temple_effect_tp',[2,25]) : loc('city_temple_effect4')}</div>`;
     }
     return desc;
 }
