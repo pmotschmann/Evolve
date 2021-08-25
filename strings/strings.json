@@ -5612,6 +5612,7 @@
   "outer_shipyard_registry": "Ship Name",
   "outer_shipyard_sensors": "Sensor Range",
   "outer_shipyard_build": "Construct Ship",
+  "outer_shipyard_park": "Ships parked at %0 are out of service and require no crew or fuel.",
   "outer_shipyard_scrap": "Scrap Ship",
   "outer_shipyard_fuel": "Fuel",
   "outer_shipyard_arrive": "Arrive at %0 in %1 days",

@@ -185,7 +185,7 @@ export function drawShipYard(){
             </b-dropdown>`);
         });
 
-        plans.append(`<div class="assemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button></div>`);
+        plans.append(`<div class="assemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span></div>`);
 
         updateCosts();
 
@@ -295,7 +295,10 @@ function getRandomShipName(){
         'Phoenix','Nautilus','Barracuda','Dolphin','Cuttlefish','Tiger Shark','Stingray','Swordfish','Triton','Dragon','Scorpion','Hagfish','Marlin',
         'Galileo','Raven','Sarcophagus','Excelsior','Scimitar','Vengeance','Nomad','Nova','Olympus','Aegis','Agamemnon','Charon','Achilles','Apollo',
         'Hermes','Hydra','Medusa','Talos','Zeus','Heracles','Cerberus','Acheron','Damocles','Juno','Persephone','Solaris','Victory','Hawk','Fury',
-        'Razor','Stinger','Outrider','Falcon','Vulture','Nirvana','Retribution','Swordbreaker','Valkyrie','Athena','Avalon','Merlin','Argonaut','Serenity'
+        'Razor','Stinger','Outrider','Falcon','Vulture','Nirvana','Retribution','Swordbreaker','Valkyrie','Athena','Avalon','Merlin','Argonaut','Serenity',
+        'Gunstar','Ranger','Tantive','Cygnus','Nostromo','Reliant','Narcissus','Liberator','Sulaco','Infinity','Resolute','Wasp','Hornet','Independence',
+        'Gilgamesh','Midway','Concordia','Goliath','Cosmos','Express','Tigers Claw','Oberon','Minnow','Majestic','Spartacus','Colossi','Vigilant',
+        'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire'
     ];
 
     return names[Math.rand(0, names.length)];
@@ -315,7 +318,7 @@ function updateCosts(){
     });
 }
 
-function shipCrewSize(ship){
+export function shipCrewSize(ship){
     switch (ship.class){
         case 'corvette':
             return 2;
@@ -767,9 +770,13 @@ function drawShips(){
                 },
                 setLoc(l,id){
                     let distance = transferWindow(global.space.shipyard.ships[id].location,l);
-                    global.space.shipyard.ships[id].location = l;
-                    global.space.shipyard.ships[id].transit = Math.round(distance / shipSpeed(global.space.shipyard.ships[id]));
-                    drawShips();
+                    let crew = shipCrewSize(global.space.shipyard.ships[id]);
+                    if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                        global.space.shipyard.ships[id].location = l;
+                        global.space.shipyard.ships[id].transit = Math.round(distance / shipSpeed(global.space.shipyard.ships[id]));
+                        global.civic.garrison.crew += crew;
+                        drawShips();
+                    }
                 },
                 crewText(id){
                     return shipCrewSize(global.space.shipyard.ships[id]);
