@@ -898,16 +898,16 @@ export function syndicate(region,extra){
             case 'spc_moon':
             case 'spc_red':
             case 'spc_hell':
-                divisor = (2000 * global.tech.syndicate) + rival;
+                divisor = (1250 * global.tech.syndicate) + rival;
                 break;
             case 'spc_gas':
             case 'spc_gas_moon':
             case 'spc_belt':
-                divisor = (1520 * global.tech.syndicate) + rival;
+                divisor = (1020 * global.tech.syndicate) + rival;
                 break;
             case 'spc_titan':
             case 'spc_enceladus':
-                divisor = 1000 * global.tech.syndicate;
+                divisor = 600 * global.tech.syndicate;
                 break;
         }
 
@@ -923,7 +923,7 @@ export function syndicate(region,extra){
                 }
             });
             
-            patrol = Math.round(patrol * (sensor / 100));
+            patrol = Math.round(patrol * ((sensor + 25) / 125));
             piracy = piracy - patrol > 0 ? piracy - patrol : 0;
         }
 

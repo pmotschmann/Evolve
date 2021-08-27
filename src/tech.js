@@ -10387,6 +10387,27 @@ const techs = {
             }
             return false;
         }
+    },
+    pulse_engine: {
+        id: 'tech-pulse_engine',
+        title: loc('outer_shipyard_engine_pulse'),
+        desc: loc('outer_shipyard_engine_pulse'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_engine: 2, stanene: 1 },
+        grant: ['syard_engine',3],
+        cost: {
+            Knowledge(){ return 555000; },
+            Stanene(){ return 250000; }
+        },
+        effect: loc('tech_pulse_engine_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     }
 };
 

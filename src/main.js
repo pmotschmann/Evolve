@@ -4149,10 +4149,13 @@ function fastLoop(){
         if (global.resource.Water.display){
             let water_bd = {};
             if (support_on['water_freighter']){
+                let synd = syndicate('spc_enceladus');
+
                 let base = production('water_freighter') * support_on['water_freighter'];
-                let delta = base * hunger * global_multiplier;
+                let delta = base * hunger * global_multiplier * synd;
 
                 water_bd[loc('space_water_freighter_title')] = base + 'v';
+                water_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 water_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
                 modRes('Water', delta * time_multiplier);
@@ -8115,8 +8118,11 @@ function longLoop(){
                     if (!global.space.syndicate.hasOwnProperty(region)){
                         global.space.syndicate[region] = 0;
                     }
-                    if (global.space.syndicate[region] < (1000 * global.tech.syndicate) && Math.rand(0, 10) === 0){
+                    if (global.space.syndicate[region] < (500 * global.tech.syndicate) && Math.rand(0, 10) === 0){
                         global.space.syndicate[region]++;
+                    }
+                    if (global.space.syndicate[region] > 500 * global.tech.syndicate){
+                        global.space.syndicate[region] = 500 * global.tech.syndicate;
                     }
                 }
             });

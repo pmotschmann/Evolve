@@ -177,7 +177,7 @@ export function production(id,val){
         }
         case 'water_freighter':
         {
-            return 0.75 * zigguratBonus();
+            return 1.25 * zigguratBonus();
         }
     }
 }

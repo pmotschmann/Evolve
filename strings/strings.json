@@ -2300,6 +2300,7 @@
   "tech_pulse_lasers_effect": "Pulse lasers are like machine gun lasers, they fire rapid short burts of high energy.",
   "tech_destroyer_ship": "Destroyer",
   "tech_destroyer_ship_effect": "Design a Destroyer class ship for use in your fleet.",
+  "tech_pulse_engine_effect": "A new engine concept called the Pulse Drive which creates a rapid series of small explosions behind the ship to accelerate it.",
   "star_dock_probe": "Space Probe",
   "star_dock_probe_desc": "Interstellar Probe",
   "star_dock_probe_effect": "Each interstellar probe increases the number of target worlds your bioseeder ship can scout by 1.",
