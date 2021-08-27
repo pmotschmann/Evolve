@@ -1,6 +1,8 @@
 import { global, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
+import { spatialReasoning } from './resources.js';
+import { production } from './prod.js';
 import { payCosts } from './actions.js';
 import { fuel_adjust, spaceTech } from './space.js';
 import { loc } from './locale.js';
@@ -14,9 +16,9 @@ export const outerTruth = {
             desc(){
                 return loc('space_titan_info_desc',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]);
             },
-            support: 'titan_spaceport',
+            support: 'electrolysis',
             zone: 'outer',
-            syndicate(){ return global.tech['titan'] && global.tech.titan >= 2 ? true : false; }
+            syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -53,27 +55,56 @@ export const outerTruth = {
             path: 'truepath',
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_spaceport', offset, 2500000, 1.32); },
-                Iridium(offset){ return spaceCostMultiplier('titan_spaceport', offset, 3500, 1.32); },
-                Mythril(offset){ return spaceCostMultiplier('titan_spaceport', offset, 50, 1.32); },
-                Titanium(offset){ return spaceCostMultiplier('titan_spaceport', offset, 45000, 1.32); }
+                Lumber(offset){ return spaceCostMultiplier('titan_spaceport', offset, 750000, 1.32); },
+                Cement(offset){ return spaceCostMultiplier('titan_spaceport', offset, 350000, 1.32); },
+                Mythril(offset){ return spaceCostMultiplier('titan_spaceport', offset, 10000, 1.32); }
             },
             effect(){
-                let helium = +(fuel_adjust(5,true)).toFixed(2);
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,$(this)[0].support()])}</div><div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
+                let water = global.resource.Water.display ? `<div>${loc('plus_max_resource',[sizeApproximation(spatialReasoning(1000)),global.resource.Water.name])}</div>` : ``;
+                let support = global.tech['enceladus'] && global.tech.enceladus >= 2 ? `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.enceladus])}</div>` : ``;
+                return `${support}${water}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            support(){ return 2; },
+            powered(){ return powerCostMod(10); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.titan_spaceport.count++;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.space.titan_spaceport.on++;
+                    }
+                    if (global.tech['titan'] <= 1){
+                        global.tech['titan'] = 2;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        electrolysis: {
+            id: 'space-electrolysis',
+            title: loc('space_electrolysis_title'),
+            desc(){ return `<div>${loc('space_electrolysis_title')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource.Water.name])}</div>`; },
+            reqs: { titan: 3 },
+            path: 'truepath',
+            cost: {
+                Money(offset){ return spaceCostMultiplier('electrolysis', offset, 1000000, 1.25); },
+                Copper(offset){ return spaceCostMultiplier('electrolysis', offset, 185000, 1.25); },
+                Steel(offset){ return spaceCostMultiplier('electrolysis', offset, 220000, 1.25); },
+                Polymer(offset){ return spaceCostMultiplier('electrolysis', offset, 380000, 1.25); }
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_electrolysis_use',[10,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(){
                 return 2;
             },
             powered(){ return powerCostMod(8); },
-            refresh: true,
             action(){
                 if (payCosts($(this)[0])){
-                    incrementStruct('titan_spaceport');
+                    global.space.electrolysis.count++;
                     if (global.city.power >= $(this)[0].powered()){
-                        global.space['titan_spaceport'].on++;
-                    }
-                    if (global.tech['titan'] <= 1){
-                        global.tech['titan'] = 2;
+                        global.space.electrolysis.on++;
                     }
                     return true;
                 }
@@ -89,8 +120,9 @@ export const outerTruth = {
             desc(){
                 return loc('space_enceladus_info_desc',[genusVars[races[global.race.species].type].solar.enceladus, races[global.race.species].home]);
             },
+            support: 'titan_spaceport',
             zone: 'outer',
-            syndicate(){ return global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; }
+            syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; }
         },
         enceladus_mission: {
             id: 'space-enceladus_mission',
@@ -114,6 +146,38 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info');
+                    global.resource.Water.display = true;
+                    return true;
+                }
+                return false;
+            }
+        },
+        water_freighter: {
+            id: 'space-water_freighter',
+            title: loc('space_water_freighter_title'),
+            desc(){
+                return `<div>${loc('space_water_freighter_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+            },
+            reqs: { enceladus: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('water_freighter', offset, 450000, 1.25); },
+                Iron(offset){ return spaceCostMultiplier('water_freighter', offset, 362000, 1.25); },
+                Nano_Tube(offset){ return spaceCostMultiplier('water_freighter', offset, 125000, 1.25); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('water_freighter', offset, 75000, 1.25); }
+            },
+            effect(){
+                let helium = +fuel_adjust(2.5).toFixed(2);
+                let water = +(production('water_freighter')).toFixed(2);
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.water_freighter.count++;
+                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
+                        global.space.water_freighter.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -462,13 +526,13 @@ function shipAttackPower(ship){
         case 'corvette':
             return rating;
         case 'frigate':
-            return Math.round(rating * 1.25);
+            return Math.round(rating * 1.3);
         case 'destroyer':
-            return Math.round(rating * 2);
+            return Math.round(rating * 2.75);
         case 'cruiser':
-            return Math.round(rating * 4.5);
+            return Math.round(rating * 5.5);
         case 'battlecruiser':
-            return Math.round(rating * 8);
+            return Math.round(rating * 10);
         case 'dreadnought':
             return Math.round(rating * 22);
     }

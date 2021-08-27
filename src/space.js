@@ -1,4 +1,4 @@
-import { save, global, webWorker, clearStates, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { save, global, webWorker, clearStates, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
@@ -225,6 +225,7 @@ const spaceProjects = {
                 return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
+            support_fuel(){ return { r: 'Oil', a: 2 }; },
             powered(){ return powerCostMod(4); },
             refresh: true,
             action(){
@@ -441,6 +442,7 @@ const spaceProjects = {
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 4){ support++; }
                 return support;
             },
+            support_fuel(){ return { r: 'Helium_3', a: 1.25 }; },
             powered(){ return powerCostMod(5); },
             refresh: true,
             action(){
@@ -500,9 +502,9 @@ const spaceProjects = {
             },
             effect(){
                 let gain = global.race['cataclysm'] ? 2 : 1;
-                if (red_on['biodome']){
+                if (support_on['biodome']){
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
-                    gain += pop * red_on['biodome'];
+                    gain += pop * support_on['biodome'];
                 }
                 gain = +(gain).toFixed(2);
                 let safe = ``;
@@ -883,7 +885,7 @@ const spaceProjects = {
                 let lab = '';
                 if (global.race['cataclysm']){
                     scientist = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div>`;
-                    sci *= 1 + (moon_on['observatory'] * 0.25);
+                    sci *= 1 + (support_on['observatory'] * 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
@@ -923,7 +925,7 @@ const spaceProjects = {
             effect(){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
                 if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
-                    bonus += 0.01 * red_on['exotic_lab'];
+                    bonus += 0.01 * support_on['exotic_lab'];
                 }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     bonus += 0.002 * global.civic.priest.workers;
@@ -1739,6 +1741,7 @@ const spaceProjects = {
                         global.settings.space.titan = true;
                         global.settings.space.enceladus = true;
                         global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     }
                     return true;
                 }
@@ -1811,7 +1814,7 @@ const spaceProjects = {
                 }
             },
             reqs: { science: 10 },
-            path: 'standard',
+            path: ['standard'],
             condition(){
                 return global.space.world_collider.count < 1859 ? true : false;
             },
@@ -1866,7 +1869,7 @@ const spaceProjects = {
             },
             wiki: false,
             reqs: { science: 11 },
-            path: 'standard',
+            path: ['standard'],
             condition(){
                 return global.space.world_collider.count < 1859 ? false : true;
             },
@@ -1895,7 +1898,7 @@ const spaceProjects = {
                 return `<div>${loc('outer_shipyard_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { shipyard: 1 },
-            path: 'truepath',
+            path: ['truepath'],
             cost: {
                 Money(){ return 10000000; },
                 Aluminium(){ return 1000000; },
@@ -2151,7 +2154,7 @@ const interstellarProjects = {
             effect(){
                 let know = 10000;
                 if (global.tech.science >= 15){
-                    know *= 1 + ((global.race['cataclysm'] ? red_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
+                    know *= 1 + ((global.race['cataclysm'] ? support_on['exotic_lab'] : global.city.wardenclyffe.count) * 0.02);
                 }
                 if (global.race['cataclysm'] && p_on['s_gate'] && gal_on['scavenger']){
                     know *= 1 + (gal_on['scavenger'] * +(piracy('gxy_alien2') * 0.75).toFixed(1));
@@ -5689,8 +5692,8 @@ function house_adjust(res){
 }
 
 export function iron_adjust(res){
-    if (global.tech['solar'] && global.tech['solar'] >= 5 && belt_on['iron_ship']){
-        res *= 0.95 ** belt_on['iron_ship'];
+    if (global.tech['solar'] && global.tech['solar'] >= 5 && support_on['iron_ship']){
+        res *= 0.95 ** support_on['iron_ship'];
     }
     return res;
 }
@@ -5758,8 +5761,8 @@ export function zigguratBonus(){
     let bonus = 1;
     if (global.space['ziggurat'] && global.space['ziggurat'].count > 0){
         let zig = global.tech['ancient_study'] ? 0.006 : 0.004;
-        if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && red_on['exotic_lab']){
-            zig += 0.0001 * red_on['exotic_lab'];
+        if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
+            zig += 0.0001 * support_on['exotic_lab'];
         }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             zig += 0.00002 * global.civic.priest.workers;

@@ -175,5 +175,9 @@ export function production(id,val){
             }
             return vitreloy;
         }
+        case 'water_freighter':
+        {
+            return 0.75 * zigguratBonus();
+        }
     }
 }

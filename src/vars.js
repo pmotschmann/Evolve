@@ -34,9 +34,7 @@ export var breakdown = {
     p: {}
 };
 export var p_on = {};
-export var red_on = {};
-export var moon_on = {};
-export var belt_on = {};
+export var support_on = {};
 export var int_on = {};
 export var gal_on = {};
 export var spire_on = {};
@@ -874,6 +872,11 @@ if (!global.hasOwnProperty('support')){
         lake: [],
         spire: []
     };
+}
+
+if (!global.support.hasOwnProperty('titan')){
+    global.support['titan'] = [];
+    global.support['enceladus'] = [];
 }
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){

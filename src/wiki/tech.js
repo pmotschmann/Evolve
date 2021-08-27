@@ -2102,8 +2102,6 @@ const extraTechPositions = {
     bribe_sphinx: 'miasma'
 };
 
-
-
 function getTechTrees(path){
     let techTrees = {};
     let techs = path === 'truepath' ? truepath_tech : standard_tech;
@@ -2196,15 +2194,23 @@ function addRequirements(parent,key,keyName,path){
     }
 }
 
+const alt_era = {
+    solar: 'interstellar'
+};
+const alt_era_r = {
+    interstellar: 'solar'
+};
+
 export function renderTechPage(era,path){
     let content = sideMenu('create');;
     let techListing = [];
     let otherTechs = [];
     let techs = path === 'truepath' ? truepath_tech : standard_tech;
+    let prefix = path === 'truepath' ? 'tp_tech' : 'tech';
 
     Object.keys(techs).forEach(function (actionName){
         let action = techs[actionName];
-        if (action.hasOwnProperty('era') && action.era === era && (!action.hasOwnProperty('wiki') || action.wiki)){
+        if (action.hasOwnProperty('era') && (action.era === era || action.era === alt_era[era]) && (!action.hasOwnProperty('wiki') || action.wiki)){
             let id = techs[actionName].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             actionDesc(info, action);
@@ -2234,10 +2240,10 @@ export function renderTechPage(era,path){
         for (let i=0; i<otherTechs.length; i++) {
             let sorted = false;
             Object.keys(extraTechPositions).forEach(function (extraTech){
-                if (!sorted && otherTechs[i][0].id === 'tech-' + extraTech) {
+                if (!sorted && otherTechs[i][0].id === `${prefix}-` + extraTech) {
                     let insertPos = -1;
                     for (let i=0; i<techListing.length; i++) {
-                        if (techListing[i][0].id === 'tech-' + extraTechPositions[extraTech]) {
+                        if (techListing[i][0].id === `${prefix}-` + extraTechPositions[extraTech]) {
                             insertPos = i + 1;
                             break;
                         }
@@ -2254,8 +2260,9 @@ export function renderTechPage(era,path){
         }
     }
     for (let i=0; i<techListing.length; i++) {
+        let era = path === 'truepath' && alt_era_r[techListing[i][0].era] ? alt_era_r[techListing[i][0].era] : techListing[i][0].era;
         content.append(techListing[i][1]);
         let id = techListing[i][0].id.split('-');
-        sideMenu('add',`${techListing[i][0].era}-tech`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
+        sideMenu('add',`${era}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
     }
 }

@@ -2,7 +2,7 @@ import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
-import { races, traits } from './races.js';
+import { races, traits, genusVars } from './races.js';
 import { checkRequirements, checkSpaceRequirements } from './space.js';
 import { fortressTech } from './portal.js';
 
@@ -1234,6 +1234,8 @@ export function gridDefs(){
         alien2: { l: global.support.alien2, n: loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]), s: global.settings.space.alien2, r: 'galaxy', rs: 'foothold'  },
         lake: { l: global.support.lake, n: loc(`portal_lake_name`), s: global.settings.portal.lake, r: 'portal', rs: 'harbour'  },
         spire: { l: global.support.spire, n: loc(`portal_spire_name`), s: global.settings.portal.spire, r: 'portal', rs: 'purifier'  },
+        titan: { l: global.support.titan, n: genusVars[races[global.race.species].type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
+        enceladus: { l: global.support.enceladus, n: genusVars[races[global.race.species].type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
     };
 }
 

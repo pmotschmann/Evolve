@@ -1,4 +1,4 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, red_on } from './vars.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
@@ -27,6 +27,7 @@ export const resource_values = {
     Helium_3: 620,
     Deuterium: 950,
     Elerium: 2000,
+    Water: 2,
     Neutronium: 1500,
     Adamantite: 2250,
     Infernite: 2750,
@@ -68,6 +69,7 @@ export const tradeRatio = {
     Helium_3: 0.1,
     Deuterium: 0.1,
     Elerium: 0.02,
+    Water: 2,
     Neutronium: 0.05,
     Adamantite: 0.05,
     Infernite: 0.01,
@@ -290,8 +292,8 @@ export const craftingRatio = (function(){
             if (global.space['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
-                    manual: red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02),
-                    auto: red_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02)
+                    manual: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02),
+                    auto: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02)
                 });
             }
             if (p_on['stellar_forge']){
@@ -526,6 +528,7 @@ export function defineResources(){
     loadResource('Polymer',50,1,true,true);
     loadResource('Iridium',0,1,true,true);
     loadResource('Helium_3',0,1,true,false);
+    loadResource('Water',0,1,false,false,'advanced');
     loadResource('Deuterium',0,1,false,false,'advanced');
     loadResource('Neutronium',0,1,false,false,'advanced');
     loadResource('Adamantite',0,1,false,true,'advanced');

@@ -4,7 +4,7 @@ import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, message
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
 import { descension } from './portal.js';
-import { races } from './races.js';
+import { races, genusVars } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -1480,6 +1480,7 @@ const techs = {
         category: 'mining',
         era: 'interstellar',
         reqs: { alumina: 1, stanene: 1, graphene: 1 },
+        path: ['standard','truepath'],
         not_trait: ['cataclysm'],
         grant: ['alumina',2],
         cost: {
@@ -3611,7 +3612,7 @@ const techs = {
         desc: loc('tech_world_collider'),
         category: 'science',
         era: 'deep_space',
-        path: 'standard',
+        path: ['standard'],
         reqs: { science: 9, elerium: 2 },
         grant: ['science',10],
         cost: {
@@ -7882,6 +7883,7 @@ const techs = {
         era: 'interstellar',
         reqs: { swarm: 3 },
         grant: ['swarm',4],
+        path: ['standard','truepath'],
         cost: {
             Knowledge(){ return 525000; },
             Titanium(){ return 100000; }
@@ -7902,6 +7904,7 @@ const techs = {
         era: 'interstellar',
         reqs: { swarm: 4, stanene: 1 },
         grant: ['swarm',5],
+        path: ['standard','truepath'],
         cost: {
             Knowledge(){ return 725000; },
             Stanene(){ return 100000; }
@@ -8293,7 +8296,7 @@ const techs = {
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
-        path: 'standard',
+        path: ['standard'],
         reqs: { mars: 2 },
         grant: ['unify',1],
         cost: {
@@ -8313,7 +8316,7 @@ const techs = {
         desc(){ return loc('tech_unification_desc',[races[global.race.species].home]); },
         category: 'special',
         era: 'early_space',
-        path: 'standard',
+        path: ['standard'],
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
@@ -8361,7 +8364,7 @@ const techs = {
         desc(){ return loc('tech_unite_desc'); },
         category: 'special',
         era: 'globalized',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { unify: 1 },
         grant: ['unify',2],
         cost: {
@@ -10211,7 +10214,7 @@ const techs = {
         desc: loc('tech_long_range_probes'),
         category: 'space_exploration',
         era: 'solar',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { high_tech: 10, elerium: 1 },
         grant: ['outer',1],
         cost: {
@@ -10229,13 +10232,85 @@ const techs = {
             return false;
         },
     },
+    stanene_tp: {
+        id: 'tech-stanene_tp',
+        title: loc('tech_stanene'),
+        desc: loc('tech_stanene'),
+        category: 'crafting',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 1, enceladus: 1 },
+        grant: ['stanene',1],
+        cost: {
+            Knowledge(){ return 525000; },
+            Aluminium(){ return 500000; },
+            Nano_Tube(){ return 100000; }
+        },
+        effect: loc('tech_stanene_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                let tech = $(this)[0].grant[0];
+                global.tech[tech] = $(this)[0].grant[1];
+                global.resource.Stanene.display = true;
+                messageQueue(loc('tech_stanene_avail'),'info',false,['progress']);
+                defineIndustry();
+                return true;
+            }
+            return false;
+        }
+    },
+    electrolysis: {
+        id: 'tech-electrolysis',
+        title: loc('tech_electrolysis'),
+        desc: loc('tech_electrolysis'),
+        category: 'power_generation',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 2, enceladus: 1 },
+        grant: ['titan',3],
+        cost: {
+            Knowledge(){ return 465000; },
+        },
+        effect(){ return loc('tech_electrolysis_effect',[genusVars[races[global.race.species].type].solar.titan,global.resource.Water.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+    },
+    water_mining: {
+        id: 'tech-water_mining',
+        title: loc('tech_water_mining'),
+        desc: loc('tech_water_mining'),
+        category: 'power_generation',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 2, enceladus: 1 },
+        grant: ['enceladus',2],
+        cost: {
+            Knowledge(){ return 450000; },
+        },
+        effect(){ return loc('tech_water_mining_effect',[
+            genusVars[races[global.race.species].type].solar.enceladus, 
+            races[global.race.species].home,
+            global.resource.Water.name
+        ]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['water_freighter'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        },
+    },
     shipyard: {
         id: 'tech-shipyard',
         title(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
         desc(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
         category: 'space_militarization',
         era: 'solar',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { outer: 1, syndicate: 1 },
         grant: ['shipyard',1],
         cost: {
@@ -10257,7 +10332,7 @@ const techs = {
         desc: loc('tech_ship_lasers'),
         category: 'space_militarization',
         era: 'solar',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { military: 7, syard_weapon: 1 },
         grant: ['syard_weapon',2],
         cost: {
@@ -10278,7 +10353,7 @@ const techs = {
         desc: loc('tech_pulse_lasers'),
         category: 'space_militarization',
         era: 'solar',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { syard_weapon: 2 },
         grant: ['syard_weapon',3],
         cost: {
@@ -10299,7 +10374,7 @@ const techs = {
         desc: loc('tech_destroyer_ship'),
         category: 'space_militarization',
         era: 'solar',
-        path: 'truepath',
+        path: ['truepath'],
         reqs: { syard_class: 2 },
         grant: ['syard_class',3],
         cost: {
@@ -10312,7 +10387,7 @@ const techs = {
             }
             return false;
         }
-    },
+    }
 };
 
 function uniteEffect(){
@@ -10373,7 +10448,7 @@ export function techList(path){
         let techList = {};
         Object.keys(techs).forEach(function(t){
             if (techPath[path].includes(techs[t].era) || techs[t].hasOwnProperty('path')){
-                if (!techs[t].hasOwnProperty('path') || (techs[t].hasOwnProperty('path') && techs[t].path === path)){
+                if (!techs[t].hasOwnProperty('path') || (techs[t].hasOwnProperty('path') && techs[t].path.includes(path))){
                     techList[t] = techs[t];
                 }
             }

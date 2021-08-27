@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
@@ -3979,7 +3979,7 @@ export const actions = {
                     multiplier += (global.city['library'].count * 0.02);
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){
-                    multiplier += (moon_on['observatory'] * 0.05);
+                    multiplier += (support_on['observatory'] * 0.05);
                 }
                 if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
                     multiplier += (p_on['sensor_drone'] * 0.02);
@@ -5002,7 +5002,8 @@ export function checkCityRequirements(action){
     else if ((global.race['kindling_kindred'] || global.race['smoldering']) && action === 'stone'){
         return true;
     }
-    if (actions.city[action].hasOwnProperty('path') && actions.city[action].path !== (global.race['truepath'] ? 'truepath' : 'standard')){
+    let c_path = global.race['truepath'] ? 'truepath' : 'standard';
+    if (actions.city[action].hasOwnProperty('path') && !actions.city[action].path.includes(c_path)){
         return false;
     }
     var isMet = true;
@@ -5018,7 +5019,7 @@ export function checkTechRequirements(tech){
     let isMet = true;
 
     let path = global.race['truepath'] ? 'truepath' : 'standard';
-    if (!techPath[path].includes(actions.tech[tech].era) || (actions.tech[tech].hasOwnProperty('path') && actions.tech[tech].path !== path)){
+    if ((!techPath[path].includes(actions.tech[tech].era) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
         return false;
     }
 
@@ -5206,6 +5207,10 @@ export function drawTech(){
         new_techs[era] = [];
     });
 
+    const tp_era = {
+        interstellar: 'solar'
+    };
+
     Object.keys(actions.tech).forEach(function (tech_name){
         removeAction(actions.tech[tech_name].id);
 
@@ -5244,11 +5249,13 @@ export function drawTech(){
                 techs[category] = [];
             }
 
-            if (!new_techs.hasOwnProperty(c_action.era)){
-                new_techs[c_action.era] = [];
+            let era = global.race['truepath'] && tp_era[c_action.era] ? tp_era[c_action.era] : c_action.era;
+
+            if (!new_techs.hasOwnProperty(era)){
+                new_techs[era] = [];
             }
 
-            new_techs[c_action.era].push(tech_name);
+            new_techs[era].push(tech_name);
         }
     });
 
