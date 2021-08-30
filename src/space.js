@@ -883,7 +883,6 @@ const spaceProjects = {
                     desc = desc + templeEffect();
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 4){
-                    global.civic.priest.display = true;
                     desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
                 return desc;
@@ -891,6 +890,9 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('ziggurat');
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 4){
+                        global.civic.priest.display = true;
+                    }
                     if (global.race['cataclysm']){
                         unlockAchieve('iron_will',false,1);
                     }

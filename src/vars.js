@@ -1737,6 +1737,7 @@ export function resizeGame(){
         let queue = $('#msgQueue').detach();
         queue.addClass('right');
         queue.removeClass('has-text-info');
+        queue.css('resize', 'none');
         $('#queueColumn').addClass('is-one-quarter');
         $('#queueColumn').append(build);
         $('#queueColumn').append(queue);
@@ -1752,6 +1753,7 @@ export function resizeGame(){
         let queue = $('#msgQueue').detach();
         queue.removeClass('right');
         queue.addClass('has-text-info');
+        queue.css('resize', 'vertical');
         $('#queueColumn').removeClass('is-one-quarter');
         $('#sideQueue').append(build);
         $('#sideQueue').append(queue);
