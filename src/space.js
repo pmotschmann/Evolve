@@ -5701,47 +5701,80 @@ export function setUniverse(){
     }
 }
 
-function ascendLab(){
-    if (webWorker.w){
-        webWorker.w.terminate();
+export function ascendLab(wiki){
+    if (!wiki){
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+
+        unlockAchieve(`biome_${global.city.biome}`);
+        unlockAchieve(`genus_${races[global.race.species].type}`);
+        unlockAchieve(`ascended`);
+        if (global.race.species === 'junker'){
+            unlockFeat('the_misery');
+        }
+        if (global.interstellar.thermal_collector.count === 0){
+            unlockFeat(`energetic`);
+        }
+        if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
+            unlockFeat(`garbage_pie`);
+        }
+        if (global.race['emfield']){
+            unlockAchieve(`technophobe`);
+        }
+        if (global.race['cataclysm']){
+            unlockFeat(`finish_line`);
+        }
+        global.race['noexport'] = 1;
+        clearElement($(`#city`));
+        global.settings.showCity = true;
+        global.settings.showCivic = false;
+        global.settings.showResearch = false;
+        global.settings.showResources = false;
+        global.settings.showGenetics = false;
+        global.settings.showSpace = false;
+        global.settings.showDeep = false;
+        global.settings.showGalactic = false;
+        global.settings.showPortal = false;
+        global.settings.spaceTabs = 0;
     }
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    
-    unlockAchieve(`biome_${global.city.biome}`);
-    unlockAchieve(`genus_${races[global.race.species].type}`);
-    unlockAchieve(`ascended`);
-    if (global.race.species === 'junker'){
-        unlockFeat('the_misery');
-    }
-    if (global.interstellar.thermal_collector.count === 0){
-        unlockFeat(`energetic`);
-    }
-    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
-        unlockFeat(`garbage_pie`);
-    }
-    if (global.race['emfield']){
-        unlockAchieve(`technophobe`);
-    }
-    if (global.race['cataclysm']){
-        unlockFeat(`finish_line`);
-    }
-    global.race['noexport'] = 1;
-    clearElement($(`#city`));
-    global.settings.showCity = true;
-    global.settings.showCivic = false;
-    global.settings.showResearch = false;
-    global.settings.showResources = false;
-    global.settings.showGenetics = false;
-    global.settings.showSpace = false;
-    global.settings.showDeep = false;
-    global.settings.showGalactic = false;
-    global.settings.showPortal = false;
-    global.settings.spaceTabs = 0;
 
     let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
-    $(`#city`).append(lab);
-
-    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span></div>`);
+    
+    let wikiVars = {
+        ascended: {},
+        technophobe: global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l ? global.stats.achieve.technophobe.l : 0
+    };
+    
+    if (wiki){
+        wiki.append(lab);
+    }
+    else {
+        $(`#city`).append(lab);
+    }
+    
+    lab.append(`<div><h3 class="has-text-danger">${loc('genelab_title')}</h3> - <span class="has-text-warning">${loc('genelab_genes')} {{ g.genes }}</span> - <span class="has-text-warning">${loc('trait_untapped_name')}: {{ g.genes | untapped }}</span></div>`);
+    
+    if (wiki){
+        lab.append(`
+            <div class="has-text-caution">${loc('achieve_ascended_name')}</div>
+        `);
+        let ascended_levels = $(`<div></div>`);
+        lab.append(ascended_levels);
+        Object.keys(universe_types).forEach(function (uni){
+            wikiVars.ascended[uni] = global.stats.achieve[`ascended`] && global.stats.achieve.ascended.hasOwnProperty(universeAffix(uni)) ? global.stats.achieve.ascended[universeAffix(uni)] : 0;
+            ascended_levels.append(`
+                <div class="calcInput"><span>${loc('universe_' + uni)}</span> <b-numberinput :input="val('${uni}')" min="0" max="5" v-model="w.ascended.${uni}" :controls="false"></b-numberinput></div>
+            `);
+        });
+        lab.append(`
+            <div class="has-text-caution">${loc('achieve_technophobe_name')}</div>
+            <div>
+                <div class="calcInput"><b-numberinput :input="val('technophobe')" min="0" max="5" v-model="w.technophobe" :controls="false"></b-numberinput></div>
+            </div>
+        `);
+    }
     
     let name = $(`<div class="fields"><div class="name">${loc('genelab_name')} <b-input v-model="g.name" maxlength="20"></b-input></div><div class="entity">${loc('genelab_entity')} <b-input v-model="g.entity" maxlength="40"></b-input></div><div class="name">${loc('genelab_home')} <b-input v-model="g.home" maxlength="20"></b-input></div> <div>${loc('genelab_desc')} <b-input v-model="g.desc" maxlength="255"></b-input></div></div>`);
     lab.append(name);
@@ -5760,7 +5793,7 @@ function ascendLab(){
     let dGenus = false;
     let genus = `<div class="genus_selection"><div class="has-text-caution">${loc('genelab_genus')}</div><template><section>`;
     Object.keys(genus_traits).forEach(function (type){
-        if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
+        if (wiki || (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)){
             if (!dGenus){ dGenus = type; }
             genus = genus + `<div class="field ${type}"><b-radio v-model="g.genus" native-value="${type}">${loc(`genelab_genus_${type}`)}</b-radio></div>`;
         }
@@ -5774,6 +5807,8 @@ function ascendLab(){
     Object.keys(races).forEach(function (race){
         let type = races[race].type;
         if (
+            wiki
+                ||
             (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l > 0)
                 ||
             (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0)
@@ -5799,7 +5834,7 @@ function ascendLab(){
     trait_list = trait_list + negative + `</section></template></div>`;
     genes.append($(trait_list));
 
-    lab.append($(`
+    let buttons = `
         <div class="reset">
             <button class="button" @click="reset()">${loc('genelab_reset')}</button>
         </div>
@@ -5812,10 +5847,15 @@ function ascendLab(){
         <div class="importExport">
             <span>{{ err.msg }}</span>
         </div>
-        <div class="create">
-            <button class="button" @click="setRace()">${loc('genelab_create')}</button>
-        </div>
-    `));
+    `;
+    if (!wiki){
+        buttons += `
+            <div class="create">
+                <button class="button" @click="setRace()">${loc('genelab_create')}</button>
+            </div>
+        `;
+    }
+    lab.append(buttons);
 
     var genome = global.hasOwnProperty('custom') ? {
         name: global.custom.race0.name,
@@ -5851,18 +5891,37 @@ function ascendLab(){
         }
     }
 
-    genome.genes = calcGenomeScore(genome);
-    let error = { msg: "" }
+    genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
+    let error = { msg: "" };
 
     vBind({
         el: '#celestialLab',
         data: {
             g: genome,
+            w: wikiVars,
             err: error
         },
         methods: {
+            val(type){
+                if (type === 'technophobe'){
+                    if (wikiVars['technophobe'] < 0){
+                        wikiVars['technophobe'] = 0;
+                    }
+                    else if (wikiVars['technophobe'] > 5){
+                        wikiVars['technophobe'] = 5;
+                    }
+                }
+                else {
+                    if (wikiVars.ascended[type] < 0){
+                        wikiVars.ascended[type] = 0;
+                    }
+                    else if (wikiVars.ascended[type] > 5){
+                        wikiVars.ascended[type] = 5;
+                    }
+                }
+            },
             geneEdit(){
-                genome.genes = calcGenomeScore(genome);
+                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
             },
             setRace(){
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
@@ -5897,7 +5956,7 @@ function ascendLab(){
                 genome.dwarf = "";
                 genome.genus = dGenus;
                 genome.traitlist = [];
-                genome.genes = calcGenomeScore(genome);
+                genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
             },
             customImport(){
                 let file = document.getElementById("customFile").files[0];
@@ -5941,17 +6000,17 @@ function ascendLab(){
                         if (genome.desc.length > 255){
                             genome.desc = genome.desc.substring(0, 255);
                         }
-                        if (!(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
+                        if (!wiki && !(global.stats.achieve[`genus_${genome.genus}`] && global.stats.achieve[`genus_${genome.genus}`].l > 0)){
                             genome.genus = dGenus;
                         }
                         let fixTraitlist = [];
                         for (let i=0; i < genome.traitlist.length; i++){
-                            if (traits.hasOwnProperty(genome.traitlist[i]) && traits[genome.traitlist[i]].type === 'major' && !fixTraitlist.includes(genome.traitlist[i])){
+                            if (traits.hasOwnProperty(genome.traitlist[i]) && traits[genome.traitlist[i]].type === 'major' && unlockedTraits[genome.traitlist[i]] && !fixTraitlist.includes(genome.traitlist[i])){
                                 fixTraitlist.push(genome.traitlist[i]);
                             }
                         }
                         genome.traitlist = fixTraitlist;
-                        genome.genes = calcGenomeScore(genome);
+                        genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
                     
                         error.msg = "";
                     }
@@ -5976,7 +6035,10 @@ function ascendLab(){
             cost(trait){
                 if (traits[trait].val >= 0){
                     let max_complexity = 2;
-                    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+                    if (wiki){
+                        max_complexity += wikiVars.technophobe;
+                    }
+                    else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
                         max_complexity += global.stats.achieve.technophobe.l;
                     }
 
@@ -6002,6 +6064,10 @@ function ascendLab(){
                 else {
                     return traits[trait].val;
                 }
+            },
+            untapped(genes){
+                let num = genes > 0 ? +((genes / (genes + 20) / 10 + 0.00024) * 100).toFixed(3) : 0;
+                return `+${num}%`;
             }
         }
     });
