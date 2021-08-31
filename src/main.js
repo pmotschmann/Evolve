@@ -1590,7 +1590,7 @@ function fastLoop(){
             if (global.space[sup.s] && global.space[sup.s].count > 0){
                 if (actions.space[sup.r][sup.s].hasOwnProperty('support_fuel')){
                     let fuel = actions.space[sup.r][sup.s].support_fuel();
-                    let fuel_cost = +fuel_adjust(fuel.a,true);
+                    let fuel_cost = ['Oil','Helium_3'].includes(sup.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
                     let mb_consume = p_on[sup.s] * fuel_cost;
                     breakdown.p.consume[fuel.r][actions.space[sup.r][sup.s].title] = -(mb_consume);
                     for (let i=0; i<p_on[sup.s]; i++){

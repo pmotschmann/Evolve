@@ -97,11 +97,12 @@ export const outerTruth = {
             },
             effect(){
                 let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.titan])}</div>`;
-                return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[10,global.resource.Water.name,$(this)[0].powered()])}</div>`;
+                return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(){
                 return 2;
             },
+            support_fuel(){ return { r: 'Water', a: 35 }; },
             powered(){ return powerCostMod(8); },
             action(){
                 if (payCosts($(this)[0])){
