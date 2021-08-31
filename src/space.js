@@ -1900,12 +1900,12 @@ const spaceProjects = {
             reqs: { shipyard: 1 },
             path: ['truepath'],
             cost: {
-                Money(){ return 10000000; },
-                Aluminium(){ return 1000000; },
-                Titanium(){ return 650000; },
-                Iridium(){ return 250000; },
-                Neutronium(){ return 10000; },
-                Mythril(){ return 500000; },
+                Money(){ return global.space.shipyard.count === 0 ? 10000000 : 0; },
+                Aluminium(){ return global.space.shipyard.count === 0 ? 1000000 : 0; },
+                Titanium(){ return global.space.shipyard.count === 0 ? 650000 : 0; },
+                Iridium(){ return global.space.shipyard.count === 0 ? 250000 : 0; },
+                Neutronium(){ return global.space.shipyard.count === 0 ? 10000 : 0; },
+                Mythril(){ return global.space.shipyard.count === 0 ? 500000 : 0; },
             },
             no_queue(){ return global.space.shipyard.count < 1 ? false : true },
             queue_complete(){ return 1 - global.space.shipyard.count; },
@@ -1932,7 +1932,6 @@ const spaceProjects = {
                         global.settings.showShipYard = true;
                         global.space.shipyard.on++;
                     }
-                    global.space.shipyard['ships'] = [];
                     global.tech['syard_class'] = 2;
                     global.tech['syard_armor'] = 3;
                     global.tech['syard_weapon'] = 1;
@@ -5226,7 +5225,8 @@ export function checkSpaceRequirements(era,region,action){
 }
 
 export function checkRequirements(action_set,region,action){
-    if (action_set[region][action].hasOwnProperty('path') && action_set[region][action].path !== (global.race['truepath'] ? 'truepath' : 'standard')){
+    let path = global.race['truepath'] ? 'truepath' : 'standard';
+    if (action_set[region][action].hasOwnProperty('path') && !action_set[region][action].path.includes(path)){
         return false;
     }
     var isMet = true;

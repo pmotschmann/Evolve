@@ -1223,6 +1223,7 @@ export function setPowerGrid(){
 }
 
 export function gridDefs(){
+    let type = races[global.race.species].type === 'organism' ? 'humanoid' : races[global.race.species].type;
     return {
         power: { l: global.power, n: loc(`power`), s: true, r: false, rs: false },
         moon: { l: global.support.moon, n: loc(`space_moon_info_name`), s: global.settings.space.moon, r: 'space', rs: 'moon_base' },
@@ -1234,8 +1235,8 @@ export function gridDefs(){
         alien2: { l: global.support.alien2, n: loc('galaxy_alien',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name]), s: global.settings.space.alien2, r: 'galaxy', rs: 'foothold'  },
         lake: { l: global.support.lake, n: loc(`portal_lake_name`), s: global.settings.portal.lake, r: 'portal', rs: 'harbour'  },
         spire: { l: global.support.spire, n: loc(`portal_spire_name`), s: global.settings.portal.spire, r: 'portal', rs: 'purifier'  },
-        titan: { l: global.support.titan, n: genusVars[races[global.race.species].type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
-        enceladus: { l: global.support.enceladus, n: genusVars[races[global.race.species].type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
+        titan: { l: global.support.titan, n: genusVars[type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
+        enceladus: { l: global.support.enceladus, n: genusVars[type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
     };
 }
 

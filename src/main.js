@@ -6571,7 +6571,7 @@ function midLoop(){
             breakdown.t_route[loc('arpa_projects_railway_title')] = global.tech['railway'] * routes;
         }
         if (p_on['titan_spaceport']){
-            let water = p_on['titan_spaceport'] * spatialReasoning(1000);
+            let water = p_on['titan_spaceport'] * spatialReasoning(250);
             caps['Water'] += water;
             bd_Water[loc('space_red_spaceport_title')] = water+'v';
         }
