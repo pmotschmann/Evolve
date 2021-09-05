@@ -93,6 +93,43 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
     }
 
+    { // Occupying Foreign Powers
+        let occupation = infoBoxBuilder(mainContent,{ name: 'occupying', template: 'mechanics', label: loc('wiki_mechanics_occupying'), paragraphs: 20, break: [3,8,12,16,18,19,20], h_level: 2,
+            para_data: {
+                1: [loc('civics_foreign'),loc('civics_garrison_tactic_siege'),loc('civics_spy_annex'),loc('civics_spy_purchase')],
+                2: ['+5%','+8%',loc('govern_federation')],
+                3: [loc('civics_garrison_tactic_siege'),20],
+                5: [loc('civics_garrison'),loc('civics_garrison_tactic_siege')],
+                6: [loc('civics_garrison_unoccupy'),loc('tech_unification')],
+                7: [loc('govern_federation'),15],
+                8: ['50%',loc('civics_gov_relations'),'50%',loc('civics_gov_unrest'),`(300 - ${loc('civics_gov_relations')} - ${loc('civics_gov_unrest')})`,loc('morale')],
+                9: ['50%',loc('civics_gov_relations'),'50%',loc('civics_gov_unrest'),loc('civics_spy_annex')],
+                10: [loc('morale'),loc('civics_spy_annex')],
+                11: [loc('morale_stress'),'1.1x',loc('govern_federation')],
+                12: [loc('resource_Money_name')],
+                13: [3,loc('tech_spy'),loc('civics_spy_purchase')],
+                14: [loc('wiki_mechanics_occupying_para14_note1',[loc('civics_gov_eco_rate'),loc('civics_gov_relations'),loc('civics_gov_unrest')]),loc('resource_Money_name'),loc('civics_spy_purchase')],
+                15: [loc('civics_garrison_purchase'),loc('resource_Money_name'),loc('morale_tax'),'20%',loc('govern_federation')],
+                16: [loc('tech_unification')],
+                17: [loc('civics_garrison_occupy')],
+                18: [loc('achieve_world_domination_name')],
+                19: [loc('achieve_illuminati_name')],
+                20: [loc('achieve_syndicate_name')]
+            },
+            data_link: {
+                2: [false,false,false,'wiki.html#government-gameplay-federation'],
+                6: [false,'wiki.html#early_space-tech-unification2'],
+                7: ['wiki.html#government-gameplay-federation'],
+                11: [false,false,'wiki.html#government-gameplay-federation'],
+                15: [false,false,false,false,'wiki.html#government-gameplay-federation'],
+                16: ['wiki.html#early_space-tech-unification2']
+            }
+        });
+        let subSection = createCalcSection(occupation,'mechanics','occupation');
+        occupationCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`occupying`,loc('wiki_mechanics_occupying'));
+    }
+
     { // Religion
         infoBoxBuilder(mainContent,{ name: 'religion', template: 'mechanics', label: loc('wiki_mechanics_religion'), paragraphs: 20, break: [3,6,8,15,20], h_level: 2,
             para_data: {
@@ -514,6 +551,32 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'));
     }
 
+    { // Seeded Randomness
+        let seed = infoBoxBuilder(mainContent,{ name: 'seed', template: 'mechanics', label: loc('wiki_mechanics_seed'), paragraphs: 14, break: [3,5,6,7,8,9,10,11,12,13,14], h_level: 2,
+            para_data: {
+                4: [loc('wiki_faq_q_soft_reset')],
+                7: [loc('evo_sentience_title')],
+                8: [loc('wiki_menu_combat'),loc('trait_revive_name'),loc('trait_infectious_name')],
+                9: [loc('civics_spy_influence'),loc('civics_spy_sabotage'),loc('civics_spy_incite')],
+                10: [loc('wiki_menu_major'),loc('wiki_menu_minor')],
+                11: [loc('arpa_gene_mutation'),loc('tech_fanaticism'),loc('tech_deify'),loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_evolve')],
+                12: [loc('governor')],
+                13: [loc('wiki_menu_planets'),loc('wiki_resets_bioseed'),loc('wiki_resets_blackhole'),loc('wiki_resets_vacuum')],
+                14: [loc('portal_spire_name')]
+            },
+            data_link: {
+                7: ['wiki.html#prehistoric-structures-sentience'],
+                8: ['wiki.html#combat-gameplay','wiki.html#traits-species-revive','wiki.html#traits-species-infectious'],
+                10: ['wiki.html#major-events','wiki.html#minor-events'],
+                11: [false,(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify',false,'wiki.html#crispr-prestige-recombination'],
+                12: ['wiki.html#governor-gameplay'],
+                13: ['wiki.html#planets-gameplay','wiki.html#resets-prestige-bioseed','wiki.html#resets-prestige-blackhole','wiki.html#resets-prestige-vacuum'],
+                14: ['wiki.html#hell-gameplay-spire']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`seed`,loc('wiki_mechanics_seed'));
+    }
+
     { // Cheese Level
         let cheeselevel = swissKnife(true);
         let cheeseList = swissKnife(false,true);
@@ -572,6 +635,100 @@ export function mechanicsPage(content){
         });
         sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
     }
+}
+
+function occupationCalc(info){
+    let calc = $(`<div class="calc" id="occupationCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        relations: { val: undefined },
+        economic: { val: undefined },
+        unrest: { val: undefined }
+    }
+    
+    let show = {
+        annex: { vis: false, val: undefined },
+        purchase: { vis: false, val: undefined }
+    }
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_occupation_annex')}</h2>
+        </div>
+        <div>
+            <span>300 - {{ i.relations.val, 'relations' | generic }} - {{ i.unrest.val, 'unrest' | generic }}</span><span v-show="s.annex.vis"> = {{ | calcAnnex }}%</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_occupation_purchase')}</h2>
+        </div>
+        <div>
+            <span>({{ i.economic.val, 'eco_rate' | generic }} * 15384) * (1 + (0.016 * (100 - {{ i.relations.val, 'relations' | generic }}))) * (1 - (0.0025 * {{ i.unrest.val, 'unrest' | generic }}))</span><span v-show="s.purchase.vis"> = {{ | calcPurchase }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('civics_gov_relations')}</span> <b-numberinput :input="val('relations')" min="0" max ="100" v-model="i.relations.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('civics_gov_eco_rate')}</span> <b-numberinput :input="val('economic')" min="0" v-model="i.economic.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('civics_gov_unrest')}</span> <b-numberinput :input="val('unrest')" min="0" max ="100" v-model="i.unrest.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#occupationCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+                if (type !== 'economic' && inputs[type].val > 100){
+                    inputs[type].val = 100;
+                }
+            },
+            resetInputs(){
+                inputs.relations.val = undefined;
+                inputs.economic.val = undefined;
+                inputs.unrest.val = undefined;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('civics_gov_' + type);
+            },
+            calcAnnex(){
+                show.annex.vis = inputs.relations.val !== undefined && inputs.unrest.val !== undefined;
+                
+                if (show.annex.vis){
+                    show.annex.val = 300 - inputs.relations.val - inputs.unrest.val;
+                    
+                    return show.annex.val;
+                }
+            },
+            calcPurchase(){
+                show.purchase.vis = inputs.relations.val !== undefined && inputs.economic.val !== undefined && inputs.unrest.val !== undefined;
+                
+                if (show.purchase.vis){
+                    show.purchase.val = +((inputs.economic.val * 15384) * (1 + (0.016 * (100 - inputs.relations.val))) * (1 - (0.0025 * inputs.unrest.val))).toFixed(0);
+                    
+                    return show.purchase.val;
+                }
+            }
+        }
+    });
 }
 
 function genomeDecayCalc(info){

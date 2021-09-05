@@ -862,7 +862,6 @@ export function index(){
                     message_logs[filter].forEach(function (msg){
                         queue.append($('<p class="has-text-'+msg.color+'">'+msg.msg+'</p>'));
                     });
-                    $(`#msgQueueFilter-${filter}`).removeClass
                 }
             },
             clearLog(filter){

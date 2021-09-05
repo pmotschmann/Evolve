@@ -19,6 +19,18 @@ export function bloodPage(content){
     });
 }
 
+var bloodTrees = {};
+Object.keys(bloodPool).forEach(function (blood){
+    let infusion = bloodPool[blood];
+    if (!bloodTrees[infusion.grant[0]]){
+        bloodTrees[infusion.grant[0]] = {};
+    }
+    let text = typeof bloodPool[blood].title === 'string' ? bloodPool[blood].title : bloodPool[blood].title();
+    bloodTrees[infusion.grant[0]][infusion.grant[1]] = {
+        name: blood
+    };
+});
+
 function bloodDesc(info,trait){
     let owned = global.blood[bloodPool[trait].grant[0]] && global.blood[bloodPool[trait].grant[0]] >= bloodPool[trait].grant[1] ? true : false;
 
@@ -47,13 +59,13 @@ function bloodDesc(info,trait){
         if (Object.keys(bloodPool[trait].reqs).length > 0){
             Object.keys(bloodPool[trait].reqs).forEach(function (req){
                 let color = global.blood[req] && global.blood[req] >= bloodPool[trait].reqs[req] ? 'success' : 'danger';
-                reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_blood_${req}`)} ${bloodPool[trait].reqs[req]}</span>`);
+                reqs.append(`${comma ? `, ` : ``}<span><a href="wiki.html#blood-prestige-${bloodTrees[req][bloodPool[trait].reqs[req]].name}" class="has-text-${color}" target="_blank">${loc(`wiki_arpa_blood_${req}`)} ${bloodPool[trait].reqs[req]}</a></span>`);
                 comma = true;
             });
         }
         if (bloodPool[trait].hasOwnProperty('condition')){
             let color = global.genes['blood'] && global.genes.blood >= 3 ? 'success' : 'danger';
-            reqs.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${loc(`wiki_arpa_crispr_blood`)} 3</span>`);
+            reqs.append(`${comma ? `, ` : ``}<span><a href="wiki.html#crispr-prestige-essence_absorber"  class="has-text-${color}" target="_blank">${loc(`wiki_arpa_crispr_blood`)} 3</a></span>`);
         }
     }
 }

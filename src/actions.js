@@ -4034,13 +4034,15 @@ export const actions = {
             effect(){
                 let desc = templeEffect();
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2){
-                    global.civic.priest.display = true;
                     desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
                 }
                 return desc;
             },
             action(){
                 if (payCosts($(this)[0].cost)){
+                    if (global.genes['ancients'] && global.genes['ancients'] >= 2){
+                        global.civic.priest.display = true;
+                    }
                     global.city['temple'].count++;
                     return true;
                 }
