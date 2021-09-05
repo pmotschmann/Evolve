@@ -3,7 +3,7 @@ import { loc } from './../locale.js';
 import {} from './../achieve.js';
 import { vBind, clearElement, tagEvent } from './../functions.js';
 import { faqPage } from './faq.js';
-import { racesPage, traitsPage } from './species.js';
+import { speciesPage } from './species.js';
 import { planetsPage } from './planets.js';
 import { renderStructurePage } from './structures.js';
 import { renderTechPage } from './tech.js';
@@ -70,7 +70,8 @@ function initPage(){
             key: 'species',
             submenu: [
                 { key: 'races' },
-                { key: 'traits' }
+                { key: 'traits' },
+                { key: 'custom' }
             ]
         },
         {
@@ -191,17 +192,14 @@ function menuDispatch(main,sub,frag){
 
         case 'species':
             switch (sub){
-                case 'races':
-                    racesPage();
-                    break;
-                case 'traits':
-                    traitsPage();
-                    break;
                 case 'planets':
                     planetsPage();
                     break;
-                }
-                setWindowHash(main,sub,frag);
+                default:
+                    speciesPage(sub);
+                    break;
+            }
+            setWindowHash(main,sub,frag);
             break;
 
         case 'structures':

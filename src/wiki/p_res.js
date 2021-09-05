@@ -1028,16 +1028,16 @@ function darkBonusCalc(info){
         </div>
         <div v-show="s.micro.vis">
             <div>
-                <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_home')])} (${loc('wiki_calc_cap',[0.04])}):</span>
-            </div>
-            <div>
-                <span>0.01 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 35) </span><span v-show="s.micro.result"> = {{ 'micro', false, 1 | calc }}</span>
-            </div>
-            <div>
-                <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_not_home')])} (${loc('wiki_calc_cap',[0.06])}):</span>
+                <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_home')])} (${loc('wiki_calc_cap',[0.06])}):</span>
             </div>
             <div>
                 <span>0.02 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 20) </span><span v-show="s.micro.result"> = {{ 'micro', false, 2 | calc }}</span>
+            </div>
+            <div>
+                <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_not_home')])} (${loc('wiki_calc_cap',[0.04])}):</span>
+            </div>
+            <div>
+                <span>0.01 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 35) </span><span v-show="s.micro.result"> = {{ 'micro', false, 1 | calc }}</span>
             </div>
         </div>
         <div v-show="s.heavy.vis">

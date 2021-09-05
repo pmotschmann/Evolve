@@ -1784,10 +1784,15 @@ export function sLevel(level){
     }
 }
 
-export function calcGenomeScore(genome){
+export function calcGenomeScore(genome,wiki){
     let genes = 0;
 
-    if (global.stats.achieve[`ascended`]){
+    if (wiki){
+        Object.keys(wiki.ascended).forEach(function (uni){
+            genes += wiki.ascended[uni];
+        });
+    }
+    else if (global.stats.achieve[`ascended`]){
         for (let i=0; i<universe_affixes.length; i++){
             if (global.stats.achieve.ascended.hasOwnProperty(universe_affixes[i])){
                 genes += global.stats.achieve.ascended[universe_affixes[i]];
@@ -1800,7 +1805,10 @@ export function calcGenomeScore(genome){
     });
 
     let max_complexity = 2;
-    if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
+    if (wiki){
+        max_complexity += wiki.technophobe;
+    }
+    else if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         max_complexity += global.stats.achieve.technophobe.l;
     }
 

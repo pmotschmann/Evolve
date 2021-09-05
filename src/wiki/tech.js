@@ -1436,659 +1436,1530 @@ const extraInformation = {
 };
 
 const extraRequirements = {
-    theology1 : loc('wiki_tech_req_theology1'),
-    genetics3 : loc('wiki_tech_req_genetics3'),
-    supercollider1 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),1]),
-    supercollider2 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),2]),
-    supercollider3 : loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),3]),
-    stock_exchange1 : loc('wiki_tech_req_arpa',[loc('arpa_projects_stock_exchange_title'),1]),
-    monuments2 : loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),2]),
-    monuments10 : loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),10]),
-    space2 : loc('wiki_tech_req_mission',[loc('space_home_test_launch_title')]),
-    space3 : loc('wiki_tech_req_mission',[loc('space_moon_mission_title')]),
-    space4 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('red')])]),
-    space5 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas')])]),
-    luna1 : loc('wiki_tech_req_building',[loc('space_moon_base_title')]),
-    mars1 : loc('wiki_tech_req_building',[loc('space_red_spaceport_title')]),
-    hell1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('hell')])]),
-    solar1 : loc('wiki_tech_req_mission',[loc('space_sun_mission_title')]),
-    gas_moon1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas_moon')])]),
-    asteroid1 : loc('wiki_tech_req_mission',[loc('space_belt_mission_title')]),
-    asteroid3 : loc('wiki_tech_req_building',[loc('space_belt_station_title')]),
-    asteroid4 : loc('wiki_tech_req_asteroid4'),
-    dwarf1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('dwarf')])]),
-    genesis1 : loc('wiki_tech_req_genesis1'),
-    science11 : loc('wiki_tech_req_megabuilding',[loc('space_dwarf_collider_title')]),
-    wsc1 : loc('wiki_tech_req_wsc1'),
-    alpha2 : loc('wiki_tech_req_building',[loc('interstellar_alpha_starport_title')]),
-    droids1 : loc('wiki_tech_req_building',[loc('interstellar_mining_droid_title')]),
-    proxima2 : loc('wiki_tech_req_building',[loc('interstellar_xfer_station_title')]),
-    nebula2 : loc('wiki_tech_req_building',[loc('interstellar_nexus_title')]),
-    neutron1 : loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('interstellar_neutron_name')])]),
-    blackhole2 : loc('wiki_tech_req_building',[loc('interstellar_far_reach')]),
-    blackhole4 : loc('wiki_tech_req_megabuilding',[loc('interstellar_stellar_engine')]),
-    whitehole1 : loc('wiki_tech_req_whitehole1'),
-    gateway3 : loc('wiki_tech_req_building',[loc('galaxy_starbase')]),
-    stargate5 : loc('wiki_tech_req_building',[loc('galaxy_gateway_station')]),
-    xeno1 : loc('wiki_tech_req_xeno1'),
-    xeno3 : loc('wiki_tech_req_mission',[loc('galaxy_gorddon_mission')]),
-    xeno5 : loc('wiki_tech_req_building',[loc('galaxy_embassy')]),
-    xeno9 : loc('wiki_tech_req_building',[loc('galaxy_consulate')]),
-    piracy1 : loc('wiki_tech_req_piracy1'),
-    conflict2 : loc('wiki_tech_req_building',[loc('galaxy_foothold')]),
-    conflict5 : loc('wiki_tech_req_conflict5'),
-    chthonian2 : loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('galaxy_chthonian')])]),
-    infernite1 : loc('wiki_tech_req_building',[loc('portal_carport_title')]),
-    hell_pit3 : loc('wiki_tech_req_mission',[loc('portal_assault_forge_title')]),
-    corrupt1 : loc('wiki_tech_req_corrupt1'),
-    hell_ruins2 : loc('wiki_tech_req_mission',[loc('portal_ruins_mission_title')]),
-    hell_ruins3 : loc('wiki_tech_req_hell_ruins3'),
-    hell_gate1 : loc('wiki_tech_req_mission',[loc('portal_gate_mission_title')]),
-    hell_lake2 : loc('wiki_tech_req_mission',[loc('portal_lake_mission_title')]),
-    hell_spire2 : loc('wiki_tech_req_mission',[loc('portal_spire_mission_title')]),
-    hell_spire8 : loc('wiki_tech_req_hell_spire8'),
-    hell_spire10 : loc('wiki_tech_req_hell_spire10'),
-    b_stone1 : loc('wiki_tech_req_b_stone1'),
-    waygate2 : loc('wiki_tech_req_megabuilding',[loc('portal_waygate_title')]),
-    waygate3 : loc('wiki_tech_req_waygate3'),
-    decay1 : loc('wiki_tech_req_decay1')
+    theology1 : {
+        title: loc('wiki_tech_req_theology1'),
+        link: 'wiki.html#resets-prestige-intro'
+    },
+    genetics3 : {
+        title: loc('wiki_tech_req_genetics3')
+    },
+    supercollider1 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),1]),
+        link: 'wiki.html#projects-arpa-lhc'
+    },
+    supercollider2 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),2]),
+        link: 'wiki.html#projects-arpa-lhc'
+    },
+    supercollider3 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_projects_lhc_title'),3]),
+        link: 'wiki.html#projects-arpa-lhc'
+    },
+    stock_exchange1 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_projects_stock_exchange_title'),1]),
+        link: 'wiki.html#projects-arpa-stock_exchange'
+    },
+    monuments2 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),2]),
+        link: 'wiki.html#projects-arpa-monument'
+    },
+    monuments10 : {
+        title: loc('wiki_tech_req_arpa',[loc('arpa_project_monument_title'),10]),
+        link: 'wiki.html#projects-arpa-monument'
+    },
+    space2 : {
+        title: loc('wiki_tech_req_mission',[loc('space_home_test_launch_title')]),
+        link: 'wiki.html#space-structures-test_launch'
+    },
+    space3 : {
+        title: loc('wiki_tech_req_mission',[loc('space_moon_mission_title')]),
+        link: 'wiki.html#space-structures-moon_mission'
+    },
+    space4 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('red')])]),
+        link: 'wiki.html#space-structures-red_mission'
+    },
+    space5 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas')])]),
+        link: 'wiki.html#space-structures-gas_mission'
+    },
+    luna1 : {
+        title: loc('wiki_tech_req_building',[loc('space_moon_base_title')]),
+        link: 'wiki.html#space-structures-moon_base'
+    },
+    mars1 : {
+        title: loc('wiki_tech_req_building',[loc('space_red_spaceport_title')]),
+        link: 'wiki.html#space-structures-spaceport'
+    },
+    hell1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('hell')])]),
+        link: 'wiki.html#space-structures-hell_mission'
+    },
+    solar1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_sun_mission_title')]),
+        link: 'wiki.html#space-structures-sun_mission'
+    },
+    gas_moon1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('gas_moon')])]),
+        link: 'wiki.html#space-structures-gas_moon_mission'
+    },
+    asteroid1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_belt_mission_title')]),
+        link: 'wiki.html#space-structures-belt_mission'
+    },
+    asteroid3 : {
+        title: loc('wiki_tech_req_building',[loc('space_belt_station_title')]),
+        link: 'wiki.html#space-structures-space_station'
+    },
+    asteroid4 : {
+        title: loc('wiki_tech_req_asteroid4'),
+        link: 'wiki.html#progress-events-elerium'
+    },
+    dwarf1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('dwarf')])]),
+        link: 'wiki.html#space-structures-dwarf_mission'
+    },
+    genesis1 : {
+        title: loc('wiki_tech_req_genesis1')
+    },
+    science11 : {
+        title: loc('wiki_tech_req_megabuilding',[loc('space_dwarf_collider_title')]),
+        link: 'wiki.html#space-structures-world_collider'
+    },
+    wsc1 : {
+        title: loc('wiki_tech_req_wsc1'),
+        link: 'wiki.html#space-structures-world_collider'
+    },
+    alpha2 : {
+        title: loc('wiki_tech_req_building',[loc('interstellar_alpha_starport_title')]),
+        link: 'wiki.html#interstellar-structures-starport'
+    },
+    droids1 : {
+        title: loc('wiki_tech_req_building',[loc('interstellar_mining_droid_title')]),
+        link: 'wiki.html#interstellar-structures-mining_droid'
+    },
+    proxima2 : {
+        title: loc('wiki_tech_req_building',[loc('interstellar_xfer_station_title')]),
+        link: 'wiki.html#interstellar-structures-xfer_station'
+    },
+    nebula2 : {
+        title: loc('wiki_tech_req_building',[loc('interstellar_nexus_title')]),
+        link: 'wiki.html#interstellar-structures-nexus'
+    },
+    neutron1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('interstellar_neutron_name')])]),
+        link: 'wiki.html#interstellar-structures-neutron_mission'
+    },
+    blackhole2 : {
+        title: loc('wiki_tech_req_building',[loc('interstellar_far_reach')]),
+        link: 'wiki.html#interstellar-structures-far_reach'
+    },
+    blackhole4 : {
+        title: loc('wiki_tech_req_megabuilding',[loc('interstellar_stellar_engine')]),
+        link: 'wiki.html#interstellar-structures-stellar_engine'
+    },
+    whitehole1 : {
+        title: loc('wiki_tech_req_whitehole1')
+    },
+    gateway3 : {
+        title: loc('wiki_tech_req_building',[loc('galaxy_starbase')]),
+        link: 'wiki.html#intergalactic-structures-starbase'
+    },
+    stargate5 : {
+        title: loc('wiki_tech_req_building',[loc('galaxy_gateway_station')]),
+        link: 'wiki.html#intergalactic-structures-gateway_station'
+    },
+    xeno1 : {
+        title: loc('wiki_tech_req_xeno1'),
+        link: 'wiki.html#progress-events-alien_encounter'
+    },
+    xeno3 : {
+        title: loc('wiki_tech_req_mission',[loc('galaxy_gorddon_mission')]),
+        link: 'wiki.html#intergalactic-structures-gorddon_mission'
+    },
+    xeno5 : {
+        title: loc('wiki_tech_req_building',[loc('galaxy_embassy')]),
+        link: 'wiki.html#intergalactic-structures-embassy'
+    },
+    xeno9 : {
+        title: loc('wiki_tech_req_building',[loc('galaxy_consulate')]),
+        link: 'wiki.html#intergalactic-structures-consulate'
+    },
+    piracy1 : {
+        title: loc('wiki_tech_req_piracy1'),
+        link: 'wiki.html#progress-events-piracy'
+    },
+    conflict2 : {
+        title: loc('wiki_tech_req_building',[loc('galaxy_foothold')]),
+        link: 'wiki.html#intergalactic-structures-foothold'
+    },
+    conflict5 : {
+        title: loc('wiki_tech_req_conflict5'),
+        link: 'wiki.html#progress-events-alien_database'
+    },
+    chthonian2 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('galaxy_chthonian')])]),
+        link: 'wiki.html#intergalactic-structures-chthonian_mission'
+    },
+    infernite1 : {
+        title: loc('wiki_tech_req_building',[loc('portal_carport_title')]),
+        link: 'wiki.html#hell-structures-carport'
+    },
+    hell_pit3 : {
+        title: loc('wiki_tech_req_mission',[loc('portal_assault_forge_title')]),
+        link: 'wiki.html#hell-structures-assault_forge'
+    },
+    corrupt1 : {
+        title: loc('wiki_tech_req_corrupt1'),
+        link: 'wiki.html#progress-events-corrupt_gem'
+    },
+    hell_ruins2 : {
+        title: loc('wiki_tech_req_mission',[loc('portal_ruins_mission_title')]),
+        link: 'wiki.html#hell-structures-ruins_mission'
+    },
+    hell_ruins3 : {
+        title: loc('wiki_tech_req_hell_ruins3')
+    },
+    hell_gate1 : {
+        title: loc('wiki_tech_req_mission',[loc('portal_gate_mission_title')]),
+        link: 'wiki.html#hell-structures-gate_mission'
+    },
+    hell_lake2 : {
+        title: loc('wiki_tech_req_mission',[loc('portal_lake_mission_title')]),
+        link: 'wiki.html#hell-structures-lake_mission'
+    },
+    hell_spire2 : {
+        title: loc('wiki_tech_req_mission',[loc('portal_spire_mission_title')]),
+        link: 'wiki.html#hell-structures-spire_mission'
+    },
+    hell_spire8 : {
+        title: loc('wiki_tech_req_hell_spire8'),
+        link: 'wiki.html#hell-structures-sphinx'
+    },
+    hell_spire10 : {
+        title: loc('wiki_tech_req_hell_spire10')
+    },
+    b_stone1 : {
+        title: loc('wiki_tech_req_b_stone1')
+    },
+    waygate2 : {
+        title: loc('wiki_tech_req_megabuilding',[loc('portal_waygate_title')]),
+        link: 'wiki.html#hell-structures-waygate'
+    },
+    waygate3 : {
+        title: loc('wiki_tech_req_waygate3'),
+        link: 'wiki.html#mechanics-gameplay-dlord'
+    },
+    decay1 : {
+        title: loc('wiki_tech_req_decay1'),
+        link: 'wiki.html#mechanics-gameplay-genome_decay'
+    }
 };
 
 const specialRequirements = {
     bone_tools: [
-        [
-            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_trait`,[loc(`trait_evil_name`)]),loc(`wiki_tech_special_trait_not`,[loc(`trait_soul_eater_name`)])]),
-            global.race['evil'] || !global.race['soul_eater']
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_trait`,[loc(`trait_evil_name`)]),
+                    color: global.race['evil'] ? true : false,
+                    link: 'wiki.html#traits-species-evil'
+                },
+                {
+                    title: loc(`wiki_tech_special_trait_not`,[loc(`trait_soul_eater_name`)]),
+                    color: !global.race['soul_eater'],
+                    link: 'wiki.html#traits-species-soul_eater'
+                }
+            ]
+        }
     ],
     wooden_tools: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_evil_name`)]),
-            global.race['evil'] ? false : true
-        ],
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_soul_eater_name`)]),
-            global.race['soul_eater'] ? true : false
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'soul_eater'
+                }
+            ]
+        }
     ],
     smokehouse: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_carnivore_name`)]),
-            global.race['carnivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'carnivore'
+                }
+            ]
+        }
     ],
     lodge: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_carnivore_name`)]),
-            global.race['carnivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'carnivore'
+                }
+            ]
+        }
     ],
     alt_lodge: [
-        [
-            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_species`,[loc(`race_wendigo`)]),loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)])]),
-            global.race.species === 'wendigo' || global.race['detritivore']
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_species`,[loc(`race_wendigo`)]),
+                    color: global.race.species === 'wendigo',
+                    link: 'wiki.html#races-species-wendigo'
+                },
+                {
+                    title: loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
+                    color: global.race['detritivore'] ? true : false,
+                    link: 'wiki.html#traits-species-detritivore'
+                }
+            ]
+        }
     ],
     soul_well: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_soul_eater_name`)]),
-            global.race['soul_eater'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'soul_eater'
+                }
+            ]
+        }
     ],
     compost: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
-            global.race['detritivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     hot_compost: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
-            global.race['detritivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     mulching: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
-            global.race['detritivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     adv_mulching: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
-            global.race['detritivore'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     agriculture: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     farm_house: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     irrigation: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     silo: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     mill: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     windmill: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     windturbine: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     wind_plant: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     gmfood: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     republic: [
-        [
-            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)])]),
-            (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying']
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),
+                    color: global.tech['trade'] && global.tech['trade'] >= 2,
+                    link: 'wiki.html#discovery-tech-diplomacy'
+                },
+                {
+                    title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
+                    color: global.race['terrifying'] ? true : false,
+                    link: 'wiki.html#traits-species-terrifying'
+                }
+            ]
+        }
     ],
     socialist: [
-        [
-            loc(`wiki_tech_req_or`,[loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)])]),
-            (global.tech['trade'] && global.tech['trade'] >= 2) || global.race['terrifying']
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_tech`,[loc(`tech_diplomacy`)]),
+                    color: global.tech['trade'] && global.tech['trade'] >= 2,
+                    link: 'wiki.html#discovery-tech-diplomacy'
+                },
+                {
+                    title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
+                    color: global.race['terrifying'] ? true : false,
+                    link: 'wiki.html#traits-species-terrifying'
+                }
+            ]
+        }
     ],
     federation: [
-        [
-            loc(`wiki_tech_special_occupy`),
-            checkControlling()
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_occupy`),
+                    color: checkControlling()
+                    //Add link to Mechanics: Occupation entry when made.
+                }
+            ]
+        }
     ],
     magocracy: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     governor: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_governance_title`)]),
-            global.genes['governor'] && global.genes['governor'] >= 1
-        ],
-        [
-            loc(`wiki_tech_special_government_not`,[loc(`govern_anarchy`)]),
-            global.civic['govern'] && global.civic.govern['type'] && global.civic.govern.type !== 'anarchy'
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'governance',
+                    tree: 'governor',
+                    val: 1
+                }
+            ]
+        },
+        {
+            category: 'government',
+            not: true,
+            subreqs: [
+                {
+                    name: 'anarchy'
+                }
+            ]
+        }
     ],
     market: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     tax_rates: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     large_trades: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     corruption: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_terrifying_name`),loc(`trait_noble_name`)])]),
-            !global.race['terrifying'] && !global.race['noble']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                },
+                {
+                    name: 'noble'
+                }
+            ]
+        }
     ],
     massive_trades: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     trade: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     diplomacy: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     freight: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     wharf: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_terrifying_name`),loc(`trait_thalassophobia_name`)])]),
-            !global.race['terrifying'] && !global.race['thalassophobia']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                },
+                {
+                    name: 'thalassophobia'
+                }
+            ]
+        }
     ],
     reclaimer: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     iron_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     steel_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     titanium_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     alloy_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     mythril_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     adamantite_shovel: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_evil`)]),
-            global.race.universe === 'evil'
-        ],
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering']
-        ],
-        [
-            loc(`wiki_tech_special_genus_not`,[loc(`wiki_tech_req_or`,[loc(`genelab_genus_demonic`),loc(`genelab_genus_angelic`)])]),
-            races[global.race.species].type !== 'angelic' && races[global.race.species].type !== 'demonic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'evil'
+                }
+            ]
+        },
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                }
+            ]
+        },
+        {
+            category: 'genus',
+            not: true,
+            subreqs: [
+                {
+                    name: 'angelic'
+                },
+                {
+                    name: 'demonic'
+                }
+            ]
+        }
     ],
     stone_axe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     copper_axes: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     iron_saw: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     steel_saw: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     iron_axes: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     steel_axes: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     titanium_axes: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     chainsaws: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_kindling_kindred_name`),loc(`trait_smoldering_name`)]),loc(`trait_evil_name`)])]),
-            !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'kindling_kindred'
+                },
+                {
+                    name: 'smoldering'
+                },
+                {
+                    name: 'evil'
+                }
+            ]
+        }
     ],
     copper_sledgehammer: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
-            !global.race['sappy']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'sappy'
+                }
+            ]
+        }
     ],
     iron_sledgehammer: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
-            !global.race['sappy']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'sappy'
+                }
+            ]
+        }
     ],
     steel_sledgehammer: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
-            !global.race['sappy']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'sappy'
+                }
+            ]
+        }
     ],
     titanium_sledgehammer: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_sappy_name`)]),
-            !global.race['sappy']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'sappy'
+                }
+            ]
+        }
     ],
     copper_hoe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     iron_hoe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     steel_hoe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     titanium_hoe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     adamantite_hoe: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`wiki_tech_req_or`,[loc(`wiki_tech_req_or`,[loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`)]),loc(`trait_detritivore_name`)])]),
-            !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['detritivore']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'carnivore'
+                },
+                {
+                    name: 'soul_eater'
+                },
+                {
+                    name: 'detritivore'
+                }
+            ]
+        }
     ],
     slave_pens: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_slaver_name`)]),
-            global.race['slaver'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'slaver'
+                }
+            ]
+        }
     ],
     slave_market: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_slaver_name`)]),
-            global.race['slaver'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'slaver'
+                }
+            ]
+        }
     ],
     ceremonial_dagger: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
-            global.race['cannibalize'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'cannibalize'
+                }
+            ]
+        }
     ],
     last_rites: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
-            global.race['cannibalize'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'cannibalize'
+                }
+            ]
+        }
     ],
     ancient_infusion: [
-        [
-            loc(`wiki_tech_special_trait`,[loc(`trait_cannibalize_name`)]),
-            global.race['cannibalize'] ? true : false
-        ]
+        {
+            category: 'trait',
+            subreqs: [
+                {
+                    name: 'cannibalize'
+                }
+            ]
+        }
     ],
     armor: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
-            !global.race['apex_predator']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'apex_predator'
+                }
+            ]
+        }
     ],
     plate_armor: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
-            !global.race['apex_predator']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'apex_predator'
+                }
+            ]
+        }
     ],
     kevlar: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
-            !global.race['apex_predator']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'apex_predator'
+                }
+            ]
+        }
     ],
     nanoweave_vest: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_apex_predator_name`)]),
-            !global.race['apex_predator']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'apex_predator'
+                }
+            ]
+        }
     ],
     ancient_theology: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 1
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'ancients',
+                    tree: 'ancients',
+                    val: 1
+                }
+            ]
+        }
     ],
     study: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 1
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'ancients',
+                    tree: 'ancients',
+                    val: 1
+                }
+            ]
+        }
     ],
     encoding: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 1
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'ancients',
+                    tree: 'ancients',
+                    val: 1
+                }
+            ]
+        }
     ],
     deify: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 1
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'ancients',
+                    tree: 'ancients',
+                    val: 1
+                }
+            ]
+        }
     ],
     infusion: [
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_ancients_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 1
-        ]
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'ancients',
+                    tree: 'ancients',
+                    val: 1
+                }
+            ]
+        }
     ],
     gps: [
-        [
-            loc(`wiki_tech_special_trait_not`,[loc(`trait_terrifying_name`)]),
-            !global.race['terrifying']
-        ]
+        {
+            category: 'trait',
+            not: true,
+            subreqs: [
+                {
+                    name: 'terrifying'
+                }
+            ]
+        }
     ],
     veil: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     mana_syphon: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     mana: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     ley_lines: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     rituals: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     crafting_ritual: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     mana_nexus: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     clerics: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ],
-        [
-            loc(`wiki_tech_special_crispr`,[loc(`arpa_genepool_faith_title`)]),
-            global.genes['ancients'] && global.genes['ancients'] >= 2
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        },
+        {
+            category: 'crispr',
+            subreqs: [
+                {
+                    name: 'faith',
+                    tree: 'ancients',
+                    val: 2
+                }
+            ]
+        }
     ],
     conjuring: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     res_conjuring: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     alchemy: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     transmutation: [
-        [
-            loc(`wiki_tech_special_universe`,[loc(`universe_magic`)]),
-            global.race.universe === 'magic'
-        ]
+        {
+            category: 'universe',
+            subreqs: [
+                {
+                    name: 'magic'
+                }
+            ]
+        }
     ],
     dark_bomb: [
-        [
-            loc(`wiki_tech_special_demon_lord`),
-            global.stats.hasOwnProperty('spire') && 
-            global.stats.spire.hasOwnProperty(universeAffix()) && 
-            global.stats.spire[universeAffix()].hasOwnProperty('dlstr') && 
-            global.stats.spire[universeAffix()].dlstr > 0
-        ]
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_demon_lord`),
+                    color: global.stats.hasOwnProperty('spire') && 
+                           global.stats.spire.hasOwnProperty(universeAffix()) && 
+                           global.stats.spire[universeAffix()].hasOwnProperty('dlstr') && 
+                           global.stats.spire[universeAffix()].dlstr > 0,
+                    link: 'wiki.html#mechanics-gameplay-dlord'
+                }
+            ]
+        }
     ]
 };
 
@@ -2105,14 +2976,66 @@ Object.keys(actions.tech).forEach(function (actionName){
     if (!techTrees[action.grant[0]]){
         techTrees[action.grant[0]] = {};
     }
-    techTrees[action.grant[0]][action.grant[1]] = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
+    let text = typeof actions.tech[actionName].title === 'string' ? actions.tech[actionName].title : actions.tech[actionName].title();
+    techTrees[action.grant[0]][action.grant[1]] = [
+        {
+            name: actionName,
+            title: text,
+            era: actions.tech[actionName].era
+        }
+    ];
 });
 //Anomalies
-techTrees['primitive'][2] = loc('wiki_tech_req_or',[loc('tech_bone_tools'),loc('tech_wooden_tools')]);
-techTrees['theology'][3] = loc('wiki_tech_req_or',[loc('tech_fanaticism'),loc('tech_anthropology')]);
-techTrees['theology'][5] = loc('wiki_tech_req_or',[loc('tech_deify'),loc('tech_study')]);
-techTrees['ancient_study'][1] = loc('tech_study');
-techTrees['ancient_deify'][1] = loc('tech_deify');
+techTrees['primitive'][2] = [
+    {
+        name: 'bone_tools',
+        title: loc('tech_bone_tools'),
+        era: 'primitive'
+    },
+    {
+        name: 'wooden_tools',
+        title: loc('tech_wooden_tools'),
+        era: 'primitive'
+    }
+];
+techTrees['theology'][3] = [
+    {
+        name: actions.tech['fanaticism'].wiki ? 'fanaticism' : 'alt_fanaticism',
+        title: loc('tech_fanaticism'),
+        era: 'civilized'
+    },
+    {
+        name: actions.tech['anthropology'].wiki ? 'anthropology' : 'alt_anthropology',
+        title: loc('tech_anthropology'),
+        era: 'civilized'
+    }
+];
+techTrees['theology'][5] = [
+    {
+        name: 'deify',
+        title: loc('tech_deify'),
+        era: 'early_space'
+    },
+    {
+        name: 'study',
+        title: loc('tech_study'),
+        era: 'early_space'
+    }
+];
+techTrees['ancient_study'][1] = [
+    {
+        name: 'study',
+        title: loc('tech_study'),
+        era: 'early_space'
+    }
+];
+techTrees['ancient_deify'][1] = [
+    {
+        name: 'deify',
+        title: loc('tech_deify'),
+        era: 'early_space'
+    }
+];
 
 export function getSolarName(planet) {
     if (global.race.species === 'protoplasm'){
@@ -2145,42 +3068,147 @@ function addRequirements(parent,key,keyName){
         let otherReqs = {};
         Object.keys(key.reqs).forEach(function (req){
             let color = global.tech[req] && global.tech[req] >= key.reqs[req] ? 'success' : 'danger';
-            let reqName = '';
+            let reqID = req + key.reqs[req];
+            //Determine Tech Requirements and Non-Tech Requirements
             if (techTrees[req] && techTrees[req][key.reqs[req]]) {
-                reqName = techTrees[req][key.reqs[req]];
-                techReqs[reqName] = color;
+                techReqs[reqID] = [];
+                let currTechReq = techTrees[req][key.reqs[req]];
+                //For anomalies where multiple techs can fill one pre-req.
+                currTechReq.forEach(function (subReq){
+                    techReqs[reqID].push({
+                        name: subReq.name,
+                        title: subReq.title,
+                        era: subReq.era,
+                        color: color
+                    });
+                });
             }
-            else if (extraRequirements[req + key.reqs[req]]){
-                reqName = extraRequirements[req + key.reqs[req]];
-                otherReqs[reqName] = color;
+            else if (extraRequirements[reqID]){
+                otherReqs[reqID] = {
+                    title: extraRequirements[reqID].title,
+                    link: extraRequirements[reqID].link,
+                    color: color
+                };
             }
         });
+        //Add Tech Requirements
         if (Object.keys(techReqs).length > 0){
             let comma = false;
             let techReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_tech')}</span></div>`);
             parent.append(techReq);
             Object.keys(techReqs).forEach(function (req){
-                techReq.append(`${comma ? `, ` : ``}<span class="has-text-${techReqs[req]}">${req}</span>`);
+                let reqText = '';
+                let isOr = false;
+                let color = false;
+                techReqs[req].forEach(function (subReq){
+                    let subText = `<a href="wiki.html#${subReq.era}-tech-${subReq.name}" class="has-text-${subReq.color}" target="_blank">${subReq.title}</a>`;
+                    color = subReq.color;
+                    if (isOr){
+                        reqText = loc('wiki_tech_req_or',[reqText,subText]);
+                    }
+                    else {
+                        isOr = true;
+                        reqText = subText;
+                    }
+                });
+                techReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${reqText}</span>`);
                 comma = true;
             });
         }
+        //Add Non-Tech Requirements
         if (Object.keys(otherReqs).length > 0){
             let comma = false;
             let otherReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_other')}</span></div>`);
             parent.append(otherReq);
             Object.keys(otherReqs).forEach(function (req){
-                otherReq.append(`${comma ? `, ` : ``}<span class="has-text-${otherReqs[req]}">${req}</span>`);
+                let reqText = otherReqs[req].link ? `<a href="${otherReqs[req].link}" class="has-text-${otherReqs[req].color}" target="_blank">${otherReqs[req].title}</a>` : otherReqs[req].title;
+                otherReq.append(`${comma ? `, ` : ``}<span class="has-text-${otherReqs[req].color}">${reqText}</span>`);
                 comma = true;
             });
         }
     }
+    //Add Special Requirements
     if (specialRequirements.hasOwnProperty(keyName)){
         let comma = false;
         let specialReq = $(`<div class="reqs"><span class="has-text-caution">${loc('wiki_tech_req_special')}</span></div>`);
         parent.append(specialReq);
-        Object.keys(specialRequirements[keyName]).forEach(function (req){
-            let color = specialRequirements[keyName][req][1] ? 'success' : 'danger';
-            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${color}">${specialRequirements[keyName][req][0]}</span>`);
+        specialRequirements[keyName].forEach(function (req){
+            let multi = false;
+            let totalColor = false;
+            let reqText = '';
+            req.subreqs.forEach(function (subreq){
+                let subText = '';
+                let link = false;
+                let color = false;
+                switch (req.category){
+                    case 'species':
+                        subText = loc(`race_${subreq.name}`);
+                        link = `wiki.html#races-species-${subreq.name}`;
+                        color = global.race.species === subreq.name;
+                        break;
+                    case 'genus':
+                        subText = loc(`genelab_genus_${subreq.name}`);
+                        //Add link to the genus when a Genus page is made.
+                        color = races[global.race.species].type === subreq.name;
+                        break;
+                    case 'trait':
+                        subText = loc(`trait_${subreq.name}_name`);
+                        link = `wiki.html#traits-species-${subreq.name}`;
+                        color = global.race[subreq.name];
+                        break;
+                    case 'tech':
+                        subText = typeof actions.tech[subreq.name].title === 'string' ? actions.tech[subreq.name].title : actions.tech[subreq.name].title();
+                        link = `wiki.html#${actions.tech[subreq.name].era}-tech-${subreq.name}`;
+                        color = global.tech[subreq.tree] && global.genes[subreq.tree] >= subreq.val;
+                        break;
+                    case 'universe':
+                        subText = loc(`universe_${subreq.name}`);
+                        link = `wiki.html#universes-gameplay-${subreq.name}`;
+                        color = global.race.universe === subreq.name;
+                        break;
+                    case 'crispr':
+                        subText = loc(`arpa_genepool_${subreq.name}_title`);
+                        link = `wiki.html#crispr-prestige-${subreq.name}`;
+                        color = global.genes[subreq.tree] && global.genes[subreq.tree] >= subreq.val;
+                        break;
+                    case 'government':
+                        subText = loc(`govern_${subreq.name}`);
+                        link = `wiki.html#government-gameplay-${subreq.name}`;
+                        color = global.civic['govern'] && global.civic.govern['type'] && global.civic.govern.type === subreq.name;
+                        break;
+                    case 'unique':
+                        subText = subreq.title;
+                        link = subreq.link;
+                        color = subreq.color;
+                        break;
+                }
+                totalColor = totalColor || color;
+                if (req.not){
+                    color = !color;
+                }
+                color = color ? 'success' : 'danger';
+                if (link){
+                    subText = `<a href="${link}" class="has-text-${color}" target="_blank">${subText}</a>`
+                }
+                else {
+                    subText = `<span class="subreqs has-text-${color}">${subText}</span>`;
+                }
+                if (multi){
+                    reqText = loc('wiki_tech_req_or',[reqText,subText]);
+                }
+                else {
+                    multi = true;
+                    reqText = subText;
+                }
+            });
+            if (req.not){
+                totalColor = !totalColor;
+            }
+            totalColor = totalColor ? 'success' : 'danger';
+            if (req.category !== 'unique'){
+                reqText = loc(`wiki_tech_special_${req.category}${req.not ? '_not' : ''}`,[reqText]);
+            }
+            specialReq.append(`${comma ? `, ` : ``}<span class="has-text-${totalColor}">${reqText}</span>`);
             comma = true;
         });
     }
