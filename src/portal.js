@@ -1,5 +1,5 @@
 import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearStates } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, tagEvent, powerCostMod, spaceCostMultiplier, calcPrestige, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, tagEvent, timeFormat, powerCostMod, spaceCostMultiplier, calcPrestige, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -1872,7 +1872,7 @@ export function buildFortress(parent,full){
     reports.append($(`<b-checkbox class="patrol" v-model="f.nocrew"${color} v-show="s.showGalactic">${loc('fortress_nocrew')}</b-checkbox>`));
 
     if (full){
-        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     vBind({
@@ -2053,6 +2053,9 @@ export function buildFortress(parent,full){
                 else {
                     return loc('fortress_threat_level3');
                 }
+            },
+            trainTime(r,p){
+                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
             }
         }
     });

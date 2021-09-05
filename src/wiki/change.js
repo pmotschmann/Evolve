@@ -13,6 +13,15 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.13`,
+        date: `9/5/2021`,
+        changes: [
+            `Expanded Mechanics entries in wiki.`,
+            `Fixed some errors in wiki prestige calculators.`,
+            `Added a Custom Lab calculator to wiki under species.`
+        ]
+    },
+    {
         version: `1.1.12`,
         date: `8/19/2021`,
         changes: [
