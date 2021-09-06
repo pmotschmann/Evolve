@@ -10319,7 +10319,7 @@ const techs = {
         effect(){ return loc('tech_shipyard_effect',[races[global.race.species].solar.dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shipyard'] = { count: 0, on: 0, ships: [] };
+                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true };
                 setOrbits();
                 return true;
             }

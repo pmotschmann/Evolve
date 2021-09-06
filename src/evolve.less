@@ -3728,6 +3728,11 @@ span.inline {
             border-top: 1px solid;
             grid-template-columns: auto 10rem;
 
+            .name {
+                display: inline-block;
+                min-width: 5rem;
+            }
+
             .row1,
             .row2,
             .row3 {
@@ -3744,6 +3749,12 @@ span.inline {
                 margin: 0 .5rem 0 0;
             }
         }
+
+        .compact {
+            button {
+                height: 1rem;
+            }
+        }
     }
 
     .assemble {
@@ -3751,6 +3762,10 @@ span.inline {
         line-height: 2rem;
         > span {
             margin-left: 1rem;
+            > label.checkbox {
+                margin-right: 0;
+                top: .25rem;
+            }
         }
     }
 }

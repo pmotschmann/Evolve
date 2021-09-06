@@ -260,14 +260,15 @@ export function drawShipYard(){
             </b-dropdown>`);
         });
 
-        plans.append(`<div class="assemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span></div>`);
+        plans.append(`<div class="assemble"><button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button><span><b-checkbox class="patrol" v-model="s.expand" v-on:input="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span></div>`);
 
         updateCosts();
 
         vBind({
             el: '#shipPlans',
             data: {
-                b: global.space.shipyard.blueprint
+                b: global.space.shipyard.blueprint,
+                s: global.space.shipyard
             },
             methods: {
                 setVal(b,v){
@@ -336,6 +337,9 @@ export function drawShipYard(){
                             drawShips();
                         }
                     }
+                },
+                redraw(){
+                    drawShips();
                 }
             },
             filters: {
@@ -812,26 +816,49 @@ function drawShips(){
             </button>${values}
         </b-dropdown>`;
         
-        let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
-        let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
-        let row1 = $(`<div class="row1"><span class="has-text-caution">${ship.name}</span> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
-        let row2 = $(`<div class="row2"><a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | </div>`);
-        let row3 = $(`<div class="row3"></div>`);
-        let row4 = $(`<div class="location">${dispatch}</div>`);
-        
-        row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
-        row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
-        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
-        row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
-        row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
-        
-        row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+        if (global.space.shipyard.expand){
+            let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
+            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> | <a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row2 = $(`<div class="row2"></div>`);
+            let row3 = $(`<div class="row3"></div>`);
+            let row4 = $(`<div class="location">${dispatch}</div>`);
+            
+            row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
+            row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
+            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
+            row2.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
+            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
+            row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span>`);
 
-        desc.append(row1);
-        desc.append(row2);
-        desc.append(row3);
-        desc.append(row4);
-        list.append(desc);
+            row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+
+            desc.append(row1);
+            desc.append(row2);
+            desc.append(row3);
+            desc.append(row4);
+            list.append(desc);
+        }
+        else {
+            let desc = $(`<div id="shipReg${i}" class="shipRow ship${i} compact"></div>`);
+            let row1 = $(`<div class="row1"></div>`);
+            let row3 = $(`<div class="row3"></div>`);
+            let row4 = $(`<div class="location">${dispatch}</div>`);
+            
+            row1.append(`<span class="name has-text-caution">${ship.name}</span> | `);
+            row1.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
+            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
+            row1.append(`<span class="has-text-warning">${loc(`speed`)}</span> <span class="pad" v-html="speedText(${i})"></span>`);
+            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_fuel`)}</span> <span class="pad" v-bind:class="{ 'has-text-danger': !fueled }" v-html="fuelText(${i})"></span>`);
+            row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_hull`)}</span> <span class="pad" v-bind:class="hullDamage(${i})" v-html="hullText(${i})"></span>`);
+
+            row3.append(`<span v-show="show(${i})" class="has-text-caution" v-html="dest(${i})"></span>`);
+
+            desc.append(row1);
+            desc.append(row3);
+            desc.append(row4);
+            list.append(desc);
+        }
     
         vBind({
             el: `#shipReg${i}`,
@@ -874,6 +901,21 @@ function drawShips(){
                     else {
                         return `N/A`;
                     }
+                },
+                hullText(id){
+                    return `${100 - global.space.shipyard.ships[id].damage}%`;
+                },
+                hullDamage(id){
+                    if (global.space.shipyard.ships[id].damage <= 10){
+                        return `has-text-success`;
+                    }
+                    else if (global.space.shipyard.ships[id].damage >= 40 && global.space.shipyard.ships[id].damage < 65){
+                        return `has-text-caution`;
+                    }
+                    else if (global.space.shipyard.ships[id].damage >= 65){
+                        return `has-text-danger`;
+                    }
+                    return ``;
                 },
                 dest(id){
                     return loc(`outer_shipyard_arrive`,[
