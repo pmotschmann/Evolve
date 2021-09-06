@@ -179,5 +179,18 @@ export function production(id,val){
         {
             return 1.25 * zigguratBonus();
         }
+        case 'titan_mine':
+        {
+            switch (val){
+                case 'adamantite':
+                {
+                    return 0.02 * zigguratBonus() * global.space.titan_mine.ratio / 100;
+                }
+                case 'aluminium':
+                {
+                    return 0.12 * zigguratBonus() * (100 - global.space.titan_mine.ratio) / 100;
+                }
+            }
+        }
     }
 }

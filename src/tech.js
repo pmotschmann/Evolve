@@ -10274,6 +10274,29 @@ const techs = {
         effect(){ return loc('tech_electrolysis_effect',[genusVars[races[global.race.species].type].solar.titan,global.resource.Water.name]); },
         action(){
             if (payCosts($(this)[0])){
+                global.space['titan_quarters'] = { count: 0, on: 0 };
+                global.space['titan_mine'] = { count: 0, on: 0, ratio: 90 };
+                return true;
+            }
+            return false;
+        },
+    },
+    hydrogen_plant: {
+        id: 'tech-hydrogen_plant',
+        title: loc('tech_hydrogen_plant'),
+        desc: loc('tech_hydrogen_plant'),
+        category: 'power_generation',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 4, stanene: 1 },
+        grant: ['titan_power',1],
+        cost: {
+            Knowledge(){ return 550000; },
+        },
+        effect(){ return loc('tech_hydrogen_plant_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['hydrogen_plant'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

@@ -1,7 +1,7 @@
 import { global, keyMultiplier, p_on } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
+import { racialTrait, races, traits, biomes, planetTraits, genusVars } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 
@@ -193,7 +193,10 @@ export const job_desc = {
         return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);
     },
     colonist(){
-        return loc('job_colonist_desc',[races[global.race.species].solar.red]);
+        return loc(global.race['truepath'] ? 'job_colonist_desc_tp' : 'job_colonist_desc',[races[global.race.species].solar.red]);
+    },
+    titan_colonist(){
+        return loc('job_colonist_desc_tp',[genusVars[races[global.race.species].type].solar.titan]);
     },
     space_miner(){
         return loc('job_space_miner_desc');
@@ -236,6 +239,7 @@ export function defineJobs(define){
     loadJob('scientist',define,1,5,'advanced');
     loadJob('banker',define,0.1,6,'advanced');
     loadJob('colonist',define,1,5,'advanced');
+    loadJob('titan_colonist',define,1,5,'advanced');
     loadJob('space_miner',define,1,5,'advanced');
     loadJob('hell_surveyor',define,1,1,'advanced');
     loadJob('archaeologist',define,1,1,'advanced');
@@ -256,10 +260,20 @@ function loadJob(job, define, impact, stress, color){
         };
     }
 
-    let job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+    let job_name = '';
     if (global.race.universe === 'magic' && job === 'scientist'){
         job_name = loc('job_wizard');
     }
+    else if (global.race['truepath'] && job === 'colonist'){
+        job_name = loc('job_colonist_tp',[races[global.race.species].solar.red]);
+    }
+    else if (job === 'titan_colonist'){
+        job_name = loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]);
+    }
+    else {
+        job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+    }
+
     global['civic'][job].name = job_name;
 
     if (!global.civic[job]['assigned']){

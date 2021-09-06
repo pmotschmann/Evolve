@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
             `Added option to Hell Fortress to prevent using ship crew as reinforcements.`,
+            `Shrine Metal bonus now applies to Mining Droid Aluminum production.`,
             `GruvBox Dark is now the default theme.`,
             `Improved touch device support.`
         ]

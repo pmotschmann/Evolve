@@ -1,5 +1,5 @@
 import { global, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, messageQueue, powerCostMod, spaceCostMultiplier, deepClone } from './functions.js';
+import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { production } from './prod.js';
@@ -119,6 +119,106 @@ export const outerTruth = {
                     global.tech['titan'] = 4;
                     drawTech();
                 }
+            }
+        },
+        hydrogen_plant: {
+            id: 'space-hydrogen_plant',
+            title: loc('space_hydrogen_plant_title'),
+            desc(){ return `<div>${loc('space_hydrogen_plant_title')}</div><div class="has-text-special">${loc('space_hydrogen_plant_req')}</div>`; },
+            reqs: { titan_power: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 1500000, 1.28); },
+                Iridium(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 292000, 1.28); },
+                Stanene(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 599000, 1.28); },
+                Cement(offset){ return spaceCostMultiplier('hydrogen_plant', offset, 180000, 1.28); }
+            },
+            effect(){
+                return `<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_hydrogen_plant_effect',[1,loc('space_electrolysis_title')])}</span>`;
+            },
+            support(){
+                return 2;
+            },
+            powered(){ return powerModifier(-22); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.hydrogen_plant.count++;
+                    if (global.space.electrolysis.on > global.space.hydrogen_plant.on){
+                        global.space.hydrogen_plant.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        titan_quarters: {
+            id: 'space-titan_quarters',
+            title: loc('interstellar_habitat_title'),
+            desc(){
+                return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+            },
+            reqs: { titan: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('titan_quarters', offset, 1200000, 1.28); },
+                Furs(offset){ return spaceCostMultiplier('titan_quarters', offset, 85000, 1.28); },
+                Plywood(offset){ return spaceCostMultiplier('titan_quarters', offset, 100000, 1.28); },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
+            },
+            effect(){
+                let gain = 1;
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.titan_quarters.count++;
+                    global.civic.titan_colonist.display = true;
+                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
+                        global.space.titan_quarters.on++;
+                        global.resource[global.race.species].max += 1;
+                        if (global.civic[global.civic.d_job].workers > 0){
+                            global.civic[global.civic.d_job].workers--;
+                            global.civic.titan_colonist.workers++;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        titan_mine: {
+            id: 'space-titan_mine',
+            title: loc('space_red_mine_title'),
+            desc(){
+                return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+            },
+            reqs: { mars: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('titan_mine', offset, 475000, 1.28); },
+                Lumber(offset){ return spaceCostMultiplier('titan_mine', offset, 568000, 1.28); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('titan_mine', offset, 250000, 1.28); }
+            },
+            effect(){
+                let adam_val = production('titan_mine','adamantite');
+                let alum_val = production('titan_mine','aluminium');
+                let adamantite = +(adam_val).toFixed(3);
+                let aluminium = +(alum_val).toFixed(3);
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            special(){ return true; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.titan_mine.count++;
+                    global.resource.Adamantite.display = true;
+                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
+                        global.space.titan_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
             }
         },
     },
@@ -321,7 +421,7 @@ export function drawShipYard(){
                             ship['damage'] = 0;
                             ship['fueled'] = false;
 
-                            if (ship.name.length === 0){
+                            if (ship.name.length === 0 || ship.name.toLowerCase() === 'random'){
                                 ship.name = getRandomShipName();
                             }
 
@@ -377,7 +477,8 @@ function getRandomShipName(){
         'Razor','Stinger','Outrider','Falcon','Vulture','Nirvana','Retribution','Swordbreaker','Valkyrie','Athena','Avalon','Merlin','Argonaut','Serenity',
         'Gunstar','Ranger','Tantive','Cygnus','Nostromo','Reliant','Narcissus','Liberator','Sulaco','Infinity','Resolute','Wasp','Hornet','Independence',
         'Gilgamesh','Midway','Concordia','Goliath','Cosmos','Express','Tigers Claw','Oberon','Minnow','Majestic','Spartacus','Colossi','Vigilant',
-        'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire'
+        'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire',
+        'McShipFace','Monitor','Merrimack','Constitution','Ghost','Pequod','Arcadia','Corsair','Inferno','Jenny','Revenge','Red October','Jackdaw'
     ];
 
     return names[Math.rand(0, names.length)];

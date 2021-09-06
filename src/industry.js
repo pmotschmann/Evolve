@@ -26,6 +26,9 @@ export function loadIndustry(industry,parent,bind){
         case 'rock_quarry':
             loadQuarry(parent,bind);
             break;
+        case 'titan_mine':
+            loadTMine(parent,bind);
+            break;
     }
 }
 
@@ -1021,6 +1024,38 @@ function loadQuarry(parent,bind){
                     global.city.rock_quarry.asbestos += keyMult;
                     if (global.city.rock_quarry.asbestos > 100){
                         global.city.rock_quarry.asbestos = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadTMine(parent,bind){
+    parent.append($(`<div>${loc('modal_quarry_ratio',[global.resource.Adamantite.name])}</div>`));
+
+    let slider = $(`<div class="sliderbar"><span class="sub" role="button" @click="sub" aria-label="Increase Aluminium Production">&laquo;</span><b-slider v-model="ratio" format="percent"></b-slider><span class="add" role="button" @click="add" aria-label="Increase Adamantite Production">&raquo;</span></div>`);
+    parent.append(slider);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.space.titan_mine,
+        methods: {
+            sub(){
+                let keyMult = keyMultiplier();
+                if (global.space.titan_mine.ratio > 0){
+                    global.space.titan_mine.ratio -= keyMult;
+                    if (global.space.titan_mine.ratio < 0){
+                        global.space.titan_mine.ratio = 0;
+                    }
+                }
+            },
+            add(){
+                let keyMult = keyMultiplier();
+                if (global.space.titan_mine.ratio < 100){
+                    global.space.titan_mine.ratio += keyMult;
+                    if (global.space.titan_mine.ratio > 100){
+                        global.space.titan_mine.ratio = 100;
                     }
                 }
             }

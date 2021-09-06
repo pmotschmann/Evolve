@@ -2,7 +2,7 @@ import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, size
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
@@ -1462,6 +1462,18 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('space_hell_geothermal_title')] = -(power);
+        }
+
+
+        if (global.space['hydrogen_plant'] && global.space.hydrogen_plant.on > 0){
+            let output = actions.space.spc_titan.hydrogen_plant.powered();
+            if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
+                global.space.hydrogen_plant.on = global.space.electrolysis.on;
+            }
+            let power = global.space.hydrogen_plant.on * output;
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('space_hydrogen_plant_title')] = -(power);
         }
 
         if (global.space['e_reactor'] && global.space.e_reactor.on > 0){
@@ -4449,12 +4461,21 @@ function fastLoop(){
             // Aluminium Mining Droids
             if (global.interstellar['mining_droid'] && miner_droids['alum'] > 0){
                 let base = miner_droids['alum'] * 2.75 * zigguratBonus();
-                let delta = base * global_multiplier;
+                let delta = base * shrineMetal.mult * global_multiplier;
                 delta *= 1 + (refinery / 100);
 
                 alumina_bd[loc('interstellar_mining_droid_title')] = base + 'v';
 
                 modRes('Aluminium', delta * time_multiplier);
+            }
+
+            // Aluminium Titan Mines
+            if (global.resource.Aluminium.display && global.space['titan_mine']){
+                let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
+                let alum_delta = alum_base * shrineMetal.mult * global_multiplier;
+                alum_delta *= 1 + (refinery / 100);
+                alumina_bd[loc('city_mine')] = +(alum_base).toFixed(3) + 'v';
+                modRes('Aluminium', alum_delta * time_multiplier);
             }
 
             if (refinery > 0){
@@ -4800,6 +4821,14 @@ function fastLoop(){
             adamantite_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
             modRes('Adamantite', delta * time_multiplier);
         }
+
+        if (global.resource.Adamantite.display && global.space['titan_mine']){
+            let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
+            let adam_delta = adam_base * shrineMetal.mult * global_multiplier;
+            adamantite_bd[loc('city_mine')] = adam_base + 'v';
+            modRes('Adamantite', adam_delta * time_multiplier);
+        }
+
         if (shrineBonusActive()){
             adamantite_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
         }
@@ -5388,6 +5417,7 @@ function midLoop(){
             scientist: 0,
             garrison: 0,
             colonist: 0,
+            titan_colonist: 0,
             space_miner: 0,
             hell_surveyor: 0,
             archaeologist: 0,
@@ -5687,6 +5717,15 @@ function midLoop(){
                 bd_Money[loc('space_red_living_quarters_title')] = gain+'v';
             }
         }
+
+        if (global.space['titan_quarters']){
+            let base = 1;
+            let gain = Math.round(support_on['titan_quarters'] * base);
+            caps[global.race.species] += gain;
+            lCaps['titan_colonist'] += support_on['titan_quarters'];
+            bd_Citizen[`${genusVars[races[global.race.species].type].solar.titan}`] = gain + 'v';
+        }
+
         if (global.interstellar['habitat'] && p_on['habitat']){
             caps[global.race.species] += p_on['habitat'];
             bd_Citizen[loc('interstellar_habitat_title')] = p_on['habitat'] + 'v';

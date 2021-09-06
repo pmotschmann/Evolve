@@ -6460,6 +6460,9 @@ function drawModal(c_action,type){
         case 'rock_quarry':
             quarryModal(body);
             break;
+        case 'titan_mine':
+            titanModal(body);
+            break;
     }
 }
 
@@ -6518,6 +6521,10 @@ function pylonModal(modal){
 
 function quarryModal(modal){
     loadIndustry('rock_quarry',modal);
+}
+
+function titanModal(modal){
+    loadIndustry('titan_mine',modal);
 }
 
 export function evoProgress(){
