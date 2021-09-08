@@ -2297,6 +2297,8 @@
   "tech_electrolysis_effect": "Large scale electrolysis can be used on %0 if a steady supply of %1 can be found. Spliting the %1 molecules will provide both a source of oxygen and power from hydrogen.",
   "tech_storehouse": "%0 Storage Facility",
   "tech_storehouse_effect": "Design a structure suited for storage in the unique environment of %0.",
+  "tech_titan_bank": "%0 Banking",
+  "tech_titan_bank_effect": "Establishing a bank on %0 would help grow the colony.",
   "tech_hydrogen_plant": "Hydrogen Power",
   "tech_hydrogen_plant_effect": "Design a companion facility to use waste hydrogen from your electrolysis facilities to generate power.",
   "tech_water_mining": "Water Mining",

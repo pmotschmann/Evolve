@@ -2,9 +2,10 @@ import { global, p_on, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
+import { defineIndustry } from './civics.js';
 import { production } from './prod.js';
-import { payCosts, drawTech } from './actions.js';
-import { fuel_adjust, spaceTech } from './space.js';
+import { payCosts, drawTech, bank_vault } from './actions.js';
+import { fuel_adjust, spaceTech, zigguratBonus } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -330,6 +331,71 @@ export const outerTruth = {
                     if (global.resource.Adamantite.display){
                         global['resource']['Adamantite'].max += ((spatialReasoning(72) * multiplier));
                     }
+                    return true;
+                }
+                return false;
+            }
+        },
+        titan_bank: {
+            id: 'space-titan_bank',
+            title: loc('city_bank'),
+            desc(){
+                return loc('city_bank_desc',[genusVars[races[global.race.species].type].solar.titan]);
+            },
+            reqs: { titan: 6 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('titan_bank', offset, 2500000, 1.32); },
+                Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, 380000, 1.32); },
+                Neutronium(offset){ return spaceCostMultiplier('titan_bank', offset, 5000, 1.32); }
+            },
+            effect(){
+                let vault = bank_vault() * 2;
+                vault = spatialReasoning(vault);
+                vault = (+(vault).toFixed(0)).toLocaleString();
+                return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global['resource']['Money'].max += spatialReasoning(1800);
+                    global.space.titan_bank.count++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        g_factory: {
+            id: 'space-g_factory',
+            title: loc('interstellar_g_factory_title'),
+            desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`; },
+            reqs: { graphene: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28); },
+                Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28); },
+                Stone(offset){ return spaceCostMultiplier('g_factory', offset, 220000, 1.28); },
+                Adamantite(offset){ return spaceCostMultiplier('g_factory', offset, 12500, 1.28); }
+            },
+            effect(){
+                let graphene = +(0.05 * zigguratBonus()).toFixed(3);
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.g_factory.count++;
+                    global.resource.Graphene.display = true;
+                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
+                        global.space.g_factory.on++;
+                        if (global.race['kindling_kindred'] || global.race['smoldering']){
+                            global.space.g_factory.Oil++;
+                        }
+                        else {
+                            global.space.g_factory.Lumber++;
+                        }
+                    }
+                    global.settings.showIndustry = true;
+                    defineIndustry();
                     return true;
                 }
                 return false;

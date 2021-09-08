@@ -3099,7 +3099,7 @@ export const actions = {
                     return `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_resource',[1,loc('banker_name')])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',[vault,loc('resource_Money_name')]);
+                    return loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')]);
                 }
             },
             action(){

@@ -2085,6 +2085,7 @@ const techs = {
         desc: loc('tech_graphene_crates'),
         category: 'storage',
         era: 'interstellar',
+        path: ['standard','truepath'],
         reqs: { container: 6, graphene: 1 },
         grant: ['container',7],
         cost: {
@@ -3285,6 +3286,7 @@ const techs = {
         desc: loc('tech_graphene_vault'),
         category: 'banking',
         era: 'interstellar',
+        path: ['standard','truepath'],
         reqs: { vault: 3, graphene: 1 },
         grant: ['vault',4],
         cost: {
@@ -10283,6 +10285,28 @@ const techs = {
             return false;
         }
     },
+    graphene_tp: {
+        id: 'tech-graphene_tp',
+        title: loc('tech_graphene'),
+        desc: loc('tech_graphene'),
+        category: 'crafting',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 5 },
+        grant: ['graphene',1],
+        cost: {
+            Knowledge(){ return 640000; },
+            Adamantite(){ return 25000; }
+        },
+        effect: loc('tech_graphene_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     electrolysis: {
         id: 'tech-electrolysis',
         title: loc('tech_electrolysis'),
@@ -10309,7 +10333,7 @@ const techs = {
         id: 'tech-storehouse',
         title(){ return loc('tech_storehouse',[genusVars[races[global.race.species].type].solar.titan]); },
         desc(){ return loc('tech_storehouse',[genusVars[races[global.race.species].type].solar.titan]); },
-        category: 'power_generation',
+        category: 'storage',
         era: 'solar',
         path: ['truepath'],
         reqs: { titan: 4 },
@@ -10321,6 +10345,49 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.space['storehouse'] = { count: 0 };
+                return true;
+            }
+            return false;
+        },
+    },
+    adamantite_vault_tp: {
+        id: 'tech-adamantite_vault_tp',
+        title: loc('tech_adamantite_vault'),
+        desc: loc('tech_adamantite_vault'),
+        category: 'banking',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { vault: 2, titan: 4 },
+        grant: ['vault',3],
+        cost: {
+            Money(){ return 2000000; },
+            Knowledge(){ return 560000; },
+            Adamantite(){ return 20000; }
+        },
+        effect: loc('tech_adamantite_vault_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    titan_bank: {
+        id: 'tech-titan_bank',
+        title(){ return loc('tech_titan_bank',[genusVars[races[global.race.species].type].solar.titan]); },
+        desc(){ return loc('tech_titan_bank',[genusVars[races[global.race.species].type].solar.titan]); },
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 5 },
+        grant: ['titan',6],
+        cost: {
+            Knowledge(){ return 600000; },
+        },
+        effect(){ return loc('tech_titan_bank_effect',[genusVars[races[global.race.species].type].solar.titan]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['titan_bank'] = { count: 0 };
                 return true;
             }
             return false;

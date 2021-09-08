@@ -3775,28 +3775,30 @@ function fastLoop(){
         }
 
         // Graphene
-        if (global.interstellar['g_factory'] && global.interstellar['g_factory'].count > 0){
+        let graph_source = global.race['truepath'] ? 'space' : 'interstellar';
+        if (global[graph_source]['g_factory'] && global[graph_source]['g_factory'].count > 0){
             if (global.race['kindling_kindred'] || global.race['smoldering']){
-                global.interstellar.g_factory.Lumber = 0;
+                global[graph_source].g_factory.Lumber = 0;
             }
 
-            while (int_on['g_factory'] < global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil){
-                if (global.interstellar.g_factory.Oil > 0){
-                    global.interstellar.g_factory.Oil--;
+            let in_operation = global.race['truepath'] ? support_on['g_factory'] : int_on['g_factory'];
+            while (in_operation < global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil){
+                if (global[graph_source].g_factory.Oil > 0){
+                    global[graph_source].g_factory.Oil--;
                 }
-                else if (global.interstellar.g_factory.Coal > 0){
-                    global.interstellar.g_factory.Coal--;
+                else if (global[graph_source].g_factory.Coal > 0){
+                    global[graph_source].g_factory.Coal--;
                 }
-                else if (global.interstellar.g_factory.Lumber > 0){
-                    global.interstellar.g_factory.Lumber--;
+                else if (global[graph_source].g_factory.Lumber > 0){
+                    global[graph_source].g_factory.Lumber--;
                 }
             }
-            if (int_on['g_factory'] > 0){
-                let consume_wood = global.interstellar.g_factory.Lumber * 350;
-                let consume_coal = global.interstellar.g_factory.Coal * 25;
-                let consume_oil = global.interstellar.g_factory.Oil * 15;
+            if (in_operation > 0){
+                let consume_wood = global[graph_source].g_factory.Lumber * 350;
+                let consume_coal = global[graph_source].g_factory.Coal * 25;
+                let consume_oil = global[graph_source].g_factory.Oil * 15;
 
-                let graphene_production = global.interstellar.g_factory.Lumber + global.interstellar.g_factory.Coal + global.interstellar.g_factory.Oil;
+                let graphene_production = global[graph_source].g_factory.Lumber + global[graph_source].g_factory.Coal + global[graph_source].g_factory.Oil;
 
                 while (consume_wood * time_multiplier > global.resource.Lumber.amount && consume_wood > 0){
                     consume_wood -= 350;
@@ -3810,7 +3812,13 @@ function fastLoop(){
                     consume_oil -= 15;
                     graphene_production--;
                 }
-                graphene_production *= 0.6;
+
+                if (global.race['truepath']){
+                    graphene_production *= 0.05 * global.civic.titan_colonist.workers;
+                }
+                else {
+                    graphene_production *= 0.6;
+                }
 
                 breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
                 breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
@@ -3834,8 +3842,10 @@ function fastLoop(){
                 }
 
                 let graphene_bd = {};
-                let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier;
+                let synd = global.race['truepath'] ? syndicate('spc_titan') : 1;
+                let delta = graphene_production * ai * zigguratBonus() * hunger * global_multiplier * synd;
                 graphene_bd[loc('interstellar_g_factory_bd')] = (graphene_production * zigguratBonus()) + 'v';
+                graphene_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
@@ -6486,6 +6496,15 @@ function midLoop(){
                 bd_Money[loc('interstellar_exchange_bd')] = g_vault+'v';
             }
         }
+
+        if (global.space['titan_bank']){
+            let vault = bank_vault() * 2;
+            let banks = global.space.titan_bank.count;
+            let gain = (banks * spatialReasoning(vault));
+            caps['Money'] += gain;
+            bd_Money[`${genusVars[races[global.race.species].type].solar.titan} ${loc('city_bank')}`] = gain+'v';
+        }
+
         if (global.city['casino'] || global.space['spc_casino']){
             let casinos = 0;
             if (global.city['casino'] && global.city.casino.count > 0){
