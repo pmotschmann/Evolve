@@ -1912,7 +1912,7 @@ const spaceProjects = {
             no_queue(){ return global.space.shipyard.count < 1 ? false : true },
             queue_complete(){ return 1 - global.space.shipyard.count; },
             effect(){
-                return loc('outer_shipyard_effect');
+                return `<div>${loc('outer_shipyard_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(50); },
             special: true,
