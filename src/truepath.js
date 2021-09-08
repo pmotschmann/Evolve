@@ -1,4 +1,4 @@
-import { global, sizeApproximation } from './vars.js';
+import { global, p_on, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -62,7 +62,8 @@ export const outerTruth = {
             effect(){
                 let water = global.resource.Water.display ? `<div>${loc('plus_max_resource',[sizeApproximation(spatialReasoning(250)),global.resource.Water.name])}</div>` : ``;
                 let support = global.tech['enceladus'] && global.tech.enceladus >= 2 ? `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.enceladus])}</div>` : ``;
-                return `${support}${water}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let storage = global.tech['titan'] && global.tech.titan >= 5 ? `<div>${loc(`space_titan_spaceport_storage`,[25])}</div>` : ``;
+                return `${support}${water}${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
             powered(){ return powerCostMod(10); },
@@ -158,6 +159,7 @@ export const outerTruth = {
                 return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
             },
             reqs: { titan: 4 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_quarters', offset, 1200000, 1.28); },
                 Furs(offset){ return spaceCostMultiplier('titan_quarters', offset, 85000, 1.28); },
@@ -193,7 +195,8 @@ export const outerTruth = {
             desc(){
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
             },
-            reqs: { mars: 1 },
+            reqs: { titan: 4 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_mine', offset, 475000, 1.28); },
                 Lumber(offset){ return spaceCostMultiplier('titan_mine', offset, 568000, 1.28); },
@@ -215,6 +218,117 @@ export const outerTruth = {
                     global.resource.Adamantite.display = true;
                     if (global.space.electrolysis.support < global.space.electrolysis.s_max){
                         global.space.titan_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        storehouse: {
+            id: 'space-storehouse',
+            title: loc('space_storehouse_title'),
+            desc: loc('space_storehouse_title'),
+            reqs: { titan: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('storehouse', offset, 175000, 1.28); },
+                Lumber(offset){ return spaceCostMultiplier('storehouse', offset, 100000, 1.28); },
+                Aluminium(offset){ return spaceCostMultiplier('storehouse', offset, 120000, 1.28); },
+                Cement(offset){ return spaceCostMultiplier('storehouse', offset, 45000, 1.28); }
+            },
+            wide: true,
+            effect(){
+                let storage = '<div class="aTable">';
+                let multiplier = storehouseMultiplier();
+                if (global.resource.Lumber.display){
+                    let val = sizeApproximation(+(spatialReasoning(3000) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Lumber.name])}</span>`;
+                }
+                if (global.resource.Stone.display){
+                    let val = sizeApproximation(+(spatialReasoning(3000) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
+                }
+                if (global.resource.Chrysotile.display){
+                    let val = sizeApproximation(+(spatialReasoning(3000) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Chrysotile.name])}</span>`;
+                }
+                if (global.resource.Furs.display){
+                    let val = sizeApproximation(+(spatialReasoning(1700) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Furs.name])}</span>`;
+                }
+                if (global.resource.Copper.display){
+                    let val = sizeApproximation(+(spatialReasoning(1520) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Copper.name])}</span>`;
+                }
+                if (global.resource.Iron.display){
+                    let val = sizeApproximation(+(spatialReasoning(1400) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Iron.name])}</span>`;
+                }
+                if (global.resource.Aluminium.display){
+                    let val = sizeApproximation(+(spatialReasoning(1280) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Aluminium.name])}</span>`;
+                }
+                if (global.resource.Cement.display){
+                    let val = sizeApproximation(+(spatialReasoning(1120) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Cement.name])}</span>`;
+                }
+                if (global.resource.Coal.display){
+                    let val = sizeApproximation(+(spatialReasoning(480) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Coal.name])}</span>`;
+                }
+                if (global.resource.Steel.display){
+                    let val = sizeApproximation(+(spatialReasoning(240) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Steel.name])}</span>`;
+                }
+                if (global.resource.Titanium.display){
+                    let val = sizeApproximation(+(spatialReasoning(160) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Titanium.name])}</span>`;
+                }
+                if (global.resource.Alloy.display){
+                    let val = sizeApproximation(+(spatialReasoning(180) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Alloy.name])}</span>`
+                }
+                if (global.resource.Nano_Tube.display){
+                    let val = sizeApproximation(+(spatialReasoning(120) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Nano_Tube.name])}</span>`
+                }
+                if (global.resource.Neutronium.display){
+                    let val = sizeApproximation(+(spatialReasoning(64) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Neutronium.name])}</span>`
+                }
+                if (global.resource.Adamantite.display){
+                    let val = sizeApproximation(+(spatialReasoning(72) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Adamantite.name])}</span>`
+                }
+                storage = storage + '</div>';
+                return storage;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.storehouse.count++;
+                    let multiplier = storehouseMultiplier();
+                    global['resource']['Lumber'].max += (spatialReasoning(3000) * multiplier);
+                    global['resource']['Stone'].max += (spatialReasoning(3000) * multiplier);
+                    global['resource']['Furs'].max += (spatialReasoning(1700) * multiplier);
+                    global['resource']['Copper'].max += (spatialReasoning(1520) * multiplier);
+                    global['resource']['Iron'].max += (spatialReasoning(1400) * multiplier);
+                    global['resource']['Aluminium'].max += (spatialReasoning(1280) * multiplier);
+                    global['resource']['Cement'].max += (spatialReasoning(1120) * multiplier);
+                    global['resource']['Coal'].max += (spatialReasoning(480) * multiplier);
+                    global['resource']['Steel'].max += ((spatialReasoning(240) * multiplier));
+                    global['resource']['Titanium'].max += ((spatialReasoning(160) * multiplier));
+                    global['resource']['Alloy'].max += ((spatialReasoning(180) * multiplier));
+                    if (global.resource.Chrysotile.display){
+                        global['resource']['Chrysotile'].max += (spatialReasoning(3000) * multiplier);
+                    }
+                    if (global.resource.Nano_Tube.display){
+                        global['resource']['Nano_Tube'].max += ((spatialReasoning(120) * multiplier));
+                    }
+                    if (global.resource.Neutronium.display){
+                        global['resource']['Neutronium'].max += ((spatialReasoning(64) * multiplier));
+                    }
+                    if (global.resource.Adamantite.display){
+                        global['resource']['Adamantite'].max += ((spatialReasoning(72) * multiplier));
                     }
                     return true;
                 }
@@ -760,17 +874,17 @@ function shipCosts(bp){
             break;
         case 'cruiser':
             costs['Money'] = 50000000;
-            costs['Aluminium'] = 12000000;
+            costs['Adamantite'] = 1000000; //12000000;
             h_inflate = 1.3;
             break;
         case 'battlecruiser':
             costs['Money'] = 125000000;
-            costs['Aluminium'] = 32000000;
+            costs['Adamantite'] = 2600000; //32000000;
             h_inflate = 1.4;
             break;
         case 'dreadnought':
             costs['Money'] = 1000000000;
-            costs['Aluminium'] = 128000000;
+            costs['Adamantite'] = 10000000; //128000000;
             h_inflate = 1.5;
             break;
     }
@@ -1142,4 +1256,21 @@ function transferWindow(from,to){
     let y2 = +(Math.sin(global.space.position[to] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[to].dist;
 
     return Math.ceil(Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2)) * 225);
+}
+
+export function storehouseMultiplier(){
+    let multiplier = 1;
+    if (global.race['pack_rat']){
+        multiplier *= 1 + (traits.pack_rat.vars[1] / 100);
+    }
+    if (global.stats.achieve['blackhole']){
+        multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
+    }
+    if (global.tech['world_control']){
+        multiplier *= 3;
+    }
+    if (p_on['titan_spaceport']){
+        multiplier *= 1 + (p_on['titan_spaceport'] * 0.25);
+    }
+    return multiplier;
 }

@@ -5,7 +5,10 @@ import { sideMenu } from './functions.js';
 const extraInformation = {
     launch_facility: [loc('wiki_arpa_project_launch_facility')],
     monument: [monumentExtra(),loc('wiki_arpa_project_monument_random'),loc('wiki_arpa_project_monument_exceptions')],
-    roid_eject: [loc('wiki_arpa_project_roid_eject')]
+    roid_eject: [loc('wiki_arpa_project_roid_eject')],
+    tp_depot: [loc('wiki_arpa_project_depot')],
+    nexus: [loc('wiki_arpa_project_magic')],
+    syphon: [loc('wiki_arpa_project_magic')]
 };
 
 export function projectsPage(content){

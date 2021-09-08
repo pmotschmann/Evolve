@@ -4981,6 +4981,9 @@ export function storageMultipler(){
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
     }
+    if (global.tech['tp_depot']){
+        multiplier *= 1 + (global.tech['tp_depot'] / 20);
+    }
     if (global.stats.achieve['blackhole']){
         multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
     }

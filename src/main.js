@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize} from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -4471,10 +4471,12 @@ function fastLoop(){
 
             // Aluminium Titan Mines
             if (global.resource.Aluminium.display && global.space['titan_mine']){
+                let synd = syndicate('spc_titan');
                 let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
-                let alum_delta = alum_base * shrineMetal.mult * global_multiplier;
+                let alum_delta = alum_base * shrineMetal.mult * global_multiplier * synd;
                 alum_delta *= 1 + (refinery / 100);
                 alumina_bd[loc('city_mine')] = +(alum_base).toFixed(3) + 'v';
+                alumina_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 modRes('Aluminium', alum_delta * time_multiplier);
             }
 
@@ -4823,9 +4825,11 @@ function fastLoop(){
         }
 
         if (global.resource.Adamantite.display && global.space['titan_mine']){
+            let synd = syndicate('spc_titan');
             let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
-            let adam_delta = adam_base * shrineMetal.mult * global_multiplier;
+            let adam_delta = adam_base * shrineMetal.mult * global_multiplier * synd;
             adamantite_bd[loc('city_mine')] = adam_base + 'v';
+            adamantite_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
             modRes('Adamantite', adam_delta * time_multiplier);
         }
 
@@ -5534,10 +5538,14 @@ function midLoop(){
             if (global.tech['world_control'] || global.race['cataclysm']){
                 g_vol += 10;
             }
-            caps['Containers'] += (global.space['garage'].count * g_vol);
+            caps['Containers'] += (global.space.garage.count * g_vol);
             if (global.race['cataclysm']){
-                caps['Crates'] += (global.space['garage'].count * g_vol);
+                caps['Crates'] += (global.space.garage.count * g_vol);
             }
+        }
+        if (global.tech['tp_depot']){
+            caps['Containers'] += (global.tech.tp_depot * 50);
+            caps['Crates'] += (global.tech.tp_depot * 50);
         }
         if (global.city['warehouse']){
             let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
@@ -5886,6 +5894,79 @@ function midLoop(){
             }
         }
 
+        if (global.space['storehouse']){
+            var multiplier = storehouseMultiplier();
+            let gain = 0;
+            let label = loc('space_storehouse_title');
+            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
+            caps['Lumber'] += gain;
+            bd_Lumber[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
+            caps['Stone'] += gain;
+            bd_Stone[label] = gain+'v';
+
+            if (global.resource.Chrysotile.display){
+                gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
+                caps['Chrysotile'] += gain;
+                bd_Chrysotile[label] = gain+'v';
+            }
+
+            gain = (global.space.storehouse.count * (spatialReasoning(1700 * multiplier)));
+            caps['Furs'] += gain;
+            bd_Furs[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(1520 * multiplier)));
+            caps['Copper'] += gain;
+            bd_Copper[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(1400 * multiplier)));
+            caps['Iron'] += gain;
+            bd_Iron[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(1280 * multiplier)));
+            caps['Aluminium'] += gain;
+            bd_Aluminium[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(1120 * multiplier)));
+            caps['Cement'] += gain;
+            bd_Cement[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(480 * multiplier)));
+            caps['Coal'] += gain;
+            bd_Coal[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(240 * multiplier)));
+            caps['Steel'] += gain;
+            bd_Steel[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(160 * multiplier)));
+            caps['Titanium'] += gain;
+            bd_Titanium[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(180 * multiplier)));
+            caps['Alloy'] += gain;
+            bd_Alloy[label] = gain+'v';
+
+            if (global.resource.Nano_Tube.display){
+                gain = (global.space.storehouse.count * (spatialReasoning(120 * multiplier)));
+                caps['Nano_Tube'] += gain;
+                bd_Nano_Tube[label] = gain+'v';
+            }
+
+            if (global.resource.Neutronium.display){
+                gain = (global.space.storehouse.count * (spatialReasoning(64 * multiplier)));
+                caps['Neutronium'] += gain;
+                bd_Neutronium[label] = gain+'v';
+            }
+
+            if (global.resource.Adamantite.display){
+                gain = (global.space.storehouse.count * (spatialReasoning(72 * multiplier)));
+                caps['Adamantite'] += gain;
+                bd_Adamantite[label] = gain+'v';
+            }
+        }
+
         if (global.galaxy['gateway_depot']){
             let containers = global.tech['world_control'] ? 150 : 100;
             caps['Crates'] += (global.galaxy.gateway_depot.count * containers);
@@ -6210,7 +6291,7 @@ function midLoop(){
             let gain = (global.city.university.count * base * multiplier);
             lCaps['professor'] += global.city.university.count;
             if (global.tech['supercollider']){
-                let ratio = global.tech['particles'] && global.tech.particles >= 3 ? 12.5: 25;
+                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech.particles >= 3) ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             caps['Knowledge'] += gain;
@@ -6262,7 +6343,7 @@ function midLoop(){
             let powered_gain = global.tech['science'] >= 7 ? 1500 : 1000;
             gain += (p_on['wardenclyffe'] * powered_gain);
             if (global.tech['supercollider']){
-                let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             if (global.space['satellite']){
@@ -6289,7 +6370,7 @@ function midLoop(){
         if (global.space['satellite']){
             let gain = (global.space.satellite.count * (global.race['cataclysm'] ? 2000 : 750));
             if (global.race['cataclysm'] && global.tech['supercollider']){
-                let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 5: 10;
+                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 5: 10;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             caps['Knowledge'] += gain;

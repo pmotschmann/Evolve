@@ -1907,6 +1907,7 @@ const techs = {
         desc: loc('tech_pocket_dimensions_desc'),
         category: 'storage',
         era: 'early_space',
+        path: ['standard'],
         reqs: { particles: 1, storage: 5 },
         grant: ['storage',6],
         cost: {
@@ -7107,6 +7108,7 @@ const techs = {
         desc: loc('tech_pynn_partical'),
         category: 'progress',
         era: 'early_space',
+        path: ['standard'],
         reqs: { supercollider: 1 },
         grant: ['particles',1],
         cost: {
@@ -7126,6 +7128,7 @@ const techs = {
         desc: loc('tech_matter_compression'),
         category: 'storage',
         era: 'early_space',
+        path: ['standard'],
         reqs: { particles: 1 },
         grant: ['particles',2],
         cost: {
@@ -7145,6 +7148,7 @@ const techs = {
         desc: loc('tech_higgs_boson'),
         category: 'science',
         era: 'early_space',
+        path: ['standard'],
         reqs: { particles: 2, supercollider: 2 },
         grant: ['particles',3],
         cost: {
@@ -10208,6 +10212,26 @@ const techs = {
             return false;
         }
     },
+    higgs_boson_tp: {
+        id: 'tech-higgs_boson_tp',
+        title: loc('tech_higgs_boson'),
+        desc: loc('tech_higgs_boson'),
+        category: 'science',
+        era: 'early_space',
+        path: ['truepath'],
+        reqs: { supercollider: 2 },
+        grant: ['tp_particles',1],
+        cost: {
+            Knowledge(){ return 125000; }
+        },
+        effect: loc('tech_higgs_boson_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     long_range_probes: {
         id: 'tech-long_range_probes',
         title: loc('tech_long_range_probes'),
@@ -10271,11 +10295,32 @@ const techs = {
         cost: {
             Knowledge(){ return 465000; },
         },
-        effect(){ return loc('tech_electrolysis_effect',[genusVars[races[global.race.species].type].solar.titan,global.resource.Water.name]); },
+        effect(){ return loc('tech_electrolysis_effect',[genusVars[races[global.race.species].type].solar.titan, global.resource.Water.name]); },
         action(){
             if (payCosts($(this)[0])){
                 global.space['titan_quarters'] = { count: 0, on: 0 };
                 global.space['titan_mine'] = { count: 0, on: 0, ratio: 90 };
+                return true;
+            }
+            return false;
+        },
+    },
+    storehouse: {
+        id: 'tech-storehouse',
+        title(){ return loc('tech_storehouse',[genusVars[races[global.race.species].type].solar.titan]); },
+        desc(){ return loc('tech_storehouse',[genusVars[races[global.race.species].type].solar.titan]); },
+        category: 'power_generation',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 4 },
+        grant: ['titan',5],
+        cost: {
+            Knowledge(){ return 500000; },
+        },
+        effect(){ return loc('tech_storehouse_effect',[genusVars[races[global.race.species].type].solar.titan]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['storehouse'] = { count: 0 };
                 return true;
             }
             return false;
@@ -10326,6 +10371,50 @@ const techs = {
             }
             return false;
         },
+    },
+    adamantite_crates: {
+        id: 'tech-adamantite_crates',
+        title: loc('tech_adamantite_crates'),
+        desc: loc('tech_adamantite_crates_desc'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { container: 5, titan: 4 },
+        grant: ['container',6],
+        cost: {
+            Knowledge(){ return 525000; },
+            Adamantite(){ return 12500; }
+        },
+        effect: loc('tech_adamantite_crates_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                vBind({el: `#createHead`},'update');
+                return true;
+            }
+            return false;
+        }
+    },
+    adamantite_containers_tp: {
+        id: 'tech-adamantite_containers_tp',
+        title: loc('tech_adamantite_containers'),
+        desc: loc('tech_adamantite_containers_desc'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { steel_container: 4, titan: 4 },
+        grant: ['steel_container',5],
+        cost: {
+            Knowledge(){ return 575000; },
+            Adamantite(){ return 17500; }
+        },
+        effect: loc('tech_adamantite_containers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                vBind({el: `#createHead`},'update');
+                return true;
+            }
+            return false;
+        }
     },
     shipyard: {
         id: 'tech-shipyard',
@@ -10404,6 +10493,27 @@ const techs = {
             Knowledge(){ return 465000; }
         },
         effect: loc('tech_destroyer_ship_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    cruiser_ship: {
+        id: 'tech-cruiser_ship',
+        title: loc('tech_cruiser_ship'),
+        desc: loc('tech_cruiser_ship'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_class: 3, titan: 4 },
+        grant: ['syard_class',4],
+        cost: {
+            Knowledge(){ return 750000; },
+            Adamantite(){ return 50000; }
+        },
+        effect: loc('tech_cruiser_ship_tp'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

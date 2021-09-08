@@ -40,7 +40,7 @@ export const arpaProjects = {
         reqs: { high_tech: 6 },
         grant: 'supercollider',
         effect(){
-            let sc = global.tech['particles'] && global.tech['particles'] >= 3 ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
+            let sc = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
                     return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,wardenLabel()]);
@@ -86,6 +86,22 @@ export const arpaProjects = {
             Plywood(offset){ return costMultiplier('stock_exchange', offset, 25000, 1.06); },
             Brick(offset){ return costMultiplier('stock_exchange', offset, 20000, 1.06); },
             Wrought_Iron(offset){ return costMultiplier('stock_exchange', offset, 10000, 1.06); }
+        }
+    },
+    tp_depot: {
+        title: loc('galaxy_gateway_depot'),
+        desc: loc('arpa_projects_depot_desc'),
+        reqs: { high_tech: 6, storage: 4 },
+        grant: 'tp_depot',
+        path: ['truepath'],
+        effect(){
+            return loc('arpa_projects_depot_effect',[5,50]);
+        },
+        cost: {
+            Money(offset){ return costMultiplier('tp_depot', offset, 1800000, 1.08); },
+            Stone(offset){ return costMultiplier('tp_depot', offset, 750000, 1.08); },
+            Iron(offset){ return costMultiplier('tp_depot', offset, 250000, 1.08); },
+            Alloy(offset){ return costMultiplier('tp_depot', offset, 30000, 1.08); }
         }
     },
     launch_facility: {

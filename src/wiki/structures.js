@@ -9,7 +9,7 @@ export function renderStructurePage(zone,path){
 
     switch (zone){
         case 'prehistoric':
-            prehistoricPage(content);
+            prehistoricPage(content,path);
             break;
         case 'planetary':
             planetaryPage(content,path);
@@ -50,7 +50,8 @@ function addInfomration(parent,section,key){
     }
 }
 
-function prehistoricPage(content){
+function prehistoricPage(content,path){
+    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
     Object.keys(actions.evolution).forEach(function (action){
         if (actions.evolution[action].hasOwnProperty('title') && (action !== 'custom' || global.hasOwnProperty('custom')) && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let id = actions.evolution[action].id.split('-');
@@ -58,26 +59,28 @@ function prehistoricPage(content){
             content.append(info);
             actionDesc(info, actions.evolution[action]);
             addInfomration(info,'prehistoric',action);
-            sideMenu('add',`prehistoric-structures`,id[1],typeof actions.evolution[action].title === 'function' ? actions.evolution[action].title() : actions.evolution[action].title);
+            sideMenu('add',`prehistoric-${affix}`,id[1],typeof actions.evolution[action].title === 'function' ? actions.evolution[action].title() : actions.evolution[action].title);
         }
     });
 }
 
-function planetaryPage(content){
+function planetaryPage(content,path){
+    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
     Object.keys(actions.city).forEach(function (action){
         if ((!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki) &&
-            (!actions.city[action].hasOwnProperty('path') || actions.city[action].path === path) ){
+            (!actions.city[action].hasOwnProperty('path') || actions.city[action].path.includes(path)) ){
             let id = actions.city[action].id.split('-');
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.city[action]);
             addInfomration(info,'planetary',action);
-            sideMenu('add',`planetary-structures`,id[1],typeof actions.city[action].title === 'function' ? actions.city[action].title() : actions.city[action].title);
+            sideMenu('add',`planetary-${affix}`,id[1],typeof actions.city[action].title === 'function' ? actions.city[action].title() : actions.city[action].title);
         }
     });
 }
 
 function spacePage(content,path){
+    let affix = path === 'truepath' ? 'tp_structures' : 'structures';
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();
         let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
@@ -85,13 +88,13 @@ function spacePage(content,path){
         Object.keys(actions.space[region]).forEach(function (struct){
             if (struct !== 'info' && 
                 (!actions.space[region][struct].hasOwnProperty('wiki') || actions.space[region][struct].wiki) && 
-                (!actions.space[region][struct].hasOwnProperty('path') || actions.space[region][struct].path === path) ){
+                (!actions.space[region][struct].hasOwnProperty('path') || actions.space[region][struct].path.includes(path)) ){
                 let id = actions.space[region][struct].id.split('-');
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`);
                 addInfomration(info,'space',struct);
-                sideMenu('add',`space-structures`,id[1],typeof actions.space[region][struct].title === 'function' ? actions.space[region][struct].title() : actions.space[region][struct].title);
+                sideMenu('add',`space-${affix}`,id[1],typeof actions.space[region][struct].title === 'function' ? actions.space[region][struct].title() : actions.space[region][struct].title);
                 popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
