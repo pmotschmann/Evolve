@@ -7542,7 +7542,10 @@ function bioseed(){
         unlockAchieve(`atmo_${atmo}`);
     }
     unlockAchieve(`genus_${genus}`);
-
+    
+    if (global.race['truepath']){
+        unlockAchieve(`exodus`);
+    }
     if (atmo === 'dense' && global.race.universe === 'heavy'){
         unlockAchieve(`double_density`);
     }

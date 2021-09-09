@@ -1602,7 +1602,7 @@ function fastLoop(){
             if (global.space[sup.s] && global.space[sup.s].count > 0){
                 if (actions.space[sup.r][sup.s].hasOwnProperty('support_fuel')){
                     let fuel = actions.space[sup.r][sup.s].support_fuel();
-                    let fuel_cost = ['Oil','Helium_3'].includes(sup.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                    let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
                     let mb_consume = p_on[sup.s] * fuel_cost;
                     breakdown.p.consume[fuel.r][actions.space[sup.r][sup.s].title] = -(mb_consume);
                     for (let i=0; i<p_on[sup.s]; i++){
@@ -1637,8 +1637,23 @@ function fastLoop(){
                     if (global.space[area_structs[i]]){
                         let operating = global.space[area_structs[i]].on;
                         let id = actions.space[sup.r2][area_structs[i]].id;
+
+                        if (actions.space[sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
+                            let fuel = actions.space[sup.r2][area_structs[i]].support_fuel();
+                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                            let mb_consume = operating * fuel_cost;
+                            breakdown.p.consume[fuel.r][actions.space[sup.r2][area_structs[i]].title] = -(mb_consume);
+                            for (let i=0; i<operating; i++){
+                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                    mb_consume -= (operating * fuel_cost) - (i * fuel_cost);
+                                    operating -= i;
+                                    break;
+                                }
+                            }
+                        }
+
                         if (used_support + operating > global.space[sup.s].s_max){
-                            operating -=  (used_support + operating) - global.space[sup.s].s_max;
+                            operating -= (used_support + operating) - global.space[sup.s].s_max;
                             $(`#${id} .on`).addClass('warn');
                         }
                         else {
@@ -8347,7 +8362,10 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 580000 && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['infernite'] && global.tech['stanene'] && global.tech['alpha'] && global.tech['alpha'] >= 2){
+            if (
+                global.resource.Knowledge.max >= 580000 && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['stanene']
+                    ((global.tech['infernite'] && global.tech['alpha'] && global.tech['alpha'] >= 2) || (global.race['truepath']))
+                ){
                 messageQueue(loc(tech_source,[loc('tech_virtual_reality')]),'info',false,['progress']);
                 global.tech.high_tech = 12;
                 drawTech();

@@ -157,7 +157,7 @@ export const outerTruth = {
             id: 'space-titan_quarters',
             title: loc('interstellar_habitat_title'),
             desc(){
-                return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+                return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_habitat_req',[genusVars[races[global.race.species].type].solar.titan, global.resource.Water.name])}</div>`;
             },
             reqs: { titan: 4 },
             path: ['truepath'],
@@ -169,9 +169,10 @@ export const outerTruth = {
             },
             effect(){
                 let gain = 1;
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[10,global.resource.Water.name])}</div>`;
             },
             support(){ return -1; },
+            support_fuel(){ return { r: 'Water', a: 10 }; },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){

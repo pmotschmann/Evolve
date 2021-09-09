@@ -3983,6 +3983,7 @@ const techs = {
         desc: loc('tech_rapid_sequencing'),
         category: 'genes',
         era: 'interstellar',
+        path: ['standard','truepath'],
         reqs: { genetics: 7, high_tech: 12 },
         grant: ['genetics',8],
         cost: {
@@ -4305,12 +4306,13 @@ const techs = {
         desc: loc('tech_plasma'),
         category: 'progress',
         era: 'interstellar',
+        path: ['standard','truepath'],
         reqs: { high_tech: 12 },
         grant: ['high_tech',13],
         cost: {
             Knowledge(){ return 755000; },
-            Infernite(){ return 1000; },
-            Stanene(){ return 250000 }
+            Infernite(){ return global.race['truepath'] ? 0 : 1000; },
+            Stanene(){ return global.race['truepath'] ? 1000000 : 250000; }
         },
         effect: loc('tech_plasma_effect'),
         action(){
@@ -6381,6 +6383,7 @@ const techs = {
         desc: loc('tech_vr_training'),
         category: 'military',
         era: 'interstellar',
+        path: ['standard','truepath'],
         reqs: { boot_camp: 1, high_tech: 12 },
         not_trait: ['cataclysm'],
         grant: ['boot_camp',2],
@@ -6551,9 +6554,10 @@ const techs = {
         era: 'interstellar',
         reqs: { military: 7, high_tech: 13 },
         grant: ['military',8],
+        path: ['standard','truepath'],
         cost: {
             Knowledge(){ return 780000; },
-            Elerium(){ return 500; }
+            Elerium(){ return global.race['truepath'] ? 1000 : 500; }
         },
         effect: loc('tech_plasma_rifles_effect'),
         action(){
@@ -8224,6 +8228,7 @@ const techs = {
         era: 'interstellar',
         reqs: { asteroid: 6, high_tech: 13 },
         grant: ['asteroid',7],
+        path: ['standard','truepath'],
         cost: {
             Knowledge(){ return 825000; },
         },
@@ -10307,6 +10312,31 @@ const techs = {
             return false;
         }
     },
+    virtual_reality_tp: {
+        id: 'tech-virtual_reality_tp',
+        title: loc('tech_virtual_reality'),
+        desc: loc('tech_virtual_reality'),
+        category: 'progress',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { high_tech: 11, titan: 4, stanene: 1 },
+        grant: ['high_tech',12],
+        cost: {
+            Knowledge(){ return 616000; },
+            Nano_Tube(){ return 1000000; },
+            Stanene(){ return 125000 }
+        },
+        effect: loc('tech_virtual_reality_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){
+            return loc('tech_virtual_reality_flair');
+        }
+    },
     electrolysis: {
         id: 'tech-electrolysis',
         title: loc('tech_electrolysis'),
@@ -10540,6 +10570,27 @@ const techs = {
             Elerium(){ return 750; }
         },
         effect: loc('tech_pulse_lasers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ship_plasma: {
+        id: 'tech-ship_plasma',
+        title: loc('tech_ship_plasma'),
+        desc: loc('tech_ship_plasma'),
+        category: 'space_militarization',
+        era: 'solar',
+        reqs: { high_tech: 13, syard_weapon: 3 },
+        grant: ['syard_weapon',4],
+        path: ['truepath'],
+        cost: {
+            Knowledge(){ return 880000; },
+            Elerium(){ return 2500; }
+        },
+        effect: loc('tech_ship_plasma_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
