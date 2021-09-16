@@ -1620,6 +1620,9 @@ if (global.city['foundry'] && !global.city.foundry['Nanoweave']){
 if (global.city['foundry'] && !global.city.foundry['Scarletite']){
     global.city.foundry['Scarletite'] = 0;
 }
+if (global.city['foundry'] && !global.city.foundry['Quantium']){
+    global.city.foundry['Quantium'] = 0;
+}
 
 if (!global.settings['arpa']){
     global.settings['arpa'] = {

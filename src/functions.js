@@ -256,7 +256,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory'];
             break;
         case 'enceladus':
-            power_structs = ['spc_enceladus:water_freighter'];
+            power_structs = ['spc_enceladus:water_freighter','spc_enceladus:zero_g_lab'];
             break;
     }
 
@@ -1471,10 +1471,10 @@ function kindlingAdjust(costs, wiki){
 }
 
 function craftAdjust(costs, wiki){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'])){
+    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'] || costs['Quantium'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
+            if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {

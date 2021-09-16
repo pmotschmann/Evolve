@@ -901,6 +901,7 @@ function fastLoop(){
         Aerogel: {},
         Nanoweave: {},
         Scarletite: {},
+        Quantium: {}
     };
 
     var time_multiplier = 0.25;
@@ -5920,7 +5921,8 @@ function midLoop(){
         }
 
         if (global.space['storehouse']){
-            var multiplier = storehouseMultiplier();
+            var multiplier = storehouseMultiplier(false);
+            var h_multiplier = storehouseMultiplier(true);
             let gain = 0;
             let label = loc('space_storehouse_title');
             gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
@@ -5941,11 +5943,11 @@ function midLoop(){
             caps['Furs'] += gain;
             bd_Furs[label] = gain+'v';
 
-            gain = (global.space.storehouse.count * (spatialReasoning(1520 * multiplier)));
+            gain = (global.space.storehouse.count * (spatialReasoning(1520 * h_multiplier)));
             caps['Copper'] += gain;
             bd_Copper[label] = gain+'v';
 
-            gain = (global.space.storehouse.count * (spatialReasoning(1400 * multiplier)));
+            gain = (global.space.storehouse.count * (spatialReasoning(1400 * h_multiplier)));
             caps['Iron'] += gain;
             bd_Iron[label] = gain+'v';
 
@@ -5961,11 +5963,11 @@ function midLoop(){
             caps['Coal'] += gain;
             bd_Coal[label] = gain+'v';
 
-            gain = (global.space.storehouse.count * (spatialReasoning(240 * multiplier)));
+            gain = (global.space.storehouse.count * (spatialReasoning(240 * h_multiplier)));
             caps['Steel'] += gain;
             bd_Steel[label] = gain+'v';
 
-            gain = (global.space.storehouse.count * (spatialReasoning(160 * multiplier)));
+            gain = (global.space.storehouse.count * (spatialReasoning(160 * h_multiplier)));
             caps['Titanium'] += gain;
             bd_Titanium[label] = gain+'v';
 
@@ -5980,13 +5982,13 @@ function midLoop(){
             }
 
             if (global.resource.Neutronium.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(64 * multiplier)));
+                gain = (global.space.storehouse.count * (spatialReasoning(64 * h_multiplier)));
                 caps['Neutronium'] += gain;
                 bd_Neutronium[label] = gain+'v';
             }
 
             if (global.resource.Adamantite.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(72 * multiplier)));
+                gain = (global.space.storehouse.count * (spatialReasoning(72 * h_multiplier)));
                 caps['Adamantite'] += gain;
                 bd_Adamantite[label] = gain+'v';
             }
@@ -6450,6 +6452,12 @@ function midLoop(){
             }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
+        }
+        if (global.space['zero_g_lab'] && support_on['zero_g_lab'] > 0){
+            let synd = syndicate('spc_enceladus');
+            let gain = Math.round(support_on['zero_g_lab'] * 10000 * synd);
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('tech_zero_g_lab')] = gain+'v';
         }
 
         if (global.portal['archaeology']){

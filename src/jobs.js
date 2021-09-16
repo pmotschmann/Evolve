@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on } from './vars.js';
+import { global, keyMultiplier, p_on, support_on } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits, genusVars } from './races.js';
@@ -418,7 +418,7 @@ export function loadFoundry(){
         $('#foundry').append(foundry);
 
         let summer = eventActive('summer');
-        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite'];
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite','Quantium'];
         if (summer){
             list.push('Thermite');
         }
@@ -430,9 +430,17 @@ export function loadFoundry(){
                 $('#foundry').append(resource);
 
                 let controls = $('<div class="controls"></div>');
-                let job_label = res === 'Scarletite' && global.portal.hasOwnProperty('hell_forge')
-                    ? $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ p.on | maxScar }}</span></div>`)
-                    : $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
+                let job_label;
+                if (res === 'Scarletite' && global.portal.hasOwnProperty('hell_forge')){
+                    job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ p.on | maxScar }}</span></div>`);
+                }
+                else if (res === 'Quantium' && global.space.hasOwnProperty('zero_g_lab')){
+                    job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ e.on | maxQuantium }}</span></div>`);
+                }
+                else {
+                    job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
+                }
+                
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
@@ -449,10 +457,11 @@ export function loadFoundry(){
             data: global.portal.hasOwnProperty('hell_forge') ? {
                 f: global.city.foundry,
                 c: global.civic.craftsman,
-                p: global.portal.hell_forge
+                p: global.portal.hell_forge,
             } : {
                 f: global.city.foundry,
-                c: global.civic.craftsman
+                c: global.civic.craftsman,
+                e: global.space.hasOwnProperty('zero_g_lab') ? global.space.zero_g_lab : { count: 0, on: 0 },
             },
             methods: {
                 add(res){
@@ -460,6 +469,9 @@ export function loadFoundry(){
                     let tMax = -1;
                     if (res === 'Scarletite'){
                         tMax = (p_on['hell_forge'] || 0);
+                    }
+                    else if (res === 'Quantium'){
+                        tMax = (support_on['zero_g_lab'] || 0);
                     }
                     for (let i=0; i<keyMult; i++){                        
                         if (global.city.foundry.crafting < global.civic.craftsman.max 
@@ -514,6 +526,9 @@ export function loadFoundry(){
             filters: {
                 maxScar(v){
                     return (p_on['hell_forge'] || 0);
+                },
+                maxQuantium(v){
+                    return (support_on['zero_g_lab'] || 0);
                 }
             }
         });

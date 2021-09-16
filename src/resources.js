@@ -173,6 +173,7 @@ export function craftCost(){
             Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
             Scarletite: [{ r: 'Iron', a: 275000 },{ r: 'Adamantite', a: 8250 },{ r: 'Orichalcum', a: 550 }],
+            Quantium: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Graphene', a: 1100 },{ r: 'Elerium', a: 27.5 }],
             Thermite: [{ r: 'Iron', a: 198 },{ r: 'Aluminium', a: 66 }],
         }
         : {
@@ -184,6 +185,7 @@ export function craftCost(){
             Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
             Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
             Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
+            Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
             Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
         };
 }
@@ -227,6 +229,10 @@ export const craftingRatio = (function(){
                     multi: []
                 },
                 Scarletite: {
+                    add: [],
+                    multi: []
+                },
+                Quantium: {
                     add: [],
                     multi: []
                 },
@@ -551,6 +557,7 @@ export function defineResources(){
     loadResource('Aerogel',-1,0,false,false,'danger');
     loadResource('Nanoweave',-1,0,false,false,'danger');
     loadResource('Scarletite',-1,0,false,false,'danger');
+    loadResource('Quantium',-1,0,false,false,'danger');
     loadResource('Corrupt_Gem',-2,0,false,false,'caution');
     loadResource('Codex',-2,0,false,false,'caution');
     loadResource('Demonic_Essence',-2,0,false,false,'caution');
@@ -685,15 +692,15 @@ function loadResource(name,max,rate,tradable,stackable,color){
     if (stackable){
         res_container.append($(`<span><span id="con${name}" v-if="showTrigger()" class="interact has-text-success" @click="trigModal" role="button" aria-label="Open crate management for ${name}">+</span></span>`));
     }
-    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite'){
+    else if (max !== -1 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
         res_container.append($('<span></span>'));
     }
     
     let infopops = false;
-    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite'){
+    if (rate !== 0 || (max === -1 && rate === 0 && global.race['no_craft']) || name === 'Scarletite' || name === 'Quantium'){
         res_container.append($(`<span id="inc${name}" class="diff" :aria-label="resRate('${name}')">{{ diff | diffSize }} /s</span>`));
     }
-    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite'){
+    else if (max === -1 && !global.race['no_craft'] && name !== 'Scarletite' && name !== 'Quantium'){
         let craft = $('<span class="craftable"></span>');
         res_container.append(craft);
 

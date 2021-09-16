@@ -838,6 +838,7 @@ const techs = {
                     Aerogel: 0,
                     Nanoweave: 0,
                     Scarletite: 0,
+                    Quantium: 0,
                 };
                 return true;
             }
@@ -10219,6 +10220,51 @@ const techs = {
             return false;
         }
     },
+    zero_g_lab: {
+        id: 'tech-zero_g_lab',
+        title: loc('tech_zero_g_lab'),
+        desc: loc('tech_zero_g_lab'),
+        category: 'science',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { high_tech: 13, graphene: 1, enceladus: 2 },
+        grant: ['enceladus',3],
+        cost: {
+            Knowledge(){ return 900000; }
+        },
+        effect: loc('tech_zero_g_lab_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['zero_g_lab'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    quantium: {
+        id: 'tech-quantium',
+        title: loc('tech_quantium'),
+        desc: loc('tech_quantium'),
+        category: 'crafting',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { supercollider: 10, enceladus: 3 },
+        grant: ['quantium',1],
+        cost: {
+            Knowledge(){ return 1000000; },
+            Elerium(){ return 1000; },
+            Nano_Tube(){ return 1000000; },
+            Graphene(){ return 1000000; }
+        },
+        effect: loc('tech_quantium_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Quantium.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
     higgs_boson_tp: {
         id: 'tech-higgs_boson_tp',
         title: loc('tech_higgs_boson'),
@@ -10513,6 +10559,28 @@ const techs = {
             return false;
         }
     },
+    reinforced_shelving: {
+        id: 'tech-reinforced_shelving',
+        title: loc('tech_reinforced_shelving'),
+        desc: loc('tech_reinforced_shelving'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { graphene: 1, titan: 5 },
+        grant: ['shelving',1],
+        cost: {
+            Knowledge(){ return 850000; },
+            Adamantite(){ return 350000; },
+            Graphene(){ return 250000; }
+        },
+        effect: loc('tech_reinforced_shelving_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     shipyard: {
         id: 'tech-shipyard',
         title(){ return loc('tech_shipyard',[races[global.race.species].solar.dwarf]); },
@@ -10659,7 +10727,28 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    quantum_signatures: {
+        id: 'tech-quantum_signatures',
+        title: loc('tech_quantum_signatures'),
+        desc: loc('tech_quantum_signatures'),
+        category: 'progress',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { quantium: 1, syard_sensor: 3 },
+        grant: ['syard_sensor',4],
+        cost: {
+            Knowledge(){ return 1050000; },
+            Quantium(){ return 10000; }
+        },
+        effect: loc('tech_quantum_signatures_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){
