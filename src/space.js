@@ -1948,6 +1948,7 @@ const spaceProjects = {
     },
     spc_titan: outerTruth.spc_titan,
     spc_enceladus: outerTruth.spc_enceladus,
+    spc_triton: outerTruth.spc_triton,
 };
 
 const interstellarProjects = {
@@ -5202,7 +5203,10 @@ export function incrementStruct(struct,sector){
     global[sector][struct].count++;
 }
 
-export function spaceTech(){
+export function spaceTech(r,k){
+    if (r && k){
+        return spaceProjects[r][k];
+    }
     return spaceProjects;
 }
 

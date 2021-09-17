@@ -1602,15 +1602,21 @@ function fastLoop(){
             sup['r2'] = sup['r2'] || sup.r;
             if (global.space[sup.s] && global.space[sup.s].count > 0){
                 if (actions.space[sup.r][sup.s].hasOwnProperty('support_fuel')){
-                    let fuel = actions.space[sup.r][sup.s].support_fuel();
-                    let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
-                    let mb_consume = p_on[sup.s] * fuel_cost;
-                    breakdown.p.consume[fuel.r][actions.space[sup.r][sup.s].title] = -(mb_consume);
-                    for (let i=0; i<p_on[sup.s]; i++){
-                        if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
-                            mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
-                            p_on[sup.s] -= i;
-                            break;
+                    let s_fuels = actions.space[sup.r][sup.s].support_fuel();
+                    if (!Array.isArray(s_fuels)){
+                        s_fuels = [s_fuels];
+                    }
+                    for (let j=0; j<s_fuels.length; j++){
+                        let fuel = s_fuels[j];
+                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                        let mb_consume = p_on[sup.s] * fuel_cost;
+                        breakdown.p.consume[fuel.r][actions.space[sup.r][sup.s].title] = -(mb_consume);
+                        for (let i=0; i<p_on[sup.s]; i++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
+                                p_on[sup.s] -= i;
+                                break;
+                            }
                         }
                     }
                 }
@@ -1640,15 +1646,21 @@ function fastLoop(){
                         let id = actions.space[sup.r2][area_structs[i]].id;
 
                         if (actions.space[sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
-                            let fuel = actions.space[sup.r2][area_structs[i]].support_fuel();
-                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
-                            let mb_consume = operating * fuel_cost;
-                            breakdown.p.consume[fuel.r][actions.space[sup.r2][area_structs[i]].title] = -(mb_consume);
-                            for (let i=0; i<operating; i++){
-                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
-                                    mb_consume -= (operating * fuel_cost) - (i * fuel_cost);
-                                    operating -= i;
-                                    break;
+                            let s_fuels = actions.space[sup.r2][area_structs[i]].support_fuel();
+                            if (!Array.isArray(s_fuels)){
+                                s_fuels = [s_fuels];
+                            }
+                            for (let j=0; j<s_fuels.length; j++){
+                                let fuel = s_fuels[j];
+                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                                let mb_consume = operating * fuel_cost;
+                                breakdown.p.consume[fuel.r][actions.space[sup.r2][area_structs[i]].title] = -(mb_consume);
+                                for (let i=0; i<operating; i++){
+                                    if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                        mb_consume -= (operating * fuel_cost) - (i * fuel_cost);
+                                        operating -= i;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -5975,6 +5987,14 @@ function midLoop(){
             caps['Alloy'] += gain;
             bd_Alloy[label] = gain+'v';
 
+            gain = (global.space.storehouse.count * (spatialReasoning(150 * multiplier)));
+            caps['Polymer'] += gain;
+            bd_Polymer[label] = gain+'v';
+
+            gain = (global.space.storehouse.count * (spatialReasoning(175 * h_multiplier)));
+            caps['Iridium'] += gain;
+            bd_Iridium[label] = gain+'v';
+
             if (global.resource.Nano_Tube.display){
                 gain = (global.space.storehouse.count * (spatialReasoning(120 * multiplier)));
                 caps['Nano_Tube'] += gain;
@@ -6453,9 +6473,9 @@ function midLoop(){
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
-        if (global.space['zero_g_lab'] && support_on['zero_g_lab'] > 0){
+        if (global.space['zero_g_lab'] && Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) > 0){
             let synd = syndicate('spc_enceladus');
-            let gain = Math.round(support_on['zero_g_lab'] * 10000 * synd);
+            let gain = Math.round(Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) * 10000 * synd);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('tech_zero_g_lab')] = gain+'v';
         }
@@ -8277,14 +8297,15 @@ function longLoop(){
             let regions = spaceTech();
             Object.keys(regions).forEach(function(region){
                 if (regions[region].info.hasOwnProperty('syndicate') && regions[region].info.syndicate()){
+                    let cap = regions[region].info.hasOwnProperty('syndicate_cap') ? regions[region].info.syndicate_cap() : 500;
                     if (!global.space.syndicate.hasOwnProperty(region)){
                         global.space.syndicate[region] = 0;
                     }
-                    if (global.space.syndicate[region] < (500 * global.tech.syndicate) && Math.rand(0, 10) === 0){
+                    if (global.space.syndicate[region] < (cap) && Math.rand(0, 10) === 0){
                         global.space.syndicate[region]++;
                     }
-                    if (global.space.syndicate[region] > 500 * global.tech.syndicate){
-                        global.space.syndicate[region] = 500 * global.tech.syndicate;
+                    if (global.space.syndicate[region] > cap){
+                        global.space.syndicate[region] = cap;
                     }
                 }
             });

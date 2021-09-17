@@ -10309,6 +10309,27 @@ const techs = {
             return false;
         },
     },
+    strange_signal: {
+        id: 'tech-strange_signal',
+        title: loc('tech_strange_signal'),
+        desc: loc('tech_strange_signal'),
+        category: 'space_exploration',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { outer: 1, syard_sensor: 4 },
+        grant: ['outer',2],
+        cost: {
+            Knowledge(){ return 1350000; }
+        },
+        effect: loc('tech_strange_signal_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.space.triton = true;
+                return true;
+            }
+            return false;
+        },
+    },
     stanene_tp: {
         id: 'tech-stanene_tp',
         title: loc('tech_stanene'),
@@ -10596,7 +10617,7 @@ const techs = {
         effect(){ return loc('tech_shipyard_effect',[races[global.race.species].solar.dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true };
+                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true, sort: true };
                 setOrbits();
                 return true;
             }
@@ -10666,6 +10687,27 @@ const techs = {
             return false;
         }
     },
+    ship_phaser: {
+        id: 'tech-ship_phaser',
+        title: loc('tech_ship_phaser'),
+        desc: loc('tech_ship_phaser'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_weapon: 4, quantium: 1 },
+        grant: ['syard_weapon',5],
+        cost: {
+            Knowledge(){ return 1225000; },
+            Quantium(){ return 75000; }
+        },
+        effect: loc('tech_ship_phaser_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title: loc('tech_destroyer_ship'),
@@ -10721,6 +10763,48 @@ const techs = {
             Stanene(){ return 250000; }
         },
         effect: loc('tech_pulse_engine_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    photon_engine: {
+        id: 'tech-photon_engine',
+        title: loc('outer_shipyard_engine_photon'),
+        desc: loc('outer_shipyard_engine_photon'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_engine: 3, quantium: 1 },
+        grant: ['syard_engine',4],
+        cost: {
+            Knowledge(){ return 1150000; },
+            Quantium(){ return 50000; }
+        },
+        effect: loc('tech_photon_engine_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ship_fusion: {
+        id: 'tech-ship_fusion',
+        title: loc('tech_fusion_generator'),
+        desc: loc('tech_fusion_generator'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_power: 3, quantium: 1 },
+        grant: ['syard_power',4],
+        cost: {
+            Knowledge(){ return 1100000; },
+            Quantium(){ return 65000; }
+        },
+        effect: loc('tech_fusion_generator_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

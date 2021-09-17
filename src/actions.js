@@ -6896,7 +6896,9 @@ function sentience(){
         global.resource.Steel.display = true;
         global.resource.Steel.amount = 25;
         if (global.stats.achieve.technophobe.l >= 3){
-            global.resource.Soul_Gem.display = true;
+            if (!global.race['truepath']){
+                global.resource.Soul_Gem.display = true;
+            }
             let gems = 1;
             for (let i=1; i<universe_affixes.length; i++){
                 if (global.stats.achieve.technophobe[universe_affixes[i]] && global.stats.achieve.technophobe[universe_affixes[i]] >= 5){

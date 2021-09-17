@@ -2074,13 +2074,11 @@ export function clearStates(){
     global.settings.space.alien1 = false;
     global.settings.space.alien2 = false;
     global.settings.space.chthonian = false;
-
     global.settings.space.titan = false;
     global.settings.space.enceladus = false;
     global.settings.space.triton = false;
     global.settings.space.eris = false;
     global.settings.space.kuiper = false;
-
     global.settings.portal.fortress = false;
     global.settings.portal.badlands = false;
     global.settings.portal.pit = false;

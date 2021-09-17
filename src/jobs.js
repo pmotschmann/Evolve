@@ -471,7 +471,7 @@ export function loadFoundry(){
                         tMax = (p_on['hell_forge'] || 0);
                     }
                     else if (res === 'Quantium'){
-                        tMax = (support_on['zero_g_lab'] || 0);
+                        tMax = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
                     }
                     for (let i=0; i<keyMult; i++){                        
                         if (global.city.foundry.crafting < global.civic.craftsman.max 

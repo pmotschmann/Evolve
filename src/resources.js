@@ -2,6 +2,7 @@ import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, su
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { hellSupression } from './portal.js';
+import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
 import { loc } from './locale.js';
 
@@ -325,6 +326,14 @@ export const craftingRatio = (function(){
                     name: loc(`portal_ruins_supressed`),
                     manual: 1,
                     auto: sup.supress
+                });
+            }
+            if (support_on['zero_g_lab'] && p_on['zero_g_lab']){
+                let synd = syndicate('spc_enceladus');
+                crafting.Quantium.multi.push({
+                    name: loc(`space_syndicate`),
+                    manual: 1,
+                    auto: synd
                 });
             }
             if (global.race['crafty']){
@@ -726,7 +735,7 @@ function loadResource(name,max,rate,tradable,stackable,color){
         data: global['resource'][name], 
         filters: {
             size: function (value){
-                return sizeApproximation(value,0);
+                return value ? sizeApproximation(value,0) : value;
             },
             diffSize: function (value){
                 return sizeApproximation(value,2);
