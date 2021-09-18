@@ -5781,6 +5781,9 @@ function midLoop(){
             caps['Money'] += money;
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
+        if (p_on['operating_base']){
+            lCaps['garrison'] += p_on['operating_base'] * 4;
+        }
         if (global.space['living_quarters']){
             let base = global.race['cataclysm'] ? 2 : 1;
             if (support_on['biodome']){

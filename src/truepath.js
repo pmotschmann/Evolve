@@ -1,4 +1,4 @@
-import { global, p_on, sizeApproximation } from './vars.js';
+import { global, p_on, support_on, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -19,7 +19,8 @@ export const outerTruth = {
             },
             support: 'electrolysis',
             zone: 'outer',
-            syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; }
+            syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; },
+            syndicate_cap(){ return global.tech['triton'] ? 1000 : 500; }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -411,6 +412,36 @@ export const outerTruth = {
                 return false;
             }
         },
+        sam: {
+            id: 'space-sam',
+            title: loc('space_sam_title'),
+            desc(){
+                return `<div>${loc('space_sam_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { titan: 7 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('sam', offset, 2500000, 1.28); },
+                Steel(offset){ return spaceCostMultiplier('sam', offset, 450000, 1.28); },
+                Elerium(offset){ return spaceCostMultiplier('sam', offset, 120, 1.28); },
+                Brick(offset){ return spaceCostMultiplier('sam', offset, 160000, 1.28); },
+            },
+            effect(){
+                let desc = `<div>${loc('galaxy_defense_platform_effect',[25])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(5); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.sam.count++;
+                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
+                        global.space.sam.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     spc_enceladus: {
         info: {
@@ -423,6 +454,7 @@ export const outerTruth = {
             support: 'titan_spaceport',
             zone: 'outer',
             syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; },
+            syndicate_cap(){ return global.tech['triton'] ? 1000 : 500; }
         },
         enceladus_mission: {
             id: 'space-enceladus_mission',
@@ -521,6 +553,40 @@ export const outerTruth = {
                 return false;
             }
         },
+        operating_base: {
+            id: 'space-operating_base',
+            title: loc('tech_operating_base'),
+            desc(){
+                return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+            },
+            reqs: { enceladus: 4 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('operating_base', offset, 7500000, 1.3); },
+                Furs(offset){ return spaceCostMultiplier('operating_base', offset, 500000, 1.3); },
+                Adamantite(offset){ return spaceCostMultiplier('operating_base', offset, 375000, 1.3); },
+                Stanene(offset){ return spaceCostMultiplier('operating_base', offset, 750000, 1.3); },
+                Mythril(offset){ return spaceCostMultiplier('operating_base', offset, 225000, 1.3); }
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
+                desc += loc('plus_max_resource',[4,loc('civics_garrison_soldiers')]);
+                return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(10); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.operating_base.count++;
+                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
+                        global.space.operating_base.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     spc_triton: {
         info: {
@@ -532,7 +598,7 @@ export const outerTruth = {
             },
             zone: 'outer',
             syndicate(){ return global.tech['triton'] && global.tech.triton >= 2 ? true : false; },
-            syndicate_cap(){ return 1000; }
+            syndicate_cap(){ return 2500; }
         },
         triton_mission: {
             id: 'space-triton_mission',
@@ -556,7 +622,46 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info');
-                    global.space.syndicate['spc_triton'] = 500;
+                    global.space.syndicate['spc_triton'] = 1000;
+                    global.space.syndicate['spc_titan'] += 250;
+                    global.space.syndicate['spc_enceladus'] += 250;
+                    return true;
+                }
+                return false;
+            }
+        },
+        fob: {
+            id: 'space-fob',
+            title: loc('tech_operating_base'),
+            desc(){
+                return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+            },
+            reqs: { triton: 2, locked: 1 },
+            path: ['truepath'],
+            no_queue(){ return global.galaxy.embassy.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            q_once: true,
+            cost: {
+                Money(offset){ return spaceCostMultiplier('fob', offset, 250000000, 1.1); },
+                Copper(offset){ return spaceCostMultiplier('fob', offset, 8000000, 1.1); },
+                Uranium(offset){ return spaceCostMultiplier('fob', offset, 50000, 1.1); },
+                Nano_Tube(offset){ return spaceCostMultiplier('fob', offset, 2500000, 1.1); },
+                Graphene(offset){ return spaceCostMultiplier('fob', offset, 3000000, 1.1); },
+                Steet_Metal(offset){ return spaceCostMultiplier('fob', offset, 7500000, 1.1); },
+                Quantium(offset){ return spaceCostMultiplier('fob', offset, 500000, 1.1); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
+                desc += loc('plus_max_resource',[4,loc('civics_garrison_soldiers')]);
+                return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(50); },
+            action(){
+                if (global.space.fob.count < 1 && payCosts($(this)[0])){
+                    global.space.fob.count++;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.space.fob.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1338,7 +1443,7 @@ export function syndicate(region,extra){
                 break;
             case 'spc_titan':
             case 'spc_enceladus':
-                divisor = 600;
+                divisor = global.tech['triton'] ? 1000 : 600;
                 break;
             case 'spc_triton':
                 {
@@ -1359,6 +1464,14 @@ export function syndicate(region,extra){
                     sensor += sensorRange(ship.sensor);
                 }
             });
+
+            if (region === 'spc_enceladus' && Math.min(support_on['operating_base'],p_on['operating_base']) > 0){
+                let active = Math.min(support_on['operating_base'],p_on['operating_base']);
+                patrol += active * 50;
+            }
+            else if (region === 'spc_titan' && p_on['sam'] > 0){
+                patrol += p_on['sam'] * 25;
+            }
             
             patrol = Math.round(patrol * ((sensor + 25) / 125));
             piracy = piracy - patrol > 0 ? piracy - patrol : 0;
@@ -1396,6 +1509,7 @@ function sensorRange(s){
 export const spacePlanetStats = {
     spc_moon: { dist: 1, orbit: -1, },
     spc_red: { dist: 1.524, orbit: 687 },
+    spc_hell: { dist: 0.4, orbit: 88 },
     spc_gas: { dist: 5.203, orbit: 4330 },
     spc_gas_moon: { dist: 5.204, orbit: 4330 },
     spc_belt: { dist: 2.7, orbit: 1642 },

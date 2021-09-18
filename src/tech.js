@@ -10242,6 +10242,69 @@ const techs = {
             return false;
         }
     },
+    operating_base: {
+        id: 'tech-operating_base',
+        title: loc('tech_operating_base'),
+        desc: loc('tech_operating_base'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { enceladus: 3, triton: 1 },
+        grant: ['enceladus',4],
+        cost: {
+            Knowledge(){ return 1400000; }
+        },
+        effect(){ return loc('tech_operating_base_effect',[genusVars[races[global.race.species].type].solar.enceladus]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['operating_base'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    fob: {
+        id: 'tech-fob',
+        title: loc('tech_fob'),
+        desc: loc('tech_fob'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { triton: 1 },
+        grant: ['triton',2],
+        cost: {
+            Knowledge(){ return 1450000; }
+        },
+        effect(){ return loc('tech_fob_effect',[genusVars[races[global.race.species].type].solar.triton]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['fob'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    sam_site: {
+        id: 'tech-sam_site',
+        title: loc('tech_sam_site'),
+        desc: loc('tech_sam_site'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 6, triton: 1 },
+        grant: ['titan',7],
+        cost: {
+            Knowledge(){ return 1475000; }
+        },
+        effect(){ return loc('tech_sam_site_effect',[genusVars[races[global.race.species].type].solar.titan]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['sam'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     quantium: {
         id: 'tech-quantium',
         title: loc('tech_quantium'),
@@ -10786,6 +10849,26 @@ const techs = {
             Adamantite(){ return 50000; }
         },
         effect: loc('tech_cruiser_ship_tp'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    h_cruiser_ship: {
+        id: 'tech-h_cruiser_ship',
+        title: loc('tech_h_cruiser_ship'),
+        desc: loc('tech_h_cruiser_ship'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_class: 4, triton: 1 },
+        grant: ['syard_class',5],
+        cost: {
+            Knowledge(){ return 1500000; }
+        },
+        effect: loc('tech_h_cruiser_ship_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
