@@ -6433,6 +6433,9 @@ function drawModal(c_action,type){
         case 'smelter':
             smelterModal(body);
             break;
+        case 'hell_smelter':
+            smelterModal(body);
+            break;
         case 'stellar_forge':
             smelterModal(body);
             break;
@@ -7217,7 +7220,7 @@ function cataclysm(){
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
-        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1 };
+        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
         global.city['fission_power'] = { count: 0, on: 0 };
         global.city['oil_power'] = { count: 0, on: 0 };
         global.city['coal_power'] = { count: 0, on: 0 };

@@ -162,7 +162,19 @@ function loadSmelter(parent,bind){
         }
     }
 
-    if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
+    if (global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2){
+        let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
+        let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
+        parent.append(smelt);
+        smelt.append(ironSmelt);
+        if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
+            let steelSmelt = $(`<button class="button steel" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: <span v-html="$options.filters.altspook(s.Steel)"></span></button>`);
+            smelt.append(steelSmelt);
+        }
+        let iridiumSmelt = $(`<button class="button iridium" :aria-label="iridiumLabel() + ariaProd('Iridium')" @click="iridiumSmelting()">${loc('resource_Iridium_name')} ${loc('modal_smelting')}: {{ s.Iridium }}</button>`);
+        smelt.append(iridiumSmelt);
+    }
+    else if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
         let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
         let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
         let steelSmelt = $(`<button class="button steel" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: <span v-html="$options.filters.altspook(s.Steel)"></span></button>`);
@@ -246,12 +258,19 @@ function loadSmelter(parent,bind){
             steelLabel(){
                 return matText('steel');
             },
+            iridiumLabel(){
+                return matText('iridium');
+            },
             ironSmelting(){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                    if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
                         global.city.smelter.Iron++;
+                    }
+                    else if (global.city.smelter.Iron < count && global.city.smelter.Iridium > 0){
+                        global.city.smelter.Iron++;
+                        global.city.smelter.Iridium--;
                     }
                     else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
                         global.city.smelter.Iron++;
@@ -266,12 +285,36 @@ function loadSmelter(parent,bind){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel < count){
+                    if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
                         global.city.smelter.Steel++;
                     }
                     else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
                         global.city.smelter.Steel++;
                         global.city.smelter.Iron--;
+                    }
+                    else if (global.city.smelter.Steel < count && global.city.smelter.Iridium > 0){
+                        global.city.smelter.Steel++;
+                        global.city.smelter.Iridium--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            },
+            iridiumSmelting(){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+                    if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
+                        global.city.smelter.Iridium++;
+                    }
+                    else if (global.city.smelter.Iridium < count && global.city.smelter.Iron > 0){
+                        global.city.smelter.Iridium++;
+                        global.city.smelter.Iron--;
+                    }
+                    else if (global.city.smelter.Iridium < count && global.city.smelter.Steel > 0){
+                        global.city.smelter.Iridium++;
+                        global.city.smelter.Steel--;
                     }
                     else {
                         break;
@@ -368,6 +411,13 @@ function loadSmelter(parent,bind){
             }
             return loc('modal_smelter_steel',[+(boost).toFixed(3),loc('resource_Steel_name'),loc('resource_Coal_name'),loc('resource_Iron_name')]);
         }
+        else if (type === 'iridium'){
+            let boost = global.tech['smelting'] >= 7 ? 6.25 : 5;
+            if (global.race['pyrophobia']){
+                boost *= 0.9;
+            }
+            return loc('modal_smelter_iron',[+(boost).toFixed(3),loc('resource_Iridium_name')]);
+        }
         else {
             let boost = global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 15 : 12) : 10;
             if (global.race['pyrophobia']){
@@ -389,9 +439,15 @@ function loadSmelter(parent,bind){
         });
     }
 
-    if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
+    if ((global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']) || (global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2)){
         let id = parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`;
-        ['iron','steel'].forEach(function(mat){
+        ['iron','steel','iridium'].forEach(function(mat){
+            if (mat === 'steel' && (!global.resource.Steel.display || global.race['steelen'])){
+                return;
+            }
+            else if (mat === 'iridium' && !(global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2)){
+                return;
+            }
             popover(`${id}${mat}`,function(){
                 return matText(mat);
             }, {

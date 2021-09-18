@@ -851,6 +851,9 @@ if (convertVersion(global['version']) < 102000){
     if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('fortress') && !global.portal.fortress.hasOwnProperty('nocrew')){
         global.portal.fortress['nocrew'] = false;
     }
+    if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Iridium')){
+        global.city.smelter['Iridium'] = 0;
+    }
 }
 
 global['version'] = '1.1.13';

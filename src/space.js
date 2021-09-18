@@ -1102,6 +1102,34 @@ const spaceProjects = {
                 return false;
             }
         },
+        hell_smelter: {
+            id: 'space-hell_smelter',
+            title(){
+                return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
+            },
+            desc(){
+                return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
+            },
+            reqs: { hell: 1, m_smelting: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('hell_smelter', offset, 250000, 1.24); },
+                Adamantite(offset){ return spaceCostMultiplier('hell_smelter', offset, 15000, 1.24); }
+            },
+            effect(){
+                return `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
+            },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('hell_smelter');
+                    global.city.smelter.cap += 2;
+                    global.city.smelter.Steel += 2;
+                    global.city.smelter.Oil += 2;
+                    return true;
+                }
+                return false;
+            }
+        },
         spc_casino: {
             id: 'space-spc_casino',
             title: loc('city_casino'),

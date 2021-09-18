@@ -1521,7 +1521,8 @@ const techs = {
                     StarCap: 0,
                     Inferno: 0,
                     Iron: 0,
-                    Steel: 0
+                    Steel: 0,
+                    Iridium: 0
                 };
                 return true;
             }
@@ -10535,6 +10536,49 @@ const techs = {
             }
             return false;
         },
+    },
+    mercury_smelting: {
+        id: 'tech-mercury_smelting',
+        title: loc('tech_mercury_smelting'),
+        desc: loc('tech_mercury_smelting'),
+        category: 'mining',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { hell: 1, titan: 4, smelting: 6 },
+        grant: ['m_smelting',1],
+        cost: {
+            Knowledge(){ return 625000; },
+            Adamantite(){ return 50000; }
+        },
+        effect(){ return loc('tech_mercury_smelting_effect',[races[global.race.species].solar.hell]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['hell_smelter'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    iridium_smelting: {
+        id: 'tech-iridium_smelting',
+        title: loc('tech_iridium_smelting'),
+        desc: loc('tech_iridium_smelting'),
+        category: 'mining',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { m_smelting: 1, graphene: 1 },
+        grant: ['m_smelting',2],
+        cost: {
+            Knowledge(){ return 825000; },
+            Graphene(){ return 125000; }
+        },
+        effect: loc('tech_iridium_smelting_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     },
     adamantite_crates: {
         id: 'tech-adamantite_crates',

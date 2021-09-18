@@ -2312,6 +2312,10 @@
   "tech_hydrogen_plant_effect": "Design a companion facility to use waste hydrogen from your electrolysis facilities to generate power.",
   "tech_water_mining": "Water Mining",
   "tech_water_mining_effect": "Mass mining %2 from the moon %0 is tricky but the most practical source of a vital resource to supply the outer %1 system.",
+  "tech_mercury_smelting": "Solar Smelting",
+  "tech_mercury_smelting_effect": "The planet %0 is naturally hot due to proxmity to the sun and would be a great place to setup large scale smelting operations.",
+  "tech_iridium_smelting": "Iridium Smelting",
+  "tech_iridium_smelting_effect": "Your standard smelters could be upgraded to smelt Iridium increasing your gains from inner solar system sources.",
   "tech_reinforced_shelving": "Reinforced Shelving",
   "tech_reinforced_shelving_effect": "Using Reinforced Shelving in your storehouses can let you stack more heavy materials on them.",
   "tech_shipyard": "%0 Ship Yard",
@@ -4936,6 +4940,9 @@
   "space_hell_geothermal_desc": "Geothermal Energy Plant",
   "space_hell_geothermal_desc_req": "Requires Helium-3",
   "space_hell_geothermal_bd": "Geothermal Plant",
+
+  "space_hell_smelter_title": "%0 Smelter",
+
   "space_hell_swarm_plant_title": "Swarm Plant",
   "space_hell_swarm_plant_desc": "Swarm Satellite production plant",
   "space_hell_swarm_plant_effect1": "Reduces the cost of swarm satellites by %0%",

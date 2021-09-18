@@ -3549,6 +3549,7 @@ function fastLoop(){
         // Smelters
         let iron_smelter = 0;
         let star_forge = 0;
+        let iridium_smelter = 0;
         let titanium_bd = {};
         if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
             let capacity = global.city.smelter.count;
@@ -3557,6 +3558,9 @@ function fastLoop(){
             }
             if (p_on['hell_forge']){
                 capacity += p_on['hell_forge'] * 3;
+            }
+            if (global.tech['m_smelting'] && global.space['hell_smelter']){
+                capacity += global.space.hell_smelter.count * 2;
             }
             if (global.race['cataclysm']){
                 capacity += global.space.geothermal.on;
@@ -3581,20 +3585,25 @@ function fastLoop(){
                 }
                 total_fuel += global.city.smelter[fuel]
             });
-            if (global.city.smelter.Iron + global.city.smelter.Steel > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
+            if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
                 let fueled = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                let overflow = global.city.smelter.Iron + global.city.smelter.Steel - fueled;
+                let overflow = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium - fueled;
                 global.city.smelter.Iron -= overflow;
                 if (global.city.smelter.Iron < 0){
                     overflow = global.city.smelter.Iron;
                     global.city.smelter.Iron = 0;
+                    global.city.smelter.Iridium += overflow;
+                    if (global.city.smelter.Iridium < 0){
+                        overflow = global.city.smelter.Iridium;
+                        global.city.smelter.Iridium = 0;
+                    }
                     global.city.smelter.Steel += overflow;
                     if (global.city.smelter.Steel < 0){
                         global.city.smelter.Steel = 0;
                     }
                 }
             }
-            else if (global.city.smelter.Iron + global.city.smelter.Steel < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
+            else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
                 global.city.smelter.Iron++;
             }
 
@@ -3615,6 +3624,7 @@ function fastLoop(){
             let consume_oil = global.race['forge'] ? 0 : global.city.smelter.Oil * 0.35;
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
+            iridium_smelter = global.city.smelter.Iridium;
             let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno : global.city.smelter.Oil;
             star_forge = global.race['forge'] ? 0 : global.city.smelter.Star;
             let inferno_bonus = global.race['forge'] ? 0 : global.city.smelter.Inferno;
@@ -3624,12 +3634,15 @@ function fastLoop(){
                 steel_smelter = 0;
             }
 
-            while (iron_smelter + steel_smelter > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
+            while (iron_smelter + steel_smelter + iridium_smelter > global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
-                else {
+                else if (iron_smelter > 0){
                     iron_smelter--;
+                }
+                else {
+                    iridium_smelter--;
                 }
             }
 
@@ -3639,8 +3652,11 @@ function fastLoop(){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
-                else {
+                else if (iron_smelter > 0){
                     iron_smelter--;
+                }
+                else {
+                    iridium_smelter--;
                 }
             }
             while (consume_coal * time_multiplier > global.resource.Coal.amount && consume_coal > 0){
@@ -3648,8 +3664,11 @@ function fastLoop(){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
-                else {
+                else if (iron_smelter > 0){
                     iron_smelter--;
+                }
+                else {
+                    iridium_smelter--;
                 }
             }
             while (consume_oil * time_multiplier > global.resource.Oil.amount && consume_oil > 0){
@@ -3658,8 +3677,11 @@ function fastLoop(){
                 if (steel_smelter > 0){
                     steel_smelter--;
                 }
-                else {
+                else if (iron_smelter > 0){
                     iron_smelter--;
+                }
+                else {
+                    iridium_smelter--;
                 }
             }
 
@@ -3675,8 +3697,11 @@ function fastLoop(){
                         if (steel_smelter > 0){
                             steel_smelter--;
                         }
-                        else {
+                        else if (iron_smelter > 0){
                             iron_smelter--;
+                        }
+                        else {
+                            iridium_smelter--;
                         }
                     }
                 });
@@ -3689,18 +3714,26 @@ function fastLoop(){
                 modRes('Infernite', -(consume_infernite * time_multiplier));
             }
 
-            iron_smelter *= global.tech['smelting'] >= 3 ? (global.tech['smelting'] >= 7 ? 1.5 : 1.2) : 1;
+            iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
+            iridium_smelter = 1 + (iridium_smelter * 0.05);
 
-            if (global.race['pyrophobia']){
-                iron_smelter *= 1 - (traits.pyrophobia.vars[0] / 100);
+            if (global.tech['smelting'] >= 7){
+                iron_smelter *= 1.25;
+                iridium_smelter *= 1.25;
             }
-
             if (oil_bonus > 0){
                 iron_smelter *= 1 + (oil_bonus / 200);
+                iridium_smelter *= 1 + (oil_bonus / 200);
             }
             if (inferno_bonus > 0){
                 iron_smelter *= 1 + (inferno_bonus / 125);
+                iridium_smelter *= 1 + (inferno_bonus / 125);
             }
+            if (global.race['pyrophobia']){
+                iron_smelter *= 1 - (traits.pyrophobia.vars[0] / 100);
+                iridium_smelter *= 1 - (traits.pyrophobia.vars[0] / 100);
+            }
+            if (iridium_smelter < 1){ iridium_smelter = 1; }
 
             if (global.race['evil']){
                 if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
@@ -4657,9 +4690,10 @@ function fastLoop(){
                 iridium_base *= global.city.geology['Iridium'] + 1;
             }
             let synd = syndicate('spc_moon');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * iridium_smelter;
 
             iridium_bd[loc('space_moon_iridium_mine_title')] = iridium_base + 'v';
+            iridium_bd[`ᄂ${loc('city_smelter')}+0`] = ((iridium_smelter - 1) * 100) + '%';
             iridium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
@@ -4667,9 +4701,10 @@ function fastLoop(){
         if (support_on['iridium_ship']){
             let iridium_base = support_on['iridium_ship'] * production('iridium_ship');
             let synd = syndicate('spc_belt');
-            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd;
+            let delta = iridium_base * hunger * shrineMetal.mult * global_multiplier * synd * iridium_smelter;
 
             iridium_bd[loc('job_space_miner')] = iridium_base + 'v';
+            iridium_bd[`ᄂ${loc('city_smelter')}+1`] = ((iridium_smelter - 1) * 100) + '%';
             iridium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
             modRes('Iridium', delta * time_multiplier);
         }
@@ -8313,6 +8348,12 @@ function longLoop(){
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0 && ship.fueled){ ship.transit--; }
+                    if (ship.damage > 0 && p_on['shipyard']){
+                        ship.damage--;
+                    }
+                    if (ship.location !== 'spc_dwarf' && Math.rand(0, 10) === 0){
+                        ship.damage += Math.rand(1,4);
+                    }
                 });
                 if (global.space.hasOwnProperty('position')){
                     Object.keys(spacePlanetStats).forEach(function(planet){
