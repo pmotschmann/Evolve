@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -162,6 +162,16 @@ if (global.interstellar['fusion']){
 }
 if (global.portal['hell_forge']){
     p_on['hell_forge'] = global.portal.hell_forge.on;
+}
+if (global.space['sam']){
+    p_on['sam'] = global.space.sam.on;
+}
+if (global.space['operating_base']){
+    p_on['operating_base'] = global.space.operating_base.on;
+    support_on['operating_base'] = global.space.operating_base.on;
+}
+if (global.space['fob']){
+    p_on['fob'] = global.space.fob.on;
 }
 
 defineJobs(true);
@@ -1710,7 +1720,7 @@ function fastLoop(){
         }
 
         if (support_on['water_freighter'] && support_on['water_freighter'] > 0){
-            let h_cost = fuel_adjust(2.5,true);
+            let h_cost = fuel_adjust(5,true);
             let h_consume = support_on['water_freighter'] * h_cost;
             for (let i=0; i<support_on['water_freighter']; i++){
                 if (!modRes('Helium_3', -(time_multiplier * h_cost))){
@@ -2022,6 +2032,20 @@ function fastLoop(){
                 if (!modRes('Uranium', -(time_multiplier * fuel_cost))){
                     xfer_consume -= (p_on['xfer_station'] * fuel_cost) - (i * fuel_cost);
                     p_on['xfer_station'] -= i;
+                    break;
+                }
+            }
+        }
+
+        // Foward Operating Base
+        if (global.space['fob'] && p_on['fob']){
+            let fuel_cost = +fuel_adjust(125,true);
+            let xfer_consume = p_on['fob'] * fuel_cost;
+            breakdown.p.consume.Helium_3[loc('tech_fob')] = -(xfer_consume);
+            for (let i=0; i<p_on['fob']; i++){
+                if (!modRes('Helium_3', -(time_multiplier * fuel_cost))){
+                    xfer_consume -= (p_on['fob'] * fuel_cost) - (i * fuel_cost);
+                    p_on['fob'] -= i;
                     break;
                 }
             }
@@ -5782,7 +5806,10 @@ function midLoop(){
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
         if (p_on['operating_base']){
-            lCaps['garrison'] += p_on['operating_base'] * 4;
+            lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * 4;
+        }
+        if (p_on['fob']){
+            lCaps['garrison'] += 10;
         }
         if (global.space['living_quarters']){
             let base = global.race['cataclysm'] ? 2 : 1;
@@ -8369,6 +8396,10 @@ function longLoop(){
                         }
                     });
                 }
+            }
+
+            if (global.tech['triton'] && global.tech.triton >= 3){
+                tritonWar();
             }
         }
 

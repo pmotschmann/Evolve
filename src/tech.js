@@ -10278,7 +10278,8 @@ const techs = {
         effect(){ return loc('tech_fob_effect',[genusVars[races[global.race.species].type].solar.triton]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['fob'] = { count: 0, on: 0 };
+                global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
+                global.space['lander'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

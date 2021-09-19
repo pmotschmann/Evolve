@@ -5327,12 +5327,12 @@ function space(zone){
             }
 
             if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
-                $(`#${region}`).append(`<div id="${region}synd" v-show="${region}" class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}',${region})"></span></div>`);
+                $(`#${region}`).append(`<div id="${region}synd" v-show="${region}" class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}')"></span></div>`);
                 vBind({
                     el: `#${region}synd`,
                     data: global.space.syndicate,
                     methods: {
-                        threat(r,t){
+                        threat(r){
                             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                                 let synd = syndicate(r,true);
                                 if (synd.s >= 10){
@@ -5343,6 +5343,10 @@ function space(zone){
                         }
                     }
                 });
+
+                if (spaceProjects[region].info.hasOwnProperty('extra')){
+                    spaceProjects[region].info.extra(region);
+                }
             }
 
             popover(region, function(){
