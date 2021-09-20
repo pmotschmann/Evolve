@@ -586,11 +586,13 @@ const spaceProjects = {
                     containers += 10;
                 }
                 multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-                let copper = sizeApproximation(+(spatialReasoning(6500) * multiplier).toFixed(0),1);
-                let iron = sizeApproximation(+(spatialReasoning(5500) * multiplier).toFixed(0),1);
+                let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
+
+                let copper = sizeApproximation(+(spatialReasoning(6500) * h_multiplier).toFixed(0),1);
+                let iron = sizeApproximation(+(spatialReasoning(5500) * h_multiplier).toFixed(0),1);
                 let cement = sizeApproximation(+(spatialReasoning((global.race.cataclysm ? 10500 : 6000)) * multiplier).toFixed(0),1);
-                let steel = sizeApproximation(+(spatialReasoning(4500) * multiplier).toFixed(0),1);
-                let titanium = sizeApproximation(+(spatialReasoning(3500) * multiplier).toFixed(0),1);
+                let steel = sizeApproximation(+(spatialReasoning(4500) * h_multiplier).toFixed(0),1);
+                let titanium = sizeApproximation(+(spatialReasoning(3500) * h_multiplier).toFixed(0),1);
                 let alloy = sizeApproximation(+(spatialReasoning(2500) * multiplier).toFixed(0),1);
                 
                 let crate = global.race['cataclysm'] ? `<span>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</span>` : ``;
@@ -602,11 +604,11 @@ const spaceProjects = {
                     desc = desc + `<span>${loc('plus_max_resource',[nano,global.resource.Nano_Tube.name])}</span>`;
                 }
                 if (global.resource.Neutronium.display){
-                    let neutronium = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
+                    let neutronium = sizeApproximation(+(spatialReasoning(125) * h_multiplier).toFixed(0),1);
                     desc = desc + `<span>${loc('plus_max_resource',[neutronium,global.resource.Neutronium.name])}</span>`;
                 }
                 if (global.resource.Infernite.display){
-                    let infernite = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
+                    let infernite = sizeApproximation(+(spatialReasoning(75) * h_multiplier).toFixed(0),1);
                     desc = desc + `<span>${loc('plus_max_resource',[infernite,global.resource.Infernite.name])}</span>`;
                 }
 

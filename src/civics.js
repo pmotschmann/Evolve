@@ -1981,12 +1981,11 @@ export function armyRating(val,type,wound){
     return army * racialTrait(val,type);
 }
 
-export function garrisonSize(max){
+export function garrisonSize(max,nofob){
     let type = max ? 'max' : 'workers';
-    if (global.portal['fortress']){
-        return global.civic.garrison[type] - global.civic.garrison.crew - global.portal.fortress.garrison;
-    }
-    return global.civic.garrison[type] - global.civic.garrison.crew;
+    let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
+    let fob = global.space['fob'] && !nofob ? global.space.fob.troops : 0;
+    return global.civic.garrison[type] - global.civic.garrison.crew - fortress - fob;
 }
 
 function defineMad(){

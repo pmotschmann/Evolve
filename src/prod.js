@@ -192,5 +192,12 @@ export function production(id,val){
                 }
             }
         }
+        case 'lander':
+        {
+            if (global.space.crashed_ship.count === 100){
+                return 0.005;
+            }
+            return 0;
+        }
     }
 }

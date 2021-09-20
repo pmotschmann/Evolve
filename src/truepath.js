@@ -541,6 +541,9 @@ export const outerTruth = {
                 if (global.resource.Quantium.display){
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[1])}</div>`;
                 }
+                if (global.resource.Cipher.display){
+                    desc = desc + `<div>${loc('plus_max_resource',[10000,global.resource.Cipher.name])}</div>`;
+                }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return -1; },
@@ -593,6 +596,33 @@ export const outerTruth = {
                 vBind({el: `#spc_enceladussynd`},'update');
             }
         },
+        munitions_depot: {
+            id: 'space-munitions_depot',
+            title: loc('tech_munitions_depot'),
+            desc: loc('tech_munitions_depot'),
+            category: 'storage',
+            era: 'solar',
+            reqs: { enceladus: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('munitions_depot', offset, 5000000, 1.22); },
+                Iron(offset){ return spaceCostMultiplier('munitions_depot', offset, 185000, 1.22); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('munitions_depot', offset, 100000, 1.22); },
+            },
+            effect(){
+                let containers = 25;
+                return `<div>${loc('plus_max_crates',[containers])}</div><div>${loc('plus_max_containers',[containers])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.munitions_depot.count++;
+                    global.resource.Crates.max += 25;
+                    global.resource.Containers.max += 25;
+                    return true;
+                }
+                return false;
+            }
+        }
     },
     spc_triton: {
         info: {
@@ -613,7 +643,9 @@ export const outerTruth = {
                         data: global.space.fob,
                         methods: {
                             threat(e,t){
-                                let d = +(e - armyRating(t)).toFixed(0);
+                                let wounded = global.civic.garrison.wounded - garrisonSize();
+                                if (wounded < 0){ wounded = 0; }
+                                let d = +(e - armyRating(t,'army',wounded)).toFixed(0);
                                 return d < 0 ? 0 : d;
                             }
                         }
@@ -675,8 +707,9 @@ export const outerTruth = {
                 let max_troops = garrisonSize(true);
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[500])}</div>`;
                 desc += loc('plus_max_resource',[10,loc('civics_garrison_soldiers')]);
-                desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
-                desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>${global.civic.garrison.wounded}</span></div>`;
+                desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}:</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
+                desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic.garrison.wounded}</span></div>`;
+                desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space.fob.troops])}</div>`;
                 let helium = +(fuel_adjust(125,true)).toFixed(2);
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),helium,global.resource.Helium_3.name])}</div>`;
             },
@@ -717,7 +750,11 @@ export const outerTruth = {
             powered(){ return powerCostMod(1); },
             effect(){
                 let oil = +fuel_adjust(50,true).toFixed(2);
-                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div><div class="has-text-warning">${loc(`space_lander_effect2`,[3])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
+                let data = ``;
+                if (global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
+                    data = `<div>${loc(`space_lander_effect3`,[production('lander'),global.resource.Cipher.name])}</div>`;
+                }
+                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[3])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -726,10 +763,24 @@ export const outerTruth = {
                     return true;
                 }
                 return false;
+            }
+        },
+        crashed_ship: {
+            id: 'space-crashed_ship',
+            title: loc('space_crashed_ship_title'),
+            desc(){
+                return `<div>${loc('space_crashed_ship_title')}</div>`;
             },
-            postPower(){
-                vBind({el: `#srprtl_ruins`},'update');
-                vBind({el: `#srprtl_gate`},'update');
+            reqs: { triton: 3 },
+            path: ['truepath'],
+            no_queue(){ return true; },
+            cost: {},
+            effect(){
+                let control = global.space['crashed_ship'] ? global.space.crashed_ship.count : 0;
+                return `<div>${loc(`space_crashed_ship_effect`,[control])}</div>`;
+            },
+            action(){
+                return false;
             }
         },
     }
@@ -1123,15 +1174,15 @@ function shipSpeed(ship){
 
     switch (ship.engine){
         case 'ion':
-            return 10 / mass;
+            return 12 / mass;
         case 'tie':
-            return 18 / mass;
+            return 22 / mass;
         case 'pulse':
-            return 15 / mass;
+            return 18 / mass;
         case 'photon':
-            return 24 / mass;
+            return 30 / mass;
         case 'vacuum':
-            return 35 / mass;
+            return 42 / mass;
     }
 }
 
@@ -1353,13 +1404,13 @@ function drawShips(){
         Object.keys(spaceRegions).forEach(function(region){
             if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
                 let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-                values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})">${name}</b-dropdown-item>`;
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
             }
         });
 
         let location = typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
-        let dispatch = `<b-dropdown :triggers="['hover']" aria-role="list">
+        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${location}</span>
             </button>${values}
@@ -1477,6 +1528,18 @@ function drawShips(){
                 }
             }
         });
+
+        Object.keys(spaceRegions).forEach(function(region){
+            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+                popover(`ship${i}loc${region}`, function(){
+                    return Math.round(transferWindow(ship.location,region) / shipSpeed(ship));
+                },
+                {
+                    elm: `#ship${i}loc .${region}`,
+                    placement: 'left'
+                });
+            }
+        });
     }
 
     dragShipList();
@@ -1542,6 +1605,10 @@ export function syndicate(region,extra){
                 sensor += 10;
             }
             
+            if (sensor > 100){
+                sensor = Math.round((sensor - 100) / ((sensor - 100) + 250) * 250) + 100;
+            }
+
             patrol = Math.round(patrol * ((sensor + 25) / 125));
             piracy = piracy - patrol > 0 ? piracy - patrol : 0;
         }
@@ -1576,7 +1643,57 @@ function sensorRange(s){
 }
 
 export function tritonWar(){
+    if (global.space['fob']){
+        if (global.space.fob.enemy <= 1000){
+            global.space.fob.enemy += Math.rand(25,100);
+        }
 
+        let wound_cap = Math.ceil(global.space.fob.enemy / 5);
+
+        let wounded = global.civic.garrison.wounded - garrisonSize();
+        if (wounded < 0){ wounded = 0; }
+        let defense = armyRating(global.space.fob.troops,'army',wounded);
+
+        let died = Math.rand(0,wounded + 1);
+        global.civic.garrison.workers -= died;
+        global.stats.died += died;
+        global.civic.garrison.wounded -= died;
+
+        global.space.fob.enemy -= Math.rand(0,defense);
+        if (global.space.fob.enemy < 0){ global.space.fob.enemy = 0; }
+
+        let hurt = Math.rand(0,global.space.fob.troops + 1);
+        if (hurt > wound_cap){ hurt = wound_cap; }
+        if (global.race['armored']){ hurt--; }
+        if (global.race['scales']){ hurt--; }
+        if (global.tech['armor']){ hurt -= global.tech['armor']; }
+        if (hurt < 0){ hurt = 0; }
+
+        if (global.race['revive'] && died > 0){
+            let revive = Math.round(Math.rand(0,died + 1));
+            global.civic.garrison.workers += revive;
+        }
+
+        global.civic.garrison.wounded += hurt;
+        if (global.civic.garrison.wounded > garrisonSize(false,true)){
+            global.civic.garrison.wounded = garrisonSize(false,true);
+        }
+
+        {
+            let wounded = global.civic.garrison.wounded - garrisonSize();
+            if (wounded < 0){ wounded = 0; }
+            let danger = global.space.fob.enemy - armyRating(global.space.fob.troops,'army',wounded);
+            if (danger <= 0 && global.space.crashed_ship.count < 100){
+                global.space.crashed_ship.count++;
+            }
+            else if (danger > 0 && global.space.crashed_ship.count > 0){
+                global.space.crashed_ship.count--;
+            }
+            if (global.space.crashed_ship.count === 100){
+                global.resource.Cipher.display = true;
+            }
+        }
+    }
 }
 
 export const spacePlanetStats = {
@@ -1592,6 +1709,7 @@ export const spacePlanetStats = {
     spc_triton: { dist: 30.1, orbit: 60152 },
     spc_kuiper: { dist: 39.5, orbit: 90498 },
     spc_eris: { dist: 68, orbit: 204060 },
+    //tauceti: { dist: 752568.8, orbit: -2 },
 };
 
 export function setOrbits(){

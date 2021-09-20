@@ -10263,6 +10263,27 @@ const techs = {
             return false;
         }
     },
+    munitions_depot: {
+        id: 'tech-munitions_depot',
+        title: loc('tech_munitions_depot'),
+        desc: loc('tech_munitions_depot'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { enceladus: 4 },
+        grant: ['enceladus',5],
+        cost: {
+            Knowledge(){ return 1500000; }
+        },
+        effect(){ return loc('tech_munitions_depot_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['munitions_depot'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     fob: {
         id: 'tech-fob',
         title: loc('tech_fob'),
@@ -10280,6 +10301,26 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
                 global.space['lander'] = { count: 0, on: 0 };
+                global.space['crashed_ship'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    bac_tanks_tp: {
+        id: 'tech-bac_tanks_tp',
+        title: loc('tech_bac_tanks'),
+        desc: loc('tech_bac_tanks_desc'),
+        category: 'military',
+        era: 'solar',
+        reqs: { medic: 1, triton: 2 },
+        grant: ['medic',2],
+        cost: {
+            Knowledge(){ return 1750000; }
+        },
+        effect: loc('tech_bac_tanks_effect'),
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -10688,6 +10729,28 @@ const techs = {
             return false;
         }
     },
+    quantium_containers: {
+        id: 'tech-quantium_containers',
+        title: loc('tech_quantium_containers'),
+        desc: loc('tech_quantium_containers'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { steel_container: 5, quantium: 1 },
+        grant: ['steel_container',6],
+        cost: {
+            Knowledge(){ return 1150000; },
+            Quantium(){ return 100000; }
+        },
+        effect: loc('tech_quantium_containers_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                vBind({el: `#createHead`},'update');
+                return true;
+            }
+            return false;
+        }
+    },
     reinforced_shelving: {
         id: 'tech-reinforced_shelving',
         title: loc('tech_reinforced_shelving'),
@@ -10703,6 +10766,27 @@ const techs = {
             Graphene(){ return 250000; }
         },
         effect: loc('tech_reinforced_shelving_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    garage_shelving: {
+        id: 'tech-garage_shelving',
+        title: loc('tech_garage_shelving'),
+        desc: loc('tech_garage_shelving'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { shelving: 1, quantium: 1 },
+        grant: ['shelving',2],
+        cost: {
+            Knowledge(){ return 1250000; },
+            Quantium(){ return 75000; }
+        },
+        effect: loc('tech_garage_shelving_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
