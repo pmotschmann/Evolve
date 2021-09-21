@@ -1975,6 +1975,78 @@ const spaceProjects = {
                 return false;
             }
         },
+        mass_relay: {
+            id: 'space-mass_relay',
+            title: loc('space_dwarf_mass_relay_title'),
+            desc(wiki){
+                if (!global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki){
+                    return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+            },
+            reqs: { outer: 5 },
+            path: ['truepath'],
+            condition(){
+                return global.space.mass_relay.count < 100 ? true : false;
+            },
+            no_queue(){ return global.space.mass_relay.count < 100 ? false : true },
+            queue_size: 5,
+            queue_complete(){ return 100 - global.space.mass_relay.count; },
+            cost: {
+                Money(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 10000000 : 0; },
+                Neutronium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 7500 : 0; },
+                Adamantite(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 18000 : 0; },
+                Elerium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 125 : 0; },
+                Stanene(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 100000 : 0; },
+                Quantium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 25000 : 0; },
+            },
+            effect(){
+                if (!global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100){
+                    let remain = global.space.hasOwnProperty('mass_relay') ? 100 - global.space.mass_relay.count : 100;
+                    return `<div>${loc('space_dwarf_mass_relay_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return spaceProjects.spc_dwarf.m_relay.effect();
+                }
+            },
+            action(){
+                if (global.space.mass_relay.count < 100 && payCosts($(this)[0])){
+                    global.space.mass_relay.count++;
+                    if (global.space.mass_relay.count >= 100){
+                        global.tech['outer'] = 6;
+                        global.space['m_relay'] = { count: 1, on: 0 };
+                        drawTech();
+                        renderSpace();
+                        clearPopper();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        m_relay: {
+            id: 'space-m_relay',
+            title: loc('space_dwarf_mass_relay_title'),
+            desc(){
+                return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { outer: 6 },
+            path: ['truepath'],
+            condition(){
+                return global.space.mass_relay.count >= 100 ? true : false;
+            },
+            wiki: false,
+            no_queue(){ return true },
+            cost: {},
+            powered(){
+                return powerCostMod(100);
+            },
+            effect(){
+                return `<div>${loc('space_dwarf_mass_relay_effect2',[races[global.race.species].solar.dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                return false;
+            }
+        },
     },
     spc_titan: outerTruth.spc_titan,
     spc_enceladus: outerTruth.spc_enceladus,

@@ -10436,6 +10436,53 @@ const techs = {
             return false;
         },
     },
+    data_analysis: {
+        id: 'tech-data_analysis',
+        title: loc('tech_data_analysis'),
+        desc: loc('tech_data_analysis'),
+        category: 'space_exploration',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { outer: 3 },
+        grant: ['outer',4],
+        cost: {
+            Knowledge(){ return 1800000; },
+            Cipher(){ return 25000; }
+        },
+        effect: loc('tech_data_analysis_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_data_analysis_result'),'info',false,['progress']);
+                global.space.syndicate['spc_titan'] += 500;
+                global.space.syndicate['spc_enceladus'] += 250;
+                global.space.syndicate['spc_triton'] += 1000;
+                return true;
+            }
+            return false;
+        },
+    },
+    mass_relay: {
+        id: 'tech-mass_relay',
+        title: loc('tech_mass_relay'),
+        desc: loc('tech_mass_relay'),
+        category: 'space_exploration',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { outer: 4 },
+        grant: ['outer',5],
+        cost: {
+            Knowledge(){ return 2200000; },
+            Cipher(){ return 50000; }
+        },
+        effect: loc('tech_mass_relay_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['mass_relay'] = { count: 0 };
+                return true;
+            }
+            return false;
+        },
+    },
     stanene_tp: {
         id: 'tech-stanene_tp',
         title: loc('tech_stanene'),
@@ -10900,6 +10947,27 @@ const techs = {
             return false;
         }
     },
+    ship_disruptor: {
+        id: 'tech-ship_disruptor',
+        title: loc('tech_ship_disruptor'),
+        desc: loc('tech_ship_disruptor'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_weapon: 5, outer: 4 },
+        grant: ['syard_weapon',6],
+        cost: {
+            Knowledge(){ return 2000000; },
+            Cipher(){ return 25000; }
+        },
+        effect: loc('tech_ship_disruptor_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     destroyer_ship: {
         id: 'tech-destroyer_ship',
         title: loc('tech_destroyer_ship'),
@@ -11003,6 +11071,27 @@ const techs = {
             return false;
         }
     },
+    vacuum_drive: {
+        id: 'tech-vacuum_drive',
+        title: loc('outer_shipyard_engine_vacuum'),
+        desc: loc('outer_shipyard_engine_vacuum'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_engine: 4, outer: 4 },
+        grant: ['syard_engine',5],
+        cost: {
+            Knowledge(){ return 1850000; },
+            Cipher(){ return 10000; }
+        },
+        effect: loc('outer_shipyard_engine_vacuum_desc'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     ship_fusion: {
         id: 'tech-ship_fusion',
         title: loc('tech_fusion_generator'),
@@ -11017,6 +11106,27 @@ const techs = {
             Quantium(){ return 65000; }
         },
         effect: loc('tech_fusion_generator_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ship_elerium: {
+        id: 'tech-ship_elerium',
+        title: loc('tech_elerium_generator'),
+        desc: loc('tech_elerium_generator'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_power: 4, outer: 4 },
+        grant: ['syard_power',5],
+        cost: {
+            Knowledge(){ return 1900000; },
+            Cipher(){ return 18000; }
+        },
+        effect: loc('tech_elerium_generator_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

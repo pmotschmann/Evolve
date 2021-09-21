@@ -20,7 +20,12 @@ export const outerTruth = {
             support: 'electrolysis',
             zone: 'outer',
             syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; },
-            syndicate_cap(){ return global.tech['triton'] ? 1000 : 500; }
+            syndicate_cap(){
+                if (global.tech['triton']){
+                    return global.tech.outer >= 4 ? 2000 : 1000;
+                }
+                return 500;
+            }
         },
         titan_mission: {
             id: 'space-titan_mission',
@@ -457,7 +462,12 @@ export const outerTruth = {
             support: 'titan_spaceport',
             zone: 'outer',
             syndicate(){ return global.tech['titan'] && global.tech.titan >= 3 && global.tech['enceladus'] && global.tech.enceladus >= 2 ? true : false; },
-            syndicate_cap(){ return global.tech['triton'] ? 1000 : 500; }
+            syndicate_cap(){
+                if (global.tech['triton']){
+                    return global.tech.outer >= 4 ? 1500 : 1000;
+                }
+                return 500;
+            }
         },
         enceladus_mission: {
             id: 'space-enceladus_mission',
@@ -634,7 +644,7 @@ export const outerTruth = {
             },
             zone: 'outer',
             syndicate(){ return global.tech['triton'] && global.tech.triton >= 2 ? true : false; },
-            syndicate_cap(){ return 3000; },
+            syndicate_cap(){ return global.tech['outer'] && global.tech.outer >= 4 ? 5000 : 3000; },
             extra(region){
                 if (global.tech['triton'] && global.tech.triton >= 3){
                     $(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
@@ -830,7 +840,7 @@ export function drawShipYard(){
         let shipConfig = {
             class: ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'],
             power: ['solar','diesel','fission','fusion','elerium'],
-            weapon: ['railgun','laser','p_laser','plasma','phaser','disrupter'],
+            weapon: ['railgun','laser','p_laser','plasma','phaser','disruptor'],
             armor : ['steel','alloy','neutronium'],
             engine: ['ion','tie','pulse','photon','vacuum'],
             sensor: ['visual','radar','lidar','quantum'],
@@ -1072,7 +1082,7 @@ function shipPower(ship){
         case 'phaser':
             watts -= Math.round(65 * use_inflate);
             break;
-        case 'disrupter':
+        case 'disruptor':
             watts -= Math.round(100 * use_inflate);
             break;
     }
@@ -1128,7 +1138,7 @@ function shipAttackPower(ship){
         case 'phaser':
             rating = 114;
             break;
-        case 'disrupter':
+        case 'disruptor':
             rating = 156;
             break;
     }
@@ -1172,17 +1182,18 @@ function shipSpeed(ship){
             break;
     }
 
+    let boost = ship.location === 'spc_dwarf' && p_on['m_relay'] && ship.transit === 0 ? 2 : 1;
     switch (ship.engine){
         case 'ion':
-            return 12 / mass;
+            return 12 / mass * boost;
         case 'tie':
-            return 22 / mass;
+            return 22 / mass * boost;
         case 'pulse':
-            return 18 / mass;
+            return 18 / mass * boost;
         case 'photon':
-            return 30 / mass;
+            return 30 / mass * boost;
         case 'vacuum':
-            return 42 / mass;
+            return 42 / mass * boost;
     }
 }
 
@@ -1293,10 +1304,10 @@ function shipCosts(bp){
             costs['Titanium'] = Math.round(125000 ** h_inflate);
             break;
         case 'photon':
-            costs['Titanium'] = Math.round(225000 ** h_inflate);
+            costs['Titanium'] = Math.round(210000 ** h_inflate);
             break;
         case 'vacuum':
-            costs['Titanium'] = Math.round(350000 ** h_inflate);
+            costs['Titanium'] = Math.round(300000 ** h_inflate);
             break;
     }
 
@@ -1319,7 +1330,7 @@ function shipCosts(bp){
             break;
         case 'elerium':
             costs['Copper'] = Math.round(60000 ** h_inflate);
-            costs['Iridium'] = Math.round(75000 ** h_inflate);
+            costs['Iridium'] = Math.round(55000 ** h_inflate);
             break;
     }
 
@@ -1355,7 +1366,7 @@ function shipCosts(bp){
             costs['Iridium'] = Math.round(costs['Iridium'] ** 1.175);
             costs['Quantium'] = Math.round(18000 ** h_inflate);
             break;
-        case 'disrupter':
+        case 'disruptor':
             costs['Iridium'] = Math.round(costs['Iridium'] ** 1.25);
             costs['Quantium'] = Math.round(35000 ** h_inflate);
             break;
@@ -1474,8 +1485,9 @@ function drawShips(){
                     let distance = transferWindow(global.space.shipyard.ships[id].location,l);
                     let crew = shipCrewSize(global.space.shipyard.ships[id]);
                     if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                        let speed = shipSpeed(global.space.shipyard.ships[id]);
                         global.space.shipyard.ships[id].location = l;
-                        global.space.shipyard.ships[id].transit = Math.round(distance / shipSpeed(global.space.shipyard.ships[id]));
+                        global.space.shipyard.ships[id].transit = Math.round(distance / speed);
                         global.civic.garrison.crew += crew;
                         drawShips();
                     }
@@ -1571,12 +1583,20 @@ export function syndicate(region,extra){
                 break;
             case 'spc_titan':
             case 'spc_enceladus':
-                divisor = global.tech['triton'] ? 1000 : 600;
+                {
+                    if (global.tech['triton']){
+                        let r = spaceTech(region,'info');
+                        divisor = r.syndicate_cap();
+                    }
+                    else {
+                        divisor = 600;
+                    }
+                }
                 break;
             case 'spc_triton':
                 {
-                    let region = spaceTech('spc_triton','info');
-                    divisor = region.syndicate_cap();
+                    let r = spaceTech('spc_triton','info');
+                    divisor = r.syndicate_cap();
                 }
                 break;
         }
@@ -1645,7 +1665,8 @@ function sensorRange(s){
 export function tritonWar(){
     if (global.space['fob']){
         if (global.space.fob.enemy <= 1000){
-            global.space.fob.enemy += Math.rand(25,100);
+            let upper = global.tech['outer'] && global.tech.outer >= 4 ? 150 : 100;
+            global.space.fob.enemy += Math.rand(25,upper);
         }
 
         let wound_cap = Math.ceil(global.space.fob.enemy / 5);

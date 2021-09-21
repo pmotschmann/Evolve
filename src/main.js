@@ -4062,6 +4062,11 @@ function fastLoop(){
 
             modRes('Cipher', delta * time_multiplier);
             breakdown.p['Cipher'] = cipher_bd;
+
+            if (global.resource.Cipher.display && global.tech['outer'] && global.tech.outer === 2){
+                global.tech.outer = 3;
+                drawTech();
+            }
         }
 
         // Lumber
