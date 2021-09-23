@@ -793,6 +793,32 @@ export const outerTruth = {
                 return false;
             }
         },
+    },
+    spc_kuiper: {
+        info: {
+            name(){
+                return loc(`space_kuiper_title`);
+            },
+            desc(){
+                return loc('space_kuiper_desc');
+            },
+            zone: 'outer',
+            syndicate(){ return global.tech['kuiper'] ? true : false; },
+            syndicate_cap(){ return 2500; },
+        },
+    },
+    spc_eris: {
+        info: {
+            name(){
+                return genusVars[races[global.race.species].type].solar.eris;
+            },
+            desc(){
+                return loc('space_eris_info_desc',[genusVars[races[global.race.species].type].solar.eris]);
+            },
+            zone: 'outer',
+            syndicate(){ return global.tech['eris'] ? true : false; },
+            syndicate_cap(){ return 7500; },
+        },
     }
 };
 
@@ -1182,7 +1208,7 @@ function shipSpeed(ship){
             break;
     }
 
-    let boost = ship.location === 'spc_dwarf' && p_on['m_relay'] && ship.transit === 0 ? 2 : 1;
+    let boost = ship.location === 'spc_dwarf' && p_on['m_relay'] && ship.transit === 0 ? 3 : 1;
     switch (ship.engine){
         case 'ion':
             return 12 / mass * boost;
@@ -1665,7 +1691,7 @@ function sensorRange(s){
 export function tritonWar(){
     if (global.space['fob']){
         if (global.space.fob.enemy <= 1000){
-            let upper = global.tech['outer'] && global.tech.outer >= 4 ? 150 : 100;
+            let upper = global.tech['outer'] && global.tech.outer >= 4 ? 125 : 100;
             global.space.fob.enemy += Math.rand(25,upper);
         }
 

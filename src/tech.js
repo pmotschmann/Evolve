@@ -10472,12 +10472,58 @@ const techs = {
         grant: ['outer',5],
         cost: {
             Knowledge(){ return 2200000; },
-            Cipher(){ return 50000; }
+            Cipher(){ return 40000; }
         },
         effect: loc('tech_mass_relay_effect'),
         action(){
             if (payCosts($(this)[0])){
                 global.space['mass_relay'] = { count: 0 };
+                return true;
+            }
+            return false;
+        },
+    },
+    nav_data: {
+        id: 'tech-nav_data',
+        title: loc('tech_nav_data'),
+        desc: loc('tech_nav_data'),
+        category: 'space_exploration',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { outer: 6 },
+        grant: ['outer',7],
+        cost: {
+            Knowledge(){ return 2250000; },
+            Cipher(){ return 60000; }
+        },
+        effect: loc('tech_nav_data_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.space.eris = true;
+                global.settings.space.kuiper = true;
+                messageQueue(loc('tech_nav_data_result',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        },
+    },
+    sensor_logs: {
+        id: 'tech-sensor_logs',
+        title: loc('tech_sensor_logs'),
+        desc: loc('tech_sensor_logs'),
+        category: 'space_exploration',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { outer: 7 },
+        grant: ['outer',8],
+        cost: {
+            Knowledge(){ return 3000000; },
+            Cipher(){ return 80000; }
+        },
+        effect: loc('tech_sensor_logs_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_sensor_logs_result'),'info',false,['progress']);
                 return true;
             }
             return false;

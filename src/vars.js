@@ -1008,8 +1008,8 @@ if (!global.settings.space.hasOwnProperty('titan')){
     global.settings.space['titan'] = false;
     global.settings.space['enceladus'] = false;
     global.settings.space['triton'] = false;
-    global.settings.space['eris'] = false;
     global.settings.space['kuiper'] = false;
+    global.settings.space['eris'] = false;
 }
 
 if (!global.settings['showDeep']){

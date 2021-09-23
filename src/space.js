@@ -2051,6 +2051,8 @@ const spaceProjects = {
     spc_titan: outerTruth.spc_titan,
     spc_enceladus: outerTruth.spc_enceladus,
     spc_triton: outerTruth.spc_triton,
+    spc_kuiper: outerTruth.spc_kuiper,
+    spc_eris: outerTruth.spc_eris,
 };
 
 const interstellarProjects = {
