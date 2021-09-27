@@ -55,6 +55,7 @@ export function set_ulevel(u_level){
 export var message_logs = {
     view: 'all'
 };
+export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -847,9 +848,39 @@ if (convertVersion(global['version']) < 101012){
     if (global.civic['garrison']){
         global.civic.garrison['rate'] = 0;
     }
+} 
+
+if (convertVersion(global['version']) < 101014){
+    if (global.hasOwnProperty('settings') && global.settings.hasOwnProperty('msgFilters')){
+        Object.keys(global.settings.msgFilters).forEach(function (filter){
+            global.settings.msgFilters[filter] = {
+                unlocked: global.settings.msgFilters[filter] ? true : false,
+                vis: global.settings.msgFilters[filter] ? true : false,
+                max: 60,
+                save: 3
+            };
+        });
+    }
+    if (global.hasOwnProperty('lastMsg')){
+        let lastMsg = {};
+        message_filters.forEach(function (filter){
+            lastMsg[filter] = [];
+        });
+        global.lastMsg.forEach(function (msg){
+            if (msg.t){
+                msg.t.forEach(function (tag){
+                    lastMsg[tag].push({ m: msg.m, c: msg.c });
+                });
+            }
+            else {
+                lastMsg.all.push({ m: msg.m, c: msg.c })
+            }
+        });
+        global.lastMsg = lastMsg;
+    }
 }
 
-global['version'] = '1.1.13';
+global['version'] = '1.1.14';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1041,22 +1072,40 @@ if (!global['r_queue']['max']){
     global.r_queue['max'] = 0;
 }
 
-if (!global.settings['msgFilters']){
-    global.settings['msgFilters'] = {
-        all: true,
-        progress: true,
-        queue: false,
-        building_queue: false,
-        research_queue: false,
-        combat: false,
-        spy: false,
-        events: true,
-        major_events: true,
-        minor_events: true,
-        achievements: false,
-        hell: false
-    }
+if (!global['lastMsg']){
+    global['lastMsg'] = {};
 }
+
+if (!global.settings['msgFilters']){
+    global.settings['msgFilters'] = {};
+}
+
+//Message Filters unlocked by default
+['all','progress','events','major_events','minor_events'].forEach(function (filter){
+    if (!global.settings.msgFilters[filter]){
+        global.settings.msgFilters[filter] = {
+            unlocked: true,
+            vis: true,
+            max: 60,
+            save: 3
+        };
+    }
+});
+
+message_filters.forEach(function (filter){
+    if (!global.lastMsg[filter]){
+        global.lastMsg[filter] = [];
+    }
+    //Message Filters not unlocked by default.
+    if (!global.settings.msgFilters[filter]){
+        global.settings.msgFilters[filter] = {
+            unlocked: false,
+            vis: false,
+            max: 60,
+            save: 3
+        };
+    }
+});
 
 if (!global.settings['msgQueueHeight']){
     global.settings['msgQueueHeight'] = $(`#msgQueue`).outerHeight();
@@ -1276,9 +1325,6 @@ if (!global.stats.hasOwnProperty('banana')){
     };
 }
 
-if (!global['lastMsg']){
-    global['lastMsg'] = [];
-}
 if (!global.race['seeded']){
     global.race['seeded'] = false;
 }
@@ -1909,7 +1955,6 @@ window.soft_reset = function reset(){
     }
 
     clearStates();
-    global.lastMsg = [];
     global.new = true;
     Math.seed = Math.rand(0,10000);
 

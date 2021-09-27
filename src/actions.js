@@ -2941,8 +2941,10 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     global.settings['showMil'] = true;
-                    global.settings.msgFilters.combat = true;
-                    document.getElementById(`msgQueueFilter-combat`).style.display = 'inline';
+                    if (!global.settings.msgFilters.combat.unlocked){
+                        global.settings.msgFilters.combat.unlocked = true;
+                        global.settings.msgFilters.combat.vis = true;
+                    }
                     if (!global.civic.garrison.display){
                         global.civic.garrison.display = true;
                         vBind({el: `#garrison`},'update');

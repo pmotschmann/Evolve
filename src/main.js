@@ -121,8 +121,11 @@ else {
 initMessageQueue();
 
 if (global.lastMsg){
-    global.lastMsg.reverse().forEach(function(msg){
-        messageQueue(msg.m, msg.c, true, msg.t);
+    Object.keys(global.lastMsg).forEach(function (tag){
+        global.lastMsg[tag].reverse().forEach(function(msg){
+            messageQueue(msg.m, msg.c, true, [tag], true);
+        });
+        global.lastMsg[tag].reverse();
     });
 }
 
@@ -2471,7 +2474,7 @@ function fastLoop(){
         }
 
         if (global.race['gnawer']){
-            let res = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
+            let res = global.race['kindling_kindred'] || global.race['smoldering'] ? 'Stone' : 'Lumber';
             if (global.resource[res].display){
                 let pop = global.resource[global.race.species].amount + global.civic.garrison.workers;
                 let res_cost = pop * traits.gnawer.vars[0];
