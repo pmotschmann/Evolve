@@ -10,6 +10,8 @@ const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
+export const neg_roll_traits = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
+
 export function altRace(race,set){
     if (global.settings.boring){
         if (global.race['hrt']){

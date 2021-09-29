@@ -6,8 +6,7 @@ import { races } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
-import { createCalcSection } from './p_res.js';
+import { sideMenu, infoBoxBuilder, createCalcSection } from './functions.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -91,6 +90,20 @@ export function mechanicsPage(content){
             }
         });
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
+    }
+
+    { // Bank Vault
+        let occupation = infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('city_bank'),loc('interstellar_exchange_title'),loc('portal_arcology_title'),loc('resource_Money_name'),loc('wiki_mechanics_bank_vault'),loc('space_red_spaceport_title'),loc('wiki_challenges_scenarios_cataclysm')],
+                2: [loc('resource_Money_name'),loc('city_bank'),loc('tech_adamantite_vault'),loc('governor_entrepreneur'),loc('trait_paranoid_name'),loc('tech_stock_market'),loc('tech_unification'),loc('wiki_challenges_modes_inflation')]
+            },
+            data_link: {
+                1: ['wiki.html#planetary-structures-bank','wiki.html#interstellar-structures-exchange','wiki.html#hell-structures-arcology',false,false,'wiki.html#space-structures-spaceport','wiki.html#challenges-gameplay-scenarios_cataclysm'],
+                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
     }
 
     { // Occupying Foreign Powers

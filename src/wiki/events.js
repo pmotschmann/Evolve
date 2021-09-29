@@ -5,8 +5,7 @@ import { housingLabel } from './../actions.js';
 import { clearElement, eventActive } from './../functions.js';
 import { loc } from './../locale.js';
 import { swissKnife } from './../tech.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
-import { getSolarName } from './tech.js';
+import { sideMenu, infoBoxBuilder, getSolarName } from './functions.js';
 
 export function eventsPage(zone){
     let content = $(`#content`);

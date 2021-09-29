@@ -1,6 +1,6 @@
 import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, adjustCosts } from './../functions.js';
+import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 
 export function headerBoxBuilder(parent,args,box){
@@ -215,4 +215,56 @@ export function sideMenu(action,arg1,arg2,arg3){
         bindScroll(anchor, arg2);
     }
     
+}
+
+export function subSideMenu(action,arg1,arg2,arg3){
+    sideMenu(action,arg1,arg2,`ᄂ` + arg3);
+}
+
+export function getSolarName(planet) {
+    if (global.race.species === 'protoplasm'){
+        return loc(`race_human_solar_${planet}`);
+    }
+    else if (global.race.species === 'custom') {
+        return global.custom.race0[planet];
+    }
+    else {
+        return loc(`race_${global.race.species}_solar_${planet}`);
+    }
+}
+
+export function createCalcSection(info,id,type,insert){
+    insert = insert || loc(`wiki_calc_insert_` + type);
+    let calc = $(`<div></div>`);
+    info.append(calc);
+    calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info calcReveal" @click="show()">{{ vis | label }}</span>`);
+    let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
+    calc.append(section);
+    
+    let modSection = document.getElementById(id + type + 'Section');
+    let modDisplay = { vis: false };
+    
+    vBind({
+        el: `#${id}${type}Button`,
+        data: modDisplay,
+        methods: {
+            show(){
+                if (modSection.style.display === 'block'){
+                    modSection.style.display = 'none';
+                    modDisplay.vis = false;
+                }
+                else {
+                    modSection.style.display = 'block';
+                    modDisplay.vis = true;
+                }
+            }
+        },
+        filters: {
+            label(vis){
+                return vis ? loc(`wiki_calc_hide`,[insert]) : loc(`wiki_calc_show`,[insert]);
+            }
+        }
+    });
+    
+    return section;
 }
