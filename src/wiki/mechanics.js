@@ -130,7 +130,7 @@ export function mechanicsPage(content){
                 20: [loc('achieve_syndicate_name')]
             },
             data_link: {
-                2: [false,false,false,'wiki.html#government-gameplay-federation'],
+                2: [false,false,'wiki.html#government-gameplay-federation'],
                 6: [false,'wiki.html#early_space-tech-unification2'],
                 7: ['wiki.html#government-gameplay-federation'],
                 11: [false,false,'wiki.html#government-gameplay-federation'],
@@ -266,14 +266,15 @@ export function mechanicsPage(content){
     { // CRISPR Mutation
         let crispr_mutation = infoBoxBuilder(mainContent,{ name: 'crispr_mutation', template: 'mechanics', label: loc('wiki_mechanics_crispr_mutation'), paragraphs: 5, break: [3], h_level: 2,
             para_data: {
-                1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title')],
+                1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title'),loc('resource_Plasmid_plural_name')],
                 3: [loc('tech_arpa'),loc('tab_arpa_genetics'),],
                 4: ['5x',loc('wiki_mechanics_crispr_mutation_para4_note1')],
-                5: ['10x']
+                5: [loc('wiki_mechanics_custom'),'10x']
             },
             data_link: {
-                1: [false,'wiki.html#crispr-prestige-mutation'],
-                4: [false,'wiki.html#traits-species']
+                1: [false,'wiki.html#crispr-prestige-mutation','wiki.html#resources-prestige-plasmids'],
+                4: [false,'wiki.html#traits-species'],
+                5: ['wiki.html#custom-species']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));

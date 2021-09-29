@@ -6998,6 +6998,7 @@ function midLoop(){
                         global.stats.plasmid += plasma;
                         global.race.Plasmid.count += plasma;
                     }
+                    arpa('Crispr');
                     messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success',false,['progress']);
                 }
                 arpa('Genetics');

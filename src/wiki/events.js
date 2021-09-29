@@ -152,7 +152,7 @@ function mainEventsPage(content){
         infoBoxBuilder(mainContent, { name: 'terrorist_condition', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 1, h_level: 2 }, section);
         infoBoxBuilder(mainContent, { name: 'terrorist_examples', template: 'events', label: loc('wiki_events_terrorist'), h_level: 2, 
             examples: [
-                loc(`event_terrorist1`,[0,14]),
+                loc(`event_terrorist1`,[14]),
                 loc(`event_terrorist2`,[54,18])
             ]
         }, section);
@@ -1176,7 +1176,7 @@ function progressEventsPage(content){
     {   // Piracy Unlock
         let section = infoBoxBuilder(mainContent,{ name: 'piracy', template: 'events', label: loc('wiki_events_piracy'), paragraphs: 3, break: [3], h_level: 2,
             para_data: {
-                2: [loc(`galaxy_piracy`),loc(`tech_xeno_linguistics`),loc(`galaxy_corvette_ship`)],
+                2: [loc(`galaxy_piracy`)],
                 3: [`20%`]
             },
             data_link: {
