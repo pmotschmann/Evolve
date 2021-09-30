@@ -1,4 +1,4 @@
-import { save, global, webWorker, clearStates, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
+import { save, global, webWorker, clearSavedMessages, clearStates, keyMultiplier, sizeApproximation, p_on, moon_on, red_on, belt_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
 import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
@@ -6126,7 +6126,7 @@ export function ascendLab(wiki){
 }
 
 function ascend(){
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'ascend'
