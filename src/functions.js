@@ -264,9 +264,11 @@ export function messageQueue(msg,color,dnr,tags,reload){
     
     if (!dnr){
         tags.forEach(function (tag){
-            global.lastMsg[tag].unshift({ m: msg, c: color });
-            if (global.lastMsg[tag].length > global.settings.msgFilters[tag].save){
-                global.lastMsg[tag].splice(global.settings.msgFilters[tag].save);
+            if (global.lastMsg[tag]){
+                global.lastMsg[tag].unshift({ m: msg, c: color });
+                if (global.lastMsg[tag].length > global.settings.msgFilters[tag].save){
+                    global.lastMsg[tag].splice(global.settings.msgFilters[tag].save);
+                }
             }
         });
     }
