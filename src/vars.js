@@ -861,7 +861,7 @@ if (convertVersion(global['version']) < 101014){
             };
         });
     }
-    if (global.hasOwnProperty('lastMsg')){
+    if (global.hasOwnProperty('lastMsg') && global.lastMsg){
         let lastMsg = {};
         message_filters.forEach(function (filter){
             lastMsg[filter] = [];
