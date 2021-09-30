@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearStates } from './vars.js';
+import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearSavedMessages, clearStates } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, tagEvent, timeFormat, powerCostMod, spaceCostMultiplier, calcPrestige, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
 import { traits, races } from './races.js';
@@ -4161,7 +4161,7 @@ export function descension(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'descension'

@@ -859,7 +859,7 @@ if (convertVersion(global['version']) < 101014){
             };
         });
     }
-    if (global.hasOwnProperty('lastMsg')){
+    if (global.hasOwnProperty('lastMsg') && global.lastMsg){
         let lastMsg = {};
         message_filters.forEach(function (filter){
             lastMsg[filter] = [];
@@ -878,6 +878,12 @@ if (convertVersion(global['version']) < 101014){
     }
 }
 
+if (convertVersion(global['version']) <= 101014 && !global['revision']){
+    if (global.race['cataclysm'] && global.race['universe'] && global.race['universe'] === 'magic' && global.tech['magic'] && global.tech['magic'] >= 2){
+        global.space['pylon'] = { count: 0 };
+    }
+}
+
 if (convertVersion(global['version']) < 102000){
     if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('fortress') && !global.portal.fortress.hasOwnProperty('nocrew')){
         global.portal.fortress['nocrew'] = false;
@@ -885,9 +891,11 @@ if (convertVersion(global['version']) < 102000){
     if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Iridium')){
         global.city.smelter['Iridium'] = 0;
     }
+
 }
 
 global['version'] = '1.1.14';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1922,6 +1930,8 @@ window.soft_reset = function reset(){
     try {
         gtag('event', 'reset', { 'end': 'soft'});
     } catch (err){}
+    
+    clearSavedMessages();
 
     let replace = {
         species : 'protoplasm',
@@ -1996,6 +2006,15 @@ window.soft_reset = function reset(){
 
 export var webWorker = { w: false, s: false, mt: 250 };
 export var intervals = {};
+
+export function clearSavedMessages(){
+    message_filters.forEach(function (filter){
+        //Preserve achievements log.
+        if (filter !== 'achievements'){
+            global.lastMsg[filter] = [];
+        }
+    });
+}
 
 export function clearStates(){
     if (webWorker.w){

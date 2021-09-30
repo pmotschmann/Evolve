@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, clearSavedMessages, clearStates, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
@@ -6800,6 +6800,16 @@ function sentience(){
         global.tech['r_queue'] = 1;
         global.queue.display = true;
         global.r_queue.display = true;
+        if (!global.settings.msgFilters.queue.unlocked){
+            global.settings.msgFilters.queue.unlocked = true;
+            global.settings.msgFilters.queue.vis = true;
+        }
+        if (!global.settings.msgFilters.building_queue.unlocked){
+            global.settings.msgFilters.building_queue.unlocked = true;
+            global.settings.msgFilters.building_queue.vis = true;
+            global.settings.msgFilters.research_queue.unlocked = true;
+            global.settings.msgFilters.research_queue.vis = true;
+        }
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
@@ -7510,7 +7520,7 @@ export function bank_vault(){
 
 function bioseed(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'bioseed'
@@ -7660,7 +7670,7 @@ export function cataclysm_end(){
             'end': 'cataclysm'
         });
 
-        global.lastMsg = false;
+        clearSavedMessages();
 
         let plasmid = global.race.Plasmid.count;
         let antiplasmid = global.race.Plasmid.anti;
@@ -7755,7 +7765,7 @@ export function cataclysm_end(){
 
 export function big_bang(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'blackhole'

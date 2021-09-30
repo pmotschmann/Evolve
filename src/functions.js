@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, message_logs, message_filters, clearSavedMessages, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -1937,7 +1937,7 @@ export function vacuumCollapse(){
 
         global.stats['current'] = Date.now();
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-        global.lastMsg = false;
+        clearSavedMessages();
 
         tagEvent('reset',{
             'end': 'vacuum'

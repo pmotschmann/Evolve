@@ -1,4 +1,4 @@
-import { global, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, clearSavedMessages, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
@@ -2080,7 +2080,7 @@ function defineMad(){
 function warhead(){
     if (!global.civic.mad.armed && !global.race['cataclysm']){
         save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-        global.lastMsg = false;
+        clearSavedMessages();
 
         tagEvent('reset',{
             'end': 'mad'
