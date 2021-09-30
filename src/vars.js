@@ -880,7 +880,14 @@ if (convertVersion(global['version']) < 101014){
     }
 }
 
+if (convertVersion(global['version']) <= 101014 && !global['revision']){
+    if (global.race['cataclysm'] && global.race['universe'] && global.race['universe'] === 'magic' && global.tech['magic'] && global.tech['magic'] >= 2){
+        global.space['pylon'] = { count: 0 };
+    }
+}
+
 global['version'] = '1.1.14';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){

@@ -111,11 +111,12 @@ $(document).mousemove(function(e){
 });
 
 index();
+var revision = global['revision'] ? global['revision'] : '';
 if (global['beta']){
-    $('#topBar .version > a').html(`v${global.version} Beta ${global.beta}`);
+    $('#topBar .version > a').html(`v${global.version} Beta ${global.beta}${revision}`);
 }
 else {
-    $('#topBar .version > a').html('v'+global.version);
+    $('#topBar .version > a').html('v'+global.version+revision);
 }
 
 initMessageQueue();
@@ -8596,7 +8597,7 @@ intervals['version_check'] = setInterval(function(){
         dataType: 'json',
         success: function(res){
             if (res['version'] && res['version'] != global['version'] && !global['beta']){
-                $('#topBar .version > a').html(`<span class="has-text-warning">${loc(`update_avail`)}</span> v`+global.version);
+                $('#topBar .version > a').html(`<span class="has-text-warning">${loc(`update_avail`)}</span> v`+global.version+revision);
             }
         }
     });
