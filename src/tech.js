@@ -9866,7 +9866,12 @@ const techs = {
         effect(){ return loc('tech_ley_lines_effect'); },
         action(){
             if (payCosts($(this)[0].cost)){
-                global.city['pylon'] = { count: 0 };
+                if (global.race['cataclysm']){
+                    global.space['pylon'] = { count: 0 };
+                }
+                else {
+                    global.city['pylon'] = { count: 0 };
+                }
                 return true;
             }
             return false;
@@ -9998,6 +10003,7 @@ const techs = {
         era: 'civilized',
         reqs: { magic: 1 },
         grant: ['conjuring',1],
+        not_trait: ['cataclysm'],
         condition(){
             return global.race['universe'] === 'magic' ? true : false;
         },
@@ -10021,6 +10027,7 @@ const techs = {
         era: 'civilized',
         reqs: { conjuring: 1 },
         grant: ['conjuring',2],
+        not_trait: ['cataclysm'],
         condition(){
             return global.race['universe'] === 'magic' ? true : false;
         },

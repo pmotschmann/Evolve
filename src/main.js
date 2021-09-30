@@ -4147,12 +4147,12 @@ function fastLoop(){
                 });
             }
 
-            if (global.city['pylon']){
-                let mana_base = global.city.pylon.count * 0.01;
+            if (global.city['pylon'] || global.space['pylon']){
+                let mana_base = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * (global.race['cataclysm'] ? 0.005 : 0.01);
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
-                mana_bd[loc('city_pylon')] = mana_base+'v';
+                mana_bd[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = mana_base+'v';
 
                 if (global.tech['nexus']){
                     let nexus = global.tech['nexus'] * 5;
@@ -5401,9 +5401,9 @@ function midLoop(){
         caps[global.race.species] = 0;
 
         if (global.city['pylon']){
-            let gain = global.city.pylon.count * spatialReasoning(5);
+            let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;
-            bd_Mana[loc('city_pylon')] = gain+'v';
+            bd_Mana[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
         }
         if (global.city['farm']){
             if (global.tech['farm']){
