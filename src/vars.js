@@ -861,7 +861,7 @@ if (convertVersion(global['version']) < 101014){
             };
         });
     }
-    if (global.hasOwnProperty('lastMsg')){
+    if (global.hasOwnProperty('lastMsg') && global.lastMsg){
         let lastMsg = {};
         message_filters.forEach(function (filter){
             lastMsg[filter] = [];
@@ -1891,6 +1891,8 @@ window.soft_reset = function reset(){
     try {
         gtag('event', 'reset', { 'end': 'soft'});
     } catch (err){}
+    
+    clearSavedMessages();
 
     let replace = {
         species : 'protoplasm',
@@ -1965,6 +1967,15 @@ window.soft_reset = function reset(){
 
 export var webWorker = { w: false, s: false, mt: 250 };
 export var intervals = {};
+
+export function clearSavedMessages(){
+    message_filters.forEach(function (filter){
+        //Preserve achievements log.
+        if (filter !== 'achievements'){
+            global.lastMsg[filter] = [];
+        }
+    });
+}
 
 export function clearStates(){
     if (webWorker.w){

@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, clearSavedMessages, clearStates, keyMap, srSpeak, sizeApproximation, p_on, moon_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
@@ -7417,7 +7417,7 @@ export function bank_vault(){
 
 function bioseed(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'bioseed'
@@ -7564,7 +7564,7 @@ export function cataclysm_end(){
             'end': 'cataclysm'
         });
 
-        global.lastMsg = false;
+        clearSavedMessages();
 
         let plasmid = global.race.Plasmid.count;
         let antiplasmid = global.race.Plasmid.anti;
@@ -7659,7 +7659,7 @@ export function cataclysm_end(){
 
 export function big_bang(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-    global.lastMsg = false;
+    clearSavedMessages();
 
     tagEvent('reset',{
         'end': 'blackhole'
