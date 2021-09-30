@@ -14,6 +14,17 @@ const changeList = [
         ]
     },
     {
+        version: `1.1.14`,
+        date: `9/29/2021`,
+        changes: [
+            `New settings options for message log filters.`,
+            `Added Cracked Pylons for Magic Cataclysm mode.`,
+            `Conjuring is no longer researchable in Cataclysm mode.`,
+            `Challenges section added to Wiki under Gameplay.`,
+            `Smoldering Gnawer will now consume Stone instead of nothing.`
+        ]
+    },
+    {
         version: `1.1.13`,
         date: `9/5/2021`,
         changes: [

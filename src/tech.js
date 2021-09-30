@@ -2344,9 +2344,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.queue.display = true;
-                if (!global.settings.msgFilters.queue){
-                    global.settings.msgFilters.queue = true;
-                    document.getElementById(`msgQueueFilter-queue`).style.display = 'inline';
+                if (!global.settings.msgFilters.queue.unlocked){
+                    global.settings.msgFilters.queue.unlocked = true;
+                    global.settings.msgFilters.queue.vis = true;
                 }
                 return true;
             }
@@ -2419,11 +2419,11 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.r_queue.display = true;
-                if (!global.settings.msgFilters.building_queue){
-                    global.settings.msgFilters.building_queue = true;
-                    global.settings.msgFilters.research_queue = true;
-                    document.getElementById(`msgQueueFilter-building_queue`).style.display = 'inline';
-                    document.getElementById(`msgQueueFilter-research_queue`).style.display = 'inline';
+                if (!global.settings.msgFilters.building_queue.unlocked){
+                    global.settings.msgFilters.building_queue.unlocked = true;
+                    global.settings.msgFilters.building_queue.vis = true;
+                    global.settings.msgFilters.research_queue.unlocked = true;
+                    global.settings.msgFilters.research_queue.vis = true;
                 }
                 return true;
             }
@@ -2661,9 +2661,9 @@ const techs = {
         effect: loc('tech_espionage_effect'),
         action(){
             if (payCosts($(this)[0])){
-                if (!global.settings.msgFilters.spy){
-                    global.settings.msgFilters.spy = true;
-                    document.getElementById(`msgQueueFilter-spy`).style.display = 'inline';
+                if (!global.settings.msgFilters.spy.unlocked){
+                    global.settings.msgFilters.spy.unlocked = true;
+                    global.settings.msgFilters.spy.vis = true;
                 }
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
@@ -9026,9 +9026,9 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.showPortal = true;
                 global.settings.portal.fortress = true;
-                if (!global.settings.msgFilters.hell){
-                    global.settings.msgFilters.hell = true;
-                    document.getElementById(`msgQueueFilter-hell`).style.display = 'inline';
+                if (!global.settings.msgFilters.hell.unlocked){
+                    global.settings.msgFilters.hell.unlocked = true;
+                    global.settings.msgFilters.hell.vis = true;
                 }
                 let tech = $(this)[0].grant[0];
                 global.tech[tech] = $(this)[0].grant[1];
@@ -9914,7 +9914,12 @@ const techs = {
         effect(){ return loc('tech_ley_lines_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['pylon'] = { count: 0 };
+                if (global.race['cataclysm']){
+                    global.space['pylon'] = { count: 0 };
+                }
+                else {
+                    global.city['pylon'] = { count: 0 };
+                }
                 return true;
             }
             return false;
@@ -10046,6 +10051,7 @@ const techs = {
         era: 'civilized',
         reqs: { magic: 1 },
         grant: ['conjuring',1],
+        not_trait: ['cataclysm'],
         condition(){
             return global.race['universe'] === 'magic' ? true : false;
         },
@@ -10069,6 +10075,7 @@ const techs = {
         era: 'civilized',
         reqs: { conjuring: 1 },
         grant: ['conjuring',2],
+        not_trait: ['cataclysm'],
         condition(){
             return global.race['universe'] === 'magic' ? true : false;
         },

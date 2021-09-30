@@ -1,7 +1,7 @@
 import { loc } from './../locale.js';
 import { universe_types } from './../space.js';
-import { infoBoxBuilder, sideMenu } from './functions.js';
-import { createCalcSection, prestigeCalc } from './p_res.js';
+import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
+import { prestigeCalc } from './p_res.js';
 
 export function resetsPage(content){
     let mainContent = sideMenu('create',content);

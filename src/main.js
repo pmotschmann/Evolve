@@ -123,8 +123,11 @@ else {
 initMessageQueue();
 
 if (global.lastMsg){
-    global.lastMsg.reverse().forEach(function(msg){
-        messageQueue(msg.m, msg.c, true, msg.t);
+    Object.keys(global.lastMsg).forEach(function (tag){
+        global.lastMsg[tag].reverse().forEach(function(msg){
+            messageQueue(msg.m, msg.c, true, [tag], true);
+        });
+        global.lastMsg[tag].reverse();
     });
 }
 
@@ -2573,7 +2576,7 @@ function fastLoop(){
         }
 
         if (global.race['gnawer']){
-            let res = global.race['kindling_kindred'] ? 'Stone' : 'Lumber';
+            let res = global.race['kindling_kindred'] || global.race['smoldering'] ? 'Stone' : 'Lumber';
             if (global.resource[res].display){
                 let pop = global.resource[global.race.species].amount + global.civic.garrison.workers;
                 let res_cost = pop * traits.gnawer.vars[0];
@@ -4351,12 +4354,12 @@ function fastLoop(){
                 });
             }
 
-            if (global.city['pylon']){
-                let mana_base = global.city.pylon.count * 0.01;
+            if (global.city['pylon'] || global.space['pylon']){
+                let mana_base = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * (global.race['cataclysm'] ? 0.005 : 0.01);
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
-                mana_bd[loc('city_pylon')] = mana_base+'v';
+                mana_bd[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = mana_base+'v';
 
                 if (global.tech['nexus']){
                     let nexus = global.tech['nexus'] * 5;
@@ -5647,9 +5650,9 @@ function midLoop(){
         caps[global.race.species] = 0;
 
         if (global.city['pylon']){
-            let gain = global.city.pylon.count * spatialReasoning(5);
+            let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;
-            bd_Mana[loc('city_pylon')] = gain+'v';
+            bd_Mana[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
         }
         if (global.city['farm']){
             if (global.tech['farm']){
@@ -7383,6 +7386,7 @@ function midLoop(){
                         global.stats.plasmid += plasma;
                         global.race.Plasmid.count += plasma;
                     }
+                    arpa('Crispr');
                     messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success',false,['progress']);
                 }
                 arpa('Genetics');

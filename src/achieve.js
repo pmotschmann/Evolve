@@ -290,9 +290,9 @@ export function unlockAchieve(achievement,small,rank,universe){
     if (global.race.universe !== 'micro' && small === true){
         return false;
     }
-    if (!global.settings.msgFilters.achievements){
-        global.settings.msgFilters.achievements = true;
-        document.getElementById(`msgQueueFilter-achievements`).style.display = 'inline';
+    if (!global.settings.msgFilters.achievements.unlocked){
+        global.settings.msgFilters.achievements.unlocked = true;
+        global.settings.msgFilters.achievements.vis = true;
     }
     let a_level = alevel();
     let unlock = false;
@@ -337,9 +337,9 @@ export function unlockFeat(feat,small,rank){
     if ((global.race.universe === 'micro' && small !== true) || (global.race.universe !== 'micro' && small === true)){
         return false;
     }
-    if (!global.settings.msgFilters.achievements){
-        global.settings.msgFilters.achievements = true;
-        document.getElementById(`msgQueueFilter-achievements`).style.display = 'inline';
+    if (!global.settings.msgFilters.achievements.unlocked){
+        global.settings.msgFilters.achievements.unlocked = true;
+        global.settings.msgFilters.achievements.vis = true;
     }
     let a_level = alevel();
     if (typeof rank === "undefined" || rank > a_level){

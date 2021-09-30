@@ -2,7 +2,7 @@ import { global } from './../vars.js';
 import { universeAffix, alevel } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, challenge_multiplier, calcPrestige, darkEffect } from './../functions.js';
-import { infoBoxBuilder, sideMenu } from './functions.js';
+import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 
 export function pResPage(content){
     let mainContent = sideMenu('create',content);
@@ -97,42 +97,6 @@ export function pResPage(content){
     subSection = createCalcSection(section,'artifact','gain');
     prestigeCalc(subSection,'artifact');
     sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
-}
-
-export function createCalcSection(info,id,type,insert){
-    insert = insert || loc(`wiki_calc_insert_` + type);
-    let calc = $(`<div></div>`);
-    info.append(calc);
-    calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info calcReveal" @click="show()">{{ vis | label }}</span>`);
-    let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
-    calc.append(section);
-    
-    let modSection = document.getElementById(id + type + 'Section');
-    let modDisplay = { vis: false };
-    
-    vBind({
-        el: `#${id}${type}Button`,
-        data: modDisplay,
-        methods: {
-            show(){
-                if (modSection.style.display === 'block'){
-                    modSection.style.display = 'none';
-                    modDisplay.vis = false;
-                }
-                else {
-                    modSection.style.display = 'block';
-                    modDisplay.vis = true;
-                }
-            }
-        },
-        filters: {
-            label(vis){
-                return vis ? loc(`wiki_calc_hide`,[insert]) : loc(`wiki_calc_show`,[insert]);
-            }
-        }
-    });
-    
-    return section;
 }
 
 const calcVars = {

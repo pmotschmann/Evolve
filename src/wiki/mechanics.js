@@ -6,8 +6,7 @@ import { races } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { sideMenu, infoBoxBuilder } from './functions.js';
-import { createCalcSection } from './p_res.js';
+import { sideMenu, infoBoxBuilder, createCalcSection } from './functions.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -93,6 +92,20 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
     }
 
+    { // Bank Vault
+        let occupation = infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('city_bank'),loc('interstellar_exchange_title'),loc('portal_arcology_title'),loc('resource_Money_name'),loc('wiki_mechanics_bank_vault'),loc('space_red_spaceport_title'),loc('wiki_challenges_scenarios_cataclysm')],
+                2: [loc('resource_Money_name'),loc('city_bank'),loc('tech_adamantite_vault'),loc('governor_entrepreneur'),loc('trait_paranoid_name'),loc('tech_stock_market'),loc('tech_unification'),loc('wiki_challenges_modes_inflation')]
+            },
+            data_link: {
+                1: ['wiki.html#planetary-structures-bank','wiki.html#interstellar-structures-exchange','wiki.html#hell-structures-arcology',false,false,'wiki.html#space-structures-spaceport','wiki.html#challenges-gameplay-scenarios_cataclysm'],
+                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
+    }
+
     { // Occupying Foreign Powers
         let occupation = infoBoxBuilder(mainContent,{ name: 'occupying', template: 'mechanics', label: loc('wiki_mechanics_occupying'), paragraphs: 20, break: [3,8,12,16,18,19,20], h_level: 2,
             para_data: {
@@ -117,7 +130,7 @@ export function mechanicsPage(content){
                 20: [loc('achieve_syndicate_name')]
             },
             data_link: {
-                2: [false,false,false,'wiki.html#government-gameplay-federation'],
+                2: [false,false,'wiki.html#government-gameplay-federation'],
                 6: [false,'wiki.html#early_space-tech-unification2'],
                 7: ['wiki.html#government-gameplay-federation'],
                 11: [false,false,'wiki.html#government-gameplay-federation'],
@@ -253,14 +266,15 @@ export function mechanicsPage(content){
     { // CRISPR Mutation
         let crispr_mutation = infoBoxBuilder(mainContent,{ name: 'crispr_mutation', template: 'mechanics', label: loc('wiki_mechanics_crispr_mutation'), paragraphs: 5, break: [3], h_level: 2,
             para_data: {
-                1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title')],
+                1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title'),loc('resource_Plasmid_plural_name')],
                 3: [loc('tech_arpa'),loc('tab_arpa_genetics'),],
                 4: ['5x',loc('wiki_mechanics_crispr_mutation_para4_note1')],
-                5: ['10x']
+                5: [loc('wiki_mechanics_custom'),'10x']
             },
             data_link: {
-                1: [false,'wiki.html#crispr-prestige-mutation'],
-                4: [false,'wiki.html#traits-species']
+                1: [false,'wiki.html#crispr-prestige-mutation','wiki.html#resources-prestige-plasmids'],
+                4: [false,'wiki.html#traits-species'],
+                5: ['wiki.html#custom-species']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));

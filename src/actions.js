@@ -2,7 +2,7 @@ import { global, save, webWorker, keyMultiplier, clearStates, keyMap, srSpeak, s
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, unlockFeat, challengeIcon, checkAchievements, alevel } from './achieve.js';
-import { races, traits, genus_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -2760,8 +2760,10 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.settings['showMil'] = true;
-                    global.settings.msgFilters.combat = true;
-                    document.getElementById(`msgQueueFilter-combat`).style.display = 'inline';
+                    if (!global.settings.msgFilters.combat.unlocked){
+                        global.settings.msgFilters.combat.unlocked = true;
+                        global.settings.msgFilters.combat.vis = true;
+                    }
                     if (!global.civic.garrison.display){
                         global.civic.garrison.display = true;
                         vBind({el: `#garrison`},'update');
@@ -6712,11 +6714,10 @@ function sentience(){
     }
 
     if (global.race['no_crispr'] || global.race['badgenes']){
-        let bad = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
         let repeat = global.race['badgenes'] ? 2 : 1;
         for (let j=0; j<repeat; j++){
             for (let i=0; i<10; i++){
-                let trait = bad[Math.rand(0,bad.length)];
+                let trait = neg_roll_traits[Math.rand(0,neg_roll_traits.length)];
                 if ((global.race['smart'] && trait === 'dumb') || global.race[trait]) {
                     continue;
                 }

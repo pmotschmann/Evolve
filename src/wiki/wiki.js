@@ -41,6 +41,7 @@ function initPage(){
                 { key: 'government' },
                 { key: 'governor' },
                 { key: 'combat' },
+                { key: 'challenges' },
                 { key: 'resets' },
                 { key: 'planets' },
                 { key: 'universes' },

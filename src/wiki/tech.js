@@ -6,7 +6,7 @@ import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races } from './../races.js';
 import { getHalloween } from './../functions.js';
-import { actionDesc, sideMenu } from './functions.js';
+import { actionDesc, sideMenu, getSolarName } from './functions.js';
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');
@@ -3042,18 +3042,6 @@ function getTechTrees(path){
         }
     ];
     return techTrees;
-}
-
-export function getSolarName(planet) {
-    if (global.race.species === 'protoplasm'){
-        return loc(`race_human_solar_${planet}`);
-    }
-    else if (global.race.species === 'custom') {
-        return global.custom.race0[planet];
-    }
-    else {
-        return loc(`race_${global.race.species}_solar_${planet}`);
-    }
 }
 
 function addInformation(parent,key){

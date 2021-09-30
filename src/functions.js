@@ -1,4 +1,4 @@
-import { global, save, message_logs, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, clearStates } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -7,8 +7,6 @@ import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeLevel } from './achieve.js';
-
-export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -275,12 +273,17 @@ export function initMessageQueue(filters){
     filters = filters || message_filters;
     filters.forEach(function (filter){
         message_logs[filter] = [];
+        if (!global.settings.msgFilters[message_logs.view].vis){
+            $(`#msgQueueFilter-${message_logs.view}`).removeClass('is-active');
+            $(`#msgQueueFilter-${filter}`).addClass('is-active');
+            message_logs.view = filter;
+        }
     });
 }
 
-export function messageQueue(msg,color,dnr,tags){
+export function messageQueue(msg,color,dnr,tags,reload){
     tags = tags || [];
-    if (!tags.includes('all')){
+    if (!reload && !tags.includes('all')){
         tags.push('all');
     }
     
@@ -289,25 +292,26 @@ export function messageQueue(msg,color,dnr,tags){
     if (tags.includes(message_logs.view)){
         let new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
         $('#msgQueueLog').prepend(new_message);
-        if ($('#msgQueueLog').children().length > 60){
+        if ($('#msgQueueLog').children().length > global.settings.msgFilters[message_logs.view].max){
             $('#msgQueueLog').children().last().remove();
         }
     }
     tags.forEach(function (tag){
         message_logs[tag].unshift({ msg: msg, color: color });
-        if (message_logs[tag].length > 60){
+        if (message_logs[tag].length > global.settings.msgFilters[tag].max){
             message_logs[tag].pop();
         }
     });
     
     if (!dnr){
-        if (!global.lastMsg){
-            global.lastMsg = [];
-        }
-        global.lastMsg.unshift({ m: msg, c: color, t:tags });
-        if (global.lastMsg.length > 3){
-            global.lastMsg = global.lastMsg.slice(0,3);
-        }
+        tags.forEach(function (tag){
+            if (global.lastMsg[tag]){
+                global.lastMsg[tag].unshift({ m: msg, c: color });
+                if (global.lastMsg[tag].length > global.settings.msgFilters[tag].save){
+                    global.lastMsg[tag].splice(global.settings.msgFilters[tag].save);
+                }
+            }
+        });
     }
 }
 

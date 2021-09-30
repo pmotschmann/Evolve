@@ -1067,6 +1067,21 @@ Misc ---------> Main template
             }
         }
 
+        // .msgQueue
+        .msgQueue{
+            span.special {
+                .gear {
+                    fill: @div-special-gear-fill;
+                }
+            }
+
+            span.special:hover {
+                .gear {
+                    fill: @div-special-hover-gear-fill;
+                }
+            }
+        }
+
         // .main
         .main {
             .content {
@@ -1823,6 +1838,7 @@ a {
     }
 }
 
+.msgInput,
 .keyMap {
     width: 7.5rem;
     display: inline-block;
@@ -2022,6 +2038,10 @@ a {
     }
         
     #msgQueueHeader {
+        .special {
+            cursor: pointer;
+        }
+        
         h2 {
             border-bottom: solid .0625rem;
         }
@@ -2813,14 +2833,11 @@ a {
 
     .tradeOffer();
 
-    .importExport {
-        margin-top: 1rem;
-    }
-
     .setting {
         margin: 0 .25rem .5rem 0;
     }
 
+    .importExport,
     .stringPack {
         margin-top: 1rem;
     }
@@ -3252,6 +3269,26 @@ a {
     padding: .25rem;
     min-width: 38rem;
     border-radius: .5rem;
+}
+
+.modal {
+    .modalBody {
+        max-height: ~"calc(100vh - 5rem)";
+    }
+    
+    .msgInput {
+        .checkbox {
+            margin: 0 3rem;
+            
+            .control-label {
+                padding: 0;
+            }
+        }
+    }
+    
+    .msgInputApply {
+        margin-top: 1rem;
+    }
 }
 
 .main>div.popper,
