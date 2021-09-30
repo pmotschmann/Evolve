@@ -8,6 +8,7 @@ const changeList = [
         date: `9/30/2021`,
         changes: [
             `Fixed Pylon bug with upgraded save games in Magic Cataclysm runs.`,
+            `Fixed a Message Log filtering problem where some players might not unlock some options.`
         ]
     },
     {
