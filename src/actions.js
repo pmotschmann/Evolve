@@ -6765,6 +6765,16 @@ function sentience(){
         global.tech['r_queue'] = 1;
         global.queue.display = true;
         global.r_queue.display = true;
+        if (!global.settings.msgFilters.queue.unlocked){
+            global.settings.msgFilters.queue.unlocked = true;
+            global.settings.msgFilters.queue.vis = true;
+        }
+        if (!global.settings.msgFilters.building_queue.unlocked){
+            global.settings.msgFilters.building_queue.unlocked = true;
+            global.settings.msgFilters.building_queue.vis = true;
+            global.settings.msgFilters.research_queue.unlocked = true;
+            global.settings.msgFilters.research_queue.vis = true;
+        }
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){

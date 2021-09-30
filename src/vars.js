@@ -880,7 +880,13 @@ if (convertVersion(global['version']) < 101014){
     }
 }
 
-global['version'] = '1.1.14';
+if (convertVersion(global['version']) < 101015){
+    if (global.race['cataclysm'] && global.tech['magic'] && global.tech['magic'] >= 2){
+        global.space['pylon'] = { count: 0 };
+    }
+}
+
+global['version'] = '1.1.15';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
