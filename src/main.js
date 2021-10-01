@@ -1595,6 +1595,18 @@ function fastLoop(){
             }
         }
 
+        // Mass Relay charging
+        if (global.space['m_relay']){
+            if (p_on['m_relay']){
+                if (global.space.m_relay.charged < 10000){
+                    global.space.m_relay.charged++;
+                }
+            }
+            else {
+                global.space.m_relay.charged = 0;
+            }
+        }
+
         // Troop Lander
         if (global.space['fob'] && global.space['lander']){
             if (p_on['fob']){
@@ -5987,6 +5999,18 @@ function midLoop(){
             gain = (global.city['shed'].count * (spatialReasoning(75 * multiplier)));
             caps['Coal'] += gain;
             bd_Coal[label] = gain+'v';
+
+            if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
+                gain = (global.city['shed'].count * (spatialReasoning(15 * multiplier)));
+                caps['Graphene'] += gain;
+                bd_Graphene[label] = gain+'v';
+            }
+
+            if (global.tech['shelving'] && global.tech.shelving && global.resource.Stanene.display){
+                gain = (global.city['shed'].count * (spatialReasoning(25 * multiplier)));
+                caps['Stanene'] += gain;
+                bd_Stanene[label] = gain+'v';
+            }
         }
 
         if (global.interstellar['warehouse']){
@@ -6197,6 +6221,7 @@ function midLoop(){
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
             multiplier *= global.tech['world_control'] || global.race['cataclysm'] ? 2 : 1;
+            if (global.tech['shelving'] && global.tech.shelving >= 3){ multiplier *= 1.5; }
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
             let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
 

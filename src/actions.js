@@ -2939,6 +2939,14 @@ export const actions = {
                     let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Titanium.name])}</span>`;
                 }
+                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
+                    let val = sizeApproximation(+(spatialReasoning(15) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Graphene.name])}</span>`;
+                }
+                if (global.tech['shelving'] && global.tech.shelving && global.resource.Stanene.display){
+                    let val = sizeApproximation(+(spatialReasoning(25) * multiplier).toFixed(0),1);
+                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stanene.name])}</span>`;
+                }
                 storage = storage + '</div>';
                 return storage;
             },
@@ -4985,6 +4993,9 @@ export function storageMultipler(){
     }
     if (global.tech['tp_depot']){
         multiplier *= 1 + (global.tech['tp_depot'] / 20);
+    }
+    if (global.tech['shelving'] && global.tech.shelving >= 3){
+        multiplier *= 1.5;
     }
     if (global.stats.achieve['blackhole']){
         multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;

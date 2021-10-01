@@ -806,6 +806,34 @@ export const outerTruth = {
             syndicate(){ return global.tech['kuiper'] ? true : false; },
             syndicate_cap(){ return 2500; },
         },
+        kuiper_mission: {
+            id: 'space-kuiper_mission',
+            title(){
+                return loc('space_mission_title',[loc(`space_kuiper_title`)]);
+            },
+            desc(){
+                return loc('space_mission_desc',[loc(`space_kuiper_title`)]);
+            },
+            reqs: { outer: 7 },
+            grant: ['kuiper',1],
+            path: ['truepath'],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: { 
+                Helium_3(){ return +fuel_adjust(1000000).toFixed(0); },
+                Elerium(){ return 1000; }
+            },
+            effect(){
+                return loc('space_kuiper_mission_effect');
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.syndicate['spc_kuiper'] = 500;
+                    messageQueue(loc('space_kuiper_mission_action'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     spc_eris: {
         info: {
@@ -818,6 +846,34 @@ export const outerTruth = {
             zone: 'outer',
             syndicate(){ return global.tech['eris'] ? true : false; },
             syndicate_cap(){ return 7500; },
+        },
+        eris_mission: {
+            id: 'space-eris_mission',
+            title(){
+                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.eris]);
+            },
+            desc(){
+                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.eris]);
+            },
+            reqs: { outer: 7 },
+            grant: ['eris',1],
+            path: ['truepath'],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: { 
+                Helium_3(){ return +fuel_adjust(1250000).toFixed(0); },
+                Elerium(){ return 1250; }
+            },
+            effect(){
+                return loc('space_eris_mission_effect',[genusVars[races[global.race.species].type].solar.eris]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.syndicate['spc_eris'] = 1000;
+                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.eris, races[global.race.species].home]),'info');
+                    return true;
+                }
+                return false;
+            }
         },
     }
 };
@@ -1208,7 +1264,7 @@ function shipSpeed(ship){
             break;
     }
 
-    let boost = ship.location === 'spc_dwarf' && p_on['m_relay'] && ship.transit === 0 ? 3 : 1;
+    let boost = ship.location === 'spc_dwarf' && p_on['m_relay'] && ship.transit === 0 && global.space['m_relay'] && global.space.m_relay.charged >= 10000 ? 3 : 1;
     switch (ship.engine){
         case 'ion':
             return 12 / mass * boost;
@@ -1798,6 +1854,9 @@ export function storehouseMultiplier(heavy){
     }
     if (heavy && global.tech['shelving']){
         multiplier *= 2;
+    }
+    if (global.tech['shelving'] && global.tech.shelving >= 3){
+        multiplier *= 1.5;
     }
     return multiplier;
 }

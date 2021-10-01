@@ -611,6 +611,9 @@ const spaceProjects = {
                     multiplier *= 2;
                     containers += 10;
                 }
+                if (global.tech['shelving'] && global.tech.shelving >= 3){
+                    multiplier *= 1.5;
+                }
                 multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
                 let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
 
@@ -2039,7 +2042,7 @@ const spaceProjects = {
                     global.space.mass_relay.count++;
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
-                        global.space['m_relay'] = { count: 1, on: 0 };
+                        global.space['m_relay'] = { count: 1, on: 1, charged: 10000 };
                         drawTech();
                         renderSpace();
                         clearPopper();
@@ -2067,7 +2070,8 @@ const spaceProjects = {
                 return powerCostMod(100);
             },
             effect(){
-                return `<div>${loc('space_dwarf_mass_relay_effect2',[races[global.race.species].solar.dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let charge = Math.floor(global.space.m_relay.charged / 10) / 10;
+                return `<div>${loc('space_dwarf_mass_relay_effect2',[races[global.race.species].solar.dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div><div>${loc('space_dwarf_mass_relay_charged',[charge])}</div>`;
             },
             action(){
                 return false;

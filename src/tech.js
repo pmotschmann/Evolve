@@ -10521,7 +10521,7 @@ const techs = {
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
-        reqs: { outer: 7 },
+        reqs: { outer: 7, locked: 1 },
         grant: ['outer',8],
         cost: {
             Knowledge(){ return 3000000; },
@@ -10885,6 +10885,28 @@ const techs = {
         cost: {
             Knowledge(){ return 1250000; },
             Quantium(){ return 75000; }
+        },
+        effect: loc('tech_garage_shelving_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    warehouse_shelving: {
+        id: 'tech-warehouse_shelving',
+        title: loc('tech_warehouse_shelving'),
+        desc: loc('tech_warehouse_shelving'),
+        category: 'storage',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { shelving: 2, quantium: 1, outer: 4 },
+        grant: ['shelving',3],
+        cost: {
+            Knowledge(){ return 2250000; },
+            Quantium(){ return 1000000; },
+            Cipher(){ return 50000; }
         },
         effect: loc('tech_garage_shelving_effect'),
         action(){
