@@ -5049,7 +5049,7 @@ const galaxyProjects = {
                 Mythril(offset){ return spaceCostMultiplier('excavator', offset, 180000, 1.25, 'galaxy'); },
             },
             effect(){
-                let orichalcum = +(0.2 * zigguratBonus()).toFixed(3);
+                let orichalcum = +(production('excavator')).toFixed(3);
                 return `<div>${loc('gain',[orichalcum,loc('resource_Orichalcum_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(8); },

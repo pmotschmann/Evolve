@@ -2106,6 +2106,7 @@ export const races = {
 };
 
 export const genusVars = {
+    organism: {},
     humanoid: {},
     carnivore: {},
     herbivore: {},
@@ -2127,11 +2128,12 @@ export const genusVars = {
 };
 
 Object.keys(genusVars).forEach(function(k){
+    let g = k === 'organism' ? 'humanoid' : k;
     genusVars[k]['solar'] = {
-        titan: loc(`genus_${k}_solar_titan`),
-        enceladus: loc(`genus_${k}_solar_enceladus`),
-        triton: loc(`genus_${k}_solar_triton`),
-        eris: loc(`genus_${k}_solar_eris`),
+        titan: loc(`genus_${g}_solar_titan`),
+        enceladus: loc(`genus_${g}_solar_enceladus`),
+        triton: loc(`genus_${g}_solar_triton`),
+        eris: loc(`genus_${g}_solar_eris`),
     }
 });
 

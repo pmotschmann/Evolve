@@ -2797,7 +2797,8 @@ export const actions = {
             },
             effect(){
                 let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
-                let healing = global.tech['medic'] >= 2 ? 10 : 5;
+                let healing = global.tech['medic'] * 5;
+
                 return `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
             },
             action(){

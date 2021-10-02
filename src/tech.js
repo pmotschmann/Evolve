@@ -10320,12 +10320,35 @@ const techs = {
         desc: loc('tech_bac_tanks_desc'),
         category: 'military',
         era: 'solar',
+        path: ['truepath'],
         reqs: { medic: 1, triton: 2 },
         grant: ['medic',2],
         cost: {
             Knowledge(){ return 1750000; }
         },
         effect: loc('tech_bac_tanks_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    medkit: {
+        id: 'tech-medkit',
+        title: loc('tech_medkit'),
+        desc: loc('tech_medkit'),
+        category: 'military',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { medic: 2, outer: 4 },
+        grant: ['medic',3],
+        cost: {
+            Knowledge(){ return 2250000; },
+            Quantium(){ return 250000; },
+            Cipher(){ return 40000; }
+        },
+        effect: loc('tech_medkit_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -10909,6 +10932,50 @@ const techs = {
             Cipher(){ return 50000; }
         },
         effect: loc('tech_garage_shelving_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    elerium_extraction: {
+        id: 'tech-elerium_extraction',
+        title: loc('tech_elerium_extraction'),
+        desc: loc('tech_elerium_extraction'),
+        category: 'mining',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { kuiper: 1 },
+        grant: ['kuiper',2],
+        cost: {
+            Knowledge(){ return 2500000; },
+            Orichalcum(){ return 100000; },
+            Cipher(){ return 20000; }
+        },
+        effect(){ return loc('tech_elerium_extraction_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['elerium_mine'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    orichalcum_panels_tp: {
+        id: 'tech-orichalcum_panels_tp',
+        title: loc('tech_orichalcum_panels'),
+        desc: loc('tech_orichalcum_panels'),
+        category: 'power_generation',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { kuiper: 1, swarm: 5 },
+        grant: ['swarm',6],
+        cost: {
+            Knowledge(){ return 2400000; },
+            Orichalcum(){ return 125000; }
+        },
+        effect(){ return loc('tech_orichalcum_panels_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

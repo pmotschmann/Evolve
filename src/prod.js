@@ -164,6 +164,10 @@ export function production(id,val){
         {
             return 0.008 * zigguratBonus();
         }
+        case 'excavator':
+        {
+            return 0.2 * zigguratBonus();
+        }
         case 'vitreloy_plant':
         {
             let vitreloy = 0.18 * zigguratBonus();
@@ -198,6 +202,22 @@ export function production(id,val){
                 return 0.005;
             }
             return 0;
+        }
+        case 'orichalcum_mine':
+        {
+            return 0.08 * zigguratBonus();
+        }
+        case 'uranium_mine':
+        {
+            return 0.025 * zigguratBonus();
+        }
+        case 'neutronium_mine':
+        {
+            return 0.04 * zigguratBonus();
+        }
+        case 'elerium_mine':
+        {
+            return 0.009 * zigguratBonus();
         }
     }
 }

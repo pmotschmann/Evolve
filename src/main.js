@@ -1582,6 +1582,28 @@ function fastLoop(){
                     p_on[parts[1]]--;
                 }
                 power_grid -= global[region][parts[1]].on * watts;
+
+                if (c_action[parts[1]].hasOwnProperty('p_fuel')){
+                    let s_fuels = c_action[parts[1]].p_fuel();
+                    if (!Array.isArray(s_fuels)){
+                        s_fuels = [s_fuels];
+                    }
+                    for (let j=0; j<s_fuels.length; j++){
+                        let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
+                        let fuel = s_fuels[j];
+                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                        let mb_consume = p_on[parts[1]] * fuel_cost;
+                        breakdown.p.consume[fuel.r][title] = -(mb_consume);
+                        for (let k=0; k<p_on[parts[1]]; k++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
+                                p_on[parts[1]] -= k;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 if (p_on[parts[1]] !== global[region][parts[1]].on){
                     $(`#${region}-${parts[1]} .on`).addClass('warn');
                 }
@@ -4357,7 +4379,6 @@ function fastLoop(){
 
                         let buffer = global.resource.Mana.diff > 0 ? global.resource.Mana.diff * time_multiplier : 0
                         if (!modRes('Mana', -(consume_mana * time_multiplier), false, buffer)){
-                            if (global.resource.Mana.amount)
                             global.race.casting[spell]--;
                         }
                     }
@@ -4761,6 +4782,17 @@ function fastLoop(){
             modRes('Uranium', driod_delta * time_multiplier);
         }
 
+        // Kuiper Uranium
+        if (global.space['uranium_mine'] && p_on['uranium_mine']){
+            let synd = syndicate('spc_kuiper');
+
+            let mine_base = p_on['uranium_mine'] * production('uranium_mine');
+            let mine_delta = mine_base * global_multiplier * synd;
+            uranium_bd[loc('space_kuiper_mine',[global.resource.Uranium.name])] = mine_base + 'v';
+            uranium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            modRes('Uranium', mine_delta * time_multiplier);
+        }
+
         breakdown.p['Uranium'] = uranium_bd;
 
         // Oil
@@ -4897,7 +4929,7 @@ function fastLoop(){
                 neutronium_bd[`ᄂ${loc('tech_worker_drone')}`] = (p_values.d * 100) + '%';
             }
             let synd = syndicate('spc_gas_moon');
-            neutronium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            neutronium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
 
             let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier * synd;
 
@@ -4932,6 +4964,17 @@ function fastLoop(){
             modRes('Neutronium', delta * time_multiplier);
         }
 
+        // Kuiper Neutronium
+        if (global.space['neutronium_mine'] && p_on['neutronium_mine']){
+            let synd = syndicate('spc_kuiper');
+
+            let mine_base = p_on['neutronium_mine'] * production('neutronium_mine');
+            let mine_delta = mine_base * global_multiplier * synd;
+            neutronium_bd[loc('space_kuiper_mine',[global.resource.Neutronium.name])] = mine_base + 'v';
+            neutronium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
+            modRes('Neutronium', mine_delta * time_multiplier);
+        }
+
         neutronium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Neutronium'] = neutronium_bd;
 
@@ -4942,7 +4985,7 @@ function fastLoop(){
             let synd = syndicate('spc_belt');
             let delta = elerium_base * hunger * global_multiplier * synd;
             elerium_bd[loc('job_space_miner')] = elerium_base + 'v';
-            elerium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            elerium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
 
             if (global.race['discharge'] && global.race['discharge'] > 0){
                 delta *= 0.75;
@@ -4961,6 +5004,17 @@ function fastLoop(){
         }
         elerium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Elerium'] = elerium_bd;
+
+        // Kuiper Elerium
+        if (global.space['elerium_mine'] && p_on['elerium_mine']){
+            let synd = syndicate('spc_kuiper');
+
+            let mine_base = p_on['elerium_mine'] * production('elerium_mine');
+            let mine_delta = mine_base * global_multiplier * synd;
+            elerium_bd[loc('space_kuiper_mine',[global.resource.Elerium.name])] = mine_base + 'v';
+            elerium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
+            modRes('Elerium', mine_delta * time_multiplier);
+        }
 
         // Adamantite
         let adamantite_bd = {};
@@ -5086,7 +5140,7 @@ function fastLoop(){
         // Orichalcum
         let orichalcum_bd = {};
         if (p_on['s_gate'] && global.resource.Orichalcum.display && global.galaxy['excavator'] && p_on['excavator'] > 0){
-            let base = p_on['excavator'] * 0.2 * zigguratBonus();
+            let base = p_on['excavator'] * production('excavator');
             let pirate = piracy('gxy_chthonian');
             let delta = base * global_multiplier * pirate;
 
@@ -5100,6 +5154,18 @@ function fastLoop(){
 
             modRes('Orichalcum', delta * time_multiplier);
         }
+
+        // Kuiper Orichalcum
+        if (global.space['orichalcum_mine'] && p_on['orichalcum_mine']){
+            let synd = syndicate('spc_kuiper');
+
+            let mine_base = p_on['orichalcum_mine'] * production('orichalcum_mine');
+            let mine_delta = mine_base * global_multiplier * synd;
+            orichalcum_bd[loc('space_kuiper_mine',[global.resource.Orichalcum.name])] = mine_base + 'v';
+            orichalcum_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            modRes('Orichalcum', mine_delta * time_multiplier);
+        }
+
         breakdown.p['Orichalcum'] = orichalcum_bd;
 
         // Income
@@ -8134,7 +8200,7 @@ function longLoop(){
             let healed = global.race['regenerative'] ? traits.regenerative.vars[0] : 1;
             let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
             if (global.tech['medic'] && global.tech['medic'] >= 2){
-                hc *= 2;
+                hc *= global.tech['medic'];
             }
             if (global.race['fibroblast']){
                 hc += traits.fibroblast.vars[1] * global.race['fibroblast'];

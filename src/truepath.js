@@ -827,8 +827,142 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    global.space['orichalcum_mine'] = { count: 0, on: 0 };
+                    global.space['uranium_mine'] = { count: 0, on: 0 };
+                    global.space['neutronium_mine'] = { count: 0, on: 0 };
                     global.space.syndicate['spc_kuiper'] = 500;
                     messageQueue(loc('space_kuiper_mission_action'),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        orichalcum_mine: {
+            id: 'space-orichalcum_mine',
+            title(){ return loc('space_kuiper_mine',[global.resource.Orichalcum.name]); },
+            desc(){
+                return `<div>${loc('space_kuiper_mine',[global.resource.Orichalcum.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+            },
+            reqs: { kuiper: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 25000000, 1.25); },
+                Graphene(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 900000, 1.25); },
+                Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 125, 1.25); },
+                Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
+            },
+            effect(){
+                let mineral = +(production('orichalcum_mine')).toFixed(3);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let desc = `<div>${loc('gain',[mineral,loc('resource_Orichalcum_name')])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            powered(){ return powerCostMod(10); },
+            p_fuel(){ return { r: 'Oil', a: 100 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.orichalcum_mine.count++;
+                    global.resource.Orichalcum.display = true;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.orichalcum_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        uranium_mine: {
+            id: 'space-uranium_mine',
+            title(){ return loc('space_kuiper_mine',[global.resource.Uranium.name]); },
+            desc(){
+                return `<div>${loc('space_kuiper_mine',[global.resource.Uranium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+            },
+            reqs: { kuiper: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('uranium_mine', offset, 5000000, 1.25); },
+                Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 180000, 1.25); },
+                Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 375000, 1.25); }
+            },
+            effect(){
+                let mineral = +(production('uranium_mine')).toFixed(3);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let desc = `<div>${loc('gain',[mineral,loc('resource_Uranium_name')])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            powered(){ return powerCostMod(5); },
+            p_fuel(){ return { r: 'Oil', a: 50 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.uranium_mine.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.uranium_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        neutronium_mine: {
+            id: 'space-neutronium_mine',
+            title(){ return loc('space_kuiper_mine',[global.resource.Neutronium.name]); },
+            desc(){
+                return `<div>${loc('space_kuiper_mine',[global.resource.Neutronium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+            },
+            reqs: { kuiper: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('neutronium_mine', offset, 8000000, 1.25); },
+                Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 400000, 1.25); },
+                Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 750000, 1.25); },
+            },
+            effect(){
+                let mineral = +(production('neutronium_mine')).toFixed(3);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let desc = `<div>${loc('gain',[mineral,loc('resource_Neutronium_name')])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            powered(){ return powerCostMod(8); },
+            p_fuel(){ return { r: 'Oil', a: 50 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.neutronium_mine.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.neutronium_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        elerium_mine: {
+            id: 'space-elerium_mine',
+            title(){ return loc('space_kuiper_mine',[global.resource.Elerium.name]); },
+            desc(){
+                return `<div>${loc('space_kuiper_mine',[global.resource.Elerium.name])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
+            },
+            reqs: { kuiper: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('elerium_mine', offset, 20000000, 1.25); },
+                Titanium(offset){ return spaceCostMultiplier('elerium_mine', offset, 250000, 1.25); },
+                Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 50000, 1.25); },
+                Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 125000, 1.25); },
+            },
+            effect(){
+                let mineral = +(production('elerium_mine')).toFixed(3);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let desc = `<div>${loc('gain',[mineral,loc('resource_Elerium_name')])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            powered(){ return powerCostMod(12); },
+            p_fuel(){ return { r: 'Oil', a: 75 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.elerium_mine.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.elerium_mine.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1676,8 +1810,10 @@ export function syndicate(region,extra){
                 }
                 break;
             case 'spc_triton':
+            case 'spc_kuiper':
+            case 'spc_eris':
                 {
-                    let r = spaceTech('spc_triton','info');
+                    let r = spaceTech(region,'info');
                     divisor = r.syndicate_cap();
                 }
                 break;
