@@ -1726,7 +1726,7 @@ function fastLoop(){
                 }
             }
 
-            if (sup.r === 'spc_eris' && !p_on['ai_core2']){
+            if (global.space[sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
                 global.space[sup.s].s_max = 0;
             }
     
