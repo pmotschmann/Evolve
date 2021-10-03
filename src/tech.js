@@ -10228,6 +10228,27 @@ const techs = {
             return false;
         }
     },
+    alien_biotech: {
+        id: 'tech-alien_biotech',
+        title: loc('tech_alien_biotech'),
+        desc: loc('tech_alien_biotech'),
+        category: 'science',
+        era: 'solar',
+        reqs: { genetics: 8, kuiper: 1 },
+        grant: ['biotech',1],
+        cost: {
+            Knowledge(){ return 2400000; },
+            Orichalcum(){ return 125000; },
+            Cipher(){ return 15000; }
+        },
+        effect(){ return loc('tech_alien_biotech_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     zero_g_lab: {
         id: 'tech-zero_g_lab',
         title: loc('tech_zero_g_lab'),
@@ -10372,6 +10393,28 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.space['sam'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    data_cracker: {
+        id: 'tech-data_cracker',
+        title: loc('tech_data_cracker'),
+        desc: loc('tech_data_cracker'),
+        category: 'science',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 7, kuiper: 1 },
+        grant: ['titan',8],
+        cost: {
+            Knowledge(){ return 2750000; },
+            Cipher(){ return 25000; }
+        },
+        effect(){ return loc('tech_data_cracker_effect',[global.resource.Cipher.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['decoder'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

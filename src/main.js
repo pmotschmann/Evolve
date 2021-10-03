@@ -6698,6 +6698,9 @@ function midLoop(){
             if (global.tech['science'] >= 21){
                 gain *= 1.45;
             }
+            if (global.tech['biotech'] >= 1){
+                gain *= 2.5;
+            }
             caps['Knowledge'] += (p_on['biolab'] * gain);
             bd_Knowledge[loc('city_biolab')] = (p_on['biolab'] * gain)+'v';
         }
@@ -6871,6 +6874,11 @@ function midLoop(){
             if (global.race['cataclysm']){
                 lCaps['scientist'] += support_on['exotic_lab'];
             }
+        }
+        if (support_on['decoder']){
+            let gain = support_on['decoder'] * global.civic.titan_colonist.workers * 2500;
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('space_decoder_title')] = gain+'v';
         }
         if (p_on['elerium_contain']){
             let el_gain = p_on['elerium_contain'] * spatialReasoning(100);

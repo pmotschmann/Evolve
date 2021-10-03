@@ -439,7 +439,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.sam.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
+                    if (global.city.power >= $(this)[0].powered()){
                         global.space.sam.on++;
                     }
                     return true;
@@ -448,6 +448,40 @@ export const outerTruth = {
             },
             post(){
                 vBind({el: `#spc_titansynd`},'update');
+            }
+        },
+        decoder: {
+            id: 'space-decoder',
+            title: loc('space_decoder_title'),
+            desc(){
+                return `<div>${loc('space_decoder_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[genusVars[races[global.race.species].type].solar.titan, global.resource.Cipher.name])}</div>`;
+            },
+            reqs: { titan: 8 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('decoder', offset, 12500000, 1.275); },
+                Elerium(offset){ return spaceCostMultiplier('decoder', offset, 750, 1.275); },
+                Orichalcum(offset){ return spaceCostMultiplier('decoder', offset, 330000, 1.275); },
+                Quantium(offset){ return spaceCostMultiplier('decoder', offset, 180000, 1.275); },
+            },
+            effect(){
+                let cipher = $(this)[0].support_fuel().a;
+                let know = 2500;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+                desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+            },
+            powered(){ return powerCostMod(1); },
+            support_fuel(){ return { r: 'Cipher', a: 0.06 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.decoder.count++;
+                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
+                        global.space.decoder.on++;
+                    }
+                    return true;
+                }
+                return false;
             }
         },
     },

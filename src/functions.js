@@ -251,7 +251,7 @@ export function powerGrid(type,reset){
             power_structs = ['prtl_spire:port','prtl_spire:base_camp','prtl_spire:mechbay'];
             break;
         case 'titan':
-            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory'];
+            power_structs = ['spc_titan:titan_quarters','spc_titan:titan_mine','spc_titan:g_factory','spc_titan:decoder'];
             break;
         case 'enceladus':
             power_structs = ['spc_enceladus:water_freighter','spc_enceladus:operating_base','spc_enceladus:zero_g_lab'];
