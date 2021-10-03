@@ -884,6 +884,7 @@ export const outerTruth = {
                 Graphene(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 900000, 1.25); },
                 Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 125, 1.25); },
                 Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
+                Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 75000, 1.25); },
             },
             effect(){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);

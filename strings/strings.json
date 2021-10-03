@@ -2316,6 +2316,8 @@
   "tech_medkit_effect": "Advanced medkits outfit your doctors with the latest medical technology to keep your soldiers healthy. Increasing the effectiveness of hospitals",
   "tech_quantium": "Quantium",
   "tech_quantium_effect": "Quantium is an artifical resource that can be synthesized in a lab. It has amazing properties that defy conventional physics.",
+  "tech_anitgrav_bunk": "Anti-Grav Bunks",
+  "tech_anitgrav_bunk_effect": "Special bunks designed to float soldiers in bed, increases capacity of %0.",
   "tech_quantum_signatures": "Quantum Signatures",
   "tech_quantum_signatures_effect": "The ability to detect quantum signatures at great distances greatly enhances your sensor potential.",
   "tech_long_range_probes": "Long Range Probes",

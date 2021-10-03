@@ -10444,6 +10444,27 @@ const techs = {
             return false;
         }
     },
+    anitgrav_bunk: {
+        id: 'tech-anitgrav_bunk',
+        title: loc('tech_anitgrav_bunk'),
+        desc: loc('tech_anitgrav_bunk'),
+        category: 'military',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { marines: 1, quantium: 1 },
+        grant: ['marines',2],
+        cost: {
+            Knowledge(){ return 1250000; },
+            Quantium(){ return 500000; },
+        },
+        effect(){ return loc('tech_anitgrav_bunk_effect',[loc('space_red_space_barracks_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     higgs_boson_tp: {
         id: 'tech-higgs_boson_tp',
         title: loc('tech_higgs_boson'),
