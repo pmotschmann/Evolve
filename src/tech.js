@@ -10420,6 +10420,28 @@ const techs = {
             return false;
         }
     },
+    ai_core_tp: {
+        id: 'tech-ai_core_tp',
+        title: loc('tech_ai_core'),
+        desc: loc('tech_ai_core'),
+        category: 'ai_core',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan: 8 },
+        grant: ['titan',9],
+        cost: {
+            Knowledge(){ return 3000000; },
+            Cipher(){ return 100000; },
+        },
+        effect: loc('tech_ai_core_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['ai_core'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     quantium: {
         id: 'tech-quantium',
         title: loc('tech_quantium'),
@@ -10595,6 +10617,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.space.eris = true;
                 global.settings.space.kuiper = true;
+                global.tech['eris_scan'] = 0;
                 messageQueue(loc('tech_nav_data_result',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
                 return true;
             }
@@ -11228,6 +11251,27 @@ const techs = {
             Knowledge(){ return 1500000; }
         },
         effect: loc('tech_h_cruiser_ship_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    dreadnought_ship: {
+        id: 'tech-dreadnought_ship',
+        title: loc('tech_dreadnought_ship'),
+        desc: loc('tech_dreadnought_ship'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { syard_class: 5, kuiper: 1 },
+        grant: ['syard_class',6],
+        cost: {
+            Knowledge(){ return 2500000; },
+            Cipher(){ return 10000; }
+        },
+        effect: loc('tech_dreadnought_ship_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

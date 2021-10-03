@@ -211,7 +211,7 @@ export function powerGrid(type,reset){
         case 'power':
             power_structs = [
                 'prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
-                'spc_dwarf:shipyard','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam',
+                'spc_dwarf:shipyard','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob','spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','spc_titan:ai_core2',
                 'gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel','city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon',
                 'int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot','spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station',
                 'spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor','int_alpha:int_factory','city:factory','spc_red:red_factory',

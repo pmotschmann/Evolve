@@ -1,11 +1,11 @@
-import { global, p_on, support_on, sizeApproximation } from './vars.js';
+import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { production } from './prod.js';
 import { payCosts, drawTech, bank_vault } from './actions.js';
-import { fuel_adjust, spaceTech, zigguratBonus } from './space.js';
+import { fuel_adjust, spaceTech, zigguratBonus, renderSpace } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -482,6 +482,90 @@ export const outerTruth = {
                     return true;
                 }
                 return false;
+            }
+        },
+        ai_core: {
+            id: 'space-ai_core',
+            title: loc('space_ai_core'),
+            desc(wiki){
+                if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki){
+                    return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                }
+                else {
+                    return `<div>${loc('space_ai_core')}</div>`;
+                }
+            },
+            reqs: { titan: 9 },
+            path: ['truepath'],
+            condition(){
+                return global.space.ai_core.count >= 100 ? false : true;
+            },
+            no_queue(){ return global.space.ai_core.count < 100 ? false : true },
+            queue_size: 10,
+            queue_complete(){ return 100 - global.space.ai_core.count; },
+            cost: {
+                Money(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 2500000 : 0; },
+                Cement(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 180000 : 0; },
+                Aluminium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 250000 : 0; },
+                Elerium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 250 : 0; },
+                Nano_Tube(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 125000 : 0; },
+                Orichalcum(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 50000 : 0; },
+                Quantium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 100000 : 0; },
+                Cipher(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 750 : 0; },
+            },
+            effect(){
+                let effectText = `<div>${loc('space_ai_core_effect')}</div>`
+                if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100){
+                    let remain = global.space.hasOwnProperty('ai_core') ? 100 - global.space.ai_core.count : 100;
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                return effectText;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.space.ai_core.count < 100){
+                        global.space.ai_core.count++;
+                        if (global.space.ai_core.count >= 100){
+                            global.tech['titan_ai_core'] = 1;
+                            global.space['ai_core2'] = { count: 1, on: 0 };
+                            if (global.city.power >= outerTruth.spc_titan.ai_core2.powered()){
+                                global.space.spc_titan.on++;
+                            }
+                            renderSpace();
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        ai_core2: {
+            id: 'space-ai_core2',
+            title: loc('space_ai_core'),
+            desc(){
+                return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { titan_ai_core: 1 },
+            path: ['truepath'],
+            condition(){
+                return global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? true : false;
+            },
+            wiki: false,
+            no_queue(){ return true },
+            cost: {},
+            powered(){
+                return powerCostMod(100);
+            },
+            effect(){
+                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[25])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                return false;
+            },
+            flair(){
+                return global.space.hasOwnProperty('ai_core2') && global.space.ai_core2.on >= 1 ? loc(`space_ai_core_flair`) : loc(`space_ai_core_flair2`);
             }
         },
     },
@@ -1015,6 +1099,15 @@ export const outerTruth = {
             zone: 'outer',
             syndicate(){ return global.tech['eris'] ? true : false; },
             syndicate_cap(){ return 7500; },
+            extra(region){
+                if (global.tech['eris'] && global.tech['eris'] === 1){
+                    $(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
+                    vBind({
+                        el: `#${region}scanned`,
+                        data: global.tech
+                    });
+                }
+            }
         },
         eris_mission: {
             id: 'space-eris_mission',
@@ -1295,7 +1388,7 @@ function shipPower(ship){
             break;
         case 'dreadnought':
             out_inflate = 5;
-            use_inflate = 8;
+            use_inflate = 6.5;
             break;
     }
 
@@ -1499,36 +1592,44 @@ function shipCosts(bp){
     let costs = {};
 
     let h_inflate = 1;
+    let p_inflate = 1;
     switch (bp.class){
         case 'corvette':
             costs['Money'] = 2500000;
             costs['Aluminium'] = 500000;
             h_inflate = 1;
+            p_inflate = 1;
             break;
         case 'frigate':
             costs['Money'] = 5000000;
             costs['Aluminium'] = 1250000;
             h_inflate = 1.1;
+            p_inflate = 1.09;
             break;
         case 'destroyer':
             costs['Money'] = 15000000;
             costs['Aluminium'] = 3500000;
             h_inflate = 1.2;
+            p_inflate = 1.18;
             break;
         case 'cruiser':
             costs['Money'] = 50000000;
             costs['Adamantite'] = 1000000; //12000000;
             h_inflate = 1.3;
+            p_inflate = 1.25;
             break;
         case 'battlecruiser':
             costs['Money'] = 125000000;
             costs['Adamantite'] = 2600000; //32000000;
             h_inflate = 1.35;
+            p_inflate = 1.3;
             break;
         case 'dreadnought':
             costs['Money'] = 1000000000;
-            costs['Adamantite'] = 10000000; //128000000;
+            costs['Adamantite'] = 8000000; //128000000;
+            costs['Orichalcum'] = 5000000;
             h_inflate = 1.4;
+            p_inflate = 1.35;
             break;
     }
 
@@ -1565,23 +1666,23 @@ function shipCosts(bp){
     switch (bp.power){
         case 'solar':
             costs['Copper'] = Math.round(40000 ** h_inflate);
-            costs['Iridium'] = Math.round(15000 ** h_inflate);
+            costs['Iridium'] = Math.round(15000 ** p_inflate);
             break;
         case 'diesel':
             costs['Copper'] = Math.round(40000 ** h_inflate);
-            costs['Iridium'] = Math.round(15000 ** h_inflate);
+            costs['Iridium'] = Math.round(15000 ** p_inflate);
             break;
         case 'fission':
             costs['Copper'] = Math.round(50000 ** h_inflate);
-            costs['Iridium'] = Math.round(30000 ** h_inflate);
+            costs['Iridium'] = Math.round(30000 ** p_inflate);
             break;
         case 'fusion':
             costs['Copper'] = Math.round(50000 ** h_inflate);
-            costs['Iridium'] = Math.round(40000 ** h_inflate);
+            costs['Iridium'] = Math.round(40000 ** p_inflate);
             break;
         case 'elerium':
             costs['Copper'] = Math.round(60000 ** h_inflate);
-            costs['Iridium'] = Math.round(55000 ** h_inflate);
+            costs['Iridium'] = Math.round(55000 ** p_inflate);
             break;
     }
 
@@ -1614,11 +1715,11 @@ function shipCosts(bp){
             costs['Nano_Tube'] = Math.round(20000 ** h_inflate);
             break;
         case 'phaser':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.175);
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.15);
             costs['Quantium'] = Math.round(18000 ** h_inflate);
             break;
         case 'disruptor':
-            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.25);
+            costs['Iridium'] = Math.round(costs['Iridium'] ** 1.2);
             costs['Quantium'] = Math.round(35000 ** h_inflate);
             break;
     }
@@ -1902,7 +2003,7 @@ export function syndicate(region,extra){
     return 1;
 }
 
-function sensorRange(s){
+export function sensorRange(s){
     switch (s){
         case 'visual':
             return 1;

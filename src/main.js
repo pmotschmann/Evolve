@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -8557,6 +8557,7 @@ function longLoop(){
             });
 
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                let eScan = 0;
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0 && ship.fueled){ ship.transit--; }
                     if (ship.damage > 0 && p_on['shipyard']){
@@ -8577,7 +8578,15 @@ function longLoop(){
                         }
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
+                    if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
+                        eScan += sensorRange(ship.sensor) * 2;
+                    }
                 });
+                if (global.tech.hasOwnProperty('eris_scan') && global.tech.hasOwnProperty('eris') && global.tech.eris === 1 && eScan >= 100){
+                    global.tech.eris = 2;
+                    messageQueue(loc('space_eris_scan',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
+                    renderSpace();
+                }
                 if (global.space.hasOwnProperty('position')){
                     Object.keys(spacePlanetStats).forEach(function(planet){
                         if (global.space.position.hasOwnProperty(planet)){
@@ -8901,6 +8910,12 @@ function q_check(load){
             let citadel = load ? global.interstellar.citadel.on : p_on['citadel']
             if (global.tech['high_tech'] && global.tech['high_tech'] >= 15 && citadel > 0){
                 qbits *= 1 + (citadel * 0.05);
+            }
+        }
+        if (global.space['ai_core2']){
+            let core = load ? global.space.ai_core2.on : p_on['ai_core2']
+            if (global.tech['titan_ai_core'] && core > 0){
+                qbits *= 1.25;
             }
         }
         set_qlevel(qbits);
