@@ -1686,6 +1686,7 @@ function fastLoop(){
             { r: 'spc_red', s: 'spaceport', g: 'red' },
             { r: 'spc_titan', s: 'electrolysis', g: 'titan' },
             { r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
+            { r: 'spc_eris', s: 'drone_control', g: 'eris' },
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
             if (global.space[sup.s] && global.space[sup.s].count > 0){

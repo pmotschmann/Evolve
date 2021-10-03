@@ -921,6 +921,10 @@ if (!global.support.hasOwnProperty('titan')){
     global.support['enceladus'] = [];
 }
 
+if (!global.support.hasOwnProperty('eris')){
+    global.support['eris'] = [];
+}
+
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
 }

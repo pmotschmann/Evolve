@@ -543,7 +543,7 @@ export const outerTruth = {
             id: 'space-ai_core2',
             title: loc('space_ai_core'),
             desc(){
-                return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             reqs: { titan_ai_core: 1 },
             path: ['truepath'],
@@ -556,9 +556,10 @@ export const outerTruth = {
             powered(){
                 return powerCostMod(100);
             },
+            p_fuel(){ return { r: 'Water', a: 1000 }; },
             effect(){
                 let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[25])}</div>`;
-                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                desc += `<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
             action(){
@@ -966,9 +967,9 @@ export const outerTruth = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 25000000, 1.25); },
                 Graphene(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 900000, 1.25); },
-                Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 125, 1.25); },
+                Elerium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 200, 1.25); },
                 Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
-                Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 75000, 1.25); },
+                Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 150000, 1.25); },
             },
             effect(){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
@@ -977,7 +978,7 @@ export const outerTruth = {
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(10); },
-            p_fuel(){ return { r: 'Oil', a: 100 }; },
+            p_fuel(){ return { r: 'Oil', a: 200 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.orichalcum_mine.count++;
@@ -1000,8 +1001,8 @@ export const outerTruth = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('uranium_mine', offset, 5000000, 1.25); },
-                Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 180000, 1.25); },
-                Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 375000, 1.25); }
+                Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 250000, 1.25); },
+                Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 620000, 1.25); }
             },
             effect(){
                 let mineral = +(production('uranium_mine')).toFixed(3);
@@ -1010,7 +1011,7 @@ export const outerTruth = {
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(5); },
-            p_fuel(){ return { r: 'Oil', a: 50 }; },
+            p_fuel(){ return { r: 'Oil', a: 60 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.uranium_mine.count++;
@@ -1032,8 +1033,8 @@ export const outerTruth = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('neutronium_mine', offset, 8000000, 1.25); },
-                Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 400000, 1.25); },
-                Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 750000, 1.25); },
+                Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 650000, 1.25); },
+                Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 1250000, 1.25); },
             },
             effect(){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
@@ -1042,7 +1043,7 @@ export const outerTruth = {
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(8); },
-            p_fuel(){ return { r: 'Oil', a: 50 }; },
+            p_fuel(){ return { r: 'Oil', a: 60 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.neutronium_mine.count++;
@@ -1065,8 +1066,8 @@ export const outerTruth = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('elerium_mine', offset, 20000000, 1.25); },
                 Titanium(offset){ return spaceCostMultiplier('elerium_mine', offset, 250000, 1.25); },
-                Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 50000, 1.25); },
-                Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 125000, 1.25); },
+                Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 120000, 1.25); },
+                Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 175000, 1.25); },
             },
             effect(){
                 let mineral = +(production('elerium_mine')).toFixed(3);
@@ -1075,7 +1076,7 @@ export const outerTruth = {
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             powered(){ return powerCostMod(12); },
-            p_fuel(){ return { r: 'Oil', a: 75 }; },
+            p_fuel(){ return { r: 'Oil', a: 125 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.elerium_mine.count++;
@@ -1096,6 +1097,7 @@ export const outerTruth = {
             desc(){
                 return loc('space_eris_info_desc',[genusVars[races[global.race.species].type].solar.eris]);
             },
+            support: 'drone_control',
             zone: 'outer',
             syndicate(){ return global.tech['eris'] ? true : false; },
             syndicate_cap(){ return 7500; },
@@ -1131,7 +1133,70 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.syndicate['spc_eris'] = 1000;
-                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.eris, races[global.race.species].home]),'info');
+                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info');
+                    return true;
+                }
+                return false;
+            }
+        },
+        drone_control: {
+            id: 'space-drone_control',
+            title(){ return loc('space_drone_control',[genusVars[races[global.race.species].type].solar.titan]); },
+            desc(){
+                return `<div>${loc('space_drone_control',[genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            reqs: { eris: 3 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('drone_control', offset, 75000000, 1.3); },
+                Neutronium(offset){ return spaceCostMultiplier('drone_control', offset, 100000, 1.3); },
+                Stanene(offset){ return spaceCostMultiplier('drone_control', offset, 450000, 1.3); },
+                Quantium(offset){ return spaceCostMultiplier('drone_control', offset, 300000, 1.3); },
+            },
+            effect(){
+                let fuel = $(this)[0].p_fuel().a;
+                return `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            support(){ return 5; },
+            powered(){ return powerCostMod(25); },
+            p_fuel(){ return { r: 'Uranium', a: 5 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.drone_control.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.space.drone_control.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        shock_trooper: {
+            id: 'space-shock_trooper',
+            title: loc('space_shock_trooper_title'),
+            desc(){
+                return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+            },
+            reqs: { titan: 8 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('shock_trooper', offset, 4250000, 1.225); },
+                Polymer(offset){ return spaceCostMultiplier('shock_trooper', offset, 375000, 1.225); },
+                Adamantite(offset){ return spaceCostMultiplier('shock_trooper', offset, 500000, 1.225); },
+                Elerium(offset){ return spaceCostMultiplier('shock_trooper', offset, 350, 1.225); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.shock_trooper.count++;
+                    if (global.space.drone_control.support < global.space.drone_control.s_max){
+                        global.space.shock_trooper.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -1625,9 +1690,8 @@ function shipCosts(bp){
             p_inflate = 1.3;
             break;
         case 'dreadnought':
-            costs['Money'] = 1000000000;
+            costs['Money'] = 500000000;
             costs['Adamantite'] = 8000000; //128000000;
-            costs['Orichalcum'] = 5000000;
             h_inflate = 1.4;
             p_inflate = 1.35;
             break;
@@ -1647,41 +1711,41 @@ function shipCosts(bp){
 
     switch (bp.engine){
         case 'ion':
-            costs['Titanium'] = Math.round(75000 ** h_inflate);
+            costs['Titanium'] = Math.round(75000 ** p_inflate);
             break;
         case 'tie':
-            costs['Titanium'] = Math.round(150000 ** h_inflate);
+            costs['Titanium'] = Math.round(150000 ** p_inflate);
             break;
         case 'pulse':
-            costs['Titanium'] = Math.round(125000 ** h_inflate);
+            costs['Titanium'] = Math.round(125000 ** p_inflate);
             break;
         case 'photon':
-            costs['Titanium'] = Math.round(210000 ** h_inflate);
+            costs['Titanium'] = Math.round(210000 ** p_inflate);
             break;
         case 'vacuum':
-            costs['Titanium'] = Math.round(300000 ** h_inflate);
+            costs['Titanium'] = Math.round(300000 ** p_inflate);
             break;
     }
 
     switch (bp.power){
         case 'solar':
-            costs['Copper'] = Math.round(40000 ** h_inflate);
+            costs[bp.class === 'dreadnought' ? 'Orichalcum' : 'Copper'] = Math.round(40000 ** h_inflate);
             costs['Iridium'] = Math.round(15000 ** p_inflate);
             break;
         case 'diesel':
-            costs['Copper'] = Math.round(40000 ** h_inflate);
+            costs[bp.class === 'dreadnought' ? 'Orichalcum' : 'Copper'] = Math.round(40000 ** h_inflate);
             costs['Iridium'] = Math.round(15000 ** p_inflate);
             break;
         case 'fission':
-            costs['Copper'] = Math.round(50000 ** h_inflate);
+            costs[bp.class === 'dreadnought' ? 'Orichalcum' : 'Copper'] = Math.round(50000 ** h_inflate);
             costs['Iridium'] = Math.round(30000 ** p_inflate);
             break;
         case 'fusion':
-            costs['Copper'] = Math.round(50000 ** h_inflate);
+            costs[bp.class === 'dreadnought' ? 'Orichalcum' : 'Copper'] = Math.round(50000 ** h_inflate);
             costs['Iridium'] = Math.round(40000 ** p_inflate);
             break;
         case 'elerium':
-            costs['Copper'] = Math.round(60000 ** h_inflate);
+            costs[bp.class === 'dreadnought' ? 'Orichalcum' : 'Copper'] = Math.round(60000 ** h_inflate);
             costs['Iridium'] = Math.round(55000 ** p_inflate);
             break;
     }

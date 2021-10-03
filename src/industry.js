@@ -1332,6 +1332,7 @@ export function gridDefs(){
         spire: { l: global.support.spire, n: loc(`portal_spire_name`), s: global.settings.portal.spire, r: 'portal', rs: 'purifier'  },
         titan: { l: global.support.titan, n: genusVars[type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
         enceladus: { l: global.support.enceladus, n: genusVars[type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
+        eris: { l: global.support.eris, n: genusVars[type].solar.eris, s: global.settings.space.eris, r: 'space', rs: 'drone_control'  },
     };
 }
 

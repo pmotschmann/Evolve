@@ -10618,6 +10618,7 @@ const techs = {
                 global.settings.space.eris = true;
                 global.settings.space.kuiper = true;
                 global.tech['eris_scan'] = 0;
+                global.space['drone_control'] = { count: 0, on: 0, support: 0, s_max: 0 };
                 messageQueue(loc('tech_nav_data_result',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
                 return true;
             }
@@ -10634,13 +10635,35 @@ const techs = {
         reqs: { outer: 7, locked: 1 },
         grant: ['outer',8],
         cost: {
-            Knowledge(){ return 3000000; },
+            Knowledge(){ return 5000000; },
             Cipher(){ return 80000; }
         },
         effect: loc('tech_sensor_logs_effect'),
         action(){
             if (payCosts($(this)[0])){
                 messageQueue(loc('tech_sensor_logs_result'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        },
+    },
+    dronewar: {
+        id: 'tech-dronewar',
+        title: loc('tech_dronewar'),
+        desc: loc('tech_dronewar'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { eris: 2, titan_ai_core: 1 },
+        grant: ['eris',3],
+        cost: {
+            Knowledge(){ return 3200000; },
+            Cipher(){ return 50000; }
+        },
+        effect: loc('tech_dronewar_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['shock_trooper'] = { count: 0, on: 0 };
                 return true;
             }
             return false;
