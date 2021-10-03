@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -1724,6 +1724,10 @@ function fastLoop(){
                         }
                         break;
                 }
+            }
+
+            if (sup.r === 'spc_eris' && !p_on['ai_core2']){
+                global.space[sup.s].s_max = 0;
             }
     
             if (global.space[sup.s] && global.space[sup.s].count > 0){
@@ -6878,6 +6882,9 @@ function midLoop(){
         }
         if (support_on['decoder']){
             let gain = support_on['decoder'] * global.civic.titan_colonist.workers * 2500;
+            if (p_on['ai_core2']){
+                gain *= 1.25;
+            }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('space_decoder_title')] = gain+'v';
         }
@@ -8603,6 +8610,9 @@ function longLoop(){
 
             if (global.tech['triton'] && global.tech.triton >= 3){
                 tritonWar();
+            }
+            if (global.tech['eris'] && global.tech.eris >= 3){
+                erisWar();
             }
         }
 

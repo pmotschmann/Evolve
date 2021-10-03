@@ -10664,6 +10664,29 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.space['shock_trooper'] = { count: 0, on: 0 };
+                global.space['digsite'] = { count: 0, enemy: 10000 };
+                return true;
+            }
+            return false;
+        },
+    },
+    drone_tank: {
+        id: 'tech-drone_tank',
+        title: loc('tech_drone_tank'),
+        desc: loc('tech_drone_tank'),
+        category: 'space_militarization',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { eris: 3 },
+        grant: ['eris',4],
+        cost: {
+            Knowledge(){ return 3400000; },
+            Cipher(){ return 50000; }
+        },
+        effect: loc('tech_drone_tank_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['tank'] = { count: 0, on: 0 };
                 return true;
             }
             return false;

@@ -257,7 +257,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_enceladus:water_freighter','spc_enceladus:operating_base','spc_enceladus:zero_g_lab'];
             break;
         case 'eris':
-            power_structs = ['spc_eris:shock_trooper'];
+            power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
     }
 

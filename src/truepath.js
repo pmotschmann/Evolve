@@ -467,6 +467,9 @@ export const outerTruth = {
             effect(){
                 let cipher = $(this)[0].support_fuel().a;
                 let know = 2500;
+                if (p_on['ai_core2']){
+                    know *= 1.25;
+                }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
@@ -558,7 +561,9 @@ export const outerTruth = {
             },
             p_fuel(){ return { r: 'Water', a: 1000 }; },
             effect(){
-                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[25])}</div>`;
+                let value = 25;
+                let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div>`;
+                desc += `<div>${loc('interstellar_citadel_effect',[value])}</div><div>${loc('space_ai_core_effect2',[value])}</div>`;
                 desc += `<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1177,17 +1182,19 @@ export const outerTruth = {
             desc(){
                 return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
             },
-            reqs: { titan: 8 },
+            reqs: { eris: 3 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('shock_trooper', offset, 4250000, 1.225); },
                 Polymer(offset){ return spaceCostMultiplier('shock_trooper', offset, 375000, 1.225); },
                 Adamantite(offset){ return spaceCostMultiplier('shock_trooper', offset, 500000, 1.225); },
+                Graphene(offset){ return spaceCostMultiplier('shock_trooper', offset, 220000, 1.225); },
                 Elerium(offset){ return spaceCostMultiplier('shock_trooper', offset, 350, 1.225); },
             },
             effect(){
+                let rating = Math.round(armyRating(1,'army',0) * syndicate('spc_eris'));
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
-                return desc;
+                return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -1199,6 +1206,57 @@ export const outerTruth = {
                     }
                     return true;
                 }
+                return false;
+            }
+        },
+        tank: {
+            id: 'space-tank',
+            title: loc('space_tank_title'),
+            desc(){
+                return `<div>${loc('space_tank_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+            },
+            reqs: { eris: 4 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tank', offset, 100000000, 1.25); },
+                Alloy(offset){ return spaceCostMultiplier('tank', offset, 1250000, 1.25); },
+                Orichalcum(offset){ return spaceCostMultiplier('tank', offset, 600000, 1.25); },
+                Mythril(offset){ return spaceCostMultiplier('tank', offset, 500000, 1.25); },
+                Uranium(offset){ return spaceCostMultiplier('tank', offset, 25000, 1.25); },
+            },
+            effect(){
+                let rating = Math.round(100 * syndicate('spc_eris'));
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.tank.count++;
+                    if (global.space.drone_control.support < global.space.drone_control.s_max){
+                        global.space.tank.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        digsite: {
+            id: 'space-digsite',
+            title: loc('space_digsite_title'),
+            desc(){
+                return `<div>${loc('space_digsite_title')}</div>`;
+            },
+            reqs: { eris: 3 },
+            path: ['truepath'],
+            no_queue(){ return true; },
+            cost: {},
+            effect(){
+                let control = global.space['digsite'] ? global.space.digsite.count : 0;
+                return `<div>${loc(`space_crashed_ship_effect`,[control])}</div>`;
+            },
+            action(){
                 return false;
             }
         },
@@ -2132,6 +2190,27 @@ export function tritonWar(){
                 global.resource.Cipher.display = true;
             }
         }
+    }
+}
+
+export function erisWar(){
+    if (global.space['digsite']){
+        if (global.space.digsite.enemy <= 10000){
+            let upper = 250;
+            global.space.digsite.enemy += Math.rand(25,upper);
+        }
+
+        let offense = armyRating(support_on['shock_trooper'],'army',0);
+        if (support_on['tank']){
+            offense += support_on['tank'] * 100;
+        }
+        offense *= syndicate('spc_eris');
+
+        global.space.digsite.enemy -= Math.rand(0,offense);
+        if (global.space.digsite.enemy < 0){ global.space.digsite.enemy = 0; }
+        else if (global.space.digsite.enemy > 10000){ global.space.digsite.enemy = 10000; }
+
+        global.space.digsite.count = Math.floor(100 - global.space.digsite.enemy / 100);
     }
 }
 
