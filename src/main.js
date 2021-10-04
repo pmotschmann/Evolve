@@ -1730,7 +1730,7 @@ function fastLoop(){
                 global.space[sup.s].s_max = 0;
             }
     
-            if (global.space[sup.s] && global.space[sup.s].count > 0){
+            if (global.space[sup.s]){
                 let used_support = 0;
                 let area_structs = global.support[sup.g].map(x => x.split(':')[1]);
                 for (var i = 0; i < area_structs.length; i++){
@@ -3822,7 +3822,9 @@ function fastLoop(){
             }
 
             iron_smelter *= global.tech['smelting'] >= 3 ? 1.2 : 1;
-            iridium_smelter = 1 + (iridium_smelter * 0.05);
+            if (iridium_smelter > 0){
+                iridium_smelter = 1 + (iridium_smelter * 0.05);
+            }
 
             if (global.tech['smelting'] >= 7){
                 iron_smelter *= 1.25;
