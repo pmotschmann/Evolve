@@ -891,12 +891,11 @@ if (convertVersion(global['version']) < 102000){
     if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Iridium')){
         global.city.smelter['Iridium'] = 0;
     }
-
 }
 
 global['version'] = '1.2.0';
 delete global['revision'];
-global['beta'] = 1;
+global['beta'] = 2;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       

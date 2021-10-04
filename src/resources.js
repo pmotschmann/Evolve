@@ -297,7 +297,7 @@ export const craftingRatio = (function(){
                     });
                 }
             }
-            if (global.space['fabrication']){
+            if (global.space['fabrication'] && support_on['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
                     manual: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02),
