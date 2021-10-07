@@ -4764,6 +4764,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                 $(`#${$(this)[0].id}`).addClass('hl');
             }
             setChallengeScreen();
+            challengeIcon();
         }
         return false;
     },

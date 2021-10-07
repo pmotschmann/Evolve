@@ -2328,7 +2328,7 @@
   "tech_data_analysis_effect": "The Encrypted Data is useless unless we can solve how to decrypt it.",
   "tech_data_analysis_result": "You've cracked the code and can now begin analysing the Encrypted Data for its secrets.",
   "tech_mass_relay": "Mass Relay",
-  "tech_mass_relay_effect": "The Mass Relay is a structure that temporarily lowers the mass of a starship allowing it to accelerate to higher speeds. This will make ships departing your shipyard travel thrice as fast, but they'll have no assitance on subsequent jounreys unless returned to the shipyard.",
+  "tech_mass_relay_effect": "The Mass Relay is a structure that temporarily lowers the mass of a starship allowing it to accelerate to higher speeds. This will make ships departing your shipyard travel thrice as fast, but they'll have no assistance on subsequent journeys unless returned to the shipyard.",
   "tech_nav_data": "Navigation Data",
   "tech_nav_data_effect": "Decode navigation data from the derelict ship to see where it's been.",
   "tech_nav_data_result": "Navigation logs show the ship passed through the Tau Ceti system thousands of years ago, as well as it scanned several interesting sites in the Kuiper Belt and the dwarf planet %0.",

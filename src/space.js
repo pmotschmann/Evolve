@@ -2042,7 +2042,7 @@ const spaceProjects = {
                     global.space.mass_relay.count++;
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
-                        global.space['m_relay'] = { count: 1, on: 1, charged: 10000 };
+                        global.space['m_relay'] = { count: 1, on: 1, charged: 0 };
                         drawTech();
                         renderSpace();
                         clearPopper();

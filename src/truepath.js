@@ -1162,7 +1162,8 @@ export const outerTruth = {
             },
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
-                return `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                let desc = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             support(){ return 5; },
             powered(){ return powerCostMod(25); },
