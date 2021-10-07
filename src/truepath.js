@@ -706,7 +706,8 @@ export const outerTruth = {
                 Furs(offset){ return spaceCostMultiplier('operating_base', offset, 500000, 1.3); },
                 Adamantite(offset){ return spaceCostMultiplier('operating_base', offset, 375000, 1.3); },
                 Stanene(offset){ return spaceCostMultiplier('operating_base', offset, 750000, 1.3); },
-                Mythril(offset){ return spaceCostMultiplier('operating_base', offset, 225000, 1.3); }
+                Mythril(offset){ return spaceCostMultiplier('operating_base', offset, 225000, 1.3); },
+                Horseshoe(){ return global.race['hooved'] ? 4 : 0; }
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
@@ -835,6 +836,7 @@ export const outerTruth = {
                 Graphene(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 3000000, 1.1); },
                 Sheet_Metal(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 7500000, 1.1); },
                 Quantium(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
+                Horseshoe(){ return global.race['hooved'] ? 10 : 0; }
             },
             effect(){
                 let troops = garrisonSize();
@@ -1137,7 +1139,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    global.space.syndicate['spc_eris'] = 1000;
+                    global.space.syndicate['spc_eris'] = 4000;
                     messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info');
                     return true;
                 }

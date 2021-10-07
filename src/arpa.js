@@ -1510,6 +1510,10 @@ function checkRequirements(tech){
     if (arpaProjects[tech]['condition'] && !arpaProjects[tech].condition()){
         return false;
     }
+    let c_path = global.race['truepath'] ? 'truepath' : 'standard';
+    if (arpaProjects[tech].hasOwnProperty('path') && !arpaProjects[tech].path.includes(c_path)){
+        return false;
+    }
     var isMet = true;
     Object.keys(arpaProjects[tech].reqs).forEach(function (req) {
         if (!global.tech[req] || global.tech[req] < arpaProjects[tech].reqs[req]){

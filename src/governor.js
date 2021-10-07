@@ -439,25 +439,27 @@ export function drawnGovernOffice(){
         if (!global.race.governor.config.hasOwnProperty('spyop')){
             global.race.governor.config['spyop'] = {};
             Object.keys(global.civic.foreign).forEach(function (gov){
-                global.race.governor.config.spyop[gov] = ['sabotage','incite','influence'];
+                global.race.governor.config.spyop[gov] = gov === 'gov3' ? ['influence','sabotage'] : ['sabotage','incite','influence'];
             });
         }
         
         let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning">${loc(`gov_task_spyop`)}</div></div>`);
         options.append(contain);
         Object.keys(global.civic.foreign).forEach(function (gov){
-            let spyop = $(`<div></div>`);
-            contain.append(spyop);
-            spyop.append(`
-                <h2 class="has-text-caution">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
-                <ul id="spyopConfig${gov}" class="spyopConfig"></ul>
-            `);
-            let missions = $(`#spyopConfig${gov}`);
-            global.race.governor.config.spyop[gov].forEach(function (mission){
-                missions.append(`
-                    <li>${loc('civics_spy_' + mission)}</li>
+            if ((gov.substr(3,1) < 3 && !global.tech['world_control']) || (gov === 'gov3' && global.tech['rival'])){
+                let spyop = $(`<div></div>`);
+                contain.append(spyop);
+                spyop.append(`
+                    <h2 class="has-text-caution">${loc('gov_task_spyop_priority',[govTitle(gov.substring(3))])}</h2>
+                    <ul id="spyopConfig${gov}" class="spyopConfig"></ul>
                 `);
-            });
+                let missions = $(`#spyopConfig${gov}`);
+                global.race.governor.config.spyop[gov].forEach(function (mission){
+                    missions.append(`
+                        <li>${loc('civics_spy_' + mission)}</li>
+                    `);
+                });
+            }
         });
     }
 
@@ -840,12 +842,16 @@ export const gov_tasks = {
     spy: { // Spy Recruiter
         name: loc(`gov_task_spy`),
         req(){
+            if (global.race['truepath'] && global.tech['spy']){
+                return true;
+            }
             return global.tech['spy'] && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.spy.reserve / 100);
-                for (let i=0; i<3; i++){
+                let max = global.race['truepath'] && global.tech['rival'] ? 4 : 3;
+                for (let i=0; i<max; i++){
                     let cost = govCivics('s_cost',i);
                     if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
                         govCivics('t_spy',i);
@@ -857,11 +863,15 @@ export const gov_tasks = {
     spyop: { // Spy Operator
         name: loc(`gov_task_spyop`),
         req(){
+            if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
+                return true;
+            }
             return global.tech['spy'] && global.tech.spy >= 2 && !global.tech['world_control'] && !global.race['cataclysm'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
-                [0,1,2].forEach(function(gov){
+                let range = global.race['truepath'] && global.tech['rival'] ? [0,1,2,3] : [0,1,2];
+                range.forEach(function(gov){
                     if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
                         global.race.governor.config.spyop[`gov${gov}`].every(function (mission){
                             switch (mission){
@@ -878,7 +888,7 @@ export const gov_tasks = {
                                     }
                                     break;
                                 case 'incite':
-                                    if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2){
+                                    if (global.civic.foreign[`gov${gov}`].unrest < 100 && global.civic.foreign[`gov${gov}`].spy > 2 && gov < 3){
                                         govCivics('s_incite',gov);
                                         return false;
                                     }
