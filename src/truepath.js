@@ -1454,10 +1454,30 @@ function getRandomShipName(){
         'Gunstar','Ranger','Tantive','Cygnus','Nostromo','Reliant','Narcissus','Liberator','Sulaco','Infinity','Resolute','Wasp','Hornet','Independence',
         'Gilgamesh','Midway','Concordia','Goliath','Cosmos','Express','Tigers Claw','Oberon','Minnow','Majestic','Spartacus','Colossi','Vigilant',
         'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire',
-        'McShipFace','Monitor','Merrimack','Constitution','Ghost','Pequod','Arcadia','Corsair','Inferno','Jenny','Revenge','Red October','Jackdaw'
+        'McShipFace','Monitor','Merrimack','Constitution','Ghost','Pequod','Arcadia','Corsair','Inferno','Jenny','Revenge','Red October','Jackdaw',
+        'Thorn'
     ];
 
-    return names[Math.rand(0, names.length)];
+    let name = names[Math.rand(0, names.length)];
+    if (global.space.shipyard.ships.filter(s => s.name === name).length > 0){
+        name = randomWord();
+    }
+
+    return name;
+}
+
+function randomWord(){
+    let syllables = [
+        'al','an','ar','as','at','ea','ed','en','er','es','ha','he','hi','in','is','it','le','me','nd','ne','ng','nt','on','or','ou','re','se','st','te','th','ti','to','ve','wa',
+        'all','and','are','but','ent','era','ere','eve','for','had','hat','hen','her','hin','his','ing','ion','ith','not','ome','oul','our','sho','ted','ter','tha','the','thi','tio','uld','ver','was','wit','you',
+    ];
+    let max = Math.rand(2, 5);
+
+    let word = ``;
+    for (let i=0; i<max; i++){
+        word += syllables[Math.rand(0,syllables.length)];
+    }
+    return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 function updateCosts(){

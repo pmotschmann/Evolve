@@ -851,7 +851,8 @@ export const gov_tasks = {
             if ( $(this)[0].req() ){
                 let cashCap = global.resource.Money.max * (global.race.governor.config.spy.reserve / 100);
                 let max = global.race['truepath'] && global.tech['rival'] ? 4 : 3;
-                for (let i=0; i<max; i++){
+                let min = global.tech['world_control'] ? 3 : 0;
+                for (let i=min; i<max; i++){
                     let cost = govCivics('s_cost',i);
                     if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
                         govCivics('t_spy',i);
