@@ -1396,7 +1396,7 @@ export function drawShipYard(){
                             ship['damage'] = 0;
                             ship['fueled'] = false;
 
-                            if (ship.name.length === 0 || ship.name.toLowerCase() === 'random'){
+                            if (ship.name.length === 0){
                                 ship.name = getRandomShipName();
                             }
 
@@ -1410,6 +1410,7 @@ export function drawShipYard(){
 
                             global.space.shipyard.ships.push(ship);
                             drawShips();
+                            global.space.shipyard.blueprint.name = getRandomShipName();
                         }
                     }
                 },

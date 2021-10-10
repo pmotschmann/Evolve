@@ -8208,7 +8208,7 @@ function longLoop(){
         }
 
         if (global.race['truepath'] && global.civic.foreign.gov3.mil < 500){
-            if (Math.rand(0, 100) === 0){
+            if (Math.rand(0, 50) === 0){
                 global.civic.foreign.gov3.mil++;
             }
         }

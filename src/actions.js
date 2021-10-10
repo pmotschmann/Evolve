@@ -4614,7 +4614,7 @@ export function setChallengeScreen(){
         addAction('evolution','emfield');
     }
     if (global.stats.achieve['scrooge']){
-        addAction('evolution','emfield');
+        addAction('evolution','inflation');
     }
     scenarioActionHeader();
     addAction('evolution','junker');

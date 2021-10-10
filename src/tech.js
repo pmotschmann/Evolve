@@ -8399,13 +8399,6 @@ const techs = {
                     global.tech['rival'] = 1;
                     messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]));
                 }
-                if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                    Object.keys(global.race.governor.tasks).forEach(function (task){
-                        if (global.race.governor.tasks[task] === 'spy' || global.race.governor.tasks[task] === 'spyop'){
-                            global.race.governor.tasks[task] = 'none';
-                        }
-                    });
-                }
                 return true;
             }
             return false;
@@ -11263,8 +11256,8 @@ const techs = {
             return false;
         }
     },
-    cruiser_ship: {
-        id: 'tech-cruiser_ship',
+    cruiser_ship_tp: {
+        id: 'tech-cruiser_ship_tp',
         title: loc('tech_cruiser_ship'),
         desc: loc('tech_cruiser_ship'),
         category: 'space_militarization',
