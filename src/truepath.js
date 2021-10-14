@@ -1455,7 +1455,7 @@ function getRandomShipName(){
         'Gilgamesh','Midway','Concordia','Goliath','Cosmos','Express','Tigers Claw','Oberon','Minnow','Majestic','Spartacus','Colossi','Vigilant',
         'Remorseless','Caelestis','Inquisitor','Atlas','Avenger','Dauntless','Nihilus','Thanatos','Stargazer','Xyzzy','Kraken','Xerxes','Spitfire',
         'McShipFace','Monitor','Merrimack','Constitution','Ghost','Pequod','Arcadia','Corsair','Inferno','Jenny','Revenge','Red October','Jackdaw',
-        'Thorn'
+        'Thorn','Caleuche','Valencia','Ourang','Deering','Baychimo','Octavius','Joyita','Lovibond','Celeste','Dutchman'
     ];
 
     let name = names[Math.rand(0, names.length)];
@@ -1740,24 +1740,28 @@ function shipCosts(bp){
 
     let h_inflate = 1;
     let p_inflate = 1;
+    let creep_factor = 1;
     switch (bp.class){
         case 'corvette':
             costs['Money'] = 2500000;
             costs['Aluminium'] = 500000;
             h_inflate = 1;
             p_inflate = 1;
+            creep_factor = 2;
             break;
         case 'frigate':
             costs['Money'] = 5000000;
             costs['Aluminium'] = 1250000;
             h_inflate = 1.1;
             p_inflate = 1.09;
+            creep_factor = 1.5;
             break;
         case 'destroyer':
             costs['Money'] = 15000000;
             costs['Aluminium'] = 3500000;
             h_inflate = 1.2;
             p_inflate = 1.18;
+            creep_factor = 1.2;
             break;
         case 'cruiser':
             costs['Money'] = 50000000;
@@ -1770,12 +1774,14 @@ function shipCosts(bp){
             costs['Adamantite'] = 2600000; //32000000;
             h_inflate = 1.35;
             p_inflate = 1.3;
+            creep_factor = 0.8;
             break;
         case 'dreadnought':
             costs['Money'] = 500000000;
             costs['Adamantite'] = 8000000; //128000000;
             h_inflate = 1.4;
             p_inflate = 1.35;
+            creep_factor = 0.5;
             break;
     }
 
@@ -1869,6 +1875,23 @@ function shipCosts(bp){
             costs['Quantium'] = Math.round(35000 ** h_inflate);
             break;
     }
+
+    let typeCount = 0;
+    global.space.shipyard.ships.forEach(function(ship){
+        if (ship.class === bp.class){
+            typeCount++;
+        }
+    });
+
+    let creep = 1 + (typeCount - 2) / 25 * creep_factor;
+    Object.keys(costs).forEach(function(res){
+        if (typeCount < 2){
+            costs[res] = Math.ceil(costs[res] * (typeCount === 0 ? 0.75 : 0.9));
+        }
+        else if (typeCount > 2){
+            costs[res] = Math.ceil(costs[res] * creep);
+        }
+    });
 
     return costs;
 }
