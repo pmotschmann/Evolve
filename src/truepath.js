@@ -574,6 +574,38 @@ export const outerTruth = {
                 return global.space.hasOwnProperty('ai_core2') && global.space.ai_core2.on >= 1 ? loc(`space_ai_core_flair`) : loc(`space_ai_core_flair2`);
             }
         },
+        ai_colonist: {
+            id: 'space-ai_colonist',
+            title: loc('space_ai_colonist_title'),
+            desc(){
+                return `<div>${loc('space_ai_colonist_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { titan: 10 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 165000000, 1.35); },
+                Alloy(offset){ return spaceCostMultiplier('ai_colonist', offset, 750000, 1.35); },
+                Elerium(offset){ return spaceCostMultiplier('ai_colonist', offset, 500, 1.35); },
+                Nano_Tube(offset){ return spaceCostMultiplier('ai_colonist', offset, 525000, 1.35); },
+                Quantium(offset){ return spaceCostMultiplier('ai_colonist', offset, 150000, 1.35); },
+                Cipher(offset){ return spaceCostMultiplier('ai_colonist', offset, 10000, 1.35); },
+            },
+            effect(){
+                return `<div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[1,genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(10); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.ai_colonist.count++;
+                    if (global.city.power >= $(this)[0].powered()){
+                        global.space.ai_colonist.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            flair: loc(`tech_combat_droids_flair`)
+        },
     },
     spc_enceladus: {
         info: {
@@ -2258,6 +2290,15 @@ export function erisWar(){
         else if (global.space.digsite.enemy > 10000){ global.space.digsite.enemy = 10000; }
 
         global.space.digsite.count = Math.floor(100 - global.space.digsite.enemy / 100);
+
+        if (global.space.digsite.count === 100 && !global.tech['dig_control']){
+            global.tech['dig_control'] = 1;
+            drawTech();
+        }
+        else if (global.tech['dig_control']) {
+            global.tech['dig_control'] = 0;
+            drawTech();
+        }
     }
 }
 

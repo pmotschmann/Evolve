@@ -10435,6 +10435,29 @@ const techs = {
             return false;
         }
     },
+    synthetic_life: {
+        id: 'tech-synthetic_life',
+        title: loc('tech_synthetic_life'),
+        desc: loc('tech_synthetic_life'),
+        category: 'ai_core',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { eris: 3, titan: 9, dig_control: 1 },
+        grant: ['titan',10],
+        cost: {
+            Knowledge(){ return 4000000; },
+            Cipher(){ return 100000; }
+        },
+        effect: loc('tech_synthetic_life_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.space['ai_colonist'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        },
+        class: 'synth'
+    },
     quantium: {
         id: 'tech-quantium',
         title: loc('tech_quantium'),

@@ -3984,7 +3984,8 @@ function fastLoop(){
                 }
 
                 if (global.race['truepath']){
-                    graphene_production *= 0.05 * global.civic.titan_colonist.workers;
+                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+                    graphene_production *= 0.05 * titan_colonists;
                 }
                 else {
                     graphene_production *= 0.6;
@@ -4671,7 +4672,8 @@ function fastLoop(){
             // Aluminium Titan Mines
             if (global.resource.Aluminium.display && global.space['titan_mine']){
                 let synd = syndicate('spc_titan');
-                let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
+                let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+                let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * titan_colonists;
                 let alum_delta = alum_base * shrineMetal.mult * global_multiplier * synd;
                 alum_delta *= 1 + (refinery / 100);
                 alumina_bd[loc('city_mine')] = +(alum_base).toFixed(3) + 'v';
@@ -5060,7 +5062,8 @@ function fastLoop(){
 
         if (global.resource.Adamantite.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');
-            let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * global.civic.titan_colonist.workers;
+            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+            let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * titan_colonists;
             let adam_delta = adam_base * shrineMetal.mult * global_multiplier * synd;
             adamantite_bd[loc('city_mine')] = adam_base + 'v';
             adamantite_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
@@ -6883,7 +6886,8 @@ function midLoop(){
             }
         }
         if (support_on['decoder']){
-            let gain = support_on['decoder'] * global.civic.titan_colonist.workers * 2500;
+            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+            let gain = support_on['decoder'] * titan_colonists * 2500;
             if (p_on['ai_core2']){
                 gain *= 1.25;
             }

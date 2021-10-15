@@ -297,7 +297,7 @@ function loadJob(job, define, impact, stress, color){
         civ_container.append(job_label);
     }
     else {
-        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span :class="level('${job}')">{{ civic.${job}.workers }} / {{ civic.${job}.max }}</span></div>`);
+        let job_label = $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span :class="level('${job}')">{{ civic.${job}.workers | adjust('${job}') }} / {{ civic.${job}.max | adjust('${job}') }}</span></div>`);
         civ_container.append(job_label);
     }
     civ_container.append(controls);
@@ -381,6 +381,12 @@ function loadJob(job, define, impact, stress, color){
                     }
                 }
                 return c;
+            },
+            adjust(v,j){
+                if (j === 'titan_colonist' && p_on['ai_colonist']){
+                    return v + p_on['ai_colonist'];
+                }
+                return v;
             }
         }
     });
