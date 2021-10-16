@@ -1,9 +1,8 @@
-import { global, save } from './vars.js';
+import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, big_bang, cataclysm_end } from './actions.js';
-import { descension } from './portal.js';
+import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism } from './actions.js';
 import { races, genusVars } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -13,6 +12,7 @@ import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
 import { defineGovernor } from './governor.js';
+import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
 const techs = {
     club: {
@@ -10478,6 +10478,76 @@ const techs = {
             }
             return false;
         },
+        class: 'synth'
+    },
+    protocal66: {
+        id: 'tech-protocal66',
+        title: loc('tech_protocal66'),
+        desc: loc('tech_protocal66'),
+        category: 'ai_core',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan_ai_core: 3, corrupted_ai: 1 },
+        grant: ['corrupted_ai',2],
+        cost: {
+            Knowledge(){ return 5000000; }
+        },
+        effect: loc('tech_protocal66_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Knowledge.amount += 5000000;
+                return true;
+            }
+            return false;
+        },
+        flair: loc('tech_protocal66_flair'),
+        class: 'synth'
+    },
+    protocal66a: {
+        id: 'tech-protocal66a',
+        title: loc('tech_protocal66'),
+        desc: loc('tech_protocal66'),
+        category: 'ai_core',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { titan_ai_core: 3, corrupted_ai: 2 },
+        grant: ['corrupted_ai',3],
+        cost: {
+            Knowledge(){ return 5000000; }
+        },
+        effect: loc('tech_protocal66a_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                if (webWorker.w){
+                    webWorker.w.terminate();
+                }
+                clearPopper();
+                $(`body`).append(`<div id="aiAppoc"><div></div></div>`);
+                $(`#aiAppoc`).addClass('noise-wrapper');
+                $(`#aiAppoc > div`).addClass('noise');
+
+                setTimeout(function(){
+                    $(`body`).append(`<div id="deadAirTop" class="signal-lost-top"></div>`);
+                    $(`body`).append(`<div id="deadAirBottom" class="signal-lost-bottom"></div>`);
+
+                    $('#deadAirTop').animate({
+                        height: "50%",
+                        opacity: 1
+                    }, 400);
+
+                    $('#deadAirBottom').animate({
+                        height: "50%",
+                        opacity: 1
+                    }, 400);
+                }, 3000);
+                setTimeout(function(){
+                    aiApocalypse();
+                }, 4000);
+                return true;
+            }
+            return false;
+        },
+        flair: loc('tech_protocal66a_flair'),
         class: 'synth'
     },
     quantium: {

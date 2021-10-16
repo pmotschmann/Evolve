@@ -1,6 +1,6 @@
-import { save, global, webWorker, clearSavedMessages, clearStates, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, tagEvent, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, updateResetStats, calcGenomeScore, randomKey } from './functions.js';
-import { unlockAchieve, checkAchievements, unlockFeat, universeAffix } from './achieve.js';
+import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey } from './functions.js';
+import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -9,6 +9,7 @@ import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault,
 import { outerTruth, syndicate } from './truepath.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
+import { ascend } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -6390,115 +6391,4 @@ export function ascendLab(wiki){
             });
         }
     });
-}
-
-function ascend(){
-    clearSavedMessages();
-
-    tagEvent('reset',{
-        'end': 'ascend'
-    });
-
-    let god = global.race.species;
-    let old_god = global.race.gods;
-    let orbit = global.city.calendar.orbit;
-    let biome = global.city.biome;
-    let atmo = global.city.ptrait;
-    let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
-
-    let gains = calcPrestige('ascend');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
-    let new_harmony = gains.harmony;
-
-    phage += new_phage;
-    harmony += new_harmony;
-    harmony = parseFloat(harmony.toFixed(2));
-
-    global.stats.ascend++;
-    updateResetStats();
-
-    if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
-    }
-    else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
-    }
-    global.stats.phage += new_phage;
-    global.stats.harmony += new_harmony;
-    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
-
-    if (atmo !== 'none'){
-        unlockAchieve(`atmo_${atmo}`);
-    }
-
-    if (typeof global.tech['world_control'] === 'undefined'){
-        unlockAchieve(`cult_of_personality`);
-    }
-
-    let good_rocks = 0;
-    Object.keys(global.city.geology).forEach(function (g){
-        if (global.city.geology[g] > 0){
-            good_rocks++;
-        }
-    });
-    if (good_rocks >= 4) {
-        unlockAchieve('miners_dream');
-    }
-
-    if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
-        unlockAchieve(`dreaded`);
-    }
-    checkAchievements();
-
-    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
-    global['race'] = {
-        species : 'protoplasm',
-        gods: god,
-        old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        universe: global.race.universe,
-        seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
-        ascended: true,
-    };
-    if (corruption > 0){
-        global.race['corruption'] = corruption;
-    }
-
-    Object.keys(geo).forEach(function (g){
-        geo[g] += 0.02;
-    });
-
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
-        geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
-
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
 }

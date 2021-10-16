@@ -1,11 +1,12 @@
-import { global, clearSavedMessages, clearStates, save, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, keyMultiplier, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, tagEvent, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
-import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
+import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
+import { warhead } from './resets.js';
 
 // Sets up government in civics tab
 export function defineGovernment(define){
@@ -2074,100 +2075,5 @@ function defineMad(){
                 }
             );
         });
-    }
-}
-
-function warhead(){
-    if (!global.civic.mad.armed && !global.race['cataclysm']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-        clearSavedMessages();
-
-        tagEvent('reset',{
-            'end': 'mad'
-        });
-
-        let god = global.race.species;
-        let old_god = global.race.gods;
-        let orbit = global.city.calendar.orbit;
-        let biome = global.city.biome;
-        let atmo = global.city.ptrait;
-        let geo = global.city.geology;
-        let plasmid = global.race.Plasmid.count;
-        let antiplasmid = global.race.Plasmid.anti;
-
-        let gains = calcPrestige('mad');
-        let new_plasmid = gains.plasmid;
-
-        global.stats.reset++;
-        global.stats.mad++;
-        global.stats.tdays += global.stats.days;
-        global.stats.days = 0;
-        global.stats.tknow += global.stats.know;
-        global.stats.know = 0;
-        global.stats.tstarved += global.stats.starved;
-        global.stats.starved = 0;
-        global.stats.tdied += global.stats.died;
-        global.stats.died = 0;
-        if (global.race.universe === 'antimatter'){
-            antiplasmid += new_plasmid;
-            global.stats.antiplasmid += new_plasmid;
-        }
-        else {
-            plasmid += new_plasmid;
-            global.stats.plasmid += new_plasmid;
-        }
-        unlockAchieve(`apocalypse`);
-        unlockAchieve(`squished`,true);
-        unlockAchieve(`extinct_${god}`);
-        if (global.civic.govern.type === 'anarchy'){
-            unlockAchieve(`anarchist`);
-        }
-        if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
-            unlockFeat('take_no_advice');
-        }
-        if (global.race['truepath']){
-            unlockAchieve('ashanddust');
-        }
-        checkAchievements();
-        let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
-        global['race'] = { 
-            species : 'protoplasm', 
-            gods: god,
-            old_gods: old_god,
-            rapid_mutation: 1,
-            ancient_ruins: 1,
-            Plasmid: { count: plasmid, anti: antiplasmid },
-            Phage: { count: global.race.Phage.count },
-            Dark: { count: global.race.Dark.count },
-            Harmony: { count: global.race.Harmony.count },
-            universe: global.race.universe,
-            seeded: false,
-            ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-        };
-        if (corruption > 0){
-            global.race['corruption'] = corruption;
-        }
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: orbit
-            },
-            biome: biome,
-            ptrait: atmo,
-            geology: geo
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
-        
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        window.location.reload();
     }
 }

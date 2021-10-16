@@ -8,6 +8,7 @@ import { armyRating, govCivics } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
+import { descension } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -4155,111 +4156,4 @@ export function mechRating(mech,boss){
         }
         return damage;
     }
-}
-
-export function descension(){
-    if (webWorker.w){
-        webWorker.w.terminate();
-    }
-    clearSavedMessages();
-
-    tagEvent('reset',{
-        'end': 'descension'
-    });
-
-    unlockAchieve(`squished`,true);
-    unlockAchieve(`extinct_${global.race.species}`);
-    unlockAchieve(`corrupted`);
-    if (races[global.race.species].type === 'angelic'){
-        unlockFeat('twisted');
-    }
-    if (global.race.species === 'junker'){
-        unlockFeat('the_misery');
-    }
-    if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
-        unlockFeat(`garbage_pie`);
-    }
-    if (global.race['cataclysm']){
-        unlockFeat(`finish_line`);
-    }
-
-    let artifacts = calcPrestige('descend').artifact;
-    global.resource.Artifact.amount += artifacts;
-    global.resource.Artifact.display = true;
-
-    let affix = universeAffix();
-    if (global.stats.spire.hasOwnProperty(affix)){
-        if (global.stats.spire[affix].hasOwnProperty('lord')){
-            global.stats.spire[affix].lord++;
-        }
-        else {
-            global.stats.spire[affix]['lord'] = 1;
-        }
-
-        if (global.tech['dl_reset']){
-            global.stats.spire[affix]['dlstr'] = 0;
-        }
-        else { 
-            if (global.stats.spire[affix].hasOwnProperty('dlstr')){
-                global.stats.spire[affix].dlstr++;
-            }
-            else {
-                global.stats.spire[affix]['dlstr'] = 1;
-            }
-        }
-    }
-
-    let god = global.race.species;
-    let old_god = global.race.gods;
-    let orbit = global.city.calendar.orbit;
-    let biome = global.city.biome;
-    let atmo = global.city.ptrait;
-    let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
-
-    global.stats.artifact += artifacts;
-    global.stats.descend++;
-    updateResetStats();
-    checkAchievements();
-
-    global['race'] = {
-        species : 'protoplasm',
-        gods: god,
-        old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        universe: global.race.universe,
-        seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
-        corruption: 5,
-        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-    };
-
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
-        geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
-
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
 }

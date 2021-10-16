@@ -1,5 +1,6 @@
-import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
+import { global, p_on, support_on, sizeApproximation, quantum_level, clearSavedMessages } from './vars.js';
+import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, tagEvent, deepClone } from './functions.js';
+import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
