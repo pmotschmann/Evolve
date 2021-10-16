@@ -108,7 +108,7 @@ export const outerTruth = {
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(){
-                return 2;
+                return global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2 && p_on['ai_core2'] ? 3 : 2;
             },
             support_fuel(){ return { r: 'Water', a: 35 }; },
             powered(){ return powerCostMod(8); },
@@ -564,7 +564,14 @@ export const outerTruth = {
                 let value = 25;
                 let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div>`;
                 desc += `<div>${loc('interstellar_citadel_effect',[value])}</div><div>${loc('space_ai_core_effect2',[value])}</div>`;
+                if (global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 2){
+                    desc += `<div>${loc('space_ai_core_effect3',[50])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].powered()])}</div>`;
+                if (global.tech['titan_ai_core'] && global.tech.titan_ai_core >= 3){
+                    let drift = +calcAIDrift().toFixed(1);
+                    desc += `<div class="has-text-advanced">${loc('space_ai_core_effect4',[drift])}</div>`;
+                }
                 return desc;
             },
             action(){
@@ -580,7 +587,7 @@ export const outerTruth = {
             desc(){
                 return `<div>${loc('space_ai_colonist_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
-            reqs: { titan: 10 },
+            reqs: { titan_ai_core: 3 },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 165000000, 1.35); },
@@ -1229,6 +1236,9 @@ export const outerTruth = {
             effect(){
                 let rating = Math.round(armyRating(1,'army',0) * syndicate('spc_eris'));
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                if (global.space['digsite'] && global.space.digsite.count === 100){
+                    desc = `<div>${loc(`space_lander_effect3`,[production('shock_trooper'),global.resource.Cipher.name])}</div>`;
+                }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
             support(){ return -1; },
@@ -1262,6 +1272,9 @@ export const outerTruth = {
             effect(){
                 let rating = Math.round(100 * syndicate('spc_eris'));
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                if (global.space['digsite'] && global.space.digsite.count === 100){
+                    desc = `<div>${loc(`space_lander_effect3`,[production('tank'),global.resource.Cipher.name])}</div>`;
+                }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
             support(){ return -1; },
@@ -2290,15 +2303,6 @@ export function erisWar(){
         else if (global.space.digsite.enemy > 10000){ global.space.digsite.enemy = 10000; }
 
         global.space.digsite.count = Math.floor(100 - global.space.digsite.enemy / 100);
-
-        if (global.space.digsite.count === 100 && !global.tech['dig_control']){
-            global.tech['dig_control'] = 1;
-            drawTech();
-        }
-        else if (global.tech['dig_control']) {
-            global.tech['dig_control'] = 0;
-            drawTech();
-        }
     }
 }
 
@@ -2362,4 +2366,18 @@ export function storehouseMultiplier(heavy){
         multiplier *= 1.5;
     }
     return multiplier;
+}
+
+function calcAIDrift(){
+    let drift = 0;
+    if (p_on['ai_colonist'] && support_on['decoder']){
+        drift += p_on['ai_colonist'] * support_on['decoder'] * 0.25;
+    }
+    if (support_on['shock_trooper']){
+        drift += support_on['shock_trooper'] * 1.5;
+    }
+    if (support_on['tank']){
+        drift += support_on['tank'] * 1.5;
+    }
+    return drift;
 }

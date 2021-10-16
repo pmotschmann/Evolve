@@ -203,6 +203,20 @@ export function production(id,val){
             }
             return 0;
         }
+        case 'shock_trooper':
+        {
+            if (global.space.digsite.count === 100){
+                return 0.0018;
+            }
+            return 0;
+        }
+        case 'tank':
+        {
+            if (global.space.digsite.count === 100){
+                return 0.0018;
+            }
+            return 0;
+        }
         case 'orichalcum_mine':
         {
             return 0.08 * zigguratBonus();

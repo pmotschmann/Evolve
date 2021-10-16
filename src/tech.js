@@ -10435,6 +10435,28 @@ const techs = {
             return false;
         }
     },
+    ai_optimizations: {
+        id: 'tech-ai_optimizations',
+        title: loc('tech_ai_optimizations'),
+        desc: loc('tech_ai_optimizations'),
+        category: 'ai_core',
+        era: 'solar',
+        path: ['truepath'],
+        reqs: { eris: 3, titan: 9, titan_ai_core: 1, dig_control: 1 },
+        grant: ['titan_ai_core',2],
+        cost: {
+            Knowledge(){ return 3750000; },
+            Cipher(){ return 75000; }
+        },
+        effect: loc('tech_ai_optimizations_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        class: 'synth'
+    },
     synthetic_life: {
         id: 'tech-synthetic_life',
         title: loc('tech_synthetic_life'),
@@ -10442,11 +10464,11 @@ const techs = {
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
-        reqs: { eris: 3, titan: 9, dig_control: 1 },
-        grant: ['titan',10],
+        reqs: { titan_ai_core: 2 },
+        grant: ['titan_ai_core',3],
         cost: {
             Knowledge(){ return 4000000; },
-            Cipher(){ return 100000; }
+            Cipher(){ return 75000; }
         },
         effect: loc('tech_synthetic_life_effect'),
         action(){

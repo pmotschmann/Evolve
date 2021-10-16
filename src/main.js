@@ -4095,25 +4095,43 @@ function fastLoop(){
         }
         breakdown.p['Vitreloy'] = vitreloy_bd;
 
+        let cipher_bd = {};
         if (global.space['lander'] && global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
-            let cipher_bd = {};
-
             let synd = syndicate('spc_triton');
             let base = support_on['lander'] * production('lander');
             let delta = base * global_multiplier * synd * hunger;
 
             cipher_bd[loc('space_lander_title')] = base + 'v';
             cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
-            cipher_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+            cipher_bd[`ᄂ${loc('hunger')}`] = ((hunger - 1) * 100) + '%';
 
             modRes('Cipher', delta * time_multiplier);
-            breakdown.p['Cipher'] = cipher_bd;
-
+            
             if (global.resource.Cipher.display && global.tech['outer'] && global.tech.outer === 2){
                 global.tech.outer = 3;
                 drawTech();
             }
         }
+
+        if (global.space['digsite'] && global.space.digsite.count === 100){
+            if (!global.tech['dig_control']){
+                global.tech['dig_control'] = 1;
+                drawTech();
+            }
+
+            let synd = syndicate('spc_eris');
+            let shock_base = support_on['shock_trooper'] * production('shock_trooper');
+            let tank_base = support_on['tank'] * production('tank');
+            
+            cipher_bd[loc('space_shock_trooper_title')] = shock_base + 'v';
+            cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            cipher_bd[loc('space_tank_title')] = tank_base + 'v';
+            cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+
+            let delta = (shock_base + tank_base) * global_multiplier * synd;
+            modRes('Cipher', delta * time_multiplier);
+        }
+        breakdown.p['Cipher'] = cipher_bd;
 
         // Lumber
         { //block scope
