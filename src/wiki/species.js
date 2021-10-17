@@ -175,6 +175,11 @@ const traitExtra = {
     ]
 };
 
+const valAdjust = {
+    fibroblast: [5],
+    promiscuous: false
+};
+
 export function traitDesc(info,trait,fanatic,tpage){
     info.append(`<h2 class="has-text-warning">${traits[trait].name}</h2>`);
     if (tpage && traits[trait].hasOwnProperty('val')){
@@ -189,7 +194,17 @@ export function traitDesc(info,trait,fanatic,tpage){
     }
     info.append(`<div class="desc">${traits[trait].desc}</div>`);
 
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars : [];
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars() : [];
+    if (valAdjust.hasOwnProperty(trait)){
+        if (valAdjust[trait]){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * valAdjust[trait][i];
+            }
+        }
+        else {
+            vals = [];
+        }
+    }
     let color = 'warning';
     if (traits[trait].hasOwnProperty('val')){
         color = traits[trait].val >= 0 ? 'success' : 'danger';

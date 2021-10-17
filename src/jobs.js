@@ -52,9 +52,9 @@ export const job_desc = {
         else {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * biomes.forest.vars[0]) : global.civic.lumberjack.impact;
+            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * biomes.forest.vars()[0]) : global.civic.lumberjack.impact;
             if (global.city.biome === 'desert'){
-                impact *= biomes.desert.vars[2];
+                impact *= biomes.desert.vars()[2];
             }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
@@ -68,7 +68,7 @@ export const job_desc = {
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
         multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
         if (global.city.biome === 'desert'){
-            multiplier *= biomes.desert.vars[0];
+            multiplier *= biomes.desert.vars()[0];
         }
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
@@ -94,9 +94,9 @@ export const job_desc = {
         return desc;
     },
     scavenger: function(){
-        let scavanger = global.civic.scavenger.impact;
+        let scavanger = traits.scavenger.vars()[0];
         if (global.city.ptrait === 'trashed' && global.race['scavanger']){
-            scavanger *= 1.25;
+            scavanger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavanger]);
         if (global.civic.d_job === 'scavenger'){
@@ -136,7 +136,7 @@ export const job_desc = {
             interest += 2 * global.tech['stock_exchange'];
         }
         if (global.race['truthful']){
-            interest *= 1 - (traits.truthful.vars[0] / 100);
+            interest *= 1 - (traits.truthful.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'republic'){
             interest *= 1.25;
@@ -162,11 +162,11 @@ export const job_desc = {
         return desc;
     },
     professor: function(){
-        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars[0] : global.civic.professor.impact).toFixed(2);
+        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact).toFixed(2);
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
-        impact *= global.race['pompous'] ? (1 - traits.pompous.vars[0] / 100) : 1;
+        impact *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
         impact *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
             impact *= 1 + (global.city.temple.count * 0.05);
@@ -407,13 +407,13 @@ export function farmerValue(farm){
         farming += global.tech['agriculture'] >= 2 ? 1.15 : 0.65;
     }
     farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
-    farming *= global.city.biome === 'grassland' ? biomes.grassland.vars[0] : 1;
-    farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars[0] : 1;
-    farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars[0] : 1;
-    farming *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars[0] : 1;
+    farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
+    farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
+    farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
+    farming *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars()[0] : 1;
     farming *= racialTrait(global.civic.farmer.workers,'farmer');
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
-    farming *= global.race['low_light'] ? (1 - traits.low_light.vars[0] / 100) : 1;
+    farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
     return farming;
 }
 

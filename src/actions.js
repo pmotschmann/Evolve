@@ -1984,7 +1984,7 @@ export const actions = {
                 return false;
             },
             val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
@@ -2033,7 +2033,7 @@ export const actions = {
                 return false;
             },
             val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
@@ -2080,7 +2080,7 @@ export const actions = {
                 return false;
             },
             val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
@@ -2128,7 +2128,7 @@ export const actions = {
                 return false;
             },
             val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
@@ -2159,7 +2159,7 @@ export const actions = {
             not_trait: ['kindling_kindred','smoldering','cataclysm'],
             no_queue(){ return true },
             action(){
-                let gain = global.race['strong'] ? traits.strong.vars[0] : 1;
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
@@ -2535,7 +2535,7 @@ export const actions = {
             },
             effect(){
                 let souls = BHStorageMulti(spatialReasoning(500));
-                let production = global.race['ghostly'] ? (2 + traits.ghostly.vars[1]) : 2;
+                let production = global.race['ghostly'] ? (2 + traits.ghostly.vars()[1]) : 2;
                 return `<div>${loc('city_soul_well_effect',[production])}</div><div>${loc('plus_max_resource',[souls, loc('resource_Souls_name')])}</div>`;
             },
             action(){
@@ -3999,10 +3999,10 @@ export const actions = {
                     multiplier += (p_on['sensor_drone'] * 0.02);
                 }
                 if (global.race['hard_of_hearing']){
-                    multiplier *= 1 - (traits.hard_of_hearing.vars[0] / 100);
+                    multiplier *= 1 - (traits.hard_of_hearing.vars()[0] / 100);
                 }
                 if (global.race['curious']){
-                    multiplier *= 1 + (traits.curious.vars[0] / 100 * global.resource[global.race.species].amount);
+                    multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
                 }
                 if (p_on['s_gate'] && gal_on['scavenger']){
                     let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
@@ -4068,10 +4068,10 @@ export const actions = {
             effect(){
                 let gain = 125;
                 if (global.race['nearsighted']){
-                    gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                    gain *= 1 - (traits.nearsighted.vars()[0] / 100);
                 }
                 if (global.race['studious']){
-                    gain *= 1 + (traits.studious.vars[1] / 100);
+                    gain *= 1 + (traits.studious.vars()[1] / 100);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
@@ -4097,13 +4097,13 @@ export const actions = {
                 gain = +(gain).toFixed(0);
                 let muckVal2 = govActive('muckraker',2);
                 let know = muckVal2 ? (5 - muckVal2) : 5;
-                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars[0] : know])}</div>`;
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars()[0] : know])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
                     let gain = 125;
                     if (global.race['nearsighted']){
-                        gain *= 1 - (traits.nearsighted.vars[0] / 100);
+                        gain *= 1 - (traits.nearsighted.vars()[0] / 100);
                     }
                     if (global.tech['science'] && global.tech['science'] >= 8){
                         gain *= 1.4;
@@ -4145,7 +4145,7 @@ export const actions = {
             effect(){
                 let gain = 1000;
                 if (global.city.ptrait === 'magnetic'){
-                    gain += planetTraits.magnetic.vars[1];
+                    gain += planetTraits.magnetic.vars()[1];
                 }
                 if (global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
@@ -4163,7 +4163,7 @@ export const actions = {
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
-                        pgain += planetTraits.magnetic.vars[1];
+                        pgain += planetTraits.magnetic.vars()[1];
                     }
                     if (global.space['satellite']){
                         pgain *= 1 + (global.space.satellite.count * 0.04);
@@ -4808,7 +4808,7 @@ export function templeEffect(){
             faith /= 2;
         }
         if (global.race['spiritual']){
-            faith *= 1 + (traits.spiritual.vars[0] / 100);
+            faith *= 1 + (traits.spiritual.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'theocracy'){
             faith *= 1.12;
@@ -4834,7 +4834,7 @@ export function templeEffect(){
             plasmid += priest_bonus * global.civic.priest.workers;
         }
         if (global.race['spiritual']){
-            plasmid *= 1 + (traits.spiritual.vars[0] / 100);
+            plasmid *= 1 + (traits.spiritual.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'theocracy'){
             plasmid *= 1.12;
@@ -4992,7 +4992,7 @@ export function storageMultipler(){
         multiplier *= global.tech['storage'] >= 4 ? 3 : 1.5;
     }
     if (global.race['pack_rat']){
-        multiplier *= 1 + (traits.pack_rat.vars[1] / 100);
+        multiplier *= 1 + (traits.pack_rat.vars()[1] / 100);
     }
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
@@ -6718,6 +6718,15 @@ function sentience(){
         global.race[trait] = races[global.race.species].traits[trait];
     });
 
+    if (global.race['imitation'] && global.race['srace']){
+        Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+            global.race[trait] = 0.5;
+        });
+        Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
+            global.race[trait] = 0.5;
+        });
+    }
+
     const date = new Date();
     if (!global.settings.boring && global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
         global.race['slaver'] = 1;
@@ -7499,10 +7508,10 @@ export function bank_vault(){
         vault = 4000;
     }
     if (global.race['paranoid']){
-        vault *= 1 - (traits.paranoid.vars[0] / 100);
+        vault *= 1 - (traits.paranoid.vars()[0] / 100);
     }
     if (global.race['hoarder']){
-        vault *= 1 + (traits.hoarder.vars[0] / 100);
+        vault *= 1 + (traits.hoarder.vars()[0] / 100);
     }
     if (global.tech['banking'] >= 7){
         vault *= 1 + (global.civic.banker.workers * 0.05);

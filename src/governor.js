@@ -102,107 +102,107 @@ export const gmen = {
 export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
-        effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars[0]]); },
-        vars: [5]
+        effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [5]; },
     },
     militant: {
         name: loc(`gov_trait_militant`),
-        effect(){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
-        vars: [25,10]
+        effect(){ return loc(`gov_trait_militant_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
+        vars(){ return [25,10]; },
     },
     noquestions: {
         name: loc(`gov_trait_noquestions`),
-        effect(){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars[0]]); },
-        vars: [0.005]
+        effect(){ return loc(`gov_trait_noquestions_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [0.005]; },
     },
     racketeer: {
         name: loc(`gov_trait_racketeer`),
-        effect(){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
-        vars: [20,35]
+        effect(){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
+        vars(){ return [20,35]; },
     },
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
-        effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars[0]]); },
-        vars: [75]
+        effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [75]; },
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),
-        effect(){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars[0]]); },
-        vars: [10]
+        effect(){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [10]; },
     },
     teacher: {
         name: loc(`gov_trait_teacher`),
-        effect(){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars[0]]); },
-        vars: [5]
+        effect(){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [5]; },
     },
     theorist: {
         name: loc(`gov_trait_theorist`),
-        effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
-        vars: [50,4]
+        effect(){ return loc(`gov_trait_theorist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
+        vars(){ return [50,4]; },
     },
     inspirational: {
         name: loc(`gov_trait_inspirational`),
-        effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars[0]]); },
-        vars: [10]
+        effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [10]; },
     },
     pious: {
         name: loc(`gov_trait_pious`),
         effect(){
-            let val = $(this)[0].vars[1];
+            let val = $(this)[0].vars()[1];
             let xeno = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
             val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
-            return loc(`gov_trait_pious_effect`,[$(this)[0].vars[0],val]);
+            return loc(`gov_trait_pious_effect`,[$(this)[0].vars()[0],val]);
         },
-        vars: [10,2]
+        vars(){ return [10,2]; },
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),
-        effect(){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
-        vars: [50,2]
+        effect(){ return loc(`gov_trait_pragmatist_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
+        vars(){ return [50,2]; },
     },
     dirty_jobs: {
         name: loc(`gov_trait_dirty_jobs`),
-        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars[0]]); },
-        vars: [0.015]
+        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [0.015]; },
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars[0],housingLabel('large',true),$(this)[0].vars[1],$(this)[0].vars[2]+5]); },
-        vars: [10,1.25,1]
+        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]+5]); },
+        vars(){ return [10,1.25,1]; },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
-        effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2]]); },
-        vars: [50,10,10]
+        effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
+        vars(){ return [50,10,10]; },
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`),
         effect(){
-            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars[0],wardenLabel(),$(this)[0].vars[1],$(this)[0].vars[2]]);
+            return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars()[0],wardenLabel(),$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars: [0.5,0.75,0.5]
+        vars(){ return [0.5,0.75,0.5]; },
     },
     muckraker: {
         name: loc(`gov_trait_muckraker`),
         effect(){
-            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars[1],$(this)[0].vars[2]]);
+            return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars: [8,10,3]
+        vars(){ return [8,10,3]; },
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
-        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars[0],$(this)[0].vars[1],$(this)[0].vars[2],wardenLabel()]); },
-        vars: [1.5,2,4]
+        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2],wardenLabel()]); },
+        vars(){ return [1.5,2,4]; },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
-        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars[0],$(this)[0].vars[1]]); },
-        vars: [50,10]
+        effect(){ return loc(`gov_trait_nopain_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
+        vars(){ return [50,10]; },
     },
     organizer: {
         name: loc(`gov_trait_organizer`),
-        effect(){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars[0]]); },
-        vars: [1]
+        effect(){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars()[0]]); },
+        vars(){ return [1]; },
     }
 };
 
@@ -642,7 +642,7 @@ function appointGovernor(){
 
 export function govActive(trait,val){
     if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('g')){
-        return gmen[global.race.governor.g.bg].traits[trait] ? gov_traits[trait].vars[val] : false;
+        return gmen[global.race.governor.g.bg].traits[trait] ? gov_traits[trait].vars()[val] : false;
     }
     return false;
 }

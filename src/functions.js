@@ -629,32 +629,32 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
         mutiplier -= darkEffect('micro',false);
     }
 
-    if (global.race['small']){ mutiplier -= traits.small.vars[0]; }
-    else if (global.race['large']){ mutiplier += traits.large.vars[0]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars[0]; }
-    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars[0]; }
+    if (global.race['small']){ mutiplier -= traits.small.vars()[0]; }
+    else if (global.race['large']){ mutiplier += traits.large.vars()[0]; }
+    if (global.race['compact']){ mutiplier -= traits.compact.vars()[0]; }
+    if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars()[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= global.tech['housing_reduction'] * 0.02;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
-            mutiplier -= traits.solitary.vars[0];
+            mutiplier -= traits.solitary.vars()[0];
         }
         if (global.race['pack_mentality']){
-            mutiplier += traits.pack_mentality.vars[0];
+            mutiplier += traits.pack_mentality.vars()[0];
         }
     }
     if (structure === 'cottage'){
         if (global.race['solitary']){
-            mutiplier += traits.solitary.vars[0];
+            mutiplier += traits.solitary.vars()[1];
         }
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars[1];
+            mutiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (structure === 'apartment'){
         if (global.race['pack_mentality']){
-            mutiplier -= traits.pack_mentality.vars[1];
+            mutiplier -= traits.pack_mentality.vars()[1];
         }
     }
     if (global.genes['creep'] && !global.race['no_crispr']){
@@ -690,8 +690,8 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     else if (global.genes['creep'] && global.race['no_crispr']){
         mutiplier -= global.genes['creep'] * 0.002;
     }
-    if (global.race['small']){ mutiplier -= traits.small.vars[1]; }
-    if (global.race['compact']){ mutiplier -= traits.compact.vars[1]; }
+    if (global.race['small']){ mutiplier -= traits.small.vars()[1]; }
+    if (global.race['compact']){ mutiplier -= traits.compact.vars()[1]; }
     if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         mutiplier -= harmonyEffect();
     }
@@ -1066,8 +1066,8 @@ export function masteryType(universe,detailed){
             u_mastery = ua_level.uLvl * u_rate;
         }
         if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
-            m_mastery *= 1 + (traits.mastery.vars[0] * global.race.mastery / 100);
-            u_mastery *= 1 + (traits.mastery.vars[0] * global.race.mastery / 100);
+            m_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
+            u_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
         }
         return detailed ? { g: m_mastery, u: u_mastery, m: m_mastery + u_mastery } : m_mastery + u_mastery;
     }
@@ -1414,10 +1414,10 @@ function scienceAdjust(costs){
                 newCosts[res] = function(){
                     let cost = costs[res]();
                     if (global.race['smart']){
-                        cost *= 1 - (traits.smart.vars[0] / 100);
+                        cost *= 1 - (traits.smart.vars()[0] / 100);
                     }
                     if (global.race['dumb']){
-                        cost *= 1 + (traits.dumb.vars[0] / 100);
+                        cost *= 1 + (traits.dumb.vars()[0] / 100);
                     }
                     if (pragVal){
                         cost *= 1 + (pragVal / 100);
@@ -1463,7 +1463,7 @@ function smolderAdjust(costs, wiki){
 function kindlingAdjust(costs, wiki){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
-        let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
+        let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
                 newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
@@ -1482,7 +1482,7 @@ function craftAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
             }
             else {
                 newCosts[res] = function(){ return costs[res](wiki); }
@@ -1498,7 +1498,7 @@ function heavyAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
             }
             else {
                 newCosts[res] = function(){ return costs[res](wiki); }

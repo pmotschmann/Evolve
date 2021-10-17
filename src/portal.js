@@ -481,7 +481,7 @@ const fortressModules = {
             powered(){ return powerCostMod(5); },
             support(){ return 1; },
             effect(){
-                let holy = global.race['holy'] ? 1 + (traits.holy.vars[1] / 100) : 1;
+                let holy = global.race['holy'] ? 1 + (traits.holy.vars()[1] / 100) : 1;
                 let rating = Math.round(holy * armyRating(1,'hellArmy',0));
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
             },
@@ -908,7 +908,7 @@ const fortressModules = {
             effect(){
                 let security = 100;
                 if (global.race['holy']){
-                    security *= 1 + (traits.holy.vars[1] / 100);
+                    security *= 1 + (traits.holy.vars()[1] / 100);
                 }
                 let min = global.tech.hell_gun >= 2 ? 65 : 40;
                 let max = global.tech.hell_gun >= 2 ? 100 : 60;
@@ -2122,7 +2122,7 @@ function casualties(demons,pat_armor,ambush){
         dead = Math.rand(0,casualties + 1);
         let wounded = casualties - dead;
         if (global.race['instinct']){
-            let reduction = Math.floor(dead * (traits.instinct.vars[1] / 100));
+            let reduction = Math.floor(dead * (traits.instinct.vars()[1] / 100));
             dead -= reduction;
             wounded += reduction;
         }
@@ -2136,10 +2136,10 @@ function casualties(demons,pat_armor,ambush){
 export function bloodwar(){
     let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
-        pat_armor += traits.armored.vars[1];
+        pat_armor += traits.armored.vars()[1];
     }
     if (global.race['scales']){
-        pat_armor += traits.scales.vars[2];
+        pat_armor += traits.scales.vars()[2];
     }
 
     let forgeOperating = false;                    
@@ -2204,7 +2204,7 @@ export function bloodwar(){
         }
     }
     if (global.race['ghostly']){
-        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars[2]) / 100));
+        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars()[2]) / 100));
     }
 
     // Patrols
@@ -2392,10 +2392,10 @@ export function bloodwar(){
             divisor *= 1 + (painVal / 100);
         }
         if (global.race['blurry']){
-            divisor *= 1 + (traits.blurry.vars[0] / 100);
+            divisor *= 1 + (traits.blurry.vars()[0] / 100);
         }
         if (global.race['instinct']){
-            divisor *= 1 + (traits.instinct.vars[0] / 100);
+            divisor *= 1 + (traits.instinct.vars()[0] / 100);
         }
         if (global.tech['infernite'] && global.tech.infernite >= 5){
             divisor += 250;
@@ -2514,7 +2514,7 @@ export function hellSupression(area, val){
                 let arc = (p_on['arcology'] || 0) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){
-                    aRating *= 1 + (traits.holy.vars[1] / 100);
+                    aRating *= 1 + (traits.holy.vars()[1] / 100);
                 }
                 let supress = (aRating + arc) / 5000;
                 return {
@@ -2527,7 +2527,7 @@ export function hellSupression(area, val){
                 let gSup = hellSupression('ruins',val);
                 let turret = (p_on['gate_turret'] || 0) * 100;
                 if (global.race['holy']){
-                    turret *= 1 + (traits.holy.vars[1] / 100);
+                    turret *= 1 + (traits.holy.vars()[1] / 100);
                 }
                 let supress = (gSup.rating + turret) / 7500;
                 return {

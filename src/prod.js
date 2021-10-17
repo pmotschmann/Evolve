@@ -18,10 +18,10 @@ export function production(id,val){
                 oil *= global.city.geology['Oil'] + 1;
             }
             if (global.city.biome === 'desert'){
-                oil *= biomes.desert.vars[1];
+                oil *= biomes.desert.vars()[1];
             }
             else if (global.city.biome === 'tundra'){
-                oil *= biomes.tundra.vars[1];
+                oil *= biomes.tundra.vars()[1];
             }
             return oil;
         }
@@ -203,20 +203,6 @@ export function production(id,val){
             }
             return 0;
         }
-        case 'shock_trooper':
-        {
-            if (global.space.digsite.count === 100){
-                return 0.0018;
-            }
-            return 0;
-        }
-        case 'tank':
-        {
-            if (global.space.digsite.count === 100){
-                return 0.0018;
-            }
-            return 0;
-        }
         case 'orichalcum_mine':
         {
             return 0.08 * zigguratBonus();
@@ -232,6 +218,20 @@ export function production(id,val){
         case 'elerium_mine':
         {
             return 0.009 * zigguratBonus();
+        }
+        case 'shock_trooper':
+        {
+            if (global.space.digsite.count === 100){
+                return 0.0018;
+            }
+            return 0;
+        }
+        case 'tank':
+        {
+            if (global.space.digsite.count === 100){
+                return 0.0018;
+            }
+            return 0;
         }
     }
 }

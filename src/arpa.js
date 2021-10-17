@@ -1555,7 +1555,7 @@ function creativeAdjust(costs){
     if (global.race['creative']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return costs[res]() * (1 - traits.creative.vars[1] / 100); }
+            newCosts[res] = function(){ return costs[res]() * (1 - traits.creative.vars()[1] / 100); }
         });
         return newCosts;
     }
@@ -1565,7 +1565,7 @@ function creativeAdjust(costs){
 function costMultiplier(project,offset,base,mutiplier){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (global.race['creative'] && project !== 'syphon'){
-        mutiplier -= traits.creative.vars[0];
+        mutiplier -= traits.creative.vars()[0];
     }
     if (offset){
         rank += offset;

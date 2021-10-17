@@ -1,5 +1,6 @@
 import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
+import { races } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
 
 // Mutual Assured Destruction
@@ -55,6 +56,8 @@ export function warhead(){
             unlockAchieve('ashanddust');
         }
         checkAchievements();
+
+        let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = { 
             species : 'protoplasm', 
@@ -73,6 +76,10 @@ export function warhead(){
         if (corruption > 0){
             global.race['corruption'] = corruption;
         }
+        if (srace){
+            global.race['srace'] = srace;
+        }
+        
         global.city = {
             calendar: {
                 day: 0,
@@ -195,6 +202,7 @@ export function bioseed(){
 
     checkAchievements();
 
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let probes = global.starDock.probes.count + 1;
     if (global.stats.achieve['explorer']){
@@ -217,6 +225,10 @@ export function bioseed(){
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
     global.city = {
         calendar: {
             day: 0,
@@ -290,6 +302,7 @@ export function cataclysm_end(){
             unlockAchieve('failed_history');
         }
 
+        let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = {
             species : global.race.species,
@@ -306,6 +319,10 @@ export function cataclysm_end(){
         if (corruption > 0){
             global.race['corruption'] = corruption;
         }
+        if (srace){
+            global.race['srace'] = srace;
+        }
+
         global.city = {
             calendar: {
                 day: 0,
@@ -421,6 +438,7 @@ export function big_bang(){
     global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
     global.stats.universes++;
 
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
@@ -440,6 +458,10 @@ export function big_bang(){
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
     global.city = {
         calendar: {
             day: 0,
@@ -527,6 +549,7 @@ export function vacuumCollapse(){
         global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
         global.stats.universes++;
 
+        let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
         global['race'] = {
             species : 'protoplasm',
@@ -546,6 +569,10 @@ export function vacuumCollapse(){
         if (corruption > 0){
             global.race['corruption'] = corruption;
         }
+        if (srace){
+            global.race['srace'] = srace;
+        }
+
         global.city = {
             calendar: {
                 day: 0,
@@ -636,6 +663,7 @@ export function ascend(){
     }
     checkAchievements();
 
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
@@ -652,6 +680,9 @@ export function ascend(){
     };
     if (corruption > 0){
         global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
     }
 
     Object.keys(geo).forEach(function (g){
@@ -751,6 +782,7 @@ export function descension(){
     updateResetStats();
     checkAchievements();
 
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
@@ -765,6 +797,9 @@ export function descension(){
         corruption: 5,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
+    if (srace){
+        global.race['srace'] = srace;
+    }
 
     global.city = {
         calendar: {
@@ -836,11 +871,15 @@ export function aiApocalypse(){
     }
     global.stats.phage += new_phage;
 
+    races[god].type !== 'synthetic'
+
+    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
+        srace: srace,
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
         Dark: { count: dark },

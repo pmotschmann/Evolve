@@ -2349,7 +2349,7 @@ function transferWindow(from,to){
 export function storehouseMultiplier(heavy){
     let multiplier = 1;
     if (global.race['pack_rat']){
-        multiplier *= 1 + (traits.pack_rat.vars[1] / 100);
+        multiplier *= 1 + (traits.pack_rat.vars()[1] / 100);
     }
     if (global.stats.achieve['blackhole']){
         multiplier *= 1 + global.stats.achieve.blackhole.l * 0.05;
@@ -2381,7 +2381,7 @@ export function calcAIDrift(){
         drift += support_on['tank'] * 1.5;
     }
     if (drift > 100){
-        dritt = 100;
+        drift = 100;
     }
     return drift;
 }

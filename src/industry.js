@@ -609,7 +609,7 @@ function loadFactory(parent,bind){
             case 'Lux':{
                 let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
                 if (global.race['toxic']){
-                    demand *= 1 + (traits.toxic.vars[0] / 100);
+                    demand *= 1 + (traits.toxic.vars()[0] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     demand *= 2.5;

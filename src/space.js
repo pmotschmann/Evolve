@@ -1120,7 +1120,7 @@ const spaceProjects = {
             powered(){
                 let power = -8;
                 if (global.race['forge']){
-                    power -= traits.forge.vars[0];
+                    power -= traits.forge.vars()[0];
                 }
                 if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power -= 2; }
                 return powerModifier(power);
@@ -5871,13 +5871,13 @@ export function fuel_adjust(fuel,drain){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
     }
     if (global.city.ptrait === 'dense'){
-        fuel *= planetTraits.dense.vars[2];
+        fuel *= planetTraits.dense.vars()[2];
     }
     if (global.race['cataclysm']){
         fuel *= 0.2;
     }
     if (global.race['heavy']){
-        fuel *= 1 + (traits.heavy.vars[0] / 100);
+        fuel *= 1 + (traits.heavy.vars()[0] / 100);
     }
     if (eventActive('launch_day')){
         fuel *= 0.95;
@@ -5893,7 +5893,7 @@ export function int_fuel_adjust(fuel){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
     }
     if (global.race['heavy']){
-        fuel *= 1 + (traits.heavy.vars[0] / 100);
+        fuel *= 1 + (traits.heavy.vars()[0] / 100);
     }
     if (eventActive('launch_day')){
         fuel *= 0.95;

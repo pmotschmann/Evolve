@@ -165,31 +165,27 @@ export const supplyValue = {
 };
 
 export function craftCost(){
-    return global.race['wasteful'] 
-        ? {
-            Plywood: [{ r: 'Lumber', a: 110 }],
-            Brick: [{ r: 'Cement', a: 44 }],
-            Wrought_Iron: [{ r: 'Iron', a: 88 }],
-            Sheet_Metal: [{ r: 'Aluminium', a: 132 }],
-            Mythril: [{ r: 'Iridium', a: 110 },{ r: 'Alloy', a: 275 }],
-            Aerogel: [{ r: 'Graphene', a: 2750 },{ r: 'Infernite', a: 55 }],
-            Nanoweave: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Vitreloy', a: 44 }],
-            Scarletite: [{ r: 'Iron', a: 275000 },{ r: 'Adamantite', a: 8250 },{ r: 'Orichalcum', a: 550 }],
-            Quantium: [{ r: 'Nano_Tube', a: 1100 },{ r: 'Graphene', a: 1100 },{ r: 'Elerium', a: 27.5 }],
-            Thermite: [{ r: 'Iron', a: 198 },{ r: 'Aluminium', a: 66 }],
-        }
-        : {
-            Plywood: [{ r: 'Lumber', a: 100 }],
-            Brick: [{ r: 'Cement', a: 40 }],
-            Wrought_Iron: [{ r: 'Iron', a: 80 }],
-            Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
-            Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
-            Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
-            Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
-            Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
-            Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
-            Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
-        };
+    let costs = {
+        Plywood: [{ r: 'Lumber', a: 100 }],
+        Brick: [{ r: 'Cement', a: 40 }],
+        Wrought_Iron: [{ r: 'Iron', a: 80 }],
+        Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
+        Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
+        Aerogel: [{ r: 'Graphene', a: 2500 },{ r: 'Infernite', a: 50 }],
+        Nanoweave: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Vitreloy', a: 40 }],
+        Scarletite: [{ r: 'Iron', a: 250000 },{ r: 'Adamantite', a: 7500 },{ r: 'Orichalcum', a: 500 }],
+        Quantium: [{ r: 'Nano_Tube', a: 1000 },{ r: 'Graphene', a: 1000 },{ r: 'Elerium', a: 25 }],
+        Thermite: [{ r: 'Iron', a: 180 },{ r: 'Aluminium', a: 60 }],
+    };
+    if (global.race['wasteful']){
+        let rate = 1 + traits.wasteful.vars()[0] / 100;
+        Object.keys(costs).forEach(function(res){
+            for (let i=0; i<costs[res].length; i++){
+                costs[res][i].a = Math.round(costs[res][i].a * rate);
+            }
+        });
+    }
+    return costs;
 }
 
 export const craftingRatio = (function(){
@@ -347,15 +343,15 @@ export const craftingRatio = (function(){
             if (global.race['ambidextrous']){
                 crafting.general.add.push({
                     name: loc(`trait_ambidextrous_name`),
-                    manual: traits.ambidextrous.vars[0] * global.race['ambidextrous'] / 100,
-                    auto: traits.ambidextrous.vars[0] * global.race['ambidextrous'] / 100
+                    manual: traits.ambidextrous.vars()[0] * global.race['ambidextrous'] / 100,
+                    auto: traits.ambidextrous.vars()[0] * global.race['ambidextrous'] / 100
                 });
             }
             if (global.race['rigid']){
                 crafting.general.add.push({
                     name: loc(`trait_rigid_name`),
-                    manual: -(traits.rigid.vars[0] / 100),
-                    auto: -(traits.rigid.vars[0] / 100)
+                    manual: -(traits.rigid.vars()[0] / 100),
+                    auto: -(traits.rigid.vars()[0] / 100)
                 });
             }
             if (global.civic.govern.type === 'socialist'){
@@ -399,7 +395,7 @@ export const craftingRatio = (function(){
                 crafting.general.multi.push({
                     name: loc(`trait_ambidextrous_name`),
                     manual: 1,
-                    auto: 1 + (traits.ambidextrous.vars[1] * global.race['ambidextrous'] / 100)
+                    auto: 1 + (traits.ambidextrous.vars()[1] * global.race['ambidextrous'] / 100)
                 });
             }
             if (global.blood['artisan']){
@@ -1082,7 +1078,7 @@ export function marketItem(mount,market_item,name,color,full){
                     rate *= 1 + (global.race['persuasive'] / 100);
                 }
                 if (global.race['merchant']){
-                    rate *= 1 + (traits.merchant.vars[1] / 100);
+                    rate *= 1 + (traits.merchant.vars()[1] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
@@ -1106,10 +1102,10 @@ export function marketItem(mount,market_item,name,color,full){
                     let qty = global.city.market.qty;
                     let value = global.resource[res].value;
                     if (global.race['arrogant']){
-                        value *= 1 + (traits.arrogant.vars[0] / 100);
+                        value *= 1 + (traits.arrogant.vars()[0] / 100);
                     }
                     if (global.race['conniving']){
-                        value *= 1 - (traits.conniving.vars[0] / 100);
+                        value *= 1 - (traits.conniving.vars()[0] / 100);
                     }
                     var price = Math.round(value * qty);
                     if (global.resource.Money.amount >= price){
@@ -1126,13 +1122,13 @@ export function marketItem(mount,market_item,name,color,full){
                     if (global.resource[res].amount >= qty){
                         let divide = 4;
                         if (global.race['merchant']){
-                            divide *= 1 - (traits.merchant.vars[0] / 100);
+                            divide *= 1 - (traits.merchant.vars()[0] / 100);
                         }
                         if (global.race['asymmetrical']){
-                            divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                            divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
                         }
                         if (global.race['conniving']){
-                            divide *= 1 - (traits.conniving.vars[1] / 100);
+                            divide *= 1 - (traits.conniving.vars()[1] / 100);
                         } 
                         let price = Math.round(global.resource[res].value * qty / divide);
                         global.resource[res].amount -= Number(qty);
@@ -1207,17 +1203,17 @@ export function marketItem(mount,market_item,name,color,full){
         filters: {
             buy(value){
                 if (global.race['arrogant']){
-                    value *= 1 + (traits.arrogant.vars[0] / 100);
+                    value *= 1 + (traits.arrogant.vars()[0] / 100);
                 }
                 return sizeApproximation(value * global.city.market.qty,0);
             },
             sell(value){
                 let divide = 4;
                 if (global.race['merchant']){
-                    divide *= 1 - (traits.merchant.vars[0] / 100);
+                    divide *= 1 - (traits.merchant.vars()[0] / 100);
                 }
                 if (global.race['asymmetrical']){
-                    divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+                    divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
                 }
                 return sizeApproximation(value * global.city.market.qty / divide,0);
             },
@@ -1379,7 +1375,7 @@ export function galacticTrade(modal){
                     buy_vol *= 1 + (global.race['persuasive'] / 100);
                 }
                 if (global.race['merchant']){
-                    buy_vol *= 1 + (traits.merchant.vars[1] / 100);
+                    buy_vol *= 1 + (traits.merchant.vars()[1] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
@@ -1546,10 +1542,10 @@ export function containerItem(mount,market_item,name,color){
 export function tradeSellPrice(res){
     let divide = 4;
     if (global.race['merchant']){
-        divide *= 1 - (traits.merchant.vars[0] / 100);
+        divide *= 1 - (traits.merchant.vars()[0] / 100);
     }
     if (global.race['asymmetrical']){
-        divide *= 1 + (traits.asymmetrical.vars[0] / 100);
+        divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
     }
     if (global.race['conniving']){
         divide--;
@@ -1578,10 +1574,10 @@ export function tradeSellPrice(res){
 export function tradeBuyPrice(res){
     let rate = global.resource[res].value;
     if (global.race['arrogant']){
-        rate *= 1 + (traits.arrogant.vars[0] / 100);
+        rate *= 1 + (traits.arrogant.vars()[0] / 100);
     }
     if (global.race['conniving']){
-        rate *= 1 - (traits.conniving.vars[0] / 100);
+        rate *= 1 - (traits.conniving.vars()[0] / 100);
     }
     let price = rate * tradeRatio[res];
     if (global.city['wharf']){
@@ -2154,7 +2150,7 @@ export function crateValue(){
         create_value += 4000;
     }
     if (global.race['pack_rat']){
-        create_value *= 1 + (traits.pack_rat.vars[0] / 100);
+        create_value *= 1 + (traits.pack_rat.vars()[0] / 100);
     }
     if (global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 3){
         create_value *= 1.1;
@@ -2175,7 +2171,7 @@ export function containerValue(){
         container_value += 8000;
     }
     if (global.race['pack_rat']){
-        container_value *= 1 + (traits.pack_rat.vars[0] / 100);
+        container_value *= 1 + (traits.pack_rat.vars()[0] / 100);
     }
     container_value *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
     return Math.round(spatialReasoning(container_value));
@@ -2600,7 +2596,7 @@ export function faithBonus(){
                 temple_bonus /= 2;
             }
             if (global.race['spiritual']){
-                temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
+                temple_bonus *= 1 + (traits.spiritual.vars()[0] / 100);
             }
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;
@@ -2668,7 +2664,7 @@ export const plasmidBonus = (function (){
                         temple_bonus += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
-                        temple_bonus *= 1 + (traits.spiritual.vars[0] / 100);
+                        temple_bonus *= 1 + (traits.spiritual.vars()[0] / 100);
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         temple_bonus *= 1.12;
