@@ -1339,6 +1339,9 @@ if (!global.stats['ascend']){
 if (!global.stats['descend']){
     global.stats['descend'] = 0;
 }
+if (!global.stats['aiappoc']){
+    global.stats['aiappoc'] = 0;
+}
 if (!global.stats['dark']){
     global.stats['dark'] = 0;
 }

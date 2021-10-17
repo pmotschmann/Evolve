@@ -2369,7 +2369,7 @@ export function storehouseMultiplier(heavy){
     return multiplier;
 }
 
-function calcAIDrift(){
+export function calcAIDrift(){
     let drift = 0;
     if (p_on['ai_colonist'] && support_on['decoder']){
         drift += p_on['ai_colonist'] * support_on['decoder'] * 0.25;
@@ -2379,6 +2379,9 @@ function calcAIDrift(){
     }
     if (support_on['tank']){
         drift += support_on['tank'] * 1.5;
+    }
+    if (drift > 100){
+        dritt = 100;
     }
     return drift;
 }

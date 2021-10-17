@@ -463,6 +463,113 @@ export function big_bang(){
     window.location.reload();
 }
 
+export function vacuumCollapse(){
+    if (global.tech.syphon >= 80 && global.race.universe === 'magic'){
+        global.tech.syphon = 79;
+        global.arpa.syphon.rank = 79;
+        global.arpa.syphon.complete = 99;
+        global.queue.queue = [];
+
+        global.stats['current'] = Date.now();
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        clearSavedMessages();
+
+        tagEvent('reset',{
+            'end': 'vacuum'
+        });
+
+        unlockAchieve(`extinct_${global.race.species}`);
+        unlockAchieve(`pw_apocalypse`);
+
+        if (!global.race['modified'] && global.race.species === 'balorg'){
+            unlockAchieve('pass');
+        }
+        if (global.race.species === 'junker'){
+            unlockFeat('the_misery');
+        }
+        if (global.race['decay']){
+            unlockAchieve(`dissipated`);
+        }
+        if (global.race['steelen']){
+            unlockFeat('steelem');
+        }
+
+        let god = global.race.species;
+        let old_god = global.race.gods;
+        let orbit = global.city.calendar.orbit;
+        let biome = global.city.biome;
+        let atmo = global.city.ptrait;
+        let plasmid = global.race.Plasmid.count;
+        let antiplasmid = global.race.Plasmid.anti;
+        let phage = global.race.Phage.count;
+        let dark = global.race.Dark.count;
+
+        let gains = calcPrestige('vacuum');
+        let new_plasmid = gains.plasmid;
+        let new_phage = gains.phage;
+        let new_dark = gains.dark;
+
+        checkAchievements();
+
+        phage += new_phage;
+        global.stats.blackhole++;
+        updateResetStats();
+        
+        if (global.race.universe === 'antimatter'){
+            antiplasmid += new_plasmid;
+            global.stats.antiplasmid += new_plasmid;
+        }
+        else {
+            plasmid += new_plasmid;
+            global.stats.plasmid += new_plasmid;
+        }
+        global.stats.phage += new_phage;
+        global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
+        global.stats.universes++;
+
+        let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+        global['race'] = {
+            species : 'protoplasm',
+            gods: god,
+            old_gods: old_god,
+            Plasmid: { count: plasmid, anti: antiplasmid },
+            Phage: { count: phage },
+            Dark: { count: +(dark + new_dark).toFixed(3) },
+            Harmony: { count: global.race.Harmony.count },
+            universe: 'bigbang',
+            seeded: true,
+            bigbang: true,
+            probes: 4,
+            seed: Math.floor(Math.seededRandom(10000)),
+            ascended: false,
+        };
+        if (corruption > 0){
+            global.race['corruption'] = corruption;
+        }
+        global.city = {
+            calendar: {
+                day: 0,
+                year: 0,
+                weather: 2,
+                temp: 1,
+                moon: 0,
+                wind: 0,
+                orbit: orbit
+            },
+            biome: biome,
+            ptrait: atmo
+        };
+        global.tech = { theology: 1 };
+        clearStates();
+        global.new = true;
+        Math.seed = Math.rand(0,10000);
+        global.seed = Math.seed;
+
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        window.location.reload();
+    }
+}
+
 // Ascension
 export function ascend(){
     clearSavedMessages();
@@ -693,38 +800,11 @@ export function aiApocalypse(){
     });
 
     unlockAchieve(`extinct_${global.race.species}`);
-    switch (global.race.universe){
-        case 'heavy':
-            unlockAchieve(`heavy`);
-            break;
-        case 'antimatter':
-            unlockAchieve(`canceled`);
-            break;
-        case 'evil':
-            unlockAchieve(`eviltwin`);
-            break;
-        case 'micro':
-            unlockAchieve(`microbang`,true);
-            break;
-        case 'standard':
-            unlockAchieve(`whitehole`);
-            break;
-        default:
-            break;
-    }
+    unlockAchieve(`obsolete`);
 
     unlockAchieve(`squished`,true);
-    if (global.race.universe === 'evil' && races[global.race.species].type === 'angelic'){
-        unlockFeat('nephilim');
-    }
     if (global.race.species === 'junker'){
         unlockFeat('the_misery');
-    }
-    if (global.race['decay']){
-        unlockAchieve(`dissipated`);
-    }
-    if (global.race['steelen']){
-        unlockFeat('steelem');
     }
 
     let god = global.race.species;
@@ -737,15 +817,14 @@ export function aiApocalypse(){
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
 
-    let gains = calcPrestige('bigbang');
+    let gains = calcPrestige('ai');
     let new_plasmid = gains.plasmid;
     let new_phage = gains.phage;
-    let new_dark = gains.dark;
 
     checkAchievements();
 
     phage += new_phage;
-    global.stats.blackhole++;
+    global.stats.aiappoc++;
     updateResetStats();
     if (global.race.universe === 'antimatter'){
         antiplasmid += new_plasmid;
@@ -756,8 +835,6 @@ export function aiApocalypse(){
         global.stats.plasmid += new_plasmid;
     }
     global.stats.phage += new_phage;
-    global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
-    global.stats.universes++;
 
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
@@ -766,18 +843,17 @@ export function aiApocalypse(){
         old_gods: old_god,
         Plasmid: { count: plasmid, anti: antiplasmid },
         Phage: { count: phage },
-        Dark: { count: +(dark + new_dark).toFixed(3) },
+        Dark: { count: dark },
         Harmony: { count: global.race.Harmony.count },
-        universe: 'bigbang',
-        seeded: true,
-        bigbang: true,
-        probes: 4,
+        universe: global.race.universe,
+        seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
-        ascended: false
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
+
     global.city = {
         calendar: {
             day: 0,

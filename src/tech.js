@@ -10480,10 +10480,10 @@ const techs = {
         },
         class: 'synth'
     },
-    protocal66: {
-        id: 'tech-protocal66',
-        title: loc('tech_protocal66'),
-        desc: loc('tech_protocal66'),
+    protocol66: {
+        id: 'tech-protocol66',
+        title: loc('tech_protocol66'),
+        desc: loc('tech_protocol66'),
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -10492,7 +10492,7 @@ const techs = {
         cost: {
             Knowledge(){ return 5000000; }
         },
-        effect: loc('tech_protocal66_effect'),
+        effect: loc('tech_protocol66_effect'),
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Knowledge.amount += 5000000;
@@ -10500,13 +10500,13 @@ const techs = {
             }
             return false;
         },
-        flair: loc('tech_protocal66_flair'),
+        flair: loc('tech_protocol66_flair'),
         class: 'synth'
     },
-    protocal66a: {
-        id: 'tech-protocal66a',
-        title: loc('tech_protocal66'),
-        desc: loc('tech_protocal66'),
+    protocol66a: {
+        id: 'tech-protocol66a',
+        title: loc('tech_protocol66'),
+        desc: loc('tech_protocol66'),
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
@@ -10515,7 +10515,7 @@ const techs = {
         cost: {
             Knowledge(){ return 5000000; }
         },
-        effect: loc('tech_protocal66a_effect'),
+        effect: loc('tech_protocol66a_effect'),
         action(){
             if (payCosts($(this)[0])){
                 if (webWorker.w){
@@ -10547,7 +10547,7 @@ const techs = {
             }
             return false;
         },
-        flair: loc('tech_protocal66a_flair'),
+        flair: loc('tech_protocol66a_flair'),
         class: 'synth'
     },
     quantium: {

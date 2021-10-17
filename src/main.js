@@ -1,7 +1,7 @@
 import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, vacuumCollapse, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
@@ -10,12 +10,13 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
 import { production } from './prod.js';
 import { swissKnife } from './tech.js';
+import { vacuumCollapse } from './resets.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
@@ -8835,6 +8836,10 @@ function longLoop(){
             messageQueue(loc('outer_syndicate',[govTitle(4)]),'info');
             global.tech['syndicate'] = 1;
             global.space['syndicate'] = {};
+        }
+
+        if (!global.tech['corrupted_ai'] && p_on['ai_core2'] && calcAIDrift() === 100){
+            global.tech['corrupted_ai'] = 1;
         }
 
         if (global.arpa.sequence && global.arpa.sequence['auto'] && global.tech['genetics'] && global.tech['genetics'] === 7){
