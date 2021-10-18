@@ -591,7 +591,7 @@ export const outerTruth = {
             reqs: { titan_ai_core: 3 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 165000000, 1.35); },
+                Money(offset){ return spaceCostMultiplier('ai_colonist', offset, 112000000, 1.35); },
                 Alloy(offset){ return spaceCostMultiplier('ai_colonist', offset, 750000, 1.35); },
                 Elerium(offset){ return spaceCostMultiplier('ai_colonist', offset, 500, 1.35); },
                 Nano_Tube(offset){ return spaceCostMultiplier('ai_colonist', offset, 525000, 1.35); },
@@ -2372,13 +2372,13 @@ export function storehouseMultiplier(heavy){
 export function calcAIDrift(){
     let drift = 0;
     if (p_on['ai_colonist'] && support_on['decoder']){
-        drift += p_on['ai_colonist'] * support_on['decoder'] * 0.25;
+        drift += p_on['ai_colonist'] * support_on['decoder'] * 0.35;
     }
     if (support_on['shock_trooper']){
-        drift += support_on['shock_trooper'] * 1.5;
+        drift += support_on['shock_trooper'] * 2;
     }
     if (support_on['tank']){
-        drift += support_on['tank'] * 1.5;
+        drift += support_on['tank'] * 2;
     }
     if (drift > 100){
         drift = 100;

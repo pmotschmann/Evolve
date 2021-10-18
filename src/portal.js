@@ -2294,7 +2294,7 @@ export function bloodwar(){
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.round(Math.seededRandom(0,(dead / 3) + 0.25));
+        revive = Math.round(Math.seededRandom(0,(dead / traits.revive.vars()[6]) + 0.25));
         global.civic.garrison.workers += revive;
     }
 

@@ -1149,11 +1149,11 @@ export const traits = {
             // [Solder % death prevention, Hell Armor Bonus]
             switch (global.race.armored || 1){
                 case 0.5:
-                    return [15,1];
+                    return [25,1];
                 case 1:
-                    return [25,2];
+                    return [50,2];
                 case 2:
-                    return [35,2];
+                    return [75,2];
             }
         },
     },
@@ -1597,6 +1597,16 @@ export const traits = {
         desc: loc('trait_befuddle'),
         type: 'major',
         val: 4,
+        vars(){
+            switch (global.race.befuddle || 1){
+                case 0.5:
+                    return [30];
+                case 1:
+                    return [50];
+                case 2:
+                    return [75];
+            }
+        }
     },
     environmentalist: { // Use renewable energy instead of dirtly coal & oil power.
         name: loc('trait_environmentalist_name'),
@@ -1641,6 +1651,17 @@ export const traits = {
         desc: loc('trait_revive'),
         type: 'major',
         val: 4,
+        vars(){
+            // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
+            switch (global.race.musical || 1){
+                case 0.5:
+                    return [6,4,2,7,5,2.5,4];
+                case 1:
+                    return [5,3,1.5,6,4,2,3];
+                case 2:
+                    return [4,2,1,5,3,1.5,2];
+            }
+        }
     },
     slow_regen: { // Your soldiers wounds heal slower.
         name: loc('trait_slow_regen_name'),
@@ -1778,6 +1799,16 @@ export const traits = {
         desc: loc('trait_mistrustful'),
         type: 'major',
         val: -1,
+        vars(){
+            switch (global.race.mistrustful || 1){
+                case 0.5:
+                    return [3];
+                case 1:
+                    return [2];
+                case 2:
+                    return [1];
+            }
+        }
     },
     humpback: { // Starvation resistance and miner/lumberjack boost
         name: loc('trait_humpback_name'),
@@ -1837,7 +1868,7 @@ export const traits = {
                 case 1:
                     return [0.28];
                 case 2:
-                    return [0.29];
+                    return [0.3];
             }
         }
     },
@@ -1961,7 +1992,7 @@ export const traits = {
         name: loc('trait_imitation_name'),
         desc: loc('trait_imitation'),
         type: 'major',
-        val: -3,
+        val: 5,
     },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
         name: loc('trait_soul_eater_name'),
@@ -2986,8 +3017,10 @@ export const races = {
     },
     synth: {
         name: loc('race_synth'),
-        desc: loc('race_synth_desc'),
-        desc: (function(){ return global.race.hasOwnProperty('srace') ? global.race.srace : 'human'; })(),
+        desc(){
+            let race = global.race.hasOwnProperty('srace') ? global.race.srace : 'human';
+            return loc('race_synth_desc',[races[race].name]);
+        },
         type: 'synthetic',
         home: loc('race_synth_home'),
         entity: loc('race_synth_entity'),

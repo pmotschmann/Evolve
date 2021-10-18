@@ -177,7 +177,8 @@ const traitExtra = {
 
 const valAdjust = {
     fibroblast: [5],
-    promiscuous: false
+    promiscuous: false,
+    revive: false
 };
 
 export function traitDesc(info,trait,fanatic,tpage){

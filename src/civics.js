@@ -700,7 +700,7 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
                 }
             }
@@ -709,7 +709,7 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
                 }
             }
@@ -719,7 +719,7 @@ function spyAction(sa,g){
                 if (g >= 3){ break; }
                 else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
                 }
             }
@@ -782,7 +782,7 @@ function drawEspModal(gov){
                 if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
                         global.civic.foreign[`gov${g}`].act = 'annex';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
@@ -797,7 +797,7 @@ function drawEspModal(gov){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab === 0){
                         global.resource.Money.amount -= price;
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? (timer / 2) : timer;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
                         global.civic.foreign[`gov${g}`].act = 'purchase';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
@@ -1412,7 +1412,7 @@ function war_campaign(gov){
         enemy *= 2;
     }
     if (global.race['mistrustful']){
-        global.civic.foreign[`gov${gov}`].hstl++;
+        global.civic.foreign[`gov${gov}`].hstl += traits.mistrustful.vars()[0];
     }
     if (global.civic.foreign[`gov${gov}`].hstl > 100){
         global.civic.foreign[`gov${gov}`].hstl = 100;
@@ -1641,13 +1641,13 @@ function war_campaign(gov){
         if (global.race['revive']){
             switch (global.city.calendar.temp){
                 case 0:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 5),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[0]),true));
                     break;
                 case 1:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 3),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[1]),true));
                     break;
                 case 2:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 1.5),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[2]),true));
                     break;
             }
             global.civic.garrison.workers += revive;
@@ -1750,7 +1750,7 @@ function war_campaign(gov){
         }
         let armor = 0;
         if (global.race['armored']){
-            let armored = 1 - (traits.armored.vars()[0] / 100);
+            let armored = traits.armored.vars()[0] / 100;
             armor += Math.floor(death * armored);
         }
         if (global.race['scales']){
@@ -1790,13 +1790,13 @@ function war_campaign(gov){
         if (global.race['revive']){
             switch (global.city.calendar.temp){
                 case 0:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 6),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[3]),true));
                     break;
                 case 1:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 4),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[4]),true));
                     break;
                 case 2:
-                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / 2),true));
+                    revive = Math.floor(Math.seededRandom(0,Math.floor(death / traits.revive.vars()[5]),true));
                     break;
             }
             global.civic.garrison.workers += revive;

@@ -871,8 +871,6 @@ export function aiApocalypse(){
     }
     global.stats.phage += new_phage;
 
-    races[god].type !== 'synthetic'
-
     let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {

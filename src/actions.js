@@ -169,7 +169,10 @@ export const actions = {
                     addAction('evolution','chloroplasts');
                     global.evolution['chitin'] = { count: 0 };
                     addAction('evolution','chitin');
-
+                    if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
+                        global.evolution['exterminate'] = { count: 0 };
+                        addAction('evolution','exterminate');
+                    }
                     global.evolution['final'] = 20;
                     evoProgress();
                 }
@@ -198,6 +201,10 @@ export const actions = {
                     removeAction(actions.evolution.chitin.id);
                     delete global.evolution.chloroplasts;
                     delete global.evolution.chitin;
+                    if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
+                        removeAction(actions.evolution.exterminate.id);
+                        delete global.evolution.exterminate;
+                    }
                     global.evolution['multicellular'] = { count: 0 };
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
@@ -228,6 +235,10 @@ export const actions = {
                     removeAction(actions.evolution.chitin.id);
                     delete global.evolution.phagocytosis;
                     delete global.evolution.chitin;
+                    if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
+                        removeAction(actions.evolution.exterminate.id);
+                        delete global.evolution.exterminate;
+                    }
                     global.evolution['multicellular'] = { count: 0 };
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
@@ -258,9 +269,55 @@ export const actions = {
                     removeAction(actions.evolution.chloroplasts.id);
                     delete global.evolution.phagocytosis;
                     delete global.evolution.chloroplasts;
+                    if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
+                        removeAction(actions.evolution.exterminate.id);
+                        delete global.evolution.exterminate;
+                    }
                     global.evolution['multicellular'] = { count: 0 };
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
+                    evoProgress();
+                }
+                return false;
+            },
+            no_queue(){
+                let key = $(this)[0].id.split('-')[1];
+                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
+            },
+            queue_complete(){ return 1; },
+            queueable: true
+        },
+        exterminate: {
+            id: 'evolution-exterminate',
+            title: loc('evo_exterminate_title'),
+            desc: loc('evo_exterminate_desc'),
+            cost: {
+                DNA(){ return 200; }
+            },
+            effect(){ return loc('evo_chitin_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.evolution['exterminate'].count++;
+                    removeAction(actions.evolution.chitin.id);
+                    removeAction(actions.evolution.phagocytosis.id);
+                    removeAction(actions.evolution.chloroplasts.id);
+                    removeAction(actions.evolution.exterminate.id);
+                    delete global.evolution.chitin;
+                    delete global.evolution.phagocytosis;
+                    delete global.evolution.chloroplasts;
+                    cleanEvolution($(this)[0].id);
+                    global.evolution['sentience'] = { count: 0 };
+                    global.evolution['final'] = 100;
+                    addAction('evolution','sentience');
+                    addRaces(['synth']);
+                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'synthetic'){
+                        global.evolution['custom'] = { count: 0 };
+                        addAction('evolution','custom');
+                    }
+                    if (global.genes['challenge']){
+                        global.evolution['bunker'] = { count: 0 };
+                        addAction('evolution','bunker');
+                    }
                     evoProgress();
                 }
                 return false;
@@ -1206,7 +1263,19 @@ export const actions = {
 
                     // Trigger Next Phase of game
                     let races = [];
-                    if (global.evolution['humanoid']){
+                    if (global.evolution['exterminate']){
+                        if (global.race['junker']){
+                            global.race['jtype'] = 'synthetic';
+                            races.push('junker');
+                        }
+                        else {
+                            races.push('synth');
+                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'synthetic'){
+                                races.push('custom');
+                            }
+                        }
+                    }
+                    else if (global.evolution['humanoid']){
                         if (global.race['junker']){
                             global.race['jtype'] = 'humanoid';
                             races.push('junker');
@@ -6722,9 +6791,28 @@ function sentience(){
         Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
             global.race[trait] = 0.5;
         });
-        Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-            global.race[trait] = 0.5;
-        });
+        if (global.race['srace'] === 'custom'){
+            let list = ['evil','evil'];
+            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
+                if (traits[trait].val > traits[list[0]].val){
+                    list[0] = trait;
+                }
+                else if (traits[trait].val < traits[list[1]].val){
+                    list[1] = trait;
+                }
+            });
+            if (list[0] !== 'evil'){
+                global.race[list[0]] = 0.5;
+            }
+            if (list[1] !== 'evil'){
+                global.race[list[1]] = 0.5;
+            }
+        }
+        else {
+            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
+                global.race[trait] = 0.5;
+            });
+        }
     }
 
     const date = new Date();
@@ -7055,6 +7143,9 @@ function sentience(){
     if (global.race['cataclysm']){
         cataclysm();
     }
+    if (global.race['artifical']){
+        aiStart();
+    }
 
     if (global.queue.hasOwnProperty('queue')){
         global.queue.queue = [];
@@ -7069,6 +7160,145 @@ function sentience(){
     }
 }
 
+function aiStart(){
+    if (global.race['artifical']){
+        global.tech['spy'] = 5;
+        global.tech['primitive'] = 3;
+        global.tech['currency'] = 6;
+        global.tech['govern'] = 3;
+        global.tech['boot_camp'] = 1;
+        global.tech['medic'] = 1;
+        global.tech['military'] = 5;
+        global.tech['explosives'] = 3;
+        global.tech['trade'] = 3;
+        global.tech['banking'] = 6;
+        global.tech['gambling'] = 1;
+        global.tech['home_safe'] = 1;
+        global.tech['housing'] = 3;
+        global.tech['smelting'] = 3;
+        global.tech['copper'] = 1;
+        global.tech['storage'] = 5;
+        global.tech['container'] = 4;
+        global.tech['steel_container'] = 3;
+        global.tech['mining'] = 4;
+        global.tech['cement'] = 5;
+        global.tech['oil'] = 1;
+        global.tech['mass'] = 1;
+        global.tech['alumina'] = 1;
+        global.tech['titanium'] = 1;
+        global.tech['polymer'] = 1;
+        global.tech['foundry'] = 7;
+        global.tech['factory'] = 1;
+        global.tech['theatre'] = 3;
+        global.tech['broadcast'] = 2;
+        global.tech['science'] = 7;
+        global.tech['high_tech'] = 4;
+        global.tech['theology'] = 2;
+
+        global.settings.showIndustry = true;
+        global.settings.showPowerGrid = true;
+        global.settings.showResearch = true;
+        global.settings.showCivic = true;
+        global.settings.showMil = true;
+        global.settings.showResources = true;
+        global.settings.showMarket = true;
+        global.settings.showStorage = true;
+
+        //global.civic.garrison.display = true;
+        global.resource[global.race.species].display = true;
+        global.resource.Knowledge.display = true;
+        global.resource.Money.display = true;
+        global.resource.Food.display = true;
+
+        global.resource.Stone.display = true;
+        global.resource.Furs.display = true;
+        global.resource.Copper.display = true;
+        global.resource.Iron.display = true;
+        global.resource.Aluminium.display = true;
+        global.resource.Cement.display = true;
+        global.resource.Coal.display = true;
+        global.resource.Oil.display = true;
+        global.resource.Steel.display = true;
+        global.resource.Titanium.display = true;
+        global.resource.Brick.display = true;
+        global.resource.Wrought_Iron.display = true;
+        global.resource.Sheet_Metal.display = true;
+        global.resource.Crates.display = true;
+        global.resource.Containers.display = true;
+
+        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.resource.Lumber.display = true;
+            global.resource.Plywood.display = true;
+        }
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.display = true;
+        }
+
+        global.resource[global.race.species].max = 8;
+        global.resource[global.race.species].amount = 8;
+        global.resource.Crates.amount = 100;
+        global.resource.Containers.amount = 100;
+
+        global.civic.taxes.display = true;
+
+        global.civic.professor.display = true;
+        global.civic.scientist.display = true;
+        global.civic.cement_worker.display = true;
+
+        global.city.calendar.day++;
+        global.city.market.active = true;
+        global.city['power'] = 0;
+        global.city['powered'] = true;
+
+        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
+        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
+        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
+        global.city['oil_power'] = { count: 0, on: 0 };
+        global.city['coal_power'] = { count: 0, on: 0 };
+
+        global.city['mine'] = { count: 0, on: 0 };
+        global.city['coal_mine'] = { count: 0, on: 0 };
+        global.city['oil_well'] = { count: 0 };
+        global.city['oil_depot'] = { count: 0 };
+        global.city['garrison'] = { count: 0, on: 0 };
+        global.city['basic_housing'] = { count: 0 };
+        global.city['cottage'] = { count: 0 };
+        global.city['apartment'] = { count: 0, on: 0 };
+        global.city['amphitheatre'] = { count: 0 };
+        global.city['casino'] = { count: 0, on: 0 };
+        global.city['rock_quarry'] = { count: 0, on: 0 };
+        global.city['metal_refinery'] = { count: 0, on: 0 };
+        global.city['storage_yard'] = { count: 0 };
+        global.city['warehouse'] = { count: 0 };
+        global.city['trade'] = { count: 0 };
+        global.city['wharf'] = { count: 0 };
+        global.city['bank'] = { count: 0 };
+        global.city['tourist_center'] = { count: 0, on: 0 };
+        global.city['university'] = { count: 0 };
+        global.city['library'] = { count: 0 };
+        global.city['wardenclyffe'] = { count: 0, on: 0 };
+        global.city['biolab'] = { count: 0, on: 0 };
+        global.city['lumber_yard'] = { count: 0 };
+        global.city['sawmill'] = { count: 0, on: 0 };
+        global.city['temple'] = { count: 0 };
+
+        global.civic['garrison'] = {
+            display: true,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 2,
+            wounded: 0,
+            raid: 0,
+            max: 2
+        };
+
+        drawCity();
+        drawTech();
+        loadFoundry();
+    }
+}
+
 function cataclysm(){
     if (global.race['cataclysm']){
         global.tech['unify'] = 2;
@@ -7076,7 +7306,6 @@ function cataclysm(){
         global.tech['primitive'] = 3;
         global.tech['currency'] = 6;
         global.tech['govern'] = 3;
-        global.tech['spy'] = 5;
         global.tech['boot_camp'] = 1;
         global.tech['medic'] = 1;
         global.tech['military'] = 5;
