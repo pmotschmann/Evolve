@@ -325,7 +325,10 @@ export function calcRQueueMax(){
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
+    $('#buildQueue').append($(`
+        <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
+        <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
+    `));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -382,6 +385,21 @@ export function buildQueue(){
                     }
 
                     return final_costs;
+                },
+                pauseQueue(){
+                    $(`#pausequeue`).removeClass('play');
+                    $(`#pausequeue`).removeClass('pause');
+                    if (global.queue.pause){
+                        global.queue.pause = false;
+                        $(`#pausequeue`).addClass('play');
+                    }
+                    else {
+                        global.queue.pause = true;
+                        $(`#pausequeue`).addClass('pause');
+                    }
+                },
+                pausedesc(){
+                    return global.queue.pause ? loc('queue_play') : loc('queue_pause');
                 }
             },
             filters: {
@@ -702,8 +720,14 @@ export function timeCheck(c_action,track,detailed){
         let time = 0;
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
+        let og_track_r = track ? {} : false;
+        if (track){
+            Object.keys(track.r).forEach(function (res){
+                og_track_r[res] = track.r[res];
+            });
+        }
         Object.keys(costs).forEach(function (res){
-            if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
+            if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
@@ -733,13 +757,16 @@ export function timeCheck(c_action,track,detailed){
                             }
                         }
                         else {
+                            if (track){
+                                track.r = og_track_r;
+                            }
                             time = -9999999;
                         }
                     }
                 }
             }
         });
-        if (track){
+        if (track && time >= 0){
             if (typeof track.id[c_action.id] === "undefined"){
                 track.id[c_action.id] = 1;
             }
@@ -761,39 +788,50 @@ export function timeCheck(c_action,track,detailed){
 export function arpaTimeCheck(project, remain, track){
     let costs = arpaAdjustCosts(project.cost);
     let allRemainingSegmentsTime = 0;
+    let og_track_r = track ? {} : false;
+    if (track){
+        Object.keys(track.r).forEach(function (res){
+            og_track_r[res] = track.r[res];
+        });
+    }
     Object.keys(costs).forEach(function (res){
-        let allRemainingSegmentsCost = Number(costs[res]()) * remain;
-        if (allRemainingSegmentsCost > 0){
-            let res_have = Number(global.resource[res].amount);
+        if (allRemainingSegmentsTime >= 0){
+            let allRemainingSegmentsCost = Number(costs[res]()) * remain;
+            if (allRemainingSegmentsCost > 0){
+                let res_have = Number(global.resource[res].amount);
 
-            if (track){
-                res_have += global.resource[res].diff * track.t;
-                if (track.r[res]){
-                    res_have -= Number(track.r[res]);
-                    track.r[res] += allRemainingSegmentsCost;
-                }
-                else {
-                    track.r[res] = allRemainingSegmentsCost;
-                }
-                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                    res_have = global.resource[res].max;
-                }
-            }
-
-            if (allRemainingSegmentsCost > res_have){
-                if (global.resource[res].diff > 0){
-                    let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
-                    if (r_time > allRemainingSegmentsTime){
-                        allRemainingSegmentsTime = r_time;
+                if (track){
+                    res_have += global.resource[res].diff * track.t;
+                    if (track.r[res]){
+                        res_have -= Number(track.r[res]);
+                        track.r[res] += allRemainingSegmentsCost;
+                    }
+                    else {
+                        track.r[res] = allRemainingSegmentsCost;
+                    }
+                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                        res_have = global.resource[res].max;
                     }
                 }
-                else {
-                    allRemainingSegmentsTime = -9999999;
+
+                if (allRemainingSegmentsCost > res_have){
+                    if (global.resource[res].diff > 0){
+                        let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                        if (r_time > allRemainingSegmentsTime){
+                            allRemainingSegmentsTime = r_time;
+                        }
+                    }
+                    else {
+                        if (track){
+                            track.r = og_track_r;
+                        }
+                        allRemainingSegmentsTime = -9999999;
+                    }
                 }
             }
         }
     });
-    if (track){
+    if (track && allRemainingSegmentsTime >= 0){
         if (typeof track.id[project.id] === "undefined"){
             track.id[project.id] = 1;
         }
@@ -802,7 +840,7 @@ export function arpaTimeCheck(project, remain, track){
         }
         track.t += allRemainingSegmentsTime;
     }
-    return allRemainingSegmentsTime
+    return allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){

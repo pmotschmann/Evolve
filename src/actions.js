@@ -7289,7 +7289,10 @@ export function resQueue(){
     }
     clearResDrag();
     clearElement($('#resQueue'));
-    $('#resQueue').append($(`<h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>`));
+    $('#resQueue').append($(`
+        <h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>
+        <span id="pauserqueue" class="${global.r_queue.pause ? 'pause' : 'play'}" role="button" @click="pauseRQueue()" :aria-label="pausedesc()"></span>
+    `));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
@@ -7308,6 +7311,21 @@ export function resQueue(){
                 },
                 setID(index){
                     return `rq${global.r_queue.queue[index].id}`;
+                },
+                pauseRQueue(){
+                    $(`#pauserqueue`).removeClass('play');
+                    $(`#pauserqueue`).removeClass('pause');
+                    if (global.r_queue.pause){
+                        global.r_queue.pause = false;
+                        $(`#pauserqueue`).addClass('play');
+                    }
+                    else {
+                        global.r_queue.pause = true;
+                        $(`#pauserqueue`).addClass('pause');
+                    }
+                },
+                pausedesc(){
+                    return global.r_queue.pause ? loc('r_queue_play') : loc('r_queue_pause');
                 }
             },
             filters: {
