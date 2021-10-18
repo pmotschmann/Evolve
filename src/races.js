@@ -1,4 +1,4 @@
-import { global, save, webWorker } from './vars.js';
+import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
 import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
@@ -2390,6 +2390,11 @@ export function cleanAddTrait(trait){
             removeFromRQueue(['armor']);
             delete global.tech['armor'];
             break;
+        case 'environmentalist':
+            delete power_generated[loc('city_coal_power')];
+            delete power_generated[loc('city_mana_engine')];
+            delete power_generated[loc('city_oil_power')];
+            break;
         case 'terrifying':
             Object.keys(global.resource).forEach(function (res){
                 global.resource[res].trade = 0;
@@ -2399,6 +2404,8 @@ export function cleanAddTrait(trait){
                 global.settings.marketTabs = 1;
             }
             removeFromQueue(['city-trade']);
+            removeFromRQueue(['trade']);
+            delete global.tech['trade'];
             delete global.city['trade'];
             break;
         case 'slaver':
@@ -2557,6 +2564,10 @@ export function cleanRemoveTrait(trait){
             if (global.race['casting']){
                 defineIndustry();
             }
+            break;
+        case 'environmentalist':
+            delete power_generated[loc('city_hydro_power')];
+            delete power_generated[loc('city_wind_power')];
             break;
         case 'terrifying':
             global.settings.showMarket = true;

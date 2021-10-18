@@ -1269,10 +1269,10 @@ function inflationAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let rate = 1 + (global.race.inflation / 75);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * rate); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1287,10 +1287,10 @@ function extraAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let waste = 1 + (extraVal / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * waste); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * waste); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1304,13 +1304,13 @@ function technoAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1353,18 +1353,18 @@ function smolderAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Lumber' || res === 'Plywood'){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
-                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence'].includes(res)){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.9); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.9); }
             }
         });
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
-                let money = costs['Money'](wiki) || 0;
+                let money = costs['Money'](false,wiki) || 0;
                 return money > 0 ? Math.round(money / 50) : 0;
             }
         }
@@ -1379,10 +1379,10 @@ function kindlingAdjust(costs, wiki){
         let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1395,10 +1395,10 @@ function craftAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1411,10 +1411,10 @@ function heavyAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 + (traits.heavy.vars[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1428,10 +1428,10 @@ function rebarAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;

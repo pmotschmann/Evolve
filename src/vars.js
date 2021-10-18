@@ -33,6 +33,7 @@ export var breakdown = {
     c: {},
     p: {}
 };
+export var power_generated = {};
 export var p_on = {};
 export var red_on = {};
 export var moon_on = {};

@@ -150,11 +150,11 @@ const extraInformation = {
         loc(`wiki_tech_vocational_training`)
     ],
     stellar_forge: [
-        loc(`wiki_tech_building_unlock`,[loc(`interstellar_stellar_forge_title`)]),
-        loc(`wiki_tech_fuel_unlock`,[loc(`star`)])
+        loc(`wiki_tech_building_unlock`,[loc(`interstellar_stellar_forge_title`)])
     ],
     stellar_smelting: [
-        loc(`wiki_tech_stellar_smelting`)
+        loc(`wiki_tech_stellar_smelting`),
+        loc(`wiki_tech_fuel_unlock`,[loc(`star`)])
     ],
     assembly_line: [
         loc(`wiki_tech_factory_upgrade1`,[50]),
@@ -1402,7 +1402,7 @@ const extraInformation = {
         loc(`wiki_tech_job_unlock`,[loc(`job_crystal_miner`)])
     ],
     ley_lines: [
-        loc(`wiki_tech_building_unlock`,[loc(`city_pylon`)])
+        loc(`wiki_tech_building_unlock`,[global.race['cataclysm'] ? loc(`space_red_pylon`) : loc(`city_pylon`)])
     ],
     rituals: [
         loc(`wiki_tech_rituals`)
@@ -1972,8 +1972,8 @@ const specialRequirements = {
             subreqs: [
                 {
                     title: loc(`wiki_tech_special_occupy`),
-                    color: checkControlling()
-                    //Add link to Mechanics: Occupation entry when made.
+                    color: checkControlling(),
+                    link: 'wiki.html#mechanics-gameplay-occupying'
                 }
             ]
         }
@@ -2914,6 +2914,15 @@ const specialRequirements = {
                     name: 'magic'
                 }
             ]
+        },
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'cataclysm'
+                }
+            ]
         }
     ],
     res_conjuring: [
@@ -2922,6 +2931,15 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'magic'
+                }
+            ]
+        },
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'cataclysm'
                 }
             ]
         }
@@ -3163,6 +3181,11 @@ function addRequirements(parent,key,keyName){
                         subText = loc(`govern_${subreq.name}`);
                         link = `wiki.html#government-gameplay-${subreq.name}`;
                         color = global.civic['govern'] && global.civic.govern['type'] && global.civic.govern.type === subreq.name;
+                        break;
+                    case 'scenario':
+                        subText = loc(`wiki_challenges_scenarios_${subreq.name}`);
+                        link = `wiki.html#challenges-gameplay-scenarios_${subreq.name}`;
+                        color = global.race[subreq.name];
                         break;
                     case 'unique':
                         subText = subreq.title;
