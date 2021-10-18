@@ -713,7 +713,7 @@ function fastLoop(){
             global_multiplier *= 1 + (untapped);
         }
     }
-    if (global.race['rainbow'] && global.race['rainbow'] > 1){
+    if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
         breakdown.p['Global'][loc('trait_rainbow_bd')] = `${traits.rainbow.vars()[0]}%`;
         global_multiplier *= 1 + (traits.rainbow.vars()[0] / 100);
     }
@@ -8284,8 +8284,8 @@ function longLoop(){
             global.civic.garrison.m_use--;
         }
 
-        if (global.race['rainbow'] && global.race['rainbow'] > 1){
-            global.race['rainbow']--;
+        if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
+            global.race['rainbow_active']--;
         }
 
         if (global.city.calendar.day > 0){
@@ -8403,19 +8403,19 @@ function longLoop(){
 
                 if (sky === 0){
                     if (global.race['rainbow']){
-                        global.race['rainbow'] = 1;
+                        global.race['rainbow_active'] = 1;
                     }
                     global.city.calendar.weather = 0;
                 }
                 else if (sky >= 1 && sky <= 2){
                     if (global.race['rainbow']){
-                        global.race['rainbow'] = 1;
+                        global.race['rainbow_active'] = 1;
                     }
                     global.city.calendar.weather = 1;
                 }
                 else {
                     if (global.race['rainbow'] && global.city.calendar.weather === 0){
-                        global.race['rainbow'] = Math.rand(10,20);
+                        global.race['rainbow_active'] = Math.rand(10,20);
                     }
                     global.city.calendar.weather = 2;
                 }
