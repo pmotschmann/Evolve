@@ -294,7 +294,7 @@ export const actions = {
             cost: {
                 DNA(){ return 200; }
             },
-            effect(){ return loc('evo_chitin_effect'); },
+            effect(){ return loc('evo_exterminate_effect'); },
             action(){
                 if (payCosts($(this)[0])){
                     global.evolution['exterminate'].count++;
@@ -1255,7 +1255,7 @@ export const actions = {
                 RNA(){ return 300; },
                 DNA(){ return 300; }
             },
-            effect: loc('evo_sentience_effect'),
+            effect(){ return global.evolution['exterminate'] ? loc('evo_sentience_ai_effect') : loc('evo_sentience_effect'); },
             action(){
                 if (payCosts($(this)[0])){
                     global.evolution['sentience'].count++;
@@ -4768,7 +4768,7 @@ export function buildTemplate(key, region){
     }
 }
 
-export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
+export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 raceList.forEach(race => actions.evolution[race] = {
     id: `evolution-${race}`,
@@ -4847,7 +4847,7 @@ function challengeEffect(c){
             let nVal = global.race.universe === 'antimatter' ? [`20%`,`50%`,`50%`,`33%`] : [`50%`,`20%`,`50%`,`33%`];
             return loc(`evo_challenge_${c}_effect`,nVal);
         case 'badgenes':
-            return loc(`evo_challenge_${c}_effect`,[2]);
+            return loc(`evo_challenge_${c}_effect`,[1,2]);
         default:
             return loc(`evo_challenge_${c}_effect`);
     }
@@ -6828,7 +6828,7 @@ function sentience(){
     }
 
     if (global.race['no_crispr'] || global.race['badgenes']){
-        let repeat = global.race['badgenes'] ? 2 : 1;
+        let repeat = global.race['badgenes'] ? 3 : 1;
         for (let j=0; j<repeat; j++){
             for (let i=0; i<10; i++){
                 let trait = neg_roll_traits[Math.rand(0,neg_roll_traits.length)];
@@ -6836,7 +6836,11 @@ function sentience(){
                     continue;
                 }
                 if (!global.race[trait]){
-                    global.race[trait] = 1;
+                    let rank = 1;
+                    if (global.race['badgenes']){
+                        rank = j === 0 ? 2 : 0.5;
+                    }
+                    global.race[trait] = rank;
                     break;
                 }
             }
@@ -7143,7 +7147,7 @@ function sentience(){
     if (global.race['cataclysm']){
         cataclysm();
     }
-    if (global.race['artifical']){
+    else if (global.race['artifical']){
         aiStart();
     }
 
@@ -7181,9 +7185,12 @@ function aiStart(){
         global.tech['container'] = 4;
         global.tech['steel_container'] = 3;
         global.tech['mining'] = 4;
+        global.tech['axe'] = 3;
+        global.tech['pickaxe'] = 2;
+        global.tech['saw'] = 2;
+        global.tech['hammer'] = 2;
         global.tech['cement'] = 5;
-        global.tech['oil'] = 1;
-        global.tech['mass'] = 1;
+        global.tech['oil'] = 3;
         global.tech['alumina'] = 1;
         global.tech['titanium'] = 1;
         global.tech['polymer'] = 1;
@@ -7229,18 +7236,20 @@ function aiStart(){
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
+            global.civic.lumberjack.display = true;
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
         }
 
-        global.resource[global.race.species].max = 8;
-        global.resource[global.race.species].amount = 8;
-        global.resource.Crates.amount = 100;
-        global.resource.Containers.amount = 100;
+        global.resource[global.race.species].max = 0;
+        global.resource[global.race.species].amount = 0;
+        global.resource.Crates.amount = 10;
+        global.resource.Containers.amount = 10;
 
         global.civic.taxes.display = true;
 
+        global.civic.quarry_worker.display = true;
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.cement_worker.display = true;
@@ -7251,46 +7260,47 @@ function aiStart(){
         global.city['powered'] = true;
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
-        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
-        global.city['oil_power'] = { count: 0, on: 0 };
+        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0  };
+        global.city['smelter'] = { count: 1, cap: 0, Wood: 0, Coal: 0, Oil: 1, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 0, Iridium: 0 };
+        global.city['oil_power'] = { count: 1, on: 1 };
         global.city['coal_power'] = { count: 0, on: 0 };
 
-        global.city['mine'] = { count: 0, on: 0 };
-        global.city['coal_mine'] = { count: 0, on: 0 };
-        global.city['oil_well'] = { count: 0 };
-        global.city['oil_depot'] = { count: 0 };
+        global.city['mine'] = { count: 1, on: 0 };
+        global.city['coal_mine'] = { count: 1, on: 0 };
+        global.city['oil_well'] = { count: 1 };
+        global.city['oil_depot'] = { count: 1 };
+        global.city['cement_plant'] = { count: 1, on: 0 };
         global.city['garrison'] = { count: 0, on: 0 };
         global.city['basic_housing'] = { count: 0 };
         global.city['cottage'] = { count: 0 };
         global.city['apartment'] = { count: 0, on: 0 };
         global.city['amphitheatre'] = { count: 0 };
         global.city['casino'] = { count: 0, on: 0 };
-        global.city['rock_quarry'] = { count: 0, on: 0 };
-        global.city['metal_refinery'] = { count: 0, on: 0 };
-        global.city['storage_yard'] = { count: 0 };
-        global.city['warehouse'] = { count: 0 };
+        global.city['rock_quarry'] = { count: 1, on: 0 };
+        global.city['metal_refinery'] = { count: 1, on: 0 };
+        global.city['shed'] = { count: 2 };
+        global.city['storage_yard'] = { count: 1 };
+        global.city['warehouse'] = { count: 1 };
         global.city['trade'] = { count: 0 };
         global.city['wharf'] = { count: 0 };
-        global.city['bank'] = { count: 0 };
-        global.city['tourist_center'] = { count: 0, on: 0 };
-        global.city['university'] = { count: 0 };
-        global.city['library'] = { count: 0 };
+        global.city['bank'] = { count: 1 };
+        global.city['university'] = { count: 1 };
+        global.city['library'] = { count: 1 };
         global.city['wardenclyffe'] = { count: 0, on: 0 };
-        global.city['biolab'] = { count: 0, on: 0 };
-        global.city['lumber_yard'] = { count: 0 };
+        global.city['lumber_yard'] = { count: 1 };
         global.city['sawmill'] = { count: 0, on: 0 };
         global.city['temple'] = { count: 0 };
 
+        global.civic.govern.type = 'technocracy';
         global.civic['garrison'] = {
             display: true,
             disabled: false,
             progress: 0,
             tactic: 0,
-            workers: 2,
+            workers: 0,
             wounded: 0,
             raid: 0,
-            max: 2
+            max: 0
         };
 
         drawCity();
@@ -7485,7 +7495,7 @@ function cataclysm(){
         global.city['powered'] = true;
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
-        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0 };
+        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0 };
         global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
         global.city['fission_power'] = { count: 0, on: 0 };
         global.city['oil_power'] = { count: 0, on: 0 };

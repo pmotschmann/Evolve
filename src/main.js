@@ -573,16 +573,19 @@ if (global.race.species === 'protoplasm'){
             addAction('evolution',evolve_actions[i]);
         }
     }
-    if (global.evolution['sexual_reproduction'] && !global.evolution['phagocytosis'] && !global.evolution['chloroplasts'] && !global.evolution['chitin']){
+    if (global.evolution['sexual_reproduction'] && !global.evolution['phagocytosis'] && !global.evolution['chloroplasts'] && !global.evolution['chitin'] && !global.evolution['exterminate']){
         addAction('evolution','sexual_reproduction');
     }
-    else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin']) && !global.evolution['multicellular']){
+    else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin'] || global.race['exterminate']) && !global.evolution['multicellular']){
         addAction('evolution','phagocytosis');
         addAction('evolution','chloroplasts');
         addAction('evolution','chitin');
+        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
+            addAction('evolution','exterminate');
+        }
     }
     else {
-        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','aquatic','fey','sand','heat','polar','demonic','celestial','sentience','bunker'];
+        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','aquatic','fey','sand','heat','polar','demonic','celestial','synthetic','sentience','bunker'];
         for (var i = 0; i < late_actions.length; i++){
             if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
                 addAction('evolution',late_actions[i]);

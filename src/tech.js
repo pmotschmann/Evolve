@@ -638,7 +638,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3 },
-        not_trait: ['carnivore','soul_eater','detritivore','cataclysm'],
+        not_trait: ['carnivore','soul_eater','detritivore','cataclysm','artifical'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }
@@ -10487,7 +10487,7 @@ const techs = {
         category: 'ai_core',
         era: 'solar',
         path: ['truepath'],
-        reqs: { titan_ai_core: 3, corrupted_ai: 1, locked: 1 },
+        reqs: { titan_ai_core: 3, corrupted_ai: 1 },
         grant: ['corrupted_ai',2],
         cost: {
             Knowledge(){ return 5000000; }
