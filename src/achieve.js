@@ -423,7 +423,7 @@ export function drawAchieve(args){
         });
     }
 
-    let trick = trickOrTreat(5,12);
+    let trick = trickOrTreat(5,12,false);
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}${trick}</div>`);
 
     vBind({

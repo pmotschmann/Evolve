@@ -5314,7 +5314,7 @@ export function drawTech(){
             .appendTo('#oldTech')
             .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
 
-        let trick = trickOrTreat(4,12);
+        let trick = trickOrTreat(4,12,false);
         if (trick.length > 0 && category === 'science'){
             $(`#tech-dist-old-science h3`).append(trick);
         }
@@ -5648,7 +5648,7 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 else if (id === 'city-garrison' || id === 'space-space_barracks'){
-                    let trick = trickOrTreat(7,14);
+                    let trick = trickOrTreat(1,14,true);
                     let num = id === 'city-garrison' ? 13 : 0;
                     if (p === num && trick.length > 0){
                         return trick;

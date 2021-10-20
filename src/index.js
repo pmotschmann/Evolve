@@ -1153,7 +1153,7 @@ export function index(){
         hideEgg = `<b-dropdown-item>${egg9}</b-dropdown-item>`;
     }
 
-    let trick = trickOrTreat(11,12);
+    let trick = trickOrTreat(5,12,true);
     let hideTreat = '';
     if (trick.length > 0){
         hideTreat = `<b-dropdown-item>${trick}</b-dropdown-item>`;

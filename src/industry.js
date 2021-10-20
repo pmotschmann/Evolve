@@ -74,7 +74,7 @@ function loadSmelter(parent,bind){
     }
 
     if (bind && global.race['forge'] && global.race['steelen']){
-        let trick = trickOrTreat(9,12);
+        let trick = trickOrTreat(3,12,true);
         if (trick.length > 0){
             fuel.prepend(trick);
         }
@@ -301,7 +301,7 @@ function loadSmelter(parent,bind){
             },
             spook(v){
                 if (bind && ((global.race['kindling_kindred'] && (global.city.smelter.Steel === 6 || global.city.smelter.Iron === 6)) || global.city.smelter.Wood === 6) && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
-                    let trick = trickOrTreat(9,12);
+                    let trick = trickOrTreat(3,12,true);
                     if (trick.length > 0){
                         return trick;
                     }
@@ -310,7 +310,7 @@ function loadSmelter(parent,bind){
             },
             altspook(v){
                 if (bind && global.race['forge'] && global.city.smelter.Steel === 6){
-                    let trick = trickOrTreat(9,12);
+                    let trick = trickOrTreat(3,12,true);
                     if (trick.length > 0){
                         return trick;
                     }
@@ -534,7 +534,7 @@ function loadFactory(parent,bind){
             },
             spook(v){
                 if (global.city.factory.Lux === 3 && bind){
-                    let trick = trickOrTreat(12,12);
+                    let trick = trickOrTreat(6,12,true);
                     if (trick.length > 0){
                         return trick;
                     }

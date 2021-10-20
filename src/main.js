@@ -5216,9 +5216,15 @@ function fastLoop(){
 
     let halloween = eventActive('halloween');
     if (halloween.active){
-        for (i=1; i<=15; i++){
+        for (i=1; i<=6; i++){
+            if ($(`#treat${i}`).length > 0 && !$(`#treat${i}`).hasClass('binded')){
+                trickOrTreatBind(i,false);
+                $(`#treat${i}`).addClass('binded');
+            }
+        }
+        for (i=1; i<=6; i++){
             if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
-                trickOrTreatBind(i);
+                trickOrTreatBind(i,true);
                 $(`#trick${i}`).addClass('binded');
             }
         }

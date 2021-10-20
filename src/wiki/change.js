@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.1.15`,
-        date: `10/17/2021`,
+        date: `10/20/2021`,
         changes: [
             `Added buttons to pause queues.`,
             `Cracked Pylons now correctly add to Mana cap.`,

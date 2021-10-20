@@ -887,6 +887,24 @@ if (convertVersion(global['version']) <= 101014 && !global['revision']){
     }
 }
 
+if (convertVersion(global['version']) < 101015){
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('trick')){
+        global.special.trick['2020'] = JSON.parse(JSON.stringify(global.special['trick']));
+        delete global.special.trick.trick1;
+        delete global.special.trick.trick2;
+        delete global.special.trick.trick3;
+        delete global.special.trick.trick4;
+        delete global.special.trick.trick5;
+        delete global.special.trick.trick6;
+        delete global.special.trick.trick7;
+        delete global.special.trick.trick8;
+        delete global.special.trick.trick9;
+        delete global.special.trick.trick10;
+        delete global.special.trick.trick11;
+        delete global.special.trick.trick12;
+    }
+}
+
 global['version'] = '1.1.15';
 delete global['revision'];
 delete global['beta'];

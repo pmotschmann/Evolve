@@ -1717,20 +1717,31 @@ export function easterEggBind(id){
     });
 }
 
-export function trickOrTreat(num,size){
+export function trickOrTreat(num,size,trick){
     let halloween = getHalloween();
-    if (halloween.active && !global.special.trick[`trick${num}`]){
-        let label = num > 6 ? `Ghost`: `Candy Corn`;
-        return drawIcon(num <= 6 ? 'candycorn' : 'ghost', size ? size : 16, 2, `trick${num}`, `role="button" aria-label="${label}" `);
+    const date = new Date();
+    const year = date.getFullYear();
+    let tot = trick ? 'trick' : 'treat';
+    if (halloween.active && !global.special.trick[year][`${tot}${num}`]){
+        let label = trick ? `Ghost`: `Candy Corn`;
+        return drawIcon(trick ? 'ghost' : 'candycorn', size ? size : 16, 2, `${tot}${num}`, `role="button" aria-label="${label}" `);
     }
     return '';
 }
 
-export function trickOrTreatBind(id){
-    $(`#trick${id}`).click(function(){
-        if (!global.special.trick[`trick${id}`]){
-            global.special.trick[`trick${id}`] = true;
-            if (id <= 6){
+export function trickOrTreatBind(id,trick){
+    const date = new Date();
+    const year = date.getFullYear();
+    let tot = trick ? 'trick' : 'treat';
+    $(`#${tot}${id}`).click(function(){
+        if (!global.special.trick[year][`${tot}${id}`]){
+            global.special.trick[year][`${tot}${id}`] = true;
+            if (trick){
+                global.race.Phage.count += 2;
+                global.stats.phage += 2;
+                messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
+            }
+            else {
                 if (global.race.universe === 'antimatter'){
                     global.race.Plasmid.anti += 15;
                     global.stats.antiplasmid += 15;
@@ -1742,14 +1753,9 @@ export function trickOrTreatBind(id){
                     messageQueue(loc('city_trick_msg',[15,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
-            else {
-                global.race.Phage.count += 2;
-                global.stats.phage += 2;
-                messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
-            }
-            $(`#trick${id}`).remove();
+            $(`#${tot}${id}`).remove();
             setTimeout(function(){
-                if (id === 7){
+                if (id === 1 && trick){
                     if (poppers[`popcity-garrison}`]){
                         poppers[`popcity-garrison`].destroy();
                     }
@@ -2203,20 +2209,53 @@ export function getEaster(){
 }
 
 export function getHalloween(){
+    const date = new Date();
+    let year = date.getFullYear();
+
+    if (!global.special.trick.hasOwnProperty(year)){
+        global.special.trick[year] = {
+            trick1: false,
+            trick2: false,
+            trick3: false,
+            trick4: false,
+            trick5: false,
+            trick6: false,
+            treat1: false,
+            treat2: false,
+            treat3: false,
+            treat4: false,
+            treat5: false,
+            treat6: false
+        };
+    }
+
     let halloween = {
         date: [9,28],
         active: false,
-        endDate: [10,4]
+        endDate: [10,4],
+        hint: false,
+        hintDate: [9,29],
+        solve: false,
+        solveDate: [9,31]
     };
 
     if (global.settings.boring){
         return halloween;
     }
 
-    const date = new Date();
+    let start = new Date(`${halloween.date[0]+1}/${halloween.date[1]}/${year}`);
+    let end = new Date(`${halloween.endDate[0]+1}/${halloween.endDate[1]}/${year}`);
 
-    if ((date.getMonth() === halloween.date[0] && date.getDate() >= halloween.date[1]) || (date.getMonth() === halloween.endDate[0] && date.getDate() <= halloween.endDate[1])){
+    if (date >= start && date <= end){
         halloween.active = true;
+        let hint = new Date(`${halloween.hintDate[0]+1}/${halloween.hintDate[1]}/${year}`);
+        if (date >= hint && date <= end){
+            halloween.hint = true;
+        }
+        let sol = new Date(`${halloween.solveDate[0]+1}/${halloween.solveDate[1]}/${year}`);
+        if (date >= sol && date <= end){
+            halloween.solve = true;
+        }
     }
 
     return halloween;
