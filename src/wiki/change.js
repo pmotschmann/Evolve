@@ -3,6 +3,18 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.15`,
+        date: `10/17/2021`,
+        changes: [
+            `Added buttons to pause queues.`,
+            `Cracked Pylons now correctly add to Mana cap.`,
+            `Pillar of Bones will no longer be rolled with the Smoldering trait.`,
+            `Fixed bugs with removing Terrifying trait.`,
+            `Fixed bug with items in queue blocking the next item when it couldn't be completed due to negative production of a resource.`,
+            `The Tax-Morale governor task is now slightly smarter.`
+        ]
+    },
+    {
         version: `1.1.14`,
         revision: `a`,
         date: `9/30/2021`,
