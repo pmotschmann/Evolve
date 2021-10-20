@@ -152,7 +152,7 @@ export function actionDesc(info, c_action, extended){
                 }
             }
             else if (res === 'Supply'){
-                let res_cost = costs[res](true);
+                let res_cost = costs[res](false,true);
                 if (res_cost > 0){
                     let label = loc(`resource_${res}_name`);
                     cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
@@ -160,7 +160,7 @@ export function actionDesc(info, c_action, extended){
                 }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
-                let res_cost = costs[res](true);
+                let res_cost = costs[res](false,true);
                 let f_res = res === 'Species' ? global.race.species : res;
                 if (res_cost > 0){
                     if (res === 'HellArmy'){

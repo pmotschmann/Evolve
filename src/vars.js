@@ -33,6 +33,7 @@ export var breakdown = {
     c: {},
     p: {}
 };
+export var power_generated = {};
 export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
@@ -886,8 +887,26 @@ if (convertVersion(global['version']) <= 101014 && !global['revision']){
     }
 }
 
-global['version'] = '1.1.14';
-global['revision'] = 'a';
+if (convertVersion(global['version']) < 101015){
+    if (global.hasOwnProperty('special') && global.special.hasOwnProperty('trick')){
+        global.special.trick['2020'] = JSON.parse(JSON.stringify(global.special['trick']));
+        delete global.special.trick.trick1;
+        delete global.special.trick.trick2;
+        delete global.special.trick.trick3;
+        delete global.special.trick.trick4;
+        delete global.special.trick.trick5;
+        delete global.special.trick.trick6;
+        delete global.special.trick.trick7;
+        delete global.special.trick.trick8;
+        delete global.special.trick.trick9;
+        delete global.special.trick.trick10;
+        delete global.special.trick.trick11;
+        delete global.special.trick.trick12;
+    }
+}
+
+global['version'] = '1.1.15';
+delete global['revision'];
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -1077,6 +1096,14 @@ if (!global['queue']['max']){
 
 if (!global['r_queue']['max']){
     global.r_queue['max'] = 0;
+}
+
+if (!global['queue']['pause']){
+    global.queue['pause'] = false;
+}
+
+if (!global['r_queue']['pause']){
+    global.r_queue['pause'] = false;
 }
 
 if (!global['lastMsg']){
@@ -1288,6 +1315,24 @@ if (!global.stats['dkills']){
 }
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
+}
+if (!global.stats['cfood']){
+    global.stats['cfood'] = 0;
+}
+if (!global.stats['tfood']){
+    global.stats['tfood'] = 0;
+}
+if (!global.stats['cstone']){
+    global.stats['cstone'] = 0;
+}
+if (!global.stats['tstone']){
+    global.stats['tstone'] = 0;
+}
+if (!global.stats['clumber']){
+    global.stats['clumber'] = 0;
+}
+if (!global.stats['tlumber']){
+    global.stats['tlumber'] = 0;
 }
 if (!global.stats['mad']){
     global.stats['mad'] = 0;
@@ -2062,6 +2107,9 @@ export function clearStates(){
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
+    global.stats.cfood = 0;
+    global.stats.cstone = 0;
+    global.stats.clumber = 0;
     global.stats.sac = 0;
     global.settings.at = 0;
 

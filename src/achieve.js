@@ -1,5 +1,5 @@
 import { global, set_alevel, set_ulevel } from './vars.js';
-import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, trickOrTreat, harmonyEffect } from './functions.js';
+import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svgIcons, svgViewBox, format_emblem, getBaseIcon, sLevel, vBind, calcQueueMax, calcRQueueMax, messageQueue, eventActive, easterEgg, getHalloween, trickOrTreat, harmonyEffect } from './functions.js';
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
@@ -423,7 +423,7 @@ export function drawAchieve(args){
         });
     }
 
-    let trick = trickOrTreat(5,12);
+    let trick = trickOrTreat(5,12,false);
     achieve.prepend(`<div class="has-text-warning">${loc("achieve_draw_achieve_earned",[earned,total])}${trick}</div>`);
 
     vBind({
@@ -697,14 +697,19 @@ export function checkAchievements(){
         unlockFeat('launch_day',global.race.universe === 'micro' ? true : false);
     }
     else if (halloween.active){
-        let checkAll = true;
-        for (let i=1; i<13; i++){
-            if (!global.special.trick[`trick${i}`]){
-                checkAll = false;
+        let total = 0;
+        for (let i=1; i<=7; i++){
+            if (global.special.trick[year][`trick${i}`]){
+                total++;
+            }
+        }
+        for (let i=1; i<=7; i++){
+            if (global.special.trick[year][`treat${i}`]){
+                total++;
             }
         }
 
-        if (checkAll){
+        if (total >= 12){
             unlockFeat('trickortreat',global.race.universe === 'micro' ? true : false);
         }
 
@@ -2272,6 +2277,15 @@ export function drawStats(){
     }
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ r.Thermite.amount | res }}</div>`);
+    }
+
+    let hallowed = getHalloween();
+    if (hallowed.active){
+        let trick = '';
+        if (global.stats.cfood >= 13){
+            trick = `<span>${trickOrTreat(7,12,true)}</span>`;
+        }
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);
     }
 
     vBind({
