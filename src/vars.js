@@ -33,6 +33,7 @@ export var breakdown = {
     c: {},
     p: {}
 };
+export var power_generated = {};
 export var p_on = {};
 export var red_on = {};
 export var moon_on = {};
@@ -1077,6 +1078,14 @@ if (!global['queue']['max']){
 
 if (!global['r_queue']['max']){
     global.r_queue['max'] = 0;
+}
+
+if (!global['queue']['pause']){
+    global.queue['pause'] = false;
+}
+
+if (!global['r_queue']['pause']){
+    global.r_queue['pause'] = false;
 }
 
 if (!global['lastMsg']){

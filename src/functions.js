@@ -325,7 +325,10 @@ export function calcRQueueMax(){
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
+    $('#buildQueue').append($(`
+        <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
+        <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
+    `));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -382,6 +385,21 @@ export function buildQueue(){
                     }
 
                     return final_costs;
+                },
+                pauseQueue(){
+                    $(`#pausequeue`).removeClass('play');
+                    $(`#pausequeue`).removeClass('pause');
+                    if (global.queue.pause){
+                        global.queue.pause = false;
+                        $(`#pausequeue`).addClass('play');
+                    }
+                    else {
+                        global.queue.pause = true;
+                        $(`#pausequeue`).addClass('pause');
+                    }
+                },
+                pausedesc(){
+                    return global.queue.pause ? loc('queue_play') : loc('queue_pause');
                 }
             },
             filters: {
@@ -702,8 +720,14 @@ export function timeCheck(c_action,track,detailed){
         let time = 0;
         let bottleneck = false;
         let costs = adjustCosts(c_action.cost);
+        let og_track_r = track ? {} : false;
+        if (track){
+            Object.keys(track.r).forEach(function (res){
+                og_track_r[res] = track.r[res];
+            });
+        }
         Object.keys(costs).forEach(function (res){
-            if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
+            if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
@@ -733,13 +757,16 @@ export function timeCheck(c_action,track,detailed){
                             }
                         }
                         else {
+                            if (track){
+                                track.r = og_track_r;
+                            }
                             time = -9999999;
                         }
                     }
                 }
             }
         });
-        if (track){
+        if (track && time >= 0){
             if (typeof track.id[c_action.id] === "undefined"){
                 track.id[c_action.id] = 1;
             }
@@ -761,39 +788,50 @@ export function timeCheck(c_action,track,detailed){
 export function arpaTimeCheck(project, remain, track){
     let costs = arpaAdjustCosts(project.cost);
     let allRemainingSegmentsTime = 0;
+    let og_track_r = track ? {} : false;
+    if (track){
+        Object.keys(track.r).forEach(function (res){
+            og_track_r[res] = track.r[res];
+        });
+    }
     Object.keys(costs).forEach(function (res){
-        let allRemainingSegmentsCost = Number(costs[res]()) * remain;
-        if (allRemainingSegmentsCost > 0){
-            let res_have = Number(global.resource[res].amount);
+        if (allRemainingSegmentsTime >= 0){
+            let allRemainingSegmentsCost = Number(costs[res]()) * remain;
+            if (allRemainingSegmentsCost > 0){
+                let res_have = Number(global.resource[res].amount);
 
-            if (track){
-                res_have += global.resource[res].diff * track.t;
-                if (track.r[res]){
-                    res_have -= Number(track.r[res]);
-                    track.r[res] += allRemainingSegmentsCost;
-                }
-                else {
-                    track.r[res] = allRemainingSegmentsCost;
-                }
-                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                    res_have = global.resource[res].max;
-                }
-            }
-
-            if (allRemainingSegmentsCost > res_have){
-                if (global.resource[res].diff > 0){
-                    let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
-                    if (r_time > allRemainingSegmentsTime){
-                        allRemainingSegmentsTime = r_time;
+                if (track){
+                    res_have += global.resource[res].diff * track.t;
+                    if (track.r[res]){
+                        res_have -= Number(track.r[res]);
+                        track.r[res] += allRemainingSegmentsCost;
+                    }
+                    else {
+                        track.r[res] = allRemainingSegmentsCost;
+                    }
+                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                        res_have = global.resource[res].max;
                     }
                 }
-                else {
-                    allRemainingSegmentsTime = -9999999;
+
+                if (allRemainingSegmentsCost > res_have){
+                    if (global.resource[res].diff > 0){
+                        let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                        if (r_time > allRemainingSegmentsTime){
+                            allRemainingSegmentsTime = r_time;
+                        }
+                    }
+                    else {
+                        if (track){
+                            track.r = og_track_r;
+                        }
+                        allRemainingSegmentsTime = -9999999;
+                    }
                 }
             }
         }
     });
-    if (track){
+    if (track && allRemainingSegmentsTime >= 0){
         if (typeof track.id[project.id] === "undefined"){
             track.id[project.id] = 1;
         }
@@ -802,7 +840,7 @@ export function arpaTimeCheck(project, remain, track){
         }
         track.t += allRemainingSegmentsTime;
     }
-    return allRemainingSegmentsTime
+    return allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){
@@ -1269,10 +1307,10 @@ function inflationAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let rate = 1 + (global.race.inflation / 75);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * rate); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1287,10 +1325,10 @@ function extraAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let waste = 1 + (extraVal / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * waste); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * waste); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1304,13 +1342,13 @@ function technoAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1353,18 +1391,18 @@ function smolderAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Lumber' || res === 'Plywood'){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
-                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence'].includes(res)){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.9); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.9); }
             }
         });
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
-                let money = costs['Money'](wiki) || 0;
+                let money = costs['Money'](false,wiki) || 0;
                 return money > 0 ? Math.round(money / 50) : 0;
             }
         }
@@ -1379,10 +1417,10 @@ function kindlingAdjust(costs, wiki){
         let adjustRate = 1 + (traits.kindling_kindred.vars[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1395,10 +1433,10 @@ function craftAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1411,10 +1449,10 @@ function heavyAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 + (traits.heavy.vars[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1428,10 +1466,10 @@ function rebarAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;

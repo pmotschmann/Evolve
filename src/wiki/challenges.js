@@ -125,16 +125,18 @@ export function challengesPage(content){
         sideMenu('add',`challenges-gameplay`,'modes_intro',loc('wiki_challenges_modes_intro'));
         
         {   // Joyless
-            let joyless = infoBoxBuilder(modes,{ name: 'modes_joyless', template: 'challenges', paragraphs: 3, break: [3], h_level: 2,
+            let joyless = infoBoxBuilder(modes,{ name: 'modes_joyless', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_joyless`),loc(`wiki_challenges_mode`),loc(`tech_theatre`),loc(`job_entertainer`)],
                     2: [loc(`job_entertainer`),loc(`morale_broadcast`),wardenLabel(),loc(`morale`)],
-                    3: [loc(`wiki_challenges_mode`),actions.space.spc_red.biodome.title(),loc(`tech_theatre`)]
+                    3: [loc(`wiki_challenges_mode`),actions.space.spc_red.biodome.title(),loc(`tech_theatre`)],
+                    4: [loc(`wiki_challenges_scenarios_cataclysm`),loc(`wiki_challenges_scenario`)]
                 },
                 data_link: {
                     1: [false,false,'wiki.html#civilized-tech-theatre'],
                     2: [false,false,'wiki.html#planetary-structures-wardenclyffe'],
-                    3: [false,'wiki.html#space-structures-biodome','wiki.html#civilized-tech-theatre']
+                    3: [false,'wiki.html#space-structures-biodome','wiki.html#civilized-tech-theatre'],
+                    4: ['wiki.html#challenges-gameplay-scenarios_cataclysm']
                 }
             });
             addAchievements(joyless,false,['joyless']);
@@ -291,21 +293,23 @@ export function challengesPage(content){
         }
         
         {   // Cataclysm
-            let cataclysm = infoBoxBuilder(scenarios,{ name: 'scenarios_cataclysm', template: 'challenges', paragraphs: 8, break: [4,5,6,8], h_level: 2,
+            let cataclysm = infoBoxBuilder(scenarios,{ name: 'scenarios_cataclysm', template: 'challenges', paragraphs: 9, break: [4,5,6,8,9], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_cataclysm`),loc(`wiki_challenges_scenario`),loc(`wiki_resets_cataclysm`)],
                     2: [loc(`evo_challenge_cataclysm`),loc(`city_casino`),getSolarName('hell')],
                     4: [loc(`evo_challenge_cataclysm`)],
                     5: [loc(`civics_foreign`),loc(`tech_unification`)],
                     7: [loc(`trait_parasite_name`),`20x`],
-                    8: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_bioseed`)]
+                    8: [loc(`resource_Plasmid_plural_name`),loc(`resource_AntiPlasmid_plural_name`),300,loc(`wiki_challenges_scenario`),loc(`resource_Phage_name`)],
+                    9: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_bioseed`)]
                 },
                 data_link: {
                     1: [false,false,'wiki.html#resets-prestige-cataclysm'],
                     2: [false,'wiki.html#space-structures-spc_casino'],
                     5: [false,'wiki.html#early_space-tech-unification2'],
                     7: ['wiki.html#traits-species-parasite'],
-                    8: [false,'wiki.html#resets-prestige-bioseed']
+                    8: ['wiki.html#resources-prestige-plasmids','wiki.html#resources-prestige-antiplasmids',false,false,'wiki.html#resources-prestige-phage'],
+                    9: [false,'wiki.html#resets-prestige-bioseed']
                 }
             });
             addAchievements(cataclysm,false,['iron_will','failed_history']);
@@ -335,7 +339,7 @@ export function challengesPage(content){
                     4: [loc(`morale_tax`),`95%`,loc(`civics_tax_rates`),loc(`wiki_challenges_scenarios_banana_para4_note1`)],
                     5: [loc(`tab_market`),loc(`tech_sundial`),loc(`evo_challenge_banana`),1,loc(`resource_Food_name`),loc(`tech_trade`)],
                     6: [loc(`resource_market_trade_routes`)],
-                    7: [loc(`resource_market_trade_routes`),10,25,loc(`tech_large_trades`),100,loc(`tech_massive_trades`)],
+                    7: [loc(`resource_market_trade_routes`),10,25,loc(`tech_large_trades`),1000000,loc(`tech_massive_trades`)],
                     8: [loc(`civics_foreign`),`2x`,`50%`],
                     9: [loc(`civics_garrison_soldiers`),`20%`,loc(`tab_portal`)],
                     10: [loc(`galaxy_scout_ship`),7,10],
