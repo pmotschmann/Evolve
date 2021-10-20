@@ -1455,6 +1455,7 @@ function specialEventsPage(content){
             `U2FsdGVkX1+nD+SyHpi39fhqppxDiF+UhJh3w0dhZ4IxuC1s3h0gTrgBI7IxVLrQ`,
             `U2FsdGVkX1+OfTMTHGhIpqmihvW7fMCt0q+bLWqhd7Z0Cj31jNUqmvBcxb6HzbGc4mL/msBX6PO5zpb4pBUzwA==`,
             `U2FsdGVkX1+hC03MwAyWdqH6ODAGNbgm7CRgC+0Wfreja2JZX7oPwYhPmfQXzn1RfeIncnkRTmdXGMqQ/mq2GQ==`,
+            `U2FsdGVkX1/vjgxdy9GlaMJCARNWx3dEMgJ5/uj5Cn0eXaYC9ChVeNbJ4z0nVsE26gpvH1SVAV8TdQhDNn0dqg==`,
         ];
 
         let candy_solutions = [
@@ -1464,6 +1465,7 @@ function specialEventsPage(content){
             `U2FsdGVkX1+xyixviw9PD/sRskoRG9owodNkZlwcAMSzQXe2PdAJPLwEBV9knjgGg11ws2eEBHXj7Y5j5SS7br+Uehaaj0MViyfxYdsZOEQ=`,
             `U2FsdGVkX18+2YEr0TG80mQY483i7yOr+Qnh66mOKEviX0ElRHI9VCha9TG+no1r`,
             `U2FsdGVkX1/Vuthb9MYQT02lO0ngkSI4f1tbvrrCwtVQiUTSIaVgDHVYYcIgfSl3WfiRhwGJWeP/6w+i7FEqaA==`,
+            `U2FsdGVkX1/3Zbp0Tlqh/n5TKvOJEIuaf9/DcDFlDz1s2Tb+qbUS1GmPTzpP3xLu`
         ];
 
         let ghost_hints = [
@@ -1473,6 +1475,7 @@ function specialEventsPage(content){
             `U2FsdGVkX18fvaoGr3U+o/m+xJLnbmVKJ1/GjNERP1ZDotBG7lD7vCtB1XyrCV0CvZXI9WK3r+FLD4rc7ZsLav77MTvQY+3pmwTYB841IxkUGCRE2mQYcr01xtxOPxMBMppChSZ8KJFgzfLhxL2rog==`,
             `U2FsdGVkX18MRMhu9I4km+hryh9dnvVBSkHdUPBgyHnKLsRB8PxpcJSFNq9b0plJ`,
             `U2FsdGVkX18IDZ0hUGT3xuDSi9EVacctj7h0BThWEgzIovJAieOvqXg/0wrZWHXQvyyVMsQtOdBls2nDjryxiw==`,
+            `U2FsdGVkX1891SskU89HRmZPzhBcScrDGfGpJsp8F1qgVnsuON0h6WL69wEF9/uEpRi393mOXOrubNYVFzRgjwqERT3G/f6u/4bWXGSLpS8=`,
         ];
 
         let ghost_solutions = [
@@ -1482,6 +1485,7 @@ function specialEventsPage(content){
             `U2FsdGVkX1+Z3/SLqEmoDq377QCt49UMTneD9zo6FqTfFOab0SWGG8ioBZ1z+/v422HygjnuwD341scmcTuA/4Pz9APy3FQcCqA5Fw4hDed+LvjrecqEZogyCw1WVaCItGXZW9+TXM0/y6p7VXvuyw==`,
             `U2FsdGVkX19CLOS3ivLPeqIYtjSBdW1WT4UFvJjNDto6jy9751Q73OZF2JQlhgKyayhswWuEk+JGbYwLbDbWhJgZUR/R9hYJnw8/Wcay4eM=`,
             `U2FsdGVkX19Pm5I9mqzijXCNM3dk4ut0IDPpownMePohkcfE6jsuLA0dgzv9vp5tjEVPaUD/bqMgEzsD9svhOEJd+zlslkqIsBee6EJTO/4=`,
+            `U2FsdGVkX19TcqGI2bk6XYN40buKCGWH58AjMFDNE/jawAK+II3s6TvoVCcXbZsKzLF2++aeUgq6Ag+TysbSf5/T3IHeqQQnjFGIkkzlmMJH9wROKLirkPSzsw8O6J1J`,
         ];
 
         const date = new Date();
@@ -1490,7 +1494,7 @@ function specialEventsPage(content){
 
         let treats = `<div class="has-text-warning">${loc('wiki_feat_trick_found')}</div>`;
         treats = treats + `<div class="tbl">`;
-        for (let i=1; i<=6; i++){
+        for (let i=1; i<=candy_hints.length; i++){
             let treat = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';
             let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'found' : 'missing';
             
@@ -1514,7 +1518,7 @@ function specialEventsPage(content){
 
         let tricks = `<div class="has-text-warning">${loc('wiki_feat_treat_found')}</div>`;
         tricks = tricks + `<div class="tbl">`;
-        for (let i=1; i<=6; i++){
+        for (let i=1; i<=ghost_hints.length; i++){
             let trick = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';
             let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'found' : 'missing';
             

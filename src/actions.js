@@ -2171,6 +2171,8 @@ export const actions = {
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',$(this)[0].val(true),true);
                 }
+                global.stats.cfood++;
+                global.stats.tfood++;
                 return false;
             },
             val(spend){
@@ -2219,6 +2221,8 @@ export const actions = {
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',$(this)[0].val(true),true);
                 }
+                global.stats.clumber++;
+                global.stats.tlumber++;
                 return false;
             },
             val(spend){
@@ -2265,6 +2269,8 @@ export const actions = {
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',$(this)[0].val(true),true);
                 }
+                global.stats.cstone++;
+                global.stats.tstone++;
                 return false;
             },
             val(spend){
@@ -2349,11 +2355,19 @@ export const actions = {
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
-                if (!global.race['smoldering'] && global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',gain,true);
+                if (!global.race['smoldering']){
+                    if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                        modRes('Lumber',gain,true);
+                    }
+                    global.stats.clumber++;
+                    global.stats.tlumber++;
                 }
-                if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',gain,true);
+                if (global.race['soul_eater']){
+                    if (global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
+                        modRes('Food',gain,true);
+                    }
+                    global.stats.cfood++;
+                    global.stats.tfood++;
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
                     modRes('Furs',gain,true);
@@ -5364,7 +5378,7 @@ export function setAction(c_action,action,type,old){
             });
         }
         let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)">}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -5655,6 +5669,9 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 return p;
+            },
+            title(t){
+                return t;
             }
         }
     });

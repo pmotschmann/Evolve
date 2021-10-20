@@ -1743,14 +1743,14 @@ export function trickOrTreatBind(id,trick){
             }
             else {
                 if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 15;
-                    global.stats.antiplasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
+                    global.race.Plasmid.anti += 13;
+                    global.stats.antiplasmid += 13;
+                    messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.race.Plasmid.count += 15;
-                    global.stats.plasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
+                    global.race.Plasmid.count += 13;
+                    global.stats.plasmid += 13;
+                    messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             $(`#${tot}${id}`).remove();
@@ -2220,12 +2220,14 @@ export function getHalloween(){
             trick4: false,
             trick5: false,
             trick6: false,
+            trick7: false,
             treat1: false,
             treat2: false,
             treat3: false,
             treat4: false,
             treat5: false,
-            treat6: false
+            treat6: false,
+            treat7: false
         };
     }
 

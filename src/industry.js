@@ -1087,6 +1087,11 @@ export function setPowerGrid(){
             return;
         }
 
+        let candy = '';
+        if (grid_type === 'power'){
+            candy = trickOrTreat(7,12,false);
+        }
+
         if (grids[grid_type].r && grids[grid_type].rs && global[grids[grid_type].r][grids[grid_type].rs]){
             $('#powerGrid').append(`<div id="pg${grid_type}sup" class="gridHeader"><span class="has-text-caution">${grids[grid_type].n}</span> {{ support }}/{{ s_max }}</div>`);
             vBind({
@@ -1095,7 +1100,7 @@ export function setPowerGrid(){
             });
         }
         else {
-            $('#powerGrid').append(`<div class="gridHeader has-text-caution">${grids[grid_type].n}</div>`);
+            $('#powerGrid').append(`<div class="gridHeader has-text-caution">${grids[grid_type].n}${candy}</div>`);
         }
 
         let grid = $(`<div id="grid${grid_type}" class="powerGrid"></div>`);

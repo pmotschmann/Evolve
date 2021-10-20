@@ -1316,6 +1316,24 @@ if (!global.stats['dkills']){
 if (!global.stats['attacks']){
     global.stats['attacks'] = 0;
 }
+if (!global.stats['cfood']){
+    global.stats['cfood'] = 0;
+}
+if (!global.stats['tfood']){
+    global.stats['tfood'] = 0;
+}
+if (!global.stats['cstone']){
+    global.stats['cstone'] = 0;
+}
+if (!global.stats['tstone']){
+    global.stats['tstone'] = 0;
+}
+if (!global.stats['clumber']){
+    global.stats['clumber'] = 0;
+}
+if (!global.stats['tlumber']){
+    global.stats['tlumber'] = 0;
+}
 if (!global.stats['mad']){
     global.stats['mad'] = 0;
 }
@@ -2089,6 +2107,9 @@ export function clearStates(){
     global.stats.died = 0;
     global.stats.attacks = 0;
     global.stats.dkills = 0;
+    global.stats.cfood = 0;
+    global.stats.cstone = 0;
+    global.stats.clumber = 0;
     global.stats.sac = 0;
     global.settings.at = 0;
 
