@@ -1,4 +1,4 @@
-import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
@@ -299,7 +299,6 @@ popover('morale',
     }
 );
 
-var power_generated = {};
 popover('powerStatus',function(obj){
         let drain = +(global.city.power_total - global.city.power).toFixed(2);
         Object.keys(power_generated).forEach(function (k){
@@ -411,7 +410,7 @@ vBind({
             }
         },
         pausedesc(){
-            return global.settings.pause ? `Start the Game` : `Pause the Game`;
+            return global.settings.pause ? loc('game_play') : loc('game_pause');
         }
     },
     filters: {
@@ -5568,9 +5567,15 @@ function fastLoop(){
 
     let halloween = eventActive('halloween');
     if (halloween.active){
-        for (i=1; i<=15; i++){
+        for (i=1; i<=7; i++){
+            if ($(`#treat${i}`).length > 0 && !$(`#treat${i}`).hasClass('binded')){
+                trickOrTreatBind(i,false);
+                $(`#treat${i}`).addClass('binded');
+            }
+        }
+        for (i=1; i<=7; i++){
             if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
-                trickOrTreatBind(i);
+                trickOrTreatBind(i,true);
                 $(`#trick${i}`).addClass('binded');
             }
         }
@@ -5757,7 +5762,7 @@ function midLoop(){
 
         caps[global.race.species] = 0;
 
-        if (global.city['pylon']){
+        if (global.city['pylon'] || global.space['pylon']){
             let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;
             bd_Mana[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
@@ -7724,15 +7729,21 @@ function midLoop(){
                 else {
                     if (checkAffordable(t_action,true)){
                         global.r_queue.queue[i].cna = false;
-                        if (checkAffordable(t_action) && !stop){
-                            c_action = t_action;
-                            idx = i;
+                        let t_time = global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
+                        if (t_time >= 0){
+                            if (checkAffordable(t_action) && !stop){
+                                c_action = t_action;
+                                idx = i;
+                            }
+                            else {
+                                time += t_time;
+                            }
+                            global.r_queue.queue[i]['time'] = time;
+                            stop = global.settings.qAny_res ? false : true;
                         }
                         else {
-                            time += global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
+                            global.r_queue.queue[i]['time'] = t_time;
                         }
-                        global.r_queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny_res ? false : true;
                     }
                     else {
                         global.r_queue.queue[i].cna = true;
@@ -7741,7 +7752,7 @@ function midLoop(){
                 }
                 global.r_queue.queue[i].qa = global.settings.qAny_res ? true : false;
             }
-            if (idx >= 0 && c_action){
+            if (idx >= 0 && c_action && !global.r_queue.pause){
                 if (c_action.action()){
                     messageQueue(loc('research_success',[global.r_queue.queue[idx].label]),'success',false,['queue','research_queue']);
                     gainTech(global.r_queue.queue[idx].type);
@@ -7833,16 +7844,31 @@ function midLoop(){
 
             if (struct.action === 'arpa'){
                 let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
-                time += arpaTimeCheck(t_action, remain, spent);
-                global.queue.queue[i]['time'] = time;
-                if (global.queue.queue[i].q > 1){
-                    for (let j=1; j<global.queue.queue[i].q; j++){
-                        time += arpaTimeCheck(t_action, 1, spent);
+                let spent_r = spent.r;
+                let t_time = arpaTimeCheck(t_action, remain, spent);
+                if (t_time >= 0){
+                    time += t_time;
+                    global.queue.queue[i]['time'] = time;
+                    if (global.queue.queue[i].q > 1){
+                        for (let j=1; j<global.queue.queue[i].q; j++){
+                            time += arpaTimeCheck(t_action, 1, spent);
+                        }
                     }
-                }
-                global.queue.queue[i]['t_max'] = time;
-                if (global.settings.qAny){
-                    if (Math.floor(global.queue.queue[i]['time']) <= 1){
+                    global.queue.queue[i]['t_max'] = time;
+                    if (global.settings.qAny && !global.queue.pause){
+                        if (Math.floor(global.queue.queue[i]['time']) <= 1){
+                            if (!stop){
+                                c_action = t_action;
+                                idx = i;
+                                arpa = true;
+                            }
+                            stop = true;
+                        }
+                        else {
+                            buildArpa(global.queue.queue[i].type,100,true);
+                        }
+                    }
+                    else {
                         if (!stop){
                             c_action = t_action;
                             idx = i;
@@ -7850,19 +7876,9 @@ function midLoop(){
                         }
                         stop = true;
                     }
-                    else {
-                        if (!stop){
-                            buildArpa(global.queue.queue[i].type,100,true);
-                        }
-                    }
                 }
                 else {
-                    if (!stop){
-                        c_action = t_action;
-                        idx = i;
-                        arpa = true;
-                    }
-                    stop = true;
+                    global.queue.queue[i]['time'] = t_time;
                 }
             }
             else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
@@ -7874,22 +7890,28 @@ function midLoop(){
             else {
                 if (checkAffordable(t_action,true)){
                     global.queue.queue[i].cna = false;
-                    if (checkAffordable(t_action) && !stop){
-                        c_action = t_action;
-                        idx = i;
-                        arpa = false;
+                    let t_time = timeCheck(t_action, spent);
+                    if (t_time >= 0){
+                        if (checkAffordable(t_action) && !stop){
+                            c_action = t_action;
+                            idx = i;
+                            arpa = false;
+                        }
+                        else {
+                            time += t_time;
+                        }
+                        global.queue.queue[i]['time'] = time;
+                        stop = global.settings.qAny ? false : true;
+                        if (global.queue.queue[i].q > 1){
+                            for (let j=1; j<global.queue.queue[i].q; j++){
+                                time += timeCheck(t_action, spent);
+                            }
+                        }
+                        global.queue.queue[i]['t_max'] = time;
                     }
                     else {
-                        time += timeCheck(t_action, spent);
+                        global.queue.queue[i]['time'] = t_time;
                     }
-                    global.queue.queue[i]['time'] = time;
-                    stop = global.settings.qAny ? false : true;
-                    if (global.queue.queue[i].q > 1){
-                        for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += timeCheck(t_action, spent);
-                        }
-                    }
-                    global.queue.queue[i]['t_max'] = time;
                 }
                 else {
                     global.queue.queue[i].cna = true;
@@ -7898,7 +7920,7 @@ function midLoop(){
             }
             global.queue.queue[i].qa = global.settings.qAny ? true : false;
         }
-        if (idx >= 0 && c_action){
+        if (idx >= 0 && c_action && !global.queue.pause){
             if (arpa){
                 let label = global.queue.queue[idx].label;
                 let id = global.queue.queue[idx].id;

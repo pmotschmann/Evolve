@@ -1480,7 +1480,7 @@ function pick_monument(){
             monuments.push(type);
         }
     });
-    if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred']){
+    if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred'] && !global.race['smoldering']){
         monuments.push('Pillar');
     }
     if (global.race.universe === 'magic' && global.arpa['m_type'] !== 'Megalith'){

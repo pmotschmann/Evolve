@@ -1438,6 +1438,122 @@ function specialEventsPage(content){
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
 
+    {   // Trick or Treat
+        let halloween = eventActive('halloween');
+
+        let event = 'trickortreat';
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,
+            para_data: {
+                2: [loc('feat_trickortreat_name'),12],
+            }
+        });
+
+        let candy_hints = [
+            `U2FsdGVkX1/PDiFXguD51NL4kEt4e9qRJwl5IKNCQE9vI3XAoH5gDW28r2V4O5GY`,
+            `U2FsdGVkX18xhhpvSSA7YALgn1lm1e+GylSzgVdoTnLXMzPLL1knLlINAS8l5ECGfvjo6CDFYnuvqaw/8BugAw==`,
+            `U2FsdGVkX18g9cYmSZKe/VjFeCjuODnwnD+i+2ShpdeMI4uIIzbllcQFIWJaQw+EvsDu5DFBNCEuFOsWRFVMyA==`,
+            `U2FsdGVkX1+nD+SyHpi39fhqppxDiF+UhJh3w0dhZ4IxuC1s3h0gTrgBI7IxVLrQ`,
+            `U2FsdGVkX1+OfTMTHGhIpqmihvW7fMCt0q+bLWqhd7Z0Cj31jNUqmvBcxb6HzbGc4mL/msBX6PO5zpb4pBUzwA==`,
+            `U2FsdGVkX1+hC03MwAyWdqH6ODAGNbgm7CRgC+0Wfreja2JZX7oPwYhPmfQXzn1RfeIncnkRTmdXGMqQ/mq2GQ==`,
+            `U2FsdGVkX1/vjgxdy9GlaMJCARNWx3dEMgJ5/uj5Cn0eXaYC9ChVeNbJ4z0nVsE26gpvH1SVAV8TdQhDNn0dqg==`,
+        ];
+
+        let candy_solutions = [
+            `U2FsdGVkX1/bQrTdTtuTtXbxmJvxhHdsacfjyPKgyzXzthWNTsjaxqcCKjwjqCyG`,
+            `U2FsdGVkX19tP6ZlSqvfdg6qaoOceA6978unLN8j9VIm5LUJSHUZm77zK1i1rWq3`,
+            `U2FsdGVkX18Ex9HXV1+h+DIdFBxpNPI4Gl0E0EwOFbpyncN5gEfS8fWURvPT11S66x4swlZjnntbhMvDG+4SWg==`,
+            `U2FsdGVkX1+xyixviw9PD/sRskoRG9owodNkZlwcAMSzQXe2PdAJPLwEBV9knjgGg11ws2eEBHXj7Y5j5SS7br+Uehaaj0MViyfxYdsZOEQ=`,
+            `U2FsdGVkX18+2YEr0TG80mQY483i7yOr+Qnh66mOKEviX0ElRHI9VCha9TG+no1r`,
+            `U2FsdGVkX1/Vuthb9MYQT02lO0ngkSI4f1tbvrrCwtVQiUTSIaVgDHVYYcIgfSl3WfiRhwGJWeP/6w+i7FEqaA==`,
+            `U2FsdGVkX1/3Zbp0Tlqh/n5TKvOJEIuaf9/DcDFlDz1s2Tb+qbUS1GmPTzpP3xLu`
+        ];
+
+        let ghost_hints = [
+            `U2FsdGVkX18m9z0oToDhhhmI0ugH5ykCrV1z64upZad/LXRYaFAyDT+O15+BXmJUKv7yY4YiBS6SYc65LJQjwEkMY5orIcyusiXtY9xnpRY=`,
+            `U2FsdGVkX18eejrZNi9yF98CBO4KWjBLzo8HTBagKST0kjPmH48UuPWKG7Y3qyfeUyAFuDBnNRgdbgXXcWVPTE+3tbqcRiqAUZF8iLhXbmY=`,
+            `U2FsdGVkX1/RKcVkvhY8bsGcXAQX3xJH4Ns/tUctQzK58oI9LJBxzIDyOHlPatn49avqw8r5lEmWyJOL2wyUjUPlYR/C9CjtO8t8oBW4ymWZRi66Ia0z1tMRHZyamonp`,
+            `U2FsdGVkX18fvaoGr3U+o/m+xJLnbmVKJ1/GjNERP1ZDotBG7lD7vCtB1XyrCV0CvZXI9WK3r+FLD4rc7ZsLav77MTvQY+3pmwTYB841IxkUGCRE2mQYcr01xtxOPxMBMppChSZ8KJFgzfLhxL2rog==`,
+            `U2FsdGVkX18MRMhu9I4km+hryh9dnvVBSkHdUPBgyHnKLsRB8PxpcJSFNq9b0plJ`,
+            `U2FsdGVkX18IDZ0hUGT3xuDSi9EVacctj7h0BThWEgzIovJAieOvqXg/0wrZWHXQvyyVMsQtOdBls2nDjryxiw==`,
+            `U2FsdGVkX1891SskU89HRmZPzhBcScrDGfGpJsp8F1qgVnsuON0h6WL69wEF9/uEpRi393mOXOrubNYVFzRgjwqERT3G/f6u/4bWXGSLpS8=`,
+        ];
+
+        let ghost_solutions = [
+            `U2FsdGVkX19wIpvvED4RfWp5UAJfJvmnyhdkqsfr3BlVH5YEdjGNy4mcTvuvuY/92b6F3aQJHx0vunDJ64hcezPUAM5P+E/iROMQoMDCTJwwni6SRCpJggAHSOBTovW0piVAnyt6WHsjiAmVQVo8Og==`,
+            `U2FsdGVkX1+bLPNq0l72utbOUTZ+JAXIUcGrrXVneoHD/GTbFy4jqDcU++SxaFih2aKODyZx3/SPbm0pd4JIQlu3xgl/demBDPj7TRbatEOM7aTBJhke5jwSYuIPTwWm8eyO0FINhZqO94pV4BFmcYv7b1lkzFgiLEOX/5kV/qE=`,
+            `U2FsdGVkX1/QQZqQ4S2CvR3IQFL5D1pWbqrntie8JAuZrYUIQoke13j6xzI3A2KVG3lE+IZZo6Ktn2zKJ8diaroUUB/CIP0DvewzzbNj7XT3d9G456ELSMjjgb8pKc586Mq661bEjCqm+Tz2DoMLtnzMaVIXPhqBBFutt2U7JwERvNiwBkX2YhyOD3QO/tcPmwKzLJ+cYjIDSEHeCVl/yeistKb5pQbrmPH4wHAKbVQNaiaOvIjee0wqttzpmcnNgx4axIi2FAqPpT2s1hHAmhUmeV0HKDxYQWgfntqRhe/k4ar1vrZ2QdhLozqDe35S`,
+            `U2FsdGVkX1+Z3/SLqEmoDq377QCt49UMTneD9zo6FqTfFOab0SWGG8ioBZ1z+/v422HygjnuwD341scmcTuA/4Pz9APy3FQcCqA5Fw4hDed+LvjrecqEZogyCw1WVaCItGXZW9+TXM0/y6p7VXvuyw==`,
+            `U2FsdGVkX19CLOS3ivLPeqIYtjSBdW1WT4UFvJjNDto6jy9751Q73OZF2JQlhgKyayhswWuEk+JGbYwLbDbWhJgZUR/R9hYJnw8/Wcay4eM=`,
+            `U2FsdGVkX19Pm5I9mqzijXCNM3dk4ut0IDPpownMePohkcfE6jsuLA0dgzv9vp5tjEVPaUD/bqMgEzsD9svhOEJd+zlslkqIsBee6EJTO/4=`,
+            `U2FsdGVkX19TcqGI2bk6XYN40buKCGWH58AjMFDNE/jawAK+II3s6TvoVCcXbZsKzLF2++aeUgq6Ag+TysbSf5/T3IHeqQQnjFGIkkzlmMJH9wROKLirkPSzsw8O6J1J`,
+        ];
+
+        const date = new Date();
+        const year = date.getFullYear();
+        const passphrase = 'trickortreat';
+
+        let treats = `<div class="has-text-warning">${loc('wiki_feat_trick_found')}</div>`;
+        treats = treats + `<div class="tbl">`;
+        for (let i=1; i<=candy_hints.length; i++){
+            let treat = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';
+            let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'found' : 'missing';
+            
+            let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
+            if (halloween.hint){
+                const bytes = CryptoJS.AES.decrypt(candy_hints[i-1], passphrase);
+                hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+            }
+
+            treats = treats + `<div class="trow"><span role="img" class="tcell ${treat}" aria-label="${loc('wiki_feat_treat_num',[i])} ${found}">${loc('wiki_feat_treat_num',[i])}</span>${hint}</div>`
+
+            let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
+            if (halloween.solve){
+                sol = `<span class="tcell totsol" data-sol="${candy_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+            }
+
+            treats = treats + `<div class="trow"><span class="tcell"></span>${sol}</div>`
+        }
+        treats = treats + `</div>`;
+        section.append(treats);
+
+        let tricks = `<div class="has-text-warning">${loc('wiki_feat_treat_found')}</div>`;
+        tricks = tricks + `<div class="tbl">`;
+        for (let i=1; i<=ghost_hints.length; i++){
+            let trick = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';
+            let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'found' : 'missing';
+            
+            let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
+            if (halloween.hint){
+                const bytes = CryptoJS.AES.decrypt(ghost_hints[i-1], passphrase);
+                hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+            }
+
+            tricks = tricks + `<div class="trow"><span role="img" class="tcell ${trick}" aria-label="${loc('wiki_feat_trick_num',[i])} ${found}">${loc('wiki_feat_trick_num',[i])}</span>${hint}</div>`
+
+            let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
+            if (halloween.solve){
+                sol = `<span class="tcell totsol" data-sol="${ghost_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+            }
+
+            tricks = tricks + `<div class="trow"><span class="tcell"></span>${sol}</div>`
+        }
+        tricks = tricks + `</div>`;
+        section.append(tricks);
+
+        $(`.totsol`).on('click', function(){
+            const solution = $(this).attr('data-sol');
+            const bytes = CryptoJS.AES.decrypt(solution, passphrase);
+            $(this).html(bytes.toString(CryptoJS.enc.Utf8));
+        });
+
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [`${loc(`month${halloween.date[0]}`)} ${halloween.date[1]}`, `${loc(`month${halloween.endDate[0]}`)} ${halloween.endDate[1]}`],
+            }
+        }, section);
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+    }
+
     {   // Thanksgiving
         let event = 'turkey';
         let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 3, break: [2,3], h_level: 2,

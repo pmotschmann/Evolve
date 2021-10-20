@@ -1219,7 +1219,7 @@ export function marketItem(mount,market_item,name,color,full){
             },
             trade(val){
                 if (name === 'Stone' && (val === 31 || val === -31)){
-                    let trick = trickOrTreat(3,12);
+                    let trick = trickOrTreat(3,12,false);
                     if (trick.length > 0){
                         return trick;
                     }
@@ -1519,7 +1519,7 @@ export function containerItem(mount,market_item,name,color){
         filters: {
             trick(v){
                 if (name === 'Stone' && global.resource[name].crates === 10 && global.resource[name].containers === 31){
-                    let trick = trickOrTreat(10,13);
+                    let trick = trickOrTreat(4,13,true);
                     if (trick.length > 0){
                         return trick;
                     }
@@ -2018,7 +2018,7 @@ function drawModal(name){
     }
 
     if (name === 'Stone'){
-        let trick = trickOrTreat(1,12);
+        let trick = trickOrTreat(1,12,false);
         if (trick.length > 0){
             $('#modalBoxTitle').prepend(trick);
         }

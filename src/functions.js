@@ -369,7 +369,10 @@ export function calcRQueueMax(){
 export function buildQueue(){
     clearDragQueue();
     clearElement($('#buildQueue'));
-    $('#buildQueue').append($(`<h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>`));
+    $('#buildQueue').append($(`
+        <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
+        <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
+    `));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -426,6 +429,21 @@ export function buildQueue(){
                     }
 
                     return final_costs;
+                },
+                pauseQueue(){
+                    $(`#pausequeue`).removeClass('play');
+                    $(`#pausequeue`).removeClass('pause');
+                    if (global.queue.pause){
+                        global.queue.pause = false;
+                        $(`#pausequeue`).addClass('play');
+                    }
+                    else {
+                        global.queue.pause = true;
+                        $(`#pausequeue`).addClass('pause');
+                    }
+                },
+                pausedesc(){
+                    return global.queue.pause ? loc('queue_play') : loc('queue_pause');
                 }
             },
             filters: {
@@ -757,8 +775,14 @@ export function timeCheck(c_action,track,detailed){
         let time = 0;
         let bottleneck = false;
         let costs = adjustCosts(c_action);
+        let og_track_r = track ? {} : false;
+        if (track){
+            Object.keys(track.r).forEach(function (res){
+                og_track_r[res] = track.r[res];
+            });
+        }
         Object.keys(costs).forEach(function (res){
-            if (!['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
+            if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
@@ -788,13 +812,16 @@ export function timeCheck(c_action,track,detailed){
                             }
                         }
                         else {
+                            if (track){
+                                track.r = og_track_r;
+                            }
                             time = -9999999;
                         }
                     }
                 }
             }
         });
-        if (track){
+        if (track && time >= 0){
             if (typeof track.id[c_action.id] === "undefined"){
                 track.id[c_action.id] = 1;
             }
@@ -816,39 +843,50 @@ export function timeCheck(c_action,track,detailed){
 export function arpaTimeCheck(project, remain, track){
     let costs = arpaAdjustCosts(project.cost);
     let allRemainingSegmentsTime = 0;
+    let og_track_r = track ? {} : false;
+    if (track){
+        Object.keys(track.r).forEach(function (res){
+            og_track_r[res] = track.r[res];
+        });
+    }
     Object.keys(costs).forEach(function (res){
-        let allRemainingSegmentsCost = Number(costs[res]()) * remain;
-        if (allRemainingSegmentsCost > 0){
-            let res_have = Number(global.resource[res].amount);
+        if (allRemainingSegmentsTime >= 0){
+            let allRemainingSegmentsCost = Number(costs[res]()) * remain;
+            if (allRemainingSegmentsCost > 0){
+                let res_have = Number(global.resource[res].amount);
 
-            if (track){
-                res_have += global.resource[res].diff * track.t;
-                if (track.r[res]){
-                    res_have -= Number(track.r[res]);
-                    track.r[res] += allRemainingSegmentsCost;
-                }
-                else {
-                    track.r[res] = allRemainingSegmentsCost;
-                }
-                if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
-                    res_have = global.resource[res].max;
-                }
-            }
-
-            if (allRemainingSegmentsCost > res_have){
-                if (global.resource[res].diff > 0){
-                    let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
-                    if (r_time > allRemainingSegmentsTime){
-                        allRemainingSegmentsTime = r_time;
+                if (track){
+                    res_have += global.resource[res].diff * track.t;
+                    if (track.r[res]){
+                        res_have -= Number(track.r[res]);
+                        track.r[res] += allRemainingSegmentsCost;
+                    }
+                    else {
+                        track.r[res] = allRemainingSegmentsCost;
+                    }
+                    if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
+                        res_have = global.resource[res].max;
                     }
                 }
-                else {
-                    allRemainingSegmentsTime = -9999999;
+
+                if (allRemainingSegmentsCost > res_have){
+                    if (global.resource[res].diff > 0){
+                        let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                        if (r_time > allRemainingSegmentsTime){
+                            allRemainingSegmentsTime = r_time;
+                        }
+                    }
+                    else {
+                        if (track){
+                            track.r = og_track_r;
+                        }
+                        allRemainingSegmentsTime = -9999999;
+                    }
                 }
             }
         }
     });
-    if (track){
+    if (track && allRemainingSegmentsTime >= 0){
         if (typeof track.id[project.id] === "undefined"){
             track.id[project.id] = 1;
         }
@@ -857,7 +895,7 @@ export function arpaTimeCheck(project, remain, track){
         }
         track.t += allRemainingSegmentsTime;
     }
-    return allRemainingSegmentsTime
+    return allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){
@@ -1356,10 +1394,10 @@ function inflationAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let rate = 1 + (global.race.inflation / 75);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * rate); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * rate); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1374,10 +1412,10 @@ function extraAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let waste = 1 + (extraVal / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * waste); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * waste); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1391,13 +1429,13 @@ function technoAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1440,18 +1478,18 @@ function smolderAdjust(costs, wiki){
         Object.keys(costs).forEach(function (res){
             if (res === 'Lumber' || res === 'Plywood'){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
-                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 0.9); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.9); }
             }
         });
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
-                let money = costs['Money'](wiki) || 0;
+                let money = costs['Money'](false,wiki) || 0;
                 return money > 0 ? Math.round(money / 50) : 0;
             }
         }
@@ -1466,10 +1504,10 @@ function kindlingAdjust(costs, wiki){
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1482,10 +1520,10 @@ function craftAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1498,10 +1536,10 @@ function heavyAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1515,10 +1553,10 @@ function rebarAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](false,wiki); }
             }
         });
         return newCosts;
@@ -1766,39 +1804,45 @@ export function easterEggBind(id){
     });
 }
 
-export function trickOrTreat(num,size){
+export function trickOrTreat(num,size,trick){
     let halloween = getHalloween();
-    if (halloween.active && !global.special.trick[`trick${num}`]){
-        let label = num > 6 ? `Ghost`: `Candy Corn`;
-        return drawIcon(num <= 6 ? 'candycorn' : 'ghost', size ? size : 16, 2, `trick${num}`, `role="button" aria-label="${label}" `);
+    const date = new Date();
+    const year = date.getFullYear();
+    let tot = trick ? 'trick' : 'treat';
+    if (halloween.active && !global.special.trick[year][`${tot}${num}`]){
+        let label = trick ? `Ghost`: `Candy Corn`;
+        return drawIcon(trick ? 'ghost' : 'candycorn', size ? size : 16, 2, `${tot}${num}`, `role="button" aria-label="${label}" `);
     }
     return '';
 }
 
-export function trickOrTreatBind(id){
-    $(`#trick${id}`).click(function(){
-        if (!global.special.trick[`trick${id}`]){
-            global.special.trick[`trick${id}`] = true;
-            if (id <= 6){
-                if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 15;
-                    global.stats.antiplasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
-                }
-                else {
-                    global.race.Plasmid.count += 15;
-                    global.stats.plasmid += 15;
-                    messageQueue(loc('city_trick_msg',[15,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
-                }
-            }
-            else {
+export function trickOrTreatBind(id,trick){
+    const date = new Date();
+    const year = date.getFullYear();
+    let tot = trick ? 'trick' : 'treat';
+    $(`#${tot}${id}`).click(function(){
+        if (!global.special.trick[year][`${tot}${id}`]){
+            global.special.trick[year][`${tot}${id}`] = true;
+            if (trick){
                 global.race.Phage.count += 2;
                 global.stats.phage += 2;
                 messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
             }
-            $(`#trick${id}`).remove();
+            else {
+                if (global.race.universe === 'antimatter'){
+                    global.race.Plasmid.anti += 13;
+                    global.stats.antiplasmid += 13;
+                    messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
+                }
+                else {
+                    global.race.Plasmid.count += 13;
+                    global.stats.plasmid += 13;
+                    messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
+                }
+            }
+            $(`#${tot}${id}`).remove();
             setTimeout(function(){
-                if (id === 7){
+                if (id === 1 && trick){
                     if (poppers[`popcity-garrison}`]){
                         poppers[`popcity-garrison`].destroy();
                     }
@@ -2145,20 +2189,55 @@ export function getEaster(){
 }
 
 export function getHalloween(){
+    const date = new Date();
+    let year = date.getFullYear();
+
+    if (!global.special.trick.hasOwnProperty(year)){
+        global.special.trick[year] = {
+            trick1: false,
+            trick2: false,
+            trick3: false,
+            trick4: false,
+            trick5: false,
+            trick6: false,
+            trick7: false,
+            treat1: false,
+            treat2: false,
+            treat3: false,
+            treat4: false,
+            treat5: false,
+            treat6: false,
+            treat7: false
+        };
+    }
+
     let halloween = {
         date: [9,28],
         active: false,
-        endDate: [10,4]
+        endDate: [10,4],
+        hint: false,
+        hintDate: [9,29],
+        solve: false,
+        solveDate: [9,31]
     };
 
     if (global.settings.boring){
         return halloween;
     }
 
-    const date = new Date();
+    let start = new Date(`${halloween.date[0]+1}/${halloween.date[1]}/${year}`);
+    let end = new Date(`${halloween.endDate[0]+1}/${halloween.endDate[1]}/${year}`);
 
-    if ((date.getMonth() === halloween.date[0] && date.getDate() >= halloween.date[1]) || (date.getMonth() === halloween.endDate[0] && date.getDate() <= halloween.endDate[1])){
+    if (date >= start && date <= end){
         halloween.active = true;
+        let hint = new Date(`${halloween.hintDate[0]+1}/${halloween.hintDate[1]}/${year}`);
+        if (date >= hint && date <= end){
+            halloween.hint = true;
+        }
+        let sol = new Date(`${halloween.solveDate[0]+1}/${halloween.solveDate[1]}/${year}`);
+        if (date >= sol && date <= end){
+            halloween.solve = true;
+        }
     }
 
     return halloween;

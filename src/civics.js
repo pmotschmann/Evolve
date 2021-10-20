@@ -281,7 +281,7 @@ function drawGovModal(){
     if (egg.length > 0){
         $('#modalBoxTitle').append(egg);
     }
-    let trick = trickOrTreat(6,14);
+    let trick = trickOrTreat(6,14,false);
     if (trick.length > 0){
         $('#modalBoxTitle').append(trick);
     }
@@ -925,7 +925,7 @@ function taxRates(govern){
         filters: {
             tax_level(rate){
                 let egg = easterEgg(11,14);
-                let trick = trickOrTreat(2,14);
+                let trick = trickOrTreat(2,14,false);
                 if (rate === 0 && egg.length > 0){
                     return egg;
                 }
@@ -1160,7 +1160,7 @@ export function buildGarrison(garrison,full){
             stationed(v){
                 let size = garrisonSize();
                 let trickNum = global.race['cataclysm'] ? 13 : 31;
-                let trick = size === trickNum && !full ? trickOrTreat(8,14) : false;
+                let trick = size === trickNum && !full ? trickOrTreat(2,14,true) : false;
                 return size === trickNum && trick.length > 0 ? trick : size;
             },
             s_max(v){

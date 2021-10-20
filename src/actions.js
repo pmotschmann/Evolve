@@ -2050,6 +2050,8 @@ export const actions = {
                 if(global['resource']['Food'].amount < global['resource']['Food'].max){
                     modRes('Food',$(this)[0].val(true),true);
                 }
+                global.stats.cfood++;
+                global.stats.tfood++;
                 return false;
             },
             val(spend){
@@ -2099,6 +2101,8 @@ export const actions = {
                 if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
                     modRes('Lumber',$(this)[0].val(true),true);
                 }
+                global.stats.clumber++;
+                global.stats.tlumber++;
                 return false;
             },
             val(spend){
@@ -2146,6 +2150,8 @@ export const actions = {
                 if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
                     modRes('Stone',$(this)[0].val(true),true);
                 }
+                global.stats.cstone++;
+                global.stats.tstone++;
                 return false;
             },
             val(spend){
@@ -2232,11 +2238,19 @@ export const actions = {
                 if (global.genes['enhance']){
                     gain *= 2;
                 }
-                if (!global.race['smoldering'] && global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',gain,true);
+                if (!global.race['smoldering']){
+                    if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                        modRes('Lumber',gain,true);
+                    }
+                    global.stats.clumber++;
+                    global.stats.tlumber++;
                 }
-                if (global.race['soul_eater'] && global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',gain,true);
+                if (global.race['soul_eater']){
+                    if (global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
+                        modRes('Food',gain,true);
+                    }
+                    global.stats.cfood++;
+                    global.stats.tfood++;
                 }
                 if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
                     modRes('Furs',gain,true);
@@ -3818,7 +3832,7 @@ export const actions = {
                 if (piousVal){
                     pious = `<div>${loc(`city_tourist_center_effect6`,[(global.civic.govern.type === 'corpocracy' ? (piousVal * 2) : piousVal) * xeno])}</div>`;
                 }
-                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
+                return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
             powered(){ return powerCostMod(1); },
             action(){
@@ -5386,7 +5400,7 @@ export function drawTech(){
             .appendTo('#oldTech')
             .append(`<div><h3 class="name has-text-warning">${loc(`tech_dist_${category}`)}</h3></div>`);
 
-        let trick = trickOrTreat(4,12);
+        let trick = trickOrTreat(4,12,false);
         if (trick.length > 0 && category === 'science'){
             $(`#tech-dist-old-science h3`).append(trick);
         }
@@ -5440,7 +5454,7 @@ export function setAction(c_action,action,type,old){
             });
         }
         let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle">{{ title }}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)">}</span></a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -5599,13 +5613,16 @@ export function setAction(c_action,action,type,old){
                     }
                 }
                 else if (id === 'city-garrison' || id === 'space-space_barracks'){
-                    let trick = trickOrTreat(7,14);
+                    let trick = trickOrTreat(1,14,true);
                     let num = id === 'city-garrison' ? 13 : 0;
                     if (p === num && trick.length > 0){
                         return trick;
                     }
                 }
                 return p;
+            },
+            title(t){
+                return t;
             }
         }
     });
@@ -7644,7 +7661,10 @@ export function resQueue(){
     }
     clearResDrag();
     clearElement($('#resQueue'));
-    $('#resQueue').append($(`<h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>`));
+    $('#resQueue').append($(`
+        <h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>
+        <span id="pauserqueue" class="${global.r_queue.pause ? 'pause' : 'play'}" role="button" @click="pauseRQueue()" :aria-label="pausedesc()"></span>
+    `));
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#resQueue').append(queue);
@@ -7663,6 +7683,21 @@ export function resQueue(){
                 },
                 setID(index){
                     return `rq${global.r_queue.queue[index].id}`;
+                },
+                pauseRQueue(){
+                    $(`#pauserqueue`).removeClass('play');
+                    $(`#pauserqueue`).removeClass('pause');
+                    if (global.r_queue.pause){
+                        global.r_queue.pause = false;
+                        $(`#pauserqueue`).addClass('play');
+                    }
+                    else {
+                        global.r_queue.pause = true;
+                        $(`#pauserqueue`).addClass('pause');
+                    }
+                },
+                pausedesc(){
+                    return global.r_queue.pause ? loc('r_queue_play') : loc('r_queue_pause');
                 }
             },
             filters: {

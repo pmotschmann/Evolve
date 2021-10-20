@@ -287,11 +287,16 @@ function featDesc(feat,showFlair){
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${eggs}${flair}`));
     }
     else if (feat === 'trickortreat'){
+        const date = new Date();
+        let year = date.getFullYear();
         let tricks = `<div class="has-text-warning">${loc('wiki_feat_trickortreat_found')}</div><div class="flexed">`;
-        for (let i=1; i<13; i++){
-            let trick = global.special.trick[`trick${i}`] ? 'has-text-success' : 'has-text-danger';
-            
-            tricks = tricks + `<span class="wide ${trick}">${loc(i > 6 ? 'wiki_feat_trick_num' : 'wiki_feat_treat_num',[i > 6 ? i - 6 : i])}</span>`
+        for (let i=1; i<=7; i++){
+            let treat = global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';   
+            tricks = tricks + `<span class="wide ${treat}">${loc('wiki_feat_treat_num',[i])}</span>`
+        }
+        for (let i=1; i<=7; i++){
+            let trick = global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';   
+            tricks = tricks + `<span class="wide ${trick}">${loc('wiki_feat_trick_num',[i])}</span>`
         }
         tricks = tricks + `</div>`;
         popover(`f-${feat}`,$(`<div class="has-text-label">${feats[feat].desc}</div><div>${loc(`wiki_feat_${feat}`)}</div>${tricks}${flair}`));

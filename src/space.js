@@ -1884,12 +1884,12 @@ const spaceProjects = {
             queue_size: 100,
             queue_complete(){ return 1859 - global.space.world_collider.count; },
             cost: {
-                Money(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 25000 : 0; },
-                Copper(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 750 : 0; },
-                Alloy(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 125 : 0; },
-                Neutronium(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 12 : 0; },
-                Elerium(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 1 : 0; },
-                Mythril(wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 10 : 0; }
+                Money(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 25000 : 0; },
+                Copper(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 750 : 0; },
+                Alloy(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 125 : 0; },
+                Neutronium(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 12 : 0; },
+                Elerium(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 1 : 0; },
+                Mythril(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 10 : 0; }
             },
             effect(){
                 if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859){
@@ -2767,10 +2767,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
             },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 250000 : 0; },
-                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 10000 : 0; },
-                Infernite(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 25 : 0; },
-                Stanene(wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 100000 : 0; }
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 250000 : 0; },
+                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 10000 : 0; },
+                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 25 : 0; },
+                Stanene(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 100000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
@@ -2814,10 +2814,10 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 5000000 : 0; },
-                Bolognium(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 25000 : 0; },
-                Vitreloy(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 1250 : 0; },
-                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 75000 : 0; }
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 5000000 : 0; },
+                Bolognium(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 25000 : 0; },
+                Vitreloy(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 1250 : 0; },
+                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 75000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100){
@@ -2861,8 +2861,8 @@ const interstellarProjects = {
                 return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
             },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 25000000 : 0; },
-                Orichalcum(wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 75000 : 0; }
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 25000000 : 0; },
+                Orichalcum(offset,wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 75000 : 0; }
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100){
@@ -3254,13 +3254,13 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 500000 : 0; },
-                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 450 : 0; },
-                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 17500 : 0; },
-                Infernite(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 225 : 0; },
-                Graphene(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 45000 : 0; },
-                Mythril(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 250 : 0; },
-                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 75 : 0; },
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 500000 : 0; },
+                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 450 : 0; },
+                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 17500 : 0; },
+                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 225 : 0; },
+                Graphene(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 45000 : 0; },
+                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 250 : 0; },
+                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 75 : 0; },
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100){
@@ -3408,13 +3408,13 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 200 - global.interstellar.stargate.count; },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 1000000 : 0; },
-                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 4800 : 0; },
-                Infernite(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 666 : 0; },
-                Elerium(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 75 : 0; },
-                Nano_Tube(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 12000 : 0; },
-                Stanene(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 60000 : 0; },
-                Mythril(wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 3200 : 0; }
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 1000000 : 0; },
+                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 4800 : 0; },
+                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 666 : 0; },
+                Elerium(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 75 : 0; },
+                Nano_Tube(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 12000 : 0; },
+                Stanene(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 60000 : 0; },
+                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 3200 : 0; }
             },
             effect(){
                 let effectText = `<div>${loc('interstellar_stargate_effect')}</div>`
@@ -3529,10 +3529,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.space_elevator.count; },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 20000000 : 0; },
-                Nano_Tube(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 500000 : 0; },
-                Bolognium(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 100000 : 0; },
-                Mythril(wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 125000 : 0; },
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 20000000 : 0; },
+                Nano_Tube(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 500000 : 0; },
+                Bolognium(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 100000 : 0; },
+                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 125000 : 0; },
             },
             effect(){
                 let effectText = `<div>${loc('interstellar_space_elevator_effect')}</div>`;
@@ -3577,10 +3577,10 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.gravity_dome.count; },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 35000000 : 0; },
-                Cement(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 1250000 : 0; },
-                Adamantite(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 650000 : 0; },
-                Aerogel(wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 180000 : 0; },
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 35000000 : 0; },
+                Cement(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 1250000 : 0; },
+                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 650000 : 0; },
+                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 180000 : 0; },
             },
             effect(){
                 let effectText = `<div>${loc('interstellar_gravity_dome_effect',[races[global.race.species].home])}</div>`;
@@ -3626,12 +3626,12 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.ascension_machine.count; },
             cost: {
-                Money(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000000 : 0; },
-                Alloy(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 750000 : 0; },
-                Neutronium(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 125000 : 0; },
-                Elerium(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 1000 : 0; },
-                Orichalcum(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 250000 : 0; },
-                Nanoweave(wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000 : 0; },
+                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000000 : 0; },
+                Alloy(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 750000 : 0; },
+                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 125000 : 0; },
+                Elerium(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 1000 : 0; },
+                Orichalcum(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 250000 : 0; },
+                Nanoweave(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000 : 0; },
             },
             effect(){
                 if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100){
@@ -4381,11 +4381,11 @@ const galaxyProjects = {
             q_once: true,
             queue_complete(){ return 1 - global.galaxy.embassy.count; },
             cost: {
-                Money(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 30000000 : 0; },
-                Lumber(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 38000000 : 0; },
-                Stone(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 32000000 : 0; },
-                Furs(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 18000000 : 0; },
-                Wrought_Iron(wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 6000000 : 0; }
+                Money(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 30000000 : 0; },
+                Lumber(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 38000000 : 0; },
+                Stone(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 32000000 : 0; },
+                Furs(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 18000000 : 0; },
+                Wrought_Iron(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 6000000 : 0; }
             },
             effect(){
                 let food = 7500;
@@ -4542,11 +4542,11 @@ const galaxyProjects = {
             q_once: true,
             queue_complete(){ return 1 - global.galaxy.consulate.count; },
             cost: {
-                Money(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
-                Stone(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
-                Furs(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
-                Iron(wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
-                Horseshoe(wiki){ return global.race['hooved'] && (!global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki) ? 10 : 0; }
+                Money(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
+                Stone(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
+                Furs(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
+                Iron(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
+                Horseshoe(offset,wiki){ return global.race['hooved'] && (!global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki) ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);

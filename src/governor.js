@@ -655,16 +655,25 @@ export const gov_tasks = {
         },
         task(){
             if ( $(this)[0].req() ){
+                let add_morale = 1;
+                if (global.civic.taxes.tax_rate >= 40){
+                    add_morale += 0.5;
+                }
+                if (global.civic.govern.type === 'oligarchy'){
+                    if (global.civic.taxes.tax_rate >= 20){
+                        add_morale -= 0.5;
+                    }
+                }
                 let max = govCivics('tax_cap',false);
                 if (global.city.morale.current < 100 && global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 45 : 25)){
                     while (global.city.morale.current < 100 && global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 45 : 25)){
                         govCivics('adj_tax','sub');
                     }
                 }
-                else if (global.city.morale.potential > global.city.morale.cap + 1 && global.civic.taxes.tax_rate < max){
+                else if (global.city.morale.potential >= global.city.morale.cap + add_morale && global.civic.taxes.tax_rate < max){
                     govCivics('adj_tax','add');
                 }
-                else if (global.city.morale.current < global.city.morale.cap + 1 && global.civic.taxes.tax_rate > global.race.governor.config.tax.min){
+                else if (global.city.morale.current < global.city.morale.cap && global.civic.taxes.tax_rate > global.race.governor.config.tax.min){
                     govCivics('adj_tax','sub');
                 }
             }
