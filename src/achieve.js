@@ -697,14 +697,19 @@ export function checkAchievements(){
         unlockFeat('launch_day',global.race.universe === 'micro' ? true : false);
     }
     else if (halloween.active){
-        let checkAll = true;
-        for (let i=1; i<13; i++){
-            if (!global.special.trick[`trick${i}`]){
-                checkAll = false;
+        let total = 0;
+        for (let i=1; i<=6; i++){
+            if (global.special.trick[year][`trick${i}`]){
+                total++;
+            }
+        }
+        for (let i=1; i<=6; i++){
+            if (global.special.trick[year][`treat${i}`]){
+                total++;
             }
         }
 
-        if (checkAll){
+        if (total >= 12){
             unlockFeat('trickortreat',global.race.universe === 'micro' ? true : false);
         }
 
