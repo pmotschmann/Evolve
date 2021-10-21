@@ -10,6 +10,7 @@ const changeList = [
             `Added option to Hell Fortress to prevent using ship crew as reinforcements.`,
             `Shrine Metal bonus now applies to Mining Droid Aluminum production.`,
             `Armored trait now prevents 50% of deaths.`,
+            `Cannibalize healing now applies a percent based bonus instead of being equivilent to 3 5% Hospitals.`,
             `GruvBox Dark is now the default theme.`,
             `Improved touch device support.`
         ]

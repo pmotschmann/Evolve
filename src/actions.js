@@ -6855,7 +6855,7 @@ function sentience(){
                 if (!global.race[trait]){
                     let rank = 1;
                     if (global.race['badgenes']){
-                        rank = j === 0 ? 2 : 0.5;
+                        rank = j === 0 ? 0.5 : 2;
                     }
                     global.race[trait] = rank;
                     break;

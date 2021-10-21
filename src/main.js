@@ -8269,7 +8269,7 @@ function longLoop(){
                 hc += traits.fibroblast.vars()[0] * global.race['fibroblast'];
             }
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
-                hc += 3
+                hc >= 20 ? hc *= 1.15 : hc += 3;
             }
             let painVal = govActive('nopain',0);
             if (painVal){

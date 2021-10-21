@@ -1547,13 +1547,13 @@ export function shipCrewSize(ship){
         case 'frigate':
             return 3;
         case 'destroyer':
-            return 5;
+            return 4;
         case 'cruiser':
-            return 8;
+            return 6;
         case 'battlecruiser':
-            return 12;
+            return 8;
         case 'dreadnought':
-            return 20;
+            return 10;
     }
 }
 
@@ -2195,7 +2195,7 @@ export function syndicate(region,extra){
             }
             
             if (sensor > 100){
-                sensor = Math.round((sensor - 100) / ((sensor - 100) + 250) * 250) + 100;
+                sensor = Math.round((sensor - 100) / ((sensor - 100) + 200) * 100) + 100;
             }
 
             patrol = Math.round(patrol * ((sensor + 25) / 125));
