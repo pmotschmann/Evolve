@@ -1,6 +1,6 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, updateResetStats, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
@@ -6849,7 +6849,20 @@ function sentience(){
         for (let j=0; j<repeat; j++){
             for (let i=0; i<10; i++){
                 let trait = neg_roll_traits[Math.rand(0,neg_roll_traits.length)];
-                if ((global.race['smart'] && trait === 'dumb') || global.race[trait]) {
+                if (global.race[trait]){
+                    if (global.race[trait] === 2){
+                        global.race[trait] = 1;
+                        break;
+                    }
+                    else if (global.race[trait] === 1){
+                        global.race[trait] = 0.5;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                else if ((global.race['smart'] && trait === 'dumb')) {
                     continue;
                 }
                 if (!global.race[trait]){

@@ -8728,7 +8728,7 @@ function longLoop(){
             }
             if (
                 global.resource.Knowledge.max >= 580000 && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['stanene']
-                    ((global.tech['infernite'] && global.tech['alpha'] && global.tech['alpha'] >= 2) || (global.race['truepath']))
+                    && ((global.tech['infernite'] && global.tech['alpha'] && global.tech['alpha'] >= 2) || (global.race['truepath']))
                 ){
                 messageQueue(loc(tech_source,[loc('tech_virtual_reality')]),'info',false,['progress']);
                 global.tech.high_tech = 12;
