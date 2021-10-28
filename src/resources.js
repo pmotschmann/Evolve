@@ -647,6 +647,14 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
+    if (global.race['artifical']){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = loc('resource_Signal_name');
+                break;
+        }
+    }
+
     let hallowed = eventActive('halloween');
     if (hallowed.active){
         switch(name){

@@ -2659,6 +2659,31 @@ export const actions = {
                 return false;
             }
         },
+        transmitter: {
+            id: 'city-transmitter',
+            title: loc('city_transmitter'),
+            desc(){ return `<div>${loc('city_transmitter_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            category: 'residential',
+            reqs: { high_tech: 4 },
+            trait: ['artifical'],
+            cost: {
+                Money(offset){ if (global.city['transmitter'] && global.city['transmitter'].count >= 3){ return costMultiplier('transmitter', offset, 50, 1.32);} else { return 0; } },
+                Copper(offset){ return costMultiplier('transmitter', offset, 20, 1.36); },
+                Steel(offset){ return costMultiplier('transmitter', offset, 10, 1.36); },
+            },
+            effect(){
+                let signal = +(production('transmitter')).toFixed(2);
+                return `<div>${loc('gain',[signal, global.resource.Food.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(0.5); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.city.transmitter.count++;
+                    return true;
+                }
+                return false;
+            }
+        },
         farm: {
             id: 'city-farm',
             title: loc('city_farm'),
@@ -7295,6 +7320,7 @@ function aiStart(){
         global.city['oil_power'] = { count: 1, on: 1 };
         global.city['coal_power'] = { count: 0, on: 0 };
 
+        global.city['transmitter'] = { count: 1, on: 1 };
         global.city['mine'] = { count: 1, on: 0 };
         global.city['coal_mine'] = { count: 1, on: 0 };
         global.city['oil_well'] = { count: 1 };

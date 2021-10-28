@@ -5,6 +5,10 @@ import { zigguratBonus } from './space.js';
 
 export function production(id,val){
     switch (id){
+        case 'transmitter':
+        {
+            return 1;
+        }
         case 'oil_well':
         {
             let oil = global.tech['oil'] >= 4 ? 0.48 : 0.4;

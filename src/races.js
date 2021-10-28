@@ -659,13 +659,13 @@ export const traits = {
         val: 0,
         vars(){
             // [Power Req, Labor Boost]
-            switch (global.race.holy || 1){
+            switch (global.race.powered || 1){
                 case 0.5:
                     return [0.5,5];
                 case 1:
-                    return [0.5,10];
+                    return [0.25,10];
                 case 2:
-                    return [0.5,12];
+                    return [0.25,12];
             }
         },
     },

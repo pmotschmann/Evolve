@@ -1568,6 +1568,10 @@ function fastLoop(){
             power_generated[loc('city_mill_title2')] = power;
         }
 
+        if (global.race['powered']){
+            power_grid -= traits.powered.vars()[0] * global.resource[global.race.species].amount;
+        }
+
         // Power usage
         let p_structs = global.power;
         for (var i = 0; i < p_structs.length; i++){
@@ -2633,7 +2637,13 @@ function fastLoop(){
         if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center']){
             let food_bd = {};
             let food_base = 0;
-            if (global.race['detritivore']){
+            if (global.race['artifical']){
+                if (global.city['transmitter']){
+                    food_base = p_on['transmitter'] * production('transmitter');
+                    food_bd[loc('city_transmitter')] = food_base + 'v';
+                }
+            }
+            else if (global.race['detritivore']){
                 if (global.city['compost']){
                     let operating = global.city.compost.on;
                     if (!global.race['kindling_kindred']){
@@ -2726,7 +2736,7 @@ function fastLoop(){
 
             let hunting = 0;
             if (global.tech['military']){
-                hunting = global.race['herbivore'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
+                hunting = global.race['herbivore'] || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
             }
 
             let biodome = 0;
