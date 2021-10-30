@@ -685,6 +685,12 @@ export const events = {
             global.resource.Food.amount = 0;
         }
         return food;
+    },
+    function(){
+        if (global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore']){
+            return false;
+        }
+        return true;
     }),
     cat: basicEvent('cat','primitive'),
     omen: basicEvent('omen','primitive'),
@@ -724,10 +730,17 @@ export const events = {
     }),
 };
 
-function basicEvent(title,tech,func){
+function basicEvent(title,tech,func,cond){
     return {
         reqs: {
             tech: tech,
+        },
+        condition(){
+            let val = true;
+            if (typeof cond === 'function'){
+                val = cond();
+            }
+            return val;
         },
         type: 'minor',
         effect(){

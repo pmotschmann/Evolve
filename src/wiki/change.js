@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Ghost #3 can now be captured with Smoldering.`,
             `Ghost #7 can now be captured in Cataclysm mode.`,
-            `Updated description of Trick or Treat feat.`
+            `Updated description of Trick or Treat feat.`,
+            `Llamas will no longer harrass carivores, detritivores, and soul eaters by grazing their fields.`
         ]
     },
     {
