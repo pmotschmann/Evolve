@@ -2286,7 +2286,7 @@ export function drawStats(){
     let hallowed = getHalloween();
     if (hallowed.active){
         let trick = '';
-        if (global.stats.cfood >= 13){
+        if (global.stats.cfood >= 13 || global.race['cataclysm']){
             trick = `<span>${trickOrTreat(7,12,true)}</span>`;
         }
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);

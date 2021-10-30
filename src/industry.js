@@ -346,7 +346,7 @@ function loadSmelter(parent,bind){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);
             },
             spook(v){
-                if (bind && ((global.race['kindling_kindred'] && (global.city.smelter.Steel === 6 || global.city.smelter.Iron === 6)) || global.city.smelter.Wood === 6) && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
+                if (bind && (((global.race['kindling_kindred'] || global.race['smoldering']) && (global.city.smelter.Steel === 6 || global.city.smelter.Iron === 6)) || global.city.smelter.Wood === 6) && global.city.smelter.Coal === 6 && global.city.smelter.Oil === 6){
                     let trick = trickOrTreat(3,12,true);
                     if (trick.length > 0){
                         return trick;
