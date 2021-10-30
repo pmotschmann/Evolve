@@ -324,6 +324,7 @@ const techs = {
         era: 'civilized',
         reqs: { housing: 2 },
         grant: ['reproduction',1],
+        not_trait: ['artifical'],
         cost: {
             Knowledge(){ return 4500; }
         },
@@ -6327,6 +6328,7 @@ const techs = {
         era: 'civilized',
         reqs: { military: 1, alumina: 1 },
         grant: ['medic',1],
+        not_trait: ['artifical'],
         cost: {
             Knowledge(){ return 5000; }
         },

@@ -2679,6 +2679,9 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city.transmitter.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.city.transmitter.on++;
+                    }
                     return true;
                 }
                 return false;
@@ -2845,6 +2848,33 @@ export const actions = {
                 return false;
             }
         },
+        assembly: {
+            id: 'city-assembly',
+            title: loc('city_assembly'),
+            desc(){ return loc('city_assembly_desc',[races[global.race.species].name]); },
+            category: 'military',
+            reqs: {},
+            trait: ['artifical'],
+            cost: {
+                Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
+                Copper(offset){ return global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                Aluminium(offset){ return global['resource'][global.race.species].amount  >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+            },
+            effect(){
+                let warn = '';
+                if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
+                    warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
+                }
+                return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
+            },
+            action(){
+                if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
+                    global['resource'][global.race.species].amount++;
+                    return true;
+                }
+                return false;
+            }
+        },
         garrison: {
             id: 'city-garrison',
             title: loc('city_garrison'),
@@ -2897,7 +2927,7 @@ export const actions = {
             desc: loc('city_hospital_desc'),
             category: 'military',
             reqs: { medic: 1 },
-            not_trait: ['cataclysm'],
+            not_trait: ['cataclysm','artifical'],
             cost: {
                 Money(offset){ return costMultiplier('hospital', offset, 22000, 1.32); },
                 Furs(offset){ return costMultiplier('hospital', offset, 4000, 1.32); },
@@ -2920,8 +2950,8 @@ export const actions = {
         },
         boot_camp: {
             id: 'city-boot_camp',
-            title: loc('city_boot_camp'),
-            desc: loc('city_boot_camp_desc'),
+            title(){ return global.race['artifical'] ? loc('city_boot_camp_art') : loc('city_boot_camp'); },
+            desc(){ return global.race['artifical'] ? loc('city_boot_camp_art_desc',[races[global.race.species].name]) : loc('city_boot_camp_desc'); },
             category: 'military',
             reqs: { boot_camp: 1 },
             not_trait: ['cataclysm'],
@@ -2941,7 +2971,10 @@ export const actions = {
                 if (milVal){
                     rate *= 1 + (milVal / 100);
                 }
-                return global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : loc('city_boot_camp_effect',[rate]);
+                let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
+                if (global.race['artifical']){
+                    effect += `<div>${loc('city_boot_camp_art_effect',[10])}</div>`;
+                }
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -6876,7 +6909,7 @@ function sentience(){
                 let trait = neg_roll_traits[Math.rand(0,neg_roll_traits.length)];
                 if (global.race[trait]){
                     if (global.race[trait] === 2){
-                        global.race[trait] = 1;
+                        global.race[trait] = global.race['badgenes'] && j === 0 ? 0.5 : 1;
                         break;
                     }
                     else if (global.race[trait] === 1){
@@ -7304,6 +7337,8 @@ function aiStart(){
 
         global.civic.taxes.display = true;
 
+        global.civic.miner.display = true;
+        global.civic.coal_miner.display = true;
         global.civic.quarry_worker.display = true;
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
@@ -7685,8 +7720,18 @@ export function fanaticism(god){
 
 function fanaticTrait(trait){
     if (global.race[trait]){
-        randomMinorTrait(5);
-        arpa('Genetics');
+        switch (global.race[trait]){
+            case 0.5:
+                global.race[trait] = 1;
+                break;
+            case 1:
+                global.race[trait] = 2;
+                break;
+            default:
+                randomMinorTrait(5);
+                arpa('Genetics');
+                break;
+        }
     }
     else {
         global.race[trait] = 1;

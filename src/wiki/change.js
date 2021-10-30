@@ -7,6 +7,7 @@ const changeList = [
         date: `??/??/2021`,
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
+            `Using Fanaticism to gain an unempowered trait you already possess will now empower that trait.`,
             `Added option to Hell Fortress to prevent using ship crew as reinforcements.`,
             `Shrine Metal bonus now applies to Mining Droid Aluminium production.`,
             `Armored trait now prevents 50% of deaths.`,

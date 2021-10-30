@@ -1289,14 +1289,14 @@ export function describeSoldier(){
                     : loc('civics_garrison_evil_alt_soldier_desc_herb',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
                 }
             else {
-                return global.race['herbivore']
+                return global.race['herbivore'] || global.race['artifical']
                     ? loc('civics_garrison_evil_alt_soldier_desc_herb',[fur,bones,global.resource.Furs.name,global.resource.Lumber.name])
                     : loc('civics_garrison_evil_alt_soldier_desc',[food,fur,bones,global.resource.Food.name,global.resource.Furs.name,global.resource.Lumber.name]);
             }
         }
     }
     else {
-        return global.race['herbivore']
+        return global.race['herbivore'] || global.race['artifical']
             ? loc('civics_garrison_soldier_desc_herb',[fur,global.resource.Furs.name])
             : loc('civics_garrison_soldier_desc',[food,fur,global.resource.Food.name,global.resource.Furs.name]);
     }

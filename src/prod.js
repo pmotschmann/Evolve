@@ -7,7 +7,7 @@ export function production(id,val){
     switch (id){
         case 'transmitter':
         {
-            return 1;
+            return 2.5;
         }
         case 'oil_well':
         {

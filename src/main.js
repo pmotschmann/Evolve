@@ -2883,7 +2883,7 @@ function fastLoop(){
 
         // Citizen Growth
         if (fed && global['resource']['Food'].amount > 0 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
-            if (global.race['spongy'] && global.city.calendar.weather === 0){
+            if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm']){
@@ -8271,8 +8271,11 @@ function longLoop(){
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
-            let hc = global.city['hospital'] ? global.city['hospital'].count : 0;
-            if (global.tech['medic'] && global.tech['medic'] >= 2){
+            let hc = global.city['hospital'] ? global.city.hospital.count : 0;
+            if (global.race['artifical'] && global.city['boot_camp']){
+                hc = global.city.boot_camp.count * 2;
+            }
+            else if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];
             }
             if (global.race['fibroblast']){

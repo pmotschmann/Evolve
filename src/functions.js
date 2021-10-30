@@ -688,7 +688,7 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     if (mutiplier < 1.005){
         mutiplier = 1.005;
     }
-    var count = global[cat][structure] ? global[cat][structure].count : 0;
+    var count = structure === 'citizen' ? global['resource'][global.race.species].amount : (global[cat][structure] ? global[cat][structure].count : 0);
     if (offset){
         count += offset;
     }
