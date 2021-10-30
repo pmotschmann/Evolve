@@ -1455,7 +1455,7 @@ function specialEventsPage(content){
             `U2FsdGVkX1+nD+SyHpi39fhqppxDiF+UhJh3w0dhZ4IxuC1s3h0gTrgBI7IxVLrQ`,
             `U2FsdGVkX1+OfTMTHGhIpqmihvW7fMCt0q+bLWqhd7Z0Cj31jNUqmvBcxb6HzbGc4mL/msBX6PO5zpb4pBUzwA==`,
             `U2FsdGVkX1+hC03MwAyWdqH6ODAGNbgm7CRgC+0Wfreja2JZX7oPwYhPmfQXzn1RfeIncnkRTmdXGMqQ/mq2GQ==`,
-            `U2FsdGVkX1/vjgxdy9GlaMJCARNWx3dEMgJ5/uj5Cn0eXaYC9ChVeNbJ4z0nVsE26gpvH1SVAV8TdQhDNn0dqg==`,
+            `U2FsdGVkX18cU5HWOtwNhFSnlxBHxpu5XEJBFj3EhtzU/PLXxynq5Rq9YGl23QNr`,
         ];
 
         let candy_solutions = [
