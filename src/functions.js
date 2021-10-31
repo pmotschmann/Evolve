@@ -197,6 +197,11 @@ window.importGame = function importGame(data,utf16){
                 saveState.resource.Knowledge.amount += 500000;
                 saveState.stats.know -= 500000;
             }
+            if (saveState.tech.hasOwnProperty('corrupted_ai') && saveState.tech.corrupted_ai === 3){
+                saveState.tech.corrupted_ai = 1;
+                saveState.resource.Knowledge.amount += 5000000;
+                saveState.stats.know -= 5000000;
+            }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
         window.location.reload();
@@ -1196,7 +1201,8 @@ export function calcPrestige(type,inputs){
         phage: 0,
         dark: 0,
         harmony: 0,
-        artifact: 0
+        artifact: 0,
+        cores: 0,
     };
     
     if (!inputs) { inputs = {}; }
@@ -1234,6 +1240,12 @@ export function calcPrestige(type,inputs){
             k_inc = 50000;
             k_mult = 1.015;
             phage_mult = 1;
+            break;
+        case 'ai':
+            pop_divisor = 2.5;
+            k_inc = 45000;
+            k_mult = 1.014;
+            phage_mult = 2;
             break;
         case 'vacuum':
         case 'bigbang':
@@ -1341,6 +1353,10 @@ export function calcPrestige(type,inputs){
             });
             gains.artifact = artifact;
         }
+    }
+    
+    if (type === 'ai'){
+        gains.cores = 5;
     }
 
     return gains;

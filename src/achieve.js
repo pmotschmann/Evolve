@@ -2243,6 +2243,9 @@ export function drawStats(){
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_starved_to_death")}</span> {{ s.starved | t_starved | format }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_died_in_combat")}</span> {{ s.died | t_died | format }}</div>`);
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_game_days_played")}</span> {{ s.days | played | format }}</div>`);
+    if (global.stats.portals > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ s.portals | format }}</div>`);
+    }
     stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_total_resets")}</span> {{ s.reset | format }}</div>`);
     if (global.stats.mad > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_mad_resets")}</span> {{ s.mad | format }}</div>`);
@@ -2262,8 +2265,8 @@ export function drawStats(){
     if (global.stats.descend > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_descension_resets")}</span> {{ s.descend | format }}</div>`);
     }
-    if (global.stats.portals > 0){
-        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_portals")}</span> {{ s.portals | format }}</div>`);
+    if (global.stats.aiappoc > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
     }
 
     // Current Run Stats

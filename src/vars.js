@@ -1430,6 +1430,9 @@ if (!global.race['Dark']){
 if (!global.race['Harmony']){
     global.race['Harmony'] = { count: 0 };
 }
+if (!global.race['AICore']){
+    global.race['AICore'] = { count: 0 };
+}
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
 }

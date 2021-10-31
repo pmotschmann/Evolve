@@ -8994,7 +8994,10 @@ function q_check(load){
                 qbits *= 1.25;
             }
         }
-        set_qlevel(qbits);
+        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.race.AICore.count > 0){
+            qbits *= 2 - (0.99 ** global.race.AICore.count);
+        }
+        set_qlevel(+(qbits).toFixed(3));
     }
 }
 

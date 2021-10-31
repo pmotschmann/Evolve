@@ -575,6 +575,7 @@ export function defineResources(){
     loadSpecialResource('Phage');
     loadSpecialResource('Dark');
     loadSpecialResource('Harmony');
+    loadSpecialResource('AICore');
 }
 
 export function tradeSummery(){
@@ -996,6 +997,11 @@ function loadSpecialResource(name,color) {
     
             case 'Harmony':
                 desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race.universe === 'standard' ? 0.1 : 1, harmonyEffect()])}</span>`));
+                break;
+
+            case 'AICore':
+                bonus = +(1 - (0.99 ** global.race.AICore.count)).toFixed(2) * 100;
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
                 break;
         }
         return desc;

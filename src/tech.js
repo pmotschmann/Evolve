@@ -2,7 +2,7 @@ import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
 import { races, genusVars } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -8779,9 +8779,7 @@ const techs = {
         },
         effect(){ return `<div>${loc('tech_exotic_infusion_effect',[global.resource.Soul_Gem.name])}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
         action(){
-            if (payCosts($(this)[0])){
-                global.resource.Soul_Gem.amount += 10;
-                global.resource.Knowledge.amount += 1500000;
+            if (checkAffordable($(this)[0])){
                 return true;
             }
             return false;
@@ -8802,9 +8800,7 @@ const techs = {
         },
         effect(){ return `<div>${loc('tech_infusion_check_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
         action(){
-            if (payCosts($(this)[0])){
-                global.resource.Soul_Gem.amount += 10;
-                global.resource.Knowledge.amount += 1500000;
+            if (checkAffordable($(this)[0])){
                 return true;
             }
             return false;
@@ -8823,7 +8819,12 @@ const techs = {
             Knowledge(){ return 1500000; },
             Soul_Gem(){ return 10; }
         },
-        effect(){ return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>`; },
+        effect(){
+            let gains = calcPrestige('bigbang');
+            let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+            let prestige = `<div class="has-text-caution">${loc('wiki_tech_infusion_confirm_gains',[gains.plasmid,gains.phage,gains.dark,plasmidType])}</div>`;
+            return `<div>${loc('tech_infusion_confirm_effect')}</div><div class="has-text-danger">${loc('tech_exotic_infusion_effect2')}</div>${prestige}`;
+        },
         action(){
             if (payCosts($(this)[0])){
                 if (global.tech['whitehole'] >= 4){
@@ -10496,8 +10497,7 @@ const techs = {
         },
         effect: loc('tech_protocol66_effect'),
         action(){
-            if (payCosts($(this)[0])){
-                global.resource.Knowledge.amount += 5000000;
+            if (checkAffordable($(this)[0])){
                 return true;
             }
             return false;
@@ -10517,7 +10517,12 @@ const techs = {
         cost: {
             Knowledge(){ return 5000000; }
         },
-        effect: loc('tech_protocol66a_effect'),
+        effect(){
+            let gains = calcPrestige('ai');
+            let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+            let prestige = `<div class="has-text-caution">${loc('tech_protocol66a_effect_gains',[gains.plasmid, plasmidType, gains.phage, gains.cores])}</div>`;
+            return `<div>${loc('tech_protocol66a_effect')}</div>${prestige}`;
+        },
         action(){
             if (payCosts($(this)[0])){
                 if (webWorker.w){

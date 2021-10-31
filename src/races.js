@@ -661,11 +661,11 @@ export const traits = {
             // [Power Req, Labor Boost]
             switch (global.race.powered || 1){
                 case 0.5:
-                    return [0.5,5];
+                    return [0.3,5];
                 case 1:
-                    return [0.25,10];
+                    return [0.2,10];
                 case 2:
-                    return [0.25,12];
+                    return [0.1,12];
             }
         },
     },
@@ -3170,6 +3170,9 @@ export function racialTrait(workers,type){
     }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
+    }
+    if (global.race['powered'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
+        modifier *= 1 + (traits.powered.vars()[1] / 100);
     }
     if (global.race['hivemind'] && type !== 'farmer'){
         if (workers <= traits.hivemind.vars()[0]){

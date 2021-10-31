@@ -69,6 +69,7 @@ export function warhead(){
             Phage: { count: global.race.Phage.count },
             Dark: { count: global.race.Dark.count },
             Harmony: { count: global.race.Harmony.count },
+            AICore: { count: global.race.AICore.count },
             universe: global.race.universe,
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
@@ -216,6 +217,7 @@ export function bioseed(){
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
         Harmony: { count: global.race.Harmony.count },
+        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: true,
         probes: probes,
@@ -312,6 +314,7 @@ export function cataclysm_end(){
             Phage: { count: phage },
             Dark: { count: global.race.Dark.count },
             Harmony: { count: global.race.Harmony.count },
+            AICore: { count: global.race.AICore.count },
             universe: global.race.universe,
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
@@ -448,6 +451,7 @@ export function big_bang(){
         Phage: { count: phage },
         Dark: { count: +(dark + new_dark).toFixed(3) },
         Harmony: { count: global.race.Harmony.count },
+        AICore: { count: global.race.AICore.count },
         universe: 'bigbang',
         seeded: true,
         bigbang: true,
@@ -559,6 +563,7 @@ export function vacuumCollapse(){
             Phage: { count: phage },
             Dark: { count: +(dark + new_dark).toFixed(3) },
             Harmony: { count: global.race.Harmony.count },
+            AICore: { count: global.race.AICore.count },
             universe: 'bigbang',
             seeded: true,
             bigbang: true,
@@ -673,6 +678,7 @@ export function ascend(){
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
         Harmony: { count: harmony },
+        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -791,6 +797,7 @@ export function descension(){
         Phage: { count: phage },
         Dark: { count: global.race.Dark.count },
         Harmony: { count: harmony },
+        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -851,10 +858,12 @@ export function aiApocalypse(){
     let antiplasmid = global.race.Plasmid.anti;
     let phage = global.race.Phage.count;
     let dark = global.race.Dark.count;
+    let cores = global.race.AICore.count;
 
     let gains = calcPrestige('ai');
     let new_plasmid = gains.plasmid;
     let new_phage = gains.phage;
+    let new_cores = gains.cores;
 
     checkAchievements();
 
@@ -871,6 +880,9 @@ export function aiApocalypse(){
     }
     global.stats.phage += new_phage;
 
+    cores += new_cores;
+    global.stats.cores += new_cores;
+
     let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
@@ -882,6 +894,7 @@ export function aiApocalypse(){
         Phage: { count: phage },
         Dark: { count: dark },
         Harmony: { count: global.race.Harmony.count },
+        AICore: { count: cores },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
