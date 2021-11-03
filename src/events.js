@@ -140,9 +140,9 @@ export const events = {
             }
 
             if (global.race['blood_thirst']){
-                global.race['blood_thirst'] += Math.ceil(enemy / 5);
-                if (global.race['blood_thirst'] > 1000000){
-                    global.race['blood_thirst'] = 1000000;
+                global.race['blood_thirst_count'] += Math.ceil(enemy / 5);
+                if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+                    global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
             }
 
@@ -196,9 +196,9 @@ export const events = {
             }
 
             if (global.race['blood_thirst']){
-                global.race['blood_thirst'] += Math.ceil(enemy / 5);
-                if (global.race['blood_thirst'] > 1000000){
-                    global.race['blood_thirst'] = 1000000;
+                global.race['blood_thirst_count'] += Math.ceil(enemy / 5);
+                if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+                    global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
             }
 
@@ -286,9 +286,9 @@ export const events = {
             }
 
             if (global.race['blood_thirst']){
-                global.race['blood_thirst'] += 1000;
-                if (global.race['blood_thirst'] > 1000000){
-                    global.race['blood_thirst'] = 1000000;
+                global.race['blood_thirst_count'] += 1000;
+                if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+                    global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
             }
 
@@ -855,9 +855,9 @@ function pillaged(gov,serious){
     }
 
     if (global.race['blood_thirst']){
-        global.race['blood_thirst'] += Math.ceil(enemy / 5);
-        if (global.race['blood_thirst'] > 1000000){
-            global.race['blood_thirst'] = 1000000;
+        global.race['blood_thirst_count'] += Math.ceil(enemy / 5);
+        if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+            global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
         }
     }
 

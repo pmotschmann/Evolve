@@ -2314,7 +2314,7 @@ export const spacePlanetStats = {
     spc_gas: { dist: 5.203, orbit: 4330 },
     spc_gas_moon: { dist: 5.204, orbit: 4330 },
     spc_belt: { dist: 2.7, orbit: 1642 },
-    spc_dwarf: { dist: 5.203, orbit: 4330 },
+    spc_dwarf: { dist: 2.77, orbit: 1682 },
     spc_titan: { dist: 9.539, orbit: 10751 },
     spc_enceladus: { dist: 9.540, orbit: 10751 },
     spc_triton: { dist: 30.1, orbit: 60152 },

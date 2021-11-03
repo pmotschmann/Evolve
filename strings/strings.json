@@ -4217,6 +4217,8 @@
   "trait_powered_name": "Powered",
   "trait_imitation": "You are an imitation of another species, you have weaker versions of their attributes as a result.",
   "trait_imitation_name": "Imitation",
+  "trait_emotionless": "You have no emotions, cold logic dictates your decisions.",
+  "trait_emotionless_name": "Emotionless",
   "trait_soul_eater": "You eat souls for subsistence.",
   "trait_soul_eater_name": "Soul Eater",
   "trait_untapped": "You have untapped potential in your genome.",

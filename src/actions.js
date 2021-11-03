@@ -7367,7 +7367,7 @@ function aiStart(){
         global.city['apartment'] = { count: 0, on: 0 };
         global.city['amphitheatre'] = { count: 0 };
         global.city['casino'] = { count: 0, on: 0 };
-        global.city['rock_quarry'] = { count: 1, on: 0 };
+        global.city['rock_quarry'] = { count: 1, on: 0, asbestos: 50 };
         global.city['metal_refinery'] = { count: 1, on: 0 };
         global.city['shed'] = { count: 2 };
         global.city['storage_yard'] = { count: 1 };
@@ -7603,7 +7603,7 @@ function cataclysm(){
         global.city['apartment'] = { count: 0, on: 0 };
         global.city['amphitheatre'] = { count: 0 };
         global.city['casino'] = { count: 0, on: 0 };
-        global.city['rock_quarry'] = { count: 0, on: 0 };
+        global.city['rock_quarry'] = { count: 0, on: 0, asbestos: 50 };
         global.city['metal_refinery'] = { count: 0, on: 0 };
         global.city['storage_yard'] = { count: 0 };
         global.city['warehouse'] = { count: 0 };

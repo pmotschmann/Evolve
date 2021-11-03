@@ -1049,13 +1049,13 @@ function fastLoop(){
             morale += 10;
         }
 
-        if (global.race['blood_thirst']){
+        if (global.race['blood_thirst'] && global.race['blood_thirst_count']){
             if (!global.city.morale['blood_thirst']){
                 global.city.morale['blood_thirst'] = 0;
             }
 
-            if (global.race.blood_thirst >= 1){
-                let blood_thirst = Math.ceil(Math.log2(global.race.blood_thirst));
+            if (global.race.blood_thirst_count >= 1){
+                let blood_thirst = Math.ceil(Math.log2(global.race.blood_thirst_count));
                 global.city.morale.blood_thirst = blood_thirst;
                 morale += blood_thirst;
             }
@@ -2365,6 +2365,9 @@ function fastLoop(){
             if (global.race['musical']){
                 entertainment += global.civic.entertainer.workers * traits.musical.vars()[0];
             }
+            if (global.race['emotionless']){
+                entertainment -= global.civic.entertainer.workers * (1 - traits.emotionless.vars()[0] / 100);
+            }
         }
         if (global.civic.govern.type === 'democracy'){
             let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.3 : 1.25 ) : 1.2;
@@ -2406,6 +2409,9 @@ function fastLoop(){
         }
         if (global.civic.govern.type === 'socialist'){
             stress *= 1.1;
+        }
+        if (global.race['emotionless']){
+            stress *= 1 - (traits.emotionless.vars()[1] / 100);
         }
         for (let i=0; i<3; i++){
             if (global.civic.govern.type !== 'federation' && global.civic.foreign[`gov${i}`].anx){
@@ -2895,8 +2901,8 @@ function fastLoop(){
                     lowerBound += 5;
                 }
                 if (global.race['fast_growth']){
-                    lowerBound *= 2;
-                    lowerBound += 2;
+                    lowerBound *= traits.fast_growth.vars()[0];
+                    lowerBound += traits.fast_growth.vars()[1];
                 }
                 if (global.race['spores'] && global.city.calendar.wind === 1){
                     if (global.race['parasite']){
@@ -8256,9 +8262,11 @@ function longLoop(){
             if (!global.city.morale['blood_thirst']){
                 global.city.morale['blood_thirst'] = 0;
             }
-
-            if (global.race.blood_thirst > 1){
-                global.race.blood_thirst--;
+            if (!global.race.hasOwnProperty('blood_thirst_count')){
+                global.race['blood_thirst_count'] = 1;
+            }
+            if (global.race.blood_thirst_count > 1){
+                global.race.blood_thirst_count--;
             }
         }
 

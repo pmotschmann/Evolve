@@ -1,6 +1,6 @@
-import { global, save, webWorker, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation, clearSavedMessages, clearStates } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, tagEvent, timeFormat, powerCostMod, spaceCostMultiplier, calcPrestige, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
-import { unlockAchieve, unlockFeat, alevel, universeAffix, checkAchievements } from './achieve.js';
+import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation } from './vars.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
@@ -8,7 +8,6 @@ import { armyRating, govCivics } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
-import { descension } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -2236,9 +2235,9 @@ export function bloodwar(){
             let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
 
             if (global.race['blood_thirst']){
-                global.race['blood_thirst'] += Math.rand(0,Math.ceil(demons / 10));
-                if (global.race['blood_thirst'] > 1000000){
-                    global.race['blood_thirst'] = 1000000;
+                global.race['blood_thirst_count'] += Math.rand(0,Math.ceil(demons / 10));
+                if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+                    global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
                 }
             }
 

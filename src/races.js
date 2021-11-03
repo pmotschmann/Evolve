@@ -388,6 +388,16 @@ export const traits = {
         desc: loc('trait_fast_growth'),
         type: 'genus',
         val: 3,
+        vars(){
+            switch (global.race.fast_growth || 1){
+                case 0.5:
+                    return [2,1];
+                case 1:
+                    return [2,2];
+                case 2:
+                    return [3,3];
+            }
+        },
     },
     high_metabolism: { // Food requirements increased by 5%
         name: loc('trait_high_metabolism_name'),
@@ -651,6 +661,17 @@ export const traits = {
         desc: loc('trait_artifical'),
         type: 'genus',
         val: 0,
+        vars(){
+            // [Science Bonus]
+            switch (global.race.artifical || 1){
+                case 0.5:
+                    return [10];
+                case 1:
+                    return [20];
+                case 2:
+                    return [25];
+            }
+        },
     },
     powered: {
         name: loc('trait_powered_name'),
@@ -661,11 +682,11 @@ export const traits = {
             // [Power Req, Labor Boost]
             switch (global.race.powered || 1){
                 case 0.5:
-                    return [0.3,5];
+                    return [0.3,8];
                 case 1:
-                    return [0.2,10];
+                    return [0.2,16];
                 case 2:
-                    return [0.1,12];
+                    return [0.1,20];
             }
         },
     },
@@ -1542,6 +1563,17 @@ export const traits = {
         desc: loc('trait_blood_thirst'),
         type: 'major',
         val: 5,
+        vars(){
+            // [Cap]
+            switch (global.race.blood_thirst || 1){
+                case 0.5:
+                    return [750000];
+                case 1:
+                    return [1000000];
+                case 2:
+                    return [1250000];
+            }
+        }
     },
     apex_predator: { // Hunting and Combat ratings are significantly higher, but you can't use armor
         name: loc('trait_apex_predator_name'),
@@ -1653,7 +1685,7 @@ export const traits = {
         val: 4,
         vars(){
             // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
-            switch (global.race.musical || 1){
+            switch (global.race.revive || 1){
                 case 0.5:
                     return [6,4,2,7,5,2.5,4];
                 case 1:
@@ -1993,6 +2025,23 @@ export const traits = {
         desc: loc('trait_imitation'),
         type: 'major',
         val: 5,
+    },
+    emotionless: { // You have no emotions, cold logic dictates your decisions
+        name: loc('trait_emotionless_name'),
+        desc: loc('trait_emotionless'),
+        type: 'major',
+        val: -3,
+        vars(){
+            // [Entertainer Reduction, Stress Reduction]
+            switch (global.race.emotionless || 1){
+                case 0.5:
+                    return [35,10];
+                case 1:
+                    return [25,10];
+                case 2:
+                    return [20,12];
+            }
+        }
     },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
         name: loc('trait_soul_eater_name'),
@@ -3026,6 +3075,7 @@ export const races = {
         entity: loc('race_synth_entity'),
         traits: {
             imitation: 1,
+            emotionless: 1,
         },
         solar: {
             red: loc('race_synth_solar_red'),
@@ -3173,6 +3223,9 @@ export function racialTrait(workers,type){
     }
     if (global.race['powered'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
         modifier *= 1 + (traits.powered.vars()[1] / 100);
+    }
+    if (global.race['artifical'] && type === 'science'){
+        modifier *= 1 + (traits.artifical.vars()[0] / 100);
     }
     if (global.race['hivemind'] && type !== 'farmer'){
         if (workers <= traits.hivemind.vars()[0]){
@@ -3512,6 +3565,9 @@ export function cleanAddTrait(trait){
             global.resource.Zen.display = true;
             global.city['meditation'] = { count: 0 };
             break;
+        case 'blood_thirst':
+            global.race['blood_thirst_count'] = 1;
+            break;
         default:
             break;
     }
@@ -3650,6 +3706,9 @@ export function cleanRemoveTrait(trait){
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
             delete global.city['meditation'];
+            break;
+        case 'blood_thirst':
+            delete global.race['blood_thirst_count'];
             break;
         default:
             break;

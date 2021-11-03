@@ -1419,9 +1419,9 @@ function war_campaign(gov){
     }
 
     if (global.race['blood_thirst']){
-        global.race['blood_thirst'] += Math.ceil(enemy / 5);
-        if (global.race['blood_thirst'] > 1000000){
-            global.race['blood_thirst'] = 1000000;
+        global.race['blood_thirst_count'] += Math.ceil(enemy / 5);
+        if (global.race['blood_thirst_count'] > traits.blood_thirst.vars()[0]){
+            global.race['blood_thirst_count'] = traits.blood_thirst.vars()[0];
         }
     }
 
