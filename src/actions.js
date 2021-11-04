@@ -2355,20 +2355,20 @@ export const actions = {
                 let sacrifices = global.civic[global.civic.d_job].workers;
                 let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
-                    desc = desc + `<div>${loc('city_s_alter_rage',[15,timeFormat(global.city.s_alter.rage)])}</div>`;
+                    desc = desc + `<div>${loc('city_s_alter_rage',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.rage)])}</div>`;
                 }
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.regen > 0){
-                    desc = desc + `<div>${loc('city_s_alter_regen',[15,timeFormat(global.city.s_alter.regen)])}</div>`;
+                    desc = desc + `<div>${loc('city_s_alter_regen',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.regen)])}</div>`;
                 }
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mind > 0){
-                    desc = desc + `<div>${loc('city_s_alter_mind',[15,timeFormat(global.city.s_alter.mind)])}</div>`;
+                    desc = desc + `<div>${loc('city_s_alter_mind',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mind)])}</div>`;
                 }
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.mine > 0){
-                    desc = desc + `<div>${loc('city_s_alter_mine',[15,timeFormat(global.city.s_alter.mine)])}</div>`;
+                    desc = desc + `<div>${loc('city_s_alter_mine',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.mine)])}</div>`;
                 }
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.harvest > 0){
                     let jobType = global.race['evil'] && !global.race['soul_eater'] ? loc('job_reclaimer') : loc('job_lumberjack');
-                    desc = desc + `<div>${loc('city_s_alter_harvest',[15,timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
+                    desc = desc + `<div>${loc('city_s_alter_harvest',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.harvest),jobType])}</div>`;
                 }
                 return desc;
             },

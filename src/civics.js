@@ -98,7 +98,7 @@ export function defineIndustry(){
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
     }
-    if (global.race['smoldering'] && global.city['rock_quarry']){
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm']){
         var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');
@@ -1446,7 +1446,7 @@ function war_campaign(gov){
         }
         let death = Math.floor(Math.seededRandom(0,deathCap,true));
         if (global.race['frail']){
-            death++;
+            death += traits.frail.vars()[0];
         }
         let armor = 0;
         if (global.race['armored']){
@@ -1746,7 +1746,7 @@ function war_campaign(gov){
         }
         let death = Math.floor(Math.seededRandom(1,deathCap,true));
         if (global.race['frail']){
-            death += global.civic.garrison.tactic + 1;
+            death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
         let armor = 0;
         if (global.race['armored']){

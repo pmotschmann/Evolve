@@ -6,7 +6,7 @@ import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
-import { universeLevel } from './achieve.js';
+import { universeLevel, alevel } from './achieve.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -122,13 +122,20 @@ export function gameLoop(act){
             break;
         case 'start':
             {
-                let main_timer = global.race['slow'] ? 275 : 250;
-                let mid_timer = global.race['slow'] ? 1100 : 1000;
-                let long_timer = global.race['slow'] ? 5500 : 5000;
+                let main_timer = 250;
+                let mid_timer = 1000;
+                let long_timer = 5000;
+                if (global.race['slow']){
+                    let slow = 1 + (traits.slow.vars()[0] / 100);
+                    main_timer = Math.floor(main_timer * slow);
+                    mid_timer = Math.floor(mid_timer * slow);
+                    long_timer = Math.floor(long_timer * slow);
+                }
                 if (global.race['hyper']){
-                    main_timer = Math.floor(main_timer * 0.95);
-                    mid_timer = Math.floor(mid_timer * 0.95);
-                    long_timer = Math.floor(long_timer * 0.95);
+                    let fast = 1 - (traits.hyper.vars()[0] / 100);
+                    main_timer = Math.floor(main_timer * fast);
+                    mid_timer = Math.floor(mid_timer * fast);
+                    long_timer = Math.floor(long_timer * fast);
                 }
                 webWorker.mt = main_timer;
 
@@ -1143,14 +1150,7 @@ export function challenge_multiplier(value,type,decimals,challenge,universe){
     decimals = decimals || 0;
     let challenge_level = challenge;
     if (challenge === undefined){
-        challenge_level = 0;
-        if (global.race['no_plasmid']){ challenge_level++; }
-        if (global.race['no_trade']){ challenge_level++; }
-        if (global.race['no_craft']){ challenge_level++; }
-        if (global.race['no_crispr']){ challenge_level++; }
-        if (global.race['weak_mastery']){ challenge_level++; }
-        if (global.race['nerfed']){ challenge_level++; }
-        if (global.race['badgenes']){ challenge_level++; }
+        challenge_level = alevel() - 1;
         if (challenge_level > 4){
             challenge_level = 4;
         }
@@ -1179,7 +1179,7 @@ export function challenge_multiplier(value,type,decimals,challenge,universe){
         }
     }
     if (global.race['truepath']){
-        value = value * 1.5;
+        value = value * 1.1;
     }
     switch (challenge_level){
         case 1:
@@ -1227,12 +1227,14 @@ export function calcPrestige(type,inputs){
     let k_inc = 1000000;
     let k_mult = 100;
     let phage_mult = 0;
+    let plasmid_cap = 150;
 
     switch (type){
         case 'mad':
             pop_divisor = 3;
             k_inc = 100000;
             k_mult = 1.1;
+            plasmid_cap = 150;
             break;
         case 'cataclysm':
         case 'bioseed':
@@ -1240,12 +1242,14 @@ export function calcPrestige(type,inputs){
             k_inc = 50000;
             k_mult = 1.015;
             phage_mult = 1;
+            plasmid_cap = 400;
             break;
         case 'ai':
             pop_divisor = 2.5;
             k_inc = 45000;
             k_mult = 1.014;
             phage_mult = 2;
+            plasmid_cap = 600;
             break;
         case 'vacuum':
         case 'bigbang':
@@ -1253,14 +1257,18 @@ export function calcPrestige(type,inputs){
             k_inc = 40000;
             k_mult = 1.012;
             phage_mult = 2.5;
+            plasmid_cap = 800;
             break;
         case 'ascend':
             pop_divisor = 1.15;
             k_inc = 30000;
             k_mult = 1.008;
             phage_mult = 4;
+            plasmid_cap = 2000;
             break;
     }
+
+    plasmid_cap = Math.floor(plasmid_cap * (1 + (alevel() - (global.race['truepath'] ? 0 : 1)) / 8));
 
     if (inputs.plas === undefined){
         let k_base = inputs.know !== undefined ? inputs.know : global.stats.know;
@@ -1276,6 +1284,13 @@ export function calcPrestige(type,inputs){
         }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,challenge,universe);
+
+        if (gains.plasmid > plasmid_cap){
+            let overflow = gains.plasmid - plasmid_cap;
+            gains.plasmid = plasmid_cap;
+            overflow = Math.floor(overflow / (overflow + plasmid_cap) * plasmid_cap);
+            gains.plasmid += overflow;
+        }
     }
     else {
         gains.plasmid = inputs.plas;
@@ -1306,13 +1321,7 @@ export function calcPrestige(type,inputs){
     if (type === 'ascend' || type === 'descend'){
         let harmony = 1;
         if (challenge === undefined){
-            if (global.race['no_plasmid']){ harmony++; }
-            if (global.race['no_trade']){ harmony++; }
-            if (global.race['no_craft']){ harmony++; }
-            if (global.race['no_crispr']){ harmony++; }
-            if (global.race['weak_mastery']){ harmony++; }
-            if (global.race['nerfed']){ harmony++; }
-            if (global.race['badgenes']){ harmony++; }
+            harmony = alevel();
             if (harmony > 5){
                 harmony = 5;
             }

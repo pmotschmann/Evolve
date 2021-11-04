@@ -1160,6 +1160,16 @@ export const traits = {
         desc: loc('trait_slow'),
         type: 'major',
         val: -5,
+        vars(){
+            switch (global.race.slow || 1){
+                case 0.5:
+                    return [12];
+                case 1:
+                    return [10];
+                case 2:
+                    return [8];
+            }
+        },
     },
     armored: { // Less soldiers die in combat
         name: loc('trait_armored_name'),
@@ -1347,6 +1357,16 @@ export const traits = {
         desc: loc('trait_hyper'),
         type: 'major',
         val: 4,
+        vars(){
+            switch (global.race.hyper || 1){
+                case 0.5:
+                    return [3];
+                case 1:
+                    return [5];
+                case 2:
+                    return [6];
+            }
+        }
     },
     skittish: { // Thunderstorms lower all production
         name: loc('trait_skittish_name'),
@@ -1471,12 +1491,33 @@ export const traits = {
         desc: loc('trait_cannibalize'),
         type: 'major',
         val: 5,
+        vars(){
+            switch (global.race.cannibalize || 1){
+                case 0.5:
+                    return [10];
+                case 1:
+                    return [15];
+                case 2:
+                    return [20];
+            }
+        }
     },
     frail: { // More soldiers die in combat
         name: loc('trait_frail_name'),
         desc: loc('trait_frail'),
         type: 'major',
         val: -5,
+        vars(){
+            // [Win Deaths, Loss Deaths]
+            switch (global.race.frail || 1){
+                case 0.5:
+                    return [1,2];
+                case 1:
+                    return [1,1];
+                case 2:
+                    return [1,0];
+            }
+        }
     },
     malnutrition: { // The rationing penalty is weaker
         name: loc('trait_malnutrition_name'),
@@ -3263,16 +3304,16 @@ export function racialTrait(workers,type){
     }
     if (global.race['cannibalize'] && global.city['s_alter'] && global.city['s_alter'].count > 0){
         if (type === 'miner' && global.city.s_alter.mine > 0){
-            modifier *= 1.15;
+            modifier *= 1 + (traits.cannibalize.vars()[0] / 100);
         }
         if (type === 'lumberjack' && global.city.s_alter.harvest > 0){
-            modifier *= 1.15;
+            modifier *= 1 + (traits.cannibalize.vars()[0] / 100);
         }
         if ((type === 'army' || type === 'hellArmy') && global.city.s_alter.rage > 0){
-            modifier *= 1.15;
+            modifier *= 1 + (traits.cannibalize.vars()[0] / 100);
         }
         if (type === 'science' && global.city.s_alter.mind > 0){
-            modifier *= 1.15;
+            modifier *= 1 + (traits.cannibalize.vars()[0] / 100);
         }
     }
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){

@@ -116,10 +116,10 @@ function extraTraitList(race){
 export function traitsPage(content){
     content = sideMenu('create',content);
 
-    let types = ['genus','major','minor','special'];
+    let types = [['genus','major'],['minor'],['special']];
     for (let i=0; i<types.length; i++){
-        Object.keys(traits).sort().forEach(function (trait){
-            if (traits[trait].type === types[i]){
+        Object.keys(traits).sort( (a,b) => traits[a].name.localeCompare(traits[b].name) ).forEach(function (trait){
+            if (types[i].includes(traits[trait].type)){
                 let info = $(`<div id="${trait}" class="infoBox"></div>`);
                 content.append(info);
                 traitDesc(info,trait,false,true);
@@ -178,7 +178,10 @@ const traitExtra = {
 const valAdjust = {
     fibroblast: [5],
     promiscuous: false,
-    revive: false
+    revive: false,
+    fast_growth: false,
+    blood_thirst: false,
+    frail: false,
 };
 
 export function traitDesc(info,trait,fanatic,tpage){
