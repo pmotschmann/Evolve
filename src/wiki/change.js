@@ -13,6 +13,7 @@ const changeList = [
             `Armored trait now prevents 50% of deaths.`,
             `Cannibalize healing now applies a percent based bonus instead of being equivilent to 3 5% Hospitals.`,
             `GruvBox Dark is now the default theme.`,
+            `Themed several additional techs in magic universe for immersion.`,
             `Improved touch device support.`
         ]
     },

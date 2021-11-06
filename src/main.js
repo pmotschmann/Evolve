@@ -2366,7 +2366,7 @@ function fastLoop(){
                 entertainment += global.civic.entertainer.workers * traits.musical.vars()[0];
             }
             if (global.race['emotionless']){
-                entertainment -= global.civic.entertainer.workers * (1 - traits.emotionless.vars()[0] / 100);
+                entertainment *= 1 - (traits.emotionless.vars()[0] / 100);
             }
         }
         if (global.civic.govern.type === 'democracy'){
@@ -2640,7 +2640,7 @@ function fastLoop(){
 
         // Consumption
         var fed = true;
-        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center']){
+        if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center'] || global.city['transmitter']){
             let food_bd = {};
             let food_base = 0;
             if (global.race['artifical']){

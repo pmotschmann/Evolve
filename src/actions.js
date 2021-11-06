@@ -2041,7 +2041,7 @@ export const actions = {
             },
             category: 'outskirts',
             reqs: { primitive: 1 },
-            not_trait: ['soul_eater','cataclysm'],
+            not_trait: ['soul_eater','cataclysm','artifical'],
             no_queue(){ return true },
             cost: {
                 Mana(){ return global.tech['conjuring'] ? 1 : 0; },
@@ -4276,7 +4276,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('wardenclyffe', offset, 5000, 1.22); },
-                Knowledge(offset){ return costMultiplier('wardenclyffe', offset, 1000, 1.22); },
+                Knowledge(offset){ return costMultiplier('wardenclyffe', offset, global.race['logical'] ? (1000 - traits.logical.vars()[0]) : 1000, 1.22); },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('wardenclyffe', offset, 100, 1.22) : 0; },
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
@@ -7305,6 +7305,9 @@ function aiStart(){
         global.resource.Money.display = true;
         global.resource.Food.display = true;
 
+        global.resource.Money.amount = 1000;
+        global.resource.Stone.amount = 100;
+
         global.resource.Stone.display = true;
         global.resource.Furs.display = true;
         global.resource.Copper.display = true;
@@ -7322,6 +7325,7 @@ function aiStart(){
         global.resource.Containers.display = true;
 
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.resource.Lumber.amount = 100;
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
             global.civic.lumberjack.display = true;
@@ -7346,7 +7350,7 @@ function aiStart(){
 
         global.city.calendar.day++;
         global.city.market.active = true;
-        global.city['power'] = 0;
+        global.city['power'] = 7.5;
         global.city['powered'] = true;
 
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };

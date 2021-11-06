@@ -6525,8 +6525,8 @@ const techs = {
     },
     laser_rifles: {
         id: 'tech-laser_rifles',
-        title: loc('tech_laser_rifles'),
-        desc: loc('tech_laser_rifles'),
+        title(){ return global.race.universe === 'magic' ? loc('tech_mana_rifles') : loc('tech_laser_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_mana_rifles') : loc('tech_laser_rifles'); },
         category: 'military',
         era: 'deep_space',
         reqs: { military: 6, high_tech: 9, elerium: 1 },
@@ -6535,7 +6535,7 @@ const techs = {
             Knowledge(){ return 325000; },
             Elerium(){ return 250; }
         },
-        effect: loc('tech_laser_rifles_effect'),
+        effect(){ return global.race.universe === 'magic' ? loc('tech_mana_rifles_effect') : loc('tech_laser_rifles_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -6552,8 +6552,8 @@ const techs = {
     },
     plasma_rifles: {
         id: 'tech-plasma_rifles',
-        title: loc('tech_plasma_rifles'),
-        desc: loc('tech_plasma_rifles'),
+        title(){ return global.race.universe === 'magic' ? loc('tech_focused_rifles') : loc('tech_plasma_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_focused_rifles') : loc('tech_plasma_rifles'); },
         category: 'military',
         era: 'interstellar',
         reqs: { military: 7, high_tech: 13 },
@@ -6563,7 +6563,7 @@ const techs = {
             Knowledge(){ return 780000; },
             Elerium(){ return global.race['truepath'] ? 1000 : 500; }
         },
-        effect: loc('tech_plasma_rifles_effect'),
+        effect(){ return global.race.universe === 'magic' ? loc('tech_focused_rifles_effect') : loc('tech_plasma_rifles_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -6577,8 +6577,8 @@ const techs = {
     },
     disruptor_rifles: {
         id: 'tech-disruptor_rifles',
-        title: loc('tech_disruptor_rifles'),
-        desc: loc('tech_disruptor_rifles'),
+        title(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_magic_missile') : loc('tech_disruptor_rifles'); },
         category: 'military',
         era: 'interstellar',
         reqs: { military: 8, high_tech: 14, science: 15, infernite: 1 },
@@ -6587,7 +6587,7 @@ const techs = {
             Knowledge(){ return 1000000; },
             Infernite(){ return 1000; }
         },
-        effect: loc('tech_disruptor_rifles_effect'),
+        effect(){ return global.race.universe === 'magic' ? loc('tech_magic_missile_effect') : loc('tech_disruptor_rifles_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -6601,8 +6601,8 @@ const techs = {
     },
     gauss_rifles: {
         id: 'tech-gauss_rifles',
-        title: loc('tech_gauss_rifles'),
-        desc: loc('tech_gauss_rifles'),
+        title(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill') : loc('tech_gauss_rifles'); },
+        desc(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill') : loc('tech_gauss_rifles'); },
         category: 'military',
         era: 'intergalactic',
         reqs: { military: 9, science: 18 },
@@ -6611,7 +6611,7 @@ const techs = {
             Knowledge(){ return 9500000; },
             Bolognium(){ return 100000; }
         },
-        effect: loc('tech_gauss_rifles_effect'),
+        effect(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill_effect') : loc('tech_disruptor_rifles_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];

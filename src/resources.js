@@ -1000,7 +1000,7 @@ function loadSpecialResource(name,color) {
                 break;
 
             case 'AICore':
-                bonus = +(1 - (0.99 ** global.race.AICore.count)).toFixed(2) * 100;
+                let bonus = +(1 - (0.99 ** global.race.AICore.count)).toFixed(2) * 100;
                 desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
                 break;
         }

@@ -2071,16 +2071,33 @@ export const traits = {
         name: loc('trait_emotionless_name'),
         desc: loc('trait_emotionless'),
         type: 'major',
-        val: -3,
+        val: -4,
         vars(){
             // [Entertainer Reduction, Stress Reduction]
             switch (global.race.emotionless || 1){
                 case 0.5:
-                    return [35,10];
+                    return [45,12];
                 case 1:
-                    return [25,10];
+                    return [35,15];
                 case 2:
-                    return [20,12];
+                    return [25,18];
+            }
+        }
+    },
+    logical: { // Placeholder Trait Def
+        name: loc('trait_logical_name'),
+        desc: loc('trait_logical'),
+        type: 'major',
+        val: 8,
+        vars(){
+            // [Reduce Wardenclyffe Knowledge Cost]
+            switch (global.race.logical || 1){
+                case 0.5:
+                    return [50];
+                case 1:
+                    return [100];
+                case 2:
+                    return [125];
             }
         }
     },
@@ -3117,6 +3134,7 @@ export const races = {
         traits: {
             imitation: 1,
             emotionless: 1,
+            logical: 1
         },
         solar: {
             red: loc('race_synth_solar_red'),

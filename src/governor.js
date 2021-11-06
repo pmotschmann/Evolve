@@ -835,6 +835,19 @@ export const gov_tasks = {
             }
         }
     },
+    asssemble: { // Asssemble Citizens
+        name: loc(`gov_task_asssemble`),
+        req(){
+            return global.race['artifical'] ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
+                    actions.city.assembly.action();
+                }
+            }
+        }
+    },
     merc: { // Hire Mercs
         name: loc(`gov_task_merc`),
         req(){

@@ -145,8 +145,11 @@ export const job_desc = {
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
-        let morale = global.race['musical'] ? global.tech['theatre'] + 1: global.tech['theatre'];
-        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[morale]);
+        let morale = global.race['musical'] ? global.tech['theatre'] + traits.musical.vars()[0]: global.tech['theatre'];
+        if (global.race['emotionless']){
+            morale *= 1 - (traits.emotionless.vars()[0] / 100);
+        }
+        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);
     },
     priest: function(){
         let desc = ``;
