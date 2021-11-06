@@ -1994,6 +1994,7 @@ window.soft_reset = function reset(){
         Phage: { count: global.race.Phage.count },
         Dark: { count: global.race.Dark.count },
         Harmony: { count: global.race.Harmony.count },
+        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,
