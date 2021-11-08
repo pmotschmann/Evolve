@@ -4,7 +4,7 @@ import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
-import { checkHellRequirements, mechSize, drawMechList, mechCost } from './portal.js';
+import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
 
 export const gmen = {
@@ -1107,7 +1107,6 @@ export const gov_tasks = {
                                         global.portal.mechbay.mechs[i].equip.push(equip);
                                     }
                                 }
-                                drawMechList();
                             }
                             break;
                         }
@@ -1170,7 +1169,7 @@ export const gov_tasks = {
                         infernal: false
                     });
                     global.portal.mechbay.bay += size;
-                    drawMechList();
+                    global.portal.mechbay.active++;
                 }
             }
         }

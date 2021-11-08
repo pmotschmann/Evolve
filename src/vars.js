@@ -905,6 +905,13 @@ if (convertVersion(global['version']) < 101015){
     }
 }
 
+if (convertVersion(global['version']) < 101017){
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay') && !global.portal.mechbay.hasOwnProperty('active')){
+        global.portal.mechbay['active'] = 0;
+        global.portal.mechbay['scouts'] = 0;
+    }
+}
+
 global['version'] = '1.1.16';
 delete global['revision'];
 delete global['beta'];

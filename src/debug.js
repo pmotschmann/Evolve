@@ -14,10 +14,10 @@ export function enableDebug(){
         window.evolve = {
             actions: deepClone(actions),
             races: deepClone(races),
-            tradeRatio: JSON.parse(JSON.stringify(tradeRatio)),
-            craftCost: JSON.parse(JSON.stringify(craftCost())),
-            atomic_mass: JSON.parse(JSON.stringify(atomic_mass)),
-            f_rate: JSON.parse(JSON.stringify(f_rate)),
+            tradeRatio: deepClone(tradeRatio),
+            craftCost: deepClone(craftCost()),
+            atomic_mass: deepClone(atomic_mass),
+            f_rate: deepClone(f_rate),
             checkTechRequirements: deepClone(checkTechRequirements),
             checkAffordable: deepClone(checkAffordable),
             adjustCosts: deepClone(adjustCosts),
@@ -38,8 +38,8 @@ export function enableDebug(){
 
 export function updateDebugData(){
     if (global.settings.expose){
-        window.evolve.global = JSON.parse(JSON.stringify(global));
-        window.evolve.craftCost = JSON.parse(JSON.stringify(craftCost())),
-        window.evolve.breakdown = JSON.parse(JSON.stringify(breakdown));
+        window.evolve.global = deepClone(global);
+        window.evolve.craftCost = deepClone(craftCost()),
+        window.evolve.breakdown = deepClone(breakdown);
     }
 }
