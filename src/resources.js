@@ -39,6 +39,7 @@ export const resource_values = {
     Vitreloy: 10200,
     Orichalcum: 99000,
     Horseshoe: 0,
+    Nanite: 0,
     Genes: 0,
     Soul_Gem: 0,
     Corrupt_Gem: 0,
@@ -553,6 +554,7 @@ export function defineResources(){
     loadResource('Vitreloy',0,1,false,true,'advanced');
     loadResource('Orichalcum',0,1,false,true,'advanced');
     loadResource('Horseshoe',-2,0,false,false,'advanced');
+    loadResource('Nanite',0,1,false,false,'advanced');
     loadResource('Genes',-2,0,false,false,'advanced');
     loadResource('Soul_Gem',-2,0,false,false,'advanced');
     loadResource('Plywood',-1,0,false,false,'danger');
@@ -1038,6 +1040,10 @@ function importRouteEnabled(route){
 
 export function marketItem(mount,market_item,name,color,full){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
+        return;
+    }
+
+    if (global.race['artifical'] && name === 'Food'){
         return;
     }
 

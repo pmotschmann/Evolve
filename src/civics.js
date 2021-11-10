@@ -103,6 +103,11 @@ export function defineIndustry(){
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');
     }
+    if (global.race['deconstructor'] && global.city['nanite_factory']){
+        var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
+        $(`#industry`).append(nanite);
+        loadIndustry('nanite_factory',nanite,'#iNFactory');
+    }
 }
 
 // Sets up garrison in civics tab

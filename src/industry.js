@@ -29,6 +29,9 @@ export function loadIndustry(industry,parent,bind){
         case 'titan_mine':
             loadTMine(parent,bind);
             break;
+        case 'nanite_factory':
+            loadNFactory(parent,bind);
+            break;
     }
 }
 
@@ -669,6 +672,83 @@ function loadFactory(parent,bind){
             elm: $(`#${id} .factory > .${type}`),
             attach: '#main',
         });
+    });
+}
+
+export const nf_resources = [
+    'Lumber', 'Chrysotile', 'Stone', 'Crystal', 'Furs', 'Copper', 'Iron', 'Aluminium',
+    'Cement', 'Coal', 'Oil', 'Uranium', 'Steel', 'Titanium', 'Alloy', 'Polymer',
+    'Iridium', 'Helium_3', 'Water', 'Deuterium', 'Neutronium', 'Adamantite', 'Bolognium', 'Orichalcum',
+];
+
+function loadNFactory(parent,bind){
+    let fuel = $(`<div><span class="has-text-warning">${loc('modal_factory_operate')}:</span> <span :class="level()">{{count | on}}/{{ count | max }}</span></div>`);
+    parent.append(fuel);
+
+    let rId = parent.hasClass('modalBody') ? `mNFactoryRes` : `NFactoryRes`;
+    let resTypes = $(`<div id="${rId}" class="fuels"></div>`);
+    parent.append(resTypes);
+
+    nf_resources.forEach(function(r){
+        if (global.resource[r].display){
+            let res = $(`<span :aria-label="eatLabel('${r}')" class="current ${r}">${global.resource[r].name} {{ ${r} }}</span>`);
+            let subRes = $(`<span role="button" class="sub" @click="subItem('${r}')" aria-label="Decrease ${r} destruction"><span>&laquo;</span></span>`);
+            let addRes = $(`<span role="button" class="add" @click="addItem('${r}')" aria-label="Increase ${r} destruction"><span>&raquo;</span></span>`);
+            resTypes.append(subRes);
+            resTypes.append(res);
+            resTypes.append(addRes);
+        }
+    });
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.city.nanite_factory,
+        methods: {
+            subItem: function(r){
+                let keyMult = keyMultiplier();
+                global.city.nanite_factory[r] -= keyMult;
+                if (global.city.nanite_factory[r] < 0){
+                    global.city.nanite_factory[r] = 0;
+                }
+            },
+            addItem: function(r){
+                let keyMult = keyMultiplier();
+                let on = 0;
+                nf_resources.forEach(function(r){
+                    on += global.city.nanite_factory[r];
+                });
+                let avail = global.city.nanite_factory.count * 50 - on;
+                if (keyMult > avail){
+                    keyMult = avail;
+                }
+                if (keyMult > 0){
+                    global.city.nanite_factory[r] += keyMult;
+                }
+            },
+            eatLabel(r){
+                return `Consume ${r} to produce ${global.resource.Nanite.name}`;
+            },
+            level(){
+                let on = 0;
+                nf_resources.forEach(function(r){
+                    on += global.city.nanite_factory[r];
+                });
+                let max = global.city.nanite_factory.count;
+                return colorRange(on,max);
+            }
+        },
+        filters: {
+            on(){
+                let on = 0;
+                nf_resources.forEach(function(r){
+                    on += global.city.nanite_factory[r];
+                });
+                return on;
+            },
+            max(){
+                return global.city.nanite_factory.count * 50;
+            }
+        }
     });
 }
 

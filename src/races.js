@@ -2101,6 +2101,34 @@ export const traits = {
             }
         }
     },
+    shapeshifter: {
+        name: loc('trait_logical_name'),
+        desc: loc('trait_logical'),
+        type: 'major',
+        val: 0,
+    },
+    deconstructor: {
+        name: loc('trait_deconstructor_name'),
+        desc: loc('trait_deconstructor'),
+        type: 'major',
+        val: -3,
+        vars(){
+            switch (global.race.deconstructor || 1){
+                case 0.5:
+                    return [50];
+                case 1:
+                    return [100];
+                case 2:
+                    return [125];
+            }
+        }
+    },
+    linked: {
+        name: loc('trait_linked_name'),
+        desc: loc('trait_linked'),
+        type: 'major',
+        val: 0,
+    },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
         name: loc('trait_soul_eater_name'),
         desc: loc('trait_soul_eater'),
@@ -3145,6 +3173,26 @@ export const races = {
         },
         fanaticism: 'imitation'
     },
+    nano: {
+        name: loc('race_nano'),
+        desc: loc('race_nano_desc'),
+        type: 'synthetic',
+        home: loc('race_nano_home'),
+        entity: loc('race_nano_entity'),
+        traits: {
+            deconstructor: 1,
+            linked: 1,
+            shapeshifter: 1
+        },
+        solar: {
+            red: loc('race_nano_solar_red'),
+            hell: loc('race_nano_solar_hell'),
+            gas: loc('race_nano_solar_gas'),
+            gas_moon: loc('race_nano_solar_gas_moon'),
+            dwarf: loc('race_nano_solar_dwarf'),
+        },
+        fanaticism: 'shapeshifter'
+    },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
         desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),
@@ -3627,6 +3675,17 @@ export function cleanAddTrait(trait){
         case 'blood_thirst':
             global.race['blood_thirst_count'] = 1;
             break;
+        case 'deconstructor':
+            global.resource.Nanite.display = true;
+            global.city['nanite_factory'] = { count: 1,
+                Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
+                Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
+                Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
+                Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
+                Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
+                Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
+            };
+            break;
         default:
             break;
     }
@@ -3768,6 +3827,10 @@ export function cleanRemoveTrait(trait){
             break;
         case 'blood_thirst':
             delete global.race['blood_thirst_count'];
+            break;
+        case 'deconstructor':
+            global.resource.Nanite.display = false;
+            delete global.city['nanite_factory'];
             break;
         default:
             break;

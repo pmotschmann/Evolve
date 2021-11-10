@@ -1,7 +1,7 @@
 import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races } from './races.js';
-import { unlockAchieve, unlockFeat, checkAchievements } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 
 // Mutual Assured Destruction
 export function warhead(){

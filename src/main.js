@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, ti
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
-import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs } from './industry.js';
+import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
@@ -920,6 +920,7 @@ function fastLoop(){
         Scarletite: {},
         Quantium: {},
         Cipher: {},
+        Nanite: {},
     };
 
     var time_multiplier = 0.25;
@@ -1328,6 +1329,25 @@ function fastLoop(){
                 }
             }
             global.galaxy.trade.cur = used;
+        }
+
+        if (global.race['deconstructor'] && global.city['nanite_factory']){
+            nf_resources.forEach(function(r){
+                if (global.resource[r].display){
+                    let vol = global.city.nanite_factory[r] * time_multiplier;
+                    if (vol > 0){
+                        if (global.resource[r].amount < vol){
+                            vol = global.resource[r].amount;
+                        }
+                        if (modRes(r,-(vol))){
+                            breakdown.p.consume[r][loc('city_nanite_factory')] = -(vol / time_multiplier);
+                            let trait = traits.deconstructor.vars()[0] / 100;
+                            let nanite_vol = vol * atomic_mass[r] / 100 * trait; 
+                            modRes('Nanite',nanite_vol);
+                        }
+                    }
+                }
+            });
         }
 
         let power_grid = 0;
@@ -2482,6 +2502,9 @@ function fastLoop(){
         }
 
         let m_min = global.race['optimistic'] ? 60 : 50;
+        if (global.race['truepath']){
+            m_min -= 25;
+        }
         if (global.civic.govern.fr > 0){
             let rev = morale / 2;
             global.city.morale.rev = rev;
@@ -5688,7 +5711,8 @@ function midLoop(){
             Bolognium: 0,
             Vitreloy: 0,
             Orichalcum: 0,
-            Cipher: 0
+            Cipher: 0,
+            Nanite: 0,
         };
         // labor caps
         var lCaps = {
@@ -5775,9 +5799,15 @@ function midLoop(){
         var bd_Vitreloy = { [loc('base')]: caps['Vitreloy']+'v' };
         var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
         var bd_Cipher = { [loc('base')]: caps['Cipher']+'v' };
+        var bd_Nanite = { [loc('base')]: caps['Nanite']+'v' };
 
         caps[global.race.species] = 0;
 
+        if (global.city['nanite_factory']){
+            let gain = global.city.nanite_factory.count * spatialReasoning(2500);
+            caps['Nanite'] += gain;
+            bd_Mana[loc('city_nanite_factory')] = gain+'v';
+        }
         if (global.city['pylon'] || global.space['pylon']){
             let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;

@@ -310,6 +310,7 @@ export const actions = {
                     global.evolution['final'] = 100;
                     addAction('evolution','sentience');
                     addRaces(['synth']);
+                    addRaces(['nano']);
                     if (races.custom.hasOwnProperty('type') && races.custom.type === 'synthetic'){
                         global.evolution['custom'] = { count: 0 };
                         addAction('evolution','custom');
@@ -1270,6 +1271,7 @@ export const actions = {
                         }
                         else {
                             races.push('synth');
+                            races.push('nano');
                             if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'synthetic'){
                                 races.push('custom');
                             }
@@ -2857,8 +2859,9 @@ export const actions = {
             trait: ['artifical'],
             cost: {
                 Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
-                Copper(offset){ return global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
-                Aluminium(offset){ return global['resource'][global.race.species].amount  >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, 500, 1.01) : 0) : 0; },
             },
             effect(){
                 let warn = '';
@@ -3551,6 +3554,33 @@ export const actions = {
                 }
                 return false;
             }
+        },
+        nanite_factory: {
+            id: 'city-nanite_factory',
+            title: loc('city_nanite_factory'),
+            desc: loc('city_nanite_factory'),
+            category: 'industrial',
+            reqs: {},
+            trait: ['deconstructor'],
+            cost: {
+                Money(offset){ return costMultiplier('nanite_factory', offset, 25000, dirt_adjust(1.25)); },
+                Copper(offset){ return costMultiplier('nanite_factory', offset, 1200, dirt_adjust(1.25)); },
+                Steel(offset){ return costMultiplier('nanite_factory', offset, 1000, dirt_adjust(1.25)); }
+            },
+            effect(){
+                return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div>`;
+            },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.city.nanite_factory.count++;
+                    global.settings.showIndustry = true;
+                    defineIndustry();
+                    return true;
+                }
+                return false;
+            },
+            flair: loc(`city_nanite_factory_flair`)
         },
         smelter: {
             id: 'city-smelter',
@@ -4840,7 +4870,7 @@ export function buildTemplate(key, region){
     }
 }
 
-export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth'];
+export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn'];
 raceList.forEach(race => actions.evolution[race] = {
     id: `evolution-${race}`,
@@ -6632,6 +6662,9 @@ function drawModal(c_action,type){
         case 'titan_mine':
             titanModal(body);
             break;
+        case 'nanite_factory':
+            naniteModal(body);
+            break;
     }
 }
 
@@ -6694,6 +6727,10 @@ function quarryModal(modal){
 
 function titanModal(modal){
     loadIndustry('titan_mine',modal);
+}
+
+function naniteModal(modal){
+    loadIndustry('nanite_factory',modal);
 }
 
 export function evoProgress(){
@@ -7204,6 +7241,19 @@ function sentience(){
         global.resource.Horseshoe.display = true;
         global.resource.Horseshoe.amount = 5;
         global.race['shoecnt'] = 5;
+    }
+
+    if (global.race['deconstructor']){
+        global.resource.Nanite.display = true;
+        global.city['nanite_factory'] = { count: 1,
+            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
+            Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
+            Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
+            Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
+            Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
+            Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
+        };
+        global.settings.showIndustry = true;
     }
 
     calc_mastery(true);

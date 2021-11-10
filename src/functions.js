@@ -1208,6 +1208,7 @@ export function calcPrestige(type,inputs){
     if (!inputs) { inputs = {}; }
     let challenge = inputs.genes;
     let universe = inputs.uni;
+    universe = universe || global.race.universe;
     
     let pop = 0;
     if (inputs.cit === undefined){
@@ -1317,7 +1318,7 @@ export function calcPrestige(type,inputs){
         gains.dark = new_dark;
     }
 
-    universe = universe || global.race.universe;
+    
     if (type === 'ascend' || type === 'descend'){
         let harmony = 1;
         if (challenge === undefined){
@@ -1365,7 +1366,7 @@ export function calcPrestige(type,inputs){
     }
     
     if (type === 'ai'){
-        gains.cores = 5;
+        gains.cores = universe === 'micro' ? 2 : 5;
     }
 
     return gains;
