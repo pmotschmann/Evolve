@@ -3544,6 +3544,9 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.city.factory.count++;
                     global.resource.Alloy.display = true;
+                    if (global.tech['polymer']){
+                        global.resource.Polymer.display = true;
+                    }
                     if (global.city.power >= $(this)[0].powered()){
                         global.city.factory.on++;
                         global.city.factory.Alloy++;
@@ -7331,7 +7334,6 @@ function aiStart(){
         global.tech['oil'] = 3;
         global.tech['alumina'] = 1;
         global.tech['titanium'] = 1;
-        global.tech['polymer'] = 1;
         global.tech['foundry'] = 7;
         global.tech['factory'] = 1;
         global.tech['theatre'] = 3;
@@ -7397,6 +7399,7 @@ function aiStart(){
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.cement_worker.display = true;
+        global.civic.banker.display = true;
 
         global.city.calendar.day++;
         global.city.market.active = true;

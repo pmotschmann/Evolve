@@ -4144,7 +4144,7 @@ function fastLoop(){
             let delta = base * global_multiplier * synd * hunger;
 
             cipher_bd[loc('space_lander_title')] = base + 'v';
-            cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            cipher_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
             cipher_bd[`ᄂ${loc('hunger')}`] = ((hunger - 1) * 100) + '%';
 
             modRes('Cipher', delta * time_multiplier);
@@ -4166,9 +4166,9 @@ function fastLoop(){
             let tank_base = support_on['tank'] * production('tank');
             
             cipher_bd[loc('space_shock_trooper_title')] = shock_base + 'v';
-            cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            cipher_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
             cipher_bd[loc('space_tank_title')] = tank_base + 'v';
-            cipher_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
+            cipher_bd[`ᄂ${loc('space_syndicate')}+2`] = -((1 - synd) * 100) + '%';
 
             let delta = (shock_base + tank_base) * global_multiplier * synd;
             modRes('Cipher', delta * time_multiplier);
@@ -5806,7 +5806,7 @@ function midLoop(){
         if (global.city['nanite_factory']){
             let gain = global.city.nanite_factory.count * spatialReasoning(2500);
             caps['Nanite'] += gain;
-            bd_Mana[loc('city_nanite_factory')] = gain+'v';
+            bd_Nanite[loc('city_nanite_factory')] = gain+'v';
         }
         if (global.city['pylon'] || global.space['pylon']){
             let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
