@@ -6717,6 +6717,13 @@ function midLoop(){
                 bd_Mana[wardenLabel()] = mana+'v';
             }
         }
+        if (global.race['logical']){
+            let factor = global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0;
+            factor += global.tech.hasOwnProperty('science') ? global.tech.science : 0;
+            let gain = global.resource[global.race.species].amount * traits.logical.vars()[1] * factor;
+            caps['Knowledge'] += gain;
+            bd_Knowledge[races[global.race.species].name] = gain+'v';
+        }
         if (global.portal['sensor_drone']){
             let gain = p_on['sensor_drone'] * (global.tech.infernite >= 6 ? 2500 : 1000);
             caps['Knowledge'] += gain;
@@ -7740,7 +7747,7 @@ function midLoop(){
             if (global.city.s_alter.harvest > 0){
                 global.city.s_alter.harvest--;
             }
-            
+
             if ($(`#popper[data-id="city-s_alter"]`).length > 0){
                 updateDesc(actions.city.s_alter,'city','s_alter');
             }

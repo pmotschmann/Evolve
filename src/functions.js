@@ -1236,6 +1236,10 @@ export function calcPrestige(type,inputs){
             k_inc = 100000;
             k_mult = 1.1;
             plasmid_cap = 150;
+            if (races[global.race.species].type === 'synthetic'){
+                pop_divisor = 4;
+                k_inc = 125000;
+            }
             break;
         case 'cataclysm':
         case 'bioseed':

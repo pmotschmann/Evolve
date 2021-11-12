@@ -2076,28 +2076,28 @@ export const traits = {
             // [Entertainer Reduction, Stress Reduction]
             switch (global.race.emotionless || 1){
                 case 0.5:
-                    return [45,12];
+                    return [45,10];
                 case 1:
-                    return [35,15];
+                    return [35,13];
                 case 2:
-                    return [25,18];
+                    return [25,15];
             }
         }
     },
-    logical: { // Placeholder Trait Def
+    logical: { // Citizens add Knowledge
         name: loc('trait_logical_name'),
         desc: loc('trait_logical'),
         type: 'major',
-        val: 8,
+        val: 6,
         vars(){
-            // [Reduce Wardenclyffe Knowledge Cost]
+            // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
             switch (global.race.logical || 1){
                 case 0.5:
-                    return [50];
+                    return [50,15];
                 case 1:
-                    return [100];
+                    return [100,25];
                 case 2:
-                    return [125];
+                    return [125,30];
             }
         }
     },
@@ -3171,7 +3171,7 @@ export const races = {
             gas_moon: loc('race_synth_solar_gas_moon'),
             dwarf: loc('race_synth_solar_dwarf'),
         },
-        fanaticism: 'imitation'
+        fanaticism: 'logical'
     },
     nano: {
         name: loc('race_nano'),
