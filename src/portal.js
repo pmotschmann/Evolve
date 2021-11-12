@@ -1169,7 +1169,7 @@ const fortressModules = {
                 global.settings.marketTabs = 3;
                 if (!global.settings.tabLoad){
                     loadTab('mTabResource');
-                    clearElement($('#popportal-transport'),true);
+                    clearPopper(`portal-transport`);
                 }
             },
             ship: {
@@ -1500,7 +1500,6 @@ const fortressModules = {
                 global.settings.govTabs = 4;
                 if (!global.settings.tabLoad){
                     loadTab('mTabCivic');
-                    clearElement($('#popportal-mechbay'),true);
                     clearPopper(`portal-mechbay`);
                 }
             },

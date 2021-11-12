@@ -1869,9 +1869,6 @@ export function trickOrTreatBind(id,trick){
             $(`#${tot}${id}`).remove();
             setTimeout(function(){
                 if (id === 1 && trick){
-                    if (poppers[`popcity-garrison}`]){
-                        poppers[`popcity-garrison`].destroy();
-                    }
                     $('.popper').hide();
                 }
             }, 250);

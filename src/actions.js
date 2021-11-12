@@ -4656,7 +4656,7 @@ export const actions = {
                     global.starDock.seeder.count++;
                     if (global.starDock.seeder.count >= 100){
                         global.tech.genesis = 6;
-                        clearElement($('#popspcdock-seeder'),true);
+                        clearPopper(`starDock-seeder`);
                         clearElement($('#modalBox'));
                         let c_action = actions.space.spc_gas.star_dock;
                         drawModal(c_action,'star_dock');
@@ -4684,7 +4684,7 @@ export const actions = {
             },
             action(){
                 global.tech['genesis'] = 7;
-                clearElement($('#popspcdock-seeder'),true);
+                clearPopper(`starDock-prep_ship`);
                 clearElement($('#modalBox'));
                 let c_action = actions.space.spc_gas.star_dock;
                 drawModal(c_action,'star_dock');
@@ -6351,7 +6351,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
 
 export function removeAction(id){
     clearElement($(`#${id}`),true);
-    clearElement($(`#pop${id}`),true);
+    clearPopper(id);
 }
 
 export function updateDesc(c_action,category,action){
@@ -6891,7 +6891,7 @@ function sentience(){
     for (var i = 0; i < evolve_actions.length; i++) {
         if (global.race[evolve_actions[i]]){
             clearElement($('#'+actions.evolution[evolve_actions[i]].id),true);
-            clearElement($('#pop'+actions.evolution[evolve_actions[i]].id),true);
+            clearPopper(actions.evolution[evolve_actions[i]].id);
         }
     }
 

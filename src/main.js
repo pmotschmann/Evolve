@@ -7740,8 +7740,8 @@ function midLoop(){
             if (global.city.s_alter.harvest > 0){
                 global.city.s_alter.harvest--;
             }
-
-            if ($(`#popcity-s_alter`).length > 0){
+            
+            if ($(`#popper[data-id="city-s_alter"]`).length > 0){
                 updateDesc(actions.city.s_alter,'city','s_alter');
             }
         }

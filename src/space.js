@@ -1982,7 +1982,6 @@ const spaceProjects = {
                     global.settings.govTabs = 5;
                     if (!global.settings.tabLoad){
                         loadTab('mTabCivic');
-                        clearElement($('#popspace-shipyard'),true);
                         clearPopper(`space-shipyard`);
                     }
                 }
@@ -3320,7 +3319,7 @@ const interstellarProjects = {
                 global.settings.marketTabs = 2;
                 if (!global.settings.tabLoad){
                     loadTab('mTabResource');
-                    clearElement($('#popinterstellar-mass_ejector'),true);
+                    clearPopper(`interstellar-mass_ejector`);
                 }
             },
             action(){
