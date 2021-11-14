@@ -5761,6 +5761,11 @@ function midLoop(){
             caps['Uranium'] += 1000;
         }
 
+        if (global.stats.feat['adept']){
+            caps['Lumber'] += global.stats.feat['adept'] * 60;
+            caps['Stone'] += global.stats.feat['adept'] * 60;
+        }
+
         var bd_Money = { [loc('base')]: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};

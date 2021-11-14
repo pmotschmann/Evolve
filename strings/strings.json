@@ -2559,6 +2559,7 @@
   "achieve_perks_novice": "Base RNA generation +%0, Base DNA generation +%1.",
   "achieve_perks_journeyman1": "+%0 Research Queue.",
   "achieve_perks_journeyman2": "+%0 Research Queue, +%1 Build Queue.",
+  "achieve_perks_adept": "Start with +%0 Lumber, Stone, and Food. Base Lumber and Stone cap incresed by +%1.",
   "achieve_perks_ascended1": "Start with %0 extra Genes to create custom species with",
   "achieve_perks_ascended2": "Harmony Crystals are reducing non-homeworld cost creep by %0 in the current universe",
   "achieve_perks_technophobe1": "Start with %0 Steel.",

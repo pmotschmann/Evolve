@@ -2180,7 +2180,23 @@ export const perkList = {
             loc(`wiki_perks_progress_note1`,[25]),
             loc(`wiki_perks_progress_note2`)
         ]
-    }
+    },
+    adept: {
+        name: loc(`feat_adept_name`),
+        desc(wiki){
+            let rank = global.stats.feat['adept'] ? global.stats.feat['adept'] : 1;
+            let res = wiki ? "100/200/300/400/500" : rank * 100;
+            let cap = wiki ? "60/120/180/240/300" : rank * 60;
+            return loc("achieve_perks_adept",[res,cap]);
+        },
+        active(){
+            return global.stats.feat['adept'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[50]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
 };
 
 export function drawPerks(){

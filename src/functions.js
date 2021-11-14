@@ -1550,7 +1550,7 @@ function craftAdjust(costs, wiki){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
             }
             else {
                 newCosts[res] = function(){ return costs[res](false,wiki); }

@@ -749,7 +749,7 @@ export const events = {
         return food;
     },
     function(){
-        if (global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore']){
+        if (global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical']){
             return false;
         }
         return true;

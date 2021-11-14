@@ -1511,6 +1511,9 @@ function war_campaign(gov){
         let basic = gov === 3 && global.race['truepath'] ? ['Food','Lumber','Stone','Copper','Iron'] : ['Food','Lumber','Stone'];
         let common = gov === 3 && global.race['truepath'] ? ['Aluminium','Coal','Cement','Steel','Furs'] : ['Copper','Iron','Aluminium','Coal'];
         let rare = gov === 3 && global.race['truepath'] ? ['Titanium','Oil','Iridium','Alloy','Polymer'] : ['Cement','Steel'];
+        if (global.race['artifical']){
+            basic.shift();
+        }
         if (global.tech['smoldering']){
             basic.push('Chrysotile');
         }

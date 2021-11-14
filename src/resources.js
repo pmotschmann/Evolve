@@ -615,6 +615,10 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
+    if (global.race['artifical'] && name === 'Food'){
+        stackable = false;
+    }
+
     if (name === 'Mana'){
         global['resource'][name]['gen'] = 0;
         global['resource'][name]['gen_d'] = 0;
@@ -2324,6 +2328,9 @@ function initEjector(){
 
 export function loadEjector(name,color){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 2)){
+        return;
+    }
+    else if (global.race['artifical'] && name === 'Food'){
         return;
     }
     if (atomic_mass[name] && global.interstellar['mass_ejector']){

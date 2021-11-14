@@ -660,7 +660,7 @@ export const traits = {
         name: loc('trait_artifical_name'),
         desc: loc('trait_artifical'),
         type: 'genus',
-        val: 0,
+        val: 5,
         vars(){
             // [Science Bonus]
             switch (global.race.artifical || 1){
@@ -677,7 +677,7 @@ export const traits = {
         name: loc('trait_powered_name'),
         desc: loc('trait_powered'),
         type: 'genus',
-        val: 0,
+        val: -6,
         vars(){
             // [Power Req, Labor Boost]
             switch (global.race.powered || 1){

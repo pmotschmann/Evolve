@@ -2857,6 +2857,7 @@ export const actions = {
             category: 'military',
             reqs: {},
             trait: ['artifical'],
+            no_queue(){ return global.resource[global.race.species].max > global.resource[global.race.species].amount ? false : true; },
             cost: {
                 Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
                 Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
@@ -2978,6 +2979,7 @@ export const actions = {
                 if (global.race['artifical']){
                     effect += `<div>${loc('city_boot_camp_art_effect',[10])}</div>`;
                 }
+                return effect;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -7285,6 +7287,13 @@ function sentience(){
         'challenge': alevel() - 1
     });
 
+    if (global.stats.feat['adept']){
+        global.resource.Lumber.max += global.stats.feat['adept'] * 60;
+        global.resource.Lumber.amount += global.stats.feat['adept'] * 100;
+        global.resource.Stone.max += global.stats.feat['adept'] * 60;
+        global.resource.Stone.amount += global.stats.feat['adept'] * 100;
+    }
+
     if (global.race['cataclysm']){
         cataclysm();
     }
@@ -7317,7 +7326,6 @@ function aiStart(){
         global.tech['explosives'] = 3;
         global.tech['trade'] = 3;
         global.tech['banking'] = 6;
-        global.tech['gambling'] = 1;
         global.tech['home_safe'] = 1;
         global.tech['housing'] = 3;
         global.tech['smelting'] = 3;
@@ -7337,7 +7345,7 @@ function aiStart(){
         global.tech['foundry'] = 7;
         global.tech['factory'] = 1;
         global.tech['theatre'] = 3;
-        global.tech['broadcast'] = 2;
+        global.tech['broadcast'] = 1;
         global.tech['science'] = 7;
         global.tech['high_tech'] = 4;
         global.tech['theology'] = 2;
@@ -7419,11 +7427,11 @@ function aiStart(){
         global.city['oil_depot'] = { count: 1 };
         global.city['cement_plant'] = { count: 1, on: 0 };
         global.city['garrison'] = { count: 0, on: 0 };
+        global.city['boot_camp'] = { count: 0 };
         global.city['basic_housing'] = { count: 0 };
         global.city['cottage'] = { count: 0 };
         global.city['apartment'] = { count: 0, on: 0 };
         global.city['amphitheatre'] = { count: 0 };
-        global.city['casino'] = { count: 0, on: 0 };
         global.city['rock_quarry'] = { count: 1, on: 0, asbestos: 50 };
         global.city['metal_refinery'] = { count: 1, on: 0 };
         global.city['shed'] = { count: 2 };
