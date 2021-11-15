@@ -1237,8 +1237,9 @@ export function calcPrestige(type,inputs){
             k_mult = 1.1;
             plasmid_cap = 150;
             if (races[global.race.species].type === 'synthetic'){
-                pop_divisor = 4;
+                pop_divisor = 5;
                 k_inc = 125000;
+                plasmid_cap = 100;
             }
             break;
         case 'cataclysm':

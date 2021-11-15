@@ -7288,10 +7288,16 @@ function sentience(){
     });
 
     if (global.stats.feat['adept']){
-        global.resource.Lumber.max += global.stats.feat['adept'] * 60;
-        global.resource.Lumber.amount += global.stats.feat['adept'] * 100;
         global.resource.Stone.max += global.stats.feat['adept'] * 60;
         global.resource.Stone.amount += global.stats.feat['adept'] * 100;
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.max += global.stats.feat['adept'] * 60;
+            global.resource.Chrysotile.amount += global.stats.feat['adept'] * 100;
+        }
+        else {
+            global.resource.Lumber.max += global.stats.feat['adept'] * 60;
+            global.resource.Lumber.amount += global.stats.feat['adept'] * 100;
+        }
     }
 
     if (global.race['cataclysm']){
@@ -7334,9 +7340,7 @@ function aiStart(){
         global.tech['container'] = 4;
         global.tech['steel_container'] = 3;
         global.tech['mining'] = 4;
-        global.tech['axe'] = 3;
         global.tech['pickaxe'] = 2;
-        global.tech['saw'] = 2;
         global.tech['hammer'] = 2;
         global.tech['cement'] = 5;
         global.tech['oil'] = 3;
@@ -7366,7 +7370,6 @@ function aiStart(){
         global.resource.Food.display = true;
 
         global.resource.Money.amount = 1000;
-        global.resource.Stone.amount = 100;
 
         global.resource.Stone.display = true;
         global.resource.Furs.display = true;
@@ -7385,10 +7388,13 @@ function aiStart(){
         global.resource.Containers.display = true;
 
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
-            global.resource.Lumber.amount = 100;
+            global.tech['axe'] = 3;
+            global.tech['saw'] = 2;
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
             global.civic.lumberjack.display = true;
+            global.city['lumber_yard'] = { count: 1 };
+            global.city['sawmill'] = { count: 0, on: 0 };
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -7419,7 +7425,6 @@ function aiStart(){
         global.city['smelter'] = { count: 1, cap: 0, Wood: 0, Coal: 0, Oil: 1, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 0, Iridium: 0 };
         global.city['oil_power'] = { count: 1, on: 1 };
         global.city['coal_power'] = { count: 0, on: 0 };
-
         global.city['transmitter'] = { count: 1, on: 1 };
         global.city['mine'] = { count: 1, on: 0 };
         global.city['coal_mine'] = { count: 1, on: 0 };
@@ -7443,8 +7448,6 @@ function aiStart(){
         global.city['university'] = { count: 1 };
         global.city['library'] = { count: 1 };
         global.city['wardenclyffe'] = { count: 0, on: 0 };
-        global.city['lumber_yard'] = { count: 1 };
-        global.city['sawmill'] = { count: 0, on: 0 };
         global.city['temple'] = { count: 0 };
 
         global.civic.govern.type = 'technocracy';

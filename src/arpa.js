@@ -1639,11 +1639,17 @@ function genetics(){
         }
 
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
+        if (global.race['artifical']){
+            label = global.tech.genetics > 2 ? loc('arpa_code_modification') : loc('arpa_decompile_source');
+        }
         let sequence = $(`<div><span class="seqlbl has-text-warning">${label}</span> - ${loc('arpa_to_complete')} <span v-html="$options.filters.timer(time)"></span></div>`);
         genome.append(sequence);
         let progress = $(`<progress class="progress" :value="progress" max="${global.arpa.sequence.max}">{{ progress }}%</progress>`);
         genome.append(progress);
         let b_label = global.tech.genetics > 2 ? loc('arpa_mutate') : loc('arpa_sequence');
+        if (global.race['artifical']){
+            b_label = global.tech.genetics > 2 ? loc('arpa_modify') : loc('arpa_decompile');
+        }
         let button = $(`<button class="button seq" @click="toggle">${b_label}</button>`);
         genome.append(button);
 
@@ -1653,12 +1659,12 @@ function genetics(){
         }
 
         if (global.tech['genetics'] >= 6){
-            let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button" @click="novo" :aria-label="novoLabel()">${loc('arpa_novo')}</button></b-tooltip>`);
+            let boost = $(`<b-tooltip :label="novoLabel()" position="is-bottom" animated multilined><button class="button" @click="novo" :aria-label="novoLabel()">${loc(global.race['artifical'] ? 'arpa_novo_artifical' : 'arpa_novo')}</button></b-tooltip>`);
             genome.append(boost);
         }
 
         if (global.tech['genetics'] >= 7){
-            let boost = $(`<b-tooltip :label="autoLabel(false)" position="is-bottom" animated multilined><button class="button auto" @click="auto_seq" :aria-label="autoLabel(true)">${loc('arpa_auto_sequence')}</button></b-tooltip>`);
+            let boost = $(`<b-tooltip :label="autoLabel(false)" position="is-bottom" animated multilined><button class="button auto" @click="auto_seq" :aria-label="autoLabel(true)">${loc(global.race['artifical'] ? 'arpa_auto_compile' : 'arpa_auto_sequence')}</button></b-tooltip>`);
             genome.append(boost);
         }
         
@@ -1699,7 +1705,7 @@ function genetics(){
                     }
                 },
                 boostLabel(sr){
-                    return loc('arpa_boost_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
+                    return loc(global.race['artifical'] ? 'arpa_boost_artifical_label' : 'arpa_boost_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
                 },
                 novo(){
                     let keyMult = keyMultiplier();
@@ -1714,7 +1720,7 @@ function genetics(){
                     }
                 },
                 novoLabel(){
-                    return loc('arpa_novo_label',['200k']);
+                    return loc(global.race['artifical'] ? 'arpa_novo_artifical_label' : 'arpa_novo_label',['200k']);
                 },
                 auto_seq(){
                     if (global.arpa.sequence.auto){
@@ -1727,7 +1733,7 @@ function genetics(){
                     }
                 },
                 autoLabel(sr){
-                    return loc('arpa_auto_seq_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
+                    return loc(global.race['artifical'] ? 'arpa_auto_compile_label' : 'arpa_auto_seq_label') + (sr ? (global.arpa.sequence.boost ? loc('city_on') : loc('city_off')) : '');
                 }
             },
             filters: {
@@ -1753,10 +1759,10 @@ function genetics(){
 
         popover(`popArpaSeq`, function(){
             if (global.tech.genetics > 2){
-                return loc('arpa_mutate_desc');
+                return global.race['artifical'] ? loc('arpa_modify_desc') : loc('arpa_mutate_desc');
             }
             else {
-                return loc('arpa_sequence_desc');
+                return global.race['artifical'] ? loc('arpa_decompile_desc') : loc('arpa_sequence_desc');
             }
         },
         {
@@ -1902,13 +1908,13 @@ function genetics(){
         let mGeneCost = function(t){
             let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
             if (t === 'mastery'){ cost *= 5; }
-            return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+            return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost),global.resource.Genes.name]);
         };
 
         let mPhageCost = function(t){
             let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
             if (t === 'mastery'){ cost *= 2; }
-            return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost)]);
+            return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost),loc(`resource_Phage_name`)]);
         };
 
         vBind({

@@ -608,15 +608,20 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
     else {
         if (name === global.race.species){
-            global['resource'][name].name = flib('name');
+            global.resource[name].name = flib('name');
         }
         else {
-            global['resource'][name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
+            global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
         }
     }
 
-    if (global.race['artifical'] && name === 'Food'){
-        stackable = false;
+    if (global.race['artifical']){
+        if (name === 'Food'){
+            stackable = false;
+        }
+        else if (name === 'Genes'){
+            global.resource[name].name = loc(`resource_Program_name`);
+        }
     }
 
     if (name === 'Mana'){

@@ -3897,7 +3897,7 @@ const techs = {
         cost: {
             Knowledge(){ return 125000; }
         },
-        effect: loc('tech_crispr_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_crispr_effect_artifical') : loc('tech_crispr_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -3914,7 +3914,7 @@ const techs = {
     shotgun_sequencing: {
         id: 'tech-shotgun_sequencing',
         title: loc('tech_shotgun_sequencing'),
-        desc: loc('tech_shotgun_sequencing_desc'),
+        desc(){ return global.race['artifical'] ? loc('tech_shotgun_sequencing_desc_artifical') : loc('tech_shotgun_sequencing_desc'); },
         category: 'genes',
         era: 'early_space',
         reqs: { genetics: 4 },
@@ -3922,7 +3922,7 @@ const techs = {
         cost: {
             Knowledge(){ return 165000; }
         },
-        effect: loc('tech_shotgun_sequencing_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_shotgun_sequencing_effect_artifical') : loc('tech_shotgun_sequencing_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -3945,7 +3945,7 @@ const techs = {
         cost: {
             Knowledge(){ return 220000; }
         },
-        effect: loc('tech_de_novo_sequencing_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_de_novo_sequencing_effect_artifical') : loc('tech_de_novo_sequencing_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -3959,8 +3959,8 @@ const techs = {
     },
     dna_sequencer: {
         id: 'tech-dna_sequencer',
-        title: loc('tech_dna_sequencer'),
-        desc: loc('tech_dna_sequencer'),
+        title(){ return global.race['artifical'] ? loc('tech_code_sequencer') : loc('tech_dna_sequencer'); },
+        desc(){ return global.race['artifical'] ? loc('tech_code_sequencer') : loc('tech_dna_sequencer'); },
         category: 'genes',
         era: 'deep_space',
         reqs: { genetics: 6 },
@@ -3968,7 +3968,7 @@ const techs = {
         cost: {
             Knowledge(){ return 300000; }
         },
-        effect: loc('tech_dna_sequencer_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_code_sequencer_effect') : loc('tech_dna_sequencer_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];
@@ -3982,8 +3982,8 @@ const techs = {
     },
     rapid_sequencing: {
         id: 'tech-rapid_sequencing',
-        title: loc('tech_rapid_sequencing'),
-        desc: loc('tech_rapid_sequencing'),
+        title(){ return global.race['artifical'] ? loc('tech_agile_development') : loc('tech_rapid_sequencing'); },
+        desc(){ return global.race['artifical'] ? loc('tech_agile_development') : loc('tech_rapid_sequencing'); },
         category: 'genes',
         era: 'interstellar',
         path: ['standard','truepath'],
@@ -3992,7 +3992,7 @@ const techs = {
         cost: {
             Knowledge(){ return 800000; }
         },
-        effect: loc('tech_rapid_sequencing_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_agile_development_effect') : loc('tech_rapid_sequencing_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
