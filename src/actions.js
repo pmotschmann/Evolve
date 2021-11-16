@@ -2977,7 +2977,8 @@ export const actions = {
                 }
                 let effect = global.tech['spy'] && global.tech['spy'] >= 3 ? `<div>${loc('city_boot_camp_effect',[rate])}</div><div>${loc('city_boot_camp_effect2',[10])}</div>` : `<div>${loc('city_boot_camp_effect',[rate])}</div>`;
                 if (global.race['artifical']){
-                    effect += `<div>${loc('city_boot_camp_art_effect',[10])}</div>`;
+                    let repair = global.tech['medic'] || 1;
+                    effect += `<div>${loc('city_boot_camp_art_effect',[repair * 5])}</div>`;
                 }
                 return effect;
             },

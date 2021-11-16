@@ -831,10 +831,20 @@ const spaceProjects = {
         },
         biodome: {
             id: 'space-biodome',
-            title(){return global.race['soul_eater'] ? loc('space_red_asphodel_title') : loc('space_red_biodome_title'); },
+            title(){
+                if (global.race['artifical']){
+                    return loc('space_red_signal_tower_title');
+                }
+                else {
+                    return global.race['soul_eater'] ? loc('space_red_asphodel_title') : loc('space_red_biodome_title');
+                }
+            },
             desc(){
                 let desc;
-                if (global.race['soul_eater']) {
+                if (global.race['artifical']){
+                    desc = `<div>${loc('space_red_signal_tower_title')}</div>`;
+                }
+                else if (global.race['soul_eater']) {
                     desc = `<div>${loc('space_red_asphodel_desc')}</div>`;
                 }
                 else {
@@ -881,7 +891,12 @@ const spaceProjects = {
                 return false;
             },
             flair(){
-                return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : (global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair'));
+                if (global.race['artifical']){
+                    return loc('space_red_signal_tower_flair');
+                }
+                else {
+                    return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : (global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair'));
+                }
             }
         },
         exotic_lab: {

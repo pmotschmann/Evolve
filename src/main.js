@@ -2870,7 +2870,7 @@ function fastLoop(){
 
             let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
 
-            food_bd[loc('space_red_biodome_title')] = biodome + 'v';
+            food_bd[global.race['artifical'] ? loc('space_red_signal_tower_title') : loc('space_red_biodome_title')] = biodome + 'v';
             food_bd[loc('soldiers')] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
 
@@ -8323,7 +8323,7 @@ function longLoop(){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
             if (global.race['artifical'] && global.city['boot_camp']){
-                hc = global.city.boot_camp.count * 2;
+                hc = global.city.boot_camp.count;
             }
             else if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];

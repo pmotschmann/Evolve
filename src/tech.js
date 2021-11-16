@@ -6343,8 +6343,8 @@ const techs = {
     },
     bac_tanks: {
         id: 'tech-bac_tanks',
-        title: loc('tech_bac_tanks'),
-        desc: loc('tech_bac_tanks_desc'),
+        title(){ return global.race['artifical'] ? loc('tech_repair_subroutines') : loc('tech_bac_tanks'); },
+        desc(){ return global.race['artifical'] ? loc('tech_repair_subroutines') : loc('tech_bac_tanks_desc'); },
         category: 'military',
         era: 'interstellar',
         reqs: { medic: 1, infernite: 1 },
@@ -6353,7 +6353,7 @@ const techs = {
             Knowledge(){ return 600000; },
             Infernite(){ return 250; }
         },
-        effect: loc('tech_bac_tanks_effect'),
+        effect(){ return global.race['artifical'] ? loc('tech_repair_subroutines_effect') : loc('tech_bac_tanks_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -7665,7 +7665,7 @@ const techs = {
         cost: {
             Knowledge(){ return 172000; }
         },
-        effect(){ return loc('tech_colonization_effect',[races[global.race.species].solar.red]); },
+        effect(){ return loc(global.race['artifical'] ? 'tech_colonization_artifical_effect' : 'tech_colonization_effect',[races[global.race.species].solar.red]); },
         action(){
             if (payCosts($(this)[0])){
                 global.space['biodome'] = { count: 0, on: 0 };

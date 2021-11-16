@@ -2473,6 +2473,9 @@ export function loadAlchemy(name,color,basic){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 4)){
         return;
     }
+    else if (global.race['artifical'] && name === 'Food'){
+        return;
+    }
     if (global.tech['alchemy'] && (basic || global.tech.alchemy >= 2) && name !== 'Crystal'){
         let alchemy = $(`<div id="alchemy${name}" class="market-item" v-show="r.display"><h3 class="res has-text-${color}">${global.resource[name].name}</h3></div>`);
         $('#resAlchemy').append(alchemy);
