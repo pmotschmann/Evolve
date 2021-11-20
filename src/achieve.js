@@ -179,6 +179,11 @@ export const feats = {
         desc: loc("feat_twisted_desc"),
         flair: loc("feat_twisted_flair")
     },
+    dreadnot: {
+        name: loc("feat_dreadnot_name"),
+        desc: loc("feat_dreadnot_desc"),
+        flair: loc("feat_dreadnot_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),

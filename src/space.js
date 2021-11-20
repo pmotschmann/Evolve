@@ -3904,6 +3904,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0].cost)){
                     incrementStruct('dreadnought','galaxy');
+                    global.galaxy.['dreadnought'].ever_purchased = true;
                     global.galaxy.defense.gxy_gateway.dreadnought++;
                     if (global.galaxy.starbase.support + 2 < global.galaxy.starbase.s_max){
                         global.galaxy['dreadnought'].on++;
@@ -6187,6 +6188,9 @@ function ascend(){
 
     if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
         unlockAchieve(`dreaded`);
+    }
+    if (!global.galaxy.hasOwnProperty('dreadnought') || !global.galaxy.dreadnought.ever_purchased){
+        unlockFeat(`dreadnot`);
     }
     checkAchievements();
 
