@@ -1466,7 +1466,7 @@ const fortressModules = {
             effect: loc('portal_spire_survey_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, mechs: [] };
+                    global.portal['mechbay'] = { count: 0, on: 0, bay: 0, max: 0, active: 0, scouts: 0, mechs: [] };
                     global.portal['spire'] = { count: 1, progress: 0, boss: '', type: '', status: {} };
                     genSpireFloor();
                     messageQueue(loc('portal_spire_survey_msg'),'info',false,['progress','hell']);
@@ -1525,9 +1525,7 @@ const fortressModules = {
                 return false;
             },
             postPower(){
-                let bays = (spire_on['mechbay'] || 0);
-                global.portal.mechbay.max = bays * 25;
-                drawMechs();
+                updateMechbay();
             }
         },
         spire: {
@@ -3292,7 +3290,7 @@ export function drawMechLab(){
                         let mech = deepClone(global.portal.mechbay.blueprint);
                         global.portal.mechbay.mechs.push(mech);
                         global.portal.mechbay.bay += size;
-                        drawMechs();
+                        global.portal.mechbay.active++;
                     }
                 },
                 setSize(s){
@@ -3498,37 +3496,36 @@ function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));
     let list = $('#mechList');
-    let used = 0;
-    for (let i=0; i<global.portal.mechbay.mechs.length; i++){
-        let mech = global.portal.mechbay.mechs[i];
-        used += mechSize(mech.size);
-        let inactive = used > global.portal.mechbay.max ? true : false;
-        let infernal = mech.infernal ? `${loc('portal_mech_infernal')} ` : ``;
-        let desc = $(`<div class="mechRow${inactive ? ` inactive-row` : ``}"><a ${inactive ? `class="scrap${i} has-text-danger"` : `class="scrap${i}"`} @click="scrap(${i})">${loc(`portal_mech_scrap`)}</a> | <span>${loc(`portal_mech`)} #${i+1}</span>: <span class="has-text-caution">${infernal}${loc(`portal_mech_size_${mech.size}`)} ${loc(`portal_mech_chassis_${mech.chassis}`)}</span></div>`);
-        let gear_list = $(`<div class="gearList ${mech.size}"></div>`);
-        desc.append(gear_list);
-        if (mech.hardpoint.length > 0){
-            let wep_list = $(`<div></div>`);
-            gear_list.append(wep_list);
-            mech.hardpoint.forEach(function(hp){
-                wep_list.append(`<span> | </span><span class="has-text-danger">${loc(`portal_mech_weapon_${hp}`)}</span>`);
-            });
-        }
-        let eqp_list = $(`<div></div>`);
-        gear_list.append(eqp_list);
-        mech.equip.forEach(function(eq){
-            eqp_list.append(`<span> | </span><span class="has-text-warning">{{ '${eq}' | equipment('${mech.size}') }}</span>`);
-        });
-        list.append(desc);
-    }
+
+    list.append(`
+      <div v-for="(mech, index) of mechs" :key="index" class="mechRow" :class="index < active ? '' : 'inactive-row' ">
+        <a class="scrap" @click="scrap(index)">${loc('portal_mech_scrap')}</a>
+        <span> | </span><span>${loc('portal_mech')} #{{index + 1}}: </span>
+        <span class="has-text-caution">{{ mech.infernal ? "${loc('portal_mech_infernal')} " : "" }}{{ mech | size }} {{ mech | chassis }}</span>
+        <div :class="'gearList '+mech.size">
+          <div>
+            <template v-for="hp of mech.hardpoint">
+              <span> | </span>
+              <span class="has-text-danger">{{ hp | weapon }}</span>
+            </template>
+          </div>
+          <div>
+            <template v-for="eq of mech.equip">
+              <span> | </span>
+              <span class="has-text-warning">{{ eq, mech.size | equipment }}</span>
+            </template>
+          </div>
+        </div>
+      </div>`);
 
     vBind({
         el: '#mechList',
-        data: global.portal.mechbay.mechs,
+        data: global.portal.mechbay,
         methods: {
             scrap(id){
                 if (global.portal.mechbay.mechs[id]){
                     let costs = mechCost(global.portal.mechbay.mechs[id].size,global.portal.mechbay.mechs[id].infernal);
+                    let size = mechSize(global.portal.mechbay.mechs[id].size);
                     global.portal.purifier.supply += Math.floor(costs.c / 3);
                     global.resource.Soul_Gem.amount += Math.floor(costs.s / 2);
 
@@ -3536,7 +3533,8 @@ function drawMechs(){
                         global.portal.purifier.supply = global.portal.purifier.sup_max;
                     }
                     global.portal.mechbay.mechs.splice(id,1);
-                    drawMechs();
+                    global.portal.mechbay.bay -= size;
+                    global.portal.mechbay.active--;
                 }
             }
         },
@@ -3555,28 +3553,30 @@ function drawMechs(){
                         break;
                 }
                 return loc(`portal_mech_equip_${type}`);
+            },
+            weapon(hp) {
+                return loc(`portal_mech_weapon_${hp}`);
+            },
+            size(m) {
+                return loc(`portal_mech_size_${m.size}`);
+            },
+            chassis(m) {
+                return loc(`portal_mech_chassis_${m.chassis}`);
             }
         }
     });
 
     dragMechList();
 
-    for (let i=0; i<global.portal.mechbay.mechs.length; i++){
+    $(`#mechList .scrap`).each(function(i, node){
         popover(`mechList-scrap${i}`, function(){
             let costs = mechCost(global.portal.mechbay.mechs[i].size,global.portal.mechbay.mechs[i].infernal);
             return loc(`portal_mech_scrap_refund`,[Math.floor(costs.c / 3),Math.floor(costs.s / 2)]);
         },
         {
-            elm: `#mechList .scrap${i}`,
+            elm: node,
         });
-    }
-}
-
-export function drawMechList(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
-        return;
-    }
-    drawMechs();
+    });
 }
 
 export function mechSize(s){
@@ -3610,12 +3610,34 @@ function dragMechList(){
     let el = $('#mechList')[0];
     Sortable.create(el,{
         onEnd(e){
+            let items = e.from.querySelectorAll(':scope > .mechRow');
+            e.from.insertBefore(e.item, items[e.oldIndex + (e.oldIndex > e.newIndex)]);
+
             let order = global.portal.mechbay.mechs;
             order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
-            global.portal.mechbay.mechs = order;
-            drawMechs();
+            updateMechbay();
         }
     });
+}
+
+export function updateMechbay(){
+    let max = (spire_on['mechbay'] || 0) * 25;
+    let bay = 0;
+    let active = 0;
+    let scouts = 0;
+    for (let mech of global.portal.mechbay.mechs) {
+        bay += mechSize(mech.size);
+        if (bay <= max){
+            active++;
+            if (mech.size === 'small') {
+                scouts++;
+            }
+        }
+    }
+    global.portal.mechbay.bay = bay;
+    global.portal.mechbay.max = max;
+    global.portal.mechbay.active = active;
+    global.portal.mechbay.scouts = scouts;
 }
 
 export function genSpireFloor(){
@@ -3687,15 +3709,7 @@ function terrainRating(mech,rating,effects){
         }
     }
     if (mech.size !== 'small' && rating < 1){
-        let space = 0;
-        let sizes = { small: 0, medium: 0, large: 0, titan: 0, collector: 0 };
-        global.portal.mechbay.mechs.forEach(function(m){
-            space += mechSize(m.size);
-            if (space <= global.portal.mechbay.max){
-                sizes[m.size]++;
-            }
-        });
-        rating += (effects.includes('fog') || effects.includes('dark') ? 0.005 : 0.01) * sizes.small;
+        rating += (effects.includes('fog') || effects.includes('dark') ? 0.005 : 0.01) * global.portal.mechbay.scouts;
         if (rating > 1){
             rating = 1;
         }

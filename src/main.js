@@ -9,7 +9,7 @@ import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } f
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechSize, mechCollect } from './portal.js';
+import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -2625,13 +2625,12 @@ function fastLoop(){
                 }
             });
             if (global.portal['mechbay']){
-                let space = 0;
-                global.portal.mechbay.mechs.forEach(function(mech){
-                    space += mechSize(mech.size);
-                    if (space <= global.portal.mechbay.max && mech.size === 'collector'){
+                for (let i = 0; i < global.portal.mechbay.active; i++) {
+                    let mech = global.portal.mechbay.mechs[i];
+                    if (mech.size === 'collector') {
                         supply += mechCollect(mech) * time_multiplier;
                     }
-                });
+                }
             }
             global.portal.purifier.supply += supply;
             global.portal.purifier.diff = supply / time_multiplier;
@@ -7668,27 +7667,22 @@ function midLoop(){
         }
 
         if (global.portal.hasOwnProperty('mechbay') && global.tech['hell_spire'] && global.tech.hell_spire >= 9){
-            let bays = (spire_on['mechbay'] || 0);
-            global.portal.mechbay.max = bays * 25;
-
             if (!global.portal.spire['boss']){
                 genSpireFloor();
             }
+            updateMechbay();
 
-            let space = 0;
             let progress = 0;
-            global.portal.mechbay.mechs.forEach(function(mech){
-                space += mechSize(mech.size);
-                if (space <= global.portal.mechbay.max){
-                    if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
-                        progress += mechRating(mech,true);
-                    }
-                    else {
-                        progress += mechRating(mech,false);
-                    }
+            for (let i = 0; i < global.portal.mechbay.active; i++) {
+                let mech = global.portal.mechbay.mechs[i];
+                if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
+                    progress += mechRating(mech,true);
                 }
-            });
-            global.portal.mechbay.bay = space;
+                else {
+                    progress += mechRating(mech,false);
+                }
+            }
+
             if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
                 global.portal.waygate.progress += progress;
                 global.portal.waygate.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.waygate.progress) / progress);

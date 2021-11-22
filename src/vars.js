@@ -910,6 +910,10 @@ if (convertVersion(global['version']) < 102000){
     if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('Iridium')){
         global.city.smelter['Iridium'] = 0;
     }
+    if (global.hasOwnProperty('portal') && global.portal.hasOwnProperty('mechbay') && !global.portal.mechbay.hasOwnProperty('active')){
+        global.portal.mechbay['active'] = 0;
+        global.portal.mechbay['scouts'] = 0;
+    }
 }
 
 global['version'] = '1.2.0';
