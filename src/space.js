@@ -861,7 +861,8 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('biodome', offset, 45000, 1.28); },
                 Lumber(offset){ return spaceCostMultiplier('biodome', offset, 65000, 1.28); },
-                Brick(offset){ return spaceCostMultiplier('biodome', offset, 1000, 1.28); }
+                Brick(offset){ return spaceCostMultiplier('biodome', offset, 1000, 1.28); },
+                Nanite(offset){ return global.race['deconstructor'] ? spaceCostMultiplier('biodome', offset, 75, 1.28) : 0; },
             },
             effect(){
                 let food = +(production('biodome','food')).toFixed(2);

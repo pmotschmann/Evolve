@@ -7221,6 +7221,7 @@ function midLoop(){
             Bolognium: bd_Bolognium,
             Vitreloy: bd_Vitreloy,
             Orichalcum: bd_Orichalcum,
+            Nanite: bd_Nanite,
             Cipher: bd_Cipher
         };
 

@@ -2111,7 +2111,7 @@ export const traits = {
         name: loc('trait_deconstructor_name'),
         desc: loc('trait_deconstructor'),
         type: 'major',
-        val: -3,
+        val: -4,
         vars(){
             switch (global.race.deconstructor || 1){
                 case 0.5:
@@ -2127,7 +2127,7 @@ export const traits = {
         name: loc('trait_linked_name'),
         desc: loc('trait_linked'),
         type: 'major',
-        val: 3,
+        val: 4,
         vars(){
             // [Quantum Bonus per Citizen, Softcap]
             switch (global.race.linked || 1){

@@ -2643,7 +2643,8 @@ export const actions = {
                 Money(offset){ return costMultiplier('slave_pen', offset, 250, 1.32); },
                 Lumber(offset){ return costMultiplier('slave_pen', offset, 100, 1.36); },
                 Stone(offset){ return costMultiplier('slave_pen', offset, 75, 1.36); },
-                Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); }
+                Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); },
+                Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('slave_pen', offset, 4, 1.36) : 0; },
             },
             effect(){
                 let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
@@ -3575,7 +3576,8 @@ export const actions = {
                 Steel(offset){ return costMultiplier('nanite_factory', offset, 1000, dirt_adjust(1.25)); }
             },
             effect(){
-                return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div>`;
+                let val = spatialReasoning(2500);
+                return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
             },
             special: true,
             action(){
@@ -4318,7 +4320,8 @@ export const actions = {
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
                 Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('wardenclyffe', offset, 350, 1.22); },
-                Sheet_Metal(offset){ return costMultiplier('wardenclyffe', offset, 125, 1.2); }
+                Sheet_Metal(offset){ return costMultiplier('wardenclyffe', offset, 125, 1.2); },
+                Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('wardenclyffe', offset, 50, 1.18) : 0; },
             },
             effect(){
                 let gain = 1000;
