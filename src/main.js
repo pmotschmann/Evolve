@@ -8325,7 +8325,7 @@ function longLoop(){
             if (global.race['artifical'] && global.city['boot_camp']){
                 hc = global.city.boot_camp.count;
             }
-            else if (global.tech['medic'] && global.tech['medic'] >= 2){
+            if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];
             }
             if (global.race['fibroblast']){

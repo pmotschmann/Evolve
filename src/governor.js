@@ -728,6 +728,10 @@ export const gov_tasks = {
                         containers += global.resource[res].containers;
                         active++;
                     }
+                    else {
+                        global.resource[res].crates = 0;
+                        global.resource[res].containers = 0;
+                    }
                 });
 
                 let crateSet = Math.floor(crates / active);
@@ -737,6 +741,10 @@ export const gov_tasks = {
                     Food: { m: 0.1, cap: 100 },
                     Coal: { m: 0.25 },
                 };
+
+                if (global.race['artifical']){
+                    delete dist.Food;
+                }
 
                 Object.keys(global.race.governor.config.bal_storage).forEach(function(res){
                     let val = Number(global.race.governor.config.bal_storage[res]);
@@ -783,6 +791,9 @@ export const gov_tasks = {
                     if (dist[res] && dist[res].hasOwnProperty('cap')){
                         return;
                     }
+                    if (global.race['artifical'] && res === 'Food'){
+                        return;
+                    }
                     if (global.resource[res].display && global.resource[res].stackable){
                         let multiplier = dist[res] ? dist[res].m : 1;
                         let crtAssign = Math.floor(crateSet > 0 ? crateSet * multiplier : 0);
@@ -811,6 +822,9 @@ export const gov_tasks = {
                     max--;
                     res_list.forEach(function(res){
                         if (dist[res] && dist[res].hasOwnProperty('cap')){
+                            return;
+                        }
+                        if (global.race['artifical'] && res === 'Food'){
                             return;
                         }
                         if (global.resource[res].display && global.resource[res].stackable){
@@ -1002,11 +1016,13 @@ export const gov_tasks = {
                     let set = (global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) 
                         ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
                         : 0;
+                    
                     if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res]){
                         set = global.race.governor.config.trash[res];
                     }
                     if (set > remain){ set = remain; }
                     if (set < 0){ set = 0; }
+                    if (global.race['artifical'] && res === 'Food'){ set = 0; }
                     global.interstellar.mass_ejector[res] = set;
                     remain -= set;
                 }
