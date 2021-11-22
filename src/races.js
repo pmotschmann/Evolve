@@ -2102,8 +2102,8 @@ export const traits = {
         }
     },
     shapeshifter: {
-        name: loc('trait_logical_name'),
-        desc: loc('trait_logical'),
+        name: loc('trait_shapeshifter_name'),
+        desc: loc('trait_shapeshifter'),
         type: 'major',
         val: 0,
     },
@@ -2127,7 +2127,18 @@ export const traits = {
         name: loc('trait_linked_name'),
         desc: loc('trait_linked'),
         type: 'major',
-        val: 0,
+        val: 3,
+        vars(){
+            // [Quantum Bonus per Citizen, Softcap]
+            switch (global.race.linked || 1){
+                case 0.5:
+                    return [0.05,40];
+                case 1:
+                    return [0.1,80];
+                case 2:
+                    return [0.12,100];
+            }
+        }
     },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
         name: loc('trait_soul_eater_name'),

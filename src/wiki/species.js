@@ -172,6 +172,12 @@ const traitExtra = {
     ],
     instinct: [
         loc(`wiki_trait_effect_instinct_ex1`,[6.67,loc('galaxy_chthonian'),10])
+    ],
+    logical: [
+        loc(`wiki_trait_effect_logical_ex1`,[
+            global.tech.hasOwnProperty('science') ? global.tech.science : 0,
+            global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
+        ]),
     ]
 };
 

@@ -9056,6 +9056,15 @@ function q_check(load){
         if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.race.AICore.count > 0){
             qbits *= 2 - (0.99 ** global.race.AICore.count);
         }
+        if (global.race['linked']){
+            let factor = traits.linked.vars()[0] / 100 * global.resource[global.race.species].amount;
+            if (factor > traits.linked.vars()[1] / 100){
+                factor -= traits.linked.vars()[1] / 100;
+                factor = factor / (factor + 200 - traits.linked.vars()[1]);
+                factor += traits.linked.vars()[1] / 100;
+            }
+            qbits *= 1 + factor;
+        }
         set_qlevel(+(qbits).toFixed(3));
     }
 }
