@@ -868,7 +868,8 @@ const spaceProjects = {
                 let cat_fd = global.race['cataclysm'] ? `<div>${loc('produce',[+(production('biodome','cat_food')).toFixed(2),global.resource.Food.name])}</div>` : ``;
                 let cat_wd = global.race['cataclysm'] && !global.race['kindling_kindred'] ? `<div>${loc('space_red_mine_effect',[+(production('biodome','lumber')).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}`;
+                let sig_cap = global.race['artifical'] ? `<div>${loc('city_transmitter_effect',[spatialReasoning(500)])}</div` : '';
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}${sig_cap}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },

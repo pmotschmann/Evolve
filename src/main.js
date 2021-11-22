@@ -5813,6 +5813,11 @@ function midLoop(){
             caps['Nanite'] += gain;
             bd_Nanite[loc('city_nanite_factory')] = gain+'v';
         }
+        if (p_on['transmitter'] && global.race['artifical']){
+            let gain = p_on['transmitter'] * spatialReasoning(100);
+            caps['Food'] += gain;
+            bd_Food[loc('city_transmitter')] = gain+'v';
+        }
         if (global.city['pylon'] || global.space['pylon']){
             let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;
@@ -6062,7 +6067,11 @@ function midLoop(){
                 bd_Money[loc('space_red_living_quarters_title')] = gain+'v';
             }
         }
-
+        if (support_on['biodome'] && global.race['artifical']){
+            let gain = support_on['biodome'] * spatialReasoning(500);
+            caps['Food'] += gain;
+            bd_Food[loc('space_red_signal_tower_title')] = gain+'v';
+        }
         if (global.space['titan_quarters']){
             let base = 1;
             let gain = Math.round(support_on['titan_quarters'] * base);
@@ -6720,6 +6729,12 @@ function midLoop(){
                 let mana = global.city.wardenclyffe.count * spatialReasoning(8);
                 caps['Mana'] += mana;
                 bd_Mana[wardenLabel()] = mana+'v';
+            }
+
+            if (global.race['artifical']){
+                let gain = p_on['wardenclyffe'] * spatialReasoning(250);
+                caps['Food'] += gain;
+                bd_Food[wardenLabel()] = gain+'v';
             }
         }
         if (global.race['logical']){

@@ -2675,7 +2675,8 @@ export const actions = {
             },
             effect(){
                 let signal = +(production('transmitter')).toFixed(2);
-                return `<div>${loc('gain',[signal, global.resource.Food.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let sig_cap = spatialReasoning(100);
+                return `<div>${loc('gain',[signal, global.resource.Food.name])}</div><div>${loc('city_transmitter_effect',[sig_cap])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(0.5); },
             action(){
@@ -4367,6 +4368,9 @@ export const actions = {
                     }
                     else {
                         desc = desc + `<div class="has-text-caution">${loc('city_wardenclyffe_effect2',[$(this)[0].powered(),pgain.toLocaleString()])}</div>`;
+                    }
+                    if (global.race['artifical']){
+                        desc = desc + `<div class="has-text-caution">${loc('city_transmitter_effect',[spatialReasoning(250)])}</div`;
                     }
                 }
                 return desc;

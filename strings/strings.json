@@ -972,6 +972,7 @@
   "city_slave_pen_effect2": "You are currently housing %0 out of %1 possible slaves.",
   "city_transmitter": "Transmitter",
   "city_transmitter_desc": "Provides wireless capacity to connect your citizens.",
+  "city_transmitter_effect": "+%0 Wireless Capacity",
   "city_farm": "Farm",
   "city_farm_desc": "Produces food",
   "city_farm_effect": "Provides work for Farmers",
