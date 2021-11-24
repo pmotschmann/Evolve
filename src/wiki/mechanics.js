@@ -101,7 +101,7 @@ export function mechanicsPage(content){
             },
             data_link: {
                 1: ['wiki.html#planetary-structures-bank','wiki.html#interstellar-structures-exchange','wiki.html#hell-structures-arcology',false,false,'wiki.html#space-structures-spaceport','wiki.html#challenges-gameplay-scenarios_cataclysm'],
-                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
+                2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-major_paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
@@ -256,7 +256,7 @@ export function mechanicsPage(content){
                 4: [loc('tech_genetic_decay'),loc('trait_fortify_name'),loc('wiki_mechanics_genome_decay'),loc('resource_Plasmid_name'),'+0%']
             },
             data_link: {
-                4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#traits-species-fortify']
+                4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#traits-species-special_fortify']
             }
         });
         let subSection = createCalcSection(genome_decay,'mechanics','g_decay',loc('wiki_mechanics_genome_decay'));
@@ -581,7 +581,7 @@ export function mechanicsPage(content){
             },
             data_link: {
                 7: ['wiki.html#prehistoric-structures-sentience'],
-                8: ['wiki.html#combat-gameplay','wiki.html#traits-species-revive','wiki.html#traits-species-infectious'],
+                8: ['wiki.html#combat-gameplay','wiki.html#traits-species-major_revive','wiki.html#traits-species-major_infectious'],
                 10: ['wiki.html#major-events','wiki.html#minor-events'],
                 11: [false,(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify',false,'wiki.html#crispr-prestige-recombination'],
                 12: ['wiki.html#governor-gameplay'],
