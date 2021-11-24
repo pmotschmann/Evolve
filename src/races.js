@@ -1,7 +1,7 @@
 import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
-import { clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
+import { vBind, clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
@@ -2105,7 +2105,7 @@ export const traits = {
         name: loc('trait_shapeshifter_name'),
         desc: loc('trait_shapeshifter'),
         type: 'major',
-        val: 0,
+        val: 10,
     },
     deconstructor: {
         name: loc('trait_deconstructor_name'),
@@ -3462,6 +3462,23 @@ export function randomMinorTrait(ranks){
     return trait;
 }
 
+function checkPurgatory(s,t,dv){
+    if (global.race.purgatory[s].hasOwnProperty(t)){
+        global[s][t] = global.race.purgatory[s][t];
+        delete global.race.purgatory[s][t];
+    }
+    else if (dv){
+        global[s][t] = dv;
+    }
+}
+
+function setPurgatory(s,t){
+    if (global[s].hasOwnProperty(t)){
+        global.race.purgatory[s][t] = global[s][t];
+        delete global[s][t];
+    }
+}
+
 function purgeLumber(){
     global.resource.Lumber.display = false;
     global.resource.Crates.amount += global.resource.Lumber.crates;
@@ -3473,18 +3490,12 @@ function purgeLumber(){
     global.city['lumber'] = 0;
     removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
     removeFromRQueue(['reclaimer', 'axe', 'saw']);
-    if (global.city['sawmill']){
-        delete global.city['sawmill'];
-    }
-    if (global.city['graveyard']){
-        delete global.city['graveyard'];
-    }
-    if (global.city['lumber_yard']){
-        delete global.city['lumber_yard'];
-    }
-    delete global.tech['axe'];
-    delete global.tech['reclaimer'];
-    delete global.tech['saw'];
+    setPurgatory('city','sawmill');
+    setPurgatory('city','graveyard');
+    setPurgatory('city','lumber_yard');
+    setPurgatory('tech','axe');
+    setPurgatory('tech','reclaimer');
+    setPurgatory('tech','saw');
     global.civic.lumberjack.display = false;
     global.civic.lumberjack.workers = 0;
     if (global.civic.d_job === 'lumberjack') {
@@ -3529,27 +3540,28 @@ export function cleanAddTrait(trait){
             removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
             removeFromRQueue(['farm', 'agriculture']);
             if (global.tech['farm'] >= 1){
-                global.tech['hunting'] = 2;
+                checkPurgatory('tech','hunting',2);
             }
-            else if (global.tech['agriculture'] >= 3){
-                global.tech['hunting'] = 1;
+            else if (global.tech['agriculture'] && global.tech['agriculture'] >= 3){
+                checkPurgatory('tech','hunting',1);
             }
+            setPurgatory('tech','agriculture');
             if (global.city['farm']){
-                global.city['lodge'] = { count: global.city.farm.count };
-                delete global.city['farm'];
+                checkPurgatory('city','lodge',{ count: global.city.farm.count });
+                setPurgatory('city','farm');
             }
             if (global.city['silo']){
-                global.city['smokehouse'] = { count: global.city.silo.count };
-                delete global.city['silo'];
+                checkPurgatory('city','smokehouse',{ count: global.city.silo.count });
+                setPurgatory('city','silo');
             }
-            else{
+            else {
                 global.city['smokehouse'] = { count: 0 };
             }
             if (global.city['mill']){
-                delete global.city['mill'];
+                setPurgatory('city','mill');
             }
-            delete global.tech['agriculture'];
-            delete global.tech['farm'];
+            setPurgatory('tech','agriculture');
+            setPurgatory('tech','farm');
             global.civic.farmer.workers = 0;
             global.civic.farmer.max = 0;
             global.civic.farmer.display = false;
@@ -3571,9 +3583,14 @@ export function cleanAddTrait(trait){
                 defineIndustry();
             }
             break;
+        case 'sappy':
+            global.resource.Stone.name = loc('resource_Amber_name');
+            setPurgatory('tech','hammer');
+            setPurgatory('city','rock_quarry');
+            break;
         case 'apex_predator':
             removeFromRQueue(['armor']);
-            delete global.tech['armor'];
+            setPurgatory('tech','armor');
             break;
         case 'environmentalist':
             delete power_generated[loc('city_coal_power')];
@@ -3590,12 +3607,12 @@ export function cleanAddTrait(trait){
             }
             removeFromQueue(['city-trade']);
             removeFromRQueue(['trade']);
-            delete global.tech['trade'];
-            delete global.city['trade'];
+            setPurgatory('tech','trade');
+            setPurgatory('city','trade');
             break;
         case 'slaver':
-            global.tech['slaves'] = 2;
-            global.city['slave_pen'] = { count: 0, slaves: 0 };
+            checkPurgatory('tech','slaves',2);
+            checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
             break;
         case 'cannibalize':
             global.city['s_alter'] = {
@@ -3608,13 +3625,13 @@ export function cleanAddTrait(trait){
             };
             break;
         case 'magnificent':
-            global.city['shrine'] = {
+            checkPurgatory('city','shrine',{
                 count: 0,
                 morale: 0,
                 metal: 0,
                 know: 0,
                 tax: 0
-            };
+            });
             break;
         case 'unified':
             global.tech['world_control'] = 1;
@@ -3659,7 +3676,7 @@ export function cleanAddTrait(trait){
         case 'thalassophobia':
             removeFromQueue(['city-wharf']);
             removeFromRQueue(['wharf']);
-            delete global.city['wharf'];
+            setPurgatory('city','wharf');
             break;
         case 'hooved':
             global.resource.Horseshoe.display = true;
@@ -3681,21 +3698,24 @@ export function cleanAddTrait(trait){
             window.location.reload();
         case 'calm':
             global.resource.Zen.display = true;
-            global.city['meditation'] = { count: 0 };
+            checkPurgatory('city','meditation',{ count: 0 });
             break;
         case 'blood_thirst':
             global.race['blood_thirst_count'] = 1;
             break;
         case 'deconstructor':
             global.resource.Nanite.display = true;
-            global.city['nanite_factory'] = { count: 1,
+            checkPurgatory('city','nanite_factory',{ count: 1,
                 Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
                 Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
                 Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
                 Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
                 Iridium: 0, Helium_3: 0, Water: 0, Deuterium: 0,
                 Neutronium: 0, Adamantite: 0, Bolognium: 0, Orichalcum: 0,
-            };
+            });
+            break;
+        case 'shapeshifter':
+            shapeShift();
             break;
         default:
             break;
@@ -3715,6 +3735,15 @@ export function cleanRemoveTrait(trait){
             if (global.race['casting']){
                 defineIndustry();
             }
+            checkPurgatory('city','sawmill');
+            checkPurgatory('city','graveyard');
+            checkPurgatory('city','lumber_yard');
+            checkPurgatory('tech','axe');
+            checkPurgatory('tech','reclaimer');
+            checkPurgatory('tech','saw');
+            if (global.tech['axe']){
+                global.civic.lumberjack.display = true;
+            }
             break;
         case 'smoldering':
             global.resource.Chrysotile.display = false;
@@ -3728,28 +3757,42 @@ export function cleanRemoveTrait(trait){
             if (global.race['casting']){
                 defineIndustry();
             }
+            checkPurgatory('city','sawmill');
+            checkPurgatory('city','graveyard');
+            checkPurgatory('city','lumber_yard');
+            checkPurgatory('tech','axe');
+            checkPurgatory('tech','reclaimer');
+            checkPurgatory('tech','saw');
+            if (global.tech['axe']){
+                global.civic.lumberjack.display = true;
+            }
             break;
         case 'carnivore':
-            global.civic.farmer.display = true;
             removeFromQueue(['city-lodge', 'city-smokehouse', 'city-windmill']);
             removeFromRQueue(['hunting', 'wind_plant']);
-            global.tech['agriculture'] = 1;
+            checkPurgatory('city','agriculture');
             if (global.tech['hunting'] >= 2){
-                global.tech['farm'] = 1;
+                checkPurgatory('city','farm',1);
             }
-            delete global.tech['hunting'];
-            delete global.tech['wind_plant'];
+            else {
+                checkPurgatory('city','farm');
+            }
+            setPurgatory('tech','hunting');
+            setPurgatory('tech','wind_plant');
             if (global.city['lodge']){
-                global.city['farm'] = { count: global.city.lodge.count };
-                delete global.city['lodge'];
+                checkPurgatory('city','farm',{ count: global.city.lodge.count });
+                setPurgatory('city','lodge');
+            }
+            if (global.city['farm']){
+                global.civic.farmer.display = true;
             }
             if (global.city['smokehouse']){
-                global.city['silo'] = { count: global.city.smokehouse.count };
-                delete global.city['smokehouse'];
+                checkPurgatory('city','silo',{ count: global.city.smokehouse.count });
+                setPurgatory('city','smokehouse');
             }
             if (global.city['windmill']){
-                global.city['mill'] = { count: global.city.windmill.count };
-                delete global.city['windmill'];
+                checkPurgatory('city','mill',{ count: global.city.windmill.count });
+                setPurgatory('city','windmill');
             }
             if (!global.race['soul_eater']){
                 if (global.civic.d_job === 'hunter') {
@@ -3764,6 +3807,11 @@ export function cleanRemoveTrait(trait){
                 defineIndustry();
             }
             break;
+        case 'sappy':
+            global.resource.Stone.name = loc('resource_Stone_name');
+            checkPurgatory('tech','hammer');
+            checkPurgatory('city','rock_quarry',{ count: 0 });
+            break;
         case 'environmentalist':
             delete power_generated[loc('city_hydro_power')];
             delete power_generated[loc('city_wind_power')];
@@ -3774,8 +3822,8 @@ export function cleanRemoveTrait(trait){
         case 'slaver':
             removeFromQueue(['city-slave_pen']);
             removeFromRQueue(['slaves']);
-            delete global.city['slave_pen'];
-            delete global.tech['slaves'];
+            setPurgatory('city','slave_pen');
+            setPurgatory('tech','slaves');
             global.resource.Slave.amount = 0;
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
@@ -3801,11 +3849,11 @@ export function cleanRemoveTrait(trait){
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
-            delete global.city['shrine'];
+            setPurgatory('city','shrine');
             break;
         case 'thalassophobia':
             if (global.tech['wharf']){
-                global.city['wharf'] = { count: 0 };
+                checkPurgatory('city','wharf',{ count: 0 });
             }
             break;
         case 'hooved':
@@ -3834,18 +3882,88 @@ export function cleanRemoveTrait(trait){
         case 'calm':
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
-            delete global.city['meditation'];
+            setPurgatory('city','meditation');
             break;
         case 'blood_thirst':
             delete global.race['blood_thirst_count'];
             break;
         case 'deconstructor':
             global.resource.Nanite.display = false;
-            delete global.city['nanite_factory'];
+            setPurgatory('city','nanite_factory');
+            break;
+        case 'shapeshifter':
+            clearElement($('#sshifter'));
+            shapeShift();
             break;
         default:
             break;
     }
+}
+
+export function shapeShift(genus,setup){
+    let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
+    if (!setup){
+        shifted.forEach(function(trait){
+            delete global.race[trait];
+            cleanRemoveTrait(trait);
+        });
+        shifted = [];
+    }
+
+    if (genus){
+        if (genus !== 'none'){
+            Object.keys(genus_traits[genus]).forEach(function (trait) {
+                if (!global.race[trait]){
+                    if (traits[trait].val >= 0){
+                        global.race[trait] = 0.5;
+                    }
+                    else {
+                        global.race[trait] = 2;
+                    }
+                    cleanAddTrait(trait);
+                    shifted.push(trait);
+                }
+            });
+        }
+        global.race['ss_genus'] = genus;
+    }
+
+    if (setup){
+        clearElement($('#sshifter'));
+        global.race['ss_genus'] = global.race.hasOwnProperty('ss_genus') ? global.race.ss_genus : 'none';
+
+        let drop = ``;
+        Object.keys(genus_traits).forEach(function (gen) {
+            if (gen !== 'synthetic' && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 4){
+                drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
+            }
+        });
+
+        $('#sshifter').append(
+            `<span>${loc(`trait_shapeshifter_name`)}</span>: <b-dropdown hoverable>
+            <button class="button is-primary" slot="trigger">
+                <span>{{ ss_genus | genus }}</span>
+            </button>
+            <b-dropdown-item v-on:click="setShape('none')">{{ 'none' | genus }}</b-dropdown-item>${drop}
+        </b-dropdown>`);
+
+        vBind({
+            el: `#sshifter`,
+            data: global.race,
+            methods: {
+                setShape(s){
+                    shapeShift(s);
+                }
+            },
+            filters: {
+                genus(g){
+                    return loc(`genelab_genus_${g}`);
+                }
+            }
+        });
+    }
+
+    global.race['ss_traits'] = shifted;
 }
 
 export const biomes = {

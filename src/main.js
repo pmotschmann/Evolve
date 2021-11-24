@@ -2,7 +2,7 @@ import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, size
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
@@ -183,6 +183,9 @@ defineJobs(true);
 defineResources();
 initTabs();
 buildQueue();
+if (global.race['shapeshifter']){
+    shapeShift(false,true);
+}
 
 Object.keys(gridDefs()).forEach(function(gridtype){
     powerGrid(gridtype);

@@ -11179,7 +11179,7 @@ const techs = {
             Quantium(){ return 1000000; },
             Cipher(){ return 50000; }
         },
-        effect: loc('tech_garage_shelving_effect'),
+        effect: loc('tech_warehouse_shelving_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;

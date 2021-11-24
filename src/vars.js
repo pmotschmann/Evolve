@@ -918,7 +918,7 @@ if (convertVersion(global['version']) < 102000){
 
 global['version'] = '1.2.0';
 delete global['revision'];
-global['beta'] = 12;
+global['beta'] = 13;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1811,6 +1811,15 @@ if (!global.civic['new']){
     global.civic['new'] = 0;
 }
 
+if (!global.race['purgatory']){
+    global.race['purgatory'] = {
+        city: {},
+        space: {},
+        portal: {},
+        tech: {},
+    };
+}
+
 if (!global.civic['d_job']){
     if (global.race['carnivore'] || global.race['soul_eater']){
         global.civic['d_job'] = 'hunter';
@@ -1818,7 +1827,7 @@ if (!global.civic['d_job']){
     else if (global.tech['agriculture'] && global.tech['agriculture'] >= 1){
         global.civic['d_job'] = 'farmer';
     }
-    else{
+    else {
         global.civic['d_job'] = 'unemployed';
     }
 }
@@ -1991,6 +2000,7 @@ window.soft_reset = function reset(){
     
     clearSavedMessages();
 
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let replace = {
         species : 'protoplasm',
         Plasmid: { count: global.race.Plasmid.count },
@@ -2004,6 +2014,9 @@ window.soft_reset = function reset(){
         probes: global.race.probes,
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    }
+    if (srace){
+        replace['srace'] = srace;
     }
     if (global.race['bigbang']){
         replace['bigbang'] = true;

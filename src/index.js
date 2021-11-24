@@ -7,7 +7,7 @@ import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
-import { races } from './races.js';
+import { races, shapeShift } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
@@ -464,6 +464,9 @@ export function loadTab(tab){
                                                 buildGarrison($('#c_garrison'),false);
                                                 foreignGov();
                                             }
+                                            if (global.race['shapeshifter']){
+                                                shapeShift(false,true);
+                                            }
                                         }
                                         break;
                                     case 1:
@@ -523,6 +526,9 @@ export function loadTab(tab){
                     if (global.race['truepath']){
                         drawShipYard();
                     }
+                }
+                if (global.race['shapeshifter']){
+                    shapeShift(false,true);
                 }
                 defineIndustry();
             }
