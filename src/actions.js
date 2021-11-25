@@ -2559,7 +2559,7 @@ export const actions = {
             reqs: { housing: 1, currency: 1 },
             not_trait: ['cataclysm'],
             condition(){
-                return ((global.race['soul_eater'] || global.race['detritivore']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
+                return ((global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
@@ -2568,7 +2568,7 @@ export const actions = {
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
-                return global.race['carnivore'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
+                return global.race['carnivore'] && !global.race['artifical'] ? `<div>${loc('plus_max_resource',[1,loc('citizen')])}</div><div>${loc('city_lodge_effect',[5])}</div>` : loc('plus_max_resource',[1,loc('citizen')]);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2783,13 +2783,6 @@ export const actions = {
             },
             powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
             power_reqs: { agriculture: 6 },
-            action(){
-                if (payCosts($(this)[0])){
-                    global.city['mill'].count++;
-                    return true;
-                }
-                return false;
-            },
             effect(){
                 if (global.tech['agriculture'] >= 6){
                     return `<span class="has-text-success">${loc('city_on')}</span> ${loc('city_mill_effect1')} <span class="has-text-danger">${loc('city_off')}</span> ${loc('city_mill_effect2')}`;
@@ -2797,6 +2790,13 @@ export const actions = {
                 else {
                     return false;
                 }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.city['mill'].count++;
+                    return true;
+                }
+                return false;
             }
         },
         windmill: {
@@ -2812,6 +2812,8 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm'],
+            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
                 Lumber(offset){ return costMultiplier('windmill', offset, 600, 1.33); },

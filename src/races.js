@@ -2,6 +2,7 @@ import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
+import { setResourceName } from './resources.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
@@ -525,7 +526,7 @@ export const traits = {
             // [Seasonal Morale, Hot Bonus, High Hot Bonus]
             switch (global.race.smoldering || 1){
                 case 0.5:
-                    return [4,0.2,0.1];
+                    return [4,0.18,0.1];
                 case 1:
                     return [5,0.35,0.2];
                 case 2:
@@ -558,7 +559,7 @@ export const traits = {
             // [Seasonal Morale, Cold Bonus, High Cold Bonus, Snow Food Bonus, Cold Food Bonus, Sun Food Penalty]
             switch (global.race.chilled || 1){
                 case 0.5:
-                    return [2,0.2,0.1,10,5,18];
+                    return [2,0.18,0.1,10,5,18];
                 case 1:
                     return [5,0.35,0.2,20,10,15];
                 case 2:
@@ -3717,6 +3718,11 @@ export function cleanAddTrait(trait){
         case 'shapeshifter':
             shapeShift();
             break;
+        case 'evil':
+            setResourceName('Lumber');
+            setResourceName('Furs');
+            setResourceName('Plywood');
+            break;
         default:
             break;
     }
@@ -3778,8 +3784,7 @@ export function cleanRemoveTrait(trait){
                 checkPurgatory('city','farm');
             }
             setPurgatory('tech','hunting');
-            setPurgatory('tech','wind_plant');
-            if (global.city['lodge']){
+            if (global.city['lodge'] && !global.race['detritivore'] && !global.race['artifical']){
                 checkPurgatory('city','farm',{ count: global.city.lodge.count });
                 setPurgatory('city','lodge');
             }
@@ -3790,9 +3795,12 @@ export function cleanRemoveTrait(trait){
                 checkPurgatory('city','silo',{ count: global.city.smokehouse.count });
                 setPurgatory('city','smokehouse');
             }
-            if (global.city['windmill']){
-                checkPurgatory('city','mill',{ count: global.city.windmill.count });
-                setPurgatory('city','windmill');
+            if (!global.race['detritivore'] && !global.race['artifical']){
+                setPurgatory('tech','wind_plant');
+                if (global.city['windmill']){
+                    checkPurgatory('city','mill',{ count: global.city.windmill.count });
+                    setPurgatory('city','windmill');
+                }
             }
             if (!global.race['soul_eater']){
                 if (global.civic.d_job === 'hunter') {
@@ -3895,6 +3903,11 @@ export function cleanRemoveTrait(trait){
             clearElement($('#sshifter'));
             shapeShift();
             break;
+        case 'evil':
+            setResourceName('Lumber');
+            setResourceName('Furs');
+            setResourceName('Plywood');
+            break;
         default:
             break;
     }
@@ -3934,13 +3947,13 @@ export function shapeShift(genus,setup){
 
         let drop = ``;
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 4){
+            if (gen !== 'synthetic' && gen !== races[global.race.species].type && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 4){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
 
         $('#sshifter').append(
-            `<span>${loc(`trait_shapeshifter_name`)}</span>: <b-dropdown hoverable>
+            `<span>${loc(`trait_shapeshifter_name`)}</span>: <b-dropdown hoverable scrollable>
             <button class="button is-primary" slot="trigger">
                 <span>{{ ss_genus | genus }}</span>
             </button>

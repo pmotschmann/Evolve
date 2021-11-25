@@ -1584,11 +1584,11 @@ function fastLoop(){
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
-        if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['detritivore'] || global.race['carnivore'])){
-            let power = powerModifier(global.race['environmentalist'] ? (global.city.windmill.count * 1.5) : global.city.windmill.count);
-            max_power -= power;
-            power_grid += power;
-            power_generated[loc('city_mill_title2')] = power;
+        if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['detritivore'] || global.race['carnivore'] || global.race['artifical'])){
+            let power = powerModifier(global.city.windmill.count * actions.city.windmill.powered());
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('city_mill_title2')] = -(power);
         }
 
         if (global.race['powered']){

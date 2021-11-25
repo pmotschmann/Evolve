@@ -468,7 +468,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
         trait: ['carnivore'],
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','artifical'],
         grant: ['hunting',1],
         cost: {
             Knowledge(){ return 80; }
@@ -506,20 +506,20 @@ const techs = {
     },
     alt_lodge: {
         id: 'tech-alt_lodge',
-        title(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
-        desc(){ return global.race['detritivore'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+        title(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+        desc(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
         wiki: global.race['carnivore'] ? false : true,
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 1, currency: 1 },
         grant: ['s_lodge',1],
         condition(){
-            return global.race.species === 'wendigo' || global.race['detritivore'] ? true : false;
+            return global.race.species === 'wendigo' || (!global.race['soul_eater'] && (global.race['detritivore'] || global.race['artifical'])) ? true : false;
         },
         cost: {
-            Knowledge(){ return 180; }
+            Knowledge(){ return global.race['artifical'] ? 10000 : 180; }
         },
-        effect(){ return global.race['detritivore'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
+        effect(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.city['lodge'] = { count: 0 };
@@ -536,7 +536,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['soul_eater'],
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','artifical'],
         grant: ['soul_eater',1],
         cost: {
             Knowledge(){ return 10; }
@@ -558,7 +558,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['detritivore'],
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','artifical'],
         grant: ['compost',1],
         cost: {
             Knowledge(){ return 10; }
@@ -780,7 +780,7 @@ const techs = {
         category: 'power_generation',
         era: 'globalized',
         reqs: { high_tech: 4 },
-        condition(){ return (global.tech['hunting'] && global.tech['hunting'] >= 2) || global.race['detritivore'] || global.race['soul_eater'] ? true : false; },
+        condition(){ return (global.tech['hunting'] && global.tech['hunting'] >= 2) || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] ? true : false; },
         grant: ['wind_plant',1],
         cost: {
             Knowledge(){ return 66000; }

@@ -606,93 +606,19 @@ function loadResource(name,max,rate,tradable,stackable,color){
             rate: rate
         };
     }
-    else {
-        if (name === global.race.species){
-            global.resource[name].name = flib('name');
-        }
-        else {
-            global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
-        }
-    }
 
     if (global.race['artifical']){
         if (name === 'Food'){
             stackable = false;
         }
-        else if (name === 'Genes'){
-            global.resource[name].name = loc(`resource_Program_name`);
-        }
     }
+
+    setResourceName(name);
 
     if (name === 'Mana'){
         global['resource'][name]['gen'] = 0;
         global['resource'][name]['gen_d'] = 0;
-    }
-
-    if (global.race['sappy']){
-        switch(name){
-            case 'Stone':
-                global['resource'][name].name = loc('resource_Amber_name');
-                break;
-        }
-    }
-
-    if (global.race['soul_eater']){
-        switch(name){
-            case 'Food':
-                global['resource'][name].name = loc('resource_Souls_name');
-                break;
-        }
-    }
-
-    if (global.race['evil']){
-        switch(name){
-            case 'Lumber':
-                global['resource'][name].name = loc('resource_Bones_name');
-                break;
-            case 'Furs':
-                global['resource'][name].name = loc('resource_Flesh_name');
-                break;
-            case 'Plywood':
-                global['resource'][name].name = loc('resource_Boneweave_name');
-                break;
-        }
-    }
-
-    if (global.race['artifical']){
-        switch(name){
-            case 'Food':
-                global['resource'][name].name = loc('resource_Signal_name');
-                break;
-        }
-    }
-
-    let hallowed = eventActive('halloween');
-    if (hallowed.active){
-        switch(name){
-            case 'Food':
-                global['resource'][name].name = loc('resource_Candy_name');
-                break;
-            case 'Lumber':
-                global['resource'][name].name = loc('resource_Bones_name');
-                break;
-            case 'Stone':
-                global['resource'][name].name = loc('resource_RockCandy_name');
-                break;
-            case 'Furs':
-                global['resource'][name].name = loc('resource_Webs_name');
-                break;
-            case 'Plywood':
-                global['resource'][name].name = loc('resource_Boneweave_name');
-                break;
-            case 'Brick':
-                global['resource'][name].name = loc('resource_Tombstone_name');
-                break;
-            case 'Soul_Gem':
-                global['resource'][name].name = loc('resource_CandyCorn_name');
-                break;
-        }
-    }
+    }  
 
     global['resource'][name]['stackable'] = stackable;
     if (!global['resource'][name]['crates']){
@@ -911,6 +837,86 @@ function loadResource(name,max,rate,tradable,stackable,color){
         tradable: tradable,
         stackable: stackable
     };
+}
+
+export function setResourceName(name){
+    if (name === global.race.species){
+        global.resource[name].name = flib('name');
+    }
+    else {
+        global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
+    }
+    
+    if (global.race['artifical']){
+        if (name === 'Genes'){
+            global.resource[name].name = loc(`resource_Program_name`);
+        }
+    }
+
+    if (global.race['sappy']){
+        switch(name){
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Amber_name');
+                break;
+        }
+    }
+
+    if (global.race['soul_eater']){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = loc('resource_Souls_name');
+                break;
+        }
+    }
+
+    if (global.race['evil']){
+        switch(name){
+            case 'Lumber':
+                global['resource'][name].name = loc('resource_Bones_name');
+                break;
+            case 'Furs':
+                global['resource'][name].name = loc('resource_Flesh_name');
+                break;
+            case 'Plywood':
+                global['resource'][name].name = loc('resource_Boneweave_name');
+                break;
+        }
+    }
+
+    if (global.race['artifical']){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = loc('resource_Signal_name');
+                break;
+        }
+    }
+
+    let hallowed = eventActive('halloween');
+    if (hallowed.active){
+        switch(name){
+            case 'Food':
+                global['resource'][name].name = loc('resource_Candy_name');
+                break;
+            case 'Lumber':
+                global['resource'][name].name = loc('resource_Bones_name');
+                break;
+            case 'Stone':
+                global['resource'][name].name = loc('resource_RockCandy_name');
+                break;
+            case 'Furs':
+                global['resource'][name].name = loc('resource_Webs_name');
+                break;
+            case 'Plywood':
+                global['resource'][name].name = loc('resource_Boneweave_name');
+                break;
+            case 'Brick':
+                global['resource'][name].name = loc('resource_Tombstone_name');
+                break;
+            case 'Soul_Gem':
+                global['resource'][name].name = loc('resource_CandyCorn_name');
+                break;
+        }
+    }
 }
 
 function loadSpecialResource(name,color) {
