@@ -96,6 +96,24 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
     }
 
+    { // Cost Creep
+        infoBoxBuilder(mainContent,{ name: 'cost_creep', template: 'mechanics', label: loc('wiki_mechanics_cost_creep'), paragraphs: 7, break: [4,7], h_level: 2,
+            para_data: {
+                2: [loc('resource_Lumber_name'),200,1.3,'200*1.3=260','200*1.3^2=338'],
+                3: [loc('wiki_menu_arpa')],
+                5: [loc('tech_steel_beams'),loc('trait_large_name'),loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_creep')],
+                6: [loc('trait_creative_name'),loc('wiki_menu_arpa')],
+                7: [1.005]
+            },
+            data_link: {
+                3: ['wiki.html#projects-arpa'],
+                5: ['wiki.html#discovery-tech-steel_beams','wiki.html#traits-species-genus_large',false,'wiki.html#crispr-prestige-genetic_memory'],
+                6: ['wiki.html#traits-species-major_creative']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`cost_creep`,loc('wiki_mechanics_cost_creep'));
+    }
+
     { // Queue
         infoBoxBuilder(mainContent,{ name: 'queue', template: 'mechanics', label: loc('wiki_mechanics_queue'), paragraphs: 13, break: [4,6,9,10,11,13], h_level: 2,
             para_data: {

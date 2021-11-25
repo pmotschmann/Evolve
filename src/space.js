@@ -27,7 +27,7 @@ const spaceProjects = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return 100000; },
-                Oil(){ return fuel_adjust(7500); }
+                Oil(offset,wiki){ return fuel_adjust(7500,wiki); }
             },
             effect: loc('space_home_test_launch_effect'),
             action(){
@@ -47,7 +47,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('satellite', offset, 72000, 1.22); },
                 Knowledge(offset){ return spaceCostMultiplier('satellite', offset, 28000, 1.22); },
-                Oil(offset){ return spaceCostMultiplier('satellite', offset, fuel_adjust(3200), 1.22); },
+                Oil(offset,wiki){ return spaceCostMultiplier('satellite', offset, fuel_adjust(3200,wiki), 1.22); },
                 Alloy(offset){ return spaceCostMultiplier('satellite', offset, 8000, 1.22); }
             },
             effect(){
@@ -85,11 +85,12 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gps', offset, 75000, 1.18); },
                 Knowledge(offset){ return spaceCostMultiplier('gps', offset, 50000, 1.18); },
                 Copper(offset){ return spaceCostMultiplier('gps', offset, 6500, 1.18); },
-                Oil(offset){ return spaceCostMultiplier('gps', offset, fuel_adjust(3500), 1.18); },
+                Oil(offset,wiki){ return spaceCostMultiplier('gps', offset, fuel_adjust(3500,wiki), 1.18); },
                 Titanium(offset){ return spaceCostMultiplier('gps', offset, 8000, 1.18); }
             },
-            effect(){
-                if (global.space.hasOwnProperty('gps') && global.space['gps'].count < 4){
+            effect(wiki){
+                let count = (wiki || 0) + (global.space.hasOwnProperty('gps') ? global.space['gps'].count : 0);
+                if (count < 4){
                     return loc('space_home_gps_effect_req');
                 }
                 else {
@@ -112,7 +113,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('propellant_depot', offset, 55000, 1.35); },
                 Aluminium(offset){ return spaceCostMultiplier('propellant_depot', offset, 22000, 1.35); },
-                Oil(offset){ return spaceCostMultiplier('propellant_depot', offset, fuel_adjust(5500), 1.35); },
+                Oil(offset,wiki){ return spaceCostMultiplier('propellant_depot', offset, fuel_adjust(5500,wiki), 1.35); },
             },
             effect(){
                 let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
@@ -143,7 +144,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('nav_beacon', offset, 75000, 1.32); },
                 Copper(offset){ return spaceCostMultiplier('nav_beacon', offset, 38000, 1.32); },
                 Aluminium(offset){ return spaceCostMultiplier('nav_beacon', offset, 44000, 1.32); },
-                Oil(offset){ return spaceCostMultiplier('nav_beacon', offset, fuel_adjust(12500), 1.32); },
+                Oil(offset,wiki){ return spaceCostMultiplier('nav_beacon', offset, fuel_adjust(12500,wiki), 1.32); },
                 Iridium(offset){ return spaceCostMultiplier('nav_beacon', offset, 1200, 1.32); }
             },
             powered(){ return powerCostMod(2); },
@@ -180,7 +181,7 @@ const spaceProjects = {
             grant: ['space',3],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Oil(){ return +fuel_adjust(12000).toFixed(0); }
+                Oil(offset,wiki){ return +fuel_adjust(12000,wiki).toFixed(0); }
             },
             effect: loc('space_moon_mission_effect'),
             action(){
@@ -357,7 +358,7 @@ const spaceProjects = {
             grant: ['space',4],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(4500).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(4500,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_red_mission_effect',[races[global.race.species].solar.red]);
@@ -971,21 +972,35 @@ const spaceProjects = {
             trait: ['hooved','cataclysm'],
             inflation: false,
             cost: {
-                Lumber(){ 
-                    let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
-                        && (!global.resource.Copper.display || global.race.shoecnt <= 12) ? true : false;
-                    return active ? (global.race.shoecnt > 12 ? 25 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0;
+                Lumber(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    let active = !global.race['kindling_kindred'] && !global.race['smoldering']
+                        && (!global.resource.Copper.display || shoes <= 12) ? true : false;
+                    return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
                 },
-                Copper(){
+                Copper(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
                     let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
-                    let active = global.race['shoecnt'] && (!lum || (lum && global.race.shoecnt > 12 && global.resource.Copper.display))
-                        && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
-                    return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
+                    let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
+                        && (!global.resource.Iron.display || shoes <= 75) ? true : false;
+                    return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
                 },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 12 : 28) * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
-                Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
-                Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
+                Iron(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
+                },
+                Steel(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
+                },
+                Adamantite(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
+                },
+                Orichalcum(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
+                }
             },
             action(n){
                 let keyMult = n || keyMultiplier();
@@ -1022,7 +1037,7 @@ const spaceProjects = {
             grant: ['hell',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(6500).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(6500,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_mission_effect1',[races[global.race.species].solar.hell]);
@@ -1165,7 +1180,7 @@ const spaceProjects = {
             grant: ['solar',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(15000).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(15000,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_sun_mission_effect1');
@@ -1188,7 +1203,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('swarm_control', offset, 100000, 1.3); },
                 Knowledge(offset){ return spaceCostMultiplier('swarm_control', offset, 60000, 1.3); },
                 Alloy(offset){ return spaceCostMultiplier('swarm_control', offset, 7500, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('swarm_control', offset, fuel_adjust(2000), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_control', offset, fuel_adjust(2000,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('swarm_control', offset, 250, 1.3); }
             },
             effect(){
@@ -1215,7 +1230,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(5000), 1.1); },
                 Copper(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(2500), 1.1); },
                 Iridium(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(150), 1.1); },
-                Helium_3(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50)), 1.1); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50,wiki)), 1.1); }
             },
             effect(){
                 let solar = 0.35;
@@ -1261,7 +1276,7 @@ const spaceProjects = {
             grant: ['space',5],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(12500).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(12500,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_mission_effect',[races[global.race.species].solar.gas]);
@@ -1288,7 +1303,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gas_mining', offset, 250000, 1.32); },
                 Uranium(offset){ return spaceCostMultiplier('gas_mining', offset, 500, 1.32); },
                 Alloy(offset){ return spaceCostMultiplier('gas_mining', offset, 10000, 1.32); },
-                Helium_3(offset){ return spaceCostMultiplier('gas_mining', offset, fuel_adjust(2500), 1.32); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_mining', offset, fuel_adjust(2500,wiki), 1.32); },
                 Mythril(offset){ return spaceCostMultiplier('gas_mining', offset, 25, 1.32); }
             },
             effect(){
@@ -1318,7 +1333,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gas_storage', offset, 125000, 1.32); },
                 Iridium(offset){ return spaceCostMultiplier('gas_storage', offset, 3000, 1.32); },
                 Sheet_Metal(offset){ return spaceCostMultiplier('gas_storage', offset, 2000, 1.32); },
-                Helium_3(offset){ return spaceCostMultiplier('gas_storage', offset, fuel_adjust(1000), 1.32); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_storage', offset, fuel_adjust(1000,wiki), 1.32); },
             },
             effect(){
                 let oil = spatialReasoning(3500) * (global.tech['world_control'] ? 1.5 : 1);
@@ -1344,11 +1359,11 @@ const spaceProjects = {
             no_queue(){ return global.space.star_dock.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             q_once: true,
             cost: {
-                Money(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 1500000 : 0; },
-                Steel(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 500000 : 0; },
-                Helium_3(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? Math.round(fuel_adjust(10000)) : 0; },
-                Nano_Tube(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 250000 : 0; },
-                Mythril(){ return !global.space.hasOwnProperty('star_dock') || global.space.star_dock.count === 0 ? 10000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 1500000 : 0; },
+                Steel(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 500000 : 0; },
+                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(10000,wiki)) : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 250000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 10000 : 0; },
             },
             effect(){
                 return `<div>${loc('space_gas_star_dock_effect1')}</div>`;
@@ -1384,7 +1399,7 @@ const spaceProjects = {
             grant: ['space',6],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(30000).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(30000,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_moon_mission_effect',[races[global.race.species].solar.gas_moon]);
@@ -1410,7 +1425,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('outpost', offset, 666000, 1.3); },
                 Titanium(offset){ return spaceCostMultiplier('outpost', offset, 18000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('outpost', offset, 2500, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('outpost', offset, fuel_adjust(6000), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('outpost', offset, fuel_adjust(6000,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('outpost', offset, 300, 1.3); }
             },
             effect(){
@@ -1472,7 +1487,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('oil_extractor', offset, 666000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('oil_extractor', offset, 7500, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('oil_extractor', offset, fuel_adjust(2500), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('oil_extractor', offset, fuel_adjust(2500,wiki), 1.3); },
                 Wrought_Iron(offset){ return spaceCostMultiplier('oil_extractor', offset, 5000, 1.3); },
             },
             effect(){
@@ -1524,7 +1539,7 @@ const spaceProjects = {
             grant: ['asteroid',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(25000).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(25000,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_belt_mission_effect1');
@@ -1550,7 +1565,7 @@ const spaceProjects = {
                 Iron(offset){ return spaceCostMultiplier('space_station', offset, 85000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('space_station', offset, 18000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('space_station', offset, 2800, 1.28); },
-                Helium_3(offset){ return spaceCostMultiplier('space_station', offset, fuel_adjust(2000), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('space_station', offset, fuel_adjust(2000,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('space_station', offset, 75, 1.25); }
             },
             effect(){
@@ -1595,7 +1610,7 @@ const spaceProjects = {
                 Uranium(offset){ return spaceCostMultiplier('elerium_ship', offset, 2500, 1.3); },
                 Titanium(offset){ return spaceCostMultiplier('elerium_ship', offset, 10000, 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('elerium_ship', offset, 500, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('elerium_ship', offset, fuel_adjust(5000), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('elerium_ship', offset, fuel_adjust(5000,wiki), 1.3); }
             },
             effect(){
                 let elerium = +((global.tech.asteroid >= 6 ?  (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus()).toFixed(4);
@@ -1626,7 +1641,7 @@ const spaceProjects = {
                 Uranium(offset){ return spaceCostMultiplier('iridium_ship', offset, 1000, 1.3); },
                 Alloy(offset){ return spaceCostMultiplier('iridium_ship', offset, 48000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('iridium_ship', offset, 2800, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('iridium_ship', offset, fuel_adjust(1800), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('iridium_ship', offset, fuel_adjust(1800,wiki), 1.3); }
             },
             effect(){
                 let iridium = +((global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus()).toFixed(3);
@@ -1657,7 +1672,7 @@ const spaceProjects = {
                 Steel(offset){ return spaceCostMultiplier('iron_ship', offset, 42000, 1.3); },
                 Aluminium(offset){ return spaceCostMultiplier('iron_ship', offset, 38000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('iron_ship', offset, 16000, 1.3); },
-                Helium_3(offset){ return spaceCostMultiplier('iron_ship', offset, fuel_adjust(1200), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('iron_ship', offset, fuel_adjust(1200,wiki), 1.3); }
             },
             effect(){
                 let iron = +((global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus()).toFixed(2);
@@ -1703,7 +1718,7 @@ const spaceProjects = {
             grant: ['dwarf',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: { 
-                Helium_3(){ return +fuel_adjust(45000).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(45000,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_dwarf_mission_effect1',[races[global.race.species].solar.dwarf]);
@@ -1790,16 +1805,17 @@ const spaceProjects = {
             queue_size: 100,
             queue_complete(){ return 1859 - global.space.world_collider.count; },
             cost: {
-                Money(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 25000 : 0; },
-                Copper(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 750 : 0; },
-                Alloy(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 125 : 0; },
-                Neutronium(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 12 : 0; },
-                Elerium(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 1 : 0; },
-                Mythril(offset,wiki){ return !global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859 || wiki ? 10 : 0; }
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 25000 : 0; },
+                Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 750 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 125 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 12 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 1 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0)) < 1859 ? 10 : 0; }
             },
-            effect(){
-                if (!global.space.hasOwnProperty('world_collider') || global.space.world_collider.count < 1859){
-                    let remain = global.space.hasOwnProperty('world_collider') ? 1859 - global.space.world_collider.count : 1859;
+            effect(wiki){
+                let count = (wiki || 0) + (global.space.hasOwnProperty('world_collider') ? global.space.world_collider.count : 0);
+                if (count < 1859){
+                    let remain = 1859 - count;
                     return `<div>${loc('space_dwarf_collider_effect1')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
@@ -2542,15 +2558,16 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] ? false : true;
             },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 250000 : 0; },
-                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 10000 : 0; },
-                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 25 : 0; },
-                Stanene(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki ? 100000 : 0; }
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 250000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 10000 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 25 : 0; },
+                Stanene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0)) < 100 ? 100000 : 0; }
             },
-            effect(){
-                if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100){
-                    let power = global.interstellar.dyson && global.interstellar.dyson.count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(global.interstellar.dyson.count * 1.25)])}</div>` : ``;
-                    let remain = global.interstellar.hasOwnProperty('dyson') ? 100 - global.interstellar.dyson.count : 100;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('dyson') ? global.interstellar.dyson.count : 0);
+                if (count < 100){
+                    let power = count > 0 ? `<div>${loc('space_dwarf_reactor_effect1',[powerModifier(count * 1.25)])}</div>` : ``;
+                    let remain = 100 - count;
                     return `<div>${loc('interstellar_dyson_effect')}</div>${power}<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
@@ -2589,15 +2606,16 @@ const interstellarProjects = {
                 return global.interstellar.dyson.count >= 100 && global.tech['dyson'] && global.tech.dyson === 1 ? true : false;
             },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 5000000 : 0; },
-                Bolognium(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 25000 : 0; },
-                Vitreloy(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 1250 : 0; },
-                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki ? 75000 : 0; }
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 5000000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 25000 : 0; },
+                Vitreloy(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 1250 : 0; },
+                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0)) < 100 ? 75000 : 0; }
             },
-            effect(){
-                if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100){
-                    let power = global.interstellar.hasOwnProperty('dyson_sphere') ? 175 + (global.interstellar.dyson_sphere.count * 5) : 175;
-                    let remain = global.interstellar.hasOwnProperty('dyson_sphere') ? 100 - global.interstellar.dyson_sphere.count : 100;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('dyson_sphere') ? global.interstellar.dyson_sphere.count : 0); 
+                if (count < 100){
+                    let power = 175 + (count * 5);
+                    let remain = 100 - count;
                     return `<div>${loc('interstellar_dyson_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
@@ -2636,13 +2654,14 @@ const interstellarProjects = {
                 return global.interstellar.dyson_sphere.count >= 100 && global.tech['dyson'] && global.tech.dyson === 2 ? true : false;
             },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 25000000 : 0; },
-                Orichalcum(offset,wiki){ return !global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki ? 75000 : 0; }
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 25000000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0)) < 100 ? 75000 : 0; }
             },
-            effect(){
-                if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100){
-                    let power = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 750 + (global.interstellar.orichalcum_sphere.count * 8) : 750;
-                    let remain = global.interstellar.hasOwnProperty('orichalcum_sphere') ? 100 - global.interstellar.orichalcum_sphere.count : 100;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('orichalcum_sphere') ? global.interstellar.orichalcum_sphere.count : 0);
+                if (count < 100){
+                    let power = 750 + (count * 8);
+                    let remain = 100 - count;
                     return `<div>${loc('interstellar_orichalcum_sphere_effect')}</div><div>${loc('space_dwarf_reactor_effect1',[powerModifier(power)])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
@@ -3030,26 +3049,27 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 100 - global.interstellar.stellar_engine.count; },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 500000 : 0; },
-                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 450 : 0; },
-                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 17500 : 0; },
-                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 225 : 0; },
-                Graphene(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 45000 : 0; },
-                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 250 : 0; },
-                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki ? 75 : 0; },
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 500000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 450 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 17500 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 225 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 45000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 250 : 0; },
+                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0)) < 100 ? 75 : 0; },
             },
-            effect(){
-                if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100){
-                    let remain = global.interstellar.hasOwnProperty('stellar_engine') ? 100 - global.interstellar.stellar_engine.count : 100;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('stellar_engine') ? global.interstellar.stellar_engine.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
                     return `<div>${loc('interstellar_stellar_engine_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
                     let waves = global.tech['gravity'] && global.tech['gravity'] >= 2 ? 13.5 : 7.5;
-                    let r_mass = global.interstellar.stellar_engine.mass;
+                    let r_mass = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.mass : 8;
                     if (global.tech['roid_eject']){
                         r_mass += 0.225 * global.tech['roid_eject'] * (1 + (global.tech['roid_eject'] / 12));
                     }
-                    let output = powerModifier(+(20 + ((r_mass - 8) * waves) + (global.interstellar.stellar_engine.exotic * waves * 10)).toFixed(2));
+                    let output = powerModifier(+(20 + ((r_mass - 8) * waves) + ((global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0) * waves * 10)).toFixed(2));
                     if (global.tech['blackhole'] >= 5){
                         let exotic = +(global.interstellar.stellar_engine.exotic).toFixed(10);
                         let blackhole = global.interstellar.stellar_engine.exotic > 0 ? loc('interstellar_stellar_engine_effect3',[r_mass,exotic]) : loc('interstellar_stellar_engine_effect2',[r_mass]);
@@ -3184,21 +3204,23 @@ const interstellarProjects = {
             queue_size: 10,
             queue_complete(){ return 200 - global.interstellar.stargate.count; },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 1000000 : 0; },
-                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 4800 : 0; },
-                Infernite(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 666 : 0; },
-                Elerium(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 75 : 0; },
-                Nano_Tube(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 12000 : 0; },
-                Stanene(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 60000 : 0; },
-                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki ? 3200 : 0; }
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 1000000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 4800 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 666 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 75 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 12000 : 0; },
+                Stanene(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 60000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0)) < 200 ? 3200 : 0; }
             },
-            effect(){
-                let effectText = `<div>${loc('interstellar_stargate_effect')}</div>`
-                if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200){
-                    let remain = global.interstellar.hasOwnProperty('stargate') ? 200 - global.interstellar.stargate.count : 200;
-                    effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('stargate') ? global.interstellar.stargate.count : 0);
+                if (count < 200){
+                    let remain = 200 - count;
+                    return `<div>${loc('interstellar_stargate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
-                return effectText;
+                else {
+                    return interstellarProjects.int_blackhole.s_gate.effect();
+                }
             },
             action(){
                 if (payCosts($(this)[0].cost)){
@@ -3305,15 +3327,16 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.space_elevator.count; },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 20000000 : 0; },
-                Nano_Tube(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 500000 : 0; },
-                Bolognium(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 100000 : 0; },
-                Mythril(offset,wiki){ return !global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki ? 125000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 20000000 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 500000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 100000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0)) < 100 ? 125000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let effectText = `<div>${loc('interstellar_space_elevator_effect')}</div>`;
-                if (!global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100){
-                    let remain = global.interstellar.hasOwnProperty('space_elevator') ? 100 - global.interstellar.space_elevator.count : 100;
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('space_elevator') ? global.interstellar.space_elevator.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 return effectText;
@@ -3353,15 +3376,16 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.gravity_dome.count; },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 35000000 : 0; },
-                Cement(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 1250000 : 0; },
-                Adamantite(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 650000 : 0; },
-                Aerogel(offset,wiki){ return !global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki ? 180000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 35000000 : 0; },
+                Cement(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 1250000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 650000 : 0; },
+                Aerogel(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0)) < 100 ? 180000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let effectText = `<div>${loc('interstellar_gravity_dome_effect',[races[global.race.species].home])}</div>`;
-                if (!global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100){
-                    let remain = global.interstellar.hasOwnProperty('gravity_dome') ? 100 - global.interstellar.gravity_dome.count : 100;
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('gravity_dome') ? global.interstellar.gravity_dome.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 return effectText;
@@ -3402,16 +3426,17 @@ const interstellarProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.interstellar.ascension_machine.count; },
             cost: {
-                Money(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000000 : 0; },
-                Alloy(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 750000 : 0; },
-                Neutronium(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 125000 : 0; },
-                Elerium(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 1000 : 0; },
-                Orichalcum(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 250000 : 0; },
-                Nanoweave(offset,wiki){ return !global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki ? 75000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000000 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 750000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 1000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 250000 : 0; },
+                Nanoweave(offset){ return ((offset || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0)) < 100 ? 75000 : 0; },
             },
-            effect(){
-                if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100){
-                    let remain = global.interstellar.hasOwnProperty('ascension_machine') ? 100 - global.interstellar.ascension_machine.count : 100;
+            effect(wiki){
+                let count = (wiki || 0) + (global.interstellar.hasOwnProperty('ascension_machine') ? global.interstellar.ascension_machine.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
                     return `<div>${loc('interstellar_ascension_machine_effect',[flib('name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
@@ -4157,11 +4182,11 @@ const galaxyProjects = {
             q_once: true,
             queue_complete(){ return 1 - global.galaxy.embassy.count; },
             cost: {
-                Money(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 30000000 : 0; },
-                Lumber(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 38000000 : 0; },
-                Stone(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 32000000 : 0; },
-                Furs(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 18000000 : 0; },
-                Wrought_Iron(offset,wiki){ return !global.galaxy.hasOwnProperty('embassy') || global.galaxy.embassy.count < 1 || wiki ? 6000000 : 0; }
+                Money(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 30000000 : 0; },
+                Lumber(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 38000000 : 0; },
+                Stone(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 32000000 : 0; },
+                Furs(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 18000000 : 0; },
+                Wrought_Iron(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('embassy') ? global.galaxy.embassy.count : 0)) < 1 ? 6000000 : 0; }
             },
             effect(){
                 let food = 7500;
@@ -4318,11 +4343,11 @@ const galaxyProjects = {
             q_once: true,
             queue_complete(){ return 1 - global.galaxy.consulate.count; },
             cost: {
-                Money(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 90000000 : 0; },
-                Stone(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 75000000 : 0; },
-                Furs(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 30000000 : 0; },
-                Iron(offset,wiki){ return !global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki ? 45000000 : 0; },
-                Horseshoe(offset,wiki){ return global.race['hooved'] && (!global.galaxy.hasOwnProperty('consulate') || global.galaxy.consulate.count < 1 || wiki) ? 10 : 0; }
+                Money(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 90000000 : 0; },
+                Stone(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 75000000 : 0; },
+                Furs(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 30000000 : 0; },
+                Iron(offset){ return ((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1 ? 45000000 : 0; },
+                Horseshoe(offset){ return global.race['hooved'] && (((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1) ? 10 : 0; }
             },
             effect(){
                 return loc('plus_max_citizens',[10]);
@@ -5592,12 +5617,16 @@ export function swarm_adjust(res){
     return res;
 }
 
-export function fuel_adjust(fuel){
+export function fuel_adjust(fuel,wiki){
+    wiki = wiki || {};
     if (global.race.universe === 'heavy'){
         fuel *= 1.25 + (0.5 * darkEffect('heavy'));
     }
     if (global.city['mass_driver'] && p_on['mass_driver']){
         fuel *= 0.95 ** p_on['mass_driver'];
+    }
+    else if (wiki.mass_driver){
+        fuel *= 0.95 ** wiki.mass_driver;
     }
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;

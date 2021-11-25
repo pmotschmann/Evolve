@@ -1,5 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
+import { vBind } from './../functions.js';
 import { bloodPool } from './../arpa.js';
 import { sideMenu } from './functions.js';
 
@@ -44,10 +45,15 @@ function bloodDesc(info,trait){
     let costs = $(`<div class="cost right"></div>`);
     stats.append(costs);
     Object.keys(bloodPool[trait].cost).forEach(function(res){
-        let res_cost = bloodPool[trait].cost[res]();
-        if (res_cost > 0){
-            let label = loc(`resource_${res}_name`);
-            costs.append(`<div><span class="has-text-warning">${label}</span>: <span data-${res}="${res_cost}">${res_cost}</span></div>`);
+        let label = loc(`resource_${res}_name`);
+        if (bloodPool[trait].grant[1] === '*'){
+            costs.append(`<div v-show="r.${res}.vis"><span class="has-text-warning">${label}</span>: <span>{{ r.${res}.cost }}</span></div>`);
+        }
+        else {
+            let res_cost = bloodPool[trait].cost[res]();
+            if (res_cost > 0){
+                costs.append(`<div><span class="has-text-warning">${label}</span>: <span data-${res}="${res_cost}">${res_cost}</span></div>`);
+            }
         }
     });
 
@@ -68,4 +74,73 @@ function bloodDesc(info,trait){
             reqs.append(`${comma ? `, ` : ``}<span><a href="wiki.html#crispr-prestige-essence_absorber"  class="has-text-${color}" target="_blank">${loc(`wiki_arpa_crispr_blood`)} 3</a></span>`);
         }
     }
+    
+    if (bloodPool[trait].grant[1] === '*'){
+        addCalcInputs(info,trait);
+    }
+}
+
+function addCalcInputs(parent,key){
+    let inputs = {
+        owned: 0,
+    };
+    let resources = {};
+    
+    let action = bloodPool[key];
+    inputs.real_owned = global.blood[key] ? global.blood[key] : 0;
+    
+    let cost = action.cost;
+    Object.keys(cost).forEach(function (res){
+        resources[res] = {};
+    });
+    
+    //Functions to update costs and cost creeps
+    let updateCosts = function(){
+        Object.keys(resources).forEach(function (res){
+            let new_cost = cost[res] ? cost[res](inputs.owned - inputs.real_owned) : 0;
+            resources[res].vis = new_cost > 0 ? true : false;
+            resources[res].cost = new_cost;
+        });
+    };
+    updateCosts();
+    
+    //Add calculator inputs
+    parent.append($(`
+        <div class="extra">
+            <div>
+                <div class="calcInput"><span>${loc('wiki_calc_level')}</span> <b-field><span class="button has-text-danger calcInputButton" role="button" @click="less('owned')">-</span><b-numberinput :input="val('owned')" min="0" v-model="i.owned" :controls="false"></b-numberinput><span class="button has-text-success calcInputButton" role="button" @click="more('owned')">+</span></b-field></div>
+            </div>
+            <div class="calcButton">
+                <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+            </div>
+        </div>
+    `));
+    
+    vBind({
+        el: `#${key}`,
+        data: {
+            i: inputs,
+            r: resources
+        },
+        methods: {
+            val(type){
+                inputs[type] = Math.round(inputs[type]);
+                if (inputs[type] && inputs[type] < 0){
+                    inputs[type] = 0;
+                }
+                updateCosts();
+            },
+            less(type){
+                if (inputs[type] > 0){
+                    inputs[type]--;
+                }
+            },
+            more(type){
+                inputs[type]++;
+            },
+            importInputs(){
+                inputs.owned = inputs.real_owned;
+            }
+        }
+    });
 }
