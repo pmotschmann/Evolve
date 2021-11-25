@@ -210,10 +210,11 @@ const extraInformation = {
         loc(`wiki_tech_otb`)
     ],
     online_gambling: [
-        loc(`wiki_tech_dazzle`,[33.33])
+        loc(`wiki_tech_dazzle`,[33.33]),
+        loc(`wiki_tech_casino_vault`,[60000,120000])
     ],
     bolognium_vaults: [
-        loc(`wiki_tech_casino_vault`,[60000,240000])
+        loc(`wiki_tech_casino_vault`,[120000,240000])
     ],
     mining: [
         loc(`wiki_tech_building_unlock`,[loc(`city_rock_quarry`)])

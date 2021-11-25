@@ -2,7 +2,8 @@ import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
-import { races } from './../races.js';
+import { job_desc } from './../jobs.js';
+import { races, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
@@ -60,6 +61,26 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
     }
 
+    { // Job Stress
+        let stress = infoBoxBuilder(mainContent,{ name: 'job_stress', template: 'mechanics', label: loc('wiki_mechanics_job_stress'), paragraphs: 7, break: [3,5,6,7], h_level: 2,
+            para_data: {
+                2: [loc('job_unemployed'),loc('trait_content_name')],
+                3: [loc('wiki_calc_job_stress_divisor'),1],
+                4: [loc('trait_freespirit_name'),loc('trait_content_name'),loc('planet_mellow')],
+                6: [loc('trait_optimistic_name'),loc('trait_pessimistic_name'),loc('morale_stress'),loc('morale')],
+                7: [loc('civics_garrison_annex')]
+            },
+            data_link: {
+                2: [false,'wiki.html#traits-species-minor_content'],
+                4: ['wiki.html#traits-species-major_freespirit','wiki.html#traits-species-minor_content','wiki.html#planets-gameplay-mellow'],
+                6: ['wiki.html#traits-species-major_optimistic','wiki.html#traits-species-major_pessimistic']
+            }
+        });
+        let subSection = createCalcSection(stress,'mechanics','job_stress',loc('wiki_mechanics_job_stress'));
+        jobStressCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`job_stress`,loc('wiki_mechanics_job_stress'));
+    }
+
     { // Multiplier Keys
         infoBoxBuilder(mainContent,{ name: 'multiplier', template: 'mechanics', label: loc('wiki_mechanics_multiplier'), paragraphs: 5, break: [4], h_level: 2,
             para_data: {
@@ -94,7 +115,7 @@ export function mechanicsPage(content){
     }
 
     { // Bank Vault
-        let occupation = infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
+        infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
             para_data: {
                 1: [loc('city_bank'),loc('interstellar_exchange_title'),loc('portal_arcology_title'),loc('resource_Money_name'),loc('wiki_mechanics_bank_vault'),loc('space_red_spaceport_title'),loc('wiki_challenges_scenarios_cataclysm')],
                 2: [loc('resource_Money_name'),loc('city_bank'),loc('tech_adamantite_vault'),loc('governor_entrepreneur'),loc('trait_paranoid_name'),loc('tech_stock_market'),loc('tech_unification'),loc('wiki_challenges_modes_inflation')]
@@ -105,6 +126,27 @@ export function mechanicsPage(content){
             }
         });
         sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
+    }
+
+    { // Warmonger
+        let warmonger = infoBoxBuilder(mainContent,{ name: 'warmonger', template: 'mechanics', label: loc('wiki_mechanics_warmonger'), paragraphs: 8, break: [4], h_level: 2,
+            para_data: {
+                2: [loc('trait_immoral_name')],
+                3: [loc('govern_autocracy'),loc('trait_blood_thirst_name')],
+                4: [loc('wiki_calc_warmonger_fatigue'),loc('wiki_calc_warmonger_protest')],
+                5: [loc('achieve_warmonger_name')],
+                6: [loc('wiki_calc_warmonger_fatigue'),1,loc('wiki_calc_warmonger_protest')],
+                7: [loc('wiki_calc_warmonger_fatigue'),loc('wiki_calc_warmonger_protest'),1,0],
+                8: [`log2(${loc('wiki_calc_warmonger_fatigue')} + ${loc('wiki_calc_warmonger_protest')})`]
+            },
+            data_link: {
+                2: ['wiki.html#traits-species-genus_immoral'],
+                3: ['wiki.html#government-gameplay-autocracy','wiki.html#traits-species-major_blood_thirst']
+            }
+        });
+        let subSection = createCalcSection(warmonger,'mechanics','warmonger',loc('wiki_mechanics_warmonger'));
+        warmongerCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`warmonger`,loc('wiki_mechanics_warmonger'));
     }
 
     { // Occupying Foreign Powers
@@ -446,7 +488,7 @@ export function mechanicsPage(content){
             para_data: {
                 1: [loc('galaxy_stargate'),loc('galaxy_gateway')],
                 2: [loc('tab_galactic')],
-                3: [loc('galaxy_embassy'),loc('tech_xeno_gift'),loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])],
+                3: [loc('galaxy_embassy'),loc('tech_xeno_gift'),loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])],
             }
         },pirates);
         infoBoxBuilder(mainContent,{ name: 'pirate_threat', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 7, break: [2,3,4,5,6,7],  h_level: 2,
@@ -650,6 +692,417 @@ export function mechanicsPage(content){
         });
         sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
     }
+}
+
+function jobStressCalc(info){
+    let calc = $(`<div class="calc" id="jobStressCalc"></div>`);
+    info.append(calc);
+    
+    let jobSelect = $(`<div></div>`);
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(jobSelect);
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        job: { val: undefined },
+        content: { vis: false, val: undefined },
+        freespirit: { vis: false, val: false },
+        mellow: { val: false },
+        dense: { vis: false, val: false, formVis: false },
+        workers: { val: undefined },
+        playful: { vis: false, val: false },
+        government: { val: undefined },
+        annexed: { vis: false, val: undefined },
+        electricity: { vis: false, val: false },
+        virtual_reality: { val: false }
+    }
+    
+    let show = {
+        result: { vis: false, val: undefined },
+        total: { vis: false, val: 0 }
+    }
+    
+    let jobs = ['soldier'];
+    Object.keys(job_desc).forEach(function (job){
+        if (job !== 'unemployed' && job !== 'forager'){
+            jobs.push(job);
+        }
+    });
+    let jobsDropdown = `
+        <div class="calcInput"><span>${loc('wiki_calc_job_stress_job')}</span> <b-dropdown hoverable scrollable>
+            <button class="button is-primary" slot="trigger">
+                <span>{{ i.job.val | jobLabel }}</span>
+                <i class="fas fa-sort-down"></i>
+            </button>`;
+    jobs.forEach(function (job){
+        jobsDropdown += `
+            <b-dropdown-item v-on:click="pickJob('${job}')">{{ '${job}' | jobLabel }}</b-dropdown-item>`;
+    });
+    jobsDropdown += `
+        </b-dropdown></div>
+    `;
+    jobSelect.append(jobsDropdown);
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_job_stress_divisor')}</h2>
+        </div>
+        <div>
+            <span v-show="i.freespirit.vis && i.freespirit.val">(</span><span>{{ i.job.val | stressDiv }}</span><span v-show="i.content.vis"> + ({{ i.content.val, 'content' | generic }} * {{ i.job.val | contentVal }})</span><span v-show="i.mellow.val"> {{ i.job.val | mellowOp }}</span><span v-show="i.dense.vis && i.dense.val"> - 1</span><span v-show="i.freespirit.vis && i.freespirit.val">) / 1.5</span><span v-show="s.result.vis"> = {{ | calc }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_job_stress_generated')}</h2>
+        </div>
+        <div>
+            <span v-show="i.playful.vis && i.playful.val">0 * </span><span>{{ i.workers.val, 'workers' | generic }} / {{ s.result.val, 'divisor' | generic }} * {{ i.government.val, i.electricity.val, i.virtual_reality.val | govVal }}</span><span v-show="i.annexed.vis"> * {{ i.annexed.val | anxVal }}</span><span v-show="s.total.vis"> = -{{ | calcTotal }}%</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_job_stress_content')}</span> <b-numberinput :input="val('content')" min="0" v-model="i.content.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><b-checkbox class="patrol" v-model="i.mellow.val">${loc('planet_mellow')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.dense.vis"><b-checkbox class="patrol" v-model="i.dense.val">${loc('planet_dense')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.freespirit.vis"><b-checkbox class="patrol" v-model="i.freespirit.val">${loc('trait_freespirit_name')}</b-checkbox></div>
+        </div>
+        <div>
+            <div class="calcInput"><span>{{ i.job.val | workersLabel }}</span> <b-numberinput :input="val('workers')" min="0" v-model="i.workers.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.annexed.vis"><span>${loc('wiki_calc_job_stress_annexed')}</span> <b-numberinput :input="val('annexed')" min="0" v-model="i.annexed.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('civics_government')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.government.val | govLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickGov('anarchy')">{{ 'anarchy' | govLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickGov('autocracy')">{{ 'autocracy' | govLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickGov('federation')">{{ 'federation' | govLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickGov('socialist')">{{ 'socialist' | govLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickGov('other')">{{ 'other' | govLabel }}</b-dropdown-item>
+            </b-dropdown></div>
+            <div class="calcInput" v-show="i.electricity.vis"><b-checkbox class="patrol" v-model="i.electricity.val">${loc('tech_electricity')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.electricity.vis && i.electricity.val"><b-checkbox class="patrol" v-model="i.virtual_reality.val">${loc('tech_virtual_reality')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.playful.vis"><b-checkbox class="patrol" v-model="i.playful.val">${loc('trait_playful_name')}</b-checkbox></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#jobStressCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+                if (type === 'annexed' && inputs[type].val > 3){
+                    inputs[type].val = 3;
+                }
+            },
+            pickJob(job){
+                inputs.job.val = job;
+                inputs.content.vis = job !== 'hunter' && job !== 'soldier';
+                inputs.freespirit.vis = !['hunter','soldier','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job);
+                inputs.dense.vis = job === 'miner';
+                inputs.playful.vis = job === 'hunter';
+            },
+            pickGov(gov){
+                inputs.government.val = gov;
+                inputs.annexed.vis = gov !== 'federation';
+                inputs.electricity.vis = gov === 'autocracy';
+            },
+            resetInputs(){
+                inputs.job.val = undefined;
+                inputs.content.val = undefined;
+                inputs.content.vis = false;
+                inputs.freespirit.val = false;
+                inputs.freespirit.vis = false;
+                inputs.mellow.val = false;
+                inputs.dense.val = false;
+                inputs.dense.vis = false;
+                inputs.workers.val = undefined;
+                inputs.playful.val = false;
+                inputs.playful.vis = false;
+                inputs.government.val = undefined;
+                inputs.annexed.val = undefined;
+                inputs.annexed.vis = false;
+                inputs.electricity.val = false;
+                inputs.electricity.vis = false;
+                inputs.virtual_reality.val = false;
+                show.result.val = undefined;
+            },
+            importInputs(){
+                inputs.content.val = global.race['content'] ? global.race.content : 0;
+                inputs.freespirit.val = global.race['freespirit'] ? true : false;
+                inputs.mellow.val = global.city['ptrait'] && global.city.ptrait === 'mellow' ? true : false;
+                inputs.dense.val = global.city['ptrait'] && global.city.ptrait === 'dense' ? true : false;
+                inputs.workers.val = inputs.job.val === 'soldier' ? (global.civic['garrison'] && global.civic.garrison['max'] ? global.civic.garrison.max : 0) : global.civic[inputs.job.val] ? global.civic[inputs.job.val].workers : 0;
+                inputs.playful.val = global.race['playful'] ? true : false;
+                if (global.civic['govern']){
+                    let gov = global.civic.govern.type;
+                    switch (gov){
+                        case 'autocracy':
+                        case 'anarchy':
+                        case 'socialist':
+                        case 'federation':
+                            inputs.government.val = gov;
+                            break;
+                        default:
+                            inputs.government.val = 'other';
+                            break;
+                    }
+                    inputs.annexed.vis = gov !== 'federation';
+                    inputs.electricity.vis = gov === 'autocracy';
+                }
+                inputs.annexed.val = 0;
+                if (global.civic['foreign']){
+                    for (let i=0; i<3; i++){
+                        if (global.civic.foreign['gov'+i].anx){
+                            inputs.annexed.val++;
+                        }
+                    }
+                }
+                inputs.electricity.val = global.tech['high_tech'] ? global.tech['high_tech'] >= 2 : false;
+                inputs.virtual_reality.val = global.tech['high_tech'] ? global.tech['high_tech'] >= 12 : false;
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (type === 'workers' && inputs.job.val === 'soldier'){
+                    type = 'soldiers';
+                }
+                return num !== undefined ? num : loc('wiki_calc_job_stress_' + type);
+            },
+            jobLabel(job){
+                if (!job){
+                    return loc('wiki_calc_job_stress_job');
+                }
+                if (job === 'soldier'){
+                    return loc('governor_soldier');
+                }
+                return loc('job_'+job);
+            },
+            workersLabel(job){
+                if (job === 'soldier'){
+                    return loc('wiki_calc_job_stress_soldiers');
+                }
+                else {
+                    return loc('wiki_calc_job_stress_workers');
+                }
+            },
+            govLabel(gov){
+                if (!gov){
+                    return loc('civics_government');
+                }
+                if (gov === 'other'){
+                    return loc('wiki_calc_job_stress_government_other');
+                }
+                return loc('govern_'+gov);
+            },
+            stressDiv(job){
+                if (!job){
+                    return loc('base');
+                }
+                switch(job){
+                    case 'hunter':
+                        return 5;
+                    case 'soldier':
+                        return 2;
+                    default:
+                        return global.civic[job].stress;
+                }
+            },
+            contentVal(job){
+                if (!job){
+                    return loc('wiki_calc_job_stress_content_multi');
+                }
+                if (job === 'hell_surveyor'){
+                    return 0.2;
+                }
+                return 0.4;
+            },
+            mellowOp(job){
+                switch (job){
+                    case 'hunter':
+                    case 'soldier':
+                        return `* ${planetTraits.mellow.vars[0]}`;
+                    default:
+                        return `+ ${planetTraits.mellow.vars[1]}`;
+                }
+            },
+            govVal(gov, elec, vr){
+                if (!gov){
+                    return loc('wiki_calc_job_stress_government');
+                }
+                switch (gov){
+                    case 'anarchy':
+                        return 0.5;
+                    case 'autocracy':
+                        return elec ? vr ? 1.1 : 1.18 : 1.25;
+                    case 'socialist':
+                        return 1.1;
+                    default:
+                        return 1;
+                }
+            },
+            anxVal(num){
+                return num !== undefined ? +(1.1 ** num).toFixed(5) : loc('civics_spy_purchase_bd');
+            },
+            calc(){
+                let vis = inputs.job.val !== undefined;
+                if (inputs.job.val !== 'hunter' & inputs.job.val !== 'soldier'){
+                    vis = vis && inputs.content.val !== undefined;
+                }
+                show.result.vis = vis;
+                
+                if (show.result.vis){
+                    let div = inputs.job.val === 'hunter' ? 5 : inputs.job.val === 'soldier' ? 2 : global.civic[inputs.job.val].stress;
+                    if (inputs.job.val === 'hunter' || inputs.job.val === 'soldier'){
+                        if (inputs.mellow.val){
+                            div *= planetTraits.mellow.vars[0];
+                        }
+                    }
+                    else {
+                        if (inputs.mellow.val){
+                            div += planetTraits.mellow.vars[1];
+                        }
+                        div += (inputs.job.val === 'hell_surveyor' ? 0.2 : 0.4) * inputs.content.val;
+                        if (inputs.dense.val && inputs.job.val === 'miner'){
+                            div -= planetTraits.dense.vars[1];
+                        }
+                        if (inputs.freespirit.val && !['farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(inputs.job.val)){
+                            div /= 1.5;
+                        }
+                    }
+                    show.result.val = +(div).toFixed(4);
+                    return show.result.val;
+                }
+                else {
+                    show.result.val = undefined;
+                }
+            },
+            calcTotal(){
+                let vis = inputs.playful.val && inputs.job.val === 'hunter';
+                if (vis){
+                    show.total.vis = vis;
+                    show.total.val = 0;
+                }
+                else {
+                    vis = show.result.vis && inputs.government.val && inputs.workers.val !== undefined;
+                    if (inputs.government.val !== 'federation'){
+                        vis = vis && inputs.annexed.val !== undefined;
+                    }
+                    show.total.vis = vis;
+                    if (show.total.vis){
+                        let total = inputs.workers.val / show.result.val;
+                        if (inputs.government.val !== 'federation'){
+                            total *= 1.1**inputs.annexed.val;
+                            switch (inputs.government.val){
+                                case 'anarchy':
+                                    total /= 2;
+                                    break;
+                                case 'autocracy':
+                                    total *= inputs.electricity.val ? inputs.virtual_reality.val ? 1.1 : 1.18 : 1.25;
+                                    break;
+                                case 'socialist':
+                                    total *= 1.1;
+                                    break;
+                            }
+                        }
+                        show.total.val = +(total).toFixed(3);
+                    }
+                }
+                return show.total.val;
+            }
+        }
+    });
+}
+
+function warmongerCalc(info){
+    let calc = $(`<div class="calc" id="warmongerCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_mechanics_warmonger')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        fatigue: { val: undefined },
+        protest: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    
+    formula.append(`
+        <div>
+            <span>log2({{ i.fatigue.val, 'fatigue' | generic }} + {{ i.protest.val, 'protest' | generic }})</span><span v-show="s.result.vis"> = {{ false | calc }} = {{ true | calc }}% ${loc('wiki_mechanics_warmonger')}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_warmonger_fatigue')}</span> <b-numberinput :input="val('fatigue')" min="0" v-model="i.fatigue.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_warmonger_protest')}</span> <b-numberinput :input="val('protest')" min="0" v-model="i.protest.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#warmongerCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.fatigue.val = undefined;
+                inputs.protest.val = undefined;
+            },
+            importInputs(){
+                inputs.fatigue.val = global.civic['garrison'] && global.civic.garrison['fatigue'] ? global.civic.garrison.fatigue : 0;
+                inputs.protest.val = global.civic['garrison'] && global.civic.garrison['protest'] ? global.civic.garrison.protest : 0;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_warmonger_' + type);
+            },
+            calc(round){
+                if (round){
+                    return Math.round(show.result.val);
+                }
+                show.result.vis = inputs.fatigue.val !== undefined && inputs.protest.val !== undefined && inputs.fatigue.val + inputs.protest.val >= 1;
+                
+                if (show.result.vis){
+                    show.result.val = Math.log2(inputs.fatigue.val + inputs.protest.val);
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
 }
 
 function occupationCalc(info){

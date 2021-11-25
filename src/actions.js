@@ -3793,7 +3793,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: 'Roxxon'
+            flair: loc('city_oil_well_flair')
         },
         oil_depot: {
             id: 'city-oil_depot',
@@ -4319,7 +4319,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: 'No bonfires please'
+            flair: loc('city_library_flair')
         },
         wardenclyffe: {
             id: 'city-wardenclyffe',
@@ -6271,7 +6271,7 @@ function checkMaxCosts(costs){
         else {
             var testCost = Number(costs[res]()) || 0;
             let f_res = res === 'Species' ? global.race.species : res;
-            if (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1){
+            if ((!global.resource[f_res].display && testCost > 0) || (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1)){
                 test = false;
                 return;
             }

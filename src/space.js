@@ -4503,7 +4503,7 @@ const galaxyProjects = {
                         total += galaxyProjects.gxy_gateway[ship].ship.rating() * global.galaxy.defense.gxy_alien2[ship];
                     });
                     if (total >= 400){
-                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].home]),'info',false,['progress']);
+                        messageQueue(loc('galaxy_alien2_mission_result2',[races[global.galaxy.alien2.id].solar.red]),'info',false,['progress']);
                         if (total < 650){
                             let wreck = 80;
                             if (global.race['instinct']){

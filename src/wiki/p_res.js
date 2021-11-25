@@ -391,6 +391,11 @@ export function prestigeCalc(info,resource,extraType,resetType){
             importInputs(){
                 inputs.cit.val = global.resource[global.race.species].amount;
                 inputs.sol.val = global.civic['garrison'] ? global.civic.garrison.workers : 0;
+                for (let i=0; i<3; i++){
+                    if (global.civic.foreign[`gov${i}`].occ){
+                        inputs.sol.val += global.civic.govern.type === 'federation' ? 15 : 20;
+                    }
+                }
                 inputs.know.val = global.stats.know;
                 inputs.mass.val = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.mass : 8;
                 inputs.exotic.val = global.interstellar['stellar_engine'] ? global.interstellar.stellar_engine.exotic : 0;
