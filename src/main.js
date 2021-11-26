@@ -5900,10 +5900,8 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[loc('city_rock_quarry')] = gain+'v';
 
-            if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                caps['Chrysotile'] += gain;
-                bd_Chrysotile[loc('city_rock_quarry')] = gain+'v';
-            }
+            caps['Chrysotile'] += gain;
+            bd_Chrysotile[loc('city_rock_quarry')] = gain+'v';
         }
         if (global.city['lumber_yard']){
             let gain = BHStorageMulti(global.city.lumber_yard.count * spatialReasoning(100));
@@ -6126,11 +6124,9 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
 
-            if (global.resource.Chrysotile.display){
-                gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
-                caps['Chrysotile'] += gain;
-                bd_Chrysotile[label] = gain+'v';
-            }
+            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
+            caps['Chrysotile'] += gain;
+            bd_Chrysotile[label] = gain+'v';
 
             if (global.resource.Crystal.display){
                 gain = (global.city['shed'].count * (spatialReasoning(8 * multiplier)));
@@ -6187,11 +6183,9 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
 
-            if (global.resource.Chrysotile.display){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
-                caps['Chrysotile'] += gain;
-                bd_Chrysotile[label] = gain+'v';
-            }
+            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
+            caps['Chrysotile'] += gain;
+            bd_Chrysotile[label] = gain+'v';
 
             gain = (global.interstellar['warehouse'].count * (spatialReasoning(425 * multiplier)));
             caps['Furs'] += gain;
@@ -6267,11 +6261,9 @@ function midLoop(){
             caps['Stone'] += gain;
             bd_Stone[label] = gain+'v';
 
-            if (global.resource.Chrysotile.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
-                caps['Chrysotile'] += gain;
-                bd_Chrysotile[label] = gain+'v';
-            }
+            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
+            caps['Chrysotile'] += gain;
+            bd_Chrysotile[label] = gain+'v';
 
             gain = (global.space.storehouse.count * (spatialReasoning(1700 * multiplier)));
             caps['Furs'] += gain;
@@ -6444,11 +6436,9 @@ function midLoop(){
                     bd_Lumber[loc('space_red_garage_title')] = gain+'v';
                 }
 
-                if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                    gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
-                    caps['Chrysotile'] += gain;
-                    bd_Chrysotile[loc('space_red_garage_title')] = gain+'v';
-                }
+                gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
+                caps['Chrysotile'] += gain;
+                bd_Chrysotile[loc('space_red_garage_title')] = gain+'v';
 
                 gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
                 caps['Stone'] += gain;

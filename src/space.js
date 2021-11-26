@@ -6125,7 +6125,9 @@ export function ascendLab(wiki){
             ){
             if (races[race].hasOwnProperty('traits')){
                 Object.keys(races[race].traits).forEach(function (trait){
-                    unlockedTraits[trait] = true;
+                    if (!['imitation'].includes(trait)){
+                        unlockedTraits[trait] = true;
+                    }
                 });
             }
         }
@@ -6134,10 +6136,10 @@ export function ascendLab(wiki){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             if (traits[trait].val >= 0){
-                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-success">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-advanced">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
             else {
-                negative = negative + `<div class="field t${trait}"><b-checkbox :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
+                negative = negative + `<div class="field t${trait}"><b-checkbox :disabled="allowed('${trait}')" :input="geneEdit()" v-model="g.traitlist" native-value="${trait}"><span class="has-text-danger">${loc(`trait_${trait}_name`)}</span> (<span class="has-text-caution">{{ '${trait}' | cost }}</span>)</b-checkbox></div>`;
             }
         }
     });
@@ -6253,6 +6255,15 @@ export function ascendLab(wiki){
                     }
                     ascend();
                 }
+            },
+            allowed(t){
+                if (genome.genus !== 'synthetic' && ['deconstructor'].includes(t)){
+                    if (genome.traitlist.includes(t)){
+                        genome.traitlist.splice(genome.traitlist.indexOf(t), 1);
+                    }
+                    return true;
+                }
+                return false;
             },
             reset(){
                 genome.name = "";

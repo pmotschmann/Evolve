@@ -3563,12 +3563,12 @@ export function cleanAddTrait(trait){
             }
             setPurgatory('tech','agriculture');
             setPurgatory('tech','farm');
-            global.civic.farmer.workers = 0;
-            global.civic.farmer.max = 0;
-            global.civic.farmer.display = false;
             if (global.civic.d_job === 'farmer') {
                 global.civic.d_job = 'hunter';
             }
+            global.civic.farmer.workers = 0;
+            global.civic.farmer.max = 0;
+            global.civic.farmer.display = false;
             if (!global.race['soul_eater']){
                 if (global.civic.d_job === 'unemployed') {
                     global.civic.d_job = 'hunter';
@@ -3585,7 +3585,13 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'sappy':
-            global.resource.Stone.name = loc('resource_Amber_name');
+            if (global.civic.d_job === 'quarry_worker'){
+                global.civic.d_job = 'unemployed';
+            }
+            global.civic.quarry_worker.display = false;
+            global.civic.quarry_worker.workers = 0;
+            global.civic.quarry_worker.max = 0;
+            setResourceName('Stone');
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');
             break;
@@ -3816,7 +3822,8 @@ export function cleanRemoveTrait(trait){
             }
             break;
         case 'sappy':
-            global.resource.Stone.name = loc('resource_Stone_name');
+            global.civic.quarry_worker.display = true;
+            setResourceName('Stone');
             checkPurgatory('tech','hammer');
             checkPurgatory('city','rock_quarry',{ count: 0 });
             break;
