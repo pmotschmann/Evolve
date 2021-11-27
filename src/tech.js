@@ -82,6 +82,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Stone.display = true;
+                if (global.race['smoldering']){
+                    global.resource.Chrysotile.display = true;
+                }
                 return true;
             }
             return false;
@@ -468,7 +471,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
         trait: ['carnivore'],
-        not_trait: ['cataclysm','artifical'],
+        not_trait: ['cataclysm','artifical','soul_eater'],
         grant: ['hunting',1],
         cost: {
             Knowledge(){ return 80; }
@@ -491,7 +494,6 @@ const techs = {
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
         grant: ['hunting',2],
-        not_trait: ['soul_eater'],
         cost: {
             Knowledge(){ return 180; }
         },
@@ -513,6 +515,7 @@ const techs = {
         era: 'civilized',
         reqs: { housing: 1, currency: 1 },
         grant: ['s_lodge',1],
+        not_trait: ['carnivore'],
         condition(){
             return global.race.species === 'wendigo' || (!global.race['soul_eater'] && (global.race['detritivore'] || global.race['artifical'])) ? true : false;
         },

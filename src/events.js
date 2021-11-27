@@ -1,6 +1,6 @@
 import { global, p_on } from './vars.js';
 import { loc } from './locale.js';
-import { races } from './races.js';
+import { races, traits } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech } from './actions.js';
 import { tradeRatio } from './resources.js';

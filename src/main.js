@@ -1255,11 +1255,12 @@ function fastLoop(){
             global.galaxy.trade.max = cap;
 
             let used = 0;
-            for (let i=0; i<galaxyOffers.length; i++){
-                let exprt_res = galaxyOffers[i].sell.res;
-                let exprt_vol = galaxyOffers[i].sell.vol;
-                let imprt_res = galaxyOffers[i].buy.res;
-                let imprt_vol = galaxyOffers[i].buy.vol;
+            let offers = galaxyOffers();
+            for (let i=0; i<offers.length; i++){
+                let exprt_res = offers[i].sell.res;
+                let exprt_vol = offers[i].sell.vol;
+                let imprt_res = offers[i].buy.res;
+                let imprt_vol = offers[i].buy.vol;
                 let exp_total = 0;
                 let imp_total = 0;
 
@@ -6430,11 +6431,9 @@ function midLoop(){
                 caps['Coal'] += gain;
                 bd_Coal[loc('space_red_garage_title')] = gain+'v';
 
-                if (!global.race['kindling_kindred'] && !global.race['smoldering']){
-                    gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
-                    caps['Lumber'] += gain;
-                    bd_Lumber[loc('space_red_garage_title')] = gain+'v';
-                }
+                gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
+                caps['Lumber'] += gain;
+                bd_Lumber[loc('space_red_garage_title')] = gain+'v';
 
                 gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
                 caps['Chrysotile'] += gain;

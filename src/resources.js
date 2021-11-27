@@ -1285,44 +1285,47 @@ function initGalaxyTrade(){
     galacticTrade();
 }
 
-export const galaxyOffers = [
-    {
-        buy: { res: 'Deuterium', vol: 5 },
-        sell: { res: 'Helium_3', vol: 25 }
-    },
-    {
-        buy: { res: 'Neutronium', vol: 2.5 },
-        sell: { res: 'Copper', vol: 200 }
-    },
-    {
-        buy: { res: 'Adamantite', vol: 3 },
-        sell: { res: 'Iron', vol: 300 }
-    },
-    {
-        buy: { res: 'Elerium', vol: 1 },
-        sell: { res: 'Oil', vol: 125 }
-    },
-    {
-        buy: { res: 'Nano_Tube', vol: 10 },
-        sell: { res: 'Titanium', vol: 20 }
-    },
-    {
-        buy: { res: 'Graphene', vol: 25 },
-        sell: { res: global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Lumber', vol: 1000 }
-    },
-    {
-        buy: { res: 'Stanene', vol: 40 },
-        sell: { res: 'Aluminium', vol: 800 }
-    },
-    {
-        buy: { res: 'Bolognium', vol: 0.75 },
-        sell: { res: 'Uranium', vol: 4 }
-    },
-    {
-        buy: { res: 'Vitreloy', vol: 1 },
-        sell: { res: 'Infernite', vol: 1 }
-    }
-];
+export function galaxyOffers(){
+    let offers = [
+        {
+            buy: { res: 'Deuterium', vol: 5 },
+            sell: { res: 'Helium_3', vol: 25 }
+        },
+        {
+            buy: { res: 'Neutronium', vol: 2.5 },
+            sell: { res: 'Copper', vol: 200 }
+        },
+        {
+            buy: { res: 'Adamantite', vol: 3 },
+            sell: { res: 'Iron', vol: 300 }
+        },
+        {
+            buy: { res: 'Elerium', vol: 1 },
+            sell: { res: 'Oil', vol: 125 }
+        },
+        {
+            buy: { res: 'Nano_Tube', vol: 10 },
+            sell: { res: 'Titanium', vol: 20 }
+        },
+        {
+            buy: { res: 'Graphene', vol: 25 },
+            sell: { res: global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Lumber', vol: 1000 }
+        },
+        {
+            buy: { res: 'Stanene', vol: 40 },
+            sell: { res: 'Aluminium', vol: 800 }
+        },
+        {
+            buy: { res: 'Bolognium', vol: 0.75 },
+            sell: { res: 'Uranium', vol: 4 }
+        },
+        {
+            buy: { res: 'Vitreloy', vol: 1 },
+            sell: { res: 'Infernite', vol: 1 }
+        }
+    ];
+    return offers;
+}
 
 export function galacticTrade(modal){
     let galaxyTrade = modal ? modal : $(`#galaxyTrade`);
@@ -1333,21 +1336,22 @@ export function galacticTrade(modal){
     if (global.galaxy['trade']){
         galaxyTrade.append($(`<div class="market-item trade-header"><span class="has-text-special">${loc('galaxy_trade')}</span></div>`));
 
-        for (let i=0; i<galaxyOffers.length; i++){
+        let offers = galaxyOffers();
+        for (let i=0; i<offers.length; i++){
             let offer = $(`<div class="market-item trade-offer"></div>`);
             galaxyTrade.append(offer);
 
-            offer.append($(`<span class="offer-item has-text-success">${global.resource[galaxyOffers[i].buy.res].name}</span>`));
+            offer.append($(`<span class="offer-item has-text-success">${global.resource[offers[i].buy.res].name}</span>`));
             offer.append($(`<span class="offer-vol has-text-advanced">+{{ '${i}' | t_vol }}/s</span>`));
             
-            offer.append($(`<span class="offer-item has-text-danger">${global.resource[galaxyOffers[i].sell.res].name}</span>`));
+            offer.append($(`<span class="offer-item has-text-danger">${global.resource[offers[i].sell.res].name}</span>`));
             offer.append($(`<span class="offer-vol has-text-caution">-{{ '${i}' | s_vol }}/s</span>`));
 
             let trade = $(`<span class="trade"><span class="has-text-warning">${loc('resource_market_routes')}</span></span>`);
             offer.append(trade);
             
-            let assign = loc('galaxy_freighter_assign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
-            let unassign = loc('galaxy_freighter_unassign',[global.resource[galaxyOffers[i].buy.res].name,global.resource[galaxyOffers[i].sell.res].name]);
+            let assign = loc('galaxy_freighter_assign',[global.resource[offers[i].buy.res].name,global.resource[offers[i].sell.res].name]);
+            let unassign = loc('galaxy_freighter_unassign',[global.resource[offers[i].buy.res].name,global.resource[offers[i].sell.res].name]);
             trade.append($(`<b-tooltip :label="desc('${unassign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${unassign}" class="sub has-text-danger" @click="less('${i}')"><span>-</span></span></b-tooltip>`));
             trade.append($(`<span class="current">{{ g.f${i} }}</span>`));
             trade.append($(`<b-tooltip :label="desc('${assign}')" position="is-bottom" size="is-small" multilined animated><span role="button" aria-label="${assign}" class="add has-text-success" @click="more('${i}')"><span>+</span></span></b-tooltip>`));
@@ -1393,7 +1397,8 @@ export function galacticTrade(modal){
                     global.galaxy.trade[`f${idx}`] = 0;
                 }
                 else {
-                    for (let i=0; i<galaxyOffers.length; i++){
+                    let offers = galaxyOffers();
+                    for (let i=0; i<offers.length; i++){
                         global.galaxy.trade.cur -= global.galaxy.trade[`f${i}`];
                         global.galaxy.trade[`f${i}`] = 0;
                     }
@@ -1405,7 +1410,8 @@ export function galacticTrade(modal){
         },
         filters: {
             t_vol(idx){
-                let buy_vol = galaxyOffers[idx].buy.vol;
+                let offers = galaxyOffers();
+                let buy_vol = offers[idx].buy.vol;
                 if (global.race['persuasive']){
                     buy_vol *= 1 + (global.race['persuasive'] / 100);
                 }
@@ -1425,7 +1431,8 @@ export function galacticTrade(modal){
                 return buy_vol;
             },
             s_vol(idx){
-                let sell_vol = galaxyOffers[idx].sell.vol;
+                let offers = galaxyOffers();
+                let sell_vol = offers[idx].sell.vol;
                 if (global.stats.achieve.hasOwnProperty('trade')){
                     let rank = global.stats.achieve.trade.l;
                     if (rank > 5){ rank = 5; }

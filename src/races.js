@@ -3480,6 +3480,12 @@ function setPurgatory(s,t){
     }
 }
 
+function getPurgatory(s,t){
+    if (global.race.purgatory[s].hasOwnProperty(t)){
+        return global.race.purgatory[s][t];
+    }
+}
+
 function purgeLumber(){
     global.resource.Lumber.display = false;
     global.resource.Crates.amount += global.resource.Lumber.crates;
@@ -3522,6 +3528,208 @@ function purgeLumber(){
     }
 }
 
+function adjustFood() {
+    if (global.race['artifical']) {
+        return;
+    }
+    setPurgatory('tech','agriculture');
+    setPurgatory('tech','farm');
+    setPurgatory('tech','hunting');
+    setPurgatory('tech','s_lodge');
+    setPurgatory('tech','compost');
+    setPurgatory('tech','soul_eater');
+    setPurgatory('city','silo');
+    setPurgatory('city','farm');
+    setPurgatory('city','mill');
+    setPurgatory('city','smokehouse');
+    setPurgatory('city','lodge');
+    setPurgatory('city','compost');
+    setPurgatory('city','soul_well');
+
+    if (global.race['carnivore'] || global.race['soul_eater']) {
+        if (!global.civic.hunter.display) {
+            global.civic.hunter.workers = 0;
+            global.civic.hunter.display = true;
+        }
+        ['farmer', 'unemployed'].forEach(function(job) {
+            if (global.civic[job].display) {
+                if (global.civic.d_job === job) {
+                    global.civic.d_job = 'hunter';
+                }
+                global.civic.hunter.workers += global.civic[job].workers;
+                global.civic[job].workers = 0;
+                global.civic[job].display = false;
+            }
+        });
+    }
+    else {
+        if (!global.civic.unemployed.display) {
+            global.civic.unemployed.workers = 0;
+            global.civic.unemployed.display = true;
+        }
+        if (global.civic.hunter.display) {
+            if (global.civic.d_job === 'hunter') {
+                global.civic.d_job = 'unemployed';
+            }
+            global.civic.unemployed.workers += global.civic.hunter.workers;
+            global.civic.hunter.workers = 0;
+            global.civic.hunter.display = false;
+        }
+        if (global.civic.farmer.display && global.race['detritivore']) {
+            if (global.civic.d_job === 'farmer') {
+                global.civic.d_job = 'unemployed';
+            }
+            global.civic.unemployed.workers += global.civic.farmer.workers;
+            global.civic.farmer.workers = 0;
+            global.civic.farmer.display = false;
+        }
+    }
+
+    if (global.race['carnivore'] || global.race['detritivore'] || global.race['soul_eater'] || global.race['detritivore']) {
+        removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
+        removeFromRQueue(['farm', 'agriculture']);
+    }
+    if (!global.race['carnivore'] || global.race['detritivore'] || global.race['soul_eater']) {
+        removeFromQueue(['city-smokehouse']);
+        removeFromRQueue(['hunting']);
+    }
+    if (!global.race['detritivore']) {
+        removeFromQueue(['city-compost']);
+        removeFromRQueue(['compost']);
+    }
+    if (!global.race['soul_eater']) {
+        removeFromQueue(['city-soul_well']);
+        removeFromRQueue(['soul_eater']);
+    }
+    if (global.race.species !== 'wendigo' && !global.race['detritivore'] && !global.race['carnivore']) {
+        removeFromQueue(['city-lodge']);
+    }
+
+    if (!global.race['soul_eater'] && !global.race['detritivore']) {
+        if (global.race['carnivore']) {
+            if (getPurgatory('tech','hunting')) {
+                checkPurgatory('tech','hunting');
+            }
+            else if (getPurgatory('tech','farm') >= 1) {
+                checkPurgatory('tech','hunting',2);
+            }
+            else if (getPurgatory('tech','agriculture') >= 3) {
+                checkPurgatory('tech','hunting',1);
+            }
+        }
+        else {
+            if (getPurgatory('tech','farm')) {
+                checkPurgatory('tech','farm');
+            }
+            else if (getPurgatory('tech','hunting') >= 2) {
+                checkPurgatory('tech','farm',1);
+            }
+            if (getPurgatory('tech','agriculture')) {
+                checkPurgatory('tech','agriculture');
+            }
+            else if (getPurgatory('tech','hunting') >= 1) {
+                checkPurgatory('tech','agriculture',3);
+            }
+        }
+    }
+
+
+    let altLodge = global.race.species === 'wendigo' || (!global.race['soul_eater'] && global.race['detritivore']);
+    if (altLodge) {
+        checkPurgatory('tech','s_lodge');
+        if (getPurgatory('city','lodge')) {
+            checkPurgatory('city','lodge');
+        }
+        else if (getPurgatory('city','farm')) {
+            checkPurgatory('city','lodge',{ count: getPurgatory('city','farm').count });
+        }
+        else if (global.tech['hunting'] >= 2) {
+            checkPurgatory('city','lodge',{ count: 0 });
+        }
+    }
+    if (global.race['soul_eater']) {
+        checkPurgatory('tech','soul_eater');
+        checkPurgatory('city','soul_well');
+    }
+    if (global.race['detritivore']) {
+        checkPurgatory('tech','compost');
+        checkPurgatory('city','compost');
+    }
+    if (global.race['carnivore']) {
+        if (getPurgatory('city','smokehouse')) {
+            checkPurgatory('city','smokehouse');
+        }
+        else if (getPurgatory('city','silo')) {
+            checkPurgatory('city','smokehouse',{ count: getPurgatory('city','silo').count });
+        }
+        else if (global.tech['hunting'] >= 1) {
+            checkPurgatory('city','smokehouse',{ count: 0 });
+        }
+        if (!altLodge) {
+            if (getPurgatory('city','lodge')) {
+                checkPurgatory('city','lodge');
+            }
+            else if (getPurgatory('city','farm')) {
+                checkPurgatory('city','lodge',{ count: getPurgatory('city','farm').count });
+            }
+            else if (global.tech['hunting'] >= 2) {
+                checkPurgatory('city','lodge',{ count: 0 });
+            }
+        }
+    }
+    else if (!global.race['soul_eater'] && !global.race['detritivore']) {
+        if (getPurgatory('city','farm')) {
+            checkPurgatory('city','farm');
+        }
+        else if (getPurgatory('city','lodge')) {
+            checkPurgatory('city','farm',{ count: getPurgatory('city','lodge').count });
+        }
+        else if (global.tech['agriculture'] >= 1) {
+            checkPurgatory('city','farm',{ count: 0 });
+        }
+        if (global.city['farm'] && global.city['farm'].count > 0) {
+            global.civic.farmer.display = true;
+        }
+        if (getPurgatory('city','silo')) {
+            checkPurgatory('city','silo');
+        }
+        else if (getPurgatory('city','smokehouse')) {
+            checkPurgatory('city','silo',{ count: getPurgatory('city','smokehouse').count });
+        }
+        else if (global.tech['agriculture'] >= 3) {
+            checkPurgatory('city','silo',{ count: 0 });
+        }
+        if (getPurgatory('city','mill')) {
+            checkPurgatory('city','mill');
+        }
+        else if (getPurgatory('city','windmill')) {
+            checkPurgatory('city','mill',{ count: getPurgatory('city','windmill').count });
+        }
+    }
+
+    if (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['soul_eater']) {
+        checkPurgatory('tech','wind_plant');
+        if (getPurgatory('city','windmill')) {
+            checkPurgatory('city','windmill');
+        }
+        else if (getPurgatory('city','mill')) {
+            checkPurgatory('city','windmill',{ count: getPurgatory('city','mill').count });
+        }
+    } else {
+        removeFromRQueue(['wind_plant']);
+        removeFromQueue(['city-windmill']);
+    }
+
+    if (global.race['casting']){
+        if (!global.race['carnivore'] && !global.race['soul_eater']) {
+            global.race.casting.total -= global.race.casting.farmer;
+            global.race.casting.farmer = 0;
+        }
+        defineIndustry();
+    }
+    setResourceName('Food');
+}
+
 export function cleanAddTrait(trait){
     switch (trait){
         case 'kindling_kindred':
@@ -3537,52 +3745,10 @@ export function cleanAddTrait(trait){
             }
             purgeLumber();
             break;
+        case 'soul_eater':
+        case 'detritivore':
         case 'carnivore':
-            removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
-            removeFromRQueue(['farm', 'agriculture']);
-            if (global.tech['farm'] >= 1){
-                checkPurgatory('tech','hunting',2);
-            }
-            else if (global.tech['agriculture'] && global.tech['agriculture'] >= 3){
-                checkPurgatory('tech','hunting',1);
-            }
-            setPurgatory('tech','agriculture');
-            if (global.city['farm']){
-                checkPurgatory('city','lodge',{ count: global.city.farm.count });
-                setPurgatory('city','farm');
-            }
-            if (global.city['silo']){
-                checkPurgatory('city','smokehouse',{ count: global.city.silo.count });
-                setPurgatory('city','silo');
-            }
-            else {
-                global.city['smokehouse'] = { count: 0 };
-            }
-            if (global.city['mill']){
-                setPurgatory('city','mill');
-            }
-            setPurgatory('tech','agriculture');
-            setPurgatory('tech','farm');
-            if (global.civic.d_job === 'farmer') {
-                global.civic.d_job = 'hunter';
-            }
-            global.civic.farmer.workers = 0;
-            global.civic.farmer.max = 0;
-            global.civic.farmer.display = false;
-            if (!global.race['soul_eater']){
-                if (global.civic.d_job === 'unemployed') {
-                    global.civic.d_job = 'hunter';
-                }
-                global.civic.hunter.display = true;
-                global.civic.hunter.workers = global.civic.unemployed.workers;
-                global.civic.unemployed.display = false;
-                global.civic.unemployed.workers = 0;
-            }
-            if (global.race['casting']){
-                global.race.casting.total -= global.race.casting.farmer;
-                global.race.casting.farmer = 0;
-                defineIndustry();
-            }
+            adjustFood();
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
@@ -3590,7 +3756,6 @@ export function cleanAddTrait(trait){
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
-            global.civic.quarry_worker.max = 0;
             setResourceName('Stone');
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');
@@ -3618,27 +3783,34 @@ export function cleanAddTrait(trait){
             setPurgatory('city','trade');
             break;
         case 'slaver':
-            checkPurgatory('tech','slaves',2);
-            checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+            checkPurgatory('tech','slaves');
+            if (global.tech['slaves'] >= 1) {
+                checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+            }
             break;
         case 'cannibalize':
-            global.city['s_alter'] = {
-                count: 0,
-                rage: 0,
-                mind: 0,
-                regen: 0,
-                mine: 0,
-                harvest: 0,
-            };
+            checkPurgatory('tech','sacrifice');
+            if (global.tech['mining']) {
+                global.city['s_alter'] = {
+                    count: 0,
+                    rage: 0,
+                    mind: 0,
+                    regen: 0,
+                    mine: 0,
+                    harvest: 0,
+                };
+            }
             break;
         case 'magnificent':
-            checkPurgatory('city','shrine',{
-                count: 0,
-                morale: 0,
-                metal: 0,
-                know: 0,
-                tax: 0
-            });
+            if (global.tech['theology'] >= 2) {
+                checkPurgatory('city','shrine',{
+                    count: 0,
+                    morale: 0,
+                    metal: 0,
+                    know: 0,
+                    tax: 0
+                });
+            }
             break;
         case 'unified':
             global.tech['world_control'] = 1;
@@ -3705,7 +3877,9 @@ export function cleanAddTrait(trait){
             window.location.reload();
         case 'calm':
             global.resource.Zen.display = true;
-            checkPurgatory('city','meditation',{ count: 0 });
+            if (global.tech['primitive'] >= 3) {
+                checkPurgatory('city','meditation',{ count: 0 });
+            }
             break;
         case 'blood_thirst':
             global.race['blood_thirst_count'] = 1;
@@ -3779,53 +3953,20 @@ export function cleanRemoveTrait(trait){
                 global.civic.lumberjack.display = true;
             }
             break;
+        case 'soul_eater':
+        case 'detritivore':
         case 'carnivore':
-            removeFromQueue(['city-lodge', 'city-smokehouse', 'city-windmill']);
-            removeFromRQueue(['hunting', 'wind_plant']);
-            checkPurgatory('city','agriculture');
-            if (global.tech['hunting'] >= 2){
-                checkPurgatory('city','farm',1);
-            }
-            else {
-                checkPurgatory('city','farm');
-            }
-            setPurgatory('tech','hunting');
-            if (global.city['lodge'] && !global.race['detritivore'] && !global.race['artifical']){
-                checkPurgatory('city','farm',{ count: global.city.lodge.count });
-                setPurgatory('city','lodge');
-            }
-            if (global.city['farm']){
-                global.civic.farmer.display = true;
-            }
-            if (global.city['smokehouse']){
-                checkPurgatory('city','silo',{ count: global.city.smokehouse.count });
-                setPurgatory('city','smokehouse');
-            }
-            if (!global.race['detritivore'] && !global.race['artifical']){
-                setPurgatory('tech','wind_plant');
-                if (global.city['windmill']){
-                    checkPurgatory('city','mill',{ count: global.city.windmill.count });
-                    setPurgatory('city','windmill');
-                }
-            }
-            if (!global.race['soul_eater']){
-                if (global.civic.d_job === 'hunter') {
-                    global.civic.d_job = 'unemployed';
-                }
-                global.civic.unemployed.display = true;
-                global.civic.unemployed.workers = global.civic.hunter.workers;
-                global.civic.hunter.display = false;
-                global.civic.hunter.workers = 0;
-            }
-            if (global.race['casting']){
-                defineIndustry();
-            }
+            adjustFood();
             break;
         case 'sappy':
-            global.civic.quarry_worker.display = true;
             setResourceName('Stone');
             checkPurgatory('tech','hammer');
-            checkPurgatory('city','rock_quarry',{ count: 0 });
+            if (global.tech['mining'] >= 1) {
+                checkPurgatory('city','rock_quarry',{ count: 0, asbestos: 0 });
+                if (global.city['rock_quarry'].count > 0) {
+                    global.civic.quarry_worker.display = true;
+                }
+            }
             break;
         case 'environmentalist':
             delete power_generated[loc('city_hydro_power')];
@@ -3833,6 +3974,8 @@ export function cleanRemoveTrait(trait){
             break;
         case 'terrifying':
             global.settings.showMarket = true;
+            checkPurgatory('tech','trade');
+            checkPurgatory('city','trade');
             break;
         case 'slaver':
             removeFromQueue(['city-slave_pen']);
@@ -3853,6 +3996,7 @@ export function cleanRemoveTrait(trait){
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
             removeFromRQueue(['sacrifice']);
+            setPurgatory('tech','sacrifice');
             delete global.city['s_alter'];
             if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
                 for (let i=0; i<global.race.governor.tasks.length; i++){
@@ -3903,6 +4047,7 @@ export function cleanRemoveTrait(trait){
             delete global.race['blood_thirst_count'];
             break;
         case 'deconstructor':
+            removeFromQueue(['city-nanite_factory']);
             global.resource.Nanite.display = false;
             setPurgatory('city','nanite_factory');
             break;
