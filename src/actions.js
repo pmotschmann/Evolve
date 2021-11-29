@@ -48,7 +48,7 @@ export const actions = {
             id: 'evolution-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
-            cost: { RNA(){ return evolveCosts('membrane',2,2); } },
+            cost: { RNA(offset){ return evolveCosts('membrane',2,2,offset); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
                 return loc('evo_membrane_effect',[effect]);
@@ -68,8 +68,8 @@ export const actions = {
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
             cost: {
-                RNA(){ return evolveCosts('organelles',12,8); },
-                DNA(){ return evolveCosts('organelles',4,4); }
+                RNA(offset){ return evolveCosts('organelles',12,8,offset); },
+                DNA(offset){ return evolveCosts('organelles',4,4,offset); }
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
@@ -92,8 +92,8 @@ export const actions = {
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
             cost: {
-                RNA(){ return evolveCosts('nucleus',38, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32 ); },
-                DNA(){ return evolveCosts('nucleus',18, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16 ); }
+                RNA(offset){ return evolveCosts('nucleus',38, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 16 : 32, offset ); },
+                DNA(offset){ return evolveCosts('nucleus',18, global.evolution['multicellular'] && global.evolution['multicellular'].count > 0 ? 12 : 16, offset ); }
             },
             effect(){
                 let dna = (global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0) ? 2 : 1;
@@ -113,8 +113,8 @@ export const actions = {
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
             cost: {
-                RNA(){ return evolveCosts('eukaryotic_cell',20,20); },
-                DNA(){ return evolveCosts('eukaryotic_cell',40,12); }
+                RNA(offset){ return evolveCosts('eukaryotic_cell',20,20,offset); },
+                DNA(offset){ return evolveCosts('eukaryotic_cell',40,12,offset); }
             },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 10 + 10 : 10;
@@ -135,8 +135,8 @@ export const actions = {
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
             cost: {
-                RNA(){ return evolveCosts('mitochondria',75,50); },
-                DNA(){ return evolveCosts('mitochondria',65,35); }
+                RNA(offset){ return evolveCosts('mitochondria',75,50,offset); },
+                DNA(offset){ return evolveCosts('mitochondria',65,35,offset); }
             },
             effect: loc('evo_mitochondria_effect'),
             action(){
@@ -2387,21 +2387,35 @@ export const actions = {
             not_trait: ['cataclysm'],
             inflation: false,
             cost: {
-                Lumber(){ 
-                    let active = global.race['shoecnt'] && !global.race['kindling_kindred'] && !global.race['smoldering']
-                        && (!global.resource.Copper.display || global.race.shoecnt <= 12) ? true : false;
-                    return active ? (global.race.shoecnt > 12 ? 25 : 5) * (global.race.shoecnt <= 5 ? 1 : global.race.shoecnt - 4) : 0;
+                Lumber(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    let active = !global.race['kindling_kindred'] && !global.race['smoldering']
+                        && (!global.resource.Copper.display || shoes <= 12) ? true : false;
+                    return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
                 },
-                Copper(){
+                Copper(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
                     let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
-                    let active = global.race['shoecnt'] && (!lum || (lum && global.race.shoecnt > 12 && global.resource.Copper.display))
-                        && (!global.resource.Iron.display || global.race.shoecnt <= 75) ? true : false;
-                    return active ? (global.race.shoecnt > 75 ? 20 : 5) * (global.race.shoecnt <= 12 ? 1 : global.race.shoecnt - 11) : 0;
+                    let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
+                        && (!global.resource.Iron.display || shoes <= 75) ? true : false;
+                    return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
                 },
-                Iron(){ return global.race['shoecnt'] && global.resource.Iron.display && global.race.shoecnt > 75 && (!global.resource.Steel.display || global.race.shoecnt <= 150) ? (global.race.shoecnt <= 150 ? 12 : 28) * global.race.shoecnt : 0; },
-                Steel(){ return global.race['shoecnt'] && global.resource.Steel.display && global.race.shoecnt > 150 && (!global.resource.Adamantite.display || global.race.shoecnt <= 500) ? (global.race.shoecnt <= 500 ? 40 : 100) * global.race.shoecnt : 0; },
-                Adamantite(){ return global.race['shoecnt'] && global.resource.Adamantite.display && global.race.shoecnt > 500 && (!global.resource.Orichalcum.display || global.race.shoecnt <= 5000) ? (global.race.shoecnt <= 5000 ? 5 : 25) * global.race.shoecnt : 0; },
-                Orichalcum(){ return global.race['shoecnt'] && global.resource.Orichalcum.display && global.race.shoecnt > 5000 ? 25 * global.race.shoecnt - 120000 : 0; }
+                Iron(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
+                },
+                Steel(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
+                },
+                Adamantite(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
+                },
+                Orichalcum(offset){
+                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                    return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
+                }
             },
             action(n){
                 let keyMult = n || keyMultiplier();
@@ -2464,7 +2478,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             inflation: false,
             cost: {
-                Stone(){ return global.city.hasOwnProperty('s_alter') && global.city['s_alter'].count >= 1 ? 0 : 100; }
+                Stone(offset){ return ((offset || 0) + (global.city.hasOwnProperty('s_alter') ? global.city['s_alter'].count : 0)) >= 1 ? 0 : 100; }
             },
             effect(){
                 let sacrifices = global.civic[global.civic.d_job].workers;
@@ -2552,7 +2566,8 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){
-                    if (global.city['basic_housing'] && global.city['basic_housing'].count >= 5){
+                    offset = offset || 0;
+                    if ((global.city['basic_housing'] ? global.city['basic_housing'].count : 0) + offset >= 5){
                         return costMultiplier('basic_housing', offset, 20, 1.17);
                     }
                     else {
@@ -2723,7 +2738,15 @@ export const actions = {
             reqs: { soul_eater: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['soul_well'] && global.city['soul_well'].count >= 3){ return costMultiplier('soul_well', offset, 50, 1.32);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['soul_well'] ? global.city['soul_well'].count : 0) + offset >= 3){
+                        return costMultiplier('soul_well', offset, 50, 1.32);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('soul_well', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('soul_well', offset, 10, 1.36); }
             },
@@ -2778,10 +2801,18 @@ export const actions = {
             reqs: { agriculture: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['farm'] && global.city['farm'].count >= 3){ return costMultiplier('farm', offset, 50, 1.32);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['farm'] ? global.city['farm'].count : 0) + offset >= 3){
+                        return costMultiplier('farm', offset, 50, 1.32);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('farm', offset, 20, 1.36); },
                 Stone(offset){ return costMultiplier('farm', offset, 10, 1.36); },
-                Horseshoe(){ return global.race['hooved'] && global.city['farm'] && global.city['farm'].count >= 2 ? 1 : 0; }
+                Horseshoe(offset){ return global.race['hooved'] && ((global.city['farm'] ? global.city['farm'].count : 0) + (offset || 0)) >= 2 ? 1 : 0; }
             },
             effect(){
                 return global.tech['farm'] ? `<div>${loc('city_farm_effect')}</div><div>${loc('plus_max_resource',[1,loc('citizen')])}</div>` : loc('city_farm_effect');
@@ -2809,7 +2840,15 @@ export const actions = {
             reqs: { compost: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['compost'] && global.city['compost'].count >= 3){ return costMultiplier('compost', offset, 50, 1.32);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['compost'] ? global.city['compost'].count : 0) + offset >= 3){
+                        return costMultiplier('compost', offset, 50, 1.32);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('compost', offset, 12, 1.36); },
                 Stone(offset){ return costMultiplier('compost', offset, 12, 1.36); }
             },
@@ -2916,7 +2955,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('silo', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('silo', offset, 65, 1.36) },
                 Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); },
-                Iron(offset){ return global.city.silo && global.city.silo.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
+                Iron(offset){ return ((global.city.silo ? global.city.silo.count : 0) + (offset || 0)) >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
             },
             effect(){
                 let food = BHStorageMulti(spatialReasoning(500));
@@ -2941,7 +2980,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('garrison', offset, 240, 1.5); },
                 Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); },
-                Iron(offset){ return global.city['garrison'] && global.city.garrison.count >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; },
+                Iron(offset){ return ((global.city['garrison'] ? global.city.garrison.count : 0) + (offset || 0)) >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; },
                 Horseshoe(){ return global.race['hooved'] ? (global.race['chameleon'] ? 1 : 2) : 0; }
             },
             effect(){
@@ -3285,7 +3324,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('bank', offset, 250, 1.35); },
                 Lumber(offset){ return costMultiplier('bank', offset, 75, 1.32); },
                 Stone(offset){ return costMultiplier('bank', offset, 100, 1.35); },
-                Iron(offset){ return global.city['bank'] && global.city.bank.count >= 2 && global.city.ptrait === 'unstable' ? costMultiplier('bank', offset, 30, 1.3) : 0; }
+                Iron(offset){ return ((global.city['bank'] ? global.city.bank.count : 0) + (offset || 0)) >= 2 && global.city.ptrait === 'unstable' ? costMultiplier('bank', offset, 30, 1.3) : 0; }
             },
             effect(){
                 let vault = bank_vault();
@@ -3317,7 +3356,15 @@ export const actions = {
             reqs: { magic: 2 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['pylon'] && global.city['pylon'].count >= 2){ return costMultiplier('pylon', offset, 10, 1.48);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['pylon'] ? global.city['pylon'].count : 0) + offset >= 2){
+                        return costMultiplier('pylon', offset, 10, 1.48);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Stone(offset){ return costMultiplier('pylon', offset, 12, 1.42); },
                 Crystal(offset){ return costMultiplier('pylon', offset, 8, 1.42) - 3; }
             },
@@ -3344,7 +3391,15 @@ export const actions = {
             reqs: { reclaimer: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['graveyard'] && global.city['graveyard'].count >= 5){ return costMultiplier('graveyard', offset, 5, 1.85);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['graveyard'] ? global.city['graveyard'].count : 0) + offset >= 5){
+                        return costMultiplier('graveyard', offset, 5, 1.85);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('graveyard', offset, 2, 1.95); },
                 Stone(offset){ return costMultiplier('graveyard', offset, 6, 1.9); }
             },
@@ -3369,7 +3424,15 @@ export const actions = {
             reqs: { axe: 1 },
             not_trait: ['cataclysm'],
             cost: {
-                Money(offset){ if (global.city['lumber_yard'] && global.city['lumber_yard'].count >= 5){ return costMultiplier('lumber_yard', offset, 5, 1.85);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['lumber_yard'] ? global.city['lumber_yard'].count : 0) + offset >= 5){
+                        return costMultiplier('lumber_yard', offset, 5, 1.85);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('lumber_yard', offset, 6, 1.9); },
                 Stone(offset){ return costMultiplier('lumber_yard', offset, 2, 1.95); }
             },
@@ -3432,7 +3495,15 @@ export const actions = {
             reqs: { mining: 1 },
             not_trait: ['cataclysm','sappy'],
             cost: {
-                Money(offset){ if (global.city['rock_quarry'] && global.city['rock_quarry'].count >= 2){ return costMultiplier('rock_quarry', offset, 20, 1.45);} else { return 0; } },
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['rock_quarry'] ? global.city['rock_quarry'].count : 0) + offset >= 2){
+                        return costMultiplier('rock_quarry', offset, 20, 1.45);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
                 Lumber(offset){ return costMultiplier('rock_quarry', offset, 50, 1.36); },
                 Stone(offset){ return costMultiplier('rock_quarry', offset, 10, 1.36); }
             },
@@ -3793,7 +3864,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: 'Roxxon'
+            flair: loc('city_oil_well_flair')
         },
         oil_depot: {
             id: 'city-oil_depot',
@@ -4179,7 +4250,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('university', offset, 500, 1.36) - 200; },
                 Stone(offset){ return costMultiplier('university', offset, 750, 1.36) - 350; },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('university', offset, 5, 1.36) : 0; },
-                Iron(offset){ return global.city['university'] && global.city.university.count >= 3 && global.city.ptrait === 'unstable' ? costMultiplier('university', offset, 25, 1.36) : 0; }
+                Iron(offset){ return ((global.city['university'] ? global.city.university.count : 0) + (offset || 0)) >= 3 && global.city.ptrait === 'unstable' ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
             effect(){
                 let multiplier = 1;
@@ -4319,7 +4390,7 @@ export const actions = {
                 }
                 return false;
             },
-            flair: 'No bonfires please'
+            flair: loc('city_library_flair')
         },
         wardenclyffe: {
             id: 'city-wardenclyffe',
@@ -4942,11 +5013,9 @@ export function casinoEffect(){
     return desc;
 }
 
-function evolveCosts(molecule,base,mult){
-    if (global.evolution.hasOwnProperty(molecule)){
-        return global.evolution[molecule].count * mult + base;
-    }
-    return base;
+function evolveCosts(molecule,base,mult,offset){
+    let count = (global.evolution.hasOwnProperty(molecule) ? global.evolution[molecule].count : 0) + (offset || 0);
+    return count * mult + base;
 }
 
 function addRaces(races){
@@ -6271,7 +6340,7 @@ function checkMaxCosts(costs){
         else {
             var testCost = Number(costs[res]()) || 0;
             let f_res = res === 'Species' ? global.race.species : res;
-            if (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1){
+            if ((!global.resource[f_res].display && testCost > 0) || (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1)){
                 test = false;
                 return;
             }

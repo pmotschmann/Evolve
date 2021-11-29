@@ -178,7 +178,7 @@ export function governPage(content){
                     2: [loc(`trait_slaver_name`)],
                 },
                 data_link: {
-                    2: ['wiki.html#traits-species-slaver']
+                    2: ['wiki.html#traits-species-major_slaver']
                 }
             });
             sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
@@ -195,7 +195,7 @@ export function governPage(content){
                     2: [loc(`trait_cannibalize_name`)],
                 },
                 data_link: {
-                    2: ['wiki.html#traits-species-cannibalize']
+                    2: ['wiki.html#traits-species-major_cannibalize']
                 }
             });
             sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
@@ -212,7 +212,7 @@ export function governPage(content){
                     2: [loc(`trait_hooved_name`)],
                 },
                 data_link: {
-                    2: ['wiki.html#traits-species-hooved']
+                    2: ['wiki.html#traits-species-major_hooved']
                 }
             });
             sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));

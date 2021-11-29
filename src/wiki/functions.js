@@ -88,7 +88,7 @@ export function infoBoxBuilder(parent,args,box){
     return info;
 }
 
-export function actionDesc(info, c_action, extended){
+export function actionDesc(info, c_action, extended, isStruct){
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     if (extended){
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2><span class="has-text-caution">${extended}</span></div>`);
@@ -106,19 +106,48 @@ export function actionDesc(info, c_action, extended){
     
     let hasEffect = false;
     if (c_action.hasOwnProperty('effect')){
-        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect(true);
-        if (effect !== false){
-            stats.append(`<div class="effect">${effect}</div>`);
+        if (isStruct){
+            let effect = typeof c_action.effect === 'string' ? c_action.effect : false;
+            if (effect !== false){
+                stats.append(`<div class="effect">${effect}</div>`);
+            }
+            else {
+                stats.append(`<div class="effect"></div>`);
+            }
             hasEffect = true;
+        }
+        else {
+            let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect(true);
+            if (effect !== false){
+                stats.append(`<div class="effect">${effect}</div>`);
+                hasEffect = true;
+            }
         }
         info.append(stats);
     }
 
     if (c_action.hasOwnProperty('cost')){
-        let costs = adjustCosts(c_action.cost, true);
-        let cost = hasEffect ? $(`<div class="cost right"></div>`) : $(`<div class="cost"></div>`);
+        let costs = adjustCosts(c_action.cost);
+        let cost = hasEffect ? $(`<div class="cost right"${isStruct ? ' v-show="i.costVis"' : ''}></div>`) : $(`<div class="cost"${isStruct ? ' v-show="i.costVis"' : ''}></div>`);
+        let costCreep = ``;
+        if (isStruct){
+            cost.append($(`<h2 class="has-text-warning">${loc('wiki_calc_cost')}</h2>`));
+            costCreep = $(`<div class="cost right" v-show="i.creepVis"><h2 class="has-text-warning">${loc('wiki_calc_cost_creep')}</h2></div>`);
+        }
         let render = false;
 
+        let addCost = function(res,res_cost,label,color,structBypass){
+            if (isStruct){
+                cost.append($(`<div class="${color}" v-show="r.${res}.vis">${label}{{ r.${res}.cost }}</div>`));
+                costCreep.append($(`<div class="${color}" v-show="r.${res}.vis">{{ r.${res}.creep }}</div>`));
+                render = true;
+            }
+            else if (res_cost > 0){
+                cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,1)}</div>`));
+                render = true;
+            }
+        };
+        
         let color = 'has-text-success';
         Object.keys(costs).forEach(function (res){
             if (res === 'Structs'){
@@ -136,50 +165,42 @@ export function actionDesc(info, c_action, extended){
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
                         }
                         cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
+                        if (isStruct){
+                            costCreep.append($(`<div class="${color}">${loc('wiki_calc_none')}</div>`));
+                        }
                         render = true;
                     });
                 });
             }
             else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
-                let res_cost = costs[res]();
-                if (res_cost > 0){
-                    if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                        res = 'AntiPlasmid';
-                    }
-                    let label = loc(`resource_${res}_name`);
-                    cost.append($(`<div data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
-                    render = true;
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    res = 'AntiPlasmid';
                 }
+                addCost(res,costs[res](),loc(`resource_${res}_name`) + ': ',color);
             }
             else if (res === 'Supply'){
-                let res_cost = costs[res](false,true);
-                if (res_cost > 0){
-                    let label = loc(`resource_${res}_name`);
-                    cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
-                    render = true;
-                }
+                addCost(res,costs[res](),loc(`resource_${res}_name`) + ': ',color);
+            }
+            else if (res === 'Custom'){
+                cost.append($(`<div class="${color}">${costs[res]().label}</div>`));
+                render = true;
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
-                let res_cost = costs[res](false,true);
                 let f_res = res === 'Species' ? global.race.species : res;
-                if (res_cost > 0){
-                    if (res === 'HellArmy'){
-                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">Fortress Troops: ${res_cost}</div>`));
-                    }
-                    else {
-                        let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
-                        label = label.replace("_", " ");
-                        let display_cost = sizeApproximation(res_cost,1);
-                        cost.append($(`<div class="${color}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
-                    }
-                    render = true;
-                }
+                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
+                label = label.replace("_", " ");
+                addCost(res,costs[res](),label,color);
             }
-
         });
 
         if (render){
+            if (!c_action.hasOwnProperty('effect')){
+                info.append(stats);
+            }
             stats.append(cost);
+            if (isStruct){
+                stats.append(costCreep);
+            }
         }
     }
 }

@@ -327,19 +327,20 @@ const fortressModules = {
                 vBind({el: `#fort`},'update');
             },
             cost: {
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000000 : 0; },
-                Graphene(offset,wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 1500000 : 0; },
-                Infernite(offset,wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 25000 : 0; },
-                Bolognium(offset,wiki){ return !global.portal.hasOwnProperty('soul_forge') || global.portal.soul_forge.count < 1 || wiki ? 100000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 1500000 : 0; },
+                Infernite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 25000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0)) < 1 ? 100000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
-                if (global.portal.hasOwnProperty('soul_forge') && global.portal.soul_forge.count >= 1){
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
+                if (count >= 1){
                     let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
                     if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
                         cap *= 0.97 ** p_on['soul_attractor'];
                     }
-                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal.soul_forge.kills.toLocaleString(),Math.round(cap).toLocaleString()])}</div>`;
+                    desc = desc + `<div>${loc('portal_soul_forge_effect2',[global.portal['soul_forge'] ? global.portal.soul_forge.kills.toLocaleString() : 0,Math.round(cap).toLocaleString()])}</div>`;
                 }
                 let soldiers = soulForgeSoldiers();
                 return `${desc}<div><span class="has-text-caution">${loc('portal_soul_forge_soldiers',[soldiers])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
@@ -506,14 +507,16 @@ const fortressModules = {
                 return global.portal.vault.count >= 2 ? false : true;
             },
             cost: {
-                Soul_Gem(offset,wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 0 || wiki ? 100 : 0; },
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 250000000 : 0; },
-                Adamantite(offset,wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 12500000 : 0; },
-                Orichalcum(offset,wiki){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count === 1 || wiki ? 30000000 : 0; },
+                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 0 ? 100 : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 250000000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 12500000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 30000000 : 0; },
             },
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             q_once: true,
-            effect(){ return !global.portal.hasOwnProperty('vault') || global.portal.vault.count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
+            effect(wiki){
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0);
+                return count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
             action(){
                 if (global.portal.vault.count < 2 && payCosts($(this)[0].cost)){
                     incrementStruct('vault','portal');
@@ -708,13 +711,25 @@ const fortressModules = {
             desc: loc('portal_ancient_pillars_desc'),
             reqs: { hell_ruins: 2 },
             cost: {
-                Harmony(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0; },
-                Scarletite(){ return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0; },
+                Harmony(wiki){
+                    if (wiki !== undefined){
+                        return wiki + Object.keys(global.pillars).length < Object.keys(races).length - 1 ? 1 : 0;
+                    }
+                    return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? 1 : 0;
+                },
+                Scarletite(wiki){
+                    if (wiki !== undefined){
+                        let pillars = wiki + Object.keys(global.pillars).length;
+                        return pillars < Object.keys(races).length - 1 ? pillars * 125000 + 1000000 : 0;
+                    }
+                    return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0;
+                },
             },
             no_queue(){ return true },
-            effect(){
-                if (Object.keys(global.pillars).length >= 1){
-                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length - 1,Object.keys(global.pillars).length])}</div>`;
+            effect(wiki){
+                let pillars = (wiki || 0) + Object.keys(global.pillars).length;
+                if (pillars >= 1){
+                    return `<div>${loc('portal_ancient_pillars_effect2',[Object.keys(races).length - 1,pillars])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_ancient_pillars_effect',[Object.keys(races).length - 1])}</div>`;
@@ -797,18 +812,19 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
             cost: {
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
-                Stone(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
-                Uranium(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
-                Adamantite(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
-                Vitreloy(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
-                Soul_Gem(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? 1 : 0; },
-                Scarletite(offset,wiki){ return !global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(10000000) : 0; },
+                Stone(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(100000) : 0; },
+                Uranium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(1000) : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(18000) : 0; },
+                Vitreloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(25000) : 0; },
+                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0)) < towerSize() ? towerPrice(5000) : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size){
-                    let remain = global.portal.hasOwnProperty('west_tower') ? size - global.portal.west_tower.count : size;
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('west_tower') ? global.portal.west_tower.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
@@ -852,18 +868,19 @@ const fortressModules = {
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
             cost: {
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(10000000) : 0; },
-                Stone(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(100000) : 0; },
-                Uranium(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(1000) : 0; },
-                Adamantite(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(18000) : 0; },
-                Vitreloy(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(25000) : 0; },
-                Soul_Gem(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? 1 : 0; },
-                Scarletite(offset,wiki){ return !global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < towerSize() || wiki ? towerPrice(5000) : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(10000000) : 0; },
+                Stone(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(100000) : 0; },
+                Uranium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(1000) : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(18000) : 0; },
+                Vitreloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(25000) : 0; },
+                Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? 1 : 0; },
+                Scarletite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0)) < towerSize() ? towerPrice(5000) : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = towerSize();
-                if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size){
-                    let remain = global.portal.hasOwnProperty('east_tower') ? size - global.portal.east_tower.count : size;
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('east_tower') ? global.portal.east_tower.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_tower_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_tower_effect2')}</div>`;
                 }
                 else {
@@ -1354,14 +1371,15 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
-                Species(offset,wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 10 : 0; },
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 500000000 : 0; },
-                Supply(offset,wiki){ return !global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki ? 100000 : 0; },
+                Species(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 10 : 0; },
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 500000000 : 0; },
+                Supply(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 100000 : 0; },
             },
-            effect(){
+            effect(wiki){
                 let size = 10;
-                if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < size){
-                    let remain = global.portal.hasOwnProperty('bridge') ? size - global.portal.bridge.count : size;
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0);
+                if (count < size){
+                    let remain = size - count;
                     return `<div>${loc('portal_bridge_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div><div class="has-text-caution">${loc('portal_bridge_effect2')}</div>`;
                 }
                 else {
@@ -1388,13 +1406,17 @@ const fortressModules = {
             reqs: { hell_spire: 6 },
             no_queue(){ return global.tech.hell_spire < 8 ? false : true; },
             cost: {
-                Knowledge(offset,wiki){ return global.tech.hell_spire === 6 || global.tech.hell_spire === 7 || wiki ? (global.tech.hell_spire === 7 ? 50000000 : 40000000) : 0; }
+                Knowledge(offset){
+                    let count = (offset || 0) + (!global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2);
+                    return count === 1 ? 50000000 : count === 0 ? 40000000 : 0;
+                }
             },
-            effect(){
-                if (global.tech.hell_spire === 7){
+            effect(wiki){
+                let count = (wiki || 0) + (!global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2);
+                if (count === 1){
                     return loc('portal_sphinx_effect2');
                 }
-                else if (global.tech.hell_spire >= 8){
+                else if (count === 2){
                     return loc('portal_sphinx_effect3');
                 }
                 return loc('portal_sphinx_effect');
@@ -1597,23 +1619,44 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return global.tech['waygate'] && global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
             cost: {
-                Species(offset,wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 25 : 0; },
-                Money(offset,wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 1000000000 : 0; },
-                Supply(offset,wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 500000 : 0; },
-                Blood_Stone(offset,wiki){ return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki ? 5 : 0; },
+                Species(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 25 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 25 : 0;
+                },
+                Money(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 1000000000 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 1000000000 : 0;
+                },
+                Supply(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 500000 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 500000 : 0;
+                },
+                Blood_Stone(offset){
+                    if (offset){
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 5 : 0;
+                    }
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ?  5 : 0;
+                },
             },
             powered(){
                 return global.portal.hasOwnProperty('waygate') && global.portal.waygate.count >= 10 ? 1 : 0;
             },
             power_reqs: { waygate: 2 },
-            effect(){
-                if (global.tech['waygate'] && global.tech.waygate >= 2){
+            effect(wiki){
+                let count = (wiki || 0) + (global.tech['waygate'] && global.tech.waygate >= 2 ? 10 : global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0);
+                if (count >= 10){
                     let progress = global.portal.hasOwnProperty('waygate') ? `<span class="has-text-warning">${+(global.portal.waygate.progress).toFixed(3)}%</span>` : '0%';
                     return `<div>${loc('portal_waygate_open')}</div><div>${loc('portal_waygate_progress',[progress])}</div>`;
                 }
                 else {
                     let size = 10;
-                    let remain = global.portal.hasOwnProperty('waygate') ? size - global.portal.waygate.count : size;
+                    let remain = size - count;
                     return `<div>${loc('portal_waygate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
             },
@@ -1639,7 +1682,7 @@ function spireCreep(base){
     return creep >= 1.01 ? creep : 1.01;
 }
 
-const towerSize = (function(){
+export const towerSize = (function(){
     var size;
     return function(recalc){
         if (size && !recalc){

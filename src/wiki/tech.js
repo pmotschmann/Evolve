@@ -3,7 +3,7 @@ import { loc } from './../locale.js';
 import { universeAffix } from './../achieve.js';
 import { actions, housingLabel } from './../actions.js';
 import { checkControlling } from './../civics.js';
-import { races } from './../races.js';
+import { races, traits } from './../races.js';
 import { getHalloween } from './../functions.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
 
@@ -210,10 +210,11 @@ const extraInformation = {
         loc(`wiki_tech_otb`)
     ],
     online_gambling: [
-        loc(`wiki_tech_dazzle`,[33.33])
+        loc(`wiki_tech_dazzle`,[33.33]),
+        loc(`wiki_tech_casino_vault`,[60000,120000])
     ],
     bolognium_vaults: [
-        loc(`wiki_tech_casino_vault`,[60000,240000])
+        loc(`wiki_tech_casino_vault`,[120000,240000])
     ],
     mining: [
         loc(`wiki_tech_building_unlock`,[loc(`city_rock_quarry`)])
@@ -1664,12 +1665,12 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_evil_name`)]),
                     color: global.race['evil'] ? true : false,
-                    link: 'wiki.html#traits-species-evil'
+                    link: 'wiki.html#traits-species-genus_evil'
                 },
                 {
                     title: loc(`wiki_tech_special_trait_not`,[loc(`trait_soul_eater_name`)]),
                     color: !global.race['soul_eater'],
-                    link: 'wiki.html#traits-species-soul_eater'
+                    link: 'wiki.html#traits-species-special_soul_eater'
                 }
             ]
         }
@@ -1725,7 +1726,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_detritivore_name`)]),
                     color: global.race['detritivore'] ? true : false,
-                    link: 'wiki.html#traits-species-detritivore'
+                    link: 'wiki.html#traits-species-genus_detritivore'
                 }
             ]
         }
@@ -1944,7 +1945,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
                     color: global.race['terrifying'] ? true : false,
-                    link: 'wiki.html#traits-species-terrifying'
+                    link: 'wiki.html#traits-species-major_terrifying'
                 }
             ]
         }
@@ -1961,7 +1962,7 @@ const specialRequirements = {
                 {
                     title: loc(`wiki_tech_special_trait`,[loc(`trait_terrifying_name`)]),
                     color: global.race['terrifying'] ? true : false,
-                    link: 'wiki.html#traits-species-terrifying'
+                    link: 'wiki.html#traits-species-major_terrifying'
                 }
             ]
         }
@@ -3159,7 +3160,7 @@ function addRequirements(parent,key,keyName){
                         break;
                     case 'trait':
                         subText = loc(`trait_${subreq.name}_name`);
-                        link = `wiki.html#traits-species-${subreq.name}`;
+                        link = `wiki.html#traits-species-${traits[subreq.name].type}_${subreq.name}`;
                         color = global.race[subreq.name];
                         break;
                     case 'tech':
