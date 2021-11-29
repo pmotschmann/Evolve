@@ -4,7 +4,6 @@ import { clearElement, popover, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 import { towerSize } from './../portal.js';
 import { races } from './../races.js';
-import { fuel_adjust } from './../space.js';
 import { actionDesc, sideMenu } from './functions.js';
 
 export function renderStructurePage(zone,path){
@@ -189,7 +188,7 @@ function addCalcInputs(parent,key,section,region){
     
     let cost = action.cost;
     if (cost){
-        Object.keys(adjustCosts(cost)).forEach(function (res){
+        Object.keys(adjustCosts({ cost: cost })).forEach(function (res){
             resources[res] = {};
             if (section === 'space' && (res === 'Oil' || res === 'Helium_3')){
                 calcInputs.fuelAdj.inputs.forEach(function (input){
@@ -203,7 +202,7 @@ function addCalcInputs(parent,key,section,region){
     let updateCosts = function(){
         let vis = false;
         if (cost){
-            let new_costs = adjustCosts(cost,inputs.owned - inputs.real_owned,inputs.extra);
+            let new_costs = adjustCosts({ cost: cost },inputs.owned - inputs.real_owned,inputs.extra);
             Object.keys(resources).forEach(function (res){
                 if (res === 'Custom'){
                     resources[res].vis = true;
@@ -225,8 +224,8 @@ function addCalcInputs(parent,key,section,region){
         if (cost && !hasMax && 
             !(calcInfo.count[section] && calcInfo.count[section].hasOwnProperty(key)) &&
             section !== 'prehistoric'){
-            let upper = adjustCosts(cost,100,inputs.extra);
-            let lower = adjustCosts(cost,99,inputs.extra);
+            let upper = adjustCosts({ cost: cost },100,inputs.extra);
+            let lower = adjustCosts({ cost: cost },99,inputs.extra);
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
                     resources[res].creep = +(upper[res](100,inputs.extra) / lower[res](99,inputs.extra)).toFixed(5);
