@@ -5766,9 +5766,10 @@ function midLoop(){
             caps['Uranium'] += 1000;
         }
 
-        if (global.stats.feat['adept']){
-            caps['Lumber'] += global.stats.feat['adept'] * 60;
-            caps['Stone'] += global.stats.feat['adept'] * 60;
+        if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
+            let rank = Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']);
+            caps['Lumber'] += rank * 60;
+            caps['Stone'] += rank * 60;
         }
 
         var bd_Money = { [loc('base')]: caps['Money']+'v' };

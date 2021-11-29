@@ -7370,16 +7370,17 @@ function sentience(){
         'challenge': alevel() - 1
     });
 
-    if (global.stats.feat['adept']){
-        global.resource.Stone.max += global.stats.feat['adept'] * 60;
-        global.resource.Stone.amount += global.stats.feat['adept'] * 100;
+    if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
+        let rank = Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']);
+        global.resource.Stone.max += rank * 60;
+        global.resource.Stone.amount += rank * 100;
         if (global.race['smoldering']){
-            global.resource.Chrysotile.max += global.stats.feat['adept'] * 60;
-            global.resource.Chrysotile.amount += global.stats.feat['adept'] * 100;
+            global.resource.Chrysotile.max += rank * 60;
+            global.resource.Chrysotile.amount += rank * 100;
         }
         else {
-            global.resource.Lumber.max += global.stats.feat['adept'] * 60;
-            global.resource.Lumber.amount += global.stats.feat['adept'] * 100;
+            global.resource.Lumber.max += rank * 60;
+            global.resource.Lumber.amount += rank * 100;
         }
     }
 

@@ -2183,18 +2183,18 @@ export const perkList = {
         ]
     },
     adept: {
-        name: loc(`feat_adept_name`),
+        name: loc(`perk_adept`),
         desc(wiki){
-            let rank = global.stats.feat['adept'] ? global.stats.feat['adept'] : 1;
+            let rank = global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']) : 1;
             let res = wiki ? "100/200/300/400/500" : rank * 100;
             let cap = wiki ? "60/120/180/240/300" : rank * 60;
             return loc("achieve_perks_adept",[res,cap]);
         },
         active(){
-            return global.stats.feat['adept'] ? true : false;
+            return global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? true : false;
         },
         notes: [
-            loc(`wiki_perks_progress_note1`,[50]),
+            loc(`wiki_perks_progress_note1`,[50,loc(`wiki_resets_bioseed`)]),
             loc(`wiki_perks_progress_note2`)
         ]
     },

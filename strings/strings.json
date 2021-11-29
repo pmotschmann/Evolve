@@ -3155,6 +3155,7 @@
   "feat_fool_flair": "April Fools!",
   "perk_novice": "Evolve Novice",
   "perk_journeyman": "Evolve Journeyman",
+  "perk_adept": "Evolve Adept",
   "arpa_projects_lhc_title": "Supercollider",
   "arpa_projects_lhc_desc": "A supercollider will help expand your understanding of theoretical sciences",
   "arpa_projects_lhc_effect1": "Each completed supercollider increases %1 and university science caps by %0%.",
