@@ -2146,27 +2146,28 @@ export const perkList = {
         ]
     },
     novice: {
-        name: loc(`feat_novice_name`),
+        name: loc(`perk_novice`),
         desc(wiki){
-            let rank = global.stats.feat['novice'] ? global.stats.feat['novice'] : 1;
+            let rank = global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0 ? Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']) : 1;
             let rna = wiki ? "0.5/1/1.5/2/2.5" : rank / 2;
             let dna = wiki ? "0.25/0.5/0.75/1/1.25" : rank / 4;
             return loc("achieve_perks_novice",[rna,dna]);
         },
         active(){
-            return global.stats.feat['novice'] ? true : false;
+            return global.stats.feat['novice'] && global.stats.mad > 0 ? true : false;
         },
         notes: [
-            loc(`wiki_perks_progress_note1`,[10]),
+            loc(`wiki_perks_progress_note1`,[10,loc(`wiki_resets_mad`)]),
             loc(`wiki_perks_progress_note2`)
         ]
     },
     journeyman: {
-        name: loc(`feat_journeyman_name`),
+        name: loc(`perk_journeyman`),
         desc(wiki){
-            if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] > 1){
-                let rqueue = wiki ? "1/2/3" : global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
-                let queue = wiki ? "1/2" : global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+            let rank = global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0 ? Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']) : 1;
+            if (rank > 1){
+                let rqueue = wiki ? "1/2/3" : rank >= 3 ? (rank >= 5 ? 3 : 2) : 1;
+                let queue = wiki ? "1/2" : rank >= 4 ? 2 : 1;
                 return loc("achieve_perks_journeyman2",[rqueue,queue]);
             }
             else {
@@ -2174,10 +2175,10 @@ export const perkList = {
             }
         },
         active(){
-            return global.stats.feat['journeyman'] ? true : false;
+            return global.stats.feat['journeyman'] && global.stats.bioseed > 0 ? true : false;
         },
         notes: [
-            loc(`wiki_perks_progress_note1`,[25]),
+            loc(`wiki_perks_progress_note1`,[25,loc(`wiki_resets_bioseed`)]),
             loc(`wiki_perks_progress_note2`)
         ]
     },

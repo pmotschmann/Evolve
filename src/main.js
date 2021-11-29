@@ -953,10 +953,11 @@ function fastLoop(){
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
         }
 
-        if (global.stats.feat['novice'] && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
-            modRes('RNA', (global.stats.feat['novice'] / 2) * time_multiplier * global_multiplier);
+        if (global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0 && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
+            let rank = Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']);
+            modRes('RNA', (rank / 2) * time_multiplier * global_multiplier);
             if (global.resource.DNA.display){
-                modRes('DNA', (global.stats.feat['novice'] / 4) * time_multiplier * global_multiplier);
+                modRes('DNA', (rank / 4) * time_multiplier * global_multiplier);
             }
         }
         // Detect new unlocks
@@ -2345,15 +2346,16 @@ function fastLoop(){
 
         // Detect labor anomalies
         Object.keys(job_desc).forEach(function (job) {
-            if (global.civic[job] && job !== 'crew'){
-                total += global.civic[job].workers;
-                if (total > global.resource[global.race.species].amount){
-                    global.civic[job].workers -= total - global.resource[global.race.species].amount;
+            if (global.civic[job]){
+                if (job !== 'crew'){
+                    total += global.civic[job].workers;
+                    if (total > global.resource[global.race.species].amount){
+                        global.civic[job].workers -= total - global.resource[global.race.species].amount;
+                    }
+                    if (global.civic[job].workers < 0){
+                        global.civic[job].workers = 0;
+                    }
                 }
-                if (global.civic[job].workers < 0){
-                    global.civic[job].workers = 0;
-                }
-
                 if (job !== 'unemployed' && job !== 'hunter' && job !== 'forager'){
                     let stress_level = global.civic[job].stress;
                     if (global.city.ptrait === 'mellow'){

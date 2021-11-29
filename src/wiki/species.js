@@ -120,10 +120,10 @@ export function traitsPage(content){
     for (let i=0; i<types.length; i++){
         Object.keys(traits).sort( (a,b) => traits[a].name.localeCompare(traits[b].name) ).forEach(function (trait){
             if (types[i].includes(traits[trait].type)){
-                let info = $(`<div id="${trait}" class="infoBox"></div>`);
+                let info = $(`<div id="${types[i]}_${trait}" class="infoBox"></div>`);
                 content.append(info);
                 traitDesc(info,trait,false,true);
-                sideMenu('add',`traits-species`,trait,traits[trait].name);
+                sideMenu('add',`traits-species`,`${types[i]}_${trait}`,traits[trait].name);
             }
         });
     }

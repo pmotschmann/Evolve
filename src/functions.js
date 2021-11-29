@@ -348,8 +348,9 @@ export function removeFromRQueue(tech_trees){
 
 export function calcQueueMax(){
     let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-    if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-        max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+    if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2 && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l >= 2){
+        let rank = Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']);
+        max_queue += rank >= 4 ? 2 : 1;
     }
     if (global.genes['queue'] && global.genes['queue'] >= 2){
         max_queue *= 2;
@@ -364,8 +365,9 @@ export function calcQueueMax(){
 
 export function calcRQueueMax(){
     let max_queue = 3;
-    if (global.stats.feat['journeyman']){
-        max_queue += global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+    if (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0){
+        let rank = Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']);
+        max_queue += rank >= 3 ? (rank >= 5 ? 3 : 2) : 1;
     }
     if (global.genes['queue'] && global.genes['queue'] >= 2){
         max_queue *= 2;
@@ -1377,41 +1379,41 @@ export function calcPrestige(type,inputs){
     return gains;
 }
 
-export function adjustCosts(c_action, wiki){
+export function adjustCosts(c_action, offset, wiki){
     let costs = c_action.cost;
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'RNA' || res === 'DNA'){
-                newCosts[res] = function(){ return Math.round(costs[res]() * 0.8); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.8); }
             }
         });
         return newCosts;
     }
-    costs = truthAdjust(costs, c_action, wiki);
-    costs = inflationAdjust(costs, wiki);
-    costs = technoAdjust(costs, wiki);
-    costs = kindlingAdjust(costs, wiki);
-    costs = smolderAdjust(costs, wiki);
-    costs = scienceAdjust(costs);
-    costs = rebarAdjust(costs, wiki);
-    costs = extraAdjust(costs, wiki);
-    costs = heavyAdjust(costs, wiki);
-    return craftAdjust(costs, wiki);
+    costs = truthAdjust(costs, c_action, offset, wiki);
+    costs = inflationAdjust(costs, offset, wiki);
+    costs = technoAdjust(costs, offset, wiki);
+    costs = kindlingAdjust(costs, offset, wiki);
+    costs = smolderAdjust(costs, offset, wiki);
+    costs = scienceAdjust(costs, offset, wiki);
+    costs = rebarAdjust(costs, offset, wiki);
+    costs = extraAdjust(costs, offset, wiki);
+    costs = heavyAdjust(costs, offset, wiki);
+    return craftAdjust(costs, offset, wiki);
 }
 
-function truthAdjust(costs, c_action, wiki){
+function truthAdjust(costs, c_action, offset, wiki){
     if (global.race['truepath'] && (!c_action.hasOwnProperty('path') || !c_action.path.includes('truepath'))){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 3); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 3); }
             }
             else if (['Structs','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
-                newCosts[res] = function(){ return costs[res](wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](wiki) * 2); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 2); }
             }
         });
         return newCosts;
@@ -1419,16 +1421,16 @@ function truthAdjust(costs, c_action, wiki){
     return costs;
 }
                 
-function inflationAdjust(costs, wiki){
+function inflationAdjust(costs, offset, wiki){
     if (global.race['inflation']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let rate = 1 + (global.race.inflation / 75);
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * rate); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * rate); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1436,17 +1438,17 @@ function inflationAdjust(costs, wiki){
     return costs;
 }
 
-function extraAdjust(costs, wiki){
+function extraAdjust(costs, offset, wiki){
     let extraVal = govActive('extravagant',0);
     if (extraVal){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){
                 let waste = 1 + (extraVal / 100);
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * waste); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * waste); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1454,19 +1456,19 @@ function extraAdjust(costs, wiki){
     return costs;
 }
 
-function technoAdjust(costs, wiki){
+function technoAdjust(costs, offset, wiki){
     if (global.civic.govern.type === 'technocracy'){
         let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.92); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.92); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjust); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjust); }
             }
         });
         return newCosts;
@@ -1474,14 +1476,14 @@ function technoAdjust(costs, wiki){
     return costs;
 }
 
-function scienceAdjust(costs){
+function scienceAdjust(costs, offset, wiki){
     let pragVal = govActive('pragmatist',1);
     if ((global.race['smart'] || global.race['dumb'] || pragVal) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
                 newCosts[res] = function(){
-                    let cost = costs[res]();
+                    let cost = costs[res](offset, wiki);
                     if (global.race['smart']){
                         cost *= 1 - (traits.smart.vars()[0] / 100);
                     }
@@ -1495,7 +1497,7 @@ function scienceAdjust(costs){
                 }
             }
             else {
-                newCosts[res] = function(){ return costs[res](); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1503,24 +1505,24 @@ function scienceAdjust(costs){
     return costs;
 }
 
-function smolderAdjust(costs, wiki){
+function smolderAdjust(costs, offset, wiki){
     if (global.race['smoldering']){
         let newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Lumber' || res === 'Plywood'){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
-                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
+                newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
             else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * 0.9); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.9); }
             }
         });
         if (!newCosts.hasOwnProperty('Chrysotile') && costs.hasOwnProperty('Money') && global.tech['primitive'] && global.tech.primitive >= 3){
             newCosts['Chrysotile'] = function(){
-                let money = costs['Money'](false,wiki) || 0;
+                let money = costs['Money'](offset, wiki) || 0;
                 return money > 0 ? Math.round(money / 50) : 0;
             }
         }
@@ -1529,16 +1531,16 @@ function smolderAdjust(costs, wiki){
     return costs;
 }
 
-function kindlingAdjust(costs, wiki){
+function kindlingAdjust(costs, offset, wiki){
     if (global.race['kindling_kindred'] && (costs['Lumber'] || costs['Plywood'])){
         var newCosts = {};
         let adjustRate = 1 + (traits.kindling_kindred.vars()[0] / 100);
         Object.keys(costs).forEach(function (res){
             if (res !== 'Lumber' && res !== 'Plywood' && res !== 'Structs'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * adjustRate) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1546,15 +1548,15 @@ function kindlingAdjust(costs, wiki){
     return costs;
 }
 
-function craftAdjust(costs, wiki){
+function craftAdjust(costs, offset, wiki){
     if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'] || costs['Quantium'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1562,15 +1564,15 @@ function craftAdjust(costs, wiki){
     return costs;
 }
 
-function heavyAdjust(costs, wiki){
+function heavyAdjust(costs, offset, wiki){
     if (global.race['heavy']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Stone' || res === 'Cement' || res === 'Wrought_Iron'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * (1 + (traits.heavy.vars()[1] / 100))); }
             }
             else {
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
@@ -1578,16 +1580,16 @@ function heavyAdjust(costs, wiki){
     return costs;
 }
 
-function rebarAdjust(costs, wiki){
+function rebarAdjust(costs, offset, wiki){
     if (costs['Cement'] && global.tech['cement'] && global.tech['cement'] >= 2){
         let discount = global.tech['cement'] >= 3 ? 0.8 : 0.9;
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Cement'){
-                newCosts[res] = function(){ return Math.round(costs[res](false,wiki) * discount) || 0; }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * discount) || 0; }
             }
             else {
-                newCosts[res] = function(){ return costs[res](false,wiki); }
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
         return newCosts;
