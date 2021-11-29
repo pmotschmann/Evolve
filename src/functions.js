@@ -292,8 +292,9 @@ export function removeFromRQueue(tech_trees){
 
 export function calcQueueMax(){
     let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-    if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2){
-        max_queue += global.stats.feat['journeyman'] >= 4 ? 2 : 1;
+    if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2 && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l >= 2){
+        let rank = Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']);
+        max_queue += rank >= 4 ? 2 : 1;
     }
     if (global.genes['queue'] && global.genes['queue'] >= 2){
         max_queue *= 2;
@@ -308,8 +309,9 @@ export function calcQueueMax(){
 
 export function calcRQueueMax(){
     let max_queue = 3;
-    if (global.stats.feat['journeyman']){
-        max_queue += global.stats.feat['journeyman'] >= 3 ? (global.stats.feat['journeyman'] >= 5 ? 3 : 2) : 1;
+    if (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0){
+        let rank = Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']);
+        max_queue += rank >= 3 ? (rank >= 5 ? 3 : 2) : 1;
     }
     if (global.genes['queue'] && global.genes['queue'] >= 2){
         max_queue *= 2;

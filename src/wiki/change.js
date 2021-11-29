@@ -3,6 +3,16 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.1.17`,
+        date: `11/28/2021`,
+        changes: [
+            `Job stress from Civilian Ship Crew is now calculated correctly.`,
+            `Things will now show as unaffordable if they require a locked resource.`,
+            `Added new entries to Mechancis section of Wiki: Job Stress, Cost Creep, and Warmonger.`,
+            `Evolve Novice and Evolve Journeyman perk conditions updated.`
+        ]
+    },
+    {
         version: `1.1.16`,
         date: `10/30/2021`,
         changes: [
