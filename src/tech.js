@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
-import { races, genusVars } from './races.js';
+import { races, genusVars, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -479,7 +479,7 @@ const techs = {
         effect: loc('tech_smokehouse_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['smokehouse'] = { count: 0 };
+                checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
                 return true;
             }
             return false;
@@ -500,7 +500,7 @@ const techs = {
         effect: loc('tech_lodge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['lodge'] = { count: 0 };
+                checkAltPurgatory('city','lodge','farm',{ count: 0 });
                 return true;
             }
             return false;
@@ -525,7 +525,7 @@ const techs = {
         effect(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['lodge'] = { count: 0 };
+                checkAltPurgatory('city','lodge','farm',{ count: 0 });
                 return true;
             }
             return false;
@@ -650,7 +650,7 @@ const techs = {
         effect: loc('tech_agriculture_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['farm'] = { count: 0 };
+                checkAltPurgatory('city','farm','lodge',{ count: 0 });
                 return true;
             }
             return false;
@@ -709,7 +709,7 @@ const techs = {
         effect: loc('tech_silo_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['silo'] = { count: 0 };
+                checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
                 return true;
             }
             return false;
@@ -729,10 +729,8 @@ const techs = {
         effect: loc('tech_mill_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mill'] = {
-                    count: 0,
-                    on: 0
-                };
+                checkAltPurgatory('city','mill','windmill',{ count: 0 });
+                global.city['mill'].on = 0;
                 return true;
             }
             return false;
@@ -791,7 +789,7 @@ const techs = {
         effect: loc('tech_wind_plant_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['windmill'] = { count: 0 };
+                checkAltPurgatory('city','windmill','mill',{ count: 0 });
                 return true;
             }
             return false;
