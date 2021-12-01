@@ -6,6 +6,7 @@ import { setResourceName } from './resources.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
+import { techList } from './tech.js';
 
 const date = new Date();
 const easter = getEaster();
@@ -3473,6 +3474,20 @@ function checkPurgatory(s,t,dv){
     }
 }
 
+export function checkAltPurgatory(s,t,a,dv){
+    if (global.race.purgatory[s].hasOwnProperty(t)){
+        global[s][t] = global.race.purgatory[s][t];
+        delete global.race.purgatory[s][t];
+    }
+    else if (global.race.purgatory[s].hasOwnProperty(a)) {
+        global[s][t] = global.race.purgatory[s][a];
+        delete global.race.purgatory[s][a];
+    }
+    else if (dv){
+        global[s][t] = dv;
+    }
+}
+
 function setPurgatory(s,t){
     if (global[s].hasOwnProperty(t)){
         global.race.purgatory[s][t] = global[s][t];
@@ -3536,197 +3551,167 @@ function adjustFood() {
     setPurgatory('tech','farm');
     setPurgatory('tech','hunting');
     setPurgatory('tech','s_lodge');
+    setPurgatory('tech','wind_plant');
     setPurgatory('tech','compost');
     setPurgatory('tech','soul_eater');
     setPurgatory('city','silo');
     setPurgatory('city','farm');
     setPurgatory('city','mill');
+    setPurgatory('city','windmill');
     setPurgatory('city','smokehouse');
     setPurgatory('city','lodge');
     setPurgatory('city','compost');
     setPurgatory('city','soul_well');
 
-    if (global.race['carnivore'] || global.race['soul_eater']) {
-        if (!global.civic.hunter.display) {
-            global.civic.hunter.workers = 0;
-            global.civic.hunter.display = true;
-        }
-        ['farmer', 'unemployed'].forEach(function(job) {
-            if (global.civic[job].display) {
-                if (global.civic.d_job === job) {
-                    global.civic.d_job = 'hunter';
-                }
-                global.civic.hunter.workers += global.civic[job].workers;
-                global.civic[job].workers = 0;
-                global.civic[job].display = false;
-            }
-        });
-    }
-    else {
-        if (!global.civic.unemployed.display) {
-            global.civic.unemployed.workers = 0;
-            global.civic.unemployed.display = true;
-        }
-        if (global.civic.hunter.display) {
-            if (global.civic.d_job === 'hunter') {
-                global.civic.d_job = 'unemployed';
-            }
-            global.civic.unemployed.workers += global.civic.hunter.workers;
-            global.civic.hunter.workers = 0;
-            global.civic.hunter.display = false;
-        }
-        if (global.civic.farmer.display && global.race['detritivore']) {
-            if (global.civic.d_job === 'farmer') {
-                global.civic.d_job = 'unemployed';
-            }
-            global.civic.unemployed.workers += global.civic.farmer.workers;
-            global.civic.farmer.workers = 0;
-            global.civic.farmer.display = false;
-        }
-    }
+    let techs = techList();
+    let farmersEnabled = techs.agriculture.condition();
+    let altLodge = techs.alt_lodge.condition();
+    let disabledCity = [], disabledTech = [];
 
-    if (global.race['carnivore'] || global.race['detritivore'] || global.race['soul_eater'] || global.race['detritivore']) {
-        removeFromQueue(['city-farm', 'city-silo', 'city-mill']);
-        removeFromRQueue(['farm', 'agriculture']);
-    }
-    if (!global.race['carnivore'] || global.race['detritivore'] || global.race['soul_eater']) {
-        removeFromQueue(['city-smokehouse']);
-        removeFromRQueue(['hunting']);
-    }
-    if (!global.race['detritivore']) {
-        removeFromQueue(['city-compost']);
-        removeFromRQueue(['compost']);
-    }
-    if (!global.race['soul_eater']) {
-        removeFromQueue(['city-soul_well']);
-        removeFromRQueue(['soul_eater']);
-    }
-    if (global.race.species !== 'wendigo' && !global.race['detritivore'] && !global.race['carnivore']) {
-        removeFromQueue(['city-lodge']);
-    }
-
-    if (!global.race['soul_eater'] && !global.race['detritivore']) {
-        if (global.race['carnivore']) {
-            if (getPurgatory('tech','hunting')) {
-                checkPurgatory('tech','hunting');
-            }
-            else if (getPurgatory('tech','farm') >= 1) {
-                checkPurgatory('tech','hunting',2);
-            }
-            else if (getPurgatory('tech','agriculture') >= 3) {
-                checkPurgatory('tech','hunting',1);
-            }
-        }
-        else {
-            if (getPurgatory('tech','farm')) {
-                checkPurgatory('tech','farm');
-            }
-            else if (getPurgatory('tech','hunting') >= 2) {
-                checkPurgatory('tech','farm',1);
-            }
-            if (getPurgatory('tech','agriculture')) {
-                checkPurgatory('tech','agriculture');
-            }
-            else if (getPurgatory('tech','hunting') >= 1) {
-                checkPurgatory('tech','agriculture',3);
-            }
-        }
-    }
-
-
-    let altLodge = global.race.species === 'wendigo' || (!global.race['soul_eater'] && global.race['detritivore']);
     if (altLodge) {
         checkPurgatory('tech','s_lodge');
-        if (getPurgatory('city','lodge')) {
-            checkPurgatory('city','lodge');
+        let minAltLodge = (getPurgatory('tech','farm') >= 1 || getPurgatory('tech','hunting') >= 2) ? 1 : 0;
+        if (minAltLodge > 0 && (!global.tech['s_lodge'] || global.tech['s_lodge'] < minAltLodge)) {
+            global.tech['s_lodge'] = minAltLodge;
         }
-        else if (getPurgatory('city','farm')) {
-            checkPurgatory('city','lodge',{ count: getPurgatory('city','farm').count });
-        }
-        else if (global.tech['hunting'] >= 2) {
-            checkPurgatory('city','lodge',{ count: 0 });
+        if (global.tech['s_lodge'] >= 1) {
+            checkAltPurgatory('city','lodge','farm',{ count: 0 });
         }
     }
+
+    if (global.race['carnivore'] && !global.race['soul_eater']) {
+        checkPurgatory('tech','hunting');
+        let minHunting = (getPurgatory('tech','farm') >= 1 || getPurgatory('tech','s_lodge') >= 1) ? 2
+                        : getPurgatory('tech','agriculture') >= 3 ? 1 : 0;
+        if (minHunting > 0 && (!global.tech['hunting'] || global.tech['hunting'] < minHunting)) {
+            global.tech['hunting'] = minHunting;
+        }
+        if (global.race['herbivore'] && global.tech['hunting'] > 1) {
+            global.tech['hunting'] = 1;
+        }
+        if (global.tech['hunting'] >= 1) {
+            checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
+        }
+        if (global.tech['hunting'] >= 2 && !altLodge) {
+            checkAltPurgatory('city','lodge','farm',{ count: 0 });
+        }
+    }
+    else {
+        disabledTech.push('hunting');
+        disabledCity.push('city-smokehouse');
+        if (global.race['herbivore'] || !altLodge) {
+            disabledTech.push('city-lodge');
+        }
+    }
+
+    if (farmersEnabled) {
+        checkPurgatory('tech','farm');
+        let minFarm = (getPurgatory('tech','hunting') >= 2 || getPurgatory('tech','s_lodge') >= 1) ? 1 : 0;
+        if (minFarm > 0 && (!global.tech['farm'] || global.tech['farm'] < minFarm)) {
+            global.tech['farm'] = minFarm;
+        }
+        checkPurgatory('tech','agriculture');
+        let minAgriculture = getPurgatory('tech','hunting') >= 1 ? 3 :
+                             getPurgatory('tech','s_lodge') >= 1 ? 1 : 0;
+        if (minAgriculture > 0 && (!global.tech['agriculture'] || global.tech['agriculture'] < minAgriculture)) {
+            global.tech['agriculture'] = minAgriculture;
+        }
+        if (global.race['carnivore'] && global.tech['agriculture'] > 2) {
+            global.tech['agriculture'] = 2;
+        }
+        if (global.tech['agriculture'] >= 1) {
+            checkAltPurgatory('city','farm','lodge',{ count: 0 });
+        }
+        if (global.tech['agriculture'] >= 3) {
+            checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
+        }
+        if (global.tech['agriculture'] >= 4) {
+            checkAltPurgatory('city','mill','windmill',{ count: 0 });
+            if (!global.city['mill'].hasOwnProperty('on')) {
+                global.city['mill'].on = 0;
+            }
+        }
+        if (global.race['carnivore']) {
+            disabledCity.push('city-silo', 'city-mill');
+        }
+    }
+    else {
+        disabledTech.push('agriculture', 'farm');
+        disabledCity.push('city-farm', 'city-silo', 'city-mill');
+    }
+
     if (global.race['soul_eater']) {
         checkPurgatory('tech','soul_eater');
         checkPurgatory('city','soul_well');
     }
+    else {
+        disabledCity.push('city-soul_well');
+        disabledTech.push('soul_eater');
+    }
+
     if (global.race['detritivore']) {
         checkPurgatory('tech','compost');
         checkPurgatory('city','compost');
     }
-    if (global.race['carnivore']) {
-        if (getPurgatory('city','smokehouse')) {
-            checkPurgatory('city','smokehouse');
-        }
-        else if (getPurgatory('city','silo')) {
-            checkPurgatory('city','smokehouse',{ count: getPurgatory('city','silo').count });
-        }
-        else if (global.tech['hunting'] >= 1) {
-            checkPurgatory('city','smokehouse',{ count: 0 });
-        }
-        if (!altLodge) {
-            if (getPurgatory('city','lodge')) {
-                checkPurgatory('city','lodge');
-            }
-            else if (getPurgatory('city','farm')) {
-                checkPurgatory('city','lodge',{ count: getPurgatory('city','farm').count });
-            }
-            else if (global.tech['hunting'] >= 2) {
-                checkPurgatory('city','lodge',{ count: 0 });
-            }
-        }
-    }
-    else if (!global.race['soul_eater'] && !global.race['detritivore']) {
-        if (getPurgatory('city','farm')) {
-            checkPurgatory('city','farm');
-        }
-        else if (getPurgatory('city','lodge')) {
-            checkPurgatory('city','farm',{ count: getPurgatory('city','lodge').count });
-        }
-        else if (global.tech['agriculture'] >= 1) {
-            checkPurgatory('city','farm',{ count: 0 });
-        }
-        if (global.city['farm'] && global.city['farm'].count > 0) {
-            global.civic.farmer.display = true;
-        }
-        if (getPurgatory('city','silo')) {
-            checkPurgatory('city','silo');
-        }
-        else if (getPurgatory('city','smokehouse')) {
-            checkPurgatory('city','silo',{ count: getPurgatory('city','smokehouse').count });
-        }
-        else if (global.tech['agriculture'] >= 3) {
-            checkPurgatory('city','silo',{ count: 0 });
-        }
-        if (getPurgatory('city','mill')) {
-            checkPurgatory('city','mill');
-        }
-        else if (getPurgatory('city','windmill')) {
-            checkPurgatory('city','mill',{ count: getPurgatory('city','windmill').count });
-        }
+    else {
+        disabledTech.push('compost');
+        disabledCity.push('city-compost');
     }
 
-    if (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['soul_eater']) {
+    if (techs.wind_plant.condition()) {
         checkPurgatory('tech','wind_plant');
-        if (getPurgatory('city','windmill')) {
-            checkPurgatory('city','windmill');
+        if (global.tech['wind_plant'] >= 1) {
+            checkAltPurgatory('city','windmill','mill',{ count: 0 });
         }
-        else if (getPurgatory('city','mill')) {
-            checkPurgatory('city','windmill',{ count: getPurgatory('city','mill').count });
-        }
-    } else {
-        removeFromRQueue(['wind_plant']);
-        removeFromQueue(['city-windmill']);
     }
+    else {
+        disabledTech.push('wind_plant');
+        disabledCity.push('city-windmill');
+    }
+
+    let jobEnabled = [], jobDisabled = [];
+    if (farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
+        jobEnabled.push('farmer');
+    }
+    else {
+        jobDisabled.push('farmer');
+    }
+    if (global.race['carnivore'] || global.race['soul_eater']) {
+        jobEnabled.push('hunter');
+        jobDisabled.push('unemployed');
+    }
+    else {
+        jobDisabled.push('hunter');
+        jobEnabled.push('unemployed');
+    }
+
+    jobEnabled.forEach(function(job) {
+        if (!global.civic[job].display) {
+            global.civic[job].workers = 0;
+            global.civic[job].display = true;
+        }
+    });
+    jobDisabled.forEach(function(job) {
+        if (global.civic[job].display) {
+            if (global.civic.d_job === job) {
+                global.civic.d_job = jobEnabled[0];
+            }
+            global.civic[jobEnabled[0]].workers += global.civic[job].workers;
+            global.civic[job].workers = 0;
+            global.civic[job].display = false;
+        }
+    });
 
     if (global.race['casting']){
-        if (!global.race['carnivore'] && !global.race['soul_eater']) {
+        if (!farmersEnabled) {
             global.race.casting.total -= global.race.casting.farmer;
             global.race.casting.farmer = 0;
         }
         defineIndustry();
     }
+
+    removeFromQueue(disabledCity);
+    removeFromRQueue(disabledTech);
     setResourceName('Food');
 }
 
@@ -3748,6 +3733,7 @@ export function cleanAddTrait(trait){
         case 'soul_eater':
         case 'detritivore':
         case 'carnivore':
+        case 'herbivore':
             adjustFood();
             break;
         case 'sappy':
@@ -3956,6 +3942,7 @@ export function cleanRemoveTrait(trait){
         case 'soul_eater':
         case 'detritivore':
         case 'carnivore':
+        case 'herbivore':
             adjustFood();
             break;
         case 'sappy':

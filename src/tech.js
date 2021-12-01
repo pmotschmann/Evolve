@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
-import { races, genusVars } from './races.js';
+import { races, genusVars, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -479,7 +479,7 @@ const techs = {
         effect: loc('tech_smokehouse_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['smokehouse'] = { count: 0 };
+                checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
                 return true;
             }
             return false;
@@ -493,6 +493,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
+        not_trait: ['herbivore'],
         grant: ['hunting',2],
         cost: {
             Knowledge(){ return 180; }
@@ -500,7 +501,7 @@ const techs = {
         effect: loc('tech_lodge_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['lodge'] = { count: 0 };
+                checkAltPurgatory('city','lodge','farm',{ count: 0 });
                 return true;
             }
             return false;
@@ -508,24 +509,24 @@ const techs = {
     },
     alt_lodge: {
         id: 'tech-alt_lodge',
-        title(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
-        desc(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+        title(){ return this.condition() ? loc('tech_lodge_alt') : loc('tech_lodge'); },
+        desc(){ return this.condition() ? loc('tech_lodge_alt') : loc('tech_lodge'); },
         wiki: global.race['carnivore'] ? false : true,
         category: 'housing',
         era: 'civilized',
         reqs: { housing: 1, currency: 1 },
         grant: ['s_lodge',1],
-        not_trait: ['carnivore'],
         condition(){
-            return global.race.species === 'wendigo' || (!global.race['soul_eater'] && (global.race['detritivore'] || global.race['artifical'])) ? true : false;
+            return (((global.race.species === 'wendigo' || global.race['detritivore']) && !global.race['carnivore'] && !global.race['herbivore'])
+              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical']) ? true : false;
         },
         cost: {
             Knowledge(){ return global.race['artifical'] ? 10000 : 180; }
         },
-        effect(){ return global.race['detritivore'] || global.race['artifical'] ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
+        effect(){ return this.condition() ? loc('tech_lodge_effect_alt') : loc('tech_lodge_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.city['lodge'] = { count: 0 };
+                checkAltPurgatory('city','lodge','farm',{ count: 0 });
                 return true;
             }
             return false;
@@ -642,7 +643,10 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { primitive: 3 },
-        not_trait: ['carnivore','soul_eater','detritivore','cataclysm','artifical'],
+        condition(){
+            return (global.race['herbivore'] || (!global.race['carnivore'] && !global.race['detritivore'] && !global.race['soul_eater'])) ? true : false;
+        },
+        not_trait: ['cataclysm','artifical'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }
@@ -650,7 +654,7 @@ const techs = {
         effect: loc('tech_agriculture_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['farm'] = { count: 0 };
+                checkAltPurgatory('city','farm','lodge',{ count: 0 });
                 return true;
             }
             return false;
@@ -702,6 +706,7 @@ const techs = {
         category: 'storage',
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
+        not_trait: ['carnivore'],
         grant: ['agriculture',3],
         cost: {
             Knowledge(){ return 80; }
@@ -709,7 +714,7 @@ const techs = {
         effect: loc('tech_silo_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['silo'] = { count: 0 };
+                checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
                 return true;
             }
             return false;
@@ -729,10 +734,8 @@ const techs = {
         effect: loc('tech_mill_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['mill'] = {
-                    count: 0,
-                    on: 0
-                };
+                checkAltPurgatory('city','mill','windmill',{ count: 0 });
+                global.city['mill'].on = 0;
                 return true;
             }
             return false;
@@ -783,7 +786,9 @@ const techs = {
         category: 'power_generation',
         era: 'globalized',
         reqs: { high_tech: 4 },
-        condition(){ return (global.tech['hunting'] && global.tech['hunting'] >= 2) || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] ? true : false; },
+        condition(){
+            return (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || (global.race['carnivore'] && global.race['herbivore'])) ? true : false;
+        },
         grant: ['wind_plant',1],
         cost: {
             Knowledge(){ return 66000; }
@@ -791,7 +796,7 @@ const techs = {
         effect: loc('tech_wind_plant_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['windmill'] = { count: 0 };
+                checkAltPurgatory('city','windmill','mill',{ count: 0 });
                 return true;
             }
             return false;

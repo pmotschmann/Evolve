@@ -1586,7 +1586,7 @@ function fastLoop(){
             power_generated[loc('city_mill_title2')] = -(power);
         }
 
-        if (global.city['windmill'] && global.tech['wind_plant'] && (global.race['soul_eater'] || global.race['detritivore'] || global.race['carnivore'] || global.race['artifical'])){
+        if (global.city['windmill'] && global.tech['wind_plant']){
             let power = powerModifier(global.city.windmill.count * actions.city.windmill.powered());
             max_power += power;
             power_grid -= power;
@@ -2645,7 +2645,7 @@ function fastLoop(){
             }
         }
 
-        if (global.race['carnivore']){
+        if (global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']){
             if (global.resource['Food'].amount > 10){
                 let rot = +((global.resource['Food'].amount - 10) * (0.5)).toFixed(3);
                 if (global.city['smokehouse']){
@@ -2677,93 +2677,98 @@ function fastLoop(){
                     food_bd[loc('city_transmitter')] = food_base + 'v';
                 }
             }
-            else if (global.race['detritivore']){
-                if (global.city['compost']){
-                    let operating = global.city.compost.on;
-                    if (!global.race['kindling_kindred']){
-                        let lumberIncrement = 0.5;
-                        let lumber_cost = operating * lumberIncrement;
-
-                        while (lumber_cost * time_multiplier > global.resource.Lumber.amount && lumber_cost > 0){
-                            lumber_cost -= lumberIncrement;
-                            operating--;
-                        }
-
-                        breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
-                        modRes('Lumber', -(lumber_cost * time_multiplier));
-                    }
-                    food_base = operating * (1.2 + (global.tech['compost'] * 0.8));
-                    food_base *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
-                    food_base *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
-                    food_base *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
-                    food_base *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars()[0] : 1;
-                    food_bd[loc('city_compost_heap')] = food_base + 'v';
-                }
-            }
-            else if (global.race['carnivore'] || global.race['soul_eater']){
-                let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                food_base = global.civic.hunter.workers * strength * (global.race['carnivore'] ? 2 : 0.5);
-                if (global.race['ghostly']){
-                    food_base *= 1 + (traits.ghostly.vars()[0] / 100);
-                }
-                food_bd[loc('job_hunter')] = food_base + 'v';
-
-                if (global.race['carnivore'] && global.city['lodge'] && food_base > 0){
-                    food_base *= 1 + (global.city.lodge.count / 20);
-                    food_bd[`ᄂ${loc('city_lodge')}`] = (global.city.lodge.count * 5) + '%';
-                }
-
-                if (global.city['soul_well']){
-                    let souls = global.city['soul_well'].count * (global.race['ghostly'] ? (2 + traits.ghostly.vars()[1]) : 2);
-                    food_bd[loc('city_soul_well')] = souls + 'v';
-                    food_base += souls;
-                }
-            }
             else {
-                let weather_multiplier = 1;
-                if (!global.race['submerged']){
-                    if (global.city.calendar.temp === 0){
-                        if (global.city.calendar.weather === 0){
-                            weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[3] / 100) : 0.7;
+                if (global.race['detritivore']){
+                    if (global.city['compost']){
+                        let operating = global.city.compost.on;
+                        if (!global.race['kindling_kindred']){
+                            let lumberIncrement = 0.5;
+                            let lumber_cost = operating * lumberIncrement;
+
+                            while (lumber_cost * time_multiplier > global.resource.Lumber.amount && lumber_cost > 0){
+                                lumber_cost -= lumberIncrement;
+                                operating--;
+                            }
+
+                            breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
+                            modRes('Lumber', -(lumber_cost * time_multiplier));
                         }
-                        else {
-                            weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[4] / 100) : 0.85;
-                        }
-                    }
-                    if (global.city.calendar.weather === 2){
-                        weather_multiplier *= global.race['chilled'] ? (1 - traits.chilled.vars()[5] / 100) : 1.1;
+                        let food_compost = operating * (1.2 + (global.tech['compost'] * 0.8));
+                        food_compost *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
+                        food_compost *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
+                        food_compost *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
+                        food_compost *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars()[0] : 1;
+                        food_bd[loc('city_compost_heap')] = food_compost + 'v';
+                        food_base += food_compost;
                     }
                 }
+                if (global.race['carnivore'] || global.race['soul_eater']){
+                    let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                    let food_hunt = global.civic.hunter.workers * strength * (global.race['carnivore'] ? 2 : 0.5);
+                    if (global.race['ghostly']){
+                        food_hunt *= 1 + (traits.ghostly.vars()[0] / 100);
+                    }
+                    food_bd[loc('job_hunter')] = food_hunt + 'v';
 
-                if (global.race['forager']){
-                    let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
-                    food_base = global.civic.forager.workers * forage * 0.35;
-                    food_bd[loc('job_forager')] = food_base + 'v';
+                    if (global.race['carnivore'] && global.city['lodge'] && food_hunt > 0){
+                        food_hunt *= 1 + (global.city.lodge.count / 20);
+                        food_bd[`ᄂ${loc('city_lodge')}`] = (global.city.lodge.count * 5) + '%';
+                    }
+
+                    if (global.city['soul_well']){
+                        let souls = global.city['soul_well'].count * (global.race['ghostly'] ? (2 + traits.ghostly.vars()[1]) : 2);
+                        food_hunt += souls;
+                        food_bd[loc('city_soul_well')] = souls + 'v';
+                    }
+                    food_base += food_hunt;
                 }
-
-                if (global.city['farm']){
-                    let farmers = global.civic.farmer.workers;
-                    let farmhands = 0;
-                    if (farmers > global.city.farm.count){
-                        farmhands = farmers - global.city.farm.count;
-                        farmers = global.city.farm.count;
+                if (global.city['farm'] || global.race['forager']) {
+                    let weather_multiplier = 1;
+                    if (!global.race['submerged']){
+                        if (global.city.calendar.temp === 0){
+                            if (global.city.calendar.weather === 0){
+                                weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[3] / 100) : 0.7;
+                            }
+                            else {
+                                weather_multiplier *= global.race['chilled'] ? (1 + traits.chilled.vars()[4] / 100) : 0.85;
+                            }
+                        }
+                        if (global.city.calendar.weather === 2){
+                            weather_multiplier *= global.race['chilled'] ? (1 - traits.chilled.vars()[5] / 100) : 1.1;
+                        }
                     }
 
-                    let mill_multiplier = 1;
-                    if (global.city['mill']){
-                        let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
-                        let working = global.city['mill'].count - global.city['mill'].on;
-                        mill_multiplier += (working * mill_bonus);
+                    if (global.race['forager']){
+                        let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
+                        let food_forage = global.civic.forager.workers * forage * 0.35;
+                        food_bd[loc('job_forager')] = food_forage + 'v';
+                        food_base += food_forage;
                     }
 
-                    let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
+                    if (global.city['farm']){
+                        let farmers = global.civic.farmer.workers;
+                        let farmhands = 0;
+                        if (farmers > global.city.farm.count){
+                            farmhands = farmers - global.city.farm.count;
+                            farmers = global.city.farm.count;
+                        }
 
-                    food_bd[loc('job_farmer')] = (food) + 'v';
-                    food_base += (food * weather_multiplier * mill_multiplier);
+                        let mill_multiplier = 1;
+                        if (global.city['mill']){
+                            let mill_bonus = global.tech['agriculture'] >= 5 ? 0.05 : 0.03;
+                            let working = global.city['mill'].count - global.city['mill'].on;
+                            mill_multiplier += (working * mill_bonus);
+                        }
 
-                    if (food > 0){
-                        food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
-                        food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
+                        let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
+
+                        food_bd[loc('job_farmer')] = (food) + 'v';
+                        food_base += (food * weather_multiplier * mill_multiplier);
+
+                        if (food > 0){
+                            food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
+                            food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
+                        }
                     }
                 }
             }
@@ -7619,11 +7624,6 @@ function midLoop(){
 
         if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){
             global.tech['foundry'] = 4;
-        }
-
-        if (global.race['carnivore'] && global.civic.farmer.workers > 0){
-            global.civic.farmer.workers = 0;
-            global.civic.farmer.max = 0;
         }
 
         if (global.race['kindling_kindred'] || global.race['smoldering']){
