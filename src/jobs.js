@@ -14,7 +14,13 @@ export const job_desc = {
         return desc;
     },
     hunter: function(){
-        let desc = (global.race['soul_eater'] ? (global.race.species === 'wendigo' ? loc('job_hunter_desc') : loc('job_evil_hunter_desc')) : loc('job_hunter_desc'));
+        let desc = loc('job_hunter_desc',[global.resource.Food.name]);
+        if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+            desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
+        }
+        else if (global.race['artifical']){
+            desc = loc('job_art_hunter_desc',[global.resource.Furs.name]);
+        }
         if (global.civic.d_job === 'hunter'){
             desc = desc + ' ' + loc('job_default',[loc('job_hunter')]);
         }
@@ -252,17 +258,7 @@ export function defineJobs(define){
     }
 }
 
-function loadJob(job, define, impact, stress, color){
-    if (!global['civic'][job]){
-        global['civic'][job] = {
-            job: job,
-            display: false,
-            workers: 0,
-            max: 0,
-            impact: impact
-        };
-    }
-
+export function setJobName(job){
     let job_name = '';
     if (global.race.universe === 'magic' && job === 'scientist'){
         job_name = loc('job_wizard');
@@ -274,10 +270,23 @@ function loadJob(job, define, impact, stress, color){
         job_name = loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]);
     }
     else {
-        job_name = job === 'lumberjack' && global.race['evil'] ? loc('job_reclaimer') : loc('job_' + job);
+        job_name = job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_' + job);
+    }
+    global['civic'][job].name = job_name;
+}
+
+function loadJob(job, define, impact, stress, color){
+    if (!global['civic'][job]){
+        global['civic'][job] = {
+            job: job,
+            display: false,
+            workers: 0,
+            max: 0,
+            impact: impact
+        };
     }
 
-    global['civic'][job].name = job_name;
+    setJobName(job);
 
     if (!global.civic[job]['assigned']){
         global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;

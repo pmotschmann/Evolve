@@ -3091,13 +3091,13 @@ function fastLoop(){
         // Furs
         let fur_bd = {};
         if (global.resource.Furs.display){
-            if (global.race['evil']){
+            if (global.race['evil'] || global.race['artifical']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.hunter.workers * weapons / 20;
                 fur_bd[loc('job_hunter')] = hunters  + 'v';
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
 
-                if (!global.race['soul_eater']){
+                if (!global.race['soul_eater'] && global.race['evil']){
                     let reclaimers = global.civic.lumberjack.workers;
                     reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack') / 4;
                     fur_bd[loc('job_reclaimer')] = reclaimers  + 'v';
