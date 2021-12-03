@@ -493,7 +493,6 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
-        not_trait: ['herbivore'],
         grant: ['hunting',2],
         cost: {
             Knowledge(){ return 180; }
@@ -706,9 +705,6 @@ const techs = {
         category: 'storage',
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
-        condition(){
-            return !global.race['carnivore'] || (global.race['carnivore'] && global.race['herbivore']) ? true : false;
-        },
         grant: ['agriculture',3],
         cost: {
             Knowledge(){ return 80; }
@@ -789,8 +785,9 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         condition(){
-            return (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || (global.race['carnivore'] && !global.race['herbivore'])) ? true : false;
+            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater']) ? true : false;
         },
+        not_trait: ['herbivore'],
         grant: ['wind_plant',1],
         cost: {
             Knowledge(){ return 66000; }

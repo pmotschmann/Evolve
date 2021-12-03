@@ -5313,7 +5313,7 @@ export function checkTechRequirements(tech){
     return false;
 }
 
-function checkTechQualifications(c_action,type){
+export function checkTechQualifications(c_action,type){
     if (c_action['condition'] && !c_action.condition()){
         return false;
     }
@@ -7830,15 +7830,6 @@ function cataclysm(){
 
 export function fanaticism(god){
     switch (races[god].fanaticism){
-        case 'carnivore':
-            if (global.race['herbivore']){
-                randomMinorTrait(5);
-                arpa('Genetics');
-            }
-            else {
-                fanaticTrait('carnivore');
-            }
-            break;
         case 'smart':
             if (global.race['dumb']){
                 randomMinorTrait(5);

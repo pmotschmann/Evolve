@@ -1839,7 +1839,7 @@ function genetics(){
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
             
-            let conflict_traits = ['dumb','smart','carnivore','herbivore']; //Conflicting traits are paired together
+            let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
                 if (race !== 'junker' && race !== 'custom' && races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){

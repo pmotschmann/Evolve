@@ -7,7 +7,7 @@ import { setResourceName } from './resources.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
-import { techList } from './tech.js';
+import { actions, checkTechQualifications } from './actions.js';
 
 const date = new Date();
 const easter = getEaster();
@@ -3545,9 +3545,10 @@ function purgeLumber(){
 }
 
 function adjustFood() {
-    let techs = techList();
-    let farmersEnabled = techs.agriculture.condition();
-    let altLodge = techs.alt_lodge.condition();
+    let farmersEnabled = checkTechQualifications(actions.tech.agriculture);
+    let huntingEnabled = checkTechQualifications(actions.tech.smokehouse);
+    let altLodge = checkTechQualifications(actions.tech.alt_lodge);
+    let altMill = checkTechQualifications(actions.tech.wind_plant);
     let disabledCity = [], disabledTech = [];
 
     if (!global.race['artifical']) {
@@ -3578,15 +3579,12 @@ function adjustFood() {
             }
         }
 
-        if (global.race['carnivore'] && !global.race['herbivore'] && !global.race['soul_eater']) {
+        if (huntingEnabled) {
             checkPurgatory('tech','hunting');
             let minHunting = (getPurgatory('tech','farm') >= 1 || getPurgatory('tech','s_lodge') >= 1) ? 2
                             : getPurgatory('tech','agriculture') >= 3 ? 1 : 0;
             if (minHunting > 0 && (!global.tech['hunting'] || global.tech['hunting'] < minHunting)) {
                 global.tech['hunting'] = minHunting;
-            }
-            if (global.race['herbivore'] && global.tech['hunting'] > 1) {
-                global.tech['hunting'] = 1;
             }
             if (global.tech['hunting'] >= 1) {
                 checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
@@ -3611,12 +3609,9 @@ function adjustFood() {
             }
             checkPurgatory('tech','agriculture');
             let minAgriculture = getPurgatory('tech','hunting') >= 1 ? 3 :
-                                getPurgatory('tech','s_lodge') >= 1 ? 1 : 0;
+                                 getPurgatory('tech','s_lodge') >= 1 ? 1 : 0;
             if (minAgriculture > 0 && (!global.tech['agriculture'] || global.tech['agriculture'] < minAgriculture)) {
                 global.tech['agriculture'] = minAgriculture;
-            }
-            if (global.race['carnivore'] && !global.race['herbivore'] && global.tech['agriculture'] > 2) {
-                global.tech['agriculture'] = 2;
             }
             if (global.tech['agriculture'] >= 1) {
                 checkAltPurgatory('city','farm','lodge',{ count: 0 });
@@ -3624,7 +3619,7 @@ function adjustFood() {
             if (global.tech['agriculture'] >= 3) {
                 checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
             }
-            if (global.tech['agriculture'] >= 4) {
+            if (global.tech['agriculture'] >= 4 && !altMill) {
                 checkAltPurgatory('city','mill','windmill',{ count: 0 });
                 if (!global.city['mill'].hasOwnProperty('on')) {
                     global.city['mill'].on = 0;
@@ -3657,7 +3652,7 @@ function adjustFood() {
             disabledCity.push('city-compost');
         }
 
-        if (techs.wind_plant.condition()) {
+        if (altMill) {
             checkPurgatory('tech','wind_plant');
             if (global.tech['wind_plant'] >= 1) {
                 checkAltPurgatory('city','windmill','mill',{ count: 0 });

@@ -2775,7 +2775,7 @@ function fastLoop(){
 
             let hunting = 0;
             if (global.tech['military']){
-                hunting = global.race['herbivore'] || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
+                hunting = (global.race['herbivore'] && !global.race['carnivore']) || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
             }
 
             let biodome = 0;
