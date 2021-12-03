@@ -483,6 +483,7 @@
   "job_evil_hunter_desc": "Demons not assigned to any other task will hunt mortals for their %0, %1, and %2. Military technology will boost effectiveness.",
   "job_not_evil_hunter_desc": "Citizens not assigned to any other task will hunt for %0, %1, and %2. Military technology will boost effectiveness.",
   "job_art_hunter_desc": "Citizens not assigned to any other task will hunt for %0. Military technology will boost effectiveness.",
+  "job_art_demon_hunter_desc": "Demons not assigned to any other task will hunt mortals for their %0 and %1. Military technology will boost effectiveness.",
   "job_forager": "Forager",
   "job_forager_desc": "Foragers roam the land looking primarily for anything edible but also useful, they find enough food to feed themselves and bring in extra food and other supplies but are not very efficent.",
   "craftsman_assigned": "Craftsmen Assigned",

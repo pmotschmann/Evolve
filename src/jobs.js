@@ -15,11 +15,11 @@ export const job_desc = {
     },
     hunter: function(){
         let desc = loc('job_hunter_desc',[global.resource.Food.name]);
-        if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
-            desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
+        if (global.race['artifical']){
+            desc = global.race['soul_eater'] ? loc('job_art_demon_hunter_desc',[global.resource.Furs.name, global.resource.Lumber.name]) : loc('job_art_hunter_desc',[global.resource.Furs.name]);
         }
-        else if (global.race['artifical']){
-            desc = loc('job_art_hunter_desc',[global.resource.Furs.name]);
+        else if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+            desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
         }
         if (global.civic.d_job === 'hunter'){
             desc = desc + ' ' + loc('job_default',[loc('job_hunter')]);
