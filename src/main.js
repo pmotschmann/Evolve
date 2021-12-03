@@ -2645,7 +2645,7 @@ function fastLoop(){
             }
         }
 
-        if (global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']){
+        if (global.race['carnivore'] && !global.race['herbivore'] && !global.race['soul_eater'] && !global.race['artifical']){
             if (global.resource['Food'].amount > 10){
                 let rot = +((global.resource['Food'].amount - 10) * (0.5)).toFixed(3);
                 if (global.city['smokehouse']){

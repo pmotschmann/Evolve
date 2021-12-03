@@ -47,7 +47,7 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','ashanddust','exodus','obsolete'],    
+    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete'],
 };
 
 const flairData = {
@@ -664,6 +664,22 @@ export function checkAchievements(){
                 global.stats.banana.b3.l = true;
             }
         }
+    }
+
+    // Path Finder
+    {
+        let uAffix = universeAffix();
+        ['l',uAffix].forEach(function (affix){
+            let rank = 0;
+            ['ashanddust','exodus','obsolete'].forEach(function (achieve){
+                if (global.stats.achieve[achieve] && global.stats.achieve[achieve][affix] && global.stats.achieve[achieve][affix] >= 5){
+                    rank++;
+                }
+            });
+            if (rank > 0){
+                unlockAchieve('pathfinder',false,rank,affix);
+            }
+        });
     }
 
     const date = new Date();

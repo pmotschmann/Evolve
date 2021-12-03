@@ -3578,7 +3578,7 @@ function adjustFood() {
             }
         }
 
-        if (global.race['carnivore'] && !global.race['soul_eater']) {
+        if (global.race['carnivore'] && !global.race['herbivore'] && !global.race['soul_eater']) {
             checkPurgatory('tech','hunting');
             let minHunting = (getPurgatory('tech','farm') >= 1 || getPurgatory('tech','s_lodge') >= 1) ? 2
                             : getPurgatory('tech','agriculture') >= 3 ? 1 : 0;
@@ -3598,7 +3598,7 @@ function adjustFood() {
         else {
             disabledTech.push('hunting');
             disabledCity.push('city-smokehouse');
-            if (global.race['herbivore'] || !altLodge) {
+            if ((global.race['herbivore'] && !global.race['carnivore']) || !altLodge) {
                 disabledTech.push('city-lodge');
             }
         }
@@ -3615,7 +3615,7 @@ function adjustFood() {
             if (minAgriculture > 0 && (!global.tech['agriculture'] || global.tech['agriculture'] < minAgriculture)) {
                 global.tech['agriculture'] = minAgriculture;
             }
-            if (global.race['carnivore'] && global.tech['agriculture'] > 2) {
+            if (global.race['carnivore'] && !global.race['herbivore'] && global.tech['agriculture'] > 2) {
                 global.tech['agriculture'] = 2;
             }
             if (global.tech['agriculture'] >= 1) {
@@ -3630,7 +3630,7 @@ function adjustFood() {
                     global.city['mill'].on = 0;
                 }
             }
-            if (global.race['carnivore']) {
+            if (global.race['carnivore'] && !global.race['herbivore']) {
                 disabledCity.push('city-silo', 'city-mill');
             }
         }
@@ -3666,6 +3666,7 @@ function adjustFood() {
         else {
             disabledTech.push('wind_plant');
             disabledCity.push('city-windmill');
+            delete power_generated[loc('city_mill_title2')];
         }
     }
 
@@ -3676,7 +3677,7 @@ function adjustFood() {
     else {
         jobDisabled.push('farmer');
     }
-    if (global.race['carnivore'] || global.race['soul_eater']) {
+    if ((global.race['carnivore'] && !global.race['herbivore']) || global.race['soul_eater']) {
         jobEnabled.push('hunter');
         jobDisabled.push('unemployed');
     }
@@ -4088,7 +4089,7 @@ export function shapeShift(genus,setup){
 
         let drop = ``;
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && gen !== races[global.race.species].type && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 4){
+            if (gen !== 'synthetic' && gen !== races[global.race.species].type && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });

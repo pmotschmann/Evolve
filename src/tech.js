@@ -471,7 +471,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
         trait: ['carnivore'],
-        not_trait: ['cataclysm','artifical','soul_eater'],
+        not_trait: ['cataclysm','artifical','soul_eater','herbivore'],
         grant: ['hunting',1],
         cost: {
             Knowledge(){ return 80; }
@@ -706,7 +706,9 @@ const techs = {
         category: 'storage',
         era: 'civilized',
         reqs: { agriculture: 2, storage: 1 },
-        not_trait: ['carnivore'],
+        condition(){
+            return !global.race['carnivore'] || (global.race['carnivore'] && global.race['herbivore']) ? true : false;
+        },
         grant: ['agriculture',3],
         cost: {
             Knowledge(){ return 80; }
@@ -787,7 +789,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         condition(){
-            return (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || (global.race['carnivore'] && global.race['herbivore'])) ? true : false;
+            return (global.tech['hunting'] >= 2 || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || (global.race['carnivore'] && !global.race['herbivore'])) ? true : false;
         },
         grant: ['wind_plant',1],
         cost: {

@@ -1865,7 +1865,7 @@ export const actions = {
                 }
                 return false;
             },
-            emblem(){ return format_emblem('truepath'); },
+            emblem(){ return format_emblem('pathfinder'); },
             flair: loc('evo_challenge_truepath_flair'),
             highlight(){ return global.race['truepath'] ? true : false; }
         },
