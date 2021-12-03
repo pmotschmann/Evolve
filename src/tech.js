@@ -732,8 +732,7 @@ const techs = {
         effect: loc('tech_mill_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','mill','windmill',{ count: 0 });
-                global.city['mill'].on = 0;
+                checkAltPurgatory('city','mill','windmill',{ count: 0, on: 0 });
                 return true;
             }
             return false;
@@ -795,7 +794,7 @@ const techs = {
         effect: loc('tech_wind_plant_effect'),
         action(){
             if (payCosts($(this)[0])){
-                checkAltPurgatory('city','windmill','mill',{ count: 0 });
+                checkAltPurgatory('city','windmill','mill',{ count: 0, on: 0 });
                 return true;
             }
             return false;
