@@ -15,6 +15,7 @@ const changeList = [
             `GruvBox Dark is now the default theme.`,
             `Added Evolve Adept Perk.`,
             `Themed several additional techs in magic universe for immersion.`,
+            `Smodering and Chilled effects now display as Smoldering or Chilled in production breakdowns instead of Hot/Cold.`,
             `Improved touch device support.`
         ]
     },

@@ -792,7 +792,7 @@ function fastLoop(){
         else {
             heat = global.city['hot'] * traits.smoldering.vars()[1];
         }
-        breakdown.p['Global'][loc('hot')] = `${heat}%`;
+        breakdown.p['Global'][loc('trait_smoldering_name')] = `${heat}%`;
         global_multiplier *= 1 + (heat / 100);
     }
     if (global.race['heat_intolerance'] && global.city['hot']){
@@ -809,7 +809,7 @@ function fastLoop(){
         else {
             cold = global.city['cold'] * traits.chilled.vars()[1];
         }
-        breakdown.p['Global'][loc('cold')] = `${cold}%`;
+        breakdown.p['Global'][loc('trait_chilled_name')] = `${cold}%`;
         global_multiplier *= 1 + (cold / 100);
     }
     if (global.race['cold_intolerance'] && global.city['cold']){
