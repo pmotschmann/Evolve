@@ -91,8 +91,8 @@ function loadSmelter(parent,bind){
         let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
         parent.append(fuelTypes);
 
-        if (((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']) && !global.race['artifical']){
-            let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
+        if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
+            let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
             let addWood = $(`<span role="button" class="add" @click="addFuel('Wood')" aria-label="Add lumber fuel"><span>&raquo;</span></span>`);
@@ -373,7 +373,7 @@ function loadSmelter(parent,bind){
     function tooltip(type){
         switch(type){
             case 'wood':
-                return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
+                return loc('modal_build_wood',[global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name, global.race['evil'] && !global.race['soul_eater'] || global.race.species === 'wendigo' ? 1 : 3]);
             case 'coal':
                 {
                     let coal_fuel = global.race['kindling_kindred'] ? 0.15 : 0.25;

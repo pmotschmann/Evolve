@@ -3732,10 +3732,10 @@ function fastLoop(){
                 global.city.smelter.Oil = global.city.smelter.cap;
             }
 
-            if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil'] && !global.race['smoldering']){
+            if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
                 global.city.smelter.Wood = 0;
             }
-            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['artifical'] ? 0.15 : 0.25;
+            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] ? 0.15 : 0.25;
 
             let total_fuel = 0;
             ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
@@ -3897,7 +3897,7 @@ function fastLoop(){
             if (iridium_smelter < 1){ iridium_smelter = 1; }
 
             if (global.race['evil']){
-                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+                if (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical']){
                     breakdown.p.consume.Food[loc('city_smelter')] = -(consume_wood);
                 }
                 else {
