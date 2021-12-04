@@ -2219,6 +2219,7 @@ export const perkList = {
 export function drawPerks(){
     clearElement($('#perksPanel'));
     let perks = $('#perksPanel');
+
     let hasPerk = false;
     Object.keys(perkList).forEach(function(perk){
         if (perkList[perk].hasOwnProperty('group')){

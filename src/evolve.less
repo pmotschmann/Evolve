@@ -1349,6 +1349,17 @@ Misc ---------> Main template
         }
 
         // Stars
+        .star1 {
+            fill: @html-background;
+            stroke: @star-2-fill;
+            path {
+                stroke: @star-2-fill;
+            }
+            path.bolden {
+                stroke-width: 8px;
+            }
+        }
+
         .star2 {
             fill: @star-2-fill;
         }
@@ -2946,6 +2957,7 @@ a {
             top: 1.375rem;
         }
 
+        .star1,
         .star2,
         .star3,
         .star4,
