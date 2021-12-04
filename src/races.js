@@ -3596,7 +3596,7 @@ function adjustFood() {
         else {
             disabledTech.push('hunting');
             disabledCity.push('city-smokehouse');
-            if ((global.race['herbivore'] && !global.race['carnivore']) || !altLodge) {
+            if (!altLodge) {
                 disabledTech.push('city-lodge');
             }
         }
@@ -3620,13 +3620,7 @@ function adjustFood() {
                 checkAltPurgatory('city','silo','smokehouse',{ count: 0 });
             }
             if (global.tech['agriculture'] >= 4 && !altMill) {
-                checkAltPurgatory('city','mill','windmill',{ count: 0 });
-                if (!global.city['mill'].hasOwnProperty('on')) {
-                    global.city['mill'].on = 0;
-                }
-            }
-            if (global.race['carnivore'] && !global.race['herbivore']) {
-                disabledCity.push('city-silo', 'city-mill');
+                checkAltPurgatory('city','mill','windmill',{ count: 0, on: 0 });
             }
         }
         else {
@@ -3655,7 +3649,7 @@ function adjustFood() {
         if (altMill) {
             checkPurgatory('tech','wind_plant');
             if (global.tech['wind_plant'] >= 1) {
-                checkAltPurgatory('city','windmill','mill',{ count: 0 });
+                checkAltPurgatory('city','windmill','mill',{ count: 0, on: 0 });
             }
         }
         else {
