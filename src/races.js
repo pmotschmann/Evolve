@@ -2068,7 +2068,7 @@ export const traits = {
         name: loc('trait_imitation_name'),
         desc: loc('trait_imitation'),
         type: 'major',
-        val: 5,
+        val: 6,
     },
     emotionless: { // You have no emotions, cold logic dictates your decisions
         name: loc('trait_emotionless_name'),
@@ -4108,6 +4108,27 @@ export function shapeShift(genus,setup){
     }
 
     global.race['ss_traits'] = shifted;
+}
+
+export function setTraitRank(trait,opts){
+    if (global.race[trait]){
+        switch (global.race[trait]){
+            case 0.5:
+                global.race[trait] = opts['down'] ? 0.5 : 1;
+                return opts['down'] ? false : true;
+            case 1:
+                global.race[trait] = opts['down'] ? 0.5 : 2;
+                return true;
+            case 2:
+                global.race[trait] = opts['down'] ? 1 : 2;
+                return opts['down'] ? true : false;
+        }
+    }
+    else if (opts['set']){
+        global.race[trait] = opts['set'];
+        return true;
+    }
+    return false;
 }
 
 export const biomes = {

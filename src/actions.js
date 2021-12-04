@@ -2,7 +2,7 @@ import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximat
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, shapeShift } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -6998,15 +6998,15 @@ function sentience(){
                 }
             });
             if (list[0] !== 'evil'){
-                global.race[list[0]] = 0.5;
+                setTraitRank(list[0],{ set: 0.5 });
             }
             if (list[1] !== 'evil'){
-                global.race[list[1]] = 0.5;
+                setTraitRank(list[1],{ set: 0.5 });
             }
         }
         else {
             Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                global.race[trait] = 0.5;
+                setTraitRank(trait,{ set: 0.5 });
             });
         }
     }
@@ -7863,17 +7863,9 @@ export function fanaticism(god){
 
 function fanaticTrait(trait){
     if (global.race[trait]){
-        switch (global.race[trait]){
-            case 0.5:
-                global.race[trait] = 1;
-                break;
-            case 1:
-                global.race[trait] = 2;
-                break;
-            default:
-                randomMinorTrait(5);
-                arpa('Genetics');
-                break;
+        if (!setTraitRank(trait)){
+            randomMinorTrait(5);
+            arpa('Genetics');
         }
     }
     else {

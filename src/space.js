@@ -6154,9 +6154,7 @@ export function ascendLab(wiki){
             ){
             if (races[race].hasOwnProperty('traits')){
                 Object.keys(races[race].traits).forEach(function (trait){
-                    if (!['imitation'].includes(trait)){
-                        unlockedTraits[trait] = true;
-                    }
+                    unlockedTraits[trait] = true;
                 });
             }
         }
