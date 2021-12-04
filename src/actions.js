@@ -3135,7 +3135,7 @@ export const actions = {
                     let val = sizeApproximation(+(spatialReasoning(15) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Graphene.name])}</span>`;
                 }
-                if (global.tech['shelving'] && global.tech.shelving && global.resource.Stanene.display){
+                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
                     let val = sizeApproximation(+(spatialReasoning(25) * multiplier).toFixed(0),1);
                     storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stanene.name])}</span>`;
                 }
@@ -3186,6 +3186,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.container >= 3 ? 20 : 10;
+                if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                    cap += 10;
+                }
                 if (global.tech['world_control']){
                     cap += 10;
                 }
@@ -3211,6 +3214,9 @@ export const actions = {
                         global.settings.marketTabs = 1;
                     }
                     let cap = global.tech.container >= 3 ? 20 : 10;
+                    if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                        cap += 10;
+                    }
                     if (global.tech['world_control']){
                         cap += 10;
                     }
@@ -3242,6 +3248,9 @@ export const actions = {
             },
             effect(){
                 let cap = global.tech.steel_container >= 2 ? 20 : 10;
+                if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2){
+                    cap += 10;
+                }
                 if (global.tech['world_control']){
                     cap += 10;
                 }
@@ -3259,6 +3268,9 @@ export const actions = {
                     global.settings.showResources = true;
                     global.settings.showStorage = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
+                    if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2){
+                        cap += 10;
+                    }
                     if (global.tech['world_control']){
                         cap += 10;
                     }
@@ -3691,8 +3703,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['smelter'].count++;
-                    if (global.race['kindling_kindred'] || global.race['smoldering']){
-                        if (global.race['evil']) {
+                    if (global.race['kindling_kindred'] || global.race['smoldering'] || global.race['artifical']){
+                        if (global.race['artifical']){
+                            global.city['smelter'].Oil++;
+                        }
+                        else if (global.race['evil']) {
                             global.city['smelter'].Wood++;
                         }
                         else {

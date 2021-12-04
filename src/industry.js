@@ -91,7 +91,7 @@ function loadSmelter(parent,bind){
         let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
         parent.append(fuelTypes);
 
-        if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
+        if (((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']) && !global.race['artifical']){
             let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
             let subWood = $(`<span role="button" class="sub" @click="subFuel('Wood')" aria-label="Remove lumber fuel"><span>&laquo;</span></span>`);
@@ -165,7 +165,8 @@ function loadSmelter(parent,bind){
         }
     }
 
-    if (global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2){
+    let irid_smelt = global.tech['irid_smelting'] || (global.tech['m_smelting'] && global.tech.m_smelting >= 2) ? true : false;
+    if (global.resource.Iridium.display && irid_smelt){
         let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
         let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
         parent.append(smelt);

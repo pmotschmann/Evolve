@@ -3732,10 +3732,10 @@ function fastLoop(){
                 global.city.smelter.Oil = global.city.smelter.cap;
             }
 
-            if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
+            if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil'] && !global.race['smoldering']){
                 global.city.smelter.Wood = 0;
             }
-            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] ? 0.15 : 0.25;
+            let coal_fuel = global.race['kindling_kindred'] || global.race['smoldering'] || global.race['artifical'] ? 0.15 : 0.25;
 
             let total_fuel = 0;
             ['Wood', 'Coal', 'Oil', 'Star', 'Inferno'].forEach(function(fuel){
@@ -5872,6 +5872,9 @@ function midLoop(){
         }
         if (global.city['storage_yard']){
             let size = global.tech.container >= 3 ? 20 : 10;
+            if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
+                size += 10;
+            }
             if (global.tech['world_control']){
                 size += 10;
             }
@@ -5896,6 +5899,9 @@ function midLoop(){
         }
         if (global.city['warehouse']){
             let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
+            if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2){
+                volume += 10;
+            }
             if (global.tech['world_control']){
                 volume += 10;
             }
@@ -6173,7 +6179,7 @@ function midLoop(){
                 bd_Graphene[label] = gain+'v';
             }
 
-            if (global.tech['shelving'] && global.tech.shelving && global.resource.Stanene.display){
+            if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
                 gain = (global.city['shed'].count * (spatialReasoning(25 * multiplier)));
                 caps['Stanene'] += gain;
                 bd_Stanene[label] = gain+'v';

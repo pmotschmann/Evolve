@@ -1710,6 +1710,28 @@ const techs = {
             defineIndustry();
         }
     },
+    iridium_smelting_perk: {
+        id: 'tech-iridium_smelting_perk',
+        title: loc('tech_iridium_smelting'),
+        desc: loc('tech_iridium_smelting'),
+        category: 'mining',
+        era: 'early_space',
+        path: ['standard'],
+        reqs: { smelting: 6, space: 3 },
+        condition(){ return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 3 ? true : false; },
+        grant: ['irid_smelting',1],
+        cost: {
+            Knowledge(){ return 350000; },
+            Mythril(){ return 2500; }
+        },
+        effect: loc('tech_iridium_smelting_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     rotary_kiln: {
         id: 'tech-rotary_kiln',
         title: loc('tech_rotary_kiln'),

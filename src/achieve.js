@@ -1430,6 +1430,58 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_gladiator_name`)}</span>`])
         ]
     },
+    pathfinder: {
+        name: loc(`achieve_pathfinder_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_pathfinder1",[10]);
+                },
+                active(){
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_pathfinder2",[10]);
+                },
+                active(){
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_pathfinder3");
+                },
+                active(){
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_pathfinder4");
+                },
+                active(){
+                    return false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_pathfinder4");
+                },
+                active(){
+                    return false;
+                }
+            },
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_pathfinder_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder`,[`<span class="has-text-caution">${loc(`evo_challenge_truepath`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['ashanddust'] ? 'success' : 'danger'}">${loc(`wiki_resets_mad`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['exodus'] ? 'success' : 'danger'}">${loc(`wiki_resets_bioseed`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['obsolete'] ? 'success' : 'danger'}">${loc(`wiki_resets_ai`)}</span>`]),
+        ]
+    },
     creep: {
         name: loc(`wiki_arpa_crispr_creep`),
         desc(wiki){
