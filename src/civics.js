@@ -1982,6 +1982,9 @@ export function armyRating(val,type,wound){
 }
 
 export function garrisonSize(max,nofob){
+    if (!global.civic.garrison){
+        return 0;
+    }
     let type = max ? 'max' : 'workers';
     let fortress = global.portal['fortress'] ? global.portal.fortress.garrison : 0;
     let fob = global.space['fob'] && !nofob ? global.space.fob.troops : 0;

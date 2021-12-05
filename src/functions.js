@@ -1405,7 +1405,7 @@ export function adjustCosts(c_action, offset, wiki){
 }
 
 function truthAdjust(costs, c_action, offset, wiki){
-    if (global.race['truepath'] && (!c_action.hasOwnProperty('path') || !c_action.path.includes('truepath'))){
+    if ((wiki ? wiki.truepath : global.race['truepath']) && (!c_action.hasOwnProperty('path') || !c_action.path.includes('truepath'))){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Money'){

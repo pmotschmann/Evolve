@@ -1459,7 +1459,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_pathfinder4");
+                    return loc("unavailable_content");
                 },
                 active(){
                     return false;
@@ -1467,7 +1467,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_pathfinder4");
+                    return loc("unavailable_content");
                 },
                 active(){
                     return false;
@@ -2190,7 +2190,7 @@ export const perkList = {
             {
                 desc(wiki){
                     let harmonic = calcPillar();
-                    return loc("perks_harmonic",[wiki ? "1-49" : +((harmonic[0] - 1) * 100).toFixed(0), wiki ? "2-98" : +((harmonic[1] - 1) * 100).toFixed(0)]);
+                    return loc("perks_harmonic",[wiki ? `1-${Object.keys(races).length + 2}` : +((harmonic[0] - 1) * 100).toFixed(0), wiki ? `2-${(Object.keys(races).length + 2) * 2}` : +((harmonic[1] - 1) * 100).toFixed(0)]);
                 },
                 active(){
                     let harmonic = calcPillar();
@@ -2200,7 +2200,7 @@ export const perkList = {
             {
                 desc(wiki){
                     let harmonic = calcPillar();
-                    return loc("perks_harmonic2",[loc("portal_west_tower"), loc("portal_east_tower"), wiki ? "12-552" : +(Object.keys(global.pillars).length * 12)]);
+                    return loc("perks_harmonic2",[loc("portal_west_tower"), loc("portal_east_tower"), wiki ? `12-${(Object.keys(races).length - 1) * 12}` : +(Object.keys(global.pillars).length * 12)]);
                 },
                 active(){
                     let harmonic = calcPillar();

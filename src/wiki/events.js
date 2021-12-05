@@ -1117,7 +1117,11 @@ function progressEventsPage(content){
             para_data: {
                 1: [loc(`resource_Elerium_name`),loc(`tech_elerium_mining`)],
                 2: [loc(`space_belt_iron_ship_title`),loc(`space_belt_iridium_ship_title`),`0.4%`]
-            }, 
+            },
+            data_link: {
+                1: [false,'wiki.html#deep_space-tech-elerium_mining'],
+                2: ['wiki.html#space-structures-iron_ship','wiki.html#space-structures-iridium_ship']
+            },
             examples: [
                 loc(`discover_elerium`)
             ]
@@ -1130,7 +1134,11 @@ function progressEventsPage(content){
             para_data: {
                 1: [loc(`resource_Oil_name`),getSolarName('gas_moon'),loc(`space_gas_moon_oil_extractor_title`)],
                 2: [loc(`space_gas_moon_outpost_title`),`1%`]
-            }, 
+            },
+            data_link: {
+                1: [false,false,'wiki.html#space-structures-oil_extractor'],
+                2: ['wiki.html#space-structures-outpost']
+            },
             examples: [
                 loc(`discover_oil`,[getSolarName('gas_moon')])
             ]
@@ -1142,12 +1150,18 @@ function progressEventsPage(content){
         let section = infoBoxBuilder(mainContent,{ name: 'pit', template: 'events', label: loc('wiki_events_pit'), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
                 1: [loc(`portal_pit_name`),loc(`tab_portal`),loc(`portal_pit_mission_title`)]
-            }
+            },
+            data_link: {
+                1: [false,false,'wiki.html#hell-structures-pit_mission']
+            },
         });
         infoBoxBuilder(mainContent, { name: 'pit_condition', template: 'events', label: loc('wiki_events_pit'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [(1000000).toLocaleString(),loc(`galaxy_telemetry_beacon`)]
-            }, 
+            },
+            data_link: {
+                1: [false,'wiki.html#intergalactic-structures-telemetry_beacon']
+            },
             examples: [
                 loc(`portal_hell_pit_found`)
             ]
@@ -1160,12 +1174,15 @@ function progressEventsPage(content){
             para_data: {
                 1: [loc(`galaxy_scout_ship`),loc(`tech_xeno_linguistics`),loc(`galaxy_corvette_ship`)],
                 2: [`10%`]
-            }
+            },
+            data_link: {
+                1: ['wiki.html#intergalactic-structures-scout_ship','wiki.html#intergalactic-tech-xeno_linguistics','wiki.html#intergalactic-tech-corvette_ship']
+            },
         });
         infoBoxBuilder(mainContent, { name: 'alien_encounter_condition', template: 'events', label: loc('wiki_events_alien_encounter'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`galaxy_scout_ship`)]
-            }, 
+            },
             examples: [
                 loc(`galaxy_encounter`)
             ]
@@ -1186,7 +1203,10 @@ function progressEventsPage(content){
         infoBoxBuilder(mainContent, { name: 'piracy_condition', template: 'events', label: loc('wiki_events_piracy'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`galaxy_embassy`)]
-            }, 
+            },
+            data_link: {
+                1: ['wiki.html#intergalactic-structures-embassy']
+            },
             examples: [
                 loc(`galaxy_piracy_msg`,[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])
             ]
@@ -1199,7 +1219,10 @@ function progressEventsPage(content){
             para_data: {
                 1: [loc(`galaxy_scavenger`),loc(`tech_alien_database`)],
                 2: [loc(`galaxy_scavenger`),`2%`]
-            }, 
+            },
+            data_link: {
+                1: ['wiki.html#intergalactic-structures-scavenger']
+            },
             examples: [
                 loc(`galaxy_scavenger_find`)
             ]
@@ -1214,17 +1237,48 @@ function progressEventsPage(content){
                 2: [loc(`resource_Soul_Gem_name`),loc(`portal_soul_forge_title`),loc(`portal_soul_attractor_title`)],
                 3: [`1/(11-X)`,`X`,loc(`portal_soul_attractor_title`)],
                 4: [9,loc(`portal_soul_attractor_title`),`9.09%`,0,`50%`]
-            }
+            },
+            data_link: {
+                1: [false,'wiki.html#hell-structures-soul_forge'],
+                2: [false,false,'wiki.html#hell-structures-soul_attractor']
+            },
         });
         infoBoxBuilder(mainContent, { name: 'corrupt_gem_condition', template: 'events', label: loc('wiki_events_corrupt_gem'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_metaphysics`)]
-            }, 
+            },
+            data_link: {
+                1: ['wiki.html#intergalactic-tech-metaphysics']
+            },
             examples: [
                 loc(`portal_corrupt_gem`)
             ]
         }, section);
         sideMenu('add',`progress-events`,`corrupt_gem`,loc('wiki_events_corrupt_gem'));
+    }
+    
+    {   // Syndicate Unlock
+        let section = infoBoxBuilder(mainContent,{ name: 'syndicate', template: 'events', label: loc('wiki_events_syndicate'), paragraphs: 2, break: [2], h_level: 2,
+            para_data: {
+                1: [loc('tech_shipyard',[getSolarName('dwarf')])],
+                2: [`5%`]
+            },
+            data_link: {
+                1: ['wiki.html#solar-tp_tech-shipyard']
+            },
+        });
+        infoBoxBuilder(mainContent, { name: 'syndicate_condition', template: 'events', label: loc('wiki_events_syndicate'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`tech_long_range_probes`)]
+            },
+            data_link: {
+                1: ['wiki.html#solar-tp_tech-long_range_probes']
+            },
+            examples: [
+                loc(`outer_syndicate`,[loc(`civics_gov5`,[loc(`civics_gov_name1`)])])
+            ]
+        }, section);
+        sideMenu('add',`progress-events`,`syndicate`,loc('wiki_events_syndicate'));
     }
 }
 
