@@ -42,7 +42,7 @@ const spaceProjects = {
                         if (!checkControlling('gov1')){ sabotage++; }
                         if (!checkControlling('gov2')){ sabotage++; }
                         if (Math.floor(Math.seededRandom(0,sabotage)) !== 0){
-                            messageQueue(loc('space_home_test_launch_action_fail'),'danger');
+                            messageQueue(loc('space_home_test_launch_action_fail'),'danger',false,['progress']);
                             return 0;
                         }
                     }
@@ -249,7 +249,7 @@ const spaceProjects = {
                             else if (global.civic.foreign.gov3.hstl > 60){
                                 msg = `${msg} ${loc('space_moon_base_msg_hstl')}`;
                             }
-                            messageQueue(msg,'info');
+                            messageQueue(msg,'info',false,['progress']);
                         }
                     }
                     return true;
@@ -1175,6 +1175,7 @@ const spaceProjects = {
                 return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
             },
             reqs: { hell: 1, m_smelting: 1 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('hell_smelter', offset, 250000, 1.24); },
                 Adamantite(offset){ return spaceCostMultiplier('hell_smelter', offset, 15000, 1.24); }

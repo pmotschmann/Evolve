@@ -788,7 +788,8 @@ export function timeCheck(c_action,track,detailed){
     if (c_action.cost){
         let time = 0;
         let bottleneck = false;
-        let costs = adjustCosts(c_action);
+        let offset = track && track.id[c_action.id] ? track.id[c_action.id] : false;
+        let costs = adjustCosts(c_action,offset);
         let og_track_r = track ? {} : false;
         if (track){
             Object.keys(track.r).forEach(function (res){
@@ -797,7 +798,7 @@ export function timeCheck(c_action,track,detailed){
         }
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
-                var testCost = track && track.id[c_action.id] ? Number(costs[res](track.id[c_action.id])) : Number(costs[res]());
+                var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
                     let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
@@ -855,7 +856,8 @@ export function timeCheck(c_action,track,detailed){
 // Note: remain is a fraction between 0 and 1 representing the fraction of
 // remaining arpa segments to be completed
 export function arpaTimeCheck(project, remain, track){
-    let costs = arpaAdjustCosts(project.cost);
+    let offset = track && track.id[project.id] ? track.id[project.id] : false;
+    let costs = arpaAdjustCosts(project.cost,offset);
     let allRemainingSegmentsTime = 0;
     let og_track_r = track ? {} : false;
     if (track){
@@ -865,7 +867,7 @@ export function arpaTimeCheck(project, remain, track){
     }
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
-            let allRemainingSegmentsCost = Number(costs[res]()) * remain;
+            let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
 

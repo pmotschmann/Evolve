@@ -48,7 +48,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info');
+                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -359,6 +359,7 @@ export const outerTruth = {
                 return loc('city_bank_desc',[genusVars[races[global.race.species].type].solar.titan]);
             },
             reqs: { titan: 6 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_bank', offset, 2500000, 1.32); },
                 Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, 380000, 1.32); },
@@ -384,6 +385,7 @@ export const outerTruth = {
             title: loc('interstellar_g_factory_title'),
             desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`; },
             reqs: { graphene: 1 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28); },
                 Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28); },
@@ -653,7 +655,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info');
+                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info',false,['progress']);
                     global.resource.Water.display = true;
                     return true;
                 }
@@ -848,7 +850,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info');
+                    messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info',false,['progress']);
                     global.space.syndicate['spc_triton'] = 1250;
                     global.space.syndicate['spc_titan'] += 250;
                     global.space.syndicate['spc_enceladus'] += 250;
@@ -996,7 +998,7 @@ export const outerTruth = {
                     global.space['uranium_mine'] = { count: 0, on: 0 };
                     global.space['neutronium_mine'] = { count: 0, on: 0 };
                     global.space.syndicate['spc_kuiper'] = 500;
-                    messageQueue(loc('space_kuiper_mission_action'),'info');
+                    messageQueue(loc('space_kuiper_mission_action'),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -1179,7 +1181,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.syndicate['spc_eris'] = 4000;
-                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info');
+                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
                     return true;
                 }
                 return false;

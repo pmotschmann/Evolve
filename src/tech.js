@@ -4212,7 +4212,7 @@ const techs = {
                 arpa('Physics');
                 if (global.race['truepath'] && !global.tech['rival']){
                     global.tech['rival'] = 1;
-                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]));
+                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]),'info',false,['progress','combat']);
                 }
                 return true;
             }
@@ -8427,7 +8427,7 @@ const techs = {
                 uniteEffect();
                 if (global.race['truepath'] && !global.tech['rival']){
                     global.tech['rival'] = 1;
-                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]));
+                    messageQueue(loc(`civics_rival_unlocked`,[govTitle(3)]),'info',false,['progress','combat']);
                 }
                 return true;
             }
