@@ -98,10 +98,10 @@ export const arpaProjects = {
             return loc('arpa_projects_depot_effect',[5,50]);
         },
         cost: {
-            Money(offset){ return costMultiplier('tp_depot', offset, 1800000, 1.08); },
-            Stone(offset){ return costMultiplier('tp_depot', offset, 750000, 1.08); },
-            Iron(offset){ return costMultiplier('tp_depot', offset, 250000, 1.08); },
-            Alloy(offset){ return costMultiplier('tp_depot', offset, 30000, 1.08); }
+            Money(offset,wiki){ return costMultiplier('tp_depot', offset, 1800000, 1.08, wiki); },
+            Stone(offset,wiki){ return costMultiplier('tp_depot', offset, 750000, 1.08, wiki); },
+            Iron(offset,wiki){ return costMultiplier('tp_depot', offset, 250000, 1.08, wiki); },
+            Alloy(offset,wiki){ return costMultiplier('tp_depot', offset, 30000, 1.08, wiki); }
         }
     },
     launch_facility: {

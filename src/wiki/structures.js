@@ -58,10 +58,15 @@ const calcInfo = {
     },
     exclude: {
         planetary: ['food','lumber','stone','chrysotile','slaughter','slave_market',''],
-        space: ['test_launch','moon_mission','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission'],
+        space: ['test_launch','moon_mission','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite'],
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
         hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire']
+    },
+    excludeCreep: {
+        planetary: ['horseshoe'],
+        space: ['horseshoe'],
+        hell: ['ancient_pillars','sphinx','waygate']
     },
     max: {
         prehistoric: {},
@@ -70,7 +75,11 @@ const calcInfo = {
         },
         space: {
             star_dock: 1,
-            world_collider: 1859
+            world_collider: 1859,
+            shipyard: 1,
+            mass_relay: 100,
+            fob: 1,
+            ai_core: 100
         },
         interstellar: {
             dyson: 100,
@@ -99,10 +108,12 @@ const calcInfo = {
     },
     count: {
         planetary: {
-            horseshoe: global.race['shoecnt'] ? global.race['shoecnt'] : 0
+            horseshoe: global.race['shoecnt'] ? global.race['shoecnt'] : 0,
+            assembly: global.resource[global.race.species] ? global.resource[global.race.species].amount : 0
         },
         space: {
-            horseshoe: global.race['shoecnt'] ? global.race['shoecnt'] : 0
+            horseshoe: global.race['shoecnt'] ? global.race['shoecnt'] : 0,
+            assembly: global.resource[global.race.species] ? global.resource[global.race.species].amount : 0
         },
         interstellar: {},
         intergalactic: {},
@@ -110,6 +121,15 @@ const calcInfo = {
             ancient_pillars: Object.keys(global.pillars).length,
             sphinx: !global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2,
             waygate: global.tech['waygate'] && global.tech.waygate >= 2 ? 10 : global.portal['waygate'] ? global.portal.waygate.count : 0
+        }
+    },
+    creepCalc: {
+        planetary: {
+            assembly: 1000
+        },
+        space: {
+            assembly: 1000,
+            swarm_satellite: 200
         }
     }
 };
@@ -130,13 +150,15 @@ const calcInputs = {
     }
 };
 
-function addCalcInputs(parent,key,section,region){
+function addCalcInputs(parent,key,section,region,path){
     let hasMax = calcInfo.max[section] && calcInfo.max[section][key] ? calcInfo.max[section][key] : false;
     let inputs = {
         owned: 0,
         costVis: false,
         creepVis: false,
-        extra: {}
+        extra: {
+            truepath: path === 'truepath'
+        }
     };
     let resources = {};
     
@@ -188,7 +210,7 @@ function addCalcInputs(parent,key,section,region){
     
     let cost = action.cost;
     if (cost){
-        Object.keys(adjustCosts({ cost: cost })).forEach(function (res){
+        Object.keys(adjustCosts(action)).forEach(function (res){
             resources[res] = {};
             if (section === 'space' && (res === 'Oil' || res === 'Helium_3')){
                 calcInputs.fuelAdj.inputs.forEach(function (input){
@@ -202,7 +224,7 @@ function addCalcInputs(parent,key,section,region){
     let updateCosts = function(){
         let vis = false;
         if (cost){
-            let new_costs = adjustCosts({ cost: cost },inputs.owned - inputs.real_owned,inputs.extra);
+            let new_costs = adjustCosts(action,inputs.owned - inputs.real_owned,inputs.extra);
             Object.keys(resources).forEach(function (res){
                 if (res === 'Custom'){
                     resources[res].vis = true;
@@ -222,13 +244,15 @@ function addCalcInputs(parent,key,section,region){
     let updateCostCreep = function(){
         let creep = false;
         if (cost && !hasMax && 
-            !(calcInfo.count[section] && calcInfo.count[section].hasOwnProperty(key)) &&
+            !(calcInfo.excludeCreep[section] && calcInfo.excludeCreep[section].includes(key)) &&
             section !== 'prehistoric'){
-            let upper = adjustCosts({ cost: cost },100,inputs.extra);
-            let lower = adjustCosts({ cost: cost },99,inputs.extra);
+            let high = calcInfo.creepCalc[section] && calcInfo.creepCalc[section][key] ? calcInfo.creepCalc[section][key] : 100;
+            let low = high - 1;
+            let upper = adjustCosts(action,high,inputs.extra);
+            let lower = adjustCosts(action,low,inputs.extra);
             Object.keys(resources).forEach(function (res){
                 if (upper[res]){
-                    resources[res].creep = +(upper[res](100,inputs.extra) / lower[res](99,inputs.extra)).toFixed(5);
+                    resources[res].creep = +(upper[res](high,inputs.extra) / lower[res](low,inputs.extra)).toFixed(5);
                     if (resources[res].creep === 1){
                         resources[res].creep = loc('wiki_calc_none');
                     }
@@ -313,7 +337,7 @@ function prehistoricPage(content,path){
             content.append(info);
             actionDesc(info, actions.evolution[action], false, true);
             addInfomration(info,'prehistoric',action);
-            addCalcInputs(info,action,'prehistoric');
+            addCalcInputs(info,action,'prehistoric',false,path);
             sideMenu('add',`prehistoric-${affix}`,id[1],typeof actions.evolution[action].title === 'function' ? actions.evolution[action].title() : actions.evolution[action].title);
         }
     });
@@ -329,7 +353,7 @@ function planetaryPage(content,path){
             content.append(info);
             actionDesc(info, actions.city[action], false, true);
             addInfomration(info,'planetary',action);
-            addCalcInputs(info,action,'planetary');
+            addCalcInputs(info,action,'planetary',false,path);
             sideMenu('add',`planetary-${affix}`,id[1],typeof actions.city[action].title === 'function' ? actions.city[action].title() : actions.city[action].title);
         }
     });
@@ -350,7 +374,7 @@ function spacePage(content,path){
                 content.append(info);
                 actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`, true);
                 addInfomration(info,'space',struct);
-                addCalcInputs(info,struct,'space',region);
+                addCalcInputs(info,struct,'space',region,path);
                 sideMenu('add',`space-${affix}`,id[1],typeof actions.space[region][struct].title === 'function' ? actions.space[region][struct].title() : actions.space[region][struct].title);
                 popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }

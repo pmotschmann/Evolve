@@ -48,7 +48,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info');
+                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -359,6 +359,7 @@ export const outerTruth = {
                 return loc('city_bank_desc',[genusVars[races[global.race.species].type].solar.titan]);
             },
             reqs: { titan: 6 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_bank', offset, 2500000, 1.32); },
                 Titanium(offset){ return spaceCostMultiplier('titan_bank', offset, 380000, 1.32); },
@@ -384,6 +385,7 @@ export const outerTruth = {
             title: loc('interstellar_g_factory_title'),
             desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`; },
             reqs: { graphene: 1 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('g_factory', offset, 950000, 1.28); },
                 Copper(offset){ return spaceCostMultiplier('g_factory', offset, 165000, 1.28); },
@@ -507,20 +509,24 @@ export const outerTruth = {
             queue_size: 10,
             queue_complete(){ return 100 - global.space.ai_core.count; },
             cost: {
-                Money(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 2500000 : 0; },
-                Cement(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 180000 : 0; },
-                Aluminium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 250000 : 0; },
-                Elerium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 250 : 0; },
-                Nano_Tube(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 125000 : 0; },
-                Orichalcum(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 50000 : 0; },
-                Quantium(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 100000 : 0; },
-                Cipher(wiki){ return !global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki ? 750 : 0; },
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 2500000 : 0; },
+                Cement(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 180000 : 0; },
+                Aluminium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 250 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 125000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 50000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 100000 : 0; },
+                Cipher(offset){ return ((offset || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0)) < 100 ? 750 : 0; },
             },
-            effect(){
-                let effectText = `<div>${loc('space_ai_core_effect')}</div>`
-                if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100){
-                    let remain = global.space.hasOwnProperty('ai_core') ? 100 - global.space.ai_core.count : 100;
+            effect(wiki){
+                let effectText = `<div>${loc('space_ai_core_effect')}</div>`;
+                let count = ((wiki || 0) + (global.space.hasOwnProperty('ai_core') ? global.space.ai_core.count : 0));
+                if (count < 100){
+                    let remain = 100 - count;
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return outerTruth.spc_titan.ai_core2.effect();
                 }
                 return effectText;
             },
@@ -653,7 +659,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info');
+                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info',false,['progress']);
                     global.resource.Water.display = true;
                     return true;
                 }
@@ -848,7 +854,7 @@ export const outerTruth = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info');
+                    messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info',false,['progress']);
                     global.space.syndicate['spc_triton'] = 1250;
                     global.space.syndicate['spc_titan'] += 250;
                     global.space.syndicate['spc_enceladus'] += 250;
@@ -868,14 +874,14 @@ export const outerTruth = {
             no_queue(){ return global.space.fob.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             q_once: true,
             cost: {
-                Money(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 250000000, 1.1); },
-                Copper(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 8000000, 1.1); },
-                Uranium(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 50000, 1.1); },
-                Nano_Tube(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 2500000, 1.1); },
-                Graphene(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 3000000, 1.1); },
-                Sheet_Metal(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 7500000, 1.1); },
-                Quantium(offset){ return global.space.fob.count >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
-                Horseshoe(){ return global.race['hooved'] ? 10 : 0; }
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', offset, 250000000, 1.1); },
+                Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 8000000, 1.1); },
+                Uranium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 50000, 1.1); },
+                Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 2500000, 1.1); },
+                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 3000000, 1.1); },
+                Sheet_Metal(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 7500000, 1.1); },
+                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
+                Horseshoe(offset){ return global.race['hooved'] && ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
             },
             effect(){
                 let troops = garrisonSize();
@@ -883,8 +889,8 @@ export const outerTruth = {
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[500])}</div>`;
                 desc += loc('plus_max_resource',[10,loc('civics_garrison_soldiers')]);
                 desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}:</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
-                desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic.garrison.wounded}</span></div>`;
-                desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space.fob.troops])}</div>`;
+                desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic['garrison'] ? global.civic.garrison.wounded : 0}</span></div>`;
+                desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space['fob'] ? global.space.fob.troops : 0])}</div>`;
                 let helium = +(fuel_adjust(125,true)).toFixed(2);
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),helium,global.resource.Helium_3.name])}</div>`;
             },
@@ -996,7 +1002,7 @@ export const outerTruth = {
                     global.space['uranium_mine'] = { count: 0, on: 0 };
                     global.space['neutronium_mine'] = { count: 0, on: 0 };
                     global.space.syndicate['spc_kuiper'] = 500;
-                    messageQueue(loc('space_kuiper_mission_action'),'info');
+                    messageQueue(loc('space_kuiper_mission_action'),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -1179,7 +1185,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.syndicate['spc_eris'] = 4000;
-                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info');
+                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
                     return true;
                 }
                 return false;

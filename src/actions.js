@@ -1560,8 +1560,11 @@ export const actions = {
                 else if (global.evolution['dwarfism']){
                     return format_emblem('genus_small');
                 }
-                else if (global.evolution['animalism']){
-                    return format_emblem('genus_animal');
+                else if (global.evolution['carnivore']){
+                    return format_emblem('genus_carnivore');
+                }
+                else if (global.evolution['herbivore']){
+                    return format_emblem('genus_herbivore');
                 }
                 else if (global.evolution['ectothermic']){
                     return format_emblem('genus_reptilian');
@@ -1598,6 +1601,9 @@ export const actions = {
                 }
                 else if (global.evolution['celestial']){
                     return format_emblem('genus_angelic');
+                }
+                else if (global.evolution['exterminate']){
+                    return format_emblem('genus_synthetic');
                 }
                 else {
                     return '';
@@ -4841,12 +4847,14 @@ export function setChallengeScreen(){
     global.evolution['junker'] = { count: 0 };
     global.evolution['joyless'] = { count: 0 };
     global.evolution['steelen'] = { count: 0 };
-    global.evolution['inflation'] = { count: 0 };
     if (global.stats.achieve['whitehole']){
         global.evolution['decay'] = { count: 0 };
     }
     if (global.stats.achieve['ascended']){
         global.evolution['emfield'] = { count: 0 };
+    }
+    if (global.stats.achieve['scrooge']){
+        global.evolution['inflation'] = { count: 0 };
     }
     if (global.stats.achieve['shaken']){
         global.evolution['cataclysm'] = { count: 0 };

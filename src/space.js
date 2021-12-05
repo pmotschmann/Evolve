@@ -42,7 +42,7 @@ const spaceProjects = {
                         if (!checkControlling('gov1')){ sabotage++; }
                         if (!checkControlling('gov2')){ sabotage++; }
                         if (Math.floor(Math.seededRandom(0,sabotage)) !== 0){
-                            messageQueue(loc('space_home_test_launch_action_fail'),'danger');
+                            messageQueue(loc('space_home_test_launch_action_fail'),'danger',false,['progress']);
                             return 0;
                         }
                     }
@@ -249,7 +249,7 @@ const spaceProjects = {
                             else if (global.civic.foreign.gov3.hstl > 60){
                                 msg = `${msg} ${loc('space_moon_base_msg_hstl')}`;
                             }
-                            messageQueue(msg,'info');
+                            messageQueue(msg,'info',false,['progress']);
                         }
                     }
                     return true;
@@ -1175,6 +1175,7 @@ const spaceProjects = {
                 return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
             },
             reqs: { hell: 1, m_smelting: 1 },
+            path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('hell_smelter', offset, 250000, 1.24); },
                 Adamantite(offset){ return spaceCostMultiplier('hell_smelter', offset, 15000, 1.24); }
@@ -1995,12 +1996,12 @@ const spaceProjects = {
             reqs: { shipyard: 1 },
             path: ['truepath'],
             cost: {
-                Money(){ return global.space.shipyard.count === 0 ? 10000000 : 0; },
-                Aluminium(){ return global.space.shipyard.count === 0 ? 1000000 : 0; },
-                Titanium(){ return global.space.shipyard.count === 0 ? 650000 : 0; },
-                Iridium(){ return global.space.shipyard.count === 0 ? 250000 : 0; },
-                Neutronium(){ return global.space.shipyard.count === 0 ? 10000 : 0; },
-                Mythril(){ return global.space.shipyard.count === 0 ? 500000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000000 : 0; },
+                Aluminium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 1000000 : 0; },
+                Titanium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 650000 : 0; },
+                Iridium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 250000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 10000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('shipyard') ? global.space.shipyard.count : 0)) < 1 ? 500000 : 0; },
             },
             no_queue(){ return global.space.shipyard.count < 1 ? false : true },
             queue_complete(){ return 1 - global.space.shipyard.count; },
@@ -2054,16 +2055,17 @@ const spaceProjects = {
             queue_size: 5,
             queue_complete(){ return 100 - global.space.mass_relay.count; },
             cost: {
-                Money(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 10000000 : 0; },
-                Neutronium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 7500 : 0; },
-                Adamantite(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 18000 : 0; },
-                Elerium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 125 : 0; },
-                Stanene(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 100000 : 0; },
-                Quantium(wiki){ return !global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki ? 25000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 10000000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 7500 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 18000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 125 : 0; },
+                Stanene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 100000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0)) < 100 ? 25000 : 0; },
             },
-            effect(){
-                if (!global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100){
-                    let remain = global.space.hasOwnProperty('mass_relay') ? 100 - global.space.mass_relay.count : 100;
+            effect(wiki){ 
+                let count = ((wiki || 0) + (global.space.hasOwnProperty('mass_relay') ? global.space.mass_relay.count : 0));
+                if (count < 100){
+                    let remain = 100 - count;
                     return `<div>${loc('space_dwarf_mass_relay_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {

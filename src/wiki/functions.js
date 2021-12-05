@@ -2,6 +2,7 @@ import { global, sizeApproximation } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
+import { races, genusVars } from './../races.js';
 
 export function headerBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('h_level')){
@@ -243,14 +244,17 @@ export function subSideMenu(action,arg1,arg2,arg3){
 }
 
 export function getSolarName(planet) {
+    if (Object.keys(genusVars[races[global.race.species].type].solar).includes(planet)){
+        return genusVars[races[global.race.species].type].solar[planet];
+    }
     if (global.race.species === 'protoplasm'){
-        return loc(`race_human_solar_${planet}`);
+        return planet === 'home' ? races.human.home : races.human.solar[planet];
     }
     else if (global.race.species === 'custom') {
         return global.custom.race0[planet];
     }
     else {
-        return loc(`race_${global.race.species}_solar_${planet}`);
+        return planet === 'home' ? races[global.race.species].home : races[global.race.species].solar[planet];
     }
 }
 

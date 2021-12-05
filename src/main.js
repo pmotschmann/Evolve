@@ -8837,7 +8837,7 @@ function longLoop(){
                 loadFoundry();
             }
             if (global.resource.Knowledge.max >= 11590000 && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
-                messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info');
+                messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info',false,['progress']);
                 messageQueue(loc('tech_orichalcum_analysis_result'),'info',false,['progress']);
                 global.tech.high_tech = 17;
                 drawTech();
@@ -8929,7 +8929,7 @@ function longLoop(){
         }
 
         if (!global.tech['syndicate'] && global.tech['outer'] && Math.rand(0, 20) === 0){
-            messageQueue(loc('outer_syndicate',[govTitle(4)]),'info');
+            messageQueue(loc('outer_syndicate',[govTitle(4)]),'info',false,['progress']);
             global.tech['syndicate'] = 1;
             global.space['syndicate'] = {};
         }
