@@ -97,6 +97,17 @@ export function pResPage(content){
     subSection = createCalcSection(section,'artifact','gain');
     prestigeCalc(subSection,'artifact');
     sideMenu('add',`resources-prestige`,'artifact',loc('wiki_p_res_artifact'));
+
+    //AI Core
+    section = infoBoxBuilder(mainContent,{ name: 'ai_core', template: 'p_res', paragraphs: 2, h_level: 2,
+        para_data: {
+            1: [loc('wiki_resets_ai')],
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-ai'],
+        }
+    });
+    sideMenu('add',`resources-prestige`,'ai_core',loc('wiki_p_res_ai_core'));
 }
 
 const calcVars = {

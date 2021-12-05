@@ -90,7 +90,7 @@ export function challengesPage(content){
             subSideMenu('add',`challenges-gameplay`,'genes_craft',loc('wiki_challenges_genes_craft'));
         }
         
-        {   // Weak CRISPR Discounts
+        {   // Junk Gene
             let crispr = infoBoxBuilder(genes,{ name: 'genes_crispr', template: 'challenges', paragraphs: 2, h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_crispr`),loc(`wiki_challenges_gene`),loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_creep'),`1/5`]
@@ -111,6 +111,36 @@ export function challengesPage(content){
                 comma = true;
             });
             subSideMenu('add',`challenges-gameplay`,'genes_crispr',loc('wiki_challenges_genes_crispr'));
+        }
+
+        {   // Bad Genes
+            infoBoxBuilder(genes,{ name: 'genes_bad', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
+                para_data: {
+                    1: [1,2],
+                    4: [loc(`wiki_challenges_gene`),loc(`evo_challenge_truepath`)]
+                },
+                data_link: {
+                    4: [false,'wiki.html#challenges-gameplay-scenarios_truepath']
+                }
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_bad',loc('wiki_challenges_genes_bad'));
+        }
+
+        {   // Weak Genes
+            let weak_vals = global.race.universe === 'antimatter' ? [`20%`,`50%`,`50%`,`33%`] : [`50%`,`20%`,`50%`,`33%`];
+            infoBoxBuilder(genes,{ name: 'genes_weak', template: 'challenges', paragraphs: 5, break: [2,3,4,5], h_level: 2,
+                para_data: {
+                    1: [weak_vals[0]],
+                    2: [weak_vals[1]],
+                    3: [weak_vals[2]],
+                    4: [weak_vals[3]],
+                    5: [loc(`wiki_challenges_gene`),loc(`evo_challenge_truepath`)]
+                },
+                data_link: {
+                    5: [false,'wiki.html#challenges-gameplay-scenarios_truepath']
+                }
+            });
+            subSideMenu('add',`challenges-gameplay`,'genes_weak',loc('wiki_challenges_genes_weak'));
         }
     }
     
@@ -390,10 +420,101 @@ export function challengesPage(content){
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_banana',loc('wiki_challenges_scenarios_banana'));
         }
+
+        {   // True Path
+            let truth = infoBoxBuilder(scenarios,{ name: 'scenarios_truepath', template: 'challenges', paragraphs: 5, break: [5], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_truepath`),loc(`wiki_challenges_scenario`)],
+                    2: [loc(`tech_era_deep_space`)],
+                    3: [loc(`tech_era_interstellar`),loc(`tech_era_solar`)]
+                },
+                data_link: {
+                    2: ['wiki.html#deep_space-tech'],
+                    3: ['wiki.html#interstellar-tech','wiki.html#solar-tp_tech']
+                }
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_genes', template: 'challenges', paragraphs: 1, h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_plasmid`),loc(`evo_challenge_crispr`),loc(`evo_challenge_badgenes`),loc(`evo_challenge_nerfed`)],
+                },
+                data_link: {
+                    1: ['wiki.html#challenges-gameplay-genes_plasmid','wiki.html#challenges-gameplay-genes_crispr','wiki.html#challenges-gameplay-genes_bad','wiki.html#challenges-gameplay-genes_weak'],
+                }
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_rival', template: 'challenges', paragraphs: 5, break: [2,3,5], h_level: 2 });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_syndicate', template: 'challenges', paragraphs: 2, h_level: 2 });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_costs', template: 'challenges', paragraphs: 4, break: [2,3,4], h_level: 2,
+                para_data: {
+                    2: ['3x'],
+                    3: ['2x'],
+                }
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_market', template: 'challenges', paragraphs: 1, h_level: 2,
+                para_data: {
+                    1: ['2x'],
+                } 
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_tax', template: 'challenges', paragraphs: 3, break: [2,4], h_level: 2,
+                para_data: {
+                    1: ['50%'],
+                    2: [loc('tech_merchandising'),loc('city_temple')],
+                } 
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_money', template: 'challenges', paragraphs: 2, break: [2], h_level: 2,
+                para_data: {
+                    1: [loc('city_bank'),'25%'],
+                    2: [loc('city_casino'),'50%']
+                } 
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_morale', template: 'challenges', paragraphs: 1, h_level: 2,
+                para_data: {
+                    1: ['25%'],
+                } 
+            });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_foreign', template: 'challenges', paragraphs: 1, h_level: 2 });
+
+            infoBoxBuilder(truth,{ name: 'scenarios_truepath_fuel', template: 'challenges', paragraphs: 1, h_level: 2,
+                para_data: {
+                    1: ['25%','150%'],
+                } 
+            });
+
+            addAchievements(truth,false,['pathfinder','ashanddust','exodus','obsolete'],{ ashanddust: true, exodus: true, obsolete: true });
+            //addAchievements(truth,true,[]);
+            addRequirements(truth,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_ascension`),
+                            color: global.stats.achieve['ascended'] ? true : false,
+                            link: 'wiki.html#resets-prestige-ascension'
+                        },
+                        {
+                            text: loc(`wiki_resets_infusion`),
+                            color: global.stats.achieve['corrupted'] ? true : false,
+                            link: 'wiki.html#resets-prestige-infusion'
+                        }
+                    ]
+                    
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_truepath',loc('wiki_challenges_scenarios_truepath'));
+        }
     }
 }
 
-function addAchievements(content,feat,achievements){
+function addAchievements(content,feat,achievements,nolink){
+    nolink = nolink || {};
     let achieves = $(`
         <div class="reqs">
             <span class="has-text-caution">${loc('wiki_challenges_' + (feat ? 'feats' : 'achievements'))}</span>
@@ -402,7 +523,7 @@ function addAchievements(content,feat,achievements){
     content.append(achieves);
     let comma = false;
     achievements.forEach(function (achieve){
-        let text = feat ? loc(`feat_${achieve}_name`) : `<a href="wiki.html#perks-prestige-${achieve}" target="_blank" class="has-text-warning">${loc(`achieve_${achieve}_name`)}</a>`;
+        let text = feat ? loc(`feat_${achieve}_name`) : (nolink[achieve] ? loc(`achieve_${achieve}_name`) : `<a href="wiki.html#perks-prestige-${achieve}" target="_blank" class="has-text-warning">${loc(`achieve_${achieve}_name`)}</a>`);
         achieves.append(`${comma ? ', ' : ''}<span class="has-text-warning">${text}</span>`);
         comma = true; 
     });

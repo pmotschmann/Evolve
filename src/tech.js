@@ -10541,6 +10541,7 @@ const techs = {
         era: 'solar',
         path: ['truepath'],
         reqs: { titan_ai_core: 3, corrupted_ai: 2 },
+        wiki: false,
         grant: ['corrupted_ai',3],
         cost: {
             Knowledge(){ return 5000000; }

@@ -160,4 +160,26 @@ export function resetsPage(content){
     section = createCalcSection(section,'descend','gain');
     prestigeCalc(section,'artifact',false,'descend');
     sideMenu('add',`resets-prestige`,'infusion',loc('wiki_resets_infusion'));
+
+    section = infoBoxBuilder(mainContent,{ name: 'ai', template: 'resets', paragraphs: 8, break: [3,6,7,8], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            3: [loc('space_ai_core'),loc('wiki_resets_ai_drift'),'100%'],
+            4: [loc('tech_protocol66')],
+            5: [loc('space_ai_colonist_title'),loc('space_decoder_title'),loc('space_shock_trooper_title'),loc('space_tank_title')],
+            6: [loc('wiki_resets_ai'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_ai_core')],
+            7: [loc('genelab_genus_synthetic')],
+            8: [loc('wiki_resets_ai')],
+        },
+        data_color: {
+            6: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#space-tp_structures-ai_core'],
+            4: ['wiki.html#solar-tp_tech-protocol66'],
+            5: ['#space-tp_structures-ai_colonist','#space-tp_structures-decoder','#space-tp_structures-shock_trooper','#space-tp_structures-tank'],
+        }
+    });
+    sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
 }
