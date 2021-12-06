@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, cleanTechPopOver, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -8688,7 +8688,20 @@ function longLoop(){
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 let eScan = 0;
                 global.space.shipyard.ships.forEach(function(ship){
-                    if (ship.transit > 0 && ship.fueled){ ship.transit--; }
+                    if (ship.transit > 0 && ship.fueled){
+                        ship.transit--;
+                        let dxy = genXYcoord(ship.location);
+                        let trip = 1 - (ship.transit / ship.dist);
+                        let mx = Math.abs(ship.origin.x - dxy.x) * trip;
+                        let my = Math.abs(ship.origin.y - dxy.y) * trip;
+                        if (ship.origin.x <= dxy.x){ ship.xy.x = ship.origin.x + mx; } else { ship.xy.x = ship.origin.x - mx; }
+                        if (ship.origin.y <= dxy.y){ ship.xy.y = ship.origin.y + my; } else { ship.xy.y = ship.origin.y - my; }
+                    }
+                    if (ship.transit === 0){
+                        ship.xy = genXYcoord(ship.location);
+                        ship.origin = ship.xy;
+                        ship.dist = 0;
+                    }
                     if (ship.damage > 0 && p_on['shipyard']){
                         ship.damage--;
                     }

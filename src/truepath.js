@@ -1443,7 +1443,10 @@ export function drawShipYard(){
                         if (payCosts(false, costs)){
                             let ship = deepClone(global.space.shipyard.blueprint);
                             ship['location'] = 'spc_dwarf';
+                            ship['origin'] = 'spc_dwarf';
+                            ship['xy'] = genXYcoord('spc_dwarf');
                             ship['transit'] = 0;
+                            ship['dist'] = 0;
                             ship['damage'] = 0;
                             ship['fueled'] = false;
 
@@ -1982,12 +1985,17 @@ function drawShips(){
     const spaceRegions = spaceTech();
     for (let i=0; i<global.space.shipyard.ships.length; i++){
         let ship = global.space.shipyard.ships[i];
+        if (!ship['xy']){ ship['xy'] = genXYcoord(ship.location); }
+        if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
+        if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
         
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
-            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
-                let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-                values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+            if (ship.location !== region){
+                if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+                    let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+                    values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+                }
             }
         });
 
@@ -2054,14 +2062,18 @@ function drawShips(){
                     }
                 },
                 setLoc(l,id){
-                    let distance = transferWindow(global.space.shipyard.ships[id].location,l);
-                    let crew = shipCrewSize(global.space.shipyard.ships[id]);
-                    if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
-                        let speed = shipSpeed(global.space.shipyard.ships[id]);
-                        global.space.shipyard.ships[id].location = l;
-                        global.space.shipyard.ships[id].transit = Math.round(distance / speed);
-                        global.civic.garrison.crew += crew;
-                        drawShips();
+                    if (l !== global.space.shipyard.ships[id].location){
+                        let distance = transferWindow(global.space.shipyard.ships[id].xy,genXYcoord(l));
+                        let crew = shipCrewSize(global.space.shipyard.ships[id]);
+                        if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                            let speed = shipSpeed(global.space.shipyard.ships[id]);
+                            global.space.shipyard.ships[id].location = l;
+                            global.space.shipyard.ships[id].transit = Math.round(distance / speed);
+                            global.space.shipyard.ships[id].dist = Math.round(distance / speed);
+                            global.space.shipyard.ships[id].origin = ship.xy;
+                            global.civic.garrison.crew += crew;
+                            drawShips();
+                        }
                     }
                 },
                 crewText(id){
@@ -2115,13 +2127,15 @@ function drawShips(){
 
         Object.keys(spaceRegions).forEach(function(region){
             if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
-                popover(`ship${i}loc${region}`, function(){
-                    return Math.round(transferWindow(ship.location,region) / shipSpeed(ship));
-                },
-                {
-                    elm: `#ship${i}loc .${region}`,
-                    placement: 'left'
-                });
+                if (ship.location !== region){
+                    popover(`ship${i}loc${region}`, function(){
+                        return loc(`transit_time`,[Math.round(transferWindow(ship.xy,genXYcoord(region)) / shipSpeed(ship))]);
+                    },
+                    {
+                        elm: `#ship${i}loc .${region}`,
+                        placement: 'left'
+                    });
+                }
             }
         });
     }
@@ -2341,14 +2355,14 @@ export function setOrbits(){
     global.space.position.spc_titan = global.space.position.spc_enceladus;
 }
 
-function transferWindow(from,to){
-    let x1 = +(Math.cos(global.space.position[from] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[from].dist;
-    let y1 = +(Math.sin(global.space.position[from] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[from].dist;
+export function genXYcoord(planet){
+    let cx = +(Math.cos(global.space.position[planet] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[planet].dist;
+    let cy = +(Math.sin(global.space.position[planet] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[planet].dist;
+    return {x: cx, y: cy};
+}
 
-    let x2 = +(Math.cos(global.space.position[to] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[to].dist;
-    let y2 = +(Math.sin(global.space.position[to] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[to].dist;
-
-    return Math.ceil(Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2)) * 225);
+function transferWindow(p1,p2){
+    return Math.ceil(Math.sqrt(((p2.x - p1.x) ** 2) + ((p2.y - p1.y) ** 2)) * 225);
 }
 
 export function storehouseMultiplier(heavy){
