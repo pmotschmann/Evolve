@@ -5478,6 +5478,7 @@ function space(zone){
 
             if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
                 $(`#${region}`).append(`<div id="${region}synd" v-show="${region}" class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}')"></span></div>`);
+                $(`#${region}`).append(`<div id="${region}scan" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scan_effectiveness')} <span class="has-text-warning" v-html="scan('${region}')"></span></div>`);
                 vBind({
                     el: `#${region}synd`,
                     data: global.space.syndicate,
@@ -5490,6 +5491,20 @@ function space(zone){
                                 }
                             }
                             return '???';
+                        }
+                    }
+                });
+
+                vBind({
+                    el: `#${region}scan`,
+                    data: global.space.syndicate,
+                    methods: {
+                        scan(r){
+                            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                                let synd = syndicate(r,true);
+                                return synd.s + '%';
+                            }
+                            return loc(`galaxy_piracy_none`);
                         }
                     }
                 });
