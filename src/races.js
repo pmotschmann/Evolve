@@ -4034,6 +4034,23 @@ export function cleanRemoveTrait(trait){
             clearElement($('#sshifter'));
             shapeShift();
             break;
+        case 'imitation':
+            if (global.race['iTraits']){
+                Object.keys(global.race.iTraits).forEach(function (t){
+                    if (t !== 'imitation'){
+                        if (global.race.iTraits[t] === 0){
+                            delete global.race[t];
+                            cleanRemoveTrait(t);
+                            global.race['iTraits'];
+                        }
+                        else {
+                            global.race[t] = global.race.iTraits[t];
+                            delete global.race['iTraits'];
+                        }
+                    }
+                });
+            }
+            break;
         case 'evil':
             setResourceName('Lumber');
             setResourceName('Furs');
@@ -4041,6 +4058,54 @@ export function cleanRemoveTrait(trait){
             break;
         default:
             break;
+    }
+}
+
+export function setImitation(mod){
+    if (global.race['imitation'] && global.race['srace']){
+        if (!global.race['iTraits']){
+            global.race['iTraits'] = {};
+        }
+        Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
+            if (!global.race[trait]){
+                global.race.iTraits[trait] = 0;
+                setTraitRank(trait,{ set: traits[trait].val < 0 ? 2 : 0.5 });
+                if (mod){ cleanAddTrait(trait); }
+            }
+        });
+        if (global.race['srace'] === 'custom'){
+            let list = ['evil','evil'];
+            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
+                if (traits[trait].val > traits[list[0]].val){
+                    list[0] = trait;
+                }
+                else if (traits[trait].val < traits[list[1]].val){
+                    list[1] = trait;
+                }
+            });
+            if (!['evil','imitation'].includes(list[0])){
+                let set = global.race[list[0]] ? false : true;
+                global.race.iTraits[list[0]] = global.race[list[0]] ? global.race[list[0]] : 0;
+                setTraitRank(list[0],{ set: traits[list[0]].val < 0 ? 2 : 0.5 });
+                if (mod && set){ cleanAddTrait(list[0]); }
+            }
+            if (!['evil','imitation'].includes(list[1])){
+                let set = global.race[list[1]] ? false : true;
+                global.race.iTraits[list[1]] = global.race[list[1]] ? global.race[list[1]] : 0;
+                setTraitRank(list[1],{ set: traits[list[1]].val < 0 ? 2 : 0.5 });
+                if (mod && set){ cleanAddTrait(list[1]); }
+            }
+        }
+        else {
+            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
+                if (!['evil','imitation'].includes(trait)){
+                    let set = global.race[trait] ? false : true;
+                    global.race.iTraits[trait] = global.race[trait] ? global.race[trait] : 0;
+                    setTraitRank(trait,{ set: traits[trait].val < 0 ? 2 : 0.5 });
+                    if (mod && set){ cleanAddTrait(trait); }
+                }
+            });
+        }
     }
 }
 
@@ -4111,6 +4176,7 @@ export function shapeShift(genus,setup){
 }
 
 export function setTraitRank(trait,opts){
+    opts = opts || {};
     if (global.race[trait]){
         switch (global.race[trait]){
             case 0.5:

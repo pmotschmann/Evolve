@@ -2,7 +2,7 @@ import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximat
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, shapeShift } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs } from './jobs.js';
 import { loadIndustry } from './industry.js';
@@ -7007,31 +7007,7 @@ function sentience(){
     });
 
     if (global.race['imitation'] && global.race['srace']){
-        Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
-            global.race[trait] = 0.5;
-        });
-        if (global.race['srace'] === 'custom'){
-            let list = ['evil','evil'];
-            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                if (traits[trait].val > traits[list[0]].val){
-                    list[0] = trait;
-                }
-                else if (traits[trait].val < traits[list[1]].val){
-                    list[1] = trait;
-                }
-            });
-            if (list[0] !== 'evil'){
-                setTraitRank(list[0],{ set: 0.5 });
-            }
-            if (list[1] !== 'evil'){
-                setTraitRank(list[1],{ set: 0.5 });
-            }
-        }
-        else {
-            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                setTraitRank(trait,{ set: 0.5 });
-            });
-        }
+        setImitation(false);
     }
 
     const date = new Date();
@@ -7893,6 +7869,9 @@ function fanaticTrait(trait){
     }
     else {
         global.race[trait] = 1;
+        if (trait === 'imitation'){
+            setImitation(true);
+        }
         cleanAddTrait(trait);
     }
 }

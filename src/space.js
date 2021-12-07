@@ -6301,7 +6301,7 @@ export function ascendLab(wiki){
                 }
             },
             allowed(t){
-                if (genome.genus !== 'synthetic' && ['deconstructor'].includes(t)){
+                if (genome.genus !== 'synthetic' && ['deconstructor','imitation'].includes(t)){
                     if (genome.traitlist.includes(t)){
                         genome.traitlist.splice(genome.traitlist.indexOf(t), 1);
                     }

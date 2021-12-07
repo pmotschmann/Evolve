@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive } from './governor.js';
@@ -1816,10 +1816,11 @@ function genetics(){
         let remove_list = [];
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
-                if (global.race['ss_traits'] && global.race.ss_traits.includes(trait)){
-                    return;
+                let readOnly = false;
+                if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
+                    readOnly = true;
                 }
-                if ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2)){
+                if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
                     remove_list.push(trait);
@@ -1830,7 +1831,7 @@ function genetics(){
                     breakdown.append(major);
                 }
                 else {
-                    breakdown.append(`<div class="trait has-text-warning">${traits[trait].desc}</div>`);
+                    breakdown.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traits[trait].desc}</div>`);
                 }
             }
         });
@@ -2045,6 +2046,9 @@ function genetics(){
                         }
                         else {
                             global.race['modified']++;
+                        }
+                        if (t === 'imitation'){
+                            setImitation(true);
                         }
                         cleanAddTrait(t);
                         genetics();
