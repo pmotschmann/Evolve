@@ -1443,8 +1443,8 @@ export function drawShipYard(){
                         if (payCosts(false, costs)){
                             let ship = deepClone(global.space.shipyard.blueprint);
                             ship['location'] = 'spc_dwarf';
-                            ship['origin'] = 'spc_dwarf';
                             ship['xy'] = genXYcoord('spc_dwarf');
+                            ship['origin'] = deepClone(ship['xy']);
                             ship['transit'] = 0;
                             ship['dist'] = 0;
                             ship['damage'] = 0;
@@ -2070,7 +2070,7 @@ function drawShips(){
                             global.space.shipyard.ships[id].location = l;
                             global.space.shipyard.ships[id].transit = Math.round(distance / speed);
                             global.space.shipyard.ships[id].dist = Math.round(distance / speed);
-                            global.space.shipyard.ships[id].origin = ship.xy;
+                            global.space.shipyard.ships[id].origin = deepClone(ship.xy);
                             global.civic.garrison.crew += crew;
                             drawShips();
                         }
