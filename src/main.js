@@ -8690,12 +8690,11 @@ function longLoop(){
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0 && ship.fueled){
                         ship.transit--;
-                        let dxy = genXYcoord(ship.location);
                         let trip = 1 - (ship.transit / ship.dist);
-                        let mx = Math.abs(ship.origin.x - dxy.x) * trip;
-                        let my = Math.abs(ship.origin.y - dxy.y) * trip;
-                        if (ship.origin.x <= dxy.x){ ship.xy.x = ship.origin.x + mx; } else { ship.xy.x = ship.origin.x - mx; }
-                        if (ship.origin.y <= dxy.y){ ship.xy.y = ship.origin.y + my; } else { ship.xy.y = ship.origin.y - my; }
+                        let mx = Math.abs(ship.origin.x - ship.destination.x) * trip;
+                        let my = Math.abs(ship.origin.y - ship.destination.y) * trip;
+                        if (ship.origin.x <= ship.destination.x){ ship.xy.x = ship.origin.x + mx; } else { ship.xy.x = ship.origin.x - mx; }
+                        if (ship.origin.y <= ship.destination.y){ ship.xy.y = ship.origin.y + my; } else { ship.xy.y = ship.origin.y - my; }
                     }
                     if (ship.transit === 0){
                         ship.xy = genXYcoord(ship.location);

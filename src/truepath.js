@@ -1449,6 +1449,7 @@ export function drawShipYard(){
                             ship['location'] = 'spc_dwarf';
                             ship['xy'] = genXYcoord('spc_dwarf');
                             ship['origin'] = deepClone(ship['xy']);
+                            ship['destination'] = deepClone(ship['xy']);
                             ship['transit'] = 0;
                             ship['dist'] = 0;
                             ship['damage'] = 0;
@@ -1468,6 +1469,7 @@ export function drawShipYard(){
 
                             global.space.shipyard.ships.push(ship);
                             drawShips();
+                            updateCosts();
                             global.space.shipyard.blueprint.name = getRandomShipName();
                         }
                     }
@@ -2005,6 +2007,7 @@ function drawShips(){
         if (!ship['xy']){ ship['xy'] = genXYcoord(ship.location); }
         if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
         if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
+        if (!ship.hasOwnProperty('destination')){ ship['destination'] = genXYcoord(ship.location); }
         
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
@@ -2018,7 +2021,7 @@ function drawShips(){
 
         let location = typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
-        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list">
+        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable>
             <button class="button is-info" slot="trigger">
                 <span>${location}</span>
             </button>${values}
@@ -2076,18 +2079,21 @@ function drawShips(){
                     if (global.space.shipyard.ships[id]){
                         global.space.shipyard.ships.splice(id,1);
                         drawShips();
+                        updateCosts();
                     }
                 },
                 setLoc(l,id){
                     if (l !== global.space.shipyard.ships[id].location){
-                        let distance = transferWindow(global.space.shipyard.ships[id].xy,genXYcoord(l));
                         let crew = shipCrewSize(global.space.shipyard.ships[id]);
                         if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                            let dest = calcLandingPoint(ship, l);
+                            let distance = transferWindow(global.space.shipyard.ships[id].xy,dest);
                             let speed = shipSpeed(global.space.shipyard.ships[id]);
                             global.space.shipyard.ships[id].location = l;
                             global.space.shipyard.ships[id].transit = Math.round(distance / speed);
                             global.space.shipyard.ships[id].dist = Math.round(distance / speed);
                             global.space.shipyard.ships[id].origin = deepClone(ship.xy);
+                            global.space.shipyard.ships[id].destination = {x: dest.x, y: dest.y};
                             global.civic.garrison.crew += crew;
                             drawShips();
                         }
@@ -2146,7 +2152,7 @@ function drawShips(){
             if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
                 if (ship.location !== region){
                     popover(`ship${i}loc${region}`, function(){
-                        return loc(`transit_time`,[Math.round(transferWindow(ship.xy,genXYcoord(region)) / shipSpeed(ship))]);
+                        return loc(`transit_time`,[Math.round(transferWindow(ship.xy,calcLandingPoint(ship, region)) / shipSpeed(ship))]);
                     },
                     {
                         elm: `#ship${i}loc .${region}`,
@@ -2158,6 +2164,50 @@ function drawShips(){
     }
 
     dragShipList();
+}
+
+function calcLandingPoint(ship, planet) {
+    let ship_sun_dist = Math.sqrt((ship.xy.x ** 2) + (ship.xy.y ** 2));
+    let orbit_cross1_dist = Math.abs(ship_sun_dist - spacePlanetStats[planet].dist);
+    let orbit_cross2_dist = Math.abs(ship_sun_dist + spacePlanetStats[planet].dist);
+    let orbit_cross1_days = Math.min(orbit_cross1_dist, orbit_cross2_dist) / shipSpeed(ship) * 225;
+    let orbit_cross2_days = Math.max(orbit_cross1_dist, orbit_cross2_dist) / shipSpeed(ship) * 225;
+    let ship_degree_per_day = 360 / (orbit_cross2_days - orbit_cross1_days);
+    let planet_orbit = spacePlanetStats[planet].orbit === -1
+      ? global.city.calendar.orbit
+      : spacePlanetStats[planet].orbit;
+    let planet_degree_per_day = 360 / planet_orbit;
+    let planet_cross_degree = (global.space.position[planet] + (orbit_cross1_days * planet_degree_per_day)) % 360;
+    let touchpoint_degree = (Math.atan2(ship.xy.y, ship.xy.x) * (180 / Math.PI) + 360) % 360;
+    let ship_planet_diff = Math.abs(planet_cross_degree - touchpoint_degree);
+    if (ship_planet_diff > 180) {
+        ship_planet_diff = 360 - ship_planet_diff;
+    }
+    let planet_turn_diff = touchpoint_degree + 180 - planet_cross_degree;
+    let turn_days = planet_turn_diff / planet_degree_per_day;
+    let planet_move_degree = (planet_cross_degree + 180) % 360;
+    let planet_approaching = planet_move_degree > planet_cross_degree
+      ? (touchpoint_degree > planet_cross_degree && touchpoint_degree < planet_move_degree)
+      : (touchpoint_degree > planet_cross_degree || touchpoint_degree < planet_move_degree);
+    let runaway_speed = ship_degree_per_day - planet_degree_per_day;
+    let approach_speed = ship_degree_per_day + planet_degree_per_day;
+
+    let days_to_touch = 0;
+    if (planet_approaching) {
+        days_to_touch = ship_planet_diff / approach_speed;
+    }
+    else if (planet_degree_per_day > ship_degree_per_day || (ship_planet_diff / runaway_speed) > turn_days) {
+        days_to_touch = turn_days + 180 / approach_speed;
+    }
+    else {
+        days_to_touch = ship_planet_diff / runaway_speed;
+    }
+
+    let transit_length = Math.round(orbit_cross1_days + days_to_touch);
+    let planet_degree = (global.space.position[planet] + planet_degree_per_day * transit_length) % 360;
+    let planet_x = Math.cos(planet_degree * (Math.PI / 180)) * spacePlanetStats[planet].dist;
+    let planet_y = Math.sin(planet_degree * (Math.PI / 180)) * spacePlanetStats[planet].dist;
+    return {x: planet_x, y: planet_y};
 }
 
 export function syndicate(region,extra){
@@ -2344,7 +2394,7 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_moon: { dist: 1, orbit: -1, moon: true },
+    spc_moon: { dist: 1, orbit: -1 },
     spc_red: { dist: 1.524, orbit: 687 },
     spc_hell: { dist: 0.4, orbit: 88 },
     spc_gas: { dist: 5.203, orbit: 4330 },
@@ -2434,7 +2484,7 @@ function drawMap(scale, translatePos) {
     ctx.translate(translatePos.x, translatePos.y);
     ctx.scale(scale, scale);
 
-    // Draw orbits
+    // Calculate positions
     let planetLocation = {};
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         let posId = id === 'spc_home' ? 'spc_moon' : id;
@@ -2445,12 +2495,11 @@ function drawMap(scale, translatePos) {
         }
     }
 
-    // Orbits
+    // Draw orbits
     ctx.lineWidth = 1 / scale;
     ctx.strokeStyle = "#c0c0c0";
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         if (!planet.moon) {
-            // Oribit
             ctx.beginPath();
             ctx.arc(0, 0, planet.dist, 0, Math.PI * 2, true);
             ctx.stroke();
@@ -2474,11 +2523,17 @@ function drawMap(scale, translatePos) {
 
     // Ships
     ctx.fillStyle = "#0000ff";
+    ctx.strokeStyle = "#0000ff";
     for (let ship of global.space.shipyard.ships) {
         if (ship.transit > 0) {
             ctx.beginPath();
             ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
             ctx.fill();
+            ctx.beginPath();
+            ctx.setLineDash([0.1, 0.4]);
+            ctx.moveTo(ship.xy.x, ship.xy.y);
+            ctx.lineTo(ship.destination.x, ship.destination.y);
+            ctx.stroke();
         }
     }
 
