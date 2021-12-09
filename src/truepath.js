@@ -4,7 +4,7 @@ import { races, genusVars } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { production } from './prod.js';
-import { payCosts, drawTech, bank_vault } from './actions.js';
+import { actions, payCosts, drawTech, bank_vault } from './actions.js';
 import { fuel_adjust, spaceTech, zigguratBonus, renderSpace } from './space.js';
 import { loc } from './locale.js';
 
@@ -1386,9 +1386,13 @@ export function drawShipYard(){
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" v-on:input="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
         
         plans.append(assemble);
-        assemble.append(`<div><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span></div>`);
+        assemble.append(`<div><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
         updateCosts();
+
+        let modal = {
+            template: '<div id="modalBox" class="modalBox"></div>'
+        };
 
         vBind({
             el: '#shipPlans',
@@ -1467,6 +1471,19 @@ export function drawShipYard(){
                             global.space.shipyard.blueprint.name = getRandomShipName();
                         }
                     }
+                },
+                trigModal(){
+                    this.$buefy.modal.open({
+                        parent: this,
+                        component: modal
+                    });
+
+                    let checkExist = setInterval(function(){
+                        if ($('#modalBox').length > 0) {
+                            clearInterval(checkExist);
+                            solarModal();
+                        }
+                    }, 50);
                 },
                 redraw(){
                     drawShips();
@@ -2327,15 +2344,15 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_moon: { dist: 1, orbit: -1, },
+    spc_moon: { dist: 1, orbit: -1, moon: true },
     spc_red: { dist: 1.524, orbit: 687 },
     spc_hell: { dist: 0.4, orbit: 88 },
     spc_gas: { dist: 5.203, orbit: 4330 },
-    spc_gas_moon: { dist: 5.204, orbit: 4330 },
+    spc_gas_moon: { dist: 5.204, orbit: 4330, moon: true  },
     spc_belt: { dist: 2.7, orbit: 1642 },
     spc_dwarf: { dist: 2.77, orbit: 1682 },
     spc_titan: { dist: 9.539, orbit: 10751 },
-    spc_enceladus: { dist: 9.540, orbit: 10751 },
+    spc_enceladus: { dist: 9.540, orbit: 10751, moon: true  },
     spc_triton: { dist: 30.1, orbit: 60152 },
     spc_kuiper: { dist: 39.5, orbit: 90498 },
     spc_eris: { dist: 68, orbit: 204060 },
@@ -2403,4 +2420,134 @@ export function calcAIDrift(){
         drift = 100;
     }
     return drift;
+}
+
+function drawMap(scale, translatePos) {
+    let canvas = document.getElementById("mapCanvas");
+    let ctx = canvas.getContext("2d");
+    canvas.width = canvas.getBoundingClientRect().width;
+    canvas.height = canvas.getBoundingClientRect().height;
+
+    ctx.save();
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(translatePos.x, translatePos.y);
+    ctx.scale(scale, scale);
+
+    // Draw orbits
+    let planetLocation = {};
+    for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        let posId = id === 'spc_home' ? 'spc_moon' : id;
+        let degree = global.space.position[posId] * (Math.PI / 180);
+        planetLocation[id] = {
+            x: Math.cos(degree) * planet.dist,
+            y: Math.sin(degree) * planet.dist
+        }
+    }
+
+    // Orbits
+    ctx.lineWidth = 1 / scale;
+    ctx.strokeStyle = "#c0c0c0";
+    for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        if (!planet.moon) {
+            // Oribit
+            ctx.beginPath();
+            ctx.arc(0, 0, planet.dist, 0, Math.PI * 2, true);
+            ctx.stroke();
+        }
+    }
+
+    // Planets and moons
+    for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        let orbit = planet.orbit === -1 ? global.city.calendar.orbit : planet.orbit;
+        let shift = syndicate(id);
+        let color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
+        ctx.fillStyle = "#" + color;
+        ctx.beginPath();
+        if (planet.moon) {
+            ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+        } else {
+            ctx.arc(planetLocation[id].x, planetLocation[id].y, Math.log2(orbit) / 50, 0, Math.PI * 2, true);
+        }
+        ctx.fill();
+    }
+
+    // Ships
+    ctx.fillStyle = "#0000ff";
+    for (let ship of global.space.shipyard.ships) {
+        if (ship.transit > 0) {
+            ctx.beginPath();
+            ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
+            ctx.fill();
+        }
+    }
+
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+
+    ctx.fillStyle = "#009aff";
+    ctx.font = `${20 / scale}px serif`;
+    // Ship names
+    for (let ship of global.space.shipyard.ships) {
+        if (ship.transit > 0) {
+            ctx.fillText(ship.name, ship.xy.x + 0.15, ship.xy.y - 0.15);
+        }
+    }
+
+    ctx.fillStyle = "#ffa500";
+    ctx.font = `${25 / scale}px serif`;
+    // Planet names
+    for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        let nameRef = actions.space[id].info.name;
+        let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
+        if (planet.moon) {
+            ctx.fillText(nameText, planetLocation[id].x + 0.3, planetLocation[id].y + 0.1);
+        } else {
+            ctx.fillText(nameText, planetLocation[id].x + 0.2, planetLocation[id].y - 0.2);
+        }
+    }
+    ctx.restore();
+}
+
+function buildSolarMap(parentNode) {
+    let currentNode = $(`<div style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
+    let scale = 20.0;
+    let translatePos = {};
+    let startDragOffset = {};
+    let mouseDown = false;
+
+    currentNode.append(
+      $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
+        .on("mouseup mouseover mouseout", () => mouseDown = false)
+        .on("mousedown", (e) => {
+            mouseDown = true;
+            startDragOffset.x = e.clientX - translatePos.x;
+            startDragOffset.y = e.clientY - translatePos.y;
+        })
+        .on("mousemove", (e) => {
+            if (mouseDown) {
+                translatePos.x = e.clientX - startDragOffset.x;
+                translatePos.y = e.clientY - startDragOffset.y;
+                drawMap(scale, translatePos);
+            }
+        }),
+      $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; top: 32px; right: 2px;">`)
+        .on("click", () => drawMap(scale /= 0.8, translatePos)),
+      $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; top: 64px; right: 2px;">`)
+        .on("click", () => drawMap(scale *= 0.8, translatePos))
+    );
+
+    //document.getElementById("scriptModal").style.display = "initial";
+    let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
+    translatePos.x = bounds.width / 2;
+    translatePos.y = bounds.height / 2;
+
+    drawMap(scale, translatePos);
+}
+
+function solarModal(){
+    $('#modalBox').append($('<p id="modalBoxTitle" class="has-text-warning modalTitle">Solar System</p>'));
+    buildSolarMap($(`#modalBox`));
 }
