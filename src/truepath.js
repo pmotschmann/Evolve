@@ -2615,12 +2615,21 @@ function buildSolarMap(parentNode) {
         .on("click", () => drawMap(scale *= 0.8, translatePos))
     );
 
-    //document.getElementById("scriptModal").style.display = "initial";
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
     translatePos.x = bounds.width / 2;
     translatePos.y = bounds.height / 2;
 
     drawMap(scale, translatePos);
+
+    $('#mapCanvas').bind('mousewheel', function(e){
+        if(e.originalEvent.wheelDelta < 0) {
+            drawMap(scale *= 0.8, translatePos);
+        }
+        else {
+            drawMap(scale /= 0.8, translatePos);
+        }
+        return false;
+    });
 }
 
 function solarModal(){
