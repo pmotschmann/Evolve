@@ -2394,19 +2394,22 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_moon: { dist: 1, orbit: -1 },
-    spc_red: { dist: 1.524, orbit: 687 },
-    spc_hell: { dist: 0.4, orbit: 88 },
-    spc_gas: { dist: 5.203, orbit: 4330 },
-    spc_gas_moon: { dist: 5.204, orbit: 4330, moon: true  },
-    spc_belt: { dist: 2.7, orbit: 1642 },
-    spc_dwarf: { dist: 2.77, orbit: 1682 },
-    spc_titan: { dist: 9.539, orbit: 10751 },
-    spc_enceladus: { dist: 9.540, orbit: 10751, moon: true  },
-    spc_triton: { dist: 30.1, orbit: 60152 },
-    spc_kuiper: { dist: 39.5, orbit: 90498 },
-    spc_eris: { dist: 68, orbit: 204060 },
-    //tauceti: { dist: 752568.8, orbit: -2 },
+    spc_home: { dist: 1, orbit: -1, dest: false },
+    spc_moon: { dist: 1.01, orbit: -1, dest: true, moon: true },
+    spc_red: { dist: 1.524, orbit: 687, dest: true, },
+    spc_hell: { dist: 0.4, orbit: 88, dest: true, },
+    spc_gas: { dist: 5.203, orbit: 4330, dest: true, },
+    spc_gas_moon: { dist: 5.204, orbit: 4330, dest: true, moon: true },
+    spc_belt: { dist: 2.7, orbit: 1642, dest: true, },
+    spc_dwarf: { dist: 2.77, orbit: 1682, dest: true, },
+    spc_saturn: { dist: 9.539, orbit: 10751, dest: false  },
+    spc_titan: { dist: 9.536, orbit: 10751, dest: true, moon: true },
+    spc_enceladus: { dist: 9.542, orbit: 10751, dest: true, moon: true },
+    spc_neptune: { dist: 30.08, orbit: 60152, dest: false  },
+    spc_triton: { dist: 30.1, orbit: 60152, dest: true, moon: true },
+    spc_kuiper: { dist: 39.5, orbit: 90498, dest: true, },
+    spc_eris: { dist: 68, orbit: 204060, dest: true, },
+    //tauceti: { dist: 752568.8, orbit: -2, dest: true, },
 };
 
 export function setOrbits(){
@@ -2418,8 +2421,11 @@ export function setOrbits(){
             global.space.position[o] = Math.rand(0,360);
         }
     });
+    global.space.position.spc_home = global.space.position.spc_moon;
     global.space.position.spc_gas_moon = global.space.position.spc_gas;
     global.space.position.spc_titan = global.space.position.spc_enceladus;
+    global.space.position.spc_saturn = global.space.position.spc_titan;
+    global.space.position.spc_neptune = global.space.position.spc_triton;
 }
 
 export function genXYcoord(planet){
@@ -2511,10 +2517,18 @@ function drawMap(scale, translatePos) {
         let orbit = planet.orbit === -1 ? global.city.calendar.orbit : planet.orbit;
         let shift = syndicate(id);
         let color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
+        if (!planet.dest){
+            color = '558888';
+        }
         ctx.fillStyle = "#" + color;
         ctx.beginPath();
         if (planet.moon) {
-            ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+            if (id === 'spc_titan'){
+                ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+            }
+            else {
+                ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+            }
         } else {
             ctx.arc(planetLocation[id].x, planetLocation[id].y, Math.log2(orbit) / 50, 0, Math.PI * 2, true);
         }
@@ -2555,12 +2569,19 @@ function drawMap(scale, translatePos) {
     ctx.font = `${25 / scale}px serif`;
     // Planet names
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        let nameRef = actions.space[id].info.name;
-        let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
-        if (planet.moon) {
-            ctx.fillText(nameText, planetLocation[id].x + 0.3, planetLocation[id].y + 0.1);
-        } else {
-            ctx.fillText(nameText, planetLocation[id].x + 0.2, planetLocation[id].y - 0.2);
+        if (actions.space[id]){
+            let nameRef = actions.space[id].info.name;
+            let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
+            if (planet.moon) {
+                if (id === 'spc_titan'){
+                    ctx.fillText(nameText, planetLocation[id].x - 0.3, planetLocation[id].y - 0.3);
+                }
+                else {
+                    ctx.fillText(nameText, planetLocation[id].x + 0.25, planetLocation[id].y + 0.2);
+                }
+            } else {
+                ctx.fillText(nameText, planetLocation[id].x, planetLocation[id].y - 0.2);
+            }
         }
     }
     ctx.restore();
