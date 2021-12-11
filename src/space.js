@@ -489,6 +489,7 @@ const spaceProjects = {
                 return false;
             }
         },
+        assembly: buildTemplate(`assembly`,'space'),
         living_quarters: {
             id: 'space-living_quarters',
             title: loc('space_red_living_quarters_title'),
@@ -830,6 +831,7 @@ const spaceProjects = {
                 return false;
             }
         },
+        nanite_factory: buildTemplate(`nanite_factory`,'space'),
         biodome: {
             id: 'space-biodome',
             title(){

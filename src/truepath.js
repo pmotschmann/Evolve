@@ -2493,8 +2493,7 @@ function drawMap(scale, translatePos) {
     // Calculate positions
     let planetLocation = {};
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        let posId = id === 'spc_home' ? 'spc_moon' : id;
-        let degree = global.space.position[posId] * (Math.PI / 180);
+        let degree = global.space.position[id] * (Math.PI / 180);
         planetLocation[id] = {
             x: Math.cos(degree) * planet.dist,
             y: Math.sin(degree) * planet.dist

@@ -2899,35 +2899,7 @@ export const actions = {
                 return false;
             }
         },
-        assembly: {
-            id: 'city-assembly',
-            title: loc('city_assembly'),
-            desc(){ return loc('city_assembly_desc',[races[global.race.species].name]); },
-            category: 'military',
-            reqs: {},
-            trait: ['artifical'],
-            no_queue(){ return global.resource[global.race.species].max > global.resource[global.race.species].amount ? false : true; },
-            cost: {
-                Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
-                Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
-                Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
-                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, 500, 1.01) : 0) : 0; },
-            },
-            effect(){
-                let warn = '';
-                if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
-                    warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
-                }
-                return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
-            },
-            action(){
-                if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
-                    global['resource'][global.race.species].amount++;
-                    return true;
-                }
-                return false;
-            }
-        },
+        assembly: buildTemplate(`assembly`,'city'),
         garrison: {
             id: 'city-garrison',
             title: loc('city_garrison'),
@@ -3654,34 +3626,7 @@ export const actions = {
                 return false;
             }
         },
-        nanite_factory: {
-            id: 'city-nanite_factory',
-            title: loc('city_nanite_factory'),
-            desc: loc('city_nanite_factory'),
-            category: 'industrial',
-            reqs: {},
-            trait: ['deconstructor'],
-            cost: {
-                Money(offset){ return costMultiplier('nanite_factory', offset, 25000, dirt_adjust(1.25)); },
-                Copper(offset){ return costMultiplier('nanite_factory', offset, 1200, dirt_adjust(1.25)); },
-                Steel(offset){ return costMultiplier('nanite_factory', offset, 1000, dirt_adjust(1.25)); }
-            },
-            effect(){
-                let val = spatialReasoning(2500);
-                return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
-            },
-            special: true,
-            action(){
-                if (payCosts($(this)[0])){
-                    global.city.nanite_factory.count++;
-                    global.settings.showIndustry = true;
-                    defineIndustry();
-                    return true;
-                }
-                return false;
-            },
-            flair: loc(`city_nanite_factory_flair`)
-        },
+        nanite_factory: buildTemplate(`nanite_factory`,'city'),
         smelter: {
             id: 'city-smelter',
             title: loc('city_smelter'),
@@ -4976,6 +4921,88 @@ export function buildTemplate(key, region){
                 }
             };
         }
+        case 'assembly':
+        {
+            let id = region === 'space' ? 'space-assembly' : 'city-assembly';
+            let action = {
+                id: id,
+                title: loc('city_assembly'),
+                desc(){ return loc('city_assembly_desc',[races[global.race.species].name]); },
+                category: 'military',
+                reqs: {},
+                trait: ['artifical'],
+                no_queue(){ return global.resource[global.race.species].max > global.resource[global.race.species].amount ? false : true; },
+                cost: {
+                    Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
+                    Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                    Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
+                    Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, 500, 1.01) : 0) : 0; },
+                },
+                effect(){
+                    let warn = '';
+                    if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
+                        warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
+                    }
+                    return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
+                },
+                action(){
+                    if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
+                        global['resource'][global.race.species].amount++;
+                        return true;
+                    }
+                    return false;
+                }
+            };
+
+            if (region === 'space'){
+                action.trait.push('cataclysm');
+            }
+            else {
+                action['not_trait'] = ['cataclysm'];
+            }
+            return action;
+        }
+        case 'nanite_factory':
+        {
+            let id = region === 'space' ? 'space-nanite_factory' : 'city-nanite_factory';
+            let action = {
+                id: id,
+                title: loc('city_nanite_factory'),
+                desc: loc('city_nanite_factory'),
+                category: 'industrial',
+                reqs: {},
+                trait: ['deconstructor'],
+                region: 'city',
+                cost: {
+                    Money(offset){ return costMultiplier('nanite_factory', offset, 25000, dirt_adjust(1.25)); },
+                    Copper(offset){ return costMultiplier('nanite_factory', offset, 1200, dirt_adjust(1.25)); },
+                    Steel(offset){ return costMultiplier('nanite_factory', offset, 1000, dirt_adjust(1.25)); }
+                },
+                effect(){
+                    let val = spatialReasoning(2500);
+                    return `<div>${loc('city_nanite_factory_effect',[global.resource.Nanite.name])}</div><div>${loc('plus_max_resource',[val,global.resource.Nanite.name])}.</div>`;
+                },
+                special: true,
+                action(){
+                    if (payCosts($(this)[0])){
+                        global.city.nanite_factory.count++;
+                        global.settings.showIndustry = true;
+                        defineIndustry();
+                        return true;
+                    }
+                    return false;
+                },
+                flair: loc(`city_nanite_factory_flair`)
+            };
+
+            if (region === 'space'){
+                action.trait.push('cataclysm');
+            }
+            else {
+                action['not_trait'] = ['cataclysm'];
+            }
+            return action;
+        }
     }
 }
 
@@ -5618,6 +5645,9 @@ export function setAction(c_action,action,type,old){
     let tab = action;
     if (action === 'outerSol'){
         action = 'space';
+    }
+    if (c_action['region']){
+        action = c_action.region;
     }
     if (c_action['powered'] && !global[action][type]['on']){
         global[action][type]['on'] = 0;
