@@ -2259,6 +2259,7 @@ export function syndicate(region,extra){
         let piracy = global.space.syndicate[region];
         let patrol = 0;
         let sensor = 0;
+        let overkill = 0;
         if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
             global.space.shipyard.ships.forEach(function(ship){
                 if (ship.location === region && ship.transit === 0 && ship.fueled){
@@ -2285,6 +2286,9 @@ export function syndicate(region,extra){
             }
 
             patrol = Math.round(patrol * ((sensor + 25) / 125));
+            if (patrol > piracy){
+                overkill = patrol - piracy;
+            }
             piracy = piracy - patrol > 0 ? piracy - patrol : 0;
         }
 
@@ -2292,14 +2296,15 @@ export function syndicate(region,extra){
             return {
                 p: 1 - +(piracy / divisor).toFixed(4),
                 r: piracy,
-                s: sensor
+                s: sensor,
+                o: overkill,
             };
         }
         return 1 - +(piracy / divisor).toFixed(4);
     }
 
     if (extra){
-        return { p: 1, r: 0, s: 0 };
+        return { p: 1, r: 0, s: 0, o: 0 };
     }
     return 1;
 }
