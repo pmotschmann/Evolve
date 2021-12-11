@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.0`,
-        date: `12/??/2021`,
+        date: `12/12/2021`,
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
             `Using Fanaticism to gain an unempowered trait you already possess will now empower that trait.`,
@@ -14,7 +14,7 @@ const changeList = [
             `Cannibalize healing now applies a percent based bonus instead of being equivilent to 3 5% Hospitals.`,
             `GruvBox Dark is now the default theme.`,
             `Added Evolve Adept Perk.`,
-            `Themed several additional techs in magic universe for immersion.`,
+            `Themed several additional weapon techs in magic universe for immersion.`,
             `Smodering and Chilled effects now display as Smoldering or Chilled in production breakdowns instead of Hot/Cold.`,
             `Improved touch device support.`
         ]

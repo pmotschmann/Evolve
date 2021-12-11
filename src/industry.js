@@ -166,25 +166,39 @@ function loadSmelter(parent,bind){
     }
 
     let irid_smelt = global.tech['irid_smelting'] || (global.tech['m_smelting'] && global.tech.m_smelting >= 2) ? true : false;
-    if (global.resource.Iridium.display && irid_smelt){
+    if ((global.resource.Iridium.display && irid_smelt) || (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen'])){
         let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
-        let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
         parent.append(smelt);
-        smelt.append(ironSmelt);
+
+        smelt.append(`<div><span class="has-text-warning">${loc('modal_smelter_type')}:</span> <span :class="level()">{{s.count | son}}/{{ s.cap | on }}</span></div>`);
+
+        let smeltTypes = $(`<div class="fuels"></div>`);
+        smelt.append(smeltTypes);
+
+        let iron = $(`<span :aria-label="ironLabel() + ariaProd('Iron')" class="current iron">${global.resource.Iron.name} {{ s.Iron }}</span>`);
+        let ironSub = $(`<span role="button" class="sub" @click="subMetal('Iron')" aria-label="Smelt less iron"><span>&laquo;</span></span>`);
+        let ironAdd = $(`<span role="button" class="add" @click="addMetal('Iron')" aria-label="Smelt more iron"><span>&raquo;</span></span>`);
+        smeltTypes.append(ironSub);
+        smeltTypes.append(iron);
+        smeltTypes.append(ironAdd);
+
         if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
-            let steelSmelt = $(`<button class="button steel" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: <span v-html="$options.filters.altspook(s.Steel)"></span></button>`);
-            smelt.append(steelSmelt);
+            let steel = $(`<span :aria-label="steelLabel() + ariaProd('Steel')" class="current steel">${global.resource.Steel.name} {{ s.Steel }}</span>`);
+            let steelSub = $(`<span role="button" class="sub" @click="subMetal('Steel')" aria-label="Smelt less steel"><span>&laquo;</span></span>`);
+            let steelAdd = $(`<span role="button" class="add" @click="addMetal('Steel')" aria-label="Smelt more steel"><span>&raquo;</span></span>`);
+            smeltTypes.append(steelSub);
+            smeltTypes.append(steel);
+            smeltTypes.append(steelAdd);
         }
-        let iridiumSmelt = $(`<button class="button iridium" :aria-label="iridiumLabel() + ariaProd('Iridium')" @click="iridiumSmelting()">${loc('resource_Iridium_name')} ${loc('modal_smelting')}: {{ s.Iridium }}</button>`);
-        smelt.append(iridiumSmelt);
-    }
-    else if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
-        let smelt = $(`<div id="${parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`}" class="smelting"></div>`);
-        let ironSmelt = $(`<button class="button iron" :aria-label="ironLabel() + ariaProd('Iron')" @click="ironSmelting()">${loc('resource_Iron_name')} ${loc('modal_smelting')}: {{ s.Iron }}</button>`);
-        let steelSmelt = $(`<button class="button steel" :aria-label="steelLabel() + ariaProd('Steel')" @click="steelSmelting()">${loc('resource_Steel_name')} ${loc('modal_smelting')}: <span v-html="$options.filters.altspook(s.Steel)"></span></button>`);
-        parent.append(smelt);
-        smelt.append(ironSmelt);
-        smelt.append(steelSmelt);
+
+        if (global.resource.Iridium.display && irid_smelt){
+            let iridium = $(`<span :aria-label="iridiumLabel() + ariaProd('Iridium')" class="current iridium">${global.resource.Iridium.name} {{ s.Iridium }}</span>`);
+            let iridiumSub = $(`<span role="button" class="sub" @click="subMetal('Iridium')" aria-label="Smelt less iridium"><span>&laquo;</span></span>`);
+            let iridiumAdd = $(`<span role="button" class="add" @click="addMetal('Iridium')" aria-label="Smelt more iridium"><span>&raquo;</span></span>`);
+            smeltTypes.append(iridiumSub);
+            smeltTypes.append(iridium);
+            smeltTypes.append(iridiumAdd);
+        }
     }
 
     vBind({
@@ -265,64 +279,23 @@ function loadSmelter(parent,bind){
             iridiumLabel(){
                 return matText('iridium');
             },
-            ironSmelting(){
+            addMetal(m){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
                     if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
-                        global.city.smelter.Iron++;
-                    }
-                    else if (global.city.smelter.Iron < count && global.city.smelter.Iridium > 0){
-                        global.city.smelter.Iron++;
-                        global.city.smelter.Iridium--;
-                    }
-                    else if (global.city.smelter.Iron < count && global.city.smelter.Steel > 0){
-                        global.city.smelter.Iron++;
-                        global.city.smelter.Steel--;
+                        global.city.smelter[m]++;
                     }
                     else {
                         break;
                     }
                 }
             },
-            steelSmelting(){
+            subMetal(m){
                 let keyMult = keyMultiplier();
-                for (let i=0; i<keyMult; i++){
-                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
-                        global.city.smelter.Steel++;
-                    }
-                    else if (global.city.smelter.Steel < count && global.city.smelter.Iron > 0){
-                        global.city.smelter.Steel++;
-                        global.city.smelter.Iron--;
-                    }
-                    else if (global.city.smelter.Steel < count && global.city.smelter.Iridium > 0){
-                        global.city.smelter.Steel++;
-                        global.city.smelter.Iridium--;
-                    }
-                    else {
-                        break;
-                    }
-                }
-            },
-            iridiumSmelting(){
-                let keyMult = keyMultiplier();
-                for (let i=0; i<keyMult; i++){
-                    let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                    if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
-                        global.city.smelter.Iridium++;
-                    }
-                    else if (global.city.smelter.Iridium < count && global.city.smelter.Iron > 0){
-                        global.city.smelter.Iridium++;
-                        global.city.smelter.Iron--;
-                    }
-                    else if (global.city.smelter.Iridium < count && global.city.smelter.Steel > 0){
-                        global.city.smelter.Iridium++;
-                        global.city.smelter.Steel--;
-                    }
-                    else {
-                        break;
-                    }
+                global.city.smelter[m] -= keyMult;
+                if (global.city.smelter[m] < 0){
+                    global.city.smelter[m] = 0;
                 }
             },
             buildLabel(type){
@@ -345,6 +318,9 @@ function loadSmelter(parent,bind){
         filters: {
             on(c){
                 return global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
+            },
+            son(c){
+                return global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
             },
             diffSize(value){
                 return value > 0 ? `+${sizeApproximation(value,2)}` : sizeApproximation(value,2);

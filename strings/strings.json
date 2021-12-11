@@ -2484,6 +2484,7 @@
   "set_planet_poor": "poor",
   "modal_smelting": "Smelting",
   "modal_smelter_fuel": "Fuelled",
+  "modal_smelter_type": "Smelting Type",
   "modal_smelter_iron": "Smelt %1, boosts %1 production by %0%",
   "modal_smelter_steel": "Smelt %1, consumes 0.25 %2 and 2 %3 per second but produces %0 %1",
   "modal_smelter_inferno": "Inferno",

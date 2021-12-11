@@ -3763,7 +3763,10 @@ function fastLoop(){
                 }
             }
             else if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno){
-                global.city.smelter.Iron++;
+                let irid_smelt = global.tech['irid_smelting'] || (global.tech['m_smelting'] && global.tech.m_smelting >= 2) ? true : false;
+                if (!(global.resource.Iridium.display && irid_smelt) && !(global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen'])){
+                    global.city.smelter.Iron++;
+                }
             }
 
             if (global.tech['star_forge'] >= 2){
