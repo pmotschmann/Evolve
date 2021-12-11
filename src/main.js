@@ -4724,6 +4724,28 @@ function fastLoop(){
 
                     modRes('Aluminium', delta * time_multiplier);
                 }
+
+                // Alt Chrysotile
+                if (global.race['smoldering'] && global.resource.Chrysotile.display){
+                    let chrysotile_bd = {};
+
+                    let cry_base = miner_base / 2;
+                    let cry_power = power_mult;
+                    chrysotile_bd[loc('job_miner')] = (cry_base) + 'v';
+                    if (cry_base > 0){
+                        chrysotile_bd[`ᄂ${loc('power')}`] = ((cry_power - 1) * 100) + '%';
+                        if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
+                            cry_power = (cry_power - 1) * 0.5 + 1;
+                            chrysotile_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                        }
+                    }
+                    let delta = cry_base * cry_power;
+                    delta *= hunger * global_multiplier;
+
+                    chrysotile_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                    breakdown.p['Chrysotile'] = chrysotile_bd;
+                    modRes('Chrysotile', delta * time_multiplier);
+                }
             }
         }
 
