@@ -144,6 +144,11 @@ export const feats = {
         desc: loc("feat_equilibrium_desc"),
         flair: loc("feat_equilibrium_flair")
     },
+    digital_ascension: {
+        name: loc("feat_digital_ascension_name"),
+        desc: loc("feat_digital_ascension_desc"),
+        flair: loc("feat_digital_ascension_flair")
+    },
     novice: {
         name: loc("feat_novice_name"),
         desc: loc("feat_achievement_hunter_desc",[10]),

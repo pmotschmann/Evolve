@@ -666,6 +666,11 @@ export function ascend(){
     if (!global.galaxy.hasOwnProperty('dreadnought') || global.galaxy.dreadnought.count === 0){
         unlockAchieve(`dreaded`);
     }
+
+    if (!global.race['modified'] && (global.race.species === 'synth' || global.race.species === 'nano') && global.race['emfield']){
+        unlockFeat('digital_ascension');
+    }
+
     checkAchievements();
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
