@@ -1,6 +1,6 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
 import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
-import { races, genusVars } from './races.js';
+import { races, genusVars, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { production } from './prod.js';

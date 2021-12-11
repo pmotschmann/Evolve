@@ -21,6 +21,8 @@ import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
+global.race['shapeshifter'] = 1;
+
 {
     $(document).ready(function() {
         if (!window.matchMedia)
@@ -2939,11 +2941,11 @@ function fastLoop(){
                 }
                 if (global.race['spores'] && global.city.calendar.wind === 1){
                     if (global.race['parasite']){
-                        lowerBound += 1;
+                        lowerBound += traits.spores.vars()[2];
                     }
                     else {
-                        lowerBound += 2;
-                        lowerBound *= 2;
+                        lowerBound += traits.spores.vars()[0];
+                        lowerBound *= traits.spores.vars()[1];
                     }
                 }
                 if (global.tech['reproduction'] && global.tech.reproduction >= 2 && global.city['hospital']){
@@ -4297,7 +4299,7 @@ function fastLoop(){
             if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
                 let stone_bd = {};
 
-                let stone_base = global.resource[global.race.species].amount * 0.6;
+                let stone_base = global.resource[global.race.species].amount * traits.sappy.vars()[0];
                 stone_bd[flib('name')] = stone_base + 'v';
                 if (global.city.hasOwnProperty('basic_housing')){
                     let grove = global.city.basic_housing.count * 0.025;

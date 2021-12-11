@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.0`,
-        date: `??/??/2021`,
+        date: `12/??/2021`,
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
             `Using Fanaticism to gain an unempowered trait you already possess will now empower that trait.`,

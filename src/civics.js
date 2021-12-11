@@ -854,18 +854,18 @@ function drawEspModal(gov){
 function taxCap(min){
     let extreme = global.tech['currency'] && global.tech.currency >= 5 ? true : false;
     if (min){
-        return (extreme || global.race['terrifying']) && !global.race['noble'] ? 0 : 10;
+        return (extreme || global.race['terrifying']) && !global.race['noble'] ? 0 : (global.race['noble'] ? traits.noble.vars()[0] : 10);
     }
     else {
         let cap = 30;
         if (global.race['noble']){
-            cap = global.civic.govern.type === 'oligarchy' ? 40 : 20;
+            cap = traits.noble.vars()[1];
         }
-        else {
-            cap = global.civic.govern.type === 'oligarchy' ? 50 : 30;
-            if (extreme || global.race['terrifying']){
-                cap += 20;
-            }
+        else if (extreme || global.race['terrifying']){
+            cap += 20;
+        }
+        if (global.civic.govern.type === 'oligarchy'){
+            cap += 20;
         }
         let aristoVal = govActive('aristocrat',1);
         if (aristoVal){
@@ -1580,6 +1580,9 @@ function war_campaign(gov){
                 break;
         }
 
+        let titanium_low = global.race['terrifying'] ? traits.terrifying.vars()[0] : 12;
+        let titanium_high = global.race['terrifying'] ? traits.terrifying.vars()[1] : 32;
+
         looted.forEach(function(goods){
             switch (goods){
                 case 'Money':
@@ -1605,7 +1608,7 @@ function war_campaign(gov){
                     gains[goods] += Math.floor(Math.seededRandom(20,65,true));
                     break;
                 case 'Titanium':
-                    gains[goods] += Math.floor(Math.seededRandom(12,32,true));
+                    gains[goods] += Math.floor(Math.seededRandom(titanium_low,titanium_high,true));
                     break;
                 case 'Crystal':
                     gains[goods] += Math.floor(Math.seededRandom(1,5,true));

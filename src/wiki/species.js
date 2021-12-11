@@ -183,11 +183,16 @@ const traitExtra = {
 
 const valAdjust = {
     fibroblast: [5],
+    imitation: [races[global.race['srace'] || 'protoplasm'].name],
     promiscuous: false,
     revive: false,
     fast_growth: false,
     blood_thirst: false,
     frail: false,
+    sappy: false,
+    spores: false,
+    terrifying: false,
+    shapeshifter: false,
 };
 
 export function traitDesc(info,trait,fanatic,tpage){
@@ -206,10 +211,13 @@ export function traitDesc(info,trait,fanatic,tpage){
 
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars() : [];
     if (valAdjust.hasOwnProperty(trait)){
-        if (valAdjust[trait]){
+        if (trait === 'fibroblast'){
             for (let i=0; i<vals.length; i++){
                 vals[i] = vals[i] * valAdjust[trait][i];
             }
+        }
+        else if (valAdjust[trait]){
+            vals = valAdjust[trait];
         }
         else {
             vals = [];
