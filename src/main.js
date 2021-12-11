@@ -1594,7 +1594,11 @@ function fastLoop(){
         }
 
         if (global.race['powered']){
-            power_grid -= traits.powered.vars()[0] * global.resource[global.race.species].amount;
+            let citizens = traits.powered.vars()[0] * global.resource[global.race.species].amount;
+            if (global.race['discharge'] && global.race['discharge'] > 0){
+                citizens = +(citizens * 1.25).toFixed(3);
+            }
+            power_grid -= citizens;
         }
 
         // Power usage
