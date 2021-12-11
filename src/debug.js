@@ -1,6 +1,6 @@
 import { global, breakdown } from './vars.js';
 import { deepClone, adjustCosts, messageQueue } from './functions.js';
-import { races } from './races.js';
+import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
 import { actions, checkTechRequirements, checkAffordable } from './actions.js';
 import { fuel_adjust, int_fuel_adjust } from './space.js';
@@ -14,6 +14,7 @@ export function enableDebug(){
         window.evolve = {
             actions: deepClone(actions),
             races: deepClone(races),
+            traits: deepClone(traits),
             tradeRatio: deepClone(tradeRatio),
             craftCost: deepClone(craftCost()),
             atomic_mass: deepClone(atomic_mass),
