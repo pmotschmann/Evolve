@@ -5746,7 +5746,7 @@ export function setAction(c_action,action,type,old){
         },
         methods: {
             action(){
-                if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+                if ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/ && global.settings.touch) ? true : false){
                     return;
                 }
                 else {
@@ -6319,7 +6319,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
 
     let touch = false;
-    if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) ? true : false){
+    if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
         touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
         parent.append(touch);
 

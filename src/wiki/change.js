@@ -7,7 +7,8 @@ const changeList = [
         revision: `a`,
         date: `12/12/2021`,
         changes: [
-            `Updated Solar Map`,
+            `Updated Solar Map.`,
+            `Added setting to enable mobile device support.`,
         ]
     },
     {

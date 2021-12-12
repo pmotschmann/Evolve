@@ -1108,6 +1108,10 @@ if (!global.settings.portal.hasOwnProperty('ruins')){
     global.settings.portal['spire'] = false;
 }
 
+if (!global.settings.hasOwnProperty('touch')){
+    global.settings['touch'] = false;
+}
+
 if (!global['queue']){
     global['queue'] = {
         display: false,
