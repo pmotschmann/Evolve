@@ -545,6 +545,20 @@ export const traits = {
         desc: loc('trait_detritivore'),
         type: 'genus',
         val: 2,
+        vars(){
+            switch (global.race.detritivore || 1){
+                case 0.25:
+                    return [65];
+                case 0.5:
+                    return [72];
+                case 1:
+                    return [80];
+                case 2:
+                    return [85];
+                case 3:
+                    return [90];
+            }
+        },
     },
     spores: { // Birthrate increased when it's windy
         name: loc('trait_spores_name'),
@@ -604,6 +618,20 @@ export const traits = {
         desc: loc('trait_elusive'),
         type: 'genus',
         val: 7,
+        vars(){
+            switch (global.race.elusive || 1){
+                case 0.25:
+                    return [10];
+                case 0.5:
+                    return [15];
+                case 1:
+                    return [20];
+                case 2:
+                    return [25];
+                case 3:
+                    return [30];
+            }
+        },
     },
     iron_allergy: { // Iron mining reduced
         name: loc('trait_iron_allergy_name'),
@@ -739,6 +767,20 @@ export const traits = {
         desc: loc('trait_immoral'),
         type: 'genus',
         val: 4,
+        vars(){
+            switch (global.race.immoral || 1){
+                case 0.25:
+                    return [-30];
+                case 0.5:
+                    return [-20];
+                case 1:
+                    return [0];
+                case 2:
+                    return [20];
+                case 3:
+                    return [30];
+            }
+        },
     },
     evil: { // You are pure evil
         name: loc('trait_evil_name'),
@@ -751,6 +793,20 @@ export const traits = {
         desc: loc('trait_blissful'),
         type: 'genus',
         val: 3,
+        vars(){
+            switch (global.race.blissful || 1){
+                case 0.25:
+                    return [70];
+                case 0.5:
+                    return [60];
+                case 1:
+                    return [50];
+                case 2:
+                    return [40];
+                case 3:
+                    return [30];
+            }
+        },
     },
     pompous: { // Professors are less effective
         name: loc('trait_pompous_name'),

@@ -615,7 +615,8 @@ if (global.race.species === 'protoplasm'){
             polar: 'polar',
             sand: 'sand',
             demonic: 'demonic',
-            angelic: 'celestial'
+            angelic: 'celestial',
+            artifical: 'artifical'
         };
 
         if (races.custom.hasOwnProperty('type') && global.evolution[custom_map[races.custom.type]] && global.evolution[custom_map[races.custom.type]].count > 0){
@@ -2466,7 +2467,8 @@ function fastLoop(){
         }
 
         if (((global.civic.govern.type !== 'autocracy' && !global.race['blood_thirst']) || global.race['immoral']) && global.civic.garrison.protest + global.civic.garrison.fatigue > 2){
-            let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue));
+            let immoral = global.race['immoral'] ? 1 + (traits.strong.vars()[0] / 100) : 1;
+            let warmonger = Math.round(Math.log2(global.civic.garrison.protest + global.civic.garrison.fatigue) * immoral);
             global.city.morale.warmonger = global.race['immoral'] ? warmonger : -(warmonger);
             morale += global.city.morale.warmonger;
         }
@@ -2537,8 +2539,10 @@ function fastLoop(){
 
         if (global.city.morale.current < 100){
             if (global.race['blissful']){
-                global_multiplier *= 1 + ((global.city.morale.current - 100) / 200);
-                breakdown.p['Global'][loc('morale')] = ((global.city.morale.current - 100) / 2) + '%';
+                let mVal = global.city.morale.current - 100;
+                let bliss = traits.blissful.vars()[0] / 100;
+                global_multiplier *= 1 + (mVal * bliss / 100);
+                breakdown.p['Global'][loc('morale')] = (mVal * bliss) + '%';
             }
             else {
                 global_multiplier *= global.city.morale.current / 100;
@@ -2697,7 +2701,8 @@ function fastLoop(){
                             breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
                             modRes('Lumber', -(lumber_cost * time_multiplier));
                         }
-                        let food_compost = operating * (1.2 + (global.tech['compost'] * 0.8));
+                        let c_factor = traits.blood_thirst.vars()[0] / 100;
+                        let food_compost = operating * (1.2 + (global.tech['compost'] * c_factor));
                         food_compost *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
                         food_compost *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
                         food_compost *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
