@@ -2369,22 +2369,24 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_home: { dist: 1, orbit: -1, scale: 0.5 },
-    spc_moon: { dist: 1.01, orbit: -1, moon: true },
-    spc_red: { dist: 1.524, orbit: 687, scale: 0.5 },
-    spc_hell: { dist: 0.4, orbit: 88, scale: 0.5 },
-    spc_gas: { dist: 5.203, orbit: 4330 },
-    spc_gas_moon: { dist: 5.204, orbit: 4330, moon: true },
-    spc_belt: { dist: 2.7, orbit: 1642, scale: 0.5 },
-    spc_dwarf: { dist: 2.77, orbit: 1682, scale: 0.5 },
-    spc_saturn: { dist: 9.539, orbit: 10751 },
-    spc_titan: { dist: 9.536, orbit: 10751, moon: true },
-    spc_enceladus: { dist: 9.542, orbit: 10751, moon: true },
-    spc_uranus: { dist: 19.8, orbit: 30660 },
-    spc_neptune: { dist: 30.08, orbit: 60152 },
-    spc_triton: { dist: 30.1, orbit: 60152, moon: true },
-    spc_kuiper: { dist: 39.5, orbit: 90498 },
-    spc_eris: { dist: 68, orbit: 204060, scale: 0.5 },
+    spc_sun: { dist: 0, orbit: 0, size: 2 },
+    spc_home: { dist: 1, orbit: -1, size: 0.6 },
+    spc_moon: { dist: 1.01, orbit: -1, size: 0.1, moon: true },
+    spc_red: { dist: 1.524, orbit: 687, size: 0.5 },
+    spc_hell: { dist: 0.4, orbit: 88, size: 0.4 },
+    spc_venus: { dist: 0.7, orbit: 225, size: 0.5 },
+    spc_gas: { dist: 5.203, orbit: 4330, size: 1.25 },
+    spc_gas_moon: { dist: 5.204, orbit: 4330, size: 0.2, moon: true },
+    spc_belt: { dist: 2.7, orbit: 1642, size: 0.5 },
+    spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.5 },
+    spc_saturn: { dist: 9.539, orbit: 10751, size: 1.1 },
+    spc_titan: { dist: 9.536, orbit: 10751, size: 0.2, moon: true },
+    spc_enceladus: { dist: 9.542, orbit: 10751, size: 0.1, moon: true },
+    spc_uranus: { dist: 19.8, orbit: 30660, size: 1 },
+    spc_neptune: { dist: 30.08, orbit: 60152, size: 1 },
+    spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
+    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5 },
+    spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
     //tauceti: { dist: 752568.8, orbit: -2 },
 };
 
@@ -2505,7 +2507,6 @@ function drawMap(scale, translatePos) {
 
     // Planets and moons
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        let orbit = planet.orbit === -1 ? global.city.calendar.orbit : planet.orbit;
         let color = '558888';
         if (actions.space[id] && actions.space[id].info.syndicate()){
             let shift = syndicate(id);
@@ -2514,23 +2515,28 @@ function drawMap(scale, translatePos) {
         if (id === 'spc_dwarf'){
             color = '7132a8';
         }
+        else if (id === 'spc_sun'){
+            color = 'f8ff2b';
+        }
         ctx.fillStyle = "#" + color;
         ctx.beginPath();
+        let size = planet.size / 10;
         if (planet.moon) {
             switch (id){
                 case 'spc_moon':
-                    ctx.arc(planetLocation[id].x + 0.15, planetLocation[id].y + 0.15, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    ctx.arc(planetLocation[id].x + 0.05, planetLocation[id].y + 0.05, size, 0, Math.PI * 2, true);
                     break;
                 case 'spc_titan':
-                    ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, size, 0, Math.PI * 2, true);
                     break;
                 default:
-                    ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, size, 0, Math.PI * 2, true);
                     break;
             }
-        } else {
-            let scale = (1 + planet.scale) || 1;
-            ctx.arc(planetLocation[id].x, planetLocation[id].y, Math.log2(orbit) / (50 * scale), 0, Math.PI * 2, true);
+        }
+        else {
+            let size = planet.size / 10;
+            ctx.arc(planetLocation[id].x, planetLocation[id].y, size, 0, Math.PI * 2, true);
         }
         ctx.fill();
     }
@@ -2570,7 +2576,7 @@ function drawMap(scale, translatePos) {
             if (planet.moon) {
                 switch (id){
                     case 'spc_moon':
-                        ctx.fillText(nameText, planetLocation[id].x + 0.2, planetLocation[id].y + 0.15);
+                        ctx.fillText(nameText, planetLocation[id].x + 0.1, planetLocation[id].y + 0.1);
                         break;
                     case 'spc_titan':
                         ctx.fillText(nameText, planetLocation[id].x - 0.3, planetLocation[id].y - 0.3);
@@ -2580,7 +2586,14 @@ function drawMap(scale, translatePos) {
                         break;
                 }
             } else {
-                ctx.fillText(nameText, planetLocation[id].x, planetLocation[id].y - 0.2);
+                switch (id){
+                    case 'spc_sun':
+                        // Do Nothing
+                        break;
+                    default:
+                        ctx.fillText(nameText, planetLocation[id].x, planetLocation[id].y - (0.2 * planet.size));
+                        break;
+                }
             }
         }
     }

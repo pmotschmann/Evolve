@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.0`,
+        revision: `a`,
+        date: `12/12/2021`,
+        changes: [
+            `Updated Solar Map`,
+        ]
+    },
+    {
+        version: `1.2.0`,
         date: `12/12/2021`,
         changes: [
             `Unlock the True Path (Requires completion of Ascension or Demonic Infusion).`,
