@@ -20,7 +20,8 @@ const spaceProjects = {
                 return races[global.race.species].home;
             },
             desc: loc('space_home_info_desc'),
-            zone: 'inner'
+            zone: 'inner',
+            syndicate(){ return false; }
         },
         test_launch: {
             id: 'space-test_launch',
@@ -1105,7 +1106,8 @@ const spaceProjects = {
             desc(){
                 return loc('space_hell_info_desc',[races[global.race.species].solar.hell]);
             },
-            zone: 'inner'
+            zone: 'inner',
+            syndicate(){ return false; }
         },
         hell_mission: {
             id: 'space-hell_mission',
@@ -1278,7 +1280,8 @@ const spaceProjects = {
                 return loc('space_sun_info_desc',[races[global.race.species].home]);
             },
             support: 'swarm_control',
-            zone: 'inner'
+            zone: 'inner',
+            syndicate(){ return false; }
         },
         sun_mission: {
             id: 'space-sun_mission',
@@ -1811,7 +1814,8 @@ const spaceProjects = {
             desc(){
                 return loc('space_dwarf_info_desc',[races[global.race.species].solar.dwarf]);
             },
-            zone: 'inner'
+            zone: 'inner',
+            syndicate(){ return false; }
         },
         dwarf_mission: {
             id: 'space-dwarf_mission',

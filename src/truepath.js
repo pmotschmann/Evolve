@@ -24,7 +24,7 @@ export const outerTruth = {
                 if (global.tech['triton']){
                     return global.tech.outer >= 4 ? 2000 : 1000;
                 }
-                return 500;
+                return 600;
             }
         },
         titan_mission: {
@@ -635,7 +635,7 @@ export const outerTruth = {
                 if (global.tech['triton']){
                     return global.tech.outer >= 4 ? 1500 : 1000;
                 }
-                return 500;
+                return 600;
             }
         },
         enceladus_mission: {
@@ -2012,7 +2012,7 @@ function drawShips(){
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
             if (ship.location !== region){
-                if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+                if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
                     let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
                     values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
                 }
@@ -2149,7 +2149,7 @@ function drawShips(){
         });
 
         Object.keys(spaceRegions).forEach(function(region){
-            if (spaceRegions[region].info.hasOwnProperty('syndicate') && spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+            if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
                 if (ship.location !== region){
                     popover(`ship${i}loc${region}`, function(){
                         return loc(`transit_time`,[Math.round(transferWindow(ship.xy,calcLandingPoint(ship, region)) / shipSpeed(ship))]);
@@ -2167,47 +2167,28 @@ function drawShips(){
 }
 
 function calcLandingPoint(ship, planet) {
-    let ship_sun_dist = Math.sqrt((ship.xy.x ** 2) + (ship.xy.y ** 2));
-    let orbit_cross1_dist = Math.abs(ship_sun_dist - spacePlanetStats[planet].dist);
-    let orbit_cross2_dist = Math.abs(ship_sun_dist + spacePlanetStats[planet].dist);
-    let orbit_cross1_days = Math.min(orbit_cross1_dist, orbit_cross2_dist) / shipSpeed(ship) * 225;
-    let orbit_cross2_days = Math.max(orbit_cross1_dist, orbit_cross2_dist) / shipSpeed(ship) * 225;
-    let ship_degree_per_day = 360 / (orbit_cross2_days - orbit_cross1_days);
+    let ship_dist = Math.sqrt((ship.xy.x ** 2) + (ship.xy.y ** 2));
+    let ship_speed = shipSpeed(ship) / 225;
+    let cross1_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist);
+    let cross2_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist);
+    let cross1_days = Math.min(cross1_dist, cross2_dist) / ship_speed;
+    let cross2_days = Math.max(cross1_dist, cross2_dist) / ship_speed;
     let planet_orbit = spacePlanetStats[planet].orbit === -1
       ? global.city.calendar.orbit
       : spacePlanetStats[planet].orbit;
-    let planet_degree_per_day = 360 / planet_orbit;
-    let planet_cross_degree = (global.space.position[planet] + (orbit_cross1_days * planet_degree_per_day)) % 360;
-    let touchpoint_degree = (Math.atan2(ship.xy.y, ship.xy.x) * (180 / Math.PI) + 360) % 360;
-    let ship_planet_diff = Math.abs(planet_cross_degree - touchpoint_degree);
-    if (ship_planet_diff > 180) {
-        ship_planet_diff = 360 - ship_planet_diff;
+    let planet_speed = 360 / planet_orbit;
+    let planet_degree = (global.space.position[planet] + (cross1_days * planet_speed)) % 360;
+    let rads = (Math.PI / 180);
+    for (let i = cross1_days; i <= cross2_days; i++) {
+        let planet_x = Math.cos(planet_degree * rads) * spacePlanetStats[planet].dist;
+        let planet_y = Math.sin(planet_degree * rads) * spacePlanetStats[planet].dist;
+        let time = Math.sqrt(((planet_x - ship.xy.x) ** 2) + ((planet_y - ship.xy.y) ** 2)) / ship_speed;
+        if (time <= i) {
+            return {x: planet_x, y: planet_y};
+        }
+        planet_degree = (planet_degree + planet_speed) % 360;
     }
-    let planet_turn_diff = touchpoint_degree + 180 - planet_cross_degree;
-    let turn_days = planet_turn_diff / planet_degree_per_day;
-    let planet_move_degree = (planet_cross_degree + 180) % 360;
-    let planet_approaching = planet_move_degree > planet_cross_degree
-      ? (touchpoint_degree > planet_cross_degree && touchpoint_degree < planet_move_degree)
-      : (touchpoint_degree > planet_cross_degree || touchpoint_degree < planet_move_degree);
-    let runaway_speed = ship_degree_per_day - planet_degree_per_day;
-    let approach_speed = ship_degree_per_day + planet_degree_per_day;
-
-    let days_to_touch = 0;
-    if (planet_approaching) {
-        days_to_touch = ship_planet_diff / approach_speed;
-    }
-    else if (planet_degree_per_day > ship_degree_per_day || (ship_planet_diff / runaway_speed) > turn_days) {
-        days_to_touch = turn_days + 180 / approach_speed;
-    }
-    else {
-        days_to_touch = ship_planet_diff / runaway_speed;
-    }
-
-    let transit_length = Math.round(orbit_cross1_days + days_to_touch);
-    let planet_degree = (global.space.position[planet] + planet_degree_per_day * transit_length) % 360;
-    let planet_x = Math.cos(planet_degree * (Math.PI / 180)) * spacePlanetStats[planet].dist;
-    let planet_y = Math.sin(planet_degree * (Math.PI / 180)) * spacePlanetStats[planet].dist;
-    return {x: planet_x, y: planet_y};
+    return genXYcoord(planet);
 }
 
 export function syndicate(region,extra){
@@ -2236,23 +2217,12 @@ export function syndicate(region,extra){
                 break;
             case 'spc_titan':
             case 'spc_enceladus':
-                {
-                    if (global.tech['triton']){
-                        let r = spaceTech(region,'info');
-                        divisor = r.syndicate_cap();
-                    }
-                    else {
-                        divisor = 600;
-                    }
-                }
+                divisor = actions.space[region].info.syndicate_cap();
                 break;
             case 'spc_triton':
             case 'spc_kuiper':
             case 'spc_eris':
-                {
-                    let r = spaceTech(region,'info');
-                    divisor = r.syndicate_cap();
-                }
+                divisor = actions.space[region].info.syndicate_cap();
                 break;
         }
 
@@ -2399,22 +2369,22 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_home: { dist: 1, orbit: -1, dest: false },
-    spc_moon: { dist: 1.01, orbit: -1, dest: true, moon: true },
-    spc_red: { dist: 1.524, orbit: 687, dest: true, },
-    spc_hell: { dist: 0.4, orbit: 88, dest: true, },
-    spc_gas: { dist: 5.203, orbit: 4330, dest: true, },
-    spc_gas_moon: { dist: 5.204, orbit: 4330, dest: true, moon: true },
-    spc_belt: { dist: 2.7, orbit: 1642, dest: true, },
-    spc_dwarf: { dist: 2.77, orbit: 1682, dest: true, },
-    spc_saturn: { dist: 9.539, orbit: 10751, dest: false  },
-    spc_titan: { dist: 9.536, orbit: 10751, dest: true, moon: true },
-    spc_enceladus: { dist: 9.542, orbit: 10751, dest: true, moon: true },
-    spc_neptune: { dist: 30.08, orbit: 60152, dest: false  },
-    spc_triton: { dist: 30.1, orbit: 60152, dest: true, moon: true },
-    spc_kuiper: { dist: 39.5, orbit: 90498, dest: true, },
-    spc_eris: { dist: 68, orbit: 204060, dest: true, },
-    //tauceti: { dist: 752568.8, orbit: -2, dest: true, },
+    spc_home: { dist: 1, orbit: -1 },
+    spc_moon: { dist: 1.01, orbit: -1, moon: true },
+    spc_red: { dist: 1.524, orbit: 687 },
+    spc_hell: { dist: 0.4, orbit: 88 },
+    spc_gas: { dist: 5.203, orbit: 4330 },
+    spc_gas_moon: { dist: 5.204, orbit: 4330, moon: true },
+    spc_belt: { dist: 2.7, orbit: 1642 },
+    spc_dwarf: { dist: 2.77, orbit: 1682 },
+    spc_saturn: { dist: 9.539, orbit: 10751 },
+    spc_titan: { dist: 9.536, orbit: 10751, moon: true },
+    spc_enceladus: { dist: 9.542, orbit: 10751, moon: true },
+    spc_neptune: { dist: 30.08, orbit: 60152 },
+    spc_triton: { dist: 30.1, orbit: 60152, moon: true },
+    spc_kuiper: { dist: 39.5, orbit: 90498 },
+    spc_eris: { dist: 68, orbit: 204060 },
+    //tauceti: { dist: 752568.8, orbit: -2 },
 };
 
 export function setOrbits(){
@@ -2516,13 +2486,29 @@ function drawMap(scale, translatePos) {
         }
     }
 
+    // Ship trail
+    ctx.fillStyle = "#0000ff";
+    ctx.strokeStyle = "#0000ff";
+    for (let ship of global.space.shipyard.ships) {
+        if (ship.transit > 0) {
+            ctx.beginPath();
+            ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.setLineDash([0.1, 0.4]);
+            ctx.moveTo(ship.xy.x, ship.xy.y);
+            ctx.lineTo(ship.destination.x, ship.destination.y);
+            ctx.stroke();
+        }
+    }
+
     // Planets and moons
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         let orbit = planet.orbit === -1 ? global.city.calendar.orbit : planet.orbit;
-        let shift = syndicate(id);
-        let color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
-        if (!planet.dest){
-            color = '558888';
+        let color = '558888';
+        if (actions.space[id] && actions.space[id].info.syndicate()){
+            let shift = syndicate(id);
+            color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
         }
         ctx.fillStyle = "#" + color;
         ctx.beginPath();
@@ -2547,11 +2533,6 @@ function drawMap(scale, translatePos) {
             ctx.beginPath();
             ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
             ctx.fill();
-            ctx.beginPath();
-            ctx.setLineDash([0.1, 0.4]);
-            ctx.moveTo(ship.xy.x, ship.xy.y);
-            ctx.lineTo(ship.destination.x, ship.destination.y);
-            ctx.stroke();
         }
     }
 
@@ -2595,7 +2576,8 @@ function buildSolarMap(parentNode) {
     let currentNode = $(`<div style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
     let scale = 20.0;
     let translatePos = {};
-    let startDragOffset = {};
+    let canvasOffset = {};
+    let dragOffset = {};
     let mouseDown = false;
 
     currentNode.append(
@@ -2603,37 +2585,54 @@ function buildSolarMap(parentNode) {
         .on("mouseup mouseover mouseout", () => mouseDown = false)
         .on("mousedown", (e) => {
             mouseDown = true;
-            startDragOffset.x = e.clientX - translatePos.x;
-            startDragOffset.y = e.clientY - translatePos.y;
+            dragOffset.x = e.clientX - translatePos.x;
+            dragOffset.y = e.clientY - translatePos.y;
         })
         .on("mousemove", (e) => {
             if (mouseDown) {
-                translatePos.x = e.clientX - startDragOffset.x;
-                translatePos.y = e.clientY - startDragOffset.y;
+                translatePos.x = e.clientX - dragOffset.x;
+                translatePos.y = e.clientY - dragOffset.y;
                 drawMap(scale, translatePos);
             }
+        })
+        .on("wheel", (e) => {
+            if(e.originalEvent.deltaY < 0) {
+                scale /= 0.8;
+                translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) / 0.8;
+                translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) / 0.8;
+                drawMap(scale, translatePos);
+            }
+            else {
+                scale *= 0.8;
+                translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) * 0.8;
+                translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) * 0.8;
+                drawMap(scale, translatePos);
+            }
+            return false;
         }),
       $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; top: 32px; right: 2px;">`)
-        .on("click", () => drawMap(scale /= 0.8, translatePos)),
+        .on("click", () => {
+            scale /= 0.8;
+            translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) / 0.8;
+            translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) / 0.8;
+            drawMap(scale, translatePos);
+        }),
       $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; top: 64px; right: 2px;">`)
-        .on("click", () => drawMap(scale *= 0.8, translatePos))
+        .on("click", () => {
+            scale *= 0.8;
+            translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) * 0.8;
+            translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) * 0.8;
+            drawMap(scale, translatePos);
+        })
     );
 
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
-    translatePos.x = bounds.width / 2;
-    translatePos.y = bounds.height / 2;
+    canvasOffset.x = bounds.width / 2;
+    canvasOffset.y = bounds.height / 2;
+    translatePos.x = canvasOffset.x;
+    translatePos.y = canvasOffset.y;
 
     drawMap(scale, translatePos);
-
-    $('#mapCanvas').bind('mousewheel', function(e){
-        if(e.originalEvent.wheelDelta < 0) {
-            drawMap(scale *= 0.8, translatePos);
-        }
-        else {
-            drawMap(scale /= 0.8, translatePos);
-        }
-        return false;
-    });
 }
 
 function solarModal(){
