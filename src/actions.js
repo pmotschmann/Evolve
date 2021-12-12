@@ -7058,17 +7058,14 @@ function sentience(){
             for (let i=0; i<10; i++){
                 let trait = neg_roll_traits[Math.rand(0,neg_roll_traits.length)];
                 if (global.race[trait]){
-                    if (global.race[trait] === 2){
-                        global.race[trait] = global.race['badgenes'] && j === 0 ? 0.5 : 1;
-                        break;
-                    }
-                    else if (global.race[trait] === 1){
-                        global.race[trait] = 0.5;
-                        break;
-                    }
-                    else {
+                    if (global.race[trait] == 0.25){
                         continue;
                     }
+                    setTraitRank(trait,{down:true});
+                    if (j === 0 && global.race['badgenes']){
+                        setTraitRank(trait,{down:true});
+                    }
+                    break;
                 }
                 else if ((global.race['smart'] && trait === 'dumb')) {
                     continue;
