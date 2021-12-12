@@ -1711,7 +1711,7 @@ function shipAttackPower(ship){
         case 'corvette':
             return rating;
         case 'frigate':
-            return Math.round(rating * 1.3);
+            return Math.round(rating * 1.5);
         case 'destroyer':
             return Math.round(rating * 2.75);
         case 'cruiser':
@@ -2494,9 +2494,6 @@ function drawMap(scale, translatePos) {
     ctx.strokeStyle = "#0000ff";
     for (let ship of global.space.shipyard.ships) {
         if (ship.transit > 0) {
-            ctx.beginPath();
-            ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
-            ctx.fill();
             ctx.beginPath();
             ctx.setLineDash([0.1, 0.4]);
             ctx.moveTo(ship.xy.x, ship.xy.y);

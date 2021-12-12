@@ -2576,11 +2576,11 @@ export const spatialReasoning = (function(){
                 let plasmids = 0;
                 if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
                     plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
-                    let raw = 0;
+                    let raw = plasmids;
                     if (global.race['no_plasmid']){
                         raw = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
                     }
-                    if (global.race['nerfed']){
+                    else if (global.race['nerfed']){
                         raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
                     }
                     plasmids = Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
