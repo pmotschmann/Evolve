@@ -1679,19 +1679,19 @@ function war_campaign(gov){
             let infected = 0;
             switch(global.civic.garrison.tactic){
                 case 0:
-                    infected = Math.floor(Math.seededRandom(0,2,true));
+                    infected = Math.floor(Math.seededRandom(0,traits.infectious.vars()[0],true));
                     break;
                 case 1:
-                    infected = Math.floor(Math.seededRandom(0,3,true));
+                    infected = Math.floor(Math.seededRandom(0,traits.infectious.vars()[1],true));
                     break;
                 case 2:
-                    infected = Math.floor(Math.seededRandom(0,5,true));
+                    infected = Math.floor(Math.seededRandom(0,traits.infectious.vars()[2],true));
                     break;
                 case 3:
-                    infected = Math.floor(Math.seededRandom(0,10,true));
+                    infected = Math.floor(Math.seededRandom(0,traits.infectious.vars()[3],true));
                     break;
                 case 4:
-                    infected = Math.floor(Math.seededRandom(0,25,true));
+                    infected = Math.floor(Math.seededRandom(0,traits.infectious.vars()[4],true));
                     break;
             }
             let zombies = global.resource[global.race.species].amount + infected;

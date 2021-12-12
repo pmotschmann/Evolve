@@ -2369,21 +2369,22 @@ export function erisWar(){
 }
 
 export const spacePlanetStats = {
-    spc_home: { dist: 1, orbit: -1 },
+    spc_home: { dist: 1, orbit: -1, scale: 0.5 },
     spc_moon: { dist: 1.01, orbit: -1, moon: true },
-    spc_red: { dist: 1.524, orbit: 687 },
-    spc_hell: { dist: 0.4, orbit: 88 },
+    spc_red: { dist: 1.524, orbit: 687, scale: 0.5 },
+    spc_hell: { dist: 0.4, orbit: 88, scale: 0.5 },
     spc_gas: { dist: 5.203, orbit: 4330 },
     spc_gas_moon: { dist: 5.204, orbit: 4330, moon: true },
-    spc_belt: { dist: 2.7, orbit: 1642 },
-    spc_dwarf: { dist: 2.77, orbit: 1682 },
+    spc_belt: { dist: 2.7, orbit: 1642, scale: 0.5 },
+    spc_dwarf: { dist: 2.77, orbit: 1682, scale: 0.5 },
     spc_saturn: { dist: 9.539, orbit: 10751 },
     spc_titan: { dist: 9.536, orbit: 10751, moon: true },
     spc_enceladus: { dist: 9.542, orbit: 10751, moon: true },
+    spc_uranus: { dist: 19.8, orbit: 30660 },
     spc_neptune: { dist: 30.08, orbit: 60152 },
     spc_triton: { dist: 30.1, orbit: 60152, moon: true },
     spc_kuiper: { dist: 39.5, orbit: 90498 },
-    spc_eris: { dist: 68, orbit: 204060 },
+    spc_eris: { dist: 68, orbit: 204060, scale: 0.5 },
     //tauceti: { dist: 752568.8, orbit: -2 },
 };
 
@@ -2510,17 +2511,26 @@ function drawMap(scale, translatePos) {
             let shift = syndicate(id);
             color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
         }
+        if (id === 'spc_dwarf'){
+            color = '7132a8';
+        }
         ctx.fillStyle = "#" + color;
         ctx.beginPath();
         if (planet.moon) {
-            if (id === 'spc_titan'){
-                ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
-            }
-            else {
-                ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+            switch (id){
+                case 'spc_moon':
+                    ctx.arc(planetLocation[id].x + 0.15, planetLocation[id].y + 0.15, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    break;
+                case 'spc_titan':
+                    ctx.arc(planetLocation[id].x - 0.2, planetLocation[id].y - 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    break;
+                default:
+                    ctx.arc(planetLocation[id].x + 0.2, planetLocation[id].y + 0.2, Math.log2(orbit) / 500, 0, Math.PI * 2, true);
+                    break;
             }
         } else {
-            ctx.arc(planetLocation[id].x, planetLocation[id].y, Math.log2(orbit) / 50, 0, Math.PI * 2, true);
+            let scale = (1 + planet.scale) || 1;
+            ctx.arc(planetLocation[id].x, planetLocation[id].y, Math.log2(orbit) / (50 * scale), 0, Math.PI * 2, true);
         }
         ctx.fill();
     }
@@ -2558,11 +2568,16 @@ function drawMap(scale, translatePos) {
             let nameRef = actions.space[id].info.name;
             let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
             if (planet.moon) {
-                if (id === 'spc_titan'){
-                    ctx.fillText(nameText, planetLocation[id].x - 0.3, planetLocation[id].y - 0.3);
-                }
-                else {
-                    ctx.fillText(nameText, planetLocation[id].x + 0.25, planetLocation[id].y + 0.2);
+                switch (id){
+                    case 'spc_moon':
+                        ctx.fillText(nameText, planetLocation[id].x + 0.2, planetLocation[id].y + 0.15);
+                        break;
+                    case 'spc_titan':
+                        ctx.fillText(nameText, planetLocation[id].x - 0.3, planetLocation[id].y - 0.3);
+                        break;
+                    default:
+                        ctx.fillText(nameText, planetLocation[id].x + 0.25, planetLocation[id].y + 0.2);
+                        break;
                 }
             } else {
                 ctx.fillText(nameText, planetLocation[id].x, planetLocation[id].y - 0.2);

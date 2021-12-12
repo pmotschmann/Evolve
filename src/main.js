@@ -2374,7 +2374,7 @@ function fastLoop(){
                         stress_level -= planetTraits.dense.vars()[1];
                     }
                     if (global.race['freespirit'] && job !== 'farmer' && job !== 'lumberjack' && job !== 'quarry_worker' && job !== 'crystal_miner' && job !== 'scavenger'){
-                        stress_level /= 1.5;
+                        stress_level /= 1 + (traits.freespirit.vars()[0] / 100);
                     }
 
                     stress -= global.civic[job].workers / stress_level;
@@ -2569,8 +2569,8 @@ function fastLoop(){
 
         if (global.race['selenophobia']){
             let moon = global.city.calendar.moon > 14 ? 28 - global.city.calendar.moon : global.city.calendar.moon;
-            breakdown.p['Global'][loc('moon_phase')] = (-(moon) + 4) + '%';
-            moon = 1.04 - (moon / 100);
+            breakdown.p['Global'][loc('moon_phase')] = (-(moon) + traits.selenophobia.vars()[0]) + '%';
+            moon = 1 + (traits.selenophobia.vars()[0] / 100) - (moon / 100);
             global_multiplier *= moon;
         }
 
@@ -6035,8 +6035,8 @@ function midLoop(){
             }
         }
         if (global.race['calm'] && global.city['meditation']) {
-            caps['Zen'] = global.city.meditation.count * 10;
-            bd_Zen[loc('city_meditation')] = global.city.meditation.count * 10 + 'v';
+            caps['Zen'] = global.city.meditation.count * traits.calm.vars()[0];
+            bd_Zen[loc('city_meditation')] = global.city.meditation.count * traits.calm.vars()[0] + 'v';
             global.resource.Zen.amount = (global.resource[global.race.species].amount * 2) + global.civic.garrison.workers;
             if (global.resource.Zen.amount > global.resource.Zen.max){
                 global.resource.Zen.amount = global.resource.Zen.max;
@@ -8785,14 +8785,15 @@ function longLoop(){
 
         if (global.race['infiltrator']){
             let tech_source = global.tech['world_control'] ? `trait_infiltrator_steal_alt` : `trait_infiltrator_steal`;
-            if (global.resource.Knowledge.max >= 4000 && !global.race['steelen'] && global.tech['smelting'] && global.tech.smelting === 1){
+            let know_adjust = traits.infiltrator.vars()[0] / 100;
+            if (global.resource.Knowledge.max >= (4000 * know_adjust) && !global.race['steelen'] && global.tech['smelting'] && global.tech.smelting === 1){
                 messageQueue(loc(tech_source,[loc('tech_steel')]),'info',false,['progress']);
                 global.resource.Steel.display = true;
                 global.tech.smelting = 2;
                 defineIndustry();
                 drawTech();
             }
-            if (global.resource.Knowledge.max >= 10000 && global.tech['high_tech'] && global.tech.high_tech === 1){
+            if (global.resource.Knowledge.max >= (10000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 1){
                 messageQueue(loc(tech_source,[loc('tech_electricity')]),'info',false,['progress']);
                 global.tech.high_tech = 2;
                 global.city['power'] = 0;
@@ -8806,7 +8807,7 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 40000 && global.tech['high_tech'] && global.tech.high_tech === 3 && global.tech['titanium']){
+            if (global.resource.Knowledge.max >= (40000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 3 && global.tech['titanium']){
                 messageQueue(loc(tech_source,[loc('tech_electronics')]),'info',false,['progress']);
                 global.tech.high_tech = 4;
                 if (global.race['terrifying']){
@@ -8817,7 +8818,7 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 72000 && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
+            if (global.resource.Knowledge.max >= (72000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 4 && global.tech['uranium']){
                 messageQueue(loc(tech_source,[loc('tech_fission')]),'info',false,['progress']);
                 global.tech.high_tech = 5;
                 global.city['fission_power'] = {
@@ -8827,27 +8828,27 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 105000 && global.tech['high_tech'] && global.tech.high_tech === 6){
+            if (global.resource.Knowledge.max >= (105000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 6){
                 messageQueue(loc(tech_source,[loc('tech_rocketry')]),'info',false,['progress']);
                 global.tech.high_tech = 7;
                 arpa('Physics');
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 310000 && global.tech['high_tech'] && global.tech.high_tech === 9){
+            if (global.resource.Knowledge.max >= (310000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 9){
                 messageQueue(loc(tech_source,[loc('tech_artificial_intelligence')]),'info',false,['progress']);
                 global.tech.high_tech = 10;
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 420000 && global.tech['high_tech'] && global.tech.high_tech === 10 && global.tech['nano']){
+            if (global.resource.Knowledge.max >= (420000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 10 && global.tech['nano']){
                 messageQueue(loc(tech_source,[loc('tech_quantum_computing')]),'info',false,['progress']);
                 global.tech.high_tech = 11;
                 drawTech();
                 drawCity();
             }
             if (
-                global.resource.Knowledge.max >= 580000 && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['stanene']
+                global.resource.Knowledge.max >= (580000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 11 && global.tech['stanene']
                     && ((global.tech['infernite'] && global.tech['alpha'] && global.tech['alpha'] >= 2) || (global.race['truepath']))
                 ){
                 messageQueue(loc(tech_source,[loc('tech_virtual_reality')]),'info',false,['progress']);
@@ -8855,7 +8856,7 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 835000 && global.tech['high_tech'] && global.tech.high_tech === 13){
+            if (global.resource.Knowledge.max >= (835000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 13){
                 messageQueue(loc(tech_source,[loc('tech_shields')]),'info',false,['progress']);
                 global.tech.high_tech = 14;
                 global.settings.space.neutron = true;
@@ -8863,33 +8864,33 @@ function longLoop(){
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 1420000 && global.tech['high_tech'] && global.tech.high_tech === 14 && global.tech['blackhole'] && global.tech['blackhole'] >= 3){
+            if (global.resource.Knowledge.max >= (1420000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 14 && global.tech['blackhole'] && global.tech['blackhole'] >= 3){
                 messageQueue(loc(tech_source,[loc('tech_ai_core')]),'info',false,['progress']);
                 global.tech.high_tech = 15;
                 global.interstellar['citadel'] = { count: 0, on: 0 };
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 2250000 && global.tech['ai_core'] && global.tech.ai_core === 2){
+            if (global.resource.Knowledge.max >= (2250000 * know_adjust) && global.tech['ai_core'] && global.tech.ai_core === 2){
                 messageQueue(loc(tech_source,[loc('tech_graphene_processing')]),'info',false,['progress']);
                 global.tech.ai_core = 3;
                 drawTech();
             }
-            if (global.resource.Knowledge.max >= 8075000 && global.tech['science'] && global.tech.science >= 18 && !global.tech['nanoweave']){
+            if (global.resource.Knowledge.max >= (8075000 * know_adjust) && global.tech['science'] && global.tech.science >= 18 && !global.tech['nanoweave']){
                 messageQueue(loc(tech_source,[loc('tech_nanoweave')]),'info',false,['progress']);
                 global.tech['nanoweave'] = 1;
                 global.resource.Nanoweave.display = true;
                 drawTech();
                 loadFoundry();
             }
-            if (global.resource.Knowledge.max >= 11590000 && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
+            if (global.resource.Knowledge.max >= (11590000 * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
                 messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info',false,['progress']);
                 messageQueue(loc('tech_orichalcum_analysis_result'),'info',false,['progress']);
                 global.tech.high_tech = 17;
                 drawTech();
                 drawCity();
             }
-            if (global.resource.Knowledge.max >= 24750000 && global.tech['smelting'] && global.tech.smelting === 7 && global.tech['hell_ruins'] && global.tech['hell_ruins'] >= 4){
+            if (global.resource.Knowledge.max >= (24750000 * know_adjust) && global.tech['smelting'] && global.tech.smelting === 7 && global.tech['hell_ruins'] && global.tech['hell_ruins'] >= 4){
                 messageQueue(loc(tech_source,[loc('tech_infernium_fuel')]),'info',false,['progress']);
                 global.tech.smelting = 8;
                 defineIndustry();

@@ -4177,12 +4177,12 @@ export const actions = {
             },
             effect(){
                 let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
-                return `<div>${loc(`city_meditation_effect`,[10])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
+                return `<div>${loc(`city_meditation_effect`,[traits.calm.vars()[0]])}</div><div class="has-text-special">${loc(`city_meditation_effect2`,[2])}</div><div class="has-text-special">${loc(`city_meditation_effect3`,[1])}</div><div>${loc(`city_meditation_effect4`,[`${(zen * 100).toFixed(2)}%`])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['meditation'].count++;
-                    global.resource.Zen.max += 10;
+                    global.resource.Zen.max += traits.calm.vars()[0];
                     return true;
                 }
                 return false;

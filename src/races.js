@@ -1118,7 +1118,21 @@ export const traits = {
         name: loc('trait_freespirit_name'),
         desc: loc('trait_freespirit'),
         type: 'major',
-        val: -3
+        val: -3,
+        vars(){
+            switch (global.race.freespirit || 1){
+                case 0.25:
+                    return [65];
+                case 0.5:
+                    return [60];
+                case 1:
+                    return [50];
+                case 2:
+                    return [35];
+                case 3:
+                    return [25];
+            }
+        },
     },
     beast_of_burden: { // Gains more loot during raids
         name: loc('trait_beast_of_burden_name'),
@@ -1218,7 +1232,21 @@ export const traits = {
         name: loc('trait_calm_name'),
         desc: loc('trait_calm'),
         type: 'major',
-        val: 6
+        val: 6,
+        vars(){
+            switch (global.race.calm || 1){
+                case 0.25:
+                    return [7];
+                case 0.5:
+                    return [8];
+                case 1:
+                    return [10];
+                case 2:
+                    return [12];
+                case 3:
+                    return [13];
+            }
+        },
     },
     pack_rat: { // Storage space is increased
         name: loc('trait_pack_rat_name'),
@@ -1610,6 +1638,20 @@ export const traits = {
         desc: loc('trait_selenophobia'),
         type: 'major',
         val: -6,
+        vars(){
+            switch (global.race.selenophobia || 1){
+                case 0.25:
+                    return [6];
+                case 0.5:
+                    return [5];
+                case 1:
+                    return [4];
+                case 2:
+                    return [3];
+                case 3:
+                    return [2];
+            }
+        },
     },
     leathery: { // Morale penalty from some weather conditions are reduced.
         name: loc('trait_leathery_name'),
@@ -1804,6 +1846,21 @@ export const traits = {
         desc: loc('trait_infectious'),
         type: 'major',
         val: 4,
+        vars(){
+            // [Ambush, Raid, Pillage, Assault, Siege]
+            switch (global.race.infectious || 1){
+                case 0.25:
+                    return [1,2,3,7,18];
+                case 0.5:
+                    return [1,2,4,8,20];
+                case 1:
+                    return [2,3,5,10,25];
+                case 2:
+                    return [2,4,6,12,30];
+                case 3:
+                    return [3,4,7,13,32];
+            }
+        }
     },
     parasite: { // You can only reproduce by infecting victims, spores sometimes find a victim when it's windy
         name: loc('trait_parasite_name'),
@@ -1858,6 +1915,20 @@ export const traits = {
         desc: loc('trait_infiltrator'),
         type: 'major',
         val: 4,
+        vars(){
+            switch (global.race.infiltrator || 1){
+                case 0.25:
+                    return [120];
+                case 0.5:
+                    return [110];
+                case 1:
+                    return [100];
+                case 2:
+                    return [95];
+                case 3:
+                    return [90];
+            }
+        }
     },
     hibernator: { // Lower activity during winter
         name: loc('trait_hibernator_name'),

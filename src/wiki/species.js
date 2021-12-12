@@ -195,6 +195,10 @@ const valAdjust = {
     spores: false,
     terrifying: false,
     shapeshifter: false,
+    freespirit: false,
+    selenophobia: false,
+    infectious: false,
+    infiltrator: false,
 };
 
 export function traitDesc(info,trait,fanatic,tpage){
