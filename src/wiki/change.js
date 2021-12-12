@@ -11,11 +11,11 @@ const changeList = [
             `Added option to Hell Fortress to prevent using ship crew as reinforcements.`,
             `Shrine Metal bonus now applies to Mining Droid Aluminium production.`,
             `Armored trait now prevents 50% of deaths.`,
-            `Cannibalize healing now applies a percent based bonus instead of being equivilent to 3 5% Hospitals.`,
+            `Cannibalize healing now applies a percent based bonus instead of being equivalent to 3 5% Hospitals.`,
             `GruvBox Dark is now the default theme.`,
             `Added Evolve Adept Perk.`,
             `Themed several additional weapon techs in magic universe for immersion.`,
-            `Smodering and Chilled effects now display as Smoldering or Chilled in production breakdowns instead of Hot/Cold.`,
+            `Smoldering and Chilled effects now display as Smoldering or Chilled in production breakdowns instead of Hot/Cold.`,
             `Improved touch device support.`
         ]
     },
