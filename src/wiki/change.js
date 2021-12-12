@@ -8,6 +8,7 @@ const changeList = [
         date: `12/12/2021`,
         changes: [
             `Fixed bug with Plasmid Storage.`,
+            `Fixed bug with Befuddle trait and Espionage.`,
             `Updated Solar Map.`,
             `Added setting to enable mobile device support.`,
             `Minor buff to TP Frigate power.`

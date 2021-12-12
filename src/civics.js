@@ -705,7 +705,7 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
                 }
             }
@@ -714,7 +714,7 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
                 }
             }
@@ -724,7 +724,7 @@ function spyAction(sa,g){
                 if (g >= 3){ break; }
                 else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
+                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
                 }
             }
@@ -787,7 +787,7 @@ function drawEspModal(gov){
                 if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
                         global.civic.foreign[`gov${g}`].act = 'annex';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
@@ -802,7 +802,7 @@ function drawEspModal(gov){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab === 0){
                         global.resource.Money.amount -= price;
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer / traits.befuddle.vars()[0] / 100) : timer;
+                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
                         global.civic.foreign[`gov${g}`].act = 'purchase';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
