@@ -9,6 +9,7 @@ const changeList = [
         changes: [
             `Fixed bug with Plasmid Storage.`,
             `Fixed bug with Befuddle trait and Espionage.`,
+            `Fixed bug with Composting.`,
             `Updated Solar Map.`,
             `Added setting to enable mobile device support.`,
             `Minor buff to TP Frigate power.`

@@ -2701,7 +2701,7 @@ function fastLoop(){
                             breakdown.p.consume.Lumber[loc('city_compost_heap')] = -(lumber_cost);
                             modRes('Lumber', -(lumber_cost * time_multiplier));
                         }
-                        let c_factor = traits.blood_thirst.vars()[0] / 100;
+                        let c_factor = traits.detritivore.vars()[0] / 100;
                         let food_compost = operating * (1.2 + (global.tech['compost'] * c_factor));
                         food_compost *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
                         food_compost *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
