@@ -3182,8 +3182,13 @@ function fastLoop(){
             if (muckVal){
                 lib_multiplier -= (muckVal / 100);
             }
-            let library_bonus = global.race['autoignition'] ? (traits.autoignition.vars()[0] / 100) : lib_multiplier;
-            let library_mult = global.city['library'] ? 1 + (global.city.library.count * library_bonus) : 1;
+            if (global.race['autoignition']){
+                lib_multiplier -= (traits.autoignition.vars()[0] / 100);
+                if (lib_multiplier < 0){
+                    lib_multiplier = 0;
+                }
+            }
+            let library_mult = global.city['library'] ? 1 + (global.city.library.count * lib_multiplier) : 1;
 
             let gene_consume = 0;
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){

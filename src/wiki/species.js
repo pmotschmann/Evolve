@@ -1,6 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, popover, getEaster } from './../functions.js';
+import { clearElement, vBind, popover, getEaster } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
 import { ascendLab } from './../space.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
@@ -120,10 +120,10 @@ export function traitsPage(content){
     for (let i=0; i<types.length; i++){
         Object.keys(traits).sort( (a,b) => traits[a].name.localeCompare(traits[b].name) ).forEach(function (trait){
             if (types[i].includes(traits[trait].type)){
-                let info = $(`<div id="${types[i]}_${trait}" class="infoBox"></div>`);
+                let info = $(`<div id="${traits[trait].type}_${trait}" class="infoBox"></div>`);
                 content.append(info);
                 traitDesc(info,trait,false,true);
-                sideMenu('add',`traits-species`,`${types[i]}_${trait}`,traits[trait].name);
+                sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traits[trait].name);
             }
         });
     }
@@ -201,21 +201,8 @@ const valAdjust = {
     infiltrator: false,
 };
 
-export function traitDesc(info,trait,fanatic,tpage){
-    info.append(`<h2 class="has-text-warning">${traits[trait].name}</h2>`);
-    if (tpage && traits[trait].hasOwnProperty('val')){
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
-    }
-    else {
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
-    }
-    
-    if (fanatic){
-        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
-    }
-    info.append(`<div class="desc">${traits[trait].desc}</div>`);
-
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars() : [];
+function getTraitVals(trait,rank){
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
             for (let i=0; i<vals.length; i++){
@@ -229,14 +216,91 @@ export function traitDesc(info,trait,fanatic,tpage){
             vals = [];
         }
     }
+    return vals;
+}
+
+export function traitDesc(info,trait,fanatic,tpage){
+    let rank = '';
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
+    }
+    info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
+    if (tpage && traits[trait].hasOwnProperty('val')){
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
+    }
+    else {
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+    }
+    
+    if (fanatic){
+        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+    }
+    info.append(`<div class="desc">${traits[trait].desc}</div>`);
+
     let color = 'warning';
     if (traits[trait].hasOwnProperty('val')){
         color = traits[trait].val >= 0 ? 'success' : 'danger';
     }
-    info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,vals)}</div>`);
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        info.append(`<div class="has-text-${color} effect" v-html="traitDesc(rank)"></div>`);
+    }
+    else {
+        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait))}</div>`);
+    }
     if (traitExtra[trait]){
         traitExtra[trait].forEach(function(te){
             info.append(`<div class="effect">${te}</div>`);
+        });
+    }
+
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        let data = { rank: global.race[trait] || 1 };
+        vBind({
+            el: `#${traits[trait].type}_${trait}`,
+            data: data,
+            methods: {
+                traitDesc(rk){
+                    return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
+                },
+                up(){
+                    switch (data.rank){
+                        case 0.25:
+                            data.rank = 0.5;
+                            break;
+                        case 0.5:
+                            data.rank =  1;
+                            break;
+                        case 1:
+                            data.rank =  2;
+                            break;
+                        case 2:
+                            data.rank =  3;
+                            break;
+                        case 3:
+                            data.rank =  3;
+                            break;
+                    }
+                },
+                down(){
+                    switch (data.rank){
+                        case 0.25:
+                            data.rank = 0.25;
+                            break;
+                        case 0.5:
+                            data.rank =  0.25;
+                            break;
+                        case 1:
+                            data.rank =  0.5;
+                            break;
+                        case 2:
+                            data.rank =  1;
+                            break;
+                        case 3:
+                            data.rank =  2;
+                            break;
+                    }
+                },
+            },
         });
     }
 }

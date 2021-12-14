@@ -4316,7 +4316,13 @@ export const actions = {
                 gain = +(gain).toFixed(0);
                 let muckVal2 = govActive('muckraker',2);
                 let know = muckVal2 ? (5 - muckVal2) : 5;
-                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[global.race['autoignition'] ? traits.autoignition.vars()[0] : know])}</div>`;
+                if (global.race['autoignition']){
+                    know -= traits.autoignition.vars()[0];
+                    if (know < 0){
+                        know = 0;
+                    }
+                }
+                return `<div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div><div>${loc('city_library_effect',[know])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){

@@ -154,8 +154,8 @@ export const traits = {
         desc: loc('trait_adaptable'),
         type: 'genus',
         val: 3,
-        vars(){ 
-            switch (global.race.adaptable || 1){
+        vars(r){ 
+            switch (r || global.race.adaptable || 1){
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -174,8 +174,8 @@ export const traits = {
         desc: loc('trait_wasteful'),
         type: 'genus',
         val: -3,
-        vars(){ 
-            switch (global.race.wasteful || 1){
+        vars(r){ 
+            switch (r || global.race.wasteful || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -206,9 +206,9 @@ export const traits = {
         desc: loc('trait_beast'),
         type: 'genus',
         val: 2,
-        vars(){
+        vars(r){
             // [Hunting, Windy Hunting, Training Speed]
-            switch (global.race.beast || 1){
+            switch (r || global.race.beast || 1){
                 case 0.25:
                     return [4,8,4];
                 case 0.5:
@@ -227,8 +227,8 @@ export const traits = {
         desc: loc('trait_cautious'),
         type: 'genus',
         val: -2,
-        vars(){ 
-            switch (global.race.cautious || 1){
+        vars(r){ 
+            switch (r || global.race.cautious || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -253,9 +253,9 @@ export const traits = {
         desc: loc('trait_instinct'),
         type: 'genus',
         val: 5,
-        vars(){
+        vars(r){
             // [Surveyor Survival Boost, Reduce Combat Deaths %]
-            switch (global.race.instinct || 1){
+            switch (r || global.race.instinct || 1){
                 case 0.25:
                     return [3,15];
                 case 0.5:
@@ -280,9 +280,9 @@ export const traits = {
         desc: loc('trait_small'),
         type: 'genus',
         val: 6,
-        vars(){
+        vars(r){
             // [Planet Creep, Space Creep]
-            switch (global.race.small || 1){
+            switch (r || global.race.small || 1){
                 case 0.25:
                     return [0.0025,0.0015];
                 case 0.5:
@@ -301,8 +301,8 @@ export const traits = {
         desc: loc('trait_weak'),
         type: 'genus',
         val: -3,
-        vars(){
-            switch (global.race.weak || 1){
+        vars(r){
+            switch (r || global.race.weak || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -321,8 +321,8 @@ export const traits = {
         desc: loc('trait_large'),
         type: 'genus',
         val: -5,
-        vars(){
-            switch (global.race.large || 1){
+        vars(r){
+            switch (r || global.race.large || 1){
                 case 0.25:
                     return [0.007];
                 case 0.5:
@@ -341,8 +341,8 @@ export const traits = {
         desc: loc('trait_strong'),
         type: 'genus',
         val: 1,
-        vars(){
-            switch (global.race.strong || 1){
+        vars(r){
+            switch (r || global.race.strong || 1){
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -361,9 +361,9 @@ export const traits = {
         desc: loc('trait_cold_blooded'),
         type: 'genus',
         val: -2,
-        vars(){
+        vars(r){
             // [Weather Penalty, Weather Bonus]
-            switch (global.race.cold_blooded || 1){
+            switch (r || global.race.cold_blooded || 1){
                 case 0.25:
                     return [30,6];
                 case 0.5:
@@ -382,9 +382,9 @@ export const traits = {
         desc: loc('trait_scales'),
         type: 'genus',
         val: 5,
-        vars(){
+        vars(r){
             // [Win, Loss, Hell]
-            switch (global.race.scales || 1){
+            switch (r || global.race.scales || 1){
                 case 0.25:
                     return [1,0,1];
                 case 0.5:
@@ -403,8 +403,8 @@ export const traits = {
         desc: loc('trait_hollow_bones'),
         type: 'genus',
         val: 3,
-        vars(){
-            switch (global.race.hollow_bones || 1){
+        vars(r){
+            switch (r || global.race.hollow_bones || 1){
                 case 0.25:
                     return [1];
                 case 0.5:
@@ -423,8 +423,8 @@ export const traits = {
         desc: loc('trait_rigid'),
         type: 'genus',
         val: -1,
-        vars(){
-            switch (global.race.rigid || 1){
+        vars(r){
+            switch (r || global.race.rigid || 1){
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -443,9 +443,9 @@ export const traits = {
         desc: loc('trait_fast_growth'),
         type: 'genus',
         val: 3,
-        vars(){
+        vars(r){
             // [bound multi, bound add]
-            switch (global.race.fast_growth || 1){
+            switch (r || global.race.fast_growth || 1){
                 case 0.25:
                     return [1.5,1];
                 case 0.5:
@@ -464,8 +464,8 @@ export const traits = {
         desc: loc('trait_high_metabolism'),
         type: 'genus',
         val: -1,
-        vars(){
-            switch (global.race.high_metabolism || 1){
+        vars(r){
+            switch (r || global.race.high_metabolism || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -484,9 +484,9 @@ export const traits = {
         desc: loc('trait_photosynth'),
         type: 'genus',
         val: 3,
-        vars(){
+        vars(r){
             // [Sunny, Cloudy, Rainy]
-            switch (global.race.photosynth || 1){
+            switch (r || global.race.photosynth || 1){
                 case 0.25:
                     return [10,5,4];
                 case 0.5:
@@ -505,8 +505,8 @@ export const traits = {
         desc: loc('trait_sappy',[loc('resource_Amber_name')]),
         type: 'genus',
         val: 4,
-        vars(){
-            switch (global.race.sappy || 1){
+        vars(r){
+            switch (r || global.race.sappy || 1){
                 case 0.25:
                     return [0.4];
                 case 0.5:
@@ -525,8 +525,8 @@ export const traits = {
         desc: loc('trait_asymmetrical'),
         type: 'genus',
         val: -3,
-        vars(){
-            switch (global.race.asymmetrical || 1){
+        vars(r){
+            switch (r || global.race.asymmetrical || 1){
                 case 0.25:
                     return [30];
                 case 0.5:
@@ -545,8 +545,8 @@ export const traits = {
         desc: loc('trait_detritivore'),
         type: 'genus',
         val: 2,
-        vars(){
-            switch (global.race.detritivore || 1){
+        vars(r){
+            switch (r || global.race.detritivore || 1){
                 case 0.25:
                     return [65];
                 case 0.5:
@@ -565,9 +565,9 @@ export const traits = {
         desc: loc('trait_spores'),
         type: 'genus',
         val: 2,
-        vars(){
+        vars(r){
             // [Bound Add, Bound Multi, Bound Add Parasite]
-            switch (global.race.spores || 1){
+            switch (r || global.race.spores || 1){
                 case 0.25:
                     return [1,1.5,1];
                 case 0.5:
@@ -598,8 +598,8 @@ export const traits = {
         desc: loc('trait_low_light'),
         type: 'genus',
         val: -2,
-        vars(){
-            switch (global.race.low_light || 1){
+        vars(r){
+            switch (r || global.race.low_light || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -618,8 +618,8 @@ export const traits = {
         desc: loc('trait_elusive'),
         type: 'genus',
         val: 7,
-        vars(){
-            switch (global.race.elusive || 1){
+        vars(r){
+            switch (r || global.race.elusive || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -638,8 +638,8 @@ export const traits = {
         desc: loc('trait_iron_allergy'),
         type: 'genus',
         val: -4,
-        vars(){
-            switch (global.race.iron_allergy || 1){
+        vars(r){
+            switch (r || global.race.iron_allergy || 1){
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -658,9 +658,9 @@ export const traits = {
         desc: loc('trait_smoldering'),
         type: 'genus',
         val: 7,
-        vars(){
+        vars(r){
             // [Seasonal Morale, Hot Bonus, High Hot Bonus]
-            switch (global.race.smoldering || 1){
+            switch (r || global.race.smoldering || 1){
                 case 0.25:
                     return [3,0.14,0.08];
                 case 0.5:
@@ -679,8 +679,8 @@ export const traits = {
         desc: loc('trait_cold_intolerance'),
         type: 'genus',
         val: -4,
-        vars(){
-            switch (global.race.cold_intolerance || 1){
+        vars(r){
+            switch (r || global.race.cold_intolerance || 1){
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -699,9 +699,9 @@ export const traits = {
         desc: loc('trait_chilled'),
         type: 'genus',
         val: 7,
-        vars(){
+        vars(r){
             // [Seasonal Morale, Cold Bonus, High Cold Bonus, Snow Food Bonus, Cold Food Bonus, Sun Food Penalty]
-            switch (global.race.chilled || 1){
+            switch (r || global.race.chilled || 1){
                 case 0.25:
                     return [1,0.14,0.08,5,2,20];
                 case 0.5:
@@ -720,8 +720,8 @@ export const traits = {
         desc: loc('trait_heat_intolerance'),
         type: 'genus',
         val: -4,
-        vars(){
-            switch (global.race.heat_intolerance || 1){
+        vars(r){
+            switch (r || global.race.heat_intolerance || 1){
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -740,9 +740,9 @@ export const traits = {
         desc: loc('trait_scavenger'),
         type: 'genus',
         val: 3,
-        vars(){
+        vars(r){
             // [impact, duel bonus]
-            switch (global.race.scavenger || 1){
+            switch (r || global.race.scavenger || 1){
                 case 0.25:
                     return [0.08,20];
                 case 0.5:
@@ -767,8 +767,8 @@ export const traits = {
         desc: loc('trait_immoral'),
         type: 'genus',
         val: 4,
-        vars(){
-            switch (global.race.immoral || 1){
+        vars(r){
+            switch (r || global.race.immoral || 1){
                 case 0.25:
                     return [-30];
                 case 0.5:
@@ -793,8 +793,8 @@ export const traits = {
         desc: loc('trait_blissful'),
         type: 'genus',
         val: 3,
-        vars(){
-            switch (global.race.blissful || 1){
+        vars(r){
+            switch (r || global.race.blissful || 1){
                 case 0.25:
                     return [70];
                 case 0.5:
@@ -813,8 +813,8 @@ export const traits = {
         desc: loc('trait_pompous'),
         type: 'genus',
         val: -6,
-        vars(){
-            switch (global.race.pompous || 1){
+        vars(r){
+            switch (r || global.race.pompous || 1){
                 case 0.25:
                     return [85];
                 case 0.5:
@@ -833,9 +833,9 @@ export const traits = {
         desc: loc('trait_holy'),
         type: 'genus',
         val: 4,
-        vars(){
+        vars(r){
             // [Hell Army Bonus, Hell Suppression Bonus]
-            switch (global.race.holy || 1){
+            switch (r || global.race.holy || 1){
                 case 0.25:
                     return [25,10];
                 case 0.5:
@@ -854,9 +854,9 @@ export const traits = {
         desc: loc('trait_artifical'),
         type: 'genus',
         val: 5,
-        vars(){
+        vars(r){
             // [Science Bonus]
-            switch (global.race.artifical || 1){
+            switch (r || global.race.artifical || 1){
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -875,9 +875,9 @@ export const traits = {
         desc: loc('trait_powered'),
         type: 'genus',
         val: -6,
-        vars(){
+        vars(r){
             // [Power Req, Labor Boost]
-            switch (global.race.powered || 1){
+            switch (r || global.race.powered || 1){
                 case 0.25:
                     return [0.35,5];
                 case 0.5:
@@ -896,8 +896,8 @@ export const traits = {
         desc: loc('trait_creative'),
         type: 'major',
         val: 8,
-        vars(){
-            switch (global.race.creative || 1){
+        vars(r){
+            switch (r || global.race.creative || 1){
                 case 0.25:
                     return [0.0015,5];
                 case 0.5:
@@ -916,8 +916,8 @@ export const traits = {
         desc: loc('trait_diverse'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.diverse || 1){
+        vars(r){
+            switch (r || global.race.diverse || 1){
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -936,9 +936,9 @@ export const traits = {
         desc: loc('trait_studious'),
         type: 'major',
         val: 2,
-        vars(){
+        vars(r){
             // [Prof Bonus, Library Bonus]
-            switch (global.race.studious || 1){
+            switch (r || global.race.studious || 1){
                 case 0.25:
                     return [0.1,6];
                 case 0.5:
@@ -957,8 +957,8 @@ export const traits = {
         desc: loc('trait_arrogant'),
         type: 'major',
         val: -2,
-        vars(){
-            switch (global.race.arrogant || 1){
+        vars(r){
+            switch (r || global.race.arrogant || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -977,9 +977,9 @@ export const traits = {
         desc: loc('trait_brute'),
         type: 'major',
         val: 7,
-        vars(){
+        vars(r){
             // [Merc Discount, Training Bonus]
-            switch (global.race.brute || 1){
+            switch (r || global.race.brute || 1){
                 case 0.25:
                     return [20,50];
                 case 0.5:
@@ -998,8 +998,8 @@ export const traits = {
         desc: loc('trait_angry'),
         type: 'major',
         val: -1,
-        vars(){
-            switch (global.race.angry || 1){
+        vars(r){
+            switch (r || global.race.angry || 1){
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -1018,8 +1018,8 @@ export const traits = {
         desc: loc('trait_lazy'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.lazy || 1){
+        vars(r){
+            switch (r || global.race.lazy || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1038,8 +1038,8 @@ export const traits = {
         desc: loc('trait_curious'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.curious || 1){
+        vars(r){
+            switch (r || global.race.curious || 1){
                 case 0.25:
                     return [0.03];
                 case 0.5:
@@ -1058,9 +1058,9 @@ export const traits = {
         desc: loc('trait_pack_mentality'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Cabin Creep penatly, Cottage Creep bonus]
-            switch (global.race.pack_mentality || 1){
+            switch (r || global.race.pack_mentality || 1){
                 case 0.25:
                     return [0.04,0.016];
                 case 0.5:
@@ -1079,8 +1079,8 @@ export const traits = {
         desc: loc('trait_tracker'),
         type: 'major',
         val: 2,
-        vars(){
-            switch (global.race.tracker || 1){
+        vars(r){
+            switch (r || global.race.tracker || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1099,8 +1099,8 @@ export const traits = {
         desc: loc('trait_playful'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.playful || 1){
+        vars(r){
+            switch (r || global.race.playful || 1){
                 case 0.25:
                     return [0.3];
                 case 0.5:
@@ -1119,8 +1119,8 @@ export const traits = {
         desc: loc('trait_freespirit'),
         type: 'major',
         val: -3,
-        vars(){
-            switch (global.race.freespirit || 1){
+        vars(r){
+            switch (r || global.race.freespirit || 1){
                 case 0.25:
                     return [65];
                 case 0.5:
@@ -1145,8 +1145,8 @@ export const traits = {
         desc: loc('trait_sniper'),
         type: 'major',
         val: 6,
-        vars(){
-            switch (global.race.sniper || 1){
+        vars(r){
+            switch (r || global.race.sniper || 1){
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -1171,9 +1171,9 @@ export const traits = {
         desc: loc('trait_rage'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Armor Bonus, Wounded Bonus]
-            switch (global.race.rage || 1){
+            switch (r || global.race.rage || 1){
                 case 0.25:
                     return [0.3,20];
                 case 0.5:
@@ -1192,9 +1192,9 @@ export const traits = {
         desc: loc('trait_heavy'),
         type: 'major',
         val: -4,
-        vars(){
+        vars(r){
             // [Fuel Costs, Stone Cement and Wrought Iron Costs]
-            switch (global.race.heavy || 1){
+            switch (r || global.race.heavy || 1){
                 case 0.25:
                     return [18,10];
                 case 0.5:
@@ -1213,8 +1213,8 @@ export const traits = {
         desc: loc('trait_gnawer'),
         type: 'major',
         val: -1,
-        vars(){
-            switch (global.race.gnawer || 1){
+        vars(r){
+            switch (r || global.race.gnawer || 1){
                 case 0.25:
                     return [0.5];
                 case 0.5:
@@ -1233,8 +1233,8 @@ export const traits = {
         desc: loc('trait_calm'),
         type: 'major',
         val: 6,
-        vars(){
-            switch (global.race.calm || 1){
+        vars(r){
+            switch (r || global.race.calm || 1){
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1253,9 +1253,9 @@ export const traits = {
         desc: loc('trait_pack_rat'),
         type: 'major',
         val: 3,
-        vars(){
+        vars(r){
             // [Crate Bonus, Storage Bonus]
-            switch (global.race.pack_rat || 1){
+            switch (r || global.race.pack_rat || 1){
                 case 0.25:
                     return [5,2];
                 case 0.5:
@@ -1274,8 +1274,8 @@ export const traits = {
         desc: loc('trait_paranoid'),
         type: 'major',
         val: -3,
-        vars(){
-            switch (global.race.paranoid || 1){
+        vars(r){
+            switch (r || global.race.paranoid || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1294,8 +1294,8 @@ export const traits = {
         desc: loc('trait_greedy'),
         type: 'major',
         val: -5,
-        vars(){
-            switch (global.race.greedy || 1){
+        vars(r){
+            switch (r || global.race.greedy || 1){
                 case 0.25:
                     return [17.5];
                 case 0.5:
@@ -1314,9 +1314,9 @@ export const traits = {
         desc: loc('trait_merchant'),
         type: 'major',
         val: 3,
-        vars(){
+        vars(r){
             // [Sell Price, Galactic Buy Volume]
-            switch (global.race.merchant || 1){
+            switch (r || global.race.merchant || 1){
                 case 0.25:
                     return [10,3];
                 case 0.5:
@@ -1335,8 +1335,8 @@ export const traits = {
         desc: loc('trait_smart'),
         type: 'major',
         val: 6,
-        vars(){
-            switch (global.race.smart || 1){
+        vars(r){
+            switch (r || global.race.smart || 1){
                 case 0.25:
                     return [3];
                 case 0.5:
@@ -1355,8 +1355,8 @@ export const traits = {
         desc: loc('trait_puny'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.puny || 1){
+        vars(r){
+            switch (r || global.race.puny || 1){
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -1375,8 +1375,8 @@ export const traits = {
         desc: loc('trait_dumb'),
         type: 'major',
         val: -5,
-        vars(){
-            switch (global.race.dumb || 1){
+        vars(r){
+            switch (r || global.race.dumb || 1){
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1395,8 +1395,8 @@ export const traits = {
         desc: loc('trait_tough'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.tough || 1){
+        vars(r){
+            switch (r || global.race.tough || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1415,8 +1415,8 @@ export const traits = {
         desc: loc('trait_nearsighted'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.nearsighted || 1){
+        vars(r){
+            switch (r || global.race.nearsighted || 1){
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -1435,9 +1435,9 @@ export const traits = {
         desc: loc('trait_intelligent'),
         type: 'major',
         val: 7,
-        vars(){
+        vars(r){
             // [Prof Bonus, Scientist Bonus]
-            switch (global.race.intelligent || 1){
+            switch (r || global.race.intelligent || 1){
                 case 0.25:
                     return [0.08,0.15];
                 case 0.5:
@@ -1456,9 +1456,9 @@ export const traits = {
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
-        vars(){ return [4]; },
-        vars(){
-            switch (global.race.regenerative || 1){
+        vars(r){ return [4]; },
+        vars(r){
+            switch (r || global.race.regenerative || 1){
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -1477,8 +1477,8 @@ export const traits = {
         desc: loc('trait_gluttony'),
         type: 'major',
         val: -2,
-        vars(){
-            switch (global.race.gluttony || 1){
+        vars(r){
+            switch (r || global.race.gluttony || 1){
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -1497,8 +1497,8 @@ export const traits = {
         desc: loc('trait_slow'),
         type: 'major',
         val: -5,
-        vars(){
-            switch (global.race.slow || 1){
+        vars(r){
+            switch (r || global.race.slow || 1){
                 case 0.25:
                     return [13];
                 case 0.5:
@@ -1517,9 +1517,9 @@ export const traits = {
         desc: loc('trait_armored'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Solder % death prevention, Hell Armor Bonus]
-            switch (global.race.armored || 1){
+            switch (r || global.race.armored || 1){
                 case 0.25:
                     return [15,1];
                 case 0.5:
@@ -1538,8 +1538,8 @@ export const traits = {
         desc: loc('trait_optimistic'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.optimistic || 1){
+        vars(r){
+            switch (r || global.race.optimistic || 1){
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -1558,8 +1558,8 @@ export const traits = {
         desc: loc('trait_chameleon'),
         type: 'major',
         val: 6,
-        vars(){
-            switch (global.race.chameleon || 1){
+        vars(r){
+            switch (r || global.race.chameleon || 1){
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -1578,8 +1578,8 @@ export const traits = {
         desc: loc('trait_slow_digestion'),
         type: 'major',
         val: 1,
-        vars(){
-            switch (global.race.slow_digestion || 1){
+        vars(r){
+            switch (r || global.race.slow_digestion || 1){
                 case 0.25:
                     return [0.3];
                 case 0.5:
@@ -1598,8 +1598,8 @@ export const traits = {
         desc: loc('trait_hard_of_hearing'),
         type: 'major',
         val: -3,
-        vars(){
-            switch (global.race.hard_of_hearing || 1){
+        vars(r){
+            switch (r || global.race.hard_of_hearing || 1){
                 case 0.25:
                     return [7];
                 case 0.5:
@@ -1618,8 +1618,8 @@ export const traits = {
         desc: loc('trait_resourceful'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.resourceful || 1){
+        vars(r){
+            switch (r || global.race.resourceful || 1){
                 case 0.25:
                     return [6];
                 case 0.5:
@@ -1638,8 +1638,8 @@ export const traits = {
         desc: loc('trait_selenophobia'),
         type: 'major',
         val: -6,
-        vars(){
-            switch (global.race.selenophobia || 1){
+        vars(r){
+            switch (r || global.race.selenophobia || 1){
                 case 0.25:
                     return [6];
                 case 0.5:
@@ -1664,8 +1664,8 @@ export const traits = {
         desc: loc('trait_pessimistic'),
         type: 'major',
         val: -1,
-        vars(){
-            switch (global.race.pessimistic || 1){
+        vars(r){
+            switch (r || global.race.pessimistic || 1){
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -1684,8 +1684,8 @@ export const traits = {
         desc: loc('trait_hoarder'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.hoarder || 1){
+        vars(r){
+            switch (r || global.race.hoarder || 1){
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -1704,9 +1704,9 @@ export const traits = {
         desc: loc('trait_solitary'),
         type: 'major',
         val: -1,
-        vars(){
+        vars(r){
             // [Cabin Creep bonus, Cottage Creep malus]
-            switch (global.race.solitary || 1){
+            switch (r || global.race.solitary || 1){
                 case 0.25:
                     return [0.01,0.025];
                 case 0.5:
@@ -1725,8 +1725,8 @@ export const traits = {
         desc: loc('trait_kindling_kindred'),
         type: 'major',
         val: 8,
-        vars(){
-            switch (global.race.kindling_kindred || 1){
+        vars(r){
+            switch (r || global.race.kindling_kindred || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -1745,8 +1745,8 @@ export const traits = {
         desc: loc('trait_pyrophobia'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.pyrophobia || 1){
+        vars(r){
+            switch (r || global.race.pyrophobia || 1){
                 case 0.25:
                     return [14];
                 case 0.5:
@@ -1765,8 +1765,8 @@ export const traits = {
         desc: loc('trait_hyper'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.hyper || 1){
+        vars(r){
+            switch (r || global.race.hyper || 1){
                 case 0.25:
                     return [2];
                 case 0.5:
@@ -1785,8 +1785,8 @@ export const traits = {
         desc: loc('trait_skittish'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.skittish || 1){
+        vars(r){
+            switch (r || global.race.skittish || 1){
                 case 0.25:
                     return [18];
                 case 0.5:
@@ -1805,8 +1805,8 @@ export const traits = {
         desc: loc('trait_fragrant'),
         type: 'major',
         val: -3,
-        vars(){
-            switch (global.race.fragrant || 1){
+        vars(r){
+            switch (r || global.race.fragrant || 1){
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -1825,9 +1825,9 @@ export const traits = {
         desc: loc('trait_sticky'),
         type: 'major',
         val: 3,
-        vars(){
+        vars(r){
             // [Food Consumption, Army Bonus]
-            switch (global.race.sticky || 1){
+            switch (r || global.race.sticky || 1){
                 case 0.25:
                     return [5,5];
                 case 0.5:
@@ -1846,9 +1846,9 @@ export const traits = {
         desc: loc('trait_infectious'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Ambush, Raid, Pillage, Assault, Siege]
-            switch (global.race.infectious || 1){
+            switch (r || global.race.infectious || 1){
                 case 0.25:
                     return [1,2,3,7,18];
                 case 0.5:
@@ -1873,9 +1873,9 @@ export const traits = {
         desc: loc('trait_toxic'),
         type: 'major',
         val: 5,
-        vars(){
+        vars(r){
             // [Lux Fur Alloy Polymer, Nano Stanene, Cement]
-            switch (global.race.toxic || 1){
+            switch (r || global.race.toxic || 1){
                 case 0.25:
                     return [5,3,10];
                 case 0.5:
@@ -1894,9 +1894,9 @@ export const traits = {
         desc: loc('trait_nyctophilia'),
         type: 'major',
         val: -3,
-        vars(){
+        vars(r){
             // [Sunny, Cloudy]
-            switch (global.race.nyctophilia || 1){
+            switch (r || global.race.nyctophilia || 1){
                 case 0.25:
                     return [10,6];
                 case 0.5:
@@ -1915,8 +1915,8 @@ export const traits = {
         desc: loc('trait_infiltrator'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.infiltrator || 1){
+        vars(r){
+            switch (r || global.race.infiltrator || 1){
                 case 0.25:
                     return [120];
                 case 0.5:
@@ -1935,9 +1935,9 @@ export const traits = {
         desc: loc('trait_hibernator'),
         type: 'major',
         val: -3,
-        vars(){
+        vars(r){
             // [Food Consumption, Prodction]
-            switch (global.race.hibernator || 1){
+            switch (r || global.race.hibernator || 1){
                 case 0.25:
                     return [15,8];
                 case 0.5:
@@ -1956,8 +1956,8 @@ export const traits = {
         desc: loc('trait_cannibalize'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.cannibalize || 1){
+        vars(r){
+            switch (r || global.race.cannibalize || 1){
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -1976,9 +1976,9 @@ export const traits = {
         desc: loc('trait_frail'),
         type: 'major',
         val: -5,
-        vars(){
+        vars(r){
             // [Win Deaths, Loss Deaths]
-            switch (global.race.frail || 1){
+            switch (r || global.race.frail || 1){
                 case 0.25:
                     return [2,2];
                 case 0.5:
@@ -1997,8 +1997,8 @@ export const traits = {
         desc: loc('trait_malnutrition'),
         type: 'major',
         val: 1,
-        vars(){
-            switch (global.race.malnutrition || 1){
+        vars(r){
+            switch (r || global.race.malnutrition || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -2017,8 +2017,8 @@ export const traits = {
         desc: loc('trait_claws'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.claws || 1){
+        vars(r){
+            switch (r || global.race.claws || 1){
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -2037,8 +2037,8 @@ export const traits = {
         desc: loc('trait_atrophy'),
         type: 'major',
         val: -1,
-        vars(){
-            switch (global.race.atrophy || 1){
+        vars(r){
+            switch (r || global.race.atrophy || 1){
                 case 0.25:
                     return [0.35];
                 case 0.5:
@@ -2057,8 +2057,8 @@ export const traits = {
         desc: loc('trait_hivemind'),
         type: 'major',
         val: 9,
-        vars(){
-            switch (global.race.hivemind || 1){
+        vars(r){
+            switch (r || global.race.hivemind || 1){
                 case 0.25:
                     return [12];
                 case 0.5:
@@ -2077,8 +2077,8 @@ export const traits = {
         desc: loc('trait_tunneler'),
         type: 'major',
         val: 2,
-        vars(){
-            switch (global.race.tunneler || 1){
+        vars(r){
+            switch (r || global.race.tunneler || 1){
                 case 0.25:
                     return [0.002];
                 case 0.5:
@@ -2097,9 +2097,9 @@ export const traits = {
         desc: loc('trait_blood_thirst'),
         type: 'major',
         val: 5,
-        vars(){
+        vars(r){
             // [Cap]
-            switch (global.race.blood_thirst || 1){
+            switch (r || global.race.blood_thirst || 1){
                 case 0.25:
                     return [500000];
                 case 0.5:
@@ -2118,9 +2118,9 @@ export const traits = {
         desc: loc('trait_apex_predator'),
         type: 'major',
         val: 6,
-        vars(){
+        vars(r){
             // [Combat, Hunting]
-            switch (global.race.apex_predator || 1){
+            switch (r || global.race.apex_predator || 1){
                 case 0.25:
                     return [15,20];
                 case 0.5:
@@ -2139,8 +2139,8 @@ export const traits = {
         desc: loc('trait_invertebrate'),
         type: 'major',
         val: -2,
-        vars(){
-            switch (global.race.invertebrate || 1){
+        vars(r){
+            switch (r || global.race.invertebrate || 1){
                 case 0.25:
                     return [25];
                 case 0.5:
@@ -2159,8 +2159,8 @@ export const traits = {
         desc: loc('trait_suction_grip'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.suction_grip || 1){
+        vars(r){
+            switch (r || global.race.suction_grip || 1){
                 case 0.25:
                     return [5];
                 case 0.5:
@@ -2179,8 +2179,8 @@ export const traits = {
         desc: loc('trait_befuddle'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.befuddle || 1){
+        vars(r){
+            switch (r || global.race.befuddle || 1){
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -2205,8 +2205,8 @@ export const traits = {
         desc: loc('trait_unorganized'),
         type: 'major',
         val: -2,
-        vars(){
-            switch (global.race.unorganized || 1){
+        vars(r){
+            switch (r || global.race.unorganized || 1){
                 case 0.25:
                     return [90];
                 case 0.5:
@@ -2225,8 +2225,8 @@ export const traits = {
         desc: loc('trait_musical'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.musical || 1){
+        vars(r){
+            switch (r || global.race.musical || 1){
                 case 0.25:
                     return [0.25];
                 case 0.5:
@@ -2245,9 +2245,9 @@ export const traits = {
         desc: loc('trait_revive'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [cold win, normal win, hot win, cold loss, normal loss, hot loss, hell]
-            switch (global.race.revive || 1){
+            switch (r || global.race.revive || 1){
                 case 0.25:
                     return [7,5,2,8,6,3,4];
                 case 0.5:
@@ -2266,8 +2266,8 @@ export const traits = {
         desc: loc('trait_slow_regen'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.slow_regen || 1){
+        vars(r){
+            switch (r || global.race.slow_regen || 1){
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -2286,8 +2286,8 @@ export const traits = {
         desc: loc('trait_forge'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.forge || 1){
+        vars(r){
+            switch (r || global.race.forge || 1){
                 case 0.25:
                     return [0.5];
                 case 0.5:
@@ -2306,16 +2306,16 @@ export const traits = {
         desc: loc('trait_autoignition'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.autoignition || 1){
+        vars(r){
+            switch (r || global.race.autoignition || 1){
                 case 0.25:
-                    return [6];
+                    return [4];
                 case 0.5:
-                    return [5];
-                case 1:
                     return [3];
-                case 2:
+                case 1:
                     return [2];
+                case 2:
+                    return [1.5];
                 case 3:
                     return [1];
             }
@@ -2326,8 +2326,8 @@ export const traits = {
         desc: loc('trait_blurry'),
         type: 'major',
         val: 5,
-        vars(){
-            switch (global.race.blurry || 1){
+        vars(r){
+            switch (r || global.race.blurry || 1){
                 case 0.25:
                     return [10];
                 case 0.5:
@@ -2346,9 +2346,9 @@ export const traits = {
         desc: loc('trait_snowy'),
         type: 'major',
         val: -3,
-        vars(){
+        vars(r){
             // [Not Hot, Hot]
-            switch (global.race.snowy || 1){
+            switch (r || global.race.snowy || 1){
                 case 0.25:
                     return [4,10];
                 case 0.5:
@@ -2367,9 +2367,9 @@ export const traits = {
         desc: loc('trait_ravenous'),
         type: 'major',
         val: -5,
-        vars(){
+        vars(r){
             // [Extra Food Consumed, Stockpile Divisor]
-            switch (global.race.ravenous || 1){
+            switch (r || global.race.ravenous || 1){
                 case 0.25:
                     return [30,2];
                 case 0.5:
@@ -2388,9 +2388,9 @@ export const traits = {
         desc: loc('trait_ghostly'),
         type: 'major',
         val: 5,
-        vars(){
+        vars(r){
             // [Hunting Food, Soul Well Food, Soul Gem Adjust]
-            switch (global.race.ghostly || 1){
+            switch (r || global.race.ghostly || 1){
                 case 0.25:
                     return [20,1.2,5];
                 case 0.5:
@@ -2409,8 +2409,8 @@ export const traits = {
         desc: loc('trait_lawless'),
         type: 'major',
         val: 3,
-        vars(){
-            switch (global.race.lawless || 1){
+        vars(r){
+            switch (r || global.race.lawless || 1){
                 case 0.25:
                     return [30];
                 case 0.5:
@@ -2429,8 +2429,8 @@ export const traits = {
         desc: loc('trait_mistrustful'),
         type: 'major',
         val: -1,
-        vars(){
-            switch (global.race.mistrustful || 1){
+        vars(r){
+            switch (r || global.race.mistrustful || 1){
                 case 0.25:
                     return [4];
                 case 0.5:
@@ -2449,9 +2449,9 @@ export const traits = {
         desc: loc('trait_humpback'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Starve Resist, Miner/Lumber boost]
-            switch (global.race.humpback || 1){
+            switch (r || global.race.humpback || 1){
                 case 0.25:
                     return [0.2, 8];
                 case 0.5:
@@ -2476,9 +2476,9 @@ export const traits = {
         desc: loc('trait_fiery'),
         type: 'major',
         val: 10,
-        vars(){
+        vars(r){
             // [Combat Bonus, Hunting Bonus]
-            switch (global.race.fiery || 1){
+            switch (r || global.race.fiery || 1){
                 case 0.25:
                     return [30,15];
                 case 0.5:
@@ -2497,9 +2497,9 @@ export const traits = {
         desc: loc('trait_terrifying'),
         type: 'major',
         val: 6,
-        vars(){
+        vars(r){
             // [Titanium Low Roll, Titanium High Roll]
-            switch (global.race.terrifying || 1){
+            switch (r || global.race.terrifying || 1){
                 case 0.25:
                     return [8,20];
                 case 0.5:
@@ -2518,8 +2518,8 @@ export const traits = {
         desc: loc('trait_slaver'),
         type: 'major',
         val: 12,
-        vars(){
-            switch (global.race.slaver || 1){
+        vars(r){
+            switch (r || global.race.slaver || 1){
                 case 0.25:
                     return [0.1];
                 case 0.5:
@@ -2538,9 +2538,9 @@ export const traits = {
         desc: loc('trait_compact'),
         type: 'major',
         val: 10,
-        vars(){
+        vars(r){
             // [Planet Creep, Space Creep]
-            switch (global.race.compact || 1){
+            switch (r || global.race.compact || 1){
                 case 0.25:
                     return [0.005,0.003];
                 case 0.5:
@@ -2559,9 +2559,9 @@ export const traits = {
         desc: loc('trait_conniving'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Buy Price, Sell Price]
-            switch (global.race.conniving || 1){
+            switch (r || global.race.conniving || 1){
                 case 0.25:
                     return [2,8];
                 case 0.5:
@@ -2580,8 +2580,8 @@ export const traits = {
         desc: loc('trait_pathetic'),
         type: 'major',
         val: -5,
-        vars(){
-            switch (global.race.pathetic || 1){
+        vars(r){
+            switch (r || global.race.pathetic || 1){
                 case 0.25:
                     return [35];
                 case 0.5:
@@ -2600,8 +2600,8 @@ export const traits = {
         desc: loc('trait_spiritual'),
         type: 'major',
         val: 4,
-        vars(){
-            switch (global.race.spiritual || 1){
+        vars(r){
+            switch (r || global.race.spiritual || 1){
                 case 0.25:
                     return [8];
                 case 0.5:
@@ -2620,8 +2620,8 @@ export const traits = {
         desc: loc('trait_truthful'),
         type: 'major',
         val: -7,
-        vars(){
-            switch (global.race.truthful || 1){
+        vars(r){
+            switch (r || global.race.truthful || 1){
                 case 0.25:
                     return [75];
                 case 0.5:
@@ -2646,8 +2646,8 @@ export const traits = {
         desc: loc('trait_rainbow'),
         type: 'major',
         val: 3,
-        vars(){
-            switch (global.race.rainbow || 1){
+        vars(r){
+            switch (r || global.race.rainbow || 1){
                 case 0.25:
                     return [20];
                 case 0.5:
@@ -2672,9 +2672,9 @@ export const traits = {
         desc: loc('trait_noble'),
         type: 'major',
         val: -3,
-        vars(){
+        vars(r){
             // [min tax, max tax]
-            switch (global.race.noble || 1){
+            switch (r || global.race.noble || 1){
                 case 0.25:
                     return [15,20];
                 case 0.5:
@@ -2693,9 +2693,9 @@ export const traits = {
         desc: loc('trait_imitation'),
         type: 'major',
         val: 6,
-        vars(){
+        vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            switch (global.race.imitation || 1){
+            switch (r || global.race.imitation || 1){
                 case 0.25:
                     return [0.25,0.5];
                 case 0.5:
@@ -2714,9 +2714,9 @@ export const traits = {
         desc: loc('trait_emotionless'),
         type: 'major',
         val: -4,
-        vars(){
+        vars(r){
             // [Entertainer Reduction, Stress Reduction]
-            switch (global.race.emotionless || 1){
+            switch (r || global.race.emotionless || 1){
                 case 0.25:
                     return [50,10];
                 case 0.5:
@@ -2735,9 +2735,9 @@ export const traits = {
         desc: loc('trait_logical'),
         type: 'major',
         val: 6,
-        vars(){
+        vars(r){
             // [Reduce Wardenclyffe Knowledge Cost, Knowledge per Citizen]
-            switch (global.race.logical || 1){
+            switch (r || global.race.logical || 1){
                 case 0.25:
                     return [25,10];
                 case 0.5:
@@ -2756,9 +2756,9 @@ export const traits = {
         desc: loc('trait_shapeshifter'),
         type: 'major',
         val: 10,
-        vars(){
+        vars(r){
             // [Postitive Trait Rank, Negative Trait Rank]
-            switch (global.race.shapeshifter || 1){
+            switch (r || global.race.shapeshifter || 1){
                 case 0.25:
                     return [0.25,0.5];
                 case 0.5:
@@ -2777,8 +2777,8 @@ export const traits = {
         desc: loc('trait_deconstructor'),
         type: 'major',
         val: -4,
-        vars(){
-            switch (global.race.deconstructor || 1){
+        vars(r){
+            switch (r || global.race.deconstructor || 1){
                 case 0.25:
                     return [40];
                 case 0.5:
@@ -2797,9 +2797,9 @@ export const traits = {
         desc: loc('trait_linked'),
         type: 'major',
         val: 4,
-        vars(){
+        vars(r){
             // [Quantum Bonus per Citizen, Softcap]
-            switch (global.race.linked || 1){
+            switch (r || global.race.linked || 1){
                 case 0.25:
                     return [0.03,40];
                 case 0.5:
@@ -2835,49 +2835,49 @@ export const traits = {
         name: loc('trait_tactical_name'),
         desc: loc('trait_tactical'),
         type: 'minor',
-        vars(){ return [5]; },
+        vars(r){ return [5]; },
     },
     analytical: { // Science Bonus
         name: loc('trait_analytical_name'),
         desc: loc('trait_analytical'),
         type: 'minor',
-        vars(){ return [1]; },
+        vars(r){ return [1]; },
     },
     promiscuous: { // Population Growth Bonus
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
         type: 'minor',
-        vars(){ return [1]; },
+        vars(r){ return [1]; },
     },
     resilient: { // Coal Mining Bonus
         name: loc('trait_resilient_name'),
         desc: loc('trait_resilient'),
         type: 'minor',
-        vars(){ return [2]; },
+        vars(r){ return [2]; },
     },
     cunning: { // Hunting Bonus
         name: loc('trait_cunning_name'),
         desc: loc('trait_cunning'),
         type: 'minor',
-        vars(){ return [5]; },
+        vars(r){ return [5]; },
     },
     hardy: { // Factory Woker Bonus
         name: loc('trait_hardy_name'),
         desc: loc('trait_hardy'),
         type: 'minor',
-        vars(){ return [1]; },
+        vars(r){ return [1]; },
     },
     ambidextrous: { // Crafting Bonus
         name: loc('trait_ambidextrous_name'),
         desc: loc('trait_ambidextrous'),
         type: 'minor',
-        vars(){ return [3,2]; },
+        vars(r){ return [3,2]; },
     },
     industrious: { // Miner Bonus
         name: loc('trait_industrious_name'),
         desc: loc('trait_industrious'),
         type: 'minor',
-        vars(){ return [2]; },
+        vars(r){ return [2]; },
     },
     content: { // Morale Bonus
         name: loc('trait_content_name'),
@@ -2888,25 +2888,25 @@ export const traits = {
         name: loc('trait_fibroblast_name'),
         desc: loc('trait_fibroblast'),
         type: 'minor',
-        vars(){ return [2]; },
+        vars(r){ return [2]; },
     },
     metallurgist: { // Alloy bonus
         name: loc('trait_metallurgist_name'),
         desc: loc('trait_metallurgist'),
         type: 'minor',
-        vars(){ return [4]; },
+        vars(r){ return [4]; },
     },
     gambler: { // Casino bonus
         name: loc('trait_gambler_name'),
         desc: loc('trait_gambler'),
         type: 'minor',
-        vars(){ return [4]; },
+        vars(r){ return [4]; },
     },
     persuasive: { // Trade bonus
         name: loc('trait_persuasive_name'),
         desc: loc('trait_persuasive'),
         type: 'minor',
-        vars(){ return [1]; },
+        vars(r){ return [1]; },
     },
     fortify: { // gene fortification
         name: loc('trait_fortify_name'),
@@ -2917,7 +2917,7 @@ export const traits = {
         name: loc('trait_mastery_name'),
         desc: loc('trait_mastery'),
         type: 'special',
-        vars(){ return [1]; },
+        vars(r){ return [1]; },
     }
 };
 
