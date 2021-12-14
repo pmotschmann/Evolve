@@ -6,6 +6,7 @@ const changeList = [
         version: `1.2.1`,
         date: `12/??/2021`,
         changes: [
+            `Fixed bug with removing Weak & Bad genes when toggling True Path.`,
             `Added trait rankings to wiki.`,
         ]
     },

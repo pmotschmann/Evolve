@@ -5228,6 +5228,7 @@ function addRaces(races){
 }
 
 function setScenario(scenario){
+    console.log(scenario);
     Object.keys(races).forEach(function(r){
         if (r !== 'junker'){
             $(`#evolution-${r}`).removeClass('is-hidden');
@@ -5236,6 +5237,9 @@ function setScenario(scenario){
     if (global.race[scenario]){
         delete global.race[scenario];
         $(`#evolution-${scenario}`).removeClass('hl');
+        ['nerfed','badgenes'].forEach(function(gene){
+            delete global.race[challengeList[gene]];
+        });
     }
     else {
         ['junker','cataclysm','banana','truepath'].forEach(function(s){
