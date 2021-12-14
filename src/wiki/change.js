@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.1`,
+        date: `12/??/2021`,
+        changes: [
+            `Added trait rankings to wiki.`,
+        ]
+    },
+    {
         version: `1.2.0`,
         revision: `a`,
         date: `12/12/2021`,

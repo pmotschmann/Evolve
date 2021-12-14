@@ -538,7 +538,7 @@ export const outerTruth = {
                             global.tech['titan_ai_core'] = 1;
                             global.space['ai_core2'] = { count: 1, on: 0 };
                             if (global.city.power >= outerTruth.spc_titan.ai_core2.powered()){
-                                global.space.spc_titan.on++;
+                                global.space.ai_core2.on++;
                             }
                             renderSpace();
                         }
