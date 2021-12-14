@@ -54,7 +54,7 @@ function infoForFeature(planetFeatures, content) {
 
         let modifiers = $(`<div class="propList"></div>`);
         if (planetFeature['vars'] && planetFeature['wiki']) {
-            for (let i=0; i<planetFeature['vars'].length; i++){
+            for (let i=0; i<planetFeature.vars().length; i++){
                 let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : 'decimal');
                 modifiers.append($(`<div class="has-text-label">${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars()[i], type)])}</div>`));
             }

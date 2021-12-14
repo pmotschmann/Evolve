@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Fixed bug with removing Weak & Bad genes when toggling True Path.`,
             `Added trait rankings to wiki.`,
+            `Fixed bug with Planet Wiki entry that prevented some data from loading.`,
         ]
     },
     {
