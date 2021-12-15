@@ -916,6 +916,15 @@ if (convertVersion(global['version']) < 102000){
     }
 }
 
+if (convertVersion(global['version']) < 102001){
+    if (global.race['blood_thirst'] && global.race.blood_thirst > 3){
+        global.race.blood_thirst = 1;
+    }
+    if (global.race['rainbow'] && global.race.rainbow > 3){
+        global.race.rainbow = 1;
+    }
+}
+
 global['version'] = '1.2.1';
 delete global['revision'];
 delete global['beta'];

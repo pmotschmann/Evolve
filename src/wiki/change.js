@@ -6,6 +6,7 @@ const changeList = [
         version: `1.2.1`,
         date: `12/??/2021`,
         changes: [
+            `Smelter metals can now be reallocated without unassigning.`,
             `Fixed bug with removing Weak & Bad genes when toggling True Path.`,
             `Added trait rankings to wiki.`,
             `Fixed bug with Planet Wiki entry that prevented some data from loading.`,

@@ -175,7 +175,7 @@ function loadSmelter(parent,bind){
         let smeltTypes = $(`<div class="fuels"></div>`);
         smelt.append(smeltTypes);
 
-        let iron = $(`<span :aria-label="ironLabel() + ariaProd('Iron')" class="current iron">${global.resource.Iron.name} {{ s.Iron }}</span>`);
+        let iron = $(`<span :aria-label="mLabel('iron') + ariaProd('Iron')" class="current iron">${global.resource.Iron.name} {{ s.Iron }}</span>`);
         let ironSub = $(`<span role="button" class="sub" @click="subMetal('Iron')" aria-label="Smelt less iron"><span>&laquo;</span></span>`);
         let ironAdd = $(`<span role="button" class="add" @click="addMetal('Iron')" aria-label="Smelt more iron"><span>&raquo;</span></span>`);
         smeltTypes.append(ironSub);
@@ -183,7 +183,7 @@ function loadSmelter(parent,bind){
         smeltTypes.append(ironAdd);
 
         if (global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']){
-            let steel = $(`<span :aria-label="steelLabel() + ariaProd('Steel')" class="current steel">${global.resource.Steel.name} {{ s.Steel }}</span>`);
+            let steel = $(`<span :aria-label="mLabel('steel') + ariaProd('Steel')" class="current steel">${global.resource.Steel.name} {{ s.Steel }}</span>`);
             let steelSub = $(`<span role="button" class="sub" @click="subMetal('Steel')" aria-label="Smelt less steel"><span>&laquo;</span></span>`);
             let steelAdd = $(`<span role="button" class="add" @click="addMetal('Steel')" aria-label="Smelt more steel"><span>&raquo;</span></span>`);
             smeltTypes.append(steelSub);
@@ -192,7 +192,7 @@ function loadSmelter(parent,bind){
         }
 
         if (global.resource.Iridium.display && irid_smelt){
-            let iridium = $(`<span :aria-label="iridiumLabel() + ariaProd('Iridium')" class="current iridium">${global.resource.Iridium.name} {{ s.Iridium }}</span>`);
+            let iridium = $(`<span :aria-label="mLabel('iridium') + ariaProd('Iridium')" class="current iridium">${global.resource.Iridium.name} {{ s.Iridium }}</span>`);
             let iridiumSub = $(`<span role="button" class="sub" @click="subMetal('Iridium')" aria-label="Smelt less iridium"><span>&laquo;</span></span>`);
             let iridiumAdd = $(`<span role="button" class="add" @click="addMetal('Iridium')" aria-label="Smelt more iridium"><span>&raquo;</span></span>`);
             smeltTypes.append(iridiumSub);
@@ -270,20 +270,26 @@ function loadSmelter(parent,bind){
                     }
                 }
             },
-            ironLabel(){
-                return matText('iron');
-            },
-            steelLabel(){
-                return matText('steel');
-            },
-            iridiumLabel(){
-                return matText('iridium');
+            mLabel(m){
+                return matText(m);
             },
             addMetal(m){
                 let keyMult = keyMultiplier();
                 for (let i=0; i<keyMult; i++){
                     let count = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
                     if (global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium < count){
+                        global.city.smelter[m]++;
+                    }
+                    else if (global.city.smelter.Iron > 0 && m !== 'Iron'){
+                        global.city.smelter.Iron--;
+                        global.city.smelter[m]++;
+                    }
+                    else if (global.city.smelter.Steel > 0 && m !== 'Steel'){
+                        global.city.smelter.Steel--;
+                        global.city.smelter[m]++;
+                    }
+                    else if (global.city.smelter.Iridium > 0 && m !== 'Iridium'){
+                        global.city.smelter.Iridium--;
                         global.city.smelter[m]++;
                     }
                     else {
@@ -431,7 +437,7 @@ function loadSmelter(parent,bind){
             popover(`${id}${mat}`,function(){
                 return matText(mat);
             }, {
-                elm: $(`#${id} > .${mat}`),
+                elm: $(`#${id} span.${mat}`),
                 attach: '#main',
             });
         });

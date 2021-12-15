@@ -5228,7 +5228,6 @@ function addRaces(races){
 }
 
 function setScenario(scenario){
-    console.log(scenario);
     Object.keys(races).forEach(function(r){
         if (r !== 'junker'){
             $(`#evolution-${r}`).removeClass('is-hidden');
