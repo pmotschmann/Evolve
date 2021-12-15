@@ -9,8 +9,9 @@ const changeList = [
             `Smelter metals can now be reallocated without unassigning.`,
             `Increased accuracy of syndicate intel data`,
             `Fixed bug with removing Weak & Bad genes when toggling True Path.`,
-            `Added trait rankings to wiki.`,
+            `Fixed bug with adding or removing Professors not updating indoctrination value.`,
             `Fixed bug with Planet Wiki entry that prevented some data from loading.`,
+            `Added trait rankings to wiki.`,
         ]
     },
     {

@@ -2664,6 +2664,7 @@ export const plasmidBonus = (function (){
             global.race.Plasmid.anti,
             global.race.Phage.count,
             global.civic.govern.type,
+            global.civic.professor.assigned,
             global.genes['bleed'] || '0',
             global.race['decayed'] || '0',
             global.race['gene_fortify'] || '0',
