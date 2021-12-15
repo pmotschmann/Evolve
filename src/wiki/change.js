@@ -4,9 +4,10 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.1`,
-        date: `12/??/2021`,
+        date: `12/14/2021`,
         changes: [
             `Smelter metals can now be reallocated without unassigning.`,
+            `Increased accuracy of syndicate intel data`,
             `Fixed bug with removing Weak & Bad genes when toggling True Path.`,
             `Added trait rankings to wiki.`,
             `Fixed bug with Planet Wiki entry that prevented some data from loading.`,

@@ -5504,7 +5504,7 @@ function space(zone){
                         scan(r){
                             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                                 let synd = syndicate(r,true);
-                                return synd.s + '%';
+                                return +((synd.s + 25) / 1.25).toFixed(1) + '%';
                             }
                             return loc(`galaxy_piracy_none`);
                         },
