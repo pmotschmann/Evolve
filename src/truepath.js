@@ -2377,7 +2377,7 @@ export const spacePlanetStats = {
     spc_venus: { dist: 0.7, orbit: 225, size: 0.5 },
     spc_gas: { dist: 5.203, orbit: 4330, size: 1.25 },
     spc_gas_moon: { dist: 5.204, orbit: 4330, size: 0.2, moon: true },
-    spc_belt: { dist: 2.7, orbit: 1642, size: 0.5 },
+    spc_belt: { dist: 2.7, orbit: 1642, size: 0.5, belt: true },
     spc_dwarf: { dist: 2.77, orbit: 1682, size: 0.5 },
     spc_saturn: { dist: 9.539, orbit: 10751, size: 1.1 },
     spc_titan: { dist: 9.536, orbit: 10751, size: 0.2, moon: true },
@@ -2385,7 +2385,7 @@ export const spacePlanetStats = {
     spc_uranus: { dist: 19.8, orbit: 30660, size: 1 },
     spc_neptune: { dist: 30.08, orbit: 60152, size: 1 },
     spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
-    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5 },
+    spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true },
     spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
     //tauceti: { dist: 752568.8, orbit: -2 },
 };
@@ -2484,6 +2484,12 @@ function drawMap(scale, translatePos) {
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         if (!planet.moon) {
             ctx.beginPath();
+            if (planet.belt){
+                ctx.setLineDash([0.01, 0.01]);
+            }
+            else {
+                ctx.setLineDash([]);
+            }
             ctx.arc(0, 0, planet.dist, 0, Math.PI * 2, true);
             ctx.stroke();
         }
@@ -2505,7 +2511,7 @@ function drawMap(scale, translatePos) {
     // Planets and moons
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         let color = '558888';
-        if (actions.space[id] && actions.space[id].info.syndicate()){
+        if (actions.space[id] && actions.space[id].info.syndicate() && global.settings.space[id.substring(4)]){
             let shift = syndicate(id);
             color = ((Math.round(255*(1-shift)) << 16) + (Math.round(255*shift) << 8)).toString(16).padStart(6, 0);
         }
@@ -2567,7 +2573,7 @@ function drawMap(scale, translatePos) {
     ctx.font = `${25 / scale}px serif`;
     // Planet names
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        if (actions.space[id]){
+        if (actions.space[id] && global.settings.space[id.substring(4)]){
             let nameRef = actions.space[id].info.name;
             let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
             if (planet.moon) {
