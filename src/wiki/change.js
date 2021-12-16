@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.2`,
+        date: `12/15/2021`,
+        changes: [
+            `Added entry for Festive Season into wiki.`,
+            `The game wiki will now load without any game data.`,
+        ]
+    },
+    {
         version: `1.2.1`,
         date: `12/14/2021`,
         changes: [

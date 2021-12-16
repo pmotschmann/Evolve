@@ -1604,13 +1604,6 @@ if (!global.race['evil'] && global.race['immoral']){
 }
 
 {
-    const date = new Date();
-    if (global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
-        global.race['slaver'] = 1;
-    }
-}
-
-{
     if (global.hasOwnProperty('special') && global.special.hasOwnProperty('gift')){
         const sdate = new Date(global.stats.start);
         const cdate = new Date();

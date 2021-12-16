@@ -7051,7 +7051,8 @@ function sentience(){
 
     const date = new Date();
     if (!global.settings.boring && global.race.species === 'elven' && date.getMonth() === 11 && date.getDate() >= 17){
-        global.race['slaver'] = 1;
+        global.race['slaver'] = 2;
+        setTraitRank('small',{ set: 0.25 });
     }
     const easter = eventActive('easter');
     if (global.race.species === 'wolven' && easter.active){
