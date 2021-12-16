@@ -10804,7 +10804,7 @@ const techs = {
             Knowledge(){ return 3200000; },
             Cipher(){ return 50000; }
         },
-        effect: loc('tech_dronewar_effect'),
+        effect(){ return loc('tech_dronewar_effect',[genusVars[races[global.race.species].type].solar.eris]); },
         action(){
             if (payCosts($(this)[0])){
                 global.space['shock_trooper'] = { count: 0, on: 0 };

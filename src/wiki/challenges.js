@@ -99,6 +99,7 @@ export function challengesPage(content){
                     1: [false,false,false,'wiki.html#crispr-prestige-genetic_memory']
                 }
             });
+            crispr.find(`div.para`).append(`<span>${loc('wiki_challenges_genes_bad_para2')}</span>`);
             let traits = $(`
                 <div class="para">
                     <span>${loc('wiki_challenges_genes_crispr_para3')}</span>
