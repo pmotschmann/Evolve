@@ -1,6 +1,6 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
 import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
-import { races, traits } from './races.js';
+import { traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
@@ -504,74 +504,75 @@ export function initResourceTabs(tab){
 }
 
 // Sets up resource definitions
-export function defineResources(){
+export function defineResources(wiki){
     if (global.race.species === 'protoplasm'){
         let base = 100;
         if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
             base += 50 * (global.stats.achieve['mass_extinction'].l - 1);
         }
-        loadResource('RNA',base,1,false);
-        loadResource('DNA',base,1,false);
+        loadResource('RNA',wiki,base,1,false);
+        loadResource('DNA',wiki,base,1,false);
     }
     
-    loadResource('Money',1000,1,false,false,'success');
-    loadResource(global.race.species,0,0,false,false,'warning');
-    loadResource('Slave',0,0,false,false,'warning');
-    loadResource('Mana',0,1,false,false,'warning');
-    loadResource('Knowledge',100,1,false,false,'warning');
-    loadResource('Zen',0,0,false,false,'warning');
-    loadResource('Crates',0,0,false,false,'warning');
-    loadResource('Containers',0,0,false,false,'warning');
-    loadResource('Food',250,1,true,true);
-    loadResource('Lumber',200,1,true,true);
-    loadResource('Chrysotile',200,1,true,true);
-    loadResource('Stone',200,1,true,true);
-    loadResource('Crystal',200,1,true,true);
-    loadResource('Furs',100,1,true,true);
-    loadResource('Copper',100,1,true,true);
-    loadResource('Iron',100,1,true,true);
-    loadResource('Aluminium',50,1,true,true);
-    loadResource('Cement',100,1,true,true);
-    loadResource('Coal',50,1,true,true);
-    loadResource('Oil',0,1,true,false);
-    loadResource('Uranium',10,1,true,false);
-    loadResource('Steel',50,1,true,true);
-    loadResource('Titanium',50,1,true,true);
-    loadResource('Alloy',50,1,true,true);
-    loadResource('Polymer',50,1,true,true);
-    loadResource('Iridium',0,1,true,true);
-    loadResource('Helium_3',0,1,true,false);
-    loadResource('Water',0,1,false,false,'advanced');
-    loadResource('Deuterium',0,1,false,false,'advanced');
-    loadResource('Neutronium',0,1,false,false,'advanced');
-    loadResource('Adamantite',0,1,false,true,'advanced');
-    loadResource('Infernite',0,1,false,false,'advanced');
-    loadResource('Elerium',1,1,false,false,'advanced');
-    loadResource('Nano_Tube',0,1,false,false,'advanced');
-    loadResource('Graphene',0,1,false,true,'advanced');
-    loadResource('Stanene',0,1,false,true,'advanced');
-    loadResource('Bolognium',0,1,false,true,'advanced');
-    loadResource('Vitreloy',0,1,false,true,'advanced');
-    loadResource('Orichalcum',0,1,false,true,'advanced');
-    loadResource('Horseshoe',-2,0,false,false,'advanced');
-    loadResource('Nanite',0,1,false,false,'advanced');
-    loadResource('Genes',-2,0,false,false,'advanced');
-    loadResource('Soul_Gem',-2,0,false,false,'advanced');
-    loadResource('Plywood',-1,0,false,false,'danger');
-    loadResource('Brick',-1,0,false,false,'danger');
-    loadResource('Wrought_Iron',-1,0,false,false,'danger');
-    loadResource('Sheet_Metal',-1,0,false,false,'danger');
-    loadResource('Mythril',-1,0,false,false,'danger');
-    loadResource('Aerogel',-1,0,false,false,'danger');
-    loadResource('Nanoweave',-1,0,false,false,'danger');
-    loadResource('Scarletite',-1,0,false,false,'danger');
-    loadResource('Quantium',-1,0,false,false,'danger');
-    loadResource('Corrupt_Gem',-2,0,false,false,'caution');
-    loadResource('Codex',-2,0,false,false,'caution');
-    loadResource('Cipher',0,1,false,false,'caution');
-    loadResource('Demonic_Essence',-2,0,false,false,'caution');
-    loadResource('Blood_Stone',-2,0,false,false,'caution');
-    loadResource('Artifact',-2,0,false,false,'caution');
+    loadResource('Money',wiki,1000,1,false,false,'success');
+    loadResource(global.race.species,wiki,0,0,false,false,'warning');
+    loadResource('Slave',wiki,0,0,false,false,'warning');
+    loadResource('Mana',wiki,0,1,false,false,'warning');
+    loadResource('Knowledge',wiki,100,1,false,false,'warning');
+    loadResource('Zen',wiki,0,0,false,false,'warning');
+    loadResource('Crates',wiki,0,0,false,false,'warning');
+    loadResource('Containers',wiki,0,0,false,false,'warning');
+    loadResource('Food',wiki,250,1,true,true);
+    loadResource('Lumber',wiki,200,1,true,true);
+    loadResource('Chrysotile',wiki,200,1,true,true);
+    loadResource('Stone',wiki,200,1,true,true);
+    loadResource('Crystal',wiki,200,1,true,true);
+    loadResource('Furs',wiki,100,1,true,true);
+    loadResource('Copper',wiki,100,1,true,true);
+    loadResource('Iron',wiki,100,1,true,true);
+    loadResource('Aluminium',wiki,50,1,true,true);
+    loadResource('Cement',wiki,100,1,true,true);
+    loadResource('Coal',wiki,50,1,true,true);
+    loadResource('Oil',wiki,0,1,true,false);
+    loadResource('Uranium',wiki,10,1,true,false);
+    loadResource('Steel',wiki,50,1,true,true);
+    loadResource('Titanium',wiki,50,1,true,true);
+    loadResource('Alloy',wiki,50,1,true,true);
+    loadResource('Polymer',wiki,50,1,true,true);
+    loadResource('Iridium',wiki,0,1,true,true);
+    loadResource('Helium_3',wiki,0,1,true,false);
+    loadResource('Water',wiki,0,1,false,false,'advanced');
+    loadResource('Deuterium',wiki,0,1,false,false,'advanced');
+    loadResource('Neutronium',wiki,0,1,false,false,'advanced');
+    loadResource('Adamantite',wiki,0,1,false,true,'advanced');
+    loadResource('Infernite',wiki,0,1,false,false,'advanced');
+    loadResource('Elerium',wiki,1,1,false,false,'advanced');
+    loadResource('Nano_Tube',wiki,0,1,false,false,'advanced');
+    loadResource('Graphene',wiki,0,1,false,true,'advanced');
+    loadResource('Stanene',wiki,0,1,false,true,'advanced');
+    loadResource('Bolognium',wiki,0,1,false,true,'advanced');
+    loadResource('Vitreloy',wiki,0,1,false,true,'advanced');
+    loadResource('Orichalcum',wiki,0,1,false,true,'advanced');
+    loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');
+    loadResource('Nanite',wiki,0,1,false,false,'advanced');
+    loadResource('Genes',wiki,-2,0,false,false,'advanced');
+    loadResource('Soul_Gem',wiki,-2,0,false,false,'advanced');
+    loadResource('Plywood',wiki,-1,0,false,false,'danger');
+    loadResource('Brick',wiki,-1,0,false,false,'danger');
+    loadResource('Wrought_Iron',wiki,-1,0,false,false,'danger');
+    loadResource('Sheet_Metal',wiki,-1,0,false,false,'danger');
+    loadResource('Mythril',wiki,-1,0,false,false,'danger');
+    loadResource('Aerogel',wiki,-1,0,false,false,'danger');
+    loadResource('Nanoweave',wiki,-1,0,false,false,'danger');
+    loadResource('Scarletite',wiki,-1,0,false,false,'danger');
+    loadResource('Quantium',wiki,-1,0,false,false,'danger');
+    loadResource('Corrupt_Gem',wiki,-2,0,false,false,'caution');
+    loadResource('Codex',wiki,-2,0,false,false,'caution');
+    loadResource('Cipher',wiki,0,1,false,false,'caution');
+    loadResource('Demonic_Essence',wiki,-2,0,false,false,'caution');
+    loadResource('Blood_Stone',wiki,-2,0,false,false,'caution');
+    loadResource('Artifact',wiki,-2,0,false,false,'caution');
+    if (wiki){ return; }
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
@@ -591,21 +592,13 @@ export function tradeSummery(){
 // Load resource function
 // This function defines each resource, loads saved values from localStorage
 // And it creates Vue binds for various resource values
-function loadResource(name,max,rate,tradable,stackable,color){
+function loadResource(name,wiki,max,rate,tradable,stackable,color){
     color = color || 'info';
-    if (!global['resource'][name]){
-        global['resource'][name] = {
-            name: name === global.race.species ? races[global.race.species].name : (name === 'Money' ? '$' : loc(`resource_${name}_name`)),
-            display: false,
-            value: global.race['truepath'] ? resource_values[name] * 2 : resource_values[name],
-            amount: 0,
-            crates: 0,
-            diff: 0,
-            delta: 0,
-            max: max,
-            rate: rate
-        };
+    if (!global.resource[name]){
+        global.resource[name] = {};
     }
+
+    setResourceName(name);
 
     if (global.race['artifical']){
         if (name === 'Food'){
@@ -613,7 +606,29 @@ function loadResource(name,max,rate,tradable,stackable,color){
         }
     }
 
-    setResourceName(name);
+    if (wiki){ return; }
+
+    if (!global.resource[name].hasOwnProperty('display')){
+        global.resource[name]['display'] = false;
+    }
+    if (!global.resource[name].hasOwnProperty('value')){
+        global.resource[name]['value'] = global.race['truepath'] ? resource_values[name] * 2 : resource_values[name];
+    }
+    if (!global.resource[name].hasOwnProperty('amount')){
+        global.resource[name]['amount'] = 0;
+    }
+    if (!global.resource[name].hasOwnProperty('max')){
+        global.resource[name]['max'] = max;
+    }
+    if (!global.resource[name].hasOwnProperty('diff')){
+        global.resource[name]['diff'] = 0;
+    }
+    if (!global.resource[name].hasOwnProperty('delta')){
+        global.resource[name]['delta'] = 0;
+    }
+    if (!global.resource[name].hasOwnProperty('rate')){
+        global.resource[name]['rate'] = rate;
+    }
 
     if (name === 'Mana'){
         global['resource'][name]['gen'] = 0;
@@ -626,9 +641,6 @@ function loadResource(name,max,rate,tradable,stackable,color){
     }
     if (!global['resource'][name]['containers']){
         global['resource'][name]['containers'] = 0;
-    }
-    if (!global['resource'][name]['delta']){
-        global['resource'][name]['delta'] = 0;
     }
     if (!global['resource'][name]['trade'] && tradable){
         global['resource'][name]['trade'] = 0;

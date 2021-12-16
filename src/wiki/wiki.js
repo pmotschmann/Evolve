@@ -1,5 +1,6 @@
 import { global, setGlobal, save } from './../vars.js';
 import { loc } from './../locale.js';
+import {} from './init.js';
 import {} from './../achieve.js';
 import { vBind, clearElement, tagEvent } from './../functions.js';
 import { faqPage } from './faq.js';
