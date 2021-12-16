@@ -1621,7 +1621,7 @@ function specialEventsPage(content){
 
     {   // Holiday Elf Season
         let event = 'festive';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 8, break: [3,5,7], h_level: 2 });
         infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }

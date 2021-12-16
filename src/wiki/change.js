@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.3`,
+        date: `12/16/2021`,
+        changes: [
+            `Expanded Festive Season to include additional species.`,
+        ]
+    },
+    {
         version: `1.2.2`,
         date: `12/15/2021`,
         changes: [

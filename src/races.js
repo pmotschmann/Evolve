@@ -24,6 +24,9 @@ export function altRace(race,set){
     }
     switch (race){
         case 'elven':
+        case 'capybara':
+        case 'centaur':
+        case 'wendigo':
             {
                 if ((date.getMonth() === 11 && date.getDate() >= 17) || (global.race['hrt'] && global.race.hrt === race)){
                     if (set){global.race['hrt'] = race;}
@@ -3053,21 +3056,21 @@ export const races = {
         fanaticism: 'playful'
     },
     centaur: {
-        name: loc('race_centaur'),
-        desc: loc('race_centaur_desc'),
+        name: loc(altRace('centaur') ? 'race_reindeer' : 'race_centaur'),
+        desc: loc(altRace('centaur') ? 'race_reindeer_desc' : 'race_centaur_desc'),
         type: 'herbivore',
-        home: loc('race_centaur_home'),
-        entity: loc('race_centaur_entity'),
+        home: loc(altRace('centaur') ? 'race_reindeer_home' : 'race_centaur_home'),
+        entity: loc(altRace('centaur') ? 'race_reindeer_entity' : 'race_centaur_entity'),
         traits: {
             sniper: 1,
             hooved: 1
         },
         solar: {
-            red: loc('race_centaur_solar_red'),
-            hell: loc('race_centaur_solar_hell'),
-            gas: loc('race_centaur_solar_gas'),
-            gas_moon: loc('race_centaur_solar_gas_moon'),
-            dwarf: loc('race_centaur_solar_dwarf'),
+            red: loc(altRace('centaur') ? 'race_reindeer_solar_red' : 'race_centaur_solar_red'),
+            hell: loc(altRace('centaur') ? 'race_reindeer_solar_hell' : 'race_centaur_solar_hell'),
+            gas: loc(altRace('centaur') ? 'race_reindeer_solar_gas' : 'race_centaur_solar_gas'),
+            gas_moon: loc(altRace('centaur') ? 'race_reindeer_solar_gas_moon' : 'race_centaur_solar_gas_moon'),
+            dwarf: loc(altRace('centaur') ? 'race_reindeer_solar_dwarf' : 'race_centaur_solar_dwarf'),
         },
         fanaticism: 'sniper'
     },
@@ -3091,21 +3094,21 @@ export const races = {
         fanaticism: 'rage'
     },
     capybara: {
-        name: loc('race_capybara'),
-        desc: loc('race_capybara_desc'),
+        name: loc(altRace('capybara') ? 'race_donkey' : 'race_capybara'),
+        desc: loc(altRace('capybara') ? 'race_donkey_desc' : 'race_capybara_desc'),
         type: 'herbivore',
-        home: loc('race_capybara_home'),
-        entity: loc('race_capybara_entity'),
+        home: loc(altRace('capybara') ? 'race_donkey_home' : 'race_capybara_home'),
+        entity: loc(altRace('capybara') ? 'race_donkey_entity' : 'race_capybara_entity'),
         traits: {
             gnawer: 1,
             calm: 1
         },
         solar: {
-            red: loc('race_capybara_solar_red'),
-            hell: loc('race_capybara_solar_hell'),
-            gas: loc('race_capybara_solar_gas'),
-            gas_moon: loc('race_capybara_solar_gas_moon'),
-            dwarf: loc('race_capybara_solar_dwarf'),
+            red: loc(altRace('capybara') ? 'race_donkey_solar_red' : 'race_capybara_solar_red'),
+            hell: loc(altRace('capybara') ? 'race_donkey_solar_hell' : 'race_capybara_solar_hell'),
+            gas: loc(altRace('capybara') ? 'race_donkey_solar_gas' : 'race_capybara_solar_gas'),
+            gas_moon: loc(altRace('capybara') ? 'race_donkey_solar_gas_moon' : 'race_capybara_solar_gas_moon'),
+            dwarf: loc(altRace('capybara') ? 'race_donkey_solar_dwarf' : 'race_capybara_solar_dwarf'),
         },
         fanaticism: 'calm'
     },
@@ -3697,22 +3700,22 @@ export const races = {
         fanaticism: 'blurry'
     },
     wendigo: {
-        name: loc('race_wendigo'),
-        desc: loc('race_wendigo_desc'),
+        name: loc(altRace('wendigo') ? 'race_krampus' : 'race_wendigo'),
+        desc: loc(altRace('wendigo') ? 'race_krampus_desc' : 'race_wendigo_desc'),
         type: 'polar',
-        home: loc('race_wendigo_home'),
-        entity: loc('race_wendigo_entity'),
+        home: loc(altRace('wendigo') ? 'race_krampus_home' : 'race_wendigo_home'),
+        entity: loc(altRace('wendigo') ? 'race_krampus_entity' : 'race_wendigo_entity'),
         traits: {
             ravenous: 1,
             ghostly: 1,
             soul_eater: 1
         },
         solar: {
-            red: loc('race_wendigo_solar_red'),
-            hell: loc('race_wendigo_solar_hell'),
-            gas: loc('race_wendigo_solar_gas'),
-            gas_moon: loc('race_wendigo_solar_gas_moon'),
-            dwarf: loc('race_wendigo_solar_dwarf'),
+            red: loc(altRace('wendigo') ? 'race_krampus_solar_red' : 'race_wendigo_solar_red'),
+            hell: loc(altRace('wendigo') ? 'race_krampus_solar_hell' : 'race_wendigo_solar_hell'),
+            gas: loc(altRace('wendigo') ? 'race_krampus_solar_gas' : 'race_wendigo_solar_gas'),
+            gas_moon: loc(altRace('wendigo') ? 'race_krampus_solar_gas_moon' : 'race_wendigo_solar_gas_moon'),
+            dwarf: loc(altRace('wendigo') ? 'race_krampus_solar_dwarf' : 'race_wendigo_solar_dwarf'),
         },
         fanaticism: 'ghostly'
     },
