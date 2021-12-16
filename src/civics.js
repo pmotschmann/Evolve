@@ -88,7 +88,7 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if (global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0){
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || global.space['g_factory'] && global.space.g_factory.count > 0){
         var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');

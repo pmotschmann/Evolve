@@ -6,6 +6,7 @@ const changeList = [
         version: `1.2.2`,
         date: `12/15/2021`,
         changes: [
+            `Graphene Plants now show on industry tab for True Path.`,
             `Added entry for Festive Season into wiki.`,
             `The game wiki will now load without any game data.`,
         ]
