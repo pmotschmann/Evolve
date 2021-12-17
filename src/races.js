@@ -28,6 +28,7 @@ export function altRace(race,set){
         case 'centaur':
         case 'wendigo':
         case 'entish':
+        case 'yeti':
             {
                 if ((date.getMonth() === 11 && date.getDate() >= 17) || (global.race['hrt'] && global.race.hrt === race)){
                     if (set){global.race['hrt'] = race;}

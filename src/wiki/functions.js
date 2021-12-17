@@ -34,7 +34,9 @@ export function infoBoxBuilder(parent,args,box){
     }
     else {
         info = $(`<div class="infoBox${args.full ? ` wide` : ``}${args['pclass'] ? ` ${args['pclass']}`: ''}"></div>`);
-        info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+        if (args['h_level']){
+            info.append(`<h${args.h_level} id="${args.name}" class="header has-text-${args.header ? 'caution' : 'warning'}">${args['label'] ? args['label'] : loc(`wiki_${args.template}_${args.name}`)}</h${args.h_level}>`);
+        }
     }
 
     let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];

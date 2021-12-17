@@ -1621,7 +1621,16 @@ function specialEventsPage(content){
 
     {   // Holiday Elf Season
         let event = 'festive';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 12, break: [3,5,7,9,11], h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 });
+
+        ['elven','centaur','capybara','wendigo','yeti','entish'].forEach(function(species){
+            infoBoxBuilder(section,{ name: species, template: `events_${event}`, label: loc(`wiki_events_${event}`), paragraphs: 2, h_level: 0,
+                para_data: {
+                    1: [loc(`race_${species}`)],
+                }
+            });
+        });
+
         infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
         sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
     }
