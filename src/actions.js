@@ -7052,24 +7052,34 @@ function sentience(){
     const date = new Date();
     if (!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17){
         if (global.race.species === 'elven'){
-            global.race['slaver'] = 2;
+            setTraitRank('slaver',{ set: 2 });
             setTraitRank('resourceful',{ set: 0.5 });
             setTraitRank('small',{ set: 0.25 });
         }
         else if (global.race.species === 'capybara'){
-            global.race['beast_of_burden'] = 1;
+            setTraitRank('beast_of_burden',{ set: 1 });
             setTraitRank('pack_rat',{ set: 0.5 });
             setTraitRank('musical',{ set: 0.25 });
         }
         else if (global.race.species === 'centaur'){
-            global.race['beast_of_burden'] = 1;
+            setTraitRank('beast_of_burden',{ set: 1 });
             setTraitRank('curious',{ set: 0.5 });
             setTraitRank('blissful',{ set: 0.25 });
         }
         else if (global.race.species === 'wendigo'){
-            global.race['immoral'] = 3;
+            setTraitRank('immoral',{ set: 3 });
             setTraitRank('cannibalize',{ set: 0.5 });
             setTraitRank('claws',{ set: 0.25 });
+        }
+        else if (global.race.species === 'yeti'){
+            setTraitRank('scavenger',{ set: 3 });
+            setTraitRank('regenerative',{ set: 0.5 });
+            setTraitRank('musical',{ set: 0.25 });
+        }
+        else if (global.race.species === 'entish'){
+            setTraitRank('photosynth',{ set: 3 });
+            setTraitRank('optimistic',{ set: 0.5 });
+            setTraitRank('armored',{ set: 0.25 });
         }
     }
 

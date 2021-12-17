@@ -27,6 +27,7 @@ export function altRace(race,set){
         case 'capybara':
         case 'centaur':
         case 'wendigo':
+        case 'entish':
             {
                 if ((date.getMonth() === 11 && date.getDate() >= 17) || (global.race['hrt'] && global.race.hrt === race)){
                     if (set){global.race['hrt'] = race;}
@@ -3395,21 +3396,21 @@ export const races = {
         fanaticism: 'hoarder'
     },
     entish: {
-        name: loc('race_entish'),
-        desc: loc('race_entish_desc'),
+        name: loc(altRace('entish') ? 'race_spruce' : 'race_entish'),
+        desc: loc(altRace('entish') ? 'race_spruce_desc' : 'race_entish_desc'),
         type: 'plant',
-        home: loc('race_entish_home'),
-        entity: loc('race_entish_entity'),
+        home: loc(altRace('entish') ? 'race_spruce_home' : 'race_entish_home'),
+        entity: loc(altRace('entish') ? 'race_spruce_entity' : 'race_entish_entity'),
         traits: {
             kindling_kindred: 1,
             pyrophobia: 1
         },
         solar: {
-            red: loc('race_entish_solar_red'),
-            hell: loc('race_entish_solar_hell'),
-            gas: loc('race_entish_solar_gas'),
-            gas_moon: loc('race_entish_solar_gas_moon'),
-            dwarf: loc('race_entish_solar_dwarf'),
+            red: loc(altRace('entish') ? 'race_spruce_solar_red' : 'race_entish_solar_red'),
+            hell: loc(altRace('entish') ? 'race_spruce_solar_hell' : 'race_entish_solar_hell'),
+            gas: loc(altRace('entish') ? 'race_spruce_solar_gas' : 'race_entish_solar_gas'),
+            gas_moon: loc(altRace('entish') ? 'race_spruce_solar_gas_moon' : 'race_entish_solar_gas_moon'),
+            dwarf: loc(altRace('entish') ? 'race_spruce_solar_dwarf' : 'race_entish_solar_dwarf'),
         },
         fanaticism: 'kindling_kindred'
     },
@@ -3681,21 +3682,21 @@ export const races = {
         fanaticism: 'forge'
     },
     yeti: {
-        name: loc('race_yeti'),
-        desc: loc('race_yeti_desc'),
+        name: loc(altRace('yeti') ? 'race_snowman' : 'race_yeti'),
+        desc: loc(altRace('yeti') ? 'race_snowman_desc' : 'race_yeti_desc'),
         type: 'polar',
-        home: loc('race_yeti_home'),
-        entity: loc('race_yeti_entity'),
+        home: loc(altRace('yeti') ? 'race_snowman_home' : 'race_yeti_home'),
+        entity: loc(altRace('yeti') ? 'race_snowman_entity' : 'race_yeti_entity'),
         traits: {
             blurry: 1,
             snowy: 1
         },
         solar: {
-            red: loc('race_yeti_solar_red'),
-            hell: loc('race_yeti_solar_hell'),
-            gas: loc('race_yeti_solar_gas'),
-            gas_moon: loc('race_yeti_solar_gas_moon'),
-            dwarf: loc('race_yeti_solar_dwarf'),
+            red: loc(altRace('yeti') ? 'race_snowman_solar_red' : 'race_yeti_solar_red'),
+            hell: loc(altRace('yeti') ? 'race_snowman_solar_hell' : 'race_yeti_solar_hell'),
+            gas: loc(altRace('yeti') ? 'race_snowman_solar_gas' : 'race_yeti_solar_gas'),
+            gas_moon: loc(altRace('yeti') ? 'race_snowman_solar_gas_moon' : 'race_yeti_solar_gas_moon'),
+            dwarf: loc(altRace('yeti') ? 'race_snowman_solar_dwarf' : 'race_yeti_solar_dwarf'),
         },
         fanaticism: 'blurry'
     },
