@@ -256,12 +256,16 @@ function loadSmelter(parent,bind){
                     if (global.city.smelter[type] > 0){
                         global.city.smelter[type]--;
                         let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
-                        if (global.city.smelter.Iron + global.city.smelter.Steel > total){
+                        let used = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
+                        if (used > total){
                             if (global.city.smelter.Iron > 0){
                                 global.city.smelter.Iron--;
                             }
-                            else {
+                            else if (global.city.smelter.Steel > 0) {
                                 global.city.smelter.Steel--;
+                            }
+                            else if (global.city.smelter.Iridium > 0) {
+                                global.city.smelter.Iridium--;
                             }
                         }
                     }
