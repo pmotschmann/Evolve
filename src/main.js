@@ -25,7 +25,7 @@ import { enableDebug, updateDebugData } from './debug.js';
     $(document).ready(function() {
         if (!window.matchMedia)
             return;
-    
+
         var current = $('head > link[rel="icon"][media]');
         $.each(current, function(i, icon) {
             var match = window.matchMedia(icon.media);
@@ -1111,7 +1111,7 @@ function fastLoop(){
         morale += global.race['submerged'] ? 0 : weather_morale;
 
         let stress = 0;
-        
+
         let divisor = 5;
         global.city.morale.unemployed = 0;
         if (global.city.ptrait !== 'mellow'){
@@ -1348,7 +1348,7 @@ function fastLoop(){
                         if (modRes(r,-(vol))){
                             breakdown.p.consume[r][loc('city_nanite_factory')] = -(vol / time_multiplier);
                             let trait = traits.deconstructor.vars()[0] / 100;
-                            let nanite_vol = vol * atomic_mass[r] / 100 * trait; 
+                            let nanite_vol = vol * atomic_mass[r] / 100 * trait;
                             modRes('Nanite',nanite_vol);
                         }
                     }
@@ -1746,7 +1746,7 @@ function fastLoop(){
                         }
                     }
                 }
-                
+
                 global.space[sup.s].s_max = p_on[sup.s] * actions.space[sup.r][sup.s].support();
                 switch (sup.g){
                     case 'moon':
@@ -1766,7 +1766,7 @@ function fastLoop(){
             if (global.space[sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
                 global.space[sup.s].s_max = 0;
             }
-    
+
             if (global.space[sup.s]){
                 let used_support = 0;
                 let area_structs = global.support[sup.g].map(x => x.split(':')[1]);
@@ -3131,7 +3131,7 @@ function fastLoop(){
                 fur_bd[loc('job_forager')] = forage_base + 'v';
                 modRes('Furs', forage_base * hunger * time_multiplier);
             }
-            
+
             delta *= hunger * global_multiplier;
 
             modRes('Furs', delta * time_multiplier);
@@ -3346,7 +3346,7 @@ function fastLoop(){
                 delta *= hunger * global_multiplier;
 
                 fur_bd[loc('city_factory')] = factory_output + 'v';
-                
+
                 if (delta > 0){
                     if (global.race['discharge'] && global.race['discharge'] > 0){
                         delta *= 0.5;
@@ -4175,7 +4175,7 @@ function fastLoop(){
             cipher_bd[`ᄂ${loc('hunger')}`] = ((hunger - 1) * 100) + '%';
 
             modRes('Cipher', delta * time_multiplier);
-            
+
             if (global.resource.Cipher.display && global.tech['outer'] && global.tech.outer === 2){
                 global.tech.outer = 3;
                 drawTech();
@@ -4191,7 +4191,7 @@ function fastLoop(){
             let synd = syndicate('spc_eris');
             let shock_base = support_on['shock_trooper'] * production('shock_trooper');
             let tank_base = support_on['tank'] * production('tank');
-            
+
             cipher_bd[loc('space_shock_trooper_title')] = shock_base + 'v';
             cipher_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
             cipher_bd[loc('space_tank_title')] = tank_base + 'v';
@@ -4416,7 +4416,7 @@ function fastLoop(){
             if (global.race['smoldering'] && global.resource.Chrysotile.display){
                 let a_delta = asbestos_base * power_mult * rock_quarry;
                 a_delta *= hunger * global_multiplier;
-                
+
                 chrysotile_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
                 breakdown.p['Chrysotile'] = chrysotile_bd;
                 modRes('Chrysotile', a_delta * time_multiplier);
@@ -5492,7 +5492,7 @@ function fastLoop(){
                         crafting_usage[crafting_costs[craft][i].r] += final / time_multiplier;
                     }
                 }
-                
+
                 breakdown.p[craft][loc(`job_craftsman`)] = (volume * speed / 140) + 'v';
 
                 modRes(craft, craft_ratio * volume * speed * time_multiplier / 140);
@@ -5822,6 +5822,8 @@ function midLoop(){
         var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
         var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
         var bd_Zen = {};
+        var bd_Crates = {};
+        var bd_Containers = {};
         var bd_Food = { [loc('base')]: caps['Food']+'v' };
         var bd_Lumber = { [loc('base')]: caps['Lumber']+'v' };
         var bd_Stone = { [loc('base')]: caps['Stone']+'v' };
@@ -5885,16 +5887,22 @@ function midLoop(){
                 vol *= 2;
             }
             caps['Crates'] += (global.city.wharf.count * vol);
+            bd_Crates[loc('city_wharf')] = (global.city.wharf.count * vol) + 'v';
             caps['Containers'] += (global.city.wharf.count * vol);
+            bd_Containers[loc('city_wharf')] = (global.city.wharf.count * vol) + 'v';
         }
         if (global.space['munitions_depot']){
             let vol = 25;
             caps['Crates'] += (global.space.munitions_depot.count * vol);
+            bd_Crates[loc('tech_munitions_depot')] = (global.space.munitions_depot.count * vol) + 'v';
             caps['Containers'] += (global.space.munitions_depot.count * vol);
+            bd_Containers[loc('tech_munitions_depot')] = (global.space.munitions_depot.count * vol) + 'v';
         }
         if (global.interstellar['cargo_yard']){
             caps['Crates'] += (global.interstellar.cargo_yard.count * 50);
+            bd_Crates[loc('interstellar_cargo_yard_title')] = (global.interstellar.cargo_yard.count * 50) + 'v';
             caps['Containers'] += (global.interstellar.cargo_yard.count * 50);
+            bd_Containers[loc('interstellar_cargo_yard_title')] = (global.interstellar.cargo_yard.count * 50) + 'v';
 
             let gain = (global.interstellar.cargo_yard.count * spatialReasoning(200));
             caps['Neutronium'] += gain;
@@ -5921,6 +5929,7 @@ function midLoop(){
                 size *= 2;
             }
             caps['Crates'] += (global.city['storage_yard'].count * size);
+            bd_Crates[loc('city_storage_yard')] = (global.city['storage_yard'].count * size) + 'v';
         }
         if (global.space['garage']){
             let g_vol = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
@@ -5928,13 +5937,17 @@ function midLoop(){
                 g_vol += 10;
             }
             caps['Containers'] += (global.space.garage.count * g_vol);
+            bd_Containers[loc('space_red_garage_title')] = (global.space.garage.count * g_vol) + 'v';
             if (global.race['cataclysm']){
                 caps['Crates'] += (global.space.garage.count * g_vol);
+                bd_Crates[loc('space_red_garage_title')] = (global.space.garage.count * g_vol) + 'v';
             }
         }
         if (global.tech['tp_depot']){
             caps['Containers'] += (global.tech.tp_depot * 50);
+            bd_Containers[loc('galaxy_gateway_depot')] = (global.tech.tp_depot * 50) + 'v';
             caps['Crates'] += (global.tech.tp_depot * 50);
+            bd_Crates[loc('galaxy_gateway_depot')] = (global.tech.tp_depot * 50) + 'v';
         }
         if (global.city['warehouse']){
             let volume = global.tech['steel_container'] >= 2 ? 20 : 10;
@@ -5948,6 +5961,7 @@ function midLoop(){
                 volume *= 2;
             }
             caps['Containers'] += (global.city['warehouse'].count * volume);
+            bd_Containers[loc('city_warehouse')] = (global.city['warehouse'].count * volume) + 'v';
         }
         if (global.city['rock_quarry']){
             let gain = BHStorageMulti(global.city.rock_quarry.count * spatialReasoning(100));
@@ -6091,7 +6105,9 @@ function midLoop(){
             lCaps['garrison'] += p_on['arcology'] * 5;
 
             caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
+            bd_Containers[loc('portal_arcology_title')] = (p_on['arcology'] * Math.round(quantum_level) * 10) + 'v';
             caps['Crates'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
+            bd_Crates[loc('portal_arcology_title')] = (p_on['arcology'] * Math.round(quantum_level) * 10) + 'v';
 
             let sup = hellSupression('ruins');
             let money = (p_on['arcology'] * spatialReasoning(bank_vault() * 8 * sup.supress));
@@ -6385,7 +6401,9 @@ function midLoop(){
         if (global.galaxy['gateway_depot']){
             let containers = global.tech['world_control'] ? 150 : 100;
             caps['Crates'] += (global.galaxy.gateway_depot.count * containers);
+            bd_Crates[loc('galaxy_gateway_depot')] = (global.galaxy.gateway_depot.count * containers) + 'v';
             caps['Containers'] += (global.galaxy.gateway_depot.count * containers);
+            bd_Containers[loc('galaxy_gateway_depot')] = (global.galaxy.gateway_depot.count * containers) + 'v';
 
             let label = loc('galaxy_gateway_depot');
             let multiplier = gatewayStorage();
@@ -7235,6 +7253,8 @@ function midLoop(){
             Mana: bd_Mana,
             Knowledge: bd_Knowledge,
             Zen: bd_Zen,
+            Crates: bd_Crates,
+            Containers: bd_Containers,
             Food: bd_Food,
             Lumber: bd_Lumber,
             Stone: bd_Stone,
@@ -7270,6 +7290,7 @@ function midLoop(){
             Cipher: bd_Cipher
         };
 
+        let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
         Object.keys(caps).forEach(function (res){
             caps['Crates'] -= global.resource[res].crates;
         });
@@ -7304,7 +7325,10 @@ function midLoop(){
                 }
             });
         }
-        
+
+        bd_Crates[loc('crates_used')] = (caps['Crates'] - tempCrates) + 'v';
+        bd_Containers[loc('crates_used')] = (caps['Containers'] - tempCrates) + 'v';
+
         let create_value = crateValue();
         let container_value = containerValue();
         Object.keys(caps).forEach(function (res){
@@ -8122,7 +8146,7 @@ function midLoop(){
                     global.queue.queue.splice(i+1);
                 }
             }
-            
+
             if (global.settings.q_merge === 'merge_nearby'){
                 if (last === global.queue.queue[i].id){
                     clearPopper(`q${global.queue.queue[i].id}${i}`);
@@ -8193,7 +8217,7 @@ function midLoop(){
         let rem = $(`#topBar`).height();
         let min = rem * 5;
         let max = totHeight - (5 * rem);
-        
+
         if (msgHeight < min) {
             if (buildHeight > min){
                 buildHeight -= (min - msgHeight);
