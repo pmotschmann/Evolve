@@ -5,7 +5,7 @@ import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
-import { payCosts, setAction, drawTech, bank_vault, cleanTechPopOver } from './actions.js';
+import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -1470,7 +1470,7 @@ const fortressModules = {
                 if (global.tech['sphinx_bribe']){
                     drawTech();
                     renderFortress();
-                    cleanTechPopOver('portal-bribe_sphinx');
+                    clearPopper('portal-bribe_sphinx');
                 }
             }
         },
@@ -1499,7 +1499,7 @@ const fortressModules = {
             post(){
                 if (global.tech['hell_spire'] && global.tech.hell_spire === 9){
                     renderFortress();
-                    cleanTechPopOver('portal-spire_survey');
+                    clearPopper('portal-spire_survey');
                 }
             }
         },

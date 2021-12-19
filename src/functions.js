@@ -405,6 +405,7 @@ export function buildQueue(){
                             global.queue.queue[index].q -= global.queue.queue[index].qs;
                         }
                         if (global.queue.queue[index].q <= 0){
+                            clearPopper(`q${global.queue.queue[index].id}${index}`);
                             global.queue.queue.splice(index,1);
                             buildQueue();
                             break;
@@ -1515,7 +1516,7 @@ function smolderAdjust(costs, offset, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
-            else if (['Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            else if (['HellArmy','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {

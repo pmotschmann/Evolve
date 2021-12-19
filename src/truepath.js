@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
 import { races, genusVars, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
@@ -2096,6 +2096,7 @@ function drawShips(){
                             global.space.shipyard.ships[id].destination = {x: dest.x, y: dest.y};
                             global.civic.garrison.crew += crew;
                             drawShips();
+                            clearPopper(`ship${id}loc${l}`);
                         }
                     }
                 },
@@ -2171,8 +2172,8 @@ function calcLandingPoint(ship, planet) {
     let ship_speed = shipSpeed(ship) / 225;
     let cross1_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist);
     let cross2_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist);
-    let cross1_days = Math.min(cross1_dist, cross2_dist) / ship_speed;
-    let cross2_days = Math.max(cross1_dist, cross2_dist) / ship_speed;
+    let cross1_days = Math.floor(Math.min(cross1_dist, cross2_dist) / ship_speed);
+    let cross2_days = Math.ceil(Math.max(cross1_dist, cross2_dist) / ship_speed);
     let planet_orbit = spacePlanetStats[planet].orbit === -1
       ? global.city.calendar.orbit
       : spacePlanetStats[planet].orbit;

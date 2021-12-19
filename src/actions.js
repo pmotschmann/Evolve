@@ -7437,6 +7437,7 @@ function sentience(){
 
     if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
         let rank = Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']);
+        global.resource.Food.amount += rank * 100;
         global.resource.Stone.max += rank * 60;
         global.resource.Stone.amount += rank * 100;
         if (global.race['smoldering']){
@@ -7964,7 +7965,7 @@ export function resQueue(){
             data: global.r_queue,
             methods: {
                 remove(index){
-                    cleanTechPopOver(`rq${global.r_queue.queue[index].id}`);
+                    clearPopper(`rq${global.r_queue.queue[index].id}`);
                     global.r_queue.queue.splice(index,1);
                     resQueue();
                 },
@@ -8026,7 +8027,7 @@ function resDragQueue(){
 function attachQueuePopovers(){
     for (let i=0; i<global.r_queue.queue.length; i++){
         let id = `rq${global.r_queue.queue[i].id}`;
-        cleanTechPopOver(id);
+        clearPopper(id);
 
         let c_action;
         let segments = global.r_queue.queue[i].id.split("-");
@@ -8037,17 +8038,11 @@ function attachQueuePopovers(){
                 actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
             },
             out: function(){
-                cleanTechPopOver(id);
+                clearPopper(id);
             },
             wide: c_action['wide']
         });
     }
-}
-
-export function cleanTechPopOver(id){
-    $(`#popper`).hide();
-    vBind({el: `#popTimer`},'destroy');
-    clearPopper();
 }
 
 function bananaPerk(val){

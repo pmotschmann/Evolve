@@ -1154,34 +1154,37 @@ export function marketItem(mount,market_item,name,color,full){
                     if (global.race['conniving']){
                         value *= 1 - (traits.conniving.vars()[0] / 100);
                     }
-                    var price = Math.round(value * qty);
-                    if (global.resource.Money.amount >= price){
-                        global.resource[res].amount += Number(qty);
-                        global.resource.Money.amount -= Number(price);
-                        
-                        global.resource[res].value += Number((qty / Math.rand(1000,10000)).toFixed(2));
+                    let amount = Math.floor(Math.min(qty, global.resource.Money.amount / value,
+                      global.resource[res].max - global.resource[res].amount));
+                    if (amount > 0){
+                        global.resource[res].amount += amount;
+                        global.resource.Money.amount -= Math.round(value * amount);
+
+                        global.resource[res].value += Number((amount / Math.rand(1000,10000)).toFixed(2));
                     }
                 }
             },
             sell(res){
                 if (!global.race['no_trade']){
-                    var qty = global.city.market.qty;
-                    if (global.resource[res].amount >= qty){
-                        let divide = 4;
-                        if (global.race['merchant']){
-                            divide *= 1 - (traits.merchant.vars()[0] / 100);
-                        }
-                        if (global.race['asymmetrical']){
-                            divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
-                        }
-                        if (global.race['conniving']){
-                            divide *= 1 - (traits.conniving.vars()[1] / 100);
-                        } 
-                        let price = Math.round(global.resource[res].value * qty / divide);
-                        global.resource[res].amount -= Number(qty);
-                        global.resource.Money.amount += Number(price);
-                        
-                        global.resource[res].value -= Number((qty / Math.rand(1000,10000)).toFixed(2));
+                    let qty = global.city.market.qty;
+                    let divide = 4;
+                    if (global.race['merchant']){
+                        divide *= 1 - (traits.merchant.vars()[0] / 100);
+                    }
+                    if (global.race['asymmetrical']){
+                        divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
+                    }
+                    if (global.race['conniving']){
+                        divide *= 1 - (traits.conniving.vars()[1] / 100);
+                    }
+                    let price = global.resource[res].value / divide;
+                    let amount = Math.floor(Math.min(qty, global.resource[res].amount,
+                      (global.resource.Money.max - global.resource.Money.amount) / price));
+                    if (amount > 0) {
+                        global.resource[res].amount -= amount;
+                        global.resource.Money.amount += Math.round(price * amount);
+
+                        global.resource[res].value -= Number((amount / Math.rand(1000,10000)).toFixed(2));
                         if (global.resource[res].value < Number(resource_values[res] / 2)){
                             global.resource[res].value = Number(resource_values[res] / 2);
                         }
@@ -2540,6 +2543,7 @@ export function loadAlchemy(name,color,basic){
                     for (let i=0; i<keyMult; i++){
                         if (global.race.alchemy[spell] > 0){
                             global.race.alchemy[spell]--;
+                            global.resource.Mana.diff++;
                         }
                         else {
                             break;
