@@ -7327,7 +7327,7 @@ function midLoop(){
         }
 
         bd_Crates[loc('crates_used')] = (caps['Crates'] - tempCrates) + 'v';
-        bd_Containers[loc('crates_used')] = (caps['Containers'] - tempCrates) + 'v';
+        bd_Containers[loc('crates_used')] = (caps['Containers'] - tempContainers) + 'v';
 
         let create_value = crateValue();
         let container_value = containerValue();
