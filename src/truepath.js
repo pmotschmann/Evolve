@@ -2457,6 +2457,12 @@ export function calcAIDrift(){
     return drift;
 }
 
+function xPostion(x){
+    let e = global.city.ptrait === 'elliptical' ? 1.5 : 1.2;
+    x *= e;
+    return x;
+}
+
 function drawMap(scale, translatePos) {
     let canvas = document.getElementById("mapCanvas");
     let ctx = canvas.getContext("2d");
@@ -2474,7 +2480,7 @@ function drawMap(scale, translatePos) {
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         let degree = global.space.position[id] * (Math.PI / 180);
         planetLocation[id] = {
-            x: Math.cos(degree) * planet.dist,
+            x: xPostion(Math.cos(degree) * planet.dist),
             y: Math.sin(degree) * planet.dist
         }
     }
@@ -2491,7 +2497,8 @@ function drawMap(scale, translatePos) {
             else {
                 ctx.setLineDash([]);
             }
-            ctx.arc(0, 0, planet.dist, 0, Math.PI * 2, true);
+            ctx.ellipse(0, 0, xPostion(planet.dist), planet.dist, 0, 0, Math.PI * 2, true);
+
             ctx.stroke();
         }
     }
@@ -2503,8 +2510,8 @@ function drawMap(scale, translatePos) {
         if (ship.transit > 0) {
             ctx.beginPath();
             ctx.setLineDash([0.1, 0.4]);
-            ctx.moveTo(ship.xy.x, ship.xy.y);
-            ctx.lineTo(ship.destination.x, ship.destination.y);
+            ctx.moveTo(xPostion(ship.xy.x), ship.xy.y);
+            ctx.lineTo(xPostion(ship.destination.x), ship.destination.y);
             ctx.stroke();
         }
     }
@@ -2551,7 +2558,7 @@ function drawMap(scale, translatePos) {
     for (let ship of global.space.shipyard.ships) {
         if (ship.transit > 0) {
             ctx.beginPath();
-            ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
+            ctx.arc(xPostion(ship.xy.x), ship.xy.y, 0.1, 0, Math.PI * 2, true);
             ctx.fill();
         }
     }
