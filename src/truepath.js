@@ -2181,7 +2181,8 @@ function calcLandingPoint(ship, planet) {
     let planet_degree = (global.space.position[planet] + (cross1_days * planet_speed)) % 360;
     let rads = (Math.PI / 180);
     for (let i = cross1_days; i <= cross2_days; i++) {
-        let planet_x = Math.cos(planet_degree * rads) * spacePlanetStats[planet].dist;
+        let planet_x = xPosition(Math.cos(planet_degree * rads) * spacePlanetStats[planet].dist, planet);
+        planet_x += xShift(planet);
         let planet_y = Math.sin(planet_degree * rads) * spacePlanetStats[planet].dist;
         let time = Math.sqrt(((planet_x - ship.xy.x) ** 2) + ((planet_y - ship.xy.y) ** 2)) / ship_speed;
         if (time <= i) {
@@ -2408,8 +2409,9 @@ export function setOrbits(){
 }
 
 export function genXYcoord(planet){
-    let cx = +(Math.cos(global.space.position[planet] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[planet].dist;
+    let cx = xPosition(+(Math.cos(global.space.position[planet] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[planet].dist, planet);
     let cy = +(Math.sin(global.space.position[planet] * (Math.PI / 180))).toFixed(5) * spacePlanetStats[planet].dist;
+    cx += xShift(planet);
     return {x: cx, y: cy};
 }
 
@@ -2457,9 +2459,30 @@ export function calcAIDrift(){
     return drift;
 }
 
-function xPostion(x){
-    let e = global.city.ptrait === 'elliptical' ? 1.5 : 1.2;
+function xPosition(x,p){
+    let e = 1.075 + (spacePlanetStats[p].dist / 100);
+    if (global.city.ptrait === 'elliptical'){
+        switch (p){
+            case 'spc_home':
+                e = 1.5;
+                break;
+            default:
+                e = 1.275 + (spacePlanetStats[p].dist / 100);
+                break;
+        }
+    }
     x *= e;
+    return x;
+}
+
+function xShift(id){
+    let x = spacePlanetStats[id].dist / 3;
+    if (global.city.ptrait === 'elliptical' && id === 'spc_home'){
+        x += 0.15;
+    }
+    if (id === 'spc_eris'){
+        x += 25;
+    }
     return x;
 }
 
@@ -2478,11 +2501,7 @@ function drawMap(scale, translatePos) {
     // Calculate positions
     let planetLocation = {};
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        let degree = global.space.position[id] * (Math.PI / 180);
-        planetLocation[id] = {
-            x: xPostion(Math.cos(degree) * planet.dist),
-            y: Math.sin(degree) * planet.dist
-        }
+        planetLocation[id] = genXYcoord(id);
     }
 
     // Draw orbits
@@ -2497,8 +2516,8 @@ function drawMap(scale, translatePos) {
             else {
                 ctx.setLineDash([]);
             }
-            ctx.ellipse(0, 0, xPostion(planet.dist), planet.dist, 0, 0, Math.PI * 2, true);
-
+            let cx = xShift(id);
+            ctx.ellipse(cx, 0, xPosition(planet.dist,id), planet.dist, 0, 0, Math.PI * 2, true);
             ctx.stroke();
         }
     }
@@ -2510,8 +2529,8 @@ function drawMap(scale, translatePos) {
         if (ship.transit > 0) {
             ctx.beginPath();
             ctx.setLineDash([0.1, 0.4]);
-            ctx.moveTo(xPostion(ship.xy.x), ship.xy.y);
-            ctx.lineTo(xPostion(ship.destination.x), ship.destination.y);
+            ctx.moveTo(ship.xy.x, ship.xy.y);
+            ctx.lineTo(ship.destination.x, ship.destination.y);
             ctx.stroke();
         }
     }
@@ -2547,7 +2566,14 @@ function drawMap(scale, translatePos) {
         }
         else {
             let size = planet.size / 10;
-            ctx.arc(planetLocation[id].x, planetLocation[id].y, size, 0, Math.PI * 2, true);
+            switch (id){
+                case 'spc_sun':
+                    ctx.arc(planetLocation[id].x, planetLocation[id].y, size, 0, Math.PI * 2, true);
+                    break;
+                default:
+                    ctx.arc(planetLocation[id].x, planetLocation[id].y, size, 0, Math.PI * 2, true);
+                    break;
+            }
         }
         ctx.fill();
     }
@@ -2558,7 +2584,7 @@ function drawMap(scale, translatePos) {
     for (let ship of global.space.shipyard.ships) {
         if (ship.transit > 0) {
             ctx.beginPath();
-            ctx.arc(xPostion(ship.xy.x), ship.xy.y, 0.1, 0, Math.PI * 2, true);
+            ctx.arc(ship.xy.x, ship.xy.y, 0.1, 0, Math.PI * 2, true);
             ctx.fill();
         }
     }

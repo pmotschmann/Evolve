@@ -6,6 +6,7 @@ const changeList = [
         version: `1.2.4`,
         date: `12/19/2021`,
         changes: [
+            `Solar system now has elliptical orbits.`,
             `Fixed Evolve Adept Food bonus.`,
             `Crate/Container sources are now listed in resource popup.`,
             `Manual buying/selling will auto scale down to prevent "waste"`,
