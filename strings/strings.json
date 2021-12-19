@@ -3358,6 +3358,7 @@
   "arpa_genepool_blood_sacrifice_desc": "Earn double the Blood Stones from clearing Spire levels",
   "arpa_genepool_essence_absorber_title": "Essence Absorber",
   "arpa_genepool_essence_absorber_desc": "Unlock advanced Blood Infusions",
+  "arpa_genepool_rank": "Rank %0",
   "arpa_crispr_desc": "Permanently alter your DNA. These upgrades carry over across resets.",
   "arpa_blood_purify_title": "Purify",
   "arpa_blood_purify_desc": "Each Spire level completed slightly purifies the miasma around the island making Purifier, Harbour, Port, and Base Camp creep cheaper.",

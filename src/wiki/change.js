@@ -8,8 +8,9 @@ const changeList = [
         changes: [
             `Solar system now has elliptical orbits.`,
             `Fixed Evolve Adept Food bonus.`,
+            `Rank of each aquired trait is now listed in genetics tab.`,
             `Crate/Container sources are now listed in resource popup.`,
-            `Manual buying/selling will auto scale down to prevent "waste"`,
+            `Manual buying/selling will auto scale down to prevent "waste".`,
         ]
     },
     {

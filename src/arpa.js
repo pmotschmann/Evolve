@@ -1826,12 +1826,12 @@ function genetics(){
                     remove_list.push(trait);
                     
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
+                    major.append($(`<span class="trait has-text-warning">${traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
 
                     breakdown.append(major);
                 }
                 else {
-                    breakdown.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traits[trait].desc}</div>`);
+                    breakdown.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div>`);
                 }
             }
         });
