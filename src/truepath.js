@@ -1425,8 +1425,8 @@ export function drawShipYard(){
                     return sensorRange(global.space.shipyard.blueprint.sensor) + 'km';
                 },
                 speedText(){
-                    let speed = shipSpeed(global.space.shipyard.blueprint);
-                    return +speed.toFixed(2);
+                    let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
+                    return Math.round(speed) + 'km/s';
                 },
                 fuelText(){
                     let fuel = shipFuelUse(global.space.shipyard.blueprint);
@@ -2110,8 +2110,8 @@ function drawShips(){
                     return sensorRange(global.space.shipyard.ships[id].sensor) + 'km';
                 },
                 speedText(id){
-                    let speed = shipSpeed(global.space.shipyard.ships[id]);
-                    return +speed.toFixed(2);
+                    let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.ships[id]);
+                    return Math.round(speed) + 'km/s';
                 },
                 fuelText(id){
                     let fuel = shipFuelUse(global.space.shipyard.ships[id]);
@@ -2168,12 +2168,18 @@ function drawShips(){
 }
 
 function calcLandingPoint(ship, planet) {
-    let ship_dist = Math.sqrt((ship.xy.x ** 2) + (ship.xy.y ** 2));
+    let ship_dist = Math.sqrt(((ship.xy.x - xShift(planet)) ** 2) + (ship.xy.y ** 2));
     let ship_speed = shipSpeed(ship) / 225;
+    let width = xPosition(1, planet);
     let cross1_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist);
     let cross2_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist);
-    let cross1_days = Math.floor(Math.min(cross1_dist, cross2_dist) / ship_speed);
-    let cross2_days = Math.ceil(Math.max(cross1_dist, cross2_dist) / ship_speed);
+    let cross1w_dist = Math.abs(ship_dist - spacePlanetStats[planet].dist * width);
+    let cross2w_dist = Math.abs(ship_dist + spacePlanetStats[planet].dist * width);
+    let cross1_days = Math.floor(Math.min(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
+    let cross2_days = Math.ceil(Math.max(cross1_dist, cross1w_dist, cross2_dist, cross2w_dist) / ship_speed);
+    if (ship_dist >= spacePlanetStats[planet].dist && ship_dist <= spacePlanetStats[planet].dist * width) {
+        cross1_days = 0;
+    }
     let planet_orbit = spacePlanetStats[planet].orbit === -1
       ? global.city.calendar.orbit
       : spacePlanetStats[planet].orbit;
