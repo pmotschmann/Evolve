@@ -70,27 +70,27 @@ export function racesPage(content){
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'caution';
             genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
-            traitList.push(trait);
+            traitList.push({ t: trait, r: 1});
         });
         Object.keys(races[race].traits).sort().forEach(function (trait){
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'info';
             genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
-            traitList.push(trait);
+            traitList.push({ t: trait, r: 1});
         });
         for (let i=0; i<extraTraits.length; i++){
-            let id = `raceTrait${race}${extraTraits[i]}`;
+            let id = `raceTrait${race}${extraTraits[i].t}`;
             let color = races[race].fanaticism === extraTraits[i] ? 'danger' : 'info';
-            genes.append(`<span class="has-text-${color}" id="${id}">${traits[extraTraits[i]].name}<span>`);
+            genes.append(`<span class="has-text-${color}" id="${id}">${traits[extraTraits[i].t].name}<span>`);
             traitList.push(extraTraits[i]);
         }
         info.append(genes);
         list.push(race);
         
         for (let i=0; i<traitList.length; i++){
-            let id = `raceTrait${race}${traitList[i]}`;
+            let id = `raceTrait${race}${traitList[i].t}`;
             let desc = $(`<div></div>`);
-            traitDesc(desc,traitList[i],traitList[i] === races[race].fanaticism ? races[race].name : false);
+            traitDesc(desc, traitList[i].t, traitList[i].t === races[race].fanaticism ? races[race].name : false, false, traitList[i].r);
             popover(id,desc,{ wide: true, classes: 'w25' });
         }
     });
@@ -107,7 +107,17 @@ function extraTraitList(race){
             let easter = getEaster();
             return easter.active ? ['hyper','fast_growth','rainbow','optimistic'] : [];
         case 'elven':
-            return date.getMonth() === 11 && date.getDate() >= 17 ? ['slaver'] : [];
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'slaver', r: 2},{t: 'resourceful', r: 0.5},{t: 'small', r: 0.25}] : [];
+        case 'capybara':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'beast_of_burden', r: 1},{t: 'pack_rat', r: 0.5},{t: 'musical', r: 0.25}] : [];
+        case 'centaur':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'beast_of_burden', r: 1},{t: 'curious', r: 0.5},{t: 'blissful', r: 0.25}] : [];
+        case 'wendigo':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'immoral', r: 3},{t: 'cannibalize', r: 0.5},{t: 'claws', r: 0.25}] : [];
+        case 'yeti':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'scavenger', r: 3},{t: 'regenerative', r: 0.5},{t: 'musical', r: 0.25}] : [];
+        case 'entish':
+            return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'photosynth', r: 3},{t: 'optimistic', r: 0.5},{t: 'armored', r: 0.25}] : [];
         default:
             return [];
     }
@@ -219,7 +229,7 @@ function getTraitVals(trait,rank){
     return vals;
 }
 
-export function traitDesc(info,trait,fanatic,tpage){
+export function traitDesc(info,trait,fanatic,tpage,trank){
     let rank = '';
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
@@ -245,7 +255,7 @@ export function traitDesc(info,trait,fanatic,tpage){
         info.append(`<div class="has-text-${color} effect" v-html="traitDesc(rank)"></div>`);
     }
     else {
-        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait))}</div>`);
+        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
     }
     if (traitExtra[trait]){
         traitExtra[trait].forEach(function(te){
