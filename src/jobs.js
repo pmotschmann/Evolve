@@ -100,11 +100,11 @@ export const job_desc = {
         return desc;
     },
     scavenger: function(){
-        let scavanger = traits.scavenger.vars()[0];
-        if (global.city.ptrait === 'trashed' && global.race['scavanger']){
-            scavanger *= 1 + (traits.scavenger.vars()[1] / 100);
+        let scavenger = traits.scavenger.vars()[0];
+        if (global.city.ptrait === 'trashed' && global.race['scavenger']){
+            scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
-        let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavanger]);
+        let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger'){
             desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
         }
@@ -314,14 +314,14 @@ function loadJob(job, define, impact, stress, color){
     }
     civ_container.append(controls);
     $('#jobs').append(civ_container);
-    
+
     if (job !== 'crew'){
         var sub = $(`<span role="button" aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
         var add = $(`<span role="button" aria-label="${loc('add')} ${global['civic'][job].name}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
         controls.append(sub);
         controls.append(add);
     }
-    
+
     vBind({
         el: `#${id}`,
         data: {
@@ -458,14 +458,14 @@ export function loadFoundry(){
                 else {
                     job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }}</span></div>`);
                 }
-                
+
                 resource.append(job_label);
                 resource.append(controls);
                 $('#foundry').append(resource);
-                
+
                 let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
                 let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
-                
+
                 controls.append(sub);
                 controls.append(add);
             }
@@ -491,8 +491,8 @@ export function loadFoundry(){
                     else if (res === 'Quantium'){
                         tMax = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
                     }
-                    for (let i=0; i<keyMult; i++){                        
-                        if (global.city.foundry.crafting < global.civic.craftsman.max 
+                    for (let i=0; i<keyMult; i++){
+                        if (global.city.foundry.crafting < global.civic.craftsman.max
                             && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)
                             && (tMax === -1 || tMax > global.city.foundry[res])
                         ){
@@ -570,10 +570,10 @@ export function loadFoundry(){
                         let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
                         total.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
-                    
+
                     return total;
                 }
-                
+
                 craftingPopover(`craft${res}`,res,'auto',extra);
             }
         }
