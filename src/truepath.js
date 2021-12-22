@@ -2395,7 +2395,7 @@ export const spacePlanetStats = {
     spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true },
     spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
-    //tauceti: { dist: 752568.8, orbit: -2 },
+    //tauceti: { dist: 752568.8, orbit: -2, size: 2 },
 };
 
 export function setOrbits(){
@@ -2466,30 +2466,35 @@ export function calcAIDrift(){
 }
 
 function xPosition(x,p){
-    let e = 1.075 + (spacePlanetStats[p].dist / 100);
-    if (global.city.ptrait === 'elliptical'){
-        switch (p){
-            case 'spc_home':
-                e = 1.5;
-                break;
-            default:
-                e = 1.275 + (spacePlanetStats[p].dist / 100);
-                break;
+    if (spacePlanetStats[p].orbit !== -2){
+        let e = 1.075 + (spacePlanetStats[p].dist / 100);
+        if (global.city.ptrait === 'elliptical'){
+            switch (p){
+                case 'spc_home':
+                    e = 1.5;
+                    break;
+                default:
+                    e = 1.275 + (spacePlanetStats[p].dist / 100);
+                    break;
+            }
         }
+        x *= e;
     }
-    x *= e;
     return x;
 }
 
 function xShift(id){
-    let x = spacePlanetStats[id].dist / 3;
-    if (global.city.ptrait === 'elliptical' && id === 'spc_home'){
-        x += 0.15;
+    if (spacePlanetStats[id].orbit !== -2){
+        let x = spacePlanetStats[id].dist / 3;
+        if (global.city.ptrait === 'elliptical' && id === 'spc_home'){
+            x += 0.15;
+        }
+        if (id === 'spc_eris'){
+            x += 25;
+        }
+        return x;
     }
-    if (id === 'spc_eris'){
-        x += 25;
-    }
-    return x;
+    return 0;
 }
 
 function drawMap(scale, translatePos) {
@@ -2514,7 +2519,7 @@ function drawMap(scale, translatePos) {
     ctx.lineWidth = 1 / scale;
     ctx.strokeStyle = "#c0c0c0";
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        if (!planet.moon) {
+        if (!planet.moon && planet.orbit !== -2) {
             ctx.beginPath();
             if (planet.belt){
                 ctx.setLineDash([0.01, 0.01]);
