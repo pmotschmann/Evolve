@@ -1988,6 +1988,7 @@ export const actions = {
     
                                 let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
                                 let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
+                                let ai = global.stats.achieve['obsolete'] ? global.stats.achieve['obsolete'].l : 0;
     
                                 if (universe > 30){ universe = 30; }
                                 if (ascended > 5){ ascended = 5; }
@@ -2014,8 +2015,13 @@ export const actions = {
                                     gift.push(`${blood} ${loc(`resource_Blood_Stone_name`)}`);
                                     gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
                                 }
+                                if (active_gift !== `g2020` && ai > 0){
+                                    global.race.AICore.count += ai;
+                                    global.stats.cores += ai;
+                                    gift.push(`${ai} ${loc(`resource_AICore_name`)}`);
+                                }
                             }
-    
+
                             messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
                             drawCity();
                         }

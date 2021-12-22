@@ -925,6 +925,12 @@ if (convertVersion(global['version']) < 102001){
     }
 }
 
+if (convertVersion(global['version']) < 102005){
+    if (!global.stats['cores'] && global.race.hasOwnProperty('AICore')){
+        global.stats['cores'] = global.race.AICore.count;
+    }
+}
+
 global['version'] = '1.2.5';
 delete global['revision'];
 delete global['beta'];
@@ -1412,6 +1418,9 @@ if (!global.stats['harmony']){
 }
 if (!global.stats['blood']){
     global.stats['blood'] = 0;
+}
+if (!global.stats['cores']){
+    global.stats['cores'] = 0;
 }
 if (!global.stats['artifact']){
     global.stats['artifact'] = 0;
