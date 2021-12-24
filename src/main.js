@@ -75,7 +75,9 @@ $(document).keydown(function(e){
         Object.keys(quickMap).forEach(function(k){
             if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
                 global.settings.civTabs = quickMap[k];
-                loadTab(global.settings.civTabs);
+                if (!global.settings.tabLoad){
+                    loadTab(global.settings.civTabs);
+                }
             }
         });
     }

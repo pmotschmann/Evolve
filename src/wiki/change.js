@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Fixed bug that prevented custom Synthetic race from showing if you refreshed the page.`,
             `Fixed bugs with Synthetic evolution and traits: Calm, Cannibalize, and Magnificent.`,
+            `Fixed bugs with using the quick tab keys when preload tabs is enabled.`
         ]
     },
     {
