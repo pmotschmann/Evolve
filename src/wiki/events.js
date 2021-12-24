@@ -1637,7 +1637,7 @@ function specialEventsPage(content){
 
     {   // XMas
         let event = 'xmas';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 5, break: [2,3,4,5], h_level: 2,
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 6, break: [2,3,4,5,6], h_level: 2,
             para_data: {
                 2: [loc('feat_xmas_name')],
             }
