@@ -616,7 +616,7 @@ if (global.race.species === 'protoplasm'){
             sand: 'sand',
             demonic: 'demonic',
             angelic: 'celestial',
-            artifical: 'artifical'
+            synthetic: 'exterminate'
         };
 
         if (races.custom.hasOwnProperty('type') && global.evolution[custom_map[races.custom.type]] && global.evolution[custom_map[races.custom.type]].count > 0){
