@@ -2267,7 +2267,7 @@ export const perkList = {
             return global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? true : false;
         },
         notes: [
-            loc(`wiki_perks_progress_note1`,[50,loc(`wiki_resets_bioseed`)]),
+            loc(`wiki_perks_progress_note1`,[50,loc(`wiki_resets_blackhole`)]),
             loc(`wiki_perks_progress_note2`)
         ]
     },

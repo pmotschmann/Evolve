@@ -1638,8 +1638,14 @@ if (typeof global.civic.foreign.gov2['name'] !== "undefined" && global.civic.for
     global.civic.foreign.gov2.name.s1 = 'Divine';
 }
 
-if (!global.race['evil'] && global.race['immoral']){
+if (!global.race['evil'] && global.race['immoral'] && global.race !== undefined && global.race.species !== 'wendigo'){
     delete global.race['immoral'];
+}
+else if (global.race !== undefined && global.race.species === 'wendigo'){
+    const date = new Date();
+    if (global.settings.hasOwnProperty('boring') && !global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17){
+        global.race['immoral'] = 3;
+    }
 }
 
 {
