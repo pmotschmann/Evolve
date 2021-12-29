@@ -1,7 +1,6 @@
 import { global } from './vars.js';
 import { biomes } from './races.js';
 import { govRelationFactor } from './civics.js';
-import { zigguratBonus } from './space.js';
 
 export function production(id,val){
     switch (id){
@@ -38,7 +37,7 @@ export function production(id,val){
                     if (global.city.geology['Iridium']){
                         iridium *= global.city.geology['Iridium'] + 1;
                     }
-                    let base = iridium * zigguratBonus();
+                    let base = iridium;
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -47,12 +46,12 @@ export function production(id,val){
                     };
                 }
                 case 'coal':
-                    return 0.55 * zigguratBonus();
+                    return 0.55;
             }
         }
         case 'helium_mine':
         {
-            let base = 0.18 * zigguratBonus();
+            let base = 0.18;
             let gov = govRelationFactor(3);
             return {
                 b: base,
@@ -65,7 +64,7 @@ export function production(id,val){
             switch (val){
                 case 'copper':
                 {
-                    let base = 0.25 * zigguratBonus();
+                    let base = 0.25;
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -75,7 +74,7 @@ export function production(id,val){
                 }
                 case 'titanium':
                 {
-                    let base = 0.02 * zigguratBonus();
+                    let base = 0.02;
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -84,32 +83,32 @@ export function production(id,val){
                     };
                 }
                 case 'stone':
-                    return 0.75 * zigguratBonus();
+                    return 0.75;
                 case 'asbestos':
-                    return 1.25 * zigguratBonus();
+                    return 1.25;
                 case 'aluminium':
-                    return 0.066 * zigguratBonus();
+                    return 0.066;
             }
         }
         case 'biodome':
         {
             switch (val){
                 case 'food':
-                    return 0.25 * zigguratBonus();
+                    return 0.25;
                 case 'cat_food':
-                    return 2 * zigguratBonus();
+                    return 2;
                 case 'lumber':
-                    return 1.5 * zigguratBonus();
+                    return 1.5;
             }
         }
         case 'gas_mining':
         {
-            return (global.tech['helium'] ? 0.65 : 0.5) * zigguratBonus();
+            return (global.tech['helium'] ? 0.65 : 0.5);
         }
         case 'outpost':
         {
             let vals = {
-                b: 0.025 * zigguratBonus(),
+                b: 0.025,
                 d: 0,
                 n: 0
             };
@@ -133,48 +132,48 @@ export function production(id,val){
             else if (global.tech['oil'] >= 5){
                 oil *= global.tech['oil'] >= 6 ? 1.75 : 1.25;
             }
-            return oil * zigguratBonus();
+            return oil;
         }
         case 'elerium_ship':
         {
-            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005) * zigguratBonus();
+            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.009 : 0.0075) : 0.005);
         }
         case 'iridium_ship':
         {
-            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055) * zigguratBonus()
+            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 0.1 : 0.08) : 0.055);
         }
         case 'iron_ship':
         {
-            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2) * zigguratBonus();
+            return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2);
         }
         case 'harvester':
         {
             switch (val){
                 case 'helium':
-                    return 0.85 * zigguratBonus();
+                    return 0.85;
                 case 'deuterium':
-                    return 0.15 * zigguratBonus();
+                    return 0.15;
             }
         }
         case 'elerium_prospector':
         {
-            return 0.014 * zigguratBonus();
+            return 0.014;
         }
         case 'neutron_miner':
         {
-            return 0.055 * zigguratBonus();
+            return 0.055;
         }
         case 'bolognium_ship':
         {
-            return 0.008 * zigguratBonus();
+            return 0.008;
         }
         case 'excavator':
         {
-            return 0.2 * zigguratBonus();
+            return 0.2;
         }
         case 'vitreloy_plant':
         {
-            let vitreloy = 0.18 * zigguratBonus();
+            let vitreloy = 0.18;
             if (global.civic.govern.type === 'corpocracy'){
                 vitreloy *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
             }
@@ -185,18 +184,18 @@ export function production(id,val){
         }
         case 'water_freighter':
         {
-            return 1.25 * zigguratBonus();
+            return 1.25;
         }
         case 'titan_mine':
         {
             switch (val){
                 case 'adamantite':
                 {
-                    return 0.02 * zigguratBonus() * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
+                    return 0.02 * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
                 }
                 case 'aluminium':
                 {
-                    return 0.12 * zigguratBonus() * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
+                    return 0.12 * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
                 }
             }
         }
@@ -209,19 +208,19 @@ export function production(id,val){
         }
         case 'orichalcum_mine':
         {
-            return 0.08 * zigguratBonus();
+            return 0.08;
         }
         case 'uranium_mine':
         {
-            return 0.025 * zigguratBonus();
+            return 0.025;
         }
         case 'neutronium_mine':
         {
-            return 0.04 * zigguratBonus();
+            return 0.04;
         }
         case 'elerium_mine':
         {
-            return 0.009 * zigguratBonus();
+            return 0.009;
         }
         case 'shock_trooper':
         {
