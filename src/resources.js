@@ -859,6 +859,12 @@ export function setResourceName(name){
         global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
     }
     
+    if (global.race['sludge']){
+        if (name === 'Horseshoe'){
+            global.resource[name].name = loc(`resource_Beaker_name`);
+        }
+    }
+
     if (global.race['artifical']){
         if (name === 'Genes'){
             global.resource[name].name = loc(`resource_Program_name`);

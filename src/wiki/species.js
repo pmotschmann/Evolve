@@ -76,7 +76,7 @@ export function racesPage(content){
             let id = `raceTrait${race}${trait}`;
             let color = races[race].fanaticism === trait ? 'danger' : 'info';
             genes.append(`<span class="has-text-${color}" id="${id}">${traits[trait].name}<span>`);
-            traitList.push({ t: trait, r: 1});
+            traitList.push({ t: trait, r: races[race].traits[trait] });
         });
         for (let i=0; i<extraTraits.length; i++){
             let id = `raceTrait${race}${extraTraits[i].t}`;

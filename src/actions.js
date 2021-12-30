@@ -2253,10 +2253,8 @@ export const actions = {
         },
         horseshoe: {
             id: 'city-horseshoe',
-            title: loc('city_horseshoe'),
-            desc(){
-                return loc(`city_horseshoe_desc`);
-            },
+            title(){ return loc(global.race['sludge'] ? 'city_beaker' : 'city_horseshoe'); },
+            desc(){ return loc(global.race['sludge'] ? 'city_beaker_desc' : `city_horseshoe_desc`); },
             category: 'outskirts',
             reqs: { primitive: 3 },
             trait: ['hooved'],
@@ -7050,7 +7048,6 @@ function sentience(){
 
     if (global.race.species === 'junker' || global.race.species === 'sludge'){
         setJType();
-
     }
     if (global.race.species !== 'junker'){
         delete global.race['junker'];

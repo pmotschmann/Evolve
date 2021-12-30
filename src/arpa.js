@@ -1813,6 +1813,10 @@ function genetics(){
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
         
+        let traitDesc = {
+            hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+        };
+
         let remove_list = [];
         Object.keys(global.race).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
@@ -1826,12 +1830,12 @@ function genetics(){
                     remove_list.push(trait);
                     
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning">${traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
+                    major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
 
                     breakdown.append(major);
                 }
                 else {
-                    breakdown.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div>`);
+                    breakdown.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div>`);
                 }
             }
         });
@@ -1842,7 +1846,7 @@ function genetics(){
             
             let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
             Object.keys(races).forEach(function (race){
-                if (race !== 'junker' && race !== 'custom' && races[race].type === races[global.race.species].type){
+                if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && races[race].type === races[global.race.species].type){
                     Object.keys(races[race].traits).forEach(function (trait){
                         if (!global.race[trait] && trait !== 'soul_eater'){
                             let conflict_pos = conflict_traits.indexOf(trait);
@@ -1878,7 +1882,7 @@ function genetics(){
                 let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
                 
                 major.append(add);
-                major.append($(`<span class="trait has-text-warning">${traits[trait].desc}</span>`));
+                major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc}</span>`));
 
                 breakdown.append(major);
             }
@@ -1989,7 +1993,7 @@ function genetics(){
                 },
                 purge(t){
                     let cost = traits[t].val * 5;
-                    if (global.race.species === 'custom'){
+                    if (global.race.species === 'custom' || global.race.species === 'sludge'){
                         cost *= 10;
                     }
                     if (cost < 0){
@@ -2027,7 +2031,7 @@ function genetics(){
                 },
                 gain(t){
                     let cost = traits[t].val * 5;
-                    if (global.race.species === 'custom'){
+                    if (global.race.species === 'custom' || global.race.species === 'sludge'){
                         cost *= 10;
                     }
                     if (cost < 0){

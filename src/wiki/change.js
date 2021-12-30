@@ -6,7 +6,7 @@ const changeList = [
         version: `1.2.7`,
         date: `12/31/2021`,
         changes: [
-            `Sludge.`,
+            `Failed Experiment Challenge mode.`,
         ]
     },
     {

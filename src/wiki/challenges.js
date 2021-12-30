@@ -294,6 +294,50 @@ export function challengesPage(content){
             inflationCalc(subSection);
             subSideMenu('add',`challenges-gameplay`,'modes_inflation',loc('wiki_challenges_modes_inflation'));
         }
+
+        {   // Failed Experiment
+            let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 3, break: [3], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_sludge`),loc(`wiki_challenges_challenge`),loc(`race_sludge`)],
+                    3: [loc(`wiki_challenges_challenge`),loc(`wiki_resets_mad`)]
+                },
+                data_link: {
+                    1: [false,false,'wiki.html#races-species-sludge'],
+                    3: [false,'wiki.html#resets-prestige-mad']
+                }
+            });
+            addAchievements(failed,false,['extinct_sludge']);
+            addRequirements(failed,[
+                {
+                    text: `wiki_challenges_reqs_achieve`,
+                    subreqs: [
+                        {
+                            text: loc(`achieve_extinct_junker_name`),
+                            color: global.stats.achieve['extinct_junker'] ? true : false
+                        }
+                    ]
+                    
+                }
+            ]);
+            addRequirements(failed,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_ascension`),
+                            color: global.stats.achieve['ascended'] ? true : false,
+                            link: 'wiki.html#resets-prestige-ascension'
+                        },
+                        {
+                            text: loc(`wiki_resets_infusion`),
+                            color: global.stats.achieve['corrupted'] ? true : false,
+                            link: 'wiki.html#resets-prestige-infusion'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_sludge',loc('wiki_challenges_modes_sludge'));
+        }
     }
     
     // Scenarios
@@ -506,7 +550,6 @@ export function challengesPage(content){
                             link: 'wiki.html#resets-prestige-infusion'
                         }
                     ]
-                    
                 }
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_truepath',loc('wiki_challenges_scenarios_truepath'));
