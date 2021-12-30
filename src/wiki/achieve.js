@@ -312,7 +312,7 @@ function featDesc(feat,showFlair){
         }
         let checked = `<div class="flexed wide">`;    
         Object.keys(races).sort().forEach(function (key){
-            if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
+            if (key !== 'protoplasm' && (key !== 'sludge' || species['sludge'] >= 1) && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
                 if (species[key] && species[key] >= 1){
                     checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
                 }

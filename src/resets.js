@@ -154,7 +154,7 @@ export function bioseed(){
     if (atmo === 'dense' && global.race.universe === 'heavy'){
         unlockAchieve(`double_density`);
     }
-    if (global.race.species === 'junker'){
+    if (global.race['junker'] && global.race.species === 'junker'){
         unlockFeat('organ_harvester');
     }
     if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
@@ -399,7 +399,7 @@ export function big_bang(){
     if (global.race.universe === 'evil' && races[global.race.species].type === 'angelic'){
         unlockFeat('nephilim');
     }
-    if (global.race.species === 'junker'){
+    if (global.race['junker'] && global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
     if (global.race['decay']){
@@ -510,7 +510,7 @@ export function vacuumCollapse(){
         if (!global.race['modified'] && global.race.species === 'balorg'){
             unlockAchieve('pass');
         }
-        if (global.race.species === 'junker'){
+        if (global.race['junker'] && global.race.species === 'junker'){
             unlockFeat('the_misery');
         }
         if (global.race['decay']){
@@ -741,7 +741,7 @@ export function descension(){
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
     }
-    if (global.race.species === 'junker'){
+    if (global.race['junker'] && global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
     if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
@@ -850,7 +850,7 @@ export function aiApocalypse(){
     unlockAchieve(`obsolete`);
 
     unlockAchieve(`squished`,true);
-    if (global.race.species === 'junker'){
+    if (global.race['junker'] && global.race.species === 'junker'){
         unlockFeat('the_misery');
     }
 

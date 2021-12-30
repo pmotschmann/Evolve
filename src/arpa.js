@@ -1890,7 +1890,7 @@ function genetics(){
 
         let rmCost = function(t){
             let cost = traits[t].val * 5;
-            if (global.race.species === 'custom'){
+            if (global.race.species === 'custom' || global.race.species === 'sludge'){
                 cost *= 10;
             }
             if (cost < 0){
@@ -1901,7 +1901,7 @@ function genetics(){
 
         let addCost = function(t){
             let cost = traits[t].val * 5;
-            if (global.race.species === 'custom'){
+            if (global.race.species === 'custom' || global.race.species === 'sludge'){
                 cost *= 10;
             }
             if (cost < 0){

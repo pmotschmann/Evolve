@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.7`,
+        date: `12/31/2021`,
+        changes: [
+            `Sludge.`,
+        ]
+    },
+    {
         version: `1.2.6`,
         date: `12/24/2021`,
         changes: [

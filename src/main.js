@@ -630,6 +630,13 @@ if (global.race.species === 'protoplasm'){
                 addAction('evolution',race_options[i]);
             }
         }
+        if (global.race['junker'] || global.race['sludge']){
+            Object.keys(races).forEach(function(r){
+                if (r !== 'junker' && r !== 'sludge'){
+                    $(`#evolution-${r}`).addClass('is-hidden');
+                }
+            });
+        }
     }
     if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
         evoProgress();

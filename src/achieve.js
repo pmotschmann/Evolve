@@ -31,7 +31,7 @@ const achieve_list = {
         'extinct_arraak','extinct_pterodacti','extinct_dracnid','extinct_entish','extinct_cacti','extinct_pinguicula','extinct_sporgar',
         'extinct_shroomi','extinct_moldling','extinct_mantis','extinct_scorpid','extinct_antid','extinct_sharkin','extinct_octigoran','extinct_dryad',
         'extinct_satyr','extinct_phoenix','extinct_salamander','extinct_yeti','extinct_wendigo','extinct_tuskin','extinct_kamel','extinct_balorg',
-        'extinct_imp','extinct_seraph','extinct_unicorn','extinct_synth','extinct_nano','extinct_junker','extinct_custom'
+        'extinct_imp','extinct_seraph','extinct_unicorn','extinct_synth','extinct_nano','extinct_junker','extinct_sludge','extinct_custom'
     ],
     genus: [
         'creator','genus_humanoid','genus_carnivore','genus_herbivore','genus_small','genus_giant','genus_reptilian','genus_avian',
@@ -589,13 +589,15 @@ export function checkAchievements(){
         let equilRank = 5;
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
-                if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
-                    genus[races[race].type] = global.pillars[race];
+                if (race !== 'sludge'){
+                    if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
+                        genus[races[race].type] = global.pillars[race];
+                    }
+                    if (global.pillars[race] < equilRank){
+                        equilRank = global.pillars[race];
+                    }
+                    rCnt++;
                 }
-                if (global.pillars[race] < equilRank){
-                    equilRank = global.pillars[race];
-                }
-                rCnt++;
             }
         });
         if (Object.keys(genus).length >= Object.keys(genus_traits).length){
@@ -607,7 +609,7 @@ export function checkAchievements(){
             });
             unlockAchieve('enlightenment',false,rank);
         }
-        if (rCnt >= Object.keys(races).length - 1){
+        if (rCnt >= Object.keys(races).length - 2){
             unlockAchieve('resonance');
             unlockFeat('equilibrium',false,equilRank);
         }
