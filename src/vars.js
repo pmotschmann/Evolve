@@ -969,7 +969,7 @@ if (convertVersion(global['version']) < 102007){
 
 global['version'] = '1.2.7';
 delete global['revision'];
-global['beta'] = 4;
+global['beta'] = 5;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       

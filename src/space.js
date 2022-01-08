@@ -6186,7 +6186,9 @@ export function ascendLab(wiki){
             ){
             if (races[race].hasOwnProperty('traits')){
                 Object.keys(races[race].traits).forEach(function (trait){
-                    unlockedTraits[trait] = true;
+                    if (trait !== 'ooze'){
+                        unlockedTraits[trait] = true;
+                    }
                 });
             }
         }

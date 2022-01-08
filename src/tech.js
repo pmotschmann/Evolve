@@ -9860,8 +9860,7 @@ const techs = {
             Knowledge(){ return 500000; }
         },
         condition(){
-            if (global.race['sludge'] && !global.race['cataclysm']){ return false; }
-            return global.race['universe'] === 'magic' ? true : false;
+            return global.race['sludge'] && !global.race['cataclysm'] ? false : true;
         },
         effect(){
             let gains = calcPrestige('cataclysm');
