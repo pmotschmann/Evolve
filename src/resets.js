@@ -167,6 +167,9 @@ export function bioseed(){
     if (global.race['cataclysm']){
         unlockAchieve('iron_will',false,5);
     }
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
 
     let good_rocks = 0;
     let bad_rocks = 0;
@@ -669,6 +672,10 @@ export function ascend(){
 
     if (!global.race['modified'] && (global.race.species === 'synth' || global.race.species === 'nano') && global.race['emfield']){
         unlockFeat('digital_ascension');
+    }
+
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
     }
 
     checkAchievements();

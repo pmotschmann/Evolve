@@ -2824,7 +2824,7 @@ export const traits = {
         type: 'major',
         val: -25,
         vars(r){
-            // [All jobs worse, Theology weaker]
+            // [All jobs worse, Theology weaker, Extra knowledge costs]
             switch (r || global.race.ooze || 1){
                 case 0.25:
                     return [15,10,5];
@@ -3997,7 +3997,7 @@ export const races = {
             gas_moon: loc('race_sludge_solar_gas_moon'),
             dwarf: loc('race_sludge_solar_dwarf'),
         },
-        fanaticism: 'none'
+        fanaticism: 'ooze'
     },
     custom: customRace()
 };
@@ -4633,6 +4633,11 @@ export function cleanAddTrait(trait){
             setResourceName('Furs');
             setResourceName('Plywood');
             break;
+        case 'ooze':
+            if (!global.tech['high_tech'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+                global.race['gross_enabled'] = 1;
+            }
+            break;
         default:
             break;
     }
@@ -4808,6 +4813,9 @@ export function cleanRemoveTrait(trait){
             setResourceName('Lumber');
             setResourceName('Furs');
             setResourceName('Plywood');
+            break;
+        case 'ooze':
+            delete global.race['gross_enabled'];
             break;
         default:
             break;

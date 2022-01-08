@@ -961,9 +961,15 @@ if (convertVersion(global['version']) < 102006){
     }
 }
 
+if (convertVersion(global['version']) < 102007){
+    if (global.stats.hasOwnProperty('achieve')){
+        delete global.stats.achieve['extinct_sludge'];
+    }
+}
+
 global['version'] = '1.2.7';
 delete global['revision'];
-global['beta'] = 1;
+global['beta'] = 2;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
