@@ -1505,7 +1505,7 @@ function war_campaign(gov){
         if (global.race['artifical']){
             basic.shift();
         }
-        if (global.tech['smoldering']){
+        if (global.race['smoldering']){
             basic.push('Chrysotile');
         }
         if (global.race['terrifying'] && gov !== 3){

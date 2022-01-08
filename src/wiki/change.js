@@ -7,6 +7,7 @@ const changeList = [
         date: `1/9/2021`,
         changes: [
             `Failed Experiment Challenge mode.`,
+            `Fixed bug that prevented smoldering races from being able to loot Chrysotile`,
         ]
     },
     {
