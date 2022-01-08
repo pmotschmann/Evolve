@@ -2818,6 +2818,27 @@ export const traits = {
             }
         }
     },
+    ooze: { // you are some kind of ooze, everything is bad
+        name: loc('trait_ooze_name'),
+        desc: loc('trait_ooze'),
+        type: 'major',
+        val: -25,
+        vars(r){
+            // [All jobs worse, Theology weaker]
+            switch (r || global.race.ooze || 1){
+                case 0.25:
+                    return [15,10,5];
+                case 0.5:
+                    return [12,8,4];
+                case 1:
+                    return [10,6,3];
+                case 2:
+                    return [8,4,2];
+                case 3:
+                    return [6,2,1];
+            }
+        }
+    },
     soul_eater: { // You eat souls for breakfast, lunch, and dinner
         name: loc('trait_soul_eater_name'),
         desc: loc('trait_soul_eater'),
@@ -3932,6 +3953,7 @@ export const races = {
         home: loc('race_sludge_home'),
         entity: loc('race_sludge_entity'),
         traits: {
+            ooze: 0.25,
             diverse: 0.25,
             arrogant: 0.25,
             angry: 0.25,
@@ -4014,7 +4036,8 @@ Object.keys(genusVars).forEach(function(k){
 });
 
 export function setJType(){
-    races.junker.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
+    races.junker.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';
+    races.sludge.type = global.race.hasOwnProperty('jtype') ? global.race.jtype : 'humanoid';;
 }
 
 function customRace(){
@@ -4143,6 +4166,9 @@ export function racialTrait(workers,type){
     }
     if (global.race['analytical'] && type === 'science'){
         modifier *= 1 + (traits.analytical.vars()[0] * global.race['analytical'] / 100);
+    }
+    if (global.race['ooze']){
+        modifier *= 1 - (traits.ooze.vars()[0] / 100);
     }
     if (global.civic.govern.type === 'democracy'){
         modifier *= 0.95;

@@ -983,6 +983,9 @@ const spaceProjects = {
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     bonus += 0.002 * global.civic.priest.workers;
                 }
+                if (global.race['ooze']){
+                    bonus *= 1 - (traits.ooze.vars()[1] / 100);
+                }
                 bonus = +(bonus).toFixed(2);
                 let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
@@ -5981,6 +5984,9 @@ export function zigguratBonus(){
         }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             zig += 0.00002 * global.civic.priest.workers;
+        }
+        if (global.race['ooze']){
+            zig *= 1 - (traits.ooze.vars()[1] / 100);
         }
         bonus += (global.space.ziggurat.count * global.civic.colonist.workers * zig);
     }

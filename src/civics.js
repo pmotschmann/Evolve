@@ -1995,6 +1995,7 @@ export function garrisonSize(max,nofob){
 }
 
 function defineMad(){
+    if (global.race['sludge']){ return false; }
     if ($(`#mad`).length === 0){
         let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
         var mad_command = $('<div id="mad" v-show="display" class="tile is-child"></div>');

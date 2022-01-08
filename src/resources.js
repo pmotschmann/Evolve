@@ -2671,6 +2671,9 @@ export function faithBonus(){
             if (global.civic.govern.type === 'theocracy'){
                 temple_bonus *= 1.12;
             }
+            if (global.race['ooze']){
+                temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
+            }
             return (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple_bonus;
         }
     }
@@ -2739,6 +2742,9 @@ export const plasmidBonus = (function (){
                     }
                     if (global.civic.govern.type === 'theocracy'){
                         temple_bonus *= 1.12;
+                    }
+                    if (global.race['ooze']){
+                        temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
                     }
                     standard *= 1 + (global.city.temple.count * temple_bonus);
                 }

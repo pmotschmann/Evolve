@@ -1992,6 +1992,9 @@ function genetics(){
                     }
                 },
                 purge(t){
+                    if (global.race.species === 'sludge' && global.race['modified']){
+                        return;
+                    }
                     let cost = traits[t].val * 5;
                     if (global.race.species === 'custom' || global.race.species === 'sludge'){
                         cost *= 10;
@@ -2030,8 +2033,14 @@ function genetics(){
                     }
                 },
                 gain(t){
+                    if (global.race.species === 'sludge' && global.race['modified']){
+                        return;
+                    }
                     let cost = traits[t].val * 5;
-                    if (global.race.species === 'custom' || global.race.species === 'sludge'){
+                    if (global.race.species === 'sludge'){
+                        cost *= 2;
+                    }
+                    if (global.race.species === 'custom'){
                         cost *= 10;
                     }
                     if (cost < 0){

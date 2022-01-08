@@ -6940,6 +6940,7 @@ const techs = {
         not_trait: ['cataclysm'],
         grant: ['mad',1],
         condition(){
+            if (global.race['sludge']){ return false; }
             return global.race['truepath'] ? (global.tech['world_control'] ? true : false ) : true;
         },
         cost: {
@@ -9857,6 +9858,10 @@ const techs = {
         grant: ['quaked',2],
         cost: {
             Knowledge(){ return 500000; }
+        },
+        condition(){
+            if (global.race['sludge'] && !global.race['cataclysm']){ return false; }
+            return global.race['universe'] === 'magic' ? true : false;
         },
         effect(){
             let gains = calcPrestige('cataclysm');

@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.7`,
-        date: `12/31/2021`,
+        date: `1/9/2021`,
         changes: [
             `Failed Experiment Challenge mode.`,
         ]

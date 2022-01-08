@@ -296,10 +296,13 @@ export function challengesPage(content){
         }
 
         {   // Failed Experiment
-            let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 3, break: [3], h_level: 2,
+            let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 6, break: [3,4,5,6], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_sludge`),loc(`wiki_challenges_challenge`),loc(`race_sludge`)],
-                    3: [loc(`wiki_challenges_challenge`),loc(`wiki_resets_mad`)]
+                    3: [loc(`race_sludge`)],
+                    4: [loc(`evo_challenge_sludge`)],
+                    5: [loc(`race_sludge`),loc(`wiki_resets_mad`)],
+                    6: [loc(`race_sludge`),loc(`wiki_resets_cataclysm`)]
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-sludge'],

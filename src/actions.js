@@ -5114,6 +5114,9 @@ export function templeEffect(){
         if (global.civic.govern.type === 'theocracy'){
             faith *= 1.12;
         }
+        if (global.race['ooze']){
+            faith *= 1 - (traits.ooze.vars()[1] / 100);
+        }
         faith = +(faith).toFixed(3);
         desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
         if (global.race.universe === 'antimatter'){
@@ -5139,6 +5142,9 @@ export function templeEffect(){
         }
         if (global.civic.govern.type === 'theocracy'){
             plasmid *= 1.12;
+        }
+        if (global.race['ooze']){
+            plasmid *= 1 - (traits.ooze.vars()[1] / 100);
         }
         plasmid = +(plasmid).toFixed(3);
         desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
