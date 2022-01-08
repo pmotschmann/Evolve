@@ -2822,20 +2822,20 @@ export const traits = {
         name: loc('trait_ooze_name'),
         desc: loc('trait_ooze'),
         type: 'major',
-        val: -25,
+        val: -100,
         vars(r){
             // [All jobs worse, Theology weaker, Mastery weaker]
             switch (r || global.race.ooze || 1){
                 case 0.25:
-                    return [15,20,10];
+                    return [20,25,40];
                 case 0.5:
-                    return [12,15,8];
+                    return [15,20,35];
                 case 1:
-                    return [10,12,6];
+                    return [12,15,30];
                 case 2:
-                    return [8,8,4];
+                    return [10,12,25];
                 case 3:
-                    return [6,6,2];
+                    return [8,10,20];
             }
         }
     },
