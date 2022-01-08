@@ -2,7 +2,7 @@ import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
 import { setJobName } from './jobs.js'; 
-import { vBind, clearElement, removeFromQueue, removeFromRQueue, getEaster, getHalloween } from './functions.js';
+import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
@@ -2824,18 +2824,18 @@ export const traits = {
         type: 'major',
         val: -25,
         vars(r){
-            // [All jobs worse, Theology weaker, Extra knowledge costs]
+            // [All jobs worse, Theology weaker, Mastery weaker]
             switch (r || global.race.ooze || 1){
                 case 0.25:
-                    return [15,10,5];
+                    return [15,20,10];
                 case 0.5:
-                    return [12,8,4];
+                    return [12,15,8];
                 case 1:
-                    return [10,6,3];
+                    return [10,12,6];
                 case 2:
-                    return [8,4,2];
+                    return [8,8,4];
                 case 3:
-                    return [6,2,1];
+                    return [6,6,2];
             }
         }
     },
@@ -4637,6 +4637,7 @@ export function cleanAddTrait(trait){
             if (!global.tech['high_tech'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
                 global.race['gross_enabled'] = 1;
             }
+            calc_mastery(true);
             break;
         default:
             break;
@@ -4816,6 +4817,7 @@ export function cleanRemoveTrait(trait){
             break;
         case 'ooze':
             delete global.race['gross_enabled'];
+            calc_mastery(true);
             break;
         default:
             break;
