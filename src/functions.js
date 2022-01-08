@@ -1115,6 +1115,10 @@ export function masteryType(universe,detailed){
             m_rate /= universe === 'antimatter' ? 5 : 2;
             u_rate /= universe === 'antimatter' ? 5 : 2;
         }
+        if (global.race['ooze']){
+            m_rate *= 1 - (traits.ooze.vars()[2] / 100);
+            u_rate *= 1 - (traits.ooze.vars()[2] / 100);
+        }
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){
