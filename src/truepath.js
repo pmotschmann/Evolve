@@ -5,7 +5,7 @@ import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { production } from './prod.js';
 import { actions, payCosts, drawTech, bank_vault } from './actions.js';
-import { fuel_adjust, spaceTech, zigguratBonus, renderSpace } from './space.js';
+import { fuel_adjust, spaceTech, renderSpace } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -39,7 +39,7 @@ export const outerTruth = {
             grant: ['titan',1],
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
+            cost: {
                 Helium_3(){ return +fuel_adjust(250000).toFixed(0); },
                 Elerium(){ return 100; }
             },
@@ -393,7 +393,7 @@ export const outerTruth = {
                 Adamantite(offset){ return spaceCostMultiplier('g_factory', offset, 12500, 1.28); }
             },
             effect(){
-                let graphene = +(0.05 * zigguratBonus()).toFixed(3);
+                let graphene = 0.05;
                 return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
             support(){ return -1; },
@@ -650,7 +650,7 @@ export const outerTruth = {
             grant: ['enceladus',1],
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
+            cost: {
                 Helium_3(){ return +fuel_adjust(250000).toFixed(0); },
                 Elerium(){ return 100; }
             },
@@ -845,7 +845,7 @@ export const outerTruth = {
             grant: ['triton',1],
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
+            cost: {
                 Helium_3(){ return +fuel_adjust(600000).toFixed(0); },
                 Elerium(){ return 2500; }
             },
@@ -989,7 +989,7 @@ export const outerTruth = {
             grant: ['kuiper',1],
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
+            cost: {
                 Helium_3(){ return +fuel_adjust(1000000).toFixed(0); },
                 Elerium(){ return 1000; }
             },
@@ -1175,7 +1175,7 @@ export const outerTruth = {
             grant: ['eris',1],
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            cost: { 
+            cost: {
                 Helium_3(){ return +fuel_adjust(1250000).toFixed(0); },
                 Elerium(){ return 1250; }
             },
@@ -1366,7 +1366,7 @@ export function drawShipYard(){
             engine: ['ion','tie','pulse','photon','vacuum'],
             sensor: ['visual','radar','lidar','quantum'],
         };
-        
+
         Object.keys(shipConfig).forEach(function(k){
             let values = ``;
             shipConfig[k].forEach(function(v,idx){
@@ -1384,7 +1384,7 @@ export function drawShipYard(){
         assemble.append(`<button class="button is-info" slot="trigger" v-on:click="build()"><span>${loc('outer_shipyard_build')}</span></button>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.expand" v-on:input="redraw()">${loc('outer_shipyard_fleet_details')}</b-checkbox></span>`);
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" v-on:input="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
-        
+
         plans.append(assemble);
         assemble.append(`<div><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
@@ -2008,7 +2008,7 @@ function drawShips(){
         if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
         if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
         if (!ship.hasOwnProperty('destination')){ ship['destination'] = genXYcoord(ship.location); }
-        
+
         let values = ``;
         Object.keys(spaceRegions).forEach(function(region){
             if (ship.location !== region){
@@ -2026,7 +2026,7 @@ function drawShips(){
                 <span>${location}</span>
             </button>${values}
         </b-dropdown>`;
-        
+
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
@@ -2034,7 +2034,7 @@ function drawShips(){
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
-            
+
             row2.append(`<span class="has-text-warning">${loc(`crew`)}</span> <span class="pad" v-html="crewText(${i})"></span>`);
             row2.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
             row2.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
@@ -2055,7 +2055,7 @@ function drawShips(){
             let row1 = $(`<div class="row1"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
-            
+
             row1.append(`<span class="name has-text-caution">${ship.name}</span> | `);
             row1.append(`<span class="has-text-warning">${loc(`firepower`)}</span> <span class="pad" v-html="fireText(${i})"></span>`);
             row1.append(`<span class="has-text-warning">${loc(`outer_shipyard_sensors`)}</span> <span class="pad" v-html="sensorText(${i})"></span>`);
@@ -2070,7 +2070,7 @@ function drawShips(){
             desc.append(row4);
             list.append(desc);
         }
-    
+
         vBind({
             el: `#shipReg${i}`,
             data: global.space.shipyard.ships[i],
@@ -2258,7 +2258,7 @@ export function syndicate(region,extra){
                 patrol += 500;
                 sensor += 10;
             }
-            
+
             if (sensor > 100){
                 sensor = Math.round((sensor - 100) / ((sensor - 100) + 200) * 100) + 100;
             }
