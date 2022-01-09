@@ -176,10 +176,11 @@ export function actionDesc(info, c_action, extended, isStruct){
                 });
             }
             else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+                let resName = res;
                 if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                    res = 'AntiPlasmid';
+                    resName = 'AntiPlasmid';
                 }
-                addCost(res,costs[res](),loc(`resource_${res}_name`) + ': ',color);
+                addCost(res,costs[res](),loc(`resource_${resName}_name`) + ': ',color);
             }
             else if (res === 'Supply'){
                 addCost(res,costs[res](),loc(`resource_${res}_name`) + ': ',color);
