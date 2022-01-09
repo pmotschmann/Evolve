@@ -296,13 +296,14 @@ export function challengesPage(content){
         }
 
         {   // Failed Experiment
-            let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 6, break: [3,4,5,6], h_level: 2,
+            let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 7, break: [3,4,5,6,7], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_sludge`),loc(`wiki_challenges_challenge`),loc(`race_sludge`)],
                     3: [loc(`race_sludge`)],
                     4: [loc(`evo_challenge_sludge`)],
                     5: [loc(`race_sludge`),loc(`wiki_resets_mad`)],
-                    6: [loc(`race_sludge`),loc(`wiki_resets_cataclysm`)]
+                    6: [loc(`race_sludge`),loc(`wiki_resets_cataclysm`)],
+                    7: [loc(`wiki_challenges_scenarios_junker`)]
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-sludge'],
@@ -355,10 +356,11 @@ export function challengesPage(content){
         sideMenu('add',`challenges-gameplay`,'scenarios_intro',loc('wiki_challenges_scenarios_intro'));
         
         {   // Genetic Dead End
-            let junker = infoBoxBuilder(scenarios,{ name: 'scenarios_junker', template: 'challenges', paragraphs: 3, break: [3], h_level: 2,
+            let junker = infoBoxBuilder(scenarios,{ name: 'scenarios_junker', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_junker`),loc(`wiki_challenges_scenario`),loc(`race_junker`)],
-                    3: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_mad`)]
+                    3: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_mad`)],
+                    4: [loc(`wiki_challenges_modes_sludge`)]
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-junker'],
