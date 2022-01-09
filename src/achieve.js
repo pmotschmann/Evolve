@@ -1082,6 +1082,69 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_wheelbarrow_name`)}</span>`])
         ]
     },
+    extinct_sludge: {
+        name: loc(`achieve_extinct_sludge_name`),
+        group: [
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].l * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_standard`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.l >= 1 ? true : false;
+                },
+            },
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].h * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_heavy`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.h >= 1 ? true : false;
+                },
+            },
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].a * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_antimatter`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.a >= 1 ? true : false;
+                },
+            },
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].e * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_evil`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.e >= 1 ? true : false;
+                },
+            },
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].m * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_micro`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.m >= 1 ? true : false;
+                },
+            },
+            {
+                desc(wiki){
+                    let bonus = wiki ? "3/6/9/12/15" : (global.stats.achieve['extinct_sludge'] ? global.stats.achieve['extinct_sludge'].mg * 3 : 3);
+                    return loc("achieve_perks_extinct_sludge",[bonus,loc(`universe_magic`)]);
+                },
+                active(){
+                    return global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge.mg >= 1 ? true : false;
+                },
+            },
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_extinct_sludge_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_universe_scale`,[`<span class="has-text-caution">${loc(`achieve_extinct_sludge_name`)}</span>`])
+        ]
+    },
     whitehole: {
         name: loc(`achieve_whitehole_name`),
         group: [

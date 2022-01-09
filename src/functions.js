@@ -1007,13 +1007,17 @@ export function darkEffect(universe, flag, info, inputs){
     if (!inputs) { inputs = {}; }
     let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
     let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
-    
+
     switch (universe){
         case 'standard':
             if (global.race.universe === 'standard' || info){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.001);
                 }
+                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['l']){
+                    dark *= 1 + (global.stats.achieve.extinct_sludge.l * 0.03);
+                }
+                if (global.stats.achieve['extinct_sludge'])
                 return 1 + (dark / 200);
             }
             return 0;
@@ -1022,6 +1026,9 @@ export function darkEffect(universe, flag, info, inputs){
             if (global.race.universe === 'evil' || info){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
+                }
+                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['e']){
+                    dark *= 1 + (global.stats.achieve.extinct_sludge.e * 0.03);
                 }
                 return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / 5));
             }
@@ -1034,6 +1041,9 @@ export function darkEffect(universe, flag, info, inputs){
                         dark *= 1 + (harmony * 0.01);
                     }
                     dark = 0.01 + (Math.log(100 + dark) - 4.605170185988092) / 35;
+                    if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['m']){
+                        dark *= 1 + (global.stats.achieve.extinct_sludge.m * 0.03);
+                    }
                     if (dark > 0.04){
                         dark = 0.04;
                     }
@@ -1044,6 +1054,9 @@ export function darkEffect(universe, flag, info, inputs){
                         dark *= 1 + (harmony * 0.01);
                     }
                     dark = 0.02 + (Math.log(100 + dark) - 4.605170185988092) / 20;
+                    if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['m']){
+                        dark *= 1 + (global.stats.achieve.extinct_sludge.m * 0.03);
+                    }
                     if (dark > 0.06){
                         dark = 0.06;
                     }
@@ -1057,6 +1070,9 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
+                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['h']){
+                    dark *= 1 + (global.stats.achieve.extinct_sludge.h * 0.03);
+                }
                 return 0.995 ** dark;
             }
             return 1;
@@ -1066,6 +1082,9 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
+                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['a']){
+                    dark *= 1 + (global.stats.achieve.extinct_sludge.a * 0.03);
+                }
                 return 1 + (Math.log(50 + dark) - 3.912023005428146) / 5;
             }
             return 0;
@@ -1074,6 +1093,9 @@ export function darkEffect(universe, flag, info, inputs){
             if (global.race.universe === 'magic' || info){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
+                }
+                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['mg']){
+                    dark *= 1 + (global.stats.achieve.extinct_sludge.mg * 0.03);
                 }
                 return 1 + (Math.log(50 + dark) - 3.912023005428146) / 3;
             }
