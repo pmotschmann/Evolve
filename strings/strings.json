@@ -4945,6 +4945,7 @@
   "gov_task_slave": "Slave Replenishment",
   "gov_task_sacrifice": "Schedule Sacrifices",
   "gov_task_horseshoe": "Forge Horseshoes",
+  "gov_task_beaker": "Craft Beakers",
   "gov_task_trash": "Mass Ejector Optimizer",
   "gov_task_mech": "Mech Constructor",
   "power_grid_header": "Click and drag to reorder the priority for powering structures.",

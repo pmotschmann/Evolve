@@ -265,7 +265,7 @@ export function govern(){
         if (govActive('organizer',0)){ cnt.push(3); }
         cnt.forEach(function(n){
             if (gov_tasks[global.race.governor.tasks[`t${n}`]] && gov_tasks[global.race.governor.tasks[`t${n}`]].req()){
-                gov_tasks[global.race.governor.tasks[`t${n}`]].task()
+                gov_tasks[global.race.governor.tasks[`t${n}`]].task();
             }
         });
     }
@@ -566,7 +566,7 @@ export function drawnGovernOffice(){
         },
         filters: {
             label(t){
-                return loc(`gov_task_${t}`);
+                return gov_tasks[t] ? gov_tasks[t].name : loc(`gov_task_${t}`);
             }
         }
     });
@@ -977,7 +977,7 @@ export const gov_tasks = {
         }
     },
     horseshoe: { // Forge horseshoes
-        name: loc(`gov_task_horseshoe`),
+        name: loc(global.race['sludge'] ? `gov_task_beaker` : `gov_task_horseshoe`),
         req(){
             return global.race['hooved'] ? true : false;
         },
