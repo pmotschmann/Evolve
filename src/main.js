@@ -4853,22 +4853,20 @@ function fastLoop(){
             let synd = syndicate('spc_red');
 
             let copper_base = support_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper').f;
-            copper_base *= shrineMetal.mult;
             copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
             if (copper_base > 0){
                 copper_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 copper_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
-            modRes('Copper', copper_base * time_multiplier * global_multiplier * hunger * synd * zigVal);
+            modRes('Copper', copper_base * shrineMetal.mult * time_multiplier * global_multiplier * hunger * synd * zigVal);
 
             let titanium_base = support_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium').f;
-            titanium_base *= shrineMetal.mult;
             titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
             if (titanium_base > 0){
                 titanium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 titanium_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
             }
-            modRes('Titanium', titanium_base * time_multiplier * global_multiplier  * synd * zigVal);
+            modRes('Titanium', titanium_base * shrineMetal.mult * time_multiplier * global_multiplier  * synd * zigVal);
         }
         if (shrineBonusActive()){
             copper_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
