@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg } from './functions.js';
+import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation } from './races.js';
 import { renderSpace } from './space.js';
@@ -75,7 +75,7 @@ export const arpaProjects = {
                 }
                 else {
                     return global.tech['gambling'] && global.tech['gambling'] >= 4 ? loc('arpa_projects_stock_exchange_effect3') : loc('arpa_projects_stock_exchange_effect2');
-                }                
+                }
             }
             else {
                 return loc('arpa_projects_stock_exchange_effect1');
@@ -108,7 +108,7 @@ export const arpaProjects = {
         id: 'arpalaunch_facility',
         title: loc('arpa_projects_launch_facility_title'),
         desc: loc('arpa_projects_launch_facility_desc'),
-        reqs: { high_tech: 7 },        
+        reqs: { high_tech: 7 },
         condition(){
             return global.race['cataclysm'] ? false : true;
         },
@@ -128,7 +128,7 @@ export const arpaProjects = {
         }
     },
     monument: {
-        title(wiki){ 
+        title(wiki){
             if (wiki){
                 return loc('arpa_project_monument_title');
             }
@@ -1668,7 +1668,7 @@ function genetics(){
             let boost = $(`<b-tooltip :label="autoLabel(false)" position="is-bottom" animated multilined><button class="button auto" @click="auto_seq" :aria-label="autoLabel(true)">${loc(global.race['artifical'] ? 'arpa_auto_compile' : 'arpa_auto_sequence')}</button></b-tooltip>`);
             genome.append(boost);
         }
-        
+
         if (global.arpa.sequence.on){
             $('#arpaSequence button.seq').addClass('has-text-success');
         }
@@ -1812,7 +1812,7 @@ function genetics(){
         });
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
-        
+
         let traitDesc = {
             hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
         };
@@ -1831,9 +1831,9 @@ function genetics(){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
                     remove_list.push(trait);
-                    
+
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
 
                     breakdown.append(major);
                 }
@@ -1842,12 +1842,12 @@ function genetics(){
                 }
             }
         });
-        
+
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
             if (global.race.species !== 'sludge' || !global.race['modified']){
                 breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
-                
+
                 let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
                 Object.keys(races).forEach(function (race){
                     if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && races[race].type === races[global.race.species].type){
@@ -1884,9 +1884,9 @@ function genetics(){
                     let trait = trait_list[i];
                     let major = $(`<div class="traitRow"></div>`);
                     let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
-                    
+
                     major.append(add);
-                    major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc}</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc}</span>`));
 
                     breakdown.append(major);
                 }
@@ -2130,6 +2130,11 @@ function genetics(){
                 elm: `#geneticBreakdown .remove${t}`,
                 classes: `has-background-light has-text-dark`
             });
+
+            let id = `raceTrait${t}`;
+            let desc = $(`<div></div>`);
+            getTraitDesc(desc, t, false, false, global.race[t]);
+            popover(id,desc,{ wide: true, classes: 'w25' });
         });
 
         trait_list.forEach(function (t){
@@ -2140,6 +2145,11 @@ function genetics(){
                 elm: `#geneticBreakdown .add${t}`,
                 classes: `has-background-light has-text-dark`
             });
+
+            let id = `raceTrait${t}`;
+            let desc = $(`<div></div>`);
+            getTraitDesc(desc, t, false, false, global.race[t]);
+            popover(id,desc,{ wide: true, classes: 'w25' });
         });
 
         dragGeneticsList();

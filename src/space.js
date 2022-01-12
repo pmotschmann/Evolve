@@ -1,5 +1,5 @@
 import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -6458,10 +6458,12 @@ export function ascendLab(wiki){
     Object.keys(genus_traits).forEach(function (type){
         if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
             popover(`celestialLabgenusSelection${type}`, function(){
-                let desc = '';
+                let desc = $(`<div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
-                        desc = desc + `${traits[t].desc} `;
+                        let des = $(`<div></div>`);
+                        getTraitDesc(des, t, false, false, 1);
+                        desc.append(des);
                     }
                 });
                 return desc;
@@ -6474,7 +6476,9 @@ export function ascendLab(wiki){
     Object.keys(unlockedTraits).sort().forEach(function (trait){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             popover(`celestialLabtraitSelection${trait}`, function(){
-                return traits[trait].desc;
+                let desc = $(`<div></div>`);
+                getTraitDesc(desc, trait, false, false, 1);
+                return desc;
             },{
                 elm: `#celestialLab .trait_selection .t${trait}`,
             });

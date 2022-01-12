@@ -1,6 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, vBind, popover, getEaster } from './../functions.js';
+import { clearElement, vBind, popover, getEaster, getTraitDesc } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
 import { ascendLab } from './../space.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
@@ -86,11 +86,11 @@ export function racesPage(content){
         }
         info.append(genes);
         list.push(race);
-        
+
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i].t}`;
             let desc = $(`<div></div>`);
-            traitDesc(desc, traitList[i].t, traitList[i].t === races[race].fanaticism ? races[race].name : false, false, traitList[i].r);
+            getTraitDesc(desc, traitList[i].t, traitList[i].t === races[race].fanaticism ? races[race].name : false, false, traitList[i].r);
             popover(id,desc,{ wide: true, classes: 'w25' });
         }
     });
@@ -132,185 +132,9 @@ export function traitsPage(content){
             if (types[i].includes(traits[trait].type)){
                 let info = $(`<div id="${traits[trait].type}_${trait}" class="infoBox"></div>`);
                 content.append(info);
-                traitDesc(info,trait,false,true);
+                getTraitDesc(info,trait,false,true);
                 sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traits[trait].name);
             }
-        });
-    }
-}
-
-function rName(r){
-    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
-    return `<span class="has-text-warning">${res}</span>`;
-}
-
-const traitExtra = {
-    infiltrator: [
-        loc(`wiki_trait_effect_infiltrator_ex1`),
-        loc(`wiki_trait_effect_infiltrator_ex2`,[
-            [
-                `<span class="has-text-warning">${loc('tech_steel')}</span>`, `<span class="has-text-warning">${loc('tech_electricity')}</span>`, `<span class="has-text-warning">${loc('tech_electronics')}</span>`, `<span class="has-text-warning">${loc('tech_fission')}</span>`, 
-                `<span class="has-text-warning">${loc('tech_rocketry')}</span>`, `<span class="has-text-warning">${loc('tech_artificial_intelligence')}</span>`, `<span class="has-text-warning">${loc('tech_quantum_computing')}</span>`,
-                `<span class="has-text-warning">${loc('tech_virtual_reality')}</span>`, `<span class="has-text-warning">${loc('tech_shields')}</span>`, `<span class="has-text-warning">${loc('tech_ai_core')}</span>`, `<span class="has-text-warning">${loc('tech_graphene_processing')}</span>`,
-                `<span class="has-text-warning">${loc('tech_nanoweave')}</span>`, `<span class="has-text-warning">${loc('tech_orichalcum_analysis')}</span>`, `<span class="has-text-warning">${loc('tech_infernium_fuel')}</span>`
-            ].join(', ')
-        ])
-    ],
-    heavy: [
-        loc(`wiki_trait_effect_heavy_ex1`,[rName('Stone'),rName('Cement'),rName('Wrought_Iron')])
-    ],
-    sniper: [
-        loc(`wiki_trait_effect_sniper_ex1`),
-    ],
-    hooved: [
-        loc(`wiki_trait_effect_hooved_ex1`),
-        loc(`wiki_trait_effect_hooved_ex2`,[
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Iron') ? global.resource.Iron.name : loc('resource_Iron_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Steel') ? global.resource.Steel.name : loc('resource_Steel_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Adamantite') ? global.resource.Adamantite.name : loc('resource_Adamantite_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Orichalcum') ? global.resource.Orichalcum.name : loc('resource_Orichalcum_name')}</span>`,
-            12,75,150,500,5000
-        ]),
-        loc(`wiki_trait_effect_hooved_ex3`),
-        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`]),
-        loc(`wiki_trait_effect_hooved_ex5`,[
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
-            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
-        ]),
-    ],
-    instinct: [
-        loc(`wiki_trait_effect_instinct_ex1`,[6.67,loc('galaxy_chthonian'),10])
-    ],
-    logical: [
-        loc(`wiki_trait_effect_logical_ex1`,[
-            global.tech.hasOwnProperty('science') ? global.tech.science : 0,
-            global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
-        ]),
-    ]
-};
-
-const valAdjust = {
-    fibroblast: [5],
-    imitation: [races[global.race['srace'] || 'protoplasm'].name],
-    detritivore: false,
-    elusive: false,
-    promiscuous: false,
-    revive: false,
-    fast_growth: false,
-    blood_thirst: false,
-    frail: false,
-    sappy: false,
-    spores: false,
-    terrifying: false,
-    shapeshifter: false,
-    freespirit: false,
-    selenophobia: false,
-    infectious: false,
-    infiltrator: false,
-};
-
-function getTraitVals(trait,rank){
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
-    if (valAdjust.hasOwnProperty(trait)){
-        if (trait === 'fibroblast'){
-            for (let i=0; i<vals.length; i++){
-                vals[i] = vals[i] * valAdjust[trait][i];
-            }
-        }
-        else if (valAdjust[trait]){
-            vals = valAdjust[trait];
-        }
-        else {
-            vals = [];
-        }
-    }
-    return vals;
-}
-
-export function traitDesc(info,trait,fanatic,tpage,trank){
-    let rank = '';
-    if (tpage && ['genus','major'].includes(traits[trait].type)){
-        rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
-    }
-    info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
-    if (tpage && traits[trait].hasOwnProperty('val')){
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
-    }
-    else {
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
-    }
-    
-    if (fanatic){
-        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
-    }
-    info.append(`<div class="desc">${traits[trait].desc}</div>`);
-
-    let color = 'warning';
-    if (traits[trait].hasOwnProperty('val')){
-        color = traits[trait].val >= 0 ? 'success' : 'danger';
-    }
-    if (tpage && ['genus','major'].includes(traits[trait].type)){
-        info.append(`<div class="has-text-${color} effect" v-html="traitDesc(rank)"></div>`);
-    }
-    else {
-        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
-    }
-    if (traitExtra[trait]){
-        traitExtra[trait].forEach(function(te){
-            info.append(`<div class="effect">${te}</div>`);
-        });
-    }
-
-    if (tpage && ['genus','major'].includes(traits[trait].type)){
-        let data = { rank: global.race[trait] || 1 };
-        vBind({
-            el: `#${traits[trait].type}_${trait}`,
-            data: data,
-            methods: {
-                traitDesc(rk){
-                    return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
-                },
-                up(){
-                    switch (data.rank){
-                        case 0.25:
-                            data.rank = 0.5;
-                            break;
-                        case 0.5:
-                            data.rank =  1;
-                            break;
-                        case 1:
-                            data.rank =  2;
-                            break;
-                        case 2:
-                            data.rank =  3;
-                            break;
-                        case 3:
-                            data.rank =  3;
-                            break;
-                    }
-                },
-                down(){
-                    switch (data.rank){
-                        case 0.25:
-                            data.rank = 0.25;
-                            break;
-                        case 0.5:
-                            data.rank =  0.25;
-                            break;
-                        case 1:
-                            data.rank =  0.5;
-                            break;
-                        case 2:
-                            data.rank =  1;
-                            break;
-                        case 3:
-                            data.rank =  2;
-                            break;
-                    }
-                },
-            },
         });
     }
 }
