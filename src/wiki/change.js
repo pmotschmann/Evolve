@@ -5,14 +5,14 @@ const changeList = [
     {
         version: `1.2.7`,
         revision: `a`,
-        date: `1/11/2021`,
+        date: `1/11/2022`,
         changes: [
             `Fixed storage bug with standard universe.`,
         ]
     },
     {
         version: `1.2.7`,
-        date: `1/11/2021`,
+        date: `1/11/2022`,
         changes: [
             `Failed Experiment Challenge mode.`,
             `Ziggurat bonus separated from base production of buildings.`,
