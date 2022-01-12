@@ -1017,7 +1017,6 @@ export function darkEffect(universe, flag, info, inputs){
                 if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['l']){
                     dark *= 1 + (global.stats.achieve.extinct_sludge.l * 0.03);
                 }
-                if (global.stats.achieve['extinct_sludge'])
                 return 1 + (dark / 200);
             }
             return 0;
