@@ -4770,7 +4770,7 @@ function fastLoop(){
                         base *= global.city.geology['Aluminium'] + 1;
                     }
 
-                    let delta = base * shrineMetal.mult * hunger * global_multiplier * zigVal;
+                    let delta = base * shrineMetal.mult * hunger * global_multiplier;
 
                     if (global.tech['alumina'] >= 2){
                         refinery += p_on['metal_refinery'] * 6;
@@ -4779,7 +4779,8 @@ function fastLoop(){
                     delta *= 1 + (refinery / 100);
 
                     alumina_bd[global.race['cataclysm'] ? loc('space_red_mine_title') : loc('job_miner')] = base + 'v';
-                    if (base > 0){
+                    if (global.race['cataclysm'] && base > 0 && zigVal > 0){
+                        delta *= zigVal;
                         alumina_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                     }
                     alumina_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100) + '%';
