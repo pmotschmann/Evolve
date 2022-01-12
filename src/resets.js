@@ -757,6 +757,9 @@ export function descension(){
     if (global.race['cataclysm']){
         unlockFeat(`finish_line`);
     }
+    if (global.race['ooze'] && global.race.species === 'sludge'){
+        unlockFeat('slime_lord');
+    }
 
     let artifacts = calcPrestige('descend').artifact;
     global.resource.Artifact.amount += artifacts;

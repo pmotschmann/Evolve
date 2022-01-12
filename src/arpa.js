@@ -1824,6 +1824,9 @@ function genetics(){
                 if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
                     readOnly = true;
                 }
+                else if (global.race.species === 'sludge' && (trait === 'ooze' || global.race['modified'])){
+                    readOnly = true;
+                }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
@@ -1842,49 +1845,51 @@ function genetics(){
         
         let trait_list = [];
         if (global.genes['mutation'] && global.genes['mutation'] >= 3){
-            breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
-            
-            let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
-            Object.keys(races).forEach(function (race){
-                if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && races[race].type === races[global.race.species].type){
-                    Object.keys(races[race].traits).forEach(function (trait){
-                        if (!global.race[trait] && trait !== 'soul_eater'){
-                            let conflict_pos = conflict_traits.indexOf(trait);
-                            if (conflict_pos === -1){
-                                trait_list.push(trait);
-                            }
-                            else{
-                                let is_conflict = false;
-                                switch (conflict_pos % 2){
-                                    case 0:
-                                        if (global.race[conflict_traits[conflict_pos + 1]]){
-                                            is_conflict = true;
-                                        }
-                                        break;
-                                    case 1:
-                                        if (global.race[conflict_traits[conflict_pos - 1]]){
-                                            is_conflict = true;
-                                        }
-                                        break;
-                                }
-                                if (!is_conflict) {
+            if (global.race.species !== 'sludge' || !global.race['modified']){
+                breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_gain')}</div>`)
+                
+                let conflict_traits = ['dumb','smart']; //Conflicting traits are paired together
+                Object.keys(races).forEach(function (race){
+                    if (race !== 'junker' && race !== 'sludge' && race !== 'custom' && races[race].type === races[global.race.species].type){
+                        Object.keys(races[race].traits).forEach(function (trait){
+                            if (!global.race[trait] && trait !== 'soul_eater'){
+                                let conflict_pos = conflict_traits.indexOf(trait);
+                                if (conflict_pos === -1){
                                     trait_list.push(trait);
                                 }
+                                else {
+                                    let is_conflict = false;
+                                    switch (conflict_pos % 2){
+                                        case 0:
+                                            if (global.race[conflict_traits[conflict_pos + 1]]){
+                                                is_conflict = true;
+                                            }
+                                            break;
+                                        case 1:
+                                            if (global.race[conflict_traits[conflict_pos - 1]]){
+                                                is_conflict = true;
+                                            }
+                                            break;
+                                    }
+                                    if (!is_conflict) {
+                                        trait_list.push(trait);
+                                    }
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                });
+
+                for (let i=0; i<trait_list.length; i++){
+                    let trait = trait_list[i];
+                    let major = $(`<div class="traitRow"></div>`);
+                    let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
+                    
+                    major.append(add);
+                    major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc}</span>`));
+
+                    breakdown.append(major);
                 }
-            });
-
-            for (let i=0; i<trait_list.length; i++){
-                let trait = trait_list[i];
-                let major = $(`<div class="traitRow"></div>`);
-                let add = $(`<span class="add${trait} basic-button has-text-success" role="button" :aria-label="addCost('${trait}')" @click="gain('${trait}')">${loc('arpa_gain_button')}</span>`);
-                
-                major.append(add);
-                major.append($(`<span class="trait has-text-warning">${traitDesc[trait] ? traitDesc[trait] : traits[trait].desc}</span>`));
-
-                breakdown.append(major);
             }
         }
 
@@ -1992,7 +1997,7 @@ function genetics(){
                     }
                 },
                 purge(t){
-                    if (global.race.species === 'sludge' && global.race['modified']){
+                    if (global.race.species === 'sludge' && (global.race['modified'] || t === 'ooze')){
                         return;
                     }
                     let cost = traits[t].val * 5;

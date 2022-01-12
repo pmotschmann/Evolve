@@ -4710,6 +4710,7 @@ const galaxyProjects = {
                 mil: 0,
                 helium: 25
             },
+            special: true,
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){

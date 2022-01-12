@@ -6799,17 +6799,9 @@ function drawModal(c_action,type){
 
     switch(type){
         case 'smelter':
-            smelterModal(body);
-            break;
         case 'hell_smelter':
-            smelterModal(body);
-            break;
         case 'stellar_forge':
-            smelterModal(body);
-            break;
         case 'hell_forge':
-            smelterModal(body);
-            break;
         case 'geothermal':
             smelterModal(body);
             break;
@@ -6826,6 +6818,7 @@ function drawModal(c_action,type){
             grapheneModal(body);
             break;
         case 'freighter':
+        case 'super_freighter':
             freighterModal(body);
             break;
         case 'pylon':
