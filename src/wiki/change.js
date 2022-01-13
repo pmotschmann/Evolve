@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.8`,
+        date: `1/13/2022`,
+        changes: [
+            `Added High Population trait to Insectoid genus.`,
+        ]
+    },
+    {
         version: `1.2.7`,
         revision: `a`,
         date: `1/11/2022`,

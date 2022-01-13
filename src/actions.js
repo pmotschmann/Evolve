@@ -5166,6 +5166,9 @@ export function templeEffect(){
             let temple = 6;
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest = global.genes['ancients'] >= 5 ? 0.12 : (global.genes['ancients'] >= 3 ? 0.1 : 0.08);
+                if (global.race['high_pop']){
+                    priest *= traits.high_pop.vars()[1] / 100;
+                }
                 temple += priest * global.civic.priest.workers;
             }
             desc += `<div>${loc('city_temple_effect5',[temple.toFixed(2)])}</div>`;

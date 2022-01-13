@@ -5612,11 +5612,12 @@ function fastLoop(){
                 breakdown.p[craft] = {};
                 let num = global.city.foundry[craft];
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
+                let c_amount = crafting_costs[craft][0].a;
 
                 let speed = global.genes['crafty'] ? 2 : 1;
-                let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
+                let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (c_amount * speed * craft_costs / 140));
                 for (let i=1; i<crafting_costs[craft].length; i++){
-                    let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (crafting_costs[craft][i].a * speed * craft_costs / 140));
+                    let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (c_amount * speed * craft_costs / 140));
                     if (temp < volume){
                         volume = temp;
                     }
@@ -5626,7 +5627,7 @@ function fastLoop(){
                 }
 
                 for (let i=0; i<crafting_costs[craft].length; i++){
-                    let final = volume * crafting_costs[craft][i].a * craft_costs * speed * time_multiplier / 140;
+                    let final = volume * c_amount * craft_costs * speed * time_multiplier / 140;
                     modRes(crafting_costs[craft][i].r, -(final));
                     if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
                         crafting_usage[crafting_costs[craft][i].r] = final / time_multiplier;
@@ -5634,6 +5635,10 @@ function fastLoop(){
                     else {
                         crafting_usage[crafting_costs[craft][i].r] += final / time_multiplier;
                     }
+                }
+
+                if (global.race['high_pop']){
+                    volume *= traits.high_pop.vars()[1] / 100;
                 }
 
                 breakdown.p[craft][loc(`job_craftsman`)] = (volume * speed / 140) + 'v';

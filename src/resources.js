@@ -186,6 +186,14 @@ export function craftCost(){
             }
         });
     }
+    if (global.race['high_pop']){
+        let rate = 1 / traits.high_pop.vars()[0];
+        Object.keys(costs).forEach(function(res){
+            for (let i=0; i<costs[res].length; i++){
+                costs[res][i].a = Math.round(costs[res][i].a * rate);
+            }
+        });
+    }
     return costs;
 }
 
