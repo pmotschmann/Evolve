@@ -4701,7 +4701,7 @@ function fastLoop(){
                 let synd = syndicate('spc_belt');
                 if (support_on['iron_ship']){
                     space_iron = support_on['iron_ship'] * production('iron_ship');
-                    space_iron *= synd * zigVal;
+                    space_iron *= synd;
                 }
 
                 let iron_power = power_mult;
@@ -4714,7 +4714,7 @@ function fastLoop(){
                     }
                 }
 
-                let delta = ((iron_base * iron_power) + space_iron) * smelter_mult * shrineMetal.mult;
+                let delta = ((iron_base * iron_power) + space_iron * zigVal) * smelter_mult * shrineMetal.mult;
                 delta *= hunger * global_multiplier;
 
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
