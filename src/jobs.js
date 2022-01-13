@@ -258,6 +258,13 @@ export function defineJobs(define){
     }
 }
 
+export function jobScale(num){
+    if (global.race['high_pop']){
+        return num * traits.high_pop.vars()[0];
+    }
+    return num;
+}
+
 export function setJobName(job){
     let job_name = '';
     if (global.race.universe === 'magic' && job === 'scientist'){

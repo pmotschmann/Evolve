@@ -593,7 +593,7 @@ const fortressModules = {
                 vault = +(vault).toFixed(0);
                 let containers = Math.round(quantum_level) * 10;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[8])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -612,6 +612,13 @@ const fortressModules = {
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
+            },
+            citizens(){
+                let pop = 8;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         hell_forge: {
@@ -1144,7 +1151,7 @@ const fortressModules = {
                 return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
             },
             ship: {
-                civ: 0,
+                civ(){ return 0; },
                 mil: 2
             },
             action(){
@@ -1178,7 +1185,7 @@ const fortressModules = {
             effect(){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 0.8 : 0.85;
                 let bireme = +((rating ** (gal_on['bireme'] || 0)) * 100).toFixed(1);
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_transport_effect',[5])}</div><div class="has-text-danger">${loc('portal_transport_effect2',[bireme])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div>`;
             },
             special: true,
             sAction(){
@@ -1190,7 +1197,7 @@ const fortressModules = {
                 }
             },
             ship: {
-                civ: 3,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
                 mil: 0
             },
             action(){

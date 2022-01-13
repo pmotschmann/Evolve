@@ -106,6 +106,7 @@ export const genus_traits = {
         rigid: 1
     },
     insectoid: {
+        high_pop: 1,
         fast_growth: 1,
         high_metabolism: 1
     },
@@ -440,6 +441,27 @@ export const traits = {
                     return [0.5];
                 case 3:
                     return [0.4];
+            }
+        },
+    },
+    high_pop: { // Population is higher, but less productive
+        name: loc('trait_high_pop_name'),
+        desc: loc('trait_high_pop'),
+        type: 'genus',
+        val: 1,
+        vars(r){
+            // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
+            switch (r || global.race.high_pop || 1){
+                case 0.25:
+                    return [2,50,1.5];
+                case 0.5:
+                    return [3,35,2];
+                case 1:
+                    return [4,30,2.5];
+                case 2:
+                    return [5,25,3];
+                case 3:
+                    return [6,20,3.5];
             }
         },
     },
@@ -4190,6 +4212,9 @@ export function racialTrait(workers,type){
     }
     if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
         modifier *= 1.25;
+    }
+    if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy' && type !== 'hunter'){
+        modifier *= traits.high_pop.vars()[1] / 100;
     }
     return modifier;
 }

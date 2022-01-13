@@ -3,7 +3,7 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
-import { loadFoundry } from './jobs.js';
+import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { outerTruth, syndicate } from './truepath.js';
@@ -505,12 +505,7 @@ const spaceProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
-                let gain = global.race['cataclysm'] ? 2 : 1;
-                if (support_on['biodome']){
-                    let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
-                    gain += pop * support_on['biodome'];
-                }
-                gain = +(gain).toFixed(2);
+                let gain = $(this)[0].citizens();
                 let safe = ``;
                 if (global.race['cataclysm']){
                     let vault = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '100000' : '50000') : '25000');
@@ -535,6 +530,18 @@ const spaceProjects = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let gain = global.race['cataclysm'] ? 2 : 1;
+                if (support_on['biodome']){
+                    let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
+                    gain += pop * support_on['biodome'];
+                }
+                gain = +(gain).toFixed(2);
+                if (global.race['high_pop']){
+                    gain *= traits.high_pop.vars()[0];
+                }
+                return gain;
             }
         },
         pylon: {
@@ -995,7 +1002,7 @@ const spaceProjects = {
                     desc = desc + templeEffect();
                 }
                 if (global.genes['ancients'] && global.genes['ancients'] >= 4){
-                    desc = desc + `<div>${loc('city_temple_effect6')}</div>`;
+                    desc = desc + `<div>${loc('city_temple_effect6',[jobScale(1)])}</div>`;
                 }
                 return desc;
             },
@@ -1685,9 +1692,9 @@ const spaceProjects = {
                 let food = global.race['cataclysm'] ? 1 : 10;
                 let elerium_cap = spatialReasoning(5);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
-                return `<div>${loc('plus_max_space_miners',[3])}</div>${elerium}<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div><div class="has-text-caution">${loc('space_belt_station_effect4',[food,$(this)[0].powered(),global.resource.Food.name])}</div>`;
+                return `<div>${loc('plus_max_space_miners',[jobScale(3)])}</div>${elerium}<div class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</div><div class="has-text-caution">${loc('space_belt_station_effect4',[food,$(this)[0].powered(),global.resource.Food.name])}</div>`;
             },
-            support(){ return 3; },
+            support(){ return jobScale(3); },
             powered(){ return powerCostMod(3); },
             refresh: true,
             action(){
@@ -1726,9 +1733,9 @@ const spaceProjects = {
             },
             effect(){
                 let elerium = +(production('elerium_ship')).toFixed(4);
-                return `<div class="has-text-caution">${loc('space_belt_elerium_ship_effect1')}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
+                return `<div class="has-text-caution">${loc('space_belt_elerium_ship_effect1',[jobScale(2)])}</div><div>${loc('space_belt_elerium_ship_effect2',[elerium])}</div>`;
             },
-            support(){ return -2; },
+            support(){ return jobScale(-2); },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -1757,9 +1764,9 @@ const spaceProjects = {
             },
             effect(){
                 let iridium = +(production('iridium_ship')).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_belt_iridium_ship_effect1')}</div><div>${loc('space_belt_iridium_ship_effect2',[iridium])}</div>`;
+                return `<div class="has-text-caution">${loc('space_belt_iridium_ship_effect1',[jobScale(1)])}</div><div>${loc('space_belt_iridium_ship_effect2',[iridium])}</div>`;
             },
-            support(){ return -1; },
+            support(){ return jobScale(-1); },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -1789,13 +1796,13 @@ const spaceProjects = {
             effect(){
                 let iron = +(production('iron_ship')).toFixed(2);
                 if (global.tech['solar'] && global.tech['solar'] >= 5){
-                    return `<div class="has-text-caution">${loc('space_belt_iron_ship_effect1')}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div><div>${loc('space_belt_iron_ship_effect3')}</div>`;
+                    return `<div class="has-text-caution">${loc('space_belt_iron_ship_effect1',[jobScale(1)])}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div><div>${loc('space_belt_iron_ship_effect3')}</div>`;
                 }
                 else {
-                    return `<div class="has-text-caution">${loc('space_belt_iron_ship_effect1')}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div>`;
+                    return `<div class="has-text-caution">${loc('space_belt_iron_ship_effect1',[jobScale(1)])}</div><div>${loc('space_belt_iron_ship_effect2',[iron])}</div>`;
                 }
             },
-            support(){ return -1; },
+            support(){ return jobScale(-1); },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -2206,7 +2213,7 @@ const interstellarProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
-                let citizens = 1;
+                let citizens = $(this)[0].citizens();
                 return `<div>${loc('interstellar_alpha_starport_effect1',[$(this)[0].support()])}</div><div><span>${loc('plus_max_citizens',[citizens])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div>`;
             },
             support(){ return 1; },
@@ -2216,11 +2223,18 @@ const interstellarProjects = {
                     incrementStruct('habitat','interstellar');
                     if (global.city.power >= $(this)[0].powered()){
                         global.interstellar['habitat'].on++;
-                        global.resource[global.race.species].max += 1;
+                        global.resource[global.race.species].max += $(this)[0].citizens();
                     }
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 1;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         mining_droid: {
@@ -2495,7 +2509,7 @@ const interstellarProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
-                let citizens = 2;
+                let citizens = $(this)[0].citizens();
                 let safe = spatialReasoning(750000);
                 return `<div><span>${loc('plus_max_citizens',[citizens])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span></div><div>${loc('plus_max_resource',[`\$${safe.toLocaleString()}`,loc('resource_Money_name')])}</div>`;
             },
@@ -2510,6 +2524,13 @@ const interstellarProjects = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 2;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         zoo: {
@@ -3973,11 +3994,11 @@ const galaxyProjects = {
             effect(){
                 let bolognium = +(production('bolognium_ship')).toFixed(3);
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             support(){ return -1; },
             ship: {
-                civ: 2,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 mil: 0,
                 helium: 5
             },
@@ -4011,11 +4032,11 @@ const galaxyProjects = {
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
                 let sensors = global.tech.science >= 17 ? `<div>${loc('galaxy_scout_ship_effect2',[25])}</div>` : '';
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('galaxy_scout_ship_effect')}</div>${sensors}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('galaxy_scout_ship_effect')}</div>${sensors}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             support(){ return -1; },
             ship: {
-                civ: 1,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 mil: 1,
                 helium: 6,
                 rating(){ return global.race['banana'] ? 7 : 10; }
@@ -4049,11 +4070,11 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             support(){ return -1; },
             ship: {
-                civ: 2,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 mil: 3,
                 helium: 10,
                 rating(){ return global.race['banana'] ? 21 : 30; }
@@ -4087,11 +4108,11 @@ const galaxyProjects = {
             },
             effect(){
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             support(){ return -2; },
             ship: {
-                civ: 3,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
                 mil: 5,
                 helium: 25,
                 rating(){ return global.race['banana'] ? 56 : 80; }
@@ -4127,11 +4148,11 @@ const galaxyProjects = {
             },
             effect(){
                 let deuterium = +int_fuel_adjust($(this)[0].ship.deuterium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[deuterium,global.resource.Deuterium.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[deuterium,global.resource.Deuterium.name])}</div>`;
             },
             support(){ return -3; },
             ship: {
-                civ: 6,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 6 : 6; },
                 mil: 10,
                 deuterium: 25,
                 rating(){ return global.race['banana'] ? 175 : 250; }
@@ -4167,11 +4188,11 @@ const galaxyProjects = {
             },
             effect(){
                 let deuterium = +int_fuel_adjust($(this)[0].ship.deuterium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[deuterium,global.resource.Deuterium.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('galaxy_gateway_used_support',[-($(this)[0].support())])}</div><div class="has-text-caution">${loc('spend',[deuterium,global.resource.Deuterium.name])}</div>`;
             },
             support(){ return -5; },
             ship: {
-                civ: 10,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 10 : 10; },
                 mil: 20,
                 deuterium: 80,
                 rating(){ return global.race['banana'] ? 1260 : 1800; }
@@ -4443,7 +4464,7 @@ const galaxyProjects = {
                 let food = 7500;
                 let housing = '';
                 if (global.tech.xeno >= 11){
-                    housing = `<div>${loc('plus_max_citizens',[20])}</div>`;
+                    housing = `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div>`;
                 }
                 return `<div>${loc('galaxy_embassy_effect',[races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${housing}<div class="has-text-caution">${loc('interstellar_alpha_starport_effect3',[food,global.resource.Food.name])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -4466,6 +4487,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 20;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         dormitory: {
@@ -4483,7 +4511,7 @@ const galaxyProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             effect(){
-                return `<div>${loc('plus_max_citizens',[3])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
             action(){
@@ -4495,6 +4523,13 @@ const galaxyProjects = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 3;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         symposium: {
@@ -4549,10 +4584,10 @@ const galaxyProjects = {
                 if (global.tech.banking >= 13){
                     bank = `<div>${loc('interstellar_exchange_boost',[3])}</div>`;
                 }
-                return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('galaxy_freighter_effect',[2,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 3,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
                 mil: 0,
                 helium: 12
             },
@@ -4601,7 +4636,7 @@ const galaxyProjects = {
                 Horseshoe(offset){ return global.race['hooved'] && (((offset || 0) + (global.galaxy.hasOwnProperty('consulate') ? global.galaxy.consulate.count : 0)) < 1) ? 10 : 0; }
             },
             effect(){
-                return loc('plus_max_citizens',[10]);
+                return loc('plus_max_citizens',[$(this)[0].citizens()]);
             },
             refresh: true,
             action(){
@@ -4615,6 +4650,13 @@ const galaxyProjects = {
                     }
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 10;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         resort: {
@@ -4703,10 +4745,10 @@ const galaxyProjects = {
                 if (global.tech.banking >= 13){
                     bank = `<div>${loc('interstellar_exchange_boost',[8])}</div>`;
                 }
-                return `<div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('galaxy_freighter_effect',[5,races[global.galaxy.hasOwnProperty('alien1') ? global.galaxy.alien1.id : global.race.species].name])}</div>${bank}<div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 5,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 5 : 5; },
                 mil: 0,
                 helium: 25
             },
@@ -4801,9 +4843,9 @@ const galaxyProjects = {
                                 global.galaxy.defense.gxy_alien2[ship]--;
                                 global.galaxy[ship].on--;
                                 global.galaxy[ship].count--;
-                                global.galaxy[ship].crew -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                                global.galaxy[ship].crew -= galaxyProjects.gxy_gateway[ship].ship.civ();
                                 global.galaxy[ship].mil -= galaxyProjects.gxy_gateway[ship].ship.mil;
-                                global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                                global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway[ship].ship.civ();
                                 global.civic.garrison.workers -= galaxyProjects.gxy_gateway[ship].ship.mil;
                             }
                         }
@@ -4868,10 +4910,10 @@ const galaxyProjects = {
                 let adamantite = 0.23;
                 let iridium = 0.65;
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('gain',[adamantite,loc('resource_Adamantite_name')])}</div><div>${loc('gain',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('galaxy_alien2_support',[$(this)[0].support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('gain',[bolognium,loc('resource_Bolognium_name')])}</div><div>${loc('gain',[adamantite,loc('resource_Adamantite_name')])}</div><div>${loc('gain',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('galaxy_alien2_support',[$(this)[0].support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 2,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
                 mil: 1,
                 helium: 10,
                 rating(){ return global.race['banana'] ? 4 : 5; }
@@ -4935,10 +4977,10 @@ const galaxyProjects = {
                 let know = Math.round(pirate * 25000);
                 let helium = +int_fuel_adjust($(this)[0].ship.helium).toFixed(2);
                 let boost = global.race['cataclysm'] ? `<div>${loc('galaxy_scavenger_effect2_cata',[+(pirate * 100 * 0.75).toFixed(1)])}</div>` : `<div>${loc('galaxy_scavenger_effect2',[+(pirate * 100 / 4).toFixed(1)])}</div>`;
-                return `<div>${loc('galaxy_scavenger_effect',[know])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[$(this)[0].support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('galaxy_scavenger_effect',[know])}</div>${boost}<div class="has-text-caution">${loc('galaxy_alien2_support',[$(this)[0].support(),races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])}</div><div class="has-text-caution">${loc('galaxy_starbase_civ_crew',[$(this)[0].ship.civ()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 1,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 1 : 1; },
                 mil: 0,
                 helium: 12,
             },
@@ -5038,9 +5080,9 @@ const galaxyProjects = {
                             global.galaxy.defense.gxy_chthonian[ship]--;
                             global.galaxy[ship].on--;
                             global.galaxy[ship].count--;
-                            global.galaxy[ship].crew -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                            global.galaxy[ship].crew -= galaxyProjects.gxy_gateway[ship].ship.civ();
                             global.galaxy[ship].mil -= galaxyProjects.gxy_gateway[ship].ship.mil;
-                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway[ship].ship.civ;
+                            global.resource[global.race.species].amount -= galaxyProjects.gxy_gateway[ship].ship.civ();
                             global.civic.garrison.workers -= galaxyProjects.gxy_gateway[ship].ship.mil;
                         }
                         return true;
@@ -5068,7 +5110,7 @@ const galaxyProjects = {
                 return `<div class="has-text-advanced">${loc('galaxy_defense_platform_effect',[$(this)[0].ship.rating()])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 0,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 0 : 0; },
                 mil: 1,
                 helium: 8,
                 rating(){ return global.race['banana'] ? 35 : 50; }
@@ -5142,7 +5184,7 @@ const galaxyProjects = {
                 return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('galaxy_raider_effect')}</div><div>${loc('gain',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('gain',[vitreloy,loc('resource_Vitreloy_name')])}</div><div>${loc('gain',[polymer,loc('resource_Polymer_name')])}</div><div>${loc('gain',[neutronium,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
-                civ: 0,
+                civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 0 : 0; },
                 mil: 2,
                 helium: 18,
                 rating(){ return global.race['banana'] ? 9 : 12; }
