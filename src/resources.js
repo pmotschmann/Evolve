@@ -2631,6 +2631,9 @@ export const spatialReasoning = (function(){
                 let temple = 0.06;
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
+                    if (global.race['high_pop']){
+                        priest *= traits.high_pop.vars()[1] / 100;
+                    }
                     temple += priest * global.civic.priest.workers;
                 }
                 modifier *= 1 + ((global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * temple);
@@ -2657,6 +2660,9 @@ export function faithBonus(){
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
+                if (global.race['high_pop']){
+                    priest_bonus *= traits.high_pop.vars()[1] / 100;
+                }
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
             if (global.race.universe === 'antimatter'){
@@ -2735,6 +2741,9 @@ export const plasmidBonus = (function (){
                     }
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                         let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
+                        if (global.race['high_pop']){
+                            priest_bonus *= traits.high_pop.vars()[1] / 100;
+                        }
                         temple_bonus += priest_bonus * global.civic.priest.workers;
                     }
                     if (global.race['spiritual']){
