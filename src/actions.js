@@ -4267,7 +4267,7 @@ export const actions = {
                     gain *= shrineBonus.mult;
                 }
                 gain = +(gain).toFixed(0);
-                return `<div>${loc('city_university_effect')}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -4321,7 +4321,11 @@ export const actions = {
                     gain *= 1 + (global.city.temple.count * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
-                    gain *= 1 + (global.civic.scientist.workers * 0.12);
+                    let sci_val = global.civic.scientist.workers;
+                    if (global.race['high_pop']){
+                        sci_val *= traits.high_pop.vars()[1] / 100;
+                    }
+                    gain *= 1 + (sci_val * 0.12);
                 }
                 let teachVal = govActive('teacher',0);
                 if (teachVal){
@@ -4407,7 +4411,8 @@ export const actions = {
                     gain *= 1 - (athVal / 100);
                 }
                 gain = +(gain).toFixed(0);
-                let desc = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait === 'magnetic'){
@@ -5139,7 +5144,11 @@ export function templeEffect(){
     if (global.race.universe === 'antimatter' || global.race['no_plasmid']){
         let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            faith += +(global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.02 : 0.04)).toFixed(2);
+            let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.02 : 0.04);
+            if (global.race['high_pop']){
+                indoc *= traits.high_pop.vars()[1] / 100;
+            }
+            faith += +(indoc).toFixed(2);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
@@ -5177,7 +5186,11 @@ export function templeEffect(){
     else {
         let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            plasmid += +(global.civic.professor.workers * 0.2).toFixed(1);
+            let indoc = global.civic.professor.workers * 0.2;
+            if (global.race['high_pop']){
+                indoc *= traits.high_pop.vars()[1] / 100;
+            }
+            plasmid += +(indoc).toFixed(1);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest_bonus = global.genes['ancients'] >= 5 ? 0.15 : (global.genes['ancients'] >= 3 ? 0.125 : 0.1);

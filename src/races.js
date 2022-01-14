@@ -448,20 +448,20 @@ export const traits = {
         name: loc('trait_high_pop_name'),
         desc: loc('trait_high_pop'),
         type: 'genus',
-        val: 1,
+        val: 3,
         vars(r){
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
             switch (r || global.race.high_pop || 1){
                 case 0.25:
                     return [2,50,1.5];
                 case 0.5:
-                    return [3,35,2];
+                    return [3,34,2];
                 case 1:
-                    return [4,30,2.5];
+                    return [4,26,2.5];
                 case 2:
-                    return [5,25,3];
+                    return [5,21.2,3];
                 case 3:
-                    return [6,20,3.5];
+                    return [6,18,3.5];
             }
         },
     },
@@ -469,7 +469,7 @@ export const traits = {
         name: loc('trait_fast_growth_name'),
         desc: loc('trait_fast_growth'),
         type: 'genus',
-        val: 3,
+        val: 2,
         vars(r){
             // [bound multi, bound add]
             switch (r || global.race.fast_growth || 1){

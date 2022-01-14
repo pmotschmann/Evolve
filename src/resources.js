@@ -471,6 +471,7 @@ export const craftingRatio = (function(){
             Object.keys(multi_bd).forEach(function(multi){
                 multi_bd[multi] = (+(multi_bd[multi]) * 100).toFixed(2) + '%';
             });
+
             let craft_total = {
                 multiplier: multiplier,
                 add_bd: add_bd,
@@ -2664,7 +2665,11 @@ export function faithBonus(){
         if ((global.race['cataclysm'] && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
             let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.016 : 0.01;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                temple_bonus += global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
+                let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
+                if (global.race['high_pop']){
+                    indoc *= traits.high_pop.vars()[1] / 100;
+                }
+                temple_bonus += indoc;
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
@@ -2745,7 +2750,11 @@ export const plasmidBonus = (function (){
                 if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
                     let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-                        temple_bonus += global.civic.professor.workers * 0.002;
+                        let indoc = global.civic.professor.workers * 0.002;
+                        if (global.race['high_pop']){
+                            indoc *= traits.high_pop.vars()[1] / 100;
+                        }
+                        temple_bonus += indoc;
                     }
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                         let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);

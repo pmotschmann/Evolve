@@ -21,6 +21,8 @@ import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
+console.log(craftCost());
+
 {
     $(document).ready(function() {
         if (!window.matchMedia)
@@ -768,6 +770,9 @@ function fastLoop(){
     }
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * traits.intelligent.vars()[1]) + (global.civic.professor.workers * traits.intelligent.vars()[0]);
+        if (global.race['high_pop']){
+            bonus *= traits.high_pop.vars()[1] / 100;
+        }
         breakdown.p['Global'][loc('trait_intelligent_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
@@ -780,6 +785,9 @@ function fastLoop(){
         let bonus = (global.civic.scavenger.workers * traits.scavenger.vars()[0]);
         if (global.city.ptrait === 'trashed' && global.race['scavenger']){
             bonus *= 1 + (traits.scavenger.vars()[1] / 100);
+        }
+        if (global.race['high_pop']){
+            bonus *= traits.high_pop.vars()[1] / 100;
         }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
@@ -2410,6 +2418,9 @@ function fastLoop(){
             if (global.race['emotionless']){
                 entertainment *= 1 - (traits.emotionless.vars()[0] / 100);
             }
+            if (global.race['high_pop']){
+                entertainment *= 0.5;
+            }
         }
         if (global.civic.govern.type === 'democracy'){
             let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.3 : 1.25 ) : 1.2;
@@ -2506,7 +2517,8 @@ function fastLoop(){
             mBaseCap += p_on['resort'] * 2;
         }
         if (global.tech['superstar']){
-            mBaseCap += global.civic.entertainer.workers;
+            let mcapval = global.race['high_pop'] ? (traits.high_pop.vars()[1] / 100) : 1;
+            mBaseCap += global.civic.entertainer.workers * mcapval;
         }
         moraleCap = mBaseCap;
 
@@ -3188,7 +3200,11 @@ function fastLoop(){
             scientist_base *= global.civic.scientist.impact;
             scientist_base *= racialTrait(global.civic.scientist.workers,'science');
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
-                scientist_base *= 1 + (global.civic.professor.workers * p_on['wardenclyffe'] * 0.01);
+                let professor = global.civic.professor.workers;
+                if (global.race['high_pop']){
+                    professor *= traits.high_pop.vars()[1] / 100;
+                }
+                scientist_base *= 1 + (professor * p_on['wardenclyffe'] * 0.01);
             }
             if (global.space['satellite']){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
@@ -3686,10 +3702,11 @@ function fastLoop(){
 
         // Cement
         if (global.resource.Cement.display){
-            let stone_cost = global.civic.cement_worker.workers * 3;
+            let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
+            let stone_cost = global.civic.cement_worker.workers * unit_price;
             let workDone = global.civic.cement_worker.workers;
             while (stone_cost * time_multiplier > global.resource.Stone.amount && stone_cost > 0){
-                stone_cost -= 3;
+                stone_cost -= unit_price;
                 workDone--;
             }
 
@@ -4559,6 +4576,9 @@ function fastLoop(){
 
             if (global.race.universe === 'magic' && global.civic.scientist.display){
                 let mana_base = global.civic.scientist.workers * 0.025;
+                if (global.race['high_pop']){
+                    mana_base *= traits.high_pop.vars()[1] / 100;
+                }
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
@@ -5431,6 +5451,9 @@ function fastLoop(){
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
+            if (global.race['high_pop']){
+                income_base *= traits.high_pop.vars()[1] / 100;
+            }
             income_base *= global.race['truepath'] ? 0.2 : 0.4;
             if (global.race['greedy']){
                 income_base *= 1 - (traits.greedy.vars()[0] / 100);
@@ -5447,6 +5470,9 @@ function fastLoop(){
                     }
                     if (global.civic.govern.type === 'republic'){
                         impact *= 1.25;
+                    }
+                    if (global.race['high_pop']){
+                        impact *= traits.high_pop.vars()[1] / 100;
                     }
                     income_base *= 1 + (global.civic.banker.workers * impact);
                 }
@@ -5612,12 +5638,11 @@ function fastLoop(){
                 breakdown.p[craft] = {};
                 let num = global.city.foundry[craft];
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
-                let c_amount = crafting_costs[craft][0].a;
 
                 let speed = global.genes['crafty'] ? 2 : 1;
-                let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (c_amount * speed * craft_costs / 140));
+                let volume = Math.floor(global.resource[crafting_costs[craft][0].r].amount / (crafting_costs[craft][0].a * speed * craft_costs / 140));
                 for (let i=1; i<crafting_costs[craft].length; i++){
-                    let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (c_amount * speed * craft_costs / 140));
+                    let temp = Math.floor(global.resource[crafting_costs[craft][i].r].amount / (crafting_costs[craft][i].a * speed * craft_costs / 140));
                     if (temp < volume){
                         volume = temp;
                     }
@@ -5627,7 +5652,7 @@ function fastLoop(){
                 }
 
                 for (let i=0; i<crafting_costs[craft].length; i++){
-                    let final = volume * c_amount * craft_costs * speed * time_multiplier / 140;
+                    let final = volume * crafting_costs[craft][i].a * craft_costs * speed * time_multiplier / 140;
                     modRes(crafting_costs[craft][i].r, -(final));
                     if (typeof crafting_usage[crafting_costs[craft][i].r] === 'undefined'){
                         crafting_usage[crafting_costs[craft][i].r] = final / time_multiplier;
@@ -6889,7 +6914,11 @@ function midLoop(){
                 shelving *= 1.4;
             }
             if (global.tech['science'] && global.tech['science'] >= 5){
-                shelving *= 1 + (global.civic.scientist.workers * 0.12);
+                let sci_val = global.civic.scientist.workers;
+                if (global.race['high_pop']){
+                    sci_val *= traits.high_pop.vars()[1] / 100;
+                }
+                shelving *= 1 + (sci_val * 0.12);
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
                 shelving *= 1 + (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
@@ -7038,7 +7067,11 @@ function midLoop(){
 
         if (global.portal['archaeology']){
             let sup = hellSupression('ruins');
-            let gain = Math.round(250000 * sup.supress);
+            let value = 250000;
+            if (global.race['high_pop']){
+                value *= traits.high_pop.vars()[1] / 100;
+            }
+            let gain = Math.round(value * sup.supress);
             caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
             bd_Knowledge[loc('portal_archaeology_bd')] = (global.civic.archaeologist.workers * gain)+'v';
         }
@@ -7174,7 +7207,11 @@ function midLoop(){
                 sci += global.space.ziggurat.count * 15;
             }
             if (global.tech.mass >= 2){
-                sci += p_on['mass_driver'] * global.civic.scientist.workers;
+                let brain = global.civic.scientist.workers;
+                if (global.race['high_pop']){
+                    brain *= traits.high_pop.vars()[1] / 100;
+                }
+                sci += p_on['mass_driver'] * brain;
             }
             if (global.race['cataclysm'] && support_on['observatory']){
                 sci *= 1 + (support_on['observatory'] * 0.25);

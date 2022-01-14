@@ -787,7 +787,7 @@ const spaceProjects = {
             effect(){
                 let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[1])}</div>` : ``;
                 let fab = global.race['cataclysm'] ? 5 : 2;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1')}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -988,7 +988,11 @@ const spaceProjects = {
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-                    bonus += 0.002 * global.civic.priest.workers;
+                    let faith = 0.002;
+                    if (global.race['high_pop']){
+                        faith *= traits.high_pop.vars()[1] / 100;
+                    }
+                    bonus += faith * global.civic.priest.workers;
                 }
                 if (global.race['ooze']){
                     bonus *= 1 - (traits.ooze.vars()[1] / 100);
@@ -6026,7 +6030,11 @@ export function zigguratBonus(){
             zig += 0.0001 * support_on['exotic_lab'];
         }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            zig += 0.00002 * global.civic.priest.workers;
+            let faith = 0.00002;
+            if (global.race['high_pop']){
+                faith *= traits.high_pop.vars()[1] / 100;
+            }
+            zig += faith * global.civic.priest.workers;
         }
         if (global.race['ooze']){
             zig *= 1 - (traits.ooze.vars()[1] / 100);
