@@ -4,9 +4,10 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.8`,
-        date: `1/13/2022`,
+        date: `1/15/2022`,
         changes: [
             `Added High Population trait to Insectoid genus.`,
+            `Fixed bug that caused incorrect timer calculations when using Slow or Hyper trait at any rank other then 1.`
         ]
     },
     {

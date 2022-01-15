@@ -9339,9 +9339,14 @@ function q_check(load){
 }
 
 function diffCalc(res,period){
-    let sec = global.race['slow'] ? 1100 : 1000;
+    let sec = 1000;
+    if (global.race['slow']){
+        let slow = 1 + (traits.slow.vars()[0] / 100);
+        sec = Math.floor(sec * slow);
+    }
     if (global.race['hyper']){
-        sec = Math.floor(sec * 0.95);
+        let fast = 1 - (traits.hyper.vars()[0] / 100);
+        sec = Math.floor(sec * fast);
     }
 
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
