@@ -733,6 +733,12 @@ const fortressModules = {
                 },
             },
             no_queue(){ return true },
+            count(){
+                return Object.keys(races).length - 1;
+            },
+            on(){
+                return Object.keys(global.pillars).length;
+            },
             effect(wiki){
                 let pillars = (wiki || 0) + Object.keys(global.pillars).length;
                 if (pillars >= 1){

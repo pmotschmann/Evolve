@@ -5795,11 +5795,23 @@ export function setAction(c_action,action,type,old){
             </svg></div>`);
         parent.append(special);
     }
-    if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
-        let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
-        let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
-        parent.append(powerOn);
-        parent.append(powerOff);
+    if (c_action['on'] || c_action['off']){
+        if (c_action['on']){
+            let powerOn = $(`<span class="on" title="ON" v-html="$options.filters.val('on')"></span>`);
+            parent.append(powerOn);
+        }
+        if (c_action['off']){
+            let powerOff = $(`<span class="off" title="OFF" v-html="$options.filters.p_off('off')"></span>`);
+            parent.append(powerOff);
+        }
+    }
+    else {
+        if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
+            let powerOn = $(`<span role="button" :aria-label="on_label()" class="on" @click="power_on" title="ON" v-html="$options.filters.p_on(act.on,'${c_action.id}')"></span>`);
+            let powerOff = $(`<span role="button" :aria-label="off_label()" class="off" @click="power_off" title="OFF" v-html="$options.filters.p_off(act.on,'${c_action.id}')"></span>`);
+            parent.append(powerOn);
+            parent.append(powerOff);
+        }
     }
     if (c_action['count']){
         let count = c_action.count();
@@ -5920,6 +5932,14 @@ export function setAction(c_action,action,type,old){
             }
         },
         filters: {
+            val(v){
+                switch(v){
+                    case 'on':
+                        return c_action.on();
+                    case 'off':
+                        return c_action.off();
+                }
+            },
             p_off(p,id){
                 let value = global[action][type].count - p;
                 if (id === 'city-casino' || id === 'space-spc_casino'){
