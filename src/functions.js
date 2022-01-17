@@ -1248,10 +1248,20 @@ export function calcPrestige(type,inputs){
                 garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
             }
         }
-        pop = global.resource[global.race.species].amount + garrisoned;
+        if (global.race['high_pop']){
+            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + garrisoned;
+        }
+        else {
+            pop = global.resource[global.race.species].amount + garrisoned;
+        }
     }
     else {
-        pop = inputs.cit + inputs.sol;
+        if (global.race['high_pop']){
+            pop = Math.round(inputs.cit / traits.high_pop.vars()[0]) + inputs.sol;
+        }
+        else {
+            pop = inputs.cit + inputs.sol;
+        }
     }
 
     let pop_divisor = 999;
@@ -1590,6 +1600,13 @@ function craftAdjust(costs, offset, wiki){
         return newCosts;
     }
     return costs;
+}
+
+export function popCost(p){
+    if (global.race['high_pop']){
+        p *= traits.high_pop.vars()[0];
+    }
+    return p;
 }
 
 function heavyAdjust(costs, offset, wiki){

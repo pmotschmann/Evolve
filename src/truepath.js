@@ -195,6 +195,13 @@ export const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let gain = 1;
+                if (global.race['high_pop']){
+                    gain *= traits.high_pop.vars()[0];
+                }
+                return gain;
             }
         },
         titan_mine: {

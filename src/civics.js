@@ -1496,7 +1496,8 @@ function war_campaign(gov){
             Cement: 0,
             Steel: 0,
             Titanium: 0,
-            Crystal: 0
+            Crystal: 0,
+            Chrysotile: 0,
         };
 
         let basic = gov === 3 && global.race['truepath'] ? ['Food','Lumber','Stone','Copper','Iron'] : ['Food','Lumber','Stone'];
@@ -1605,6 +1606,7 @@ function war_campaign(gov){
                     gains[goods] += Math.floor(Math.seededRandom(25,100,true));
                     break;
                 case 'Steel':
+                case 'Chrysotile':
                     gains[goods] += Math.floor(Math.seededRandom(20,65,true));
                     break;
                 case 'Titanium':
