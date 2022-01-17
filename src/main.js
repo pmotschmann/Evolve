@@ -14,14 +14,12 @@ import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, sto
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
-import { production } from './prod.js';
+import { production, highPopAdjust } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
-
-console.log(craftCost());
 
 {
     $(document).ready(function() {
@@ -771,7 +769,7 @@ function fastLoop(){
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * traits.intelligent.vars()[1]) + (global.civic.professor.workers * traits.intelligent.vars()[0]);
         if (global.race['high_pop']){
-            bonus *= traits.high_pop.vars()[1] / 100;
+            bonus = highPopAdjust(bonus);
         }
         breakdown.p['Global'][loc('trait_intelligent_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
@@ -787,7 +785,7 @@ function fastLoop(){
             bonus *= 1 + (traits.scavenger.vars()[1] / 100);
         }
         if (global.race['high_pop']){
-            bonus *= traits.high_pop.vars()[1] / 100;
+            bonus = highPopAdjust(bonus);
         }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
@@ -2517,7 +2515,7 @@ function fastLoop(){
             mBaseCap += p_on['resort'] * 2;
         }
         if (global.tech['superstar']){
-            let mcapval = global.race['high_pop'] ? (traits.high_pop.vars()[1] / 100) : 1;
+            let mcapval = global.race['high_pop'] ? highPopAdjust(1) : 1;
             mBaseCap += global.civic.entertainer.workers * mcapval;
         }
         moraleCap = mBaseCap;
@@ -3202,7 +3200,7 @@ function fastLoop(){
             if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
                 let professor = global.civic.professor.workers;
                 if (global.race['high_pop']){
-                    professor *= traits.high_pop.vars()[1] / 100;
+                    professor = highPopAdjust(professor);
                 }
                 scientist_base *= 1 + (professor * p_on['wardenclyffe'] * 0.01);
             }
@@ -4565,7 +4563,7 @@ function fastLoop(){
             if (global.tech['cleric'] && global.civic.priest.display){
                 let mana_base = global.civic.priest.workers * 0.0025;
                 if (global.race['high_pop']){
-                    mana_base *= traits.high_pop.vars()[1] / 100;
+                    mana_base = highPopAdjust(mana_base);
                 }
                 mana_base *= darkEffect('magic');
                 let delta = mana_base * hunger * global_multiplier;
@@ -4577,7 +4575,7 @@ function fastLoop(){
             if (global.race.universe === 'magic' && global.civic.scientist.display){
                 let mana_base = global.civic.scientist.workers * 0.025;
                 if (global.race['high_pop']){
-                    mana_base *= traits.high_pop.vars()[1] / 100;
+                    mana_base = highPopAdjust(mana_base);
                 }
                 mana_base *= darkEffect('magic');
 
@@ -5452,7 +5450,7 @@ function fastLoop(){
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
             if (global.race['high_pop']){
-                income_base *= traits.high_pop.vars()[1] / 100;
+                income_base = highPopAdjust(income_base);
             }
             income_base *= global.race['truepath'] ? 0.2 : 0.4;
             if (global.race['greedy']){
@@ -5472,7 +5470,7 @@ function fastLoop(){
                         impact *= 1.25;
                     }
                     if (global.race['high_pop']){
-                        impact *= traits.high_pop.vars()[1] / 100;
+                        impact = highPopAdjust(impact);
                     }
                     income_base *= 1 + (global.civic.banker.workers * impact);
                 }
@@ -5663,7 +5661,7 @@ function fastLoop(){
                 }
 
                 if (global.race['high_pop']){
-                    volume *= traits.high_pop.vars()[1] / 100;
+                    volume = highPopAdjust(volume);
                 }
 
                 breakdown.p[craft][loc(`job_craftsman`)] = (volume * speed / 140) + 'v';
@@ -6302,7 +6300,7 @@ function midLoop(){
         if (global.space['living_quarters']){
             let gain = Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
             caps[global.race.species] += gain;
-            lCaps['colonist'] += support_on['living_quarters'];
+            lCaps['colonist'] += jobScale(support_on['living_quarters']);
             bd_Citizen[`${races[global.race.species].solar.red}`] = gain + 'v';
 
             if (global.race['cataclysm'] && global.tech['home_safe']){
@@ -6916,7 +6914,7 @@ function midLoop(){
             if (global.tech['science'] && global.tech['science'] >= 5){
                 let sci_val = global.civic.scientist.workers;
                 if (global.race['high_pop']){
-                    sci_val *= traits.high_pop.vars()[1] / 100;
+                    sci_val = highPopAdjust(sci_val);
                 }
                 shelving *= 1 + (sci_val * 0.12);
             }
@@ -7069,7 +7067,7 @@ function midLoop(){
             let sup = hellSupression('ruins');
             let value = 250000;
             if (global.race['high_pop']){
-                value *= traits.high_pop.vars()[1] / 100;
+                value = highPopAdjust(value);
             }
             let gain = Math.round(value * sup.supress);
             caps['Knowledge'] += (global.civic.archaeologist.workers * gain);
@@ -7209,7 +7207,7 @@ function midLoop(){
             if (global.tech.mass >= 2){
                 let brain = global.civic.scientist.workers;
                 if (global.race['high_pop']){
-                    brain *= traits.high_pop.vars()[1] / 100;
+                    brain = highPopAdjust(brain);
                 }
                 sci += p_on['mass_driver'] * brain;
             }
@@ -7221,6 +7219,9 @@ function midLoop(){
             }
             if (global.tech['science'] >= 21){
                 sci *= 1.45;
+            }
+            if (global.race['high_pop']){
+                sci = highPopAdjust(sci);
             }
             let gain = support_on['exotic_lab'] * global.civic.colonist.workers * sci;
             caps['Knowledge'] += gain;

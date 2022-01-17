@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { outerTruth, syndicate } from './truepath.js';
-import { production } from './prod.js';
+import { production, highPopAdjust } from './prod.js';
 import { govActive } from './governor.js';
 import { ascend } from './resets.js';
 import { loadTab } from './index.js';
@@ -511,7 +511,7 @@ const spaceProjects = {
                     let vault = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '100000' : '50000') : '25000');
                     safe = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${safe}<div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[races[global.race.species].solar.red]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${safe}<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[races[global.race.species].solar.red]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -787,6 +787,9 @@ const spaceProjects = {
             effect(){
                 let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[1])}</div>` : ``;
                 let fab = global.race['cataclysm'] ? 5 : 2;
+                if (global.race['high_pop']){
+                    fab = highPopAdjust(fab);
+                }
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
             },
             support(){ return -1; },
@@ -934,10 +937,13 @@ const spaceProjects = {
                     sci += global.space.ziggurat.count * 15;
                 }
                 if (global.tech.mass >= 2 && p_on['mass_driver']){
-                    sci += p_on['mass_driver'] * global.civic.scientist.workers;
+                    sci += highPopAdjust(p_on['mass_driver'] * global.civic.scientist.workers);
                 }
                 if (global.tech['science'] >= 21){
                     sci *= 1.45;
+                }
+                if (global.race['high_pop']){
+                    sci = highPopAdjust(sci);
                 }
                 let elerium = spatialReasoning(10);
 
@@ -950,7 +956,7 @@ const spaceProjects = {
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[sci])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -987,10 +993,13 @@ const spaceProjects = {
                 if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
+                if (global.race['high_pop']){
+                    bonus = highPopAdjust(bonus);
+                }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let faith = 0.002;
                     if (global.race['high_pop']){
-                        faith *= traits.high_pop.vars()[1] / 100;
+                        faith = highPopAdjust(faith);
                     }
                     bonus += faith * global.civic.priest.workers;
                 }
@@ -1711,7 +1720,10 @@ const spaceProjects = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.space.space_station.on++;
                         if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - 3 < 0 ? (global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2) : 3;
+                            let hired = jobScale(3);
+                            if (global.civic[global.civic.d_job].workers - hired < 0){
+                                hired = global.civic[global.civic.d_job].workers;
+                            }
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.space_miner.workers += hired;
                         }
@@ -6029,10 +6041,13 @@ export function zigguratBonus(){
         if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
             zig += 0.0001 * support_on['exotic_lab'];
         }
+        if (global.race['high_pop']){
+            zig = highPopAdjust(zig);
+        }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let faith = 0.00002;
             if (global.race['high_pop']){
-                faith *= traits.high_pop.vars()[1] / 100;
+                faith = highPopAdjust(faith);
             }
             zig += faith * global.civic.priest.workers;
         }

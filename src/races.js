@@ -4,6 +4,7 @@ import { defineIndustry } from './civics.js';
 import { setJobName } from './jobs.js'; 
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
+import { highPopAdjust } from './prod.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
@@ -453,15 +454,15 @@ export const traits = {
             // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
             switch (r || global.race.high_pop || 1){
                 case 0.25:
-                    return [2,50,1.5];
+                    return [2, 50, 1.5];
                 case 0.5:
-                    return [3,34,2];
+                    return [3, 34, 2.5];
                 case 1:
-                    return [4,26,2.5];
+                    return [4, 26, 3.5];
                 case 2:
-                    return [5,21.2,3];
+                    return [5, 21.2, 4.5];
                 case 3:
-                    return [6,18,3.5];
+                    return [6, 18, 5.5];
             }
         },
     },
@@ -4220,7 +4221,7 @@ export function racialTrait(workers,type){
         modifier *= 1.25;
     }
     if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy' && type !== 'hunter'){
-        modifier *= traits.high_pop.vars()[1] / 100;
+        modifier = highPopAdjust(modifier);
     }
     return modifier;
 }

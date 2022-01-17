@@ -1,6 +1,13 @@
 import { global } from './vars.js';
-import { biomes } from './races.js';
+import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
+
+export function highPopAdjust(v){
+    if (global.race['high_pop']){
+        v *= traits.high_pop.vars()[1] / 100;
+    }
+    return v;
+}
 
 export function production(id,val){
     switch (id){
@@ -64,7 +71,7 @@ export function production(id,val){
             switch (val){
                 case 'copper':
                 {
-                    let base = 0.25;
+                    let base = highPopAdjust(0.25);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -74,7 +81,7 @@ export function production(id,val){
                 }
                 case 'titanium':
                 {
-                    let base = 0.02;
+                    let base = highPopAdjust(0.02);
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -83,22 +90,22 @@ export function production(id,val){
                     };
                 }
                 case 'stone':
-                    return 0.75;
+                    return highPopAdjust(0.75);
                 case 'asbestos':
-                    return 1.25;
+                    return highPopAdjust(1.25);
                 case 'aluminium':
-                    return 0.066;
+                    return highPopAdjust(0.066);
             }
         }
         case 'biodome':
         {
             switch (val){
                 case 'food':
-                    return 0.25;
+                    return highPopAdjust(0.25);
                 case 'cat_food':
                     return 2;
                 case 'lumber':
-                    return 1.5;
+                    return highPopAdjust(1.5);
             }
         }
         case 'gas_mining':

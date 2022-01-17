@@ -1,5 +1,5 @@
 import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, updateResetStats, deepClone } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -1250,7 +1250,7 @@ const fortressModules = {
             grant: ['hell_spire',2],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Species(){ return 50; },
+                Species(){ return popCost(50); },
                 Oil(){ return 900000; },
                 Helium_3(){ return 750000; },
                 Structs(){
@@ -1384,7 +1384,7 @@ const fortressModules = {
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
-                Species(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 10 : 0; },
+                Species(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? popCost(10) : 0; },
                 Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 500000000 : 0; },
                 Supply(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('bridge') ? global.portal.bridge.count : 0)) < 10 ? 100000 : 0; },
             },
@@ -1632,9 +1632,9 @@ const fortressModules = {
             cost: {
                 Species(offset){
                     if (offset){
-                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? 25 : 0;
+                        return offset + (global.portal.hasOwnProperty('waygate') ? global.portal.waygate.count : 0) < 10 ? popCost(25) : 0;
                     }
-                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? 25 : 0;
+                    return !global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) ? popCost(25) : 0;
                 },
                 Money(offset){
                     if (offset){

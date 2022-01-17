@@ -4,6 +4,7 @@ import { traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
+import { highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -305,8 +306,8 @@ export const craftingRatio = (function(){
             if (global.space['fabrication'] && support_on['fabrication']){
                 crafting.general.add.push({
                     name: loc(`space_red_fabrication_title`),
-                    manual: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02),
-                    auto: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? 0.05 : 0.02)
+                    manual: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? highPopAdjust(0.05) : highPopAdjust(0.02)),
+                    auto: support_on['fabrication'] * global.civic.colonist.workers * (global.race['cataclysm'] ? highPopAdjust(0.05) : highPopAdjust(0.02))
                 });
             }
             if (p_on['stellar_forge']){
@@ -2641,7 +2642,7 @@ export const spatialReasoning = (function(){
                 if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let priest = global.genes['ancients'] >= 5 ? 0.0012 : (global.genes['ancients'] >= 3 ? 0.001 : 0.0008);
                     if (global.race['high_pop']){
-                        priest *= traits.high_pop.vars()[1] / 100;
+                        priest = highPopAdjust(priest);
                     }
                     temple += priest * global.civic.priest.workers;
                 }
@@ -2667,14 +2668,14 @@ export function faithBonus(){
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                 let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.0002 : 0.0004);
                 if (global.race['high_pop']){
-                    indoc *= traits.high_pop.vars()[1] / 100;
+                    indoc = highPopAdjust(indoc);
                 }
                 temple_bonus += indoc;
             }
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest_bonus = global.genes['ancients'] >= 5 ? 0.00015 : (global.genes['ancients'] >= 3 ? 0.000125 : 0.0001);
                 if (global.race['high_pop']){
-                    priest_bonus *= traits.high_pop.vars()[1] / 100;
+                    priest_bonus = highPopAdjust(priest_bonus);
                 }
                 temple_bonus += priest_bonus * global.civic.priest.workers;
             }
@@ -2752,14 +2753,14 @@ export const plasmidBonus = (function (){
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         let indoc = global.civic.professor.workers * 0.002;
                         if (global.race['high_pop']){
-                            indoc *= traits.high_pop.vars()[1] / 100;
+                            indoc = highPopAdjust(indoc);
                         }
                         temple_bonus += indoc;
                     }
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                         let priest_bonus = global.genes['ancients'] >= 5 ? 0.0015 : (global.genes['ancients'] >= 3 ? 0.00125 : 0.001);
                         if (global.race['high_pop']){
-                            priest_bonus *= traits.high_pop.vars()[1] / 100;
+                            priest_bonus = highPopAdjust(priest_bonus);
                         }
                         temple_bonus += priest_bonus * global.civic.priest.workers;
                     }

@@ -10,7 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commis
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
-import { production } from './prod.js';
+import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
 import { govActive } from './governor.js';
 import { bioseed } from './resets.js';
@@ -4323,7 +4323,7 @@ export const actions = {
                 if (global.tech['science'] && global.tech['science'] >= 5){
                     let sci_val = global.civic.scientist.workers;
                     if (global.race['high_pop']){
-                        sci_val *= traits.high_pop.vars()[1] / 100;
+                        sci_val = highPopAdjust(sci_val);
                     }
                     gain *= 1 + (sci_val * 0.12);
                 }
@@ -5146,14 +5146,14 @@ export function templeEffect(){
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.02 : 0.04);
             if (global.race['high_pop']){
-                indoc *= traits.high_pop.vars()[1] / 100;
+                indoc = highPopAdjust(indoc);
             }
             faith += +(indoc).toFixed(2);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
             if (global.race['high_pop']){
-                priest_bonus *= traits.high_pop.vars()[1] / 100;
+                priest_bonus = highPopAdjust(priest_bonus);
             }
             faith += priest_bonus * global.civic.priest.workers;
         }
@@ -5176,7 +5176,7 @@ export function templeEffect(){
             if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 let priest = global.genes['ancients'] >= 5 ? 0.12 : (global.genes['ancients'] >= 3 ? 0.1 : 0.08);
                 if (global.race['high_pop']){
-                    priest *= traits.high_pop.vars()[1] / 100;
+                    priest = highPopAdjust(priest);
                 }
                 temple += priest * global.civic.priest.workers;
             }
@@ -5188,14 +5188,14 @@ export function templeEffect(){
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
             let indoc = global.civic.professor.workers * 0.2;
             if (global.race['high_pop']){
-                indoc *= traits.high_pop.vars()[1] / 100;
+                indoc = highPopAdjust(indoc);
             }
             plasmid += +(indoc).toFixed(1);
         }
         if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let priest_bonus = global.genes['ancients'] >= 5 ? 0.15 : (global.genes['ancients'] >= 3 ? 0.125 : 0.1);
             if (global.race['high_pop']){
-                priest_bonus *= traits.high_pop.vars()[1] / 100;
+                priest_bonus = highPopAdjust(priest_bonus);
             }
             plasmid += priest_bonus * global.civic.priest.workers;
         }
@@ -5801,7 +5801,7 @@ export function setAction(c_action,action,type,old){
             parent.append(powerOn);
         }
         if (c_action['off']){
-            let powerOff = $(`<span class="off" title="OFF" v-html="$options.filters.p_off('off')"></span>`);
+            let powerOff = $(`<span class="off" title="OFF" v-html="$options.filters.val('off')"></span>`);
             parent.append(powerOff);
         }
     }
@@ -8201,10 +8201,10 @@ export function bank_vault(){
         vault *= 1 + (traits.hoarder.vars()[0] / 100);
     }
     if (global.tech['banking'] >= 7){
-        vault *= 1 + (global.civic.banker.workers * 0.05);
+        vault *= 1 + highPopAdjust(global.civic.banker.workers * 0.05);
     }
     if (global.tech['banking'] >= 8){
-        vault += 25 * global.resource[global.race.species].amount;
+        vault += highPopAdjust(25 * global.resource[global.race.species].amount);
     }
     if (global.tech['stock_exchange']){
         vault *= 1 + (global.tech['stock_exchange'] * 0.1);

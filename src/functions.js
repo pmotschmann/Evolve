@@ -1602,6 +1602,13 @@ function craftAdjust(costs, offset, wiki){
     return costs;
 }
 
+export function popCost(p){
+    if (global.race['high_pop']){
+        p *= traits.high_pop.vars()[0];
+    }
+    return p;
+}
+
 function heavyAdjust(costs, offset, wiki){
     if (global.race['heavy']){
         var newCosts = {};
