@@ -166,7 +166,7 @@ export const job_desc = {
             morale *= 1 - (traits.emotionless.vars()[0] / 100);
         }
         if (global.race['high_pop']){
-            morale *= 0.5;
+            morale *= traits.high_pop.vars()[1] / 100;
         }
         let mcap = global.race['high_pop'] ? (traits.high_pop.vars()[1] / 100) : 1;
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,mcap]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);

@@ -1160,7 +1160,12 @@ function fastLoop(){
             if (global.city.ptrait === 'mellow'){
                 divisor *= planetTraits.mellow.vars()[0];
             }
-            stress -= global.civic.garrison.max / divisor;
+            let army_stress = global.civic.garrison.max / divisor;
+            if (global.race['high_pop']){
+                army_stress /= traits.high_pop.vars()[0]
+            }
+
+            stress -= army_stress;
         }
 
         let money_bd = {};
@@ -2021,8 +2026,8 @@ function fastLoop(){
                         army -= forge;
                     }
                 }
-                if (army < global.portal.guard_post.on){
-                    global.portal.guard_post.on = army;
+                if (army < jobScale(global.portal.guard_post.on)){
+                    global.portal.guard_post.on = Math.floor(army / jobScale(1));
                 }
             }
 
@@ -2328,8 +2333,8 @@ function fastLoop(){
                     }
 
                     if (actions[area][region][ship].ship['mil'] && global[area][ship].hasOwnProperty('mil')){
-                        if (global[area][ship]['mil'] !== global[area][ship].on * actions[area][region][ship].ship.mil){
-                            global[area][ship]['mil'] = global[area][ship].on * actions[area][region][ship].ship.mil;
+                        if (global[area][ship]['mil'] !== global[area][ship].on * actions[area][region][ship].ship.mil()){
+                            global[area][ship]['mil'] = global[area][ship].on * actions[area][region][ship].ship.mil();
                         }
                         if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
                             let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
@@ -2344,7 +2349,7 @@ function fastLoop(){
                         crew_mil += global[area][ship]['mil'];
                     }
 
-                    if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil || gal_on[ship] < global[area][ship].on){
+                    if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil() || gal_on[ship] < global[area][ship].on){
                         $(`#galaxy-${ship} .on`).addClass('warn');
                     }
                     else {
@@ -2394,7 +2399,12 @@ function fastLoop(){
                         stress_level /= 1 + (traits.freespirit.vars()[0] / 100);
                     }
 
-                    stress -= global.civic[job].workers / stress_level;
+                    let workers = global.civic[job].workers;
+                    if (global.race['high_pop']){
+                        workers /= traits.high_pop.vars()[0]
+                    }
+
+                    stress -= workers / stress_level;
                 }
             }
         });
@@ -2417,7 +2427,7 @@ function fastLoop(){
                 entertainment *= 1 - (traits.emotionless.vars()[0] / 100);
             }
             if (global.race['high_pop']){
-                entertainment *= 0.5;
+                entertainment *= traits.high_pop.vars()[1] / 100;
             }
         }
         if (global.civic.govern.type === 'democracy'){
@@ -3028,8 +3038,8 @@ function fastLoop(){
                     if (actions[area][region][ship].ship.civ() > 0){
                         operating = Math.floor(global[area][ship].crew / actions[area][region][ship].ship.civ());
                     }
-                    if (actions[area][region][ship].ship.mil > 0){
-                        let mil_operating = Math.floor(global[area][ship].mil / actions[area][region][ship].ship.mil);
+                    if (actions[area][region][ship].ship.mil() > 0){
+                        let mil_operating = Math.floor(global[area][ship].mil / actions[area][region][ship].ship.mil());
                         if (actions[area][region][ship].ship.civ() === 0 || mil_operating < operating){
                             operating = mil_operating;
                         }
@@ -5749,6 +5759,9 @@ function fastLoop(){
 
     if (global.civic['garrison'] && global.civic.garrison.workers < global.civic.garrison.max){
         let rate = 2.5;
+        if (global.race['high_pop']){
+            rate *= traits.high_pop.vars()[2];
+        }
         if (global.race['diverse']){
             rate /= 1 + (traits.diverse.vars()[0] / 100);
         }
@@ -6184,23 +6197,23 @@ function midLoop(){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
         }
         if (global.race['parasite']){
-            lCaps['garrison'] += 2;
+            lCaps['garrison'] += jobScale(2);
         }
         if (global.city['garrison']){
-            lCaps['garrison'] += global.city.garrison.on * (global.tech['military'] >= 5 ? 3 : 2);
+            lCaps['garrison'] += global.city.garrison.on * (global.tech['military'] >= 5 ? jobScale(3) : jobScale(2));
             if (global.race['chameleon']){
                 lCaps['garrison'] -= global.city.garrison.on;
             }
         }
         if (global.space['space_barracks']){
-            let soldiers = global.tech.marines >= 2 ? 4 : 2;
+            let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
         if (global.interstellar['cruiser']){
-            lCaps['garrison'] += int_on['cruiser'] * 3;
+            lCaps['garrison'] += int_on['cruiser'] * jobScale(3);
         }
         if (p_on['s_gate'] && global.galaxy['starbase']){
-            let soldiers = global.tech.marines >= 2 ? 8 : 5;
+            let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
             lCaps['garrison'] += p_on['starbase'] * soldiers;
         }
         if (!global.tech['world_control']){
@@ -6279,7 +6292,7 @@ function midLoop(){
             let pop = p_on['arcology'] * actions.portal.prtl_ruins.arcology.citizens();
             caps[global.race.species] += pop;
             bd_Citizen[loc('portal_arcology_title')] = pop + 'v';
-            lCaps['garrison'] += p_on['arcology'] * 5;
+            lCaps['garrison'] += p_on['arcology'] * jobScale(5);
 
             caps['Containers'] += (p_on['arcology'] * Math.round(quantum_level) * 10);
             bd_Containers[loc('portal_arcology_title')] = (p_on['arcology'] * Math.round(quantum_level) * 10) + 'v';
@@ -6292,10 +6305,10 @@ function midLoop(){
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
         if (p_on['operating_base']){
-            lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * 4;
+            lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * jobScale(4);
         }
         if (p_on['fob']){
-            lCaps['garrison'] += 10;
+            lCaps['garrison'] += jobScale(10);
         }
         if (global.space['living_quarters']){
             let gain = Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
@@ -7079,14 +7092,14 @@ function midLoop(){
             let gtrade = 650 * global.galaxy.trade.cur;
             let leave = 0;
             if (global.tech.xeno >= 7){
-                let crew = global.galaxy.defense.gxy_gorddon.scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil);
-                crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ() + actions.galaxy.gxy_gateway.corvette_ship.ship.mil);
-                crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ() + actions.galaxy.gxy_gateway.frigate_ship.ship.mil);
-                crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ() + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil);
-                crew += global.galaxy.defense.gxy_gorddon.dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ() + actions.galaxy.gxy_gateway.dreadnought.ship.mil);
+                let crew = global.galaxy.defense.gxy_gorddon.scout_ship * (actions.galaxy.gxy_gateway.scout_ship.ship.civ() + actions.galaxy.gxy_gateway.scout_ship.ship.mil());
+                crew += global.galaxy.defense.gxy_gorddon.corvette_ship * (actions.galaxy.gxy_gateway.corvette_ship.ship.civ() + actions.galaxy.gxy_gateway.corvette_ship.ship.mil());
+                crew += global.galaxy.defense.gxy_gorddon.frigate_ship * (actions.galaxy.gxy_gateway.frigate_ship.ship.civ() + actions.galaxy.gxy_gateway.frigate_ship.ship.mil());
+                crew += global.galaxy.defense.gxy_gorddon.cruiser_ship * (actions.galaxy.gxy_gateway.cruiser_ship.ship.civ() + actions.galaxy.gxy_gateway.cruiser_ship.ship.mil());
+                crew += global.galaxy.defense.gxy_gorddon.dreadnought * (actions.galaxy.gxy_gateway.dreadnought.ship.civ() + actions.galaxy.gxy_gateway.dreadnought.ship.mil());
 
                 if (gal_on['freighter']){
-                    crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil);
+                    crew += gal_on['freighter'] * (actions.galaxy.gxy_gorddon.freighter.ship.civ() + actions.galaxy.gxy_gorddon.freighter.ship.mil());
                 }
                 leave = crew * 300;
             }

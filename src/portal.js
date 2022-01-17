@@ -482,8 +482,8 @@ const fortressModules = {
             support(){ return 1; },
             effect(){
                 let holy = global.race['holy'] ? 1 + (traits.holy.vars()[1] / 100) : 1;
-                let rating = Math.round(holy * armyRating(1,'hellArmy',0));
-                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[1,$(this)[0].powered()])}</div>`;
+                let rating = Math.round(holy * armyRating(jobScale(1),'hellArmy',0));
+                return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(1),$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -593,7 +593,7 @@ const fortressModules = {
                 vault = +(vault).toFixed(0);
                 let containers = Math.round(quantum_level) * 10;
                 let container_string = `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[5,loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[`\$${vault.toLocaleString()}`,loc('resource_Money_name')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div>${loc('plus_max_resource',[jobScale(5),loc('civics_garrison_soldiers')])}</div><div>${loc('portal_guard_post_effect1',[75])}</div>${container_string}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1963,7 +1963,7 @@ export function buildFortress(parent,full){
                     min += soulForgeSoldiers();
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    min += global.portal.guard_post.on;
+                    min += jobScale(global.portal.guard_post.on);
                 }
                 if (global.portal.fortress.garrison > min){
                     global.portal.fortress.garrison -= dec;
@@ -2083,7 +2083,7 @@ export function buildFortress(parent,full){
                     }
                 }
                 if (global.portal.hasOwnProperty('guard_post')){
-                    stationed -= global.portal.guard_post.on;
+                    stationed -= jobScale(global.portal.guard_post.on);
                 }
                 return stationed;
             },
@@ -2146,7 +2146,7 @@ function fortressDefenseRating(v){
         }
     }
     if (global.portal.hasOwnProperty('guard_post')){
-        army -= global.portal.guard_post.on;
+        army -= jobScale(global.portal.guard_post.on);
     }
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
@@ -2566,7 +2566,7 @@ export function hellSupression(area, val){
     switch (area){
         case 'ruins':
             {
-                let army = val || p_on['guard_post'];
+                let army = val || jobScale(p_on['guard_post']);
                 let arc = (p_on['arcology'] || 0) * 75;
                 let aRating = armyRating(army,'hellArmy',0);
                 if (global.race['holy']){

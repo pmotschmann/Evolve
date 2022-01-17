@@ -6,6 +6,7 @@ import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
+import { jobScale } from './jobs';
 import { warhead } from './resets.js';
 
 // Sets up government in civics tab
@@ -1840,6 +1841,9 @@ function looters(){
             cap = 999;
             break;
     }
+    if (global.race['high_pop']){
+        cap = jobScale(cap);
+    }
     if (looting > cap){
         looting = cap;
     }
@@ -1848,6 +1852,9 @@ function looters(){
 
 function lootModify(val,gov){
     let looting = looters();
+    if (global.race['high_pop']){
+        looting = looting / jobScale(1);
+    }
     let loot = val * Math.log(looting + 1);
     if (global.race['invertebrate']){
         loot *= 1 - (traits.invertebrate.vars()[0] / 100);

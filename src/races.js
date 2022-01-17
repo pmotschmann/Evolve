@@ -4220,7 +4220,7 @@ export function racialTrait(workers,type){
     if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
         modifier *= 1.25;
     }
-    if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy' && type !== 'hunter'){
+    if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
     }
     return modifier;
@@ -4917,7 +4917,7 @@ export function shapeShift(genus,setup){
     if (genus){
         if (genus !== 'none'){
             Object.keys(genus_traits[genus]).forEach(function (trait) {
-                if (!global.race[trait]){
+                if (!global.race[trait] && trait !== 'high_pop'){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
                     }

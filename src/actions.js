@@ -2936,7 +2936,7 @@ export const actions = {
                 Horseshoe(){ return global.race['hooved'] ? (global.race['chameleon'] ? 1 : 2) : 0; }
             },
             effect(){
-                let bunks = global.tech['military'] >= 5 ? 3 : 2;
+                let bunks = global.tech['military'] >= 5 ? jobScale(3) : jobScale(2);
                 if (global.race['chameleon']){
                     bunks--;
                 }
@@ -4963,6 +4963,9 @@ export function buildTemplate(key, region){
         case 'assembly':
         {
             let id = region === 'space' ? 'space-assembly' : 'city-assembly';
+            let assemblyCostAdjust = function(v){
+                return Math.round(highPopAdjust(v));
+            }
             let action = {
                 id: id,
                 title: loc('city_assembly'),
@@ -4972,10 +4975,10 @@ export function buildTemplate(key, region){
                 trait: ['artifical'],
                 no_queue(){ return global.resource[global.race.species].max > global.resource[global.race.species].amount ? false : true; },
                 cost: {
-                    Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, 125, 1.01) : 0; },
-                    Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
-                    Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, 50, 1.01) : 0; },
-                    Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, 500, 1.01) : 0) : 0; },
+                    Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, assemblyCostAdjust(125), 1.01) : 0; },
+                    Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
+                    Aluminium(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
+                    Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? costMultiplier('citizen', offset, assemblyCostAdjust(500), 1.01) : 0) : 0; },
                 },
                 effect(){
                     let warn = '';
