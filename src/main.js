@@ -2576,7 +2576,7 @@ function fastLoop(){
         }
 
         if (global.race['lazy'] && global.city.calendar.temp === 2){
-            breakdown.p['Global'][loc('trait_lazy_bd')] = '-10%';
+            breakdown.p['Global'][loc('trait_lazy_bd')] = '-' + traits.lazy.vars()[0] + '%';
             global_multiplier *= 1 - (traits.lazy.vars()[0] / 100);
         }
         if (global.race['distracted']){
