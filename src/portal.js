@@ -1154,11 +1154,11 @@ const fortressModules = {
             },
             effect(){
                 let rating = global.blood['spire'] && global.blood.spire >= 2 ? 20 : 15;
-                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('lake')])}</div><div>${loc('portal_bireme_effect',[rating])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil()])}</div>`;
             },
             ship: {
                 civ(){ return 0; },
-                mil: 2
+                mil(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 2 : 2; },
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1204,7 +1204,7 @@ const fortressModules = {
             },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 3 : 3; },
-                mil: 0
+                mil(){ return 0; },
             },
             action(){
                 if (payCosts($(this)[0])){
