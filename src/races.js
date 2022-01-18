@@ -4133,7 +4133,7 @@ export function racialTrait(workers,type){
             modifier *= (workers * scale) + start;
         }
         else {
-            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['hivemind'] ? 0.985 : 0.98);
+            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
             modifier *= 1 + (1 - (mod ** (workers - breakpoint)));
         }
     }

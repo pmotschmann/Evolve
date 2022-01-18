@@ -999,6 +999,9 @@ function mercCost(){
     if (global.race['inflation']){
         cost *= 1 + (global.race.inflation / 500);
     }
+    if (global.race['high_pop']){
+        cost *= traits.high_pop.vars()[1] / 100;
+    }
     return Math.round(cost);
 }
 
@@ -1446,15 +1449,18 @@ function war_campaign(gov){
             death += traits.frail.vars()[0];
         }
         let armor = 0;
-        if (global.race['armored']){
-            let armored = 1 - (traits.armored.vars()[0] / 100);
-            armor += Math.floor(death *armored);
-        }
         if (global.race['scales']){
             armor += traits.scales.vars()[0];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
+        }
+        if (global.race['high_pop']){
+            armor += Math.floor(Math.seededRandom(0, armor * traits.high_pop.vars()[0],true));
+        }
+        if (global.race['armored']){
+            let armored = 1 - (traits.armored.vars()[0] / 100);
+            armor += Math.floor(death *armored);
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
@@ -1754,15 +1760,18 @@ function war_campaign(gov){
             death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
         let armor = 0;
-        if (global.race['armored']){
-            let armored = traits.armored.vars()[0] / 100;
-            armor += Math.floor(death * armored);
-        }
         if (global.race['scales']){
             armor += traits.scales.vars()[1];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
+        }
+        if (global.race['high_pop']){
+            armor += Math.floor(Math.seededRandom(0, Math.floor(armor * traits.high_pop.vars()[0] / 2),true));
+        }
+        if (global.race['armored']){
+            let armored = traits.armored.vars()[0] / 100;
+            armor += Math.floor(death * armored);
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
