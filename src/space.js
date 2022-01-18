@@ -4765,7 +4765,7 @@ const galaxyProjects = {
             },
             ship: {
                 civ(){ return global.race['high_pop'] ? traits.high_pop.vars()[0] * 5 : 5; },
-                mil(){ 0; },
+                mil(){ return 0; },
                 helium: 25
             },
             special: true,
