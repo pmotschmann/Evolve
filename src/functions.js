@@ -1249,7 +1249,7 @@ export function calcPrestige(type,inputs){
             }
         }
         if (global.race['high_pop']){
-            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + garrisoned;
+            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
         }
         else {
             pop = global.resource[global.race.species].amount + garrisoned;
@@ -1257,7 +1257,7 @@ export function calcPrestige(type,inputs){
     }
     else {
         if (global.race['high_pop']){
-            pop = Math.round(inputs.cit / traits.high_pop.vars()[0]) + inputs.sol;
+            pop = Math.round(inputs.cit / traits.high_pop.vars()[0]) + Math.round(inputs.sol / traits.high_pop.vars()[0]);
         }
         else {
             pop = inputs.cit + inputs.sol;
