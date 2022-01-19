@@ -104,6 +104,9 @@ export const job_desc = {
         if (global.city.ptrait === 'trashed' && global.race['scavenger']){
             scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
+        if (global.race['high_pop']){
+            scavenger *= traits.high_pop.vars()[1] / 100;
+        }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger'){
             desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
@@ -130,11 +133,12 @@ export const job_desc = {
         return loc('job_craftsman_desc');
     },
     cement_worker: function(){
+        let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
         gain = +(gain).toFixed(2);
-        return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain]);
+        return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
     },
     banker: function(){
         let interest = global.civic.banker.impact * 100;
@@ -147,15 +151,25 @@ export const job_desc = {
         if (global.civic.govern.type === 'republic'){
             interest *= 1.25;
         }
+        if (global.race['high_pop']){
+            interest *= traits.high_pop.vars()[1] / 100;
+        }
         interest = +(interest).toFixed(0);
         return loc('job_banker_desc',[interest]);
     },
     entertainer: function(){
         let morale = global.race['musical'] ? global.tech['theatre'] + traits.musical.vars()[0]: global.tech['theatre'];
+        if (global.race['musical']){
+            morale += traits.musical.vars()[0];
+        }
         if (global.race['emotionless']){
             morale *= 1 - (traits.emotionless.vars()[0] / 100);
         }
-        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,1]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);
+        if (global.race['high_pop']){
+            morale *= traits.high_pop.vars()[1] / 100;
+        }
+        let mcap = global.race['high_pop'] ? (traits.high_pop.vars()[1] / 100) : 1;
+        return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,mcap]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);
     },
     priest: function(){
         let desc = ``;
@@ -217,7 +231,11 @@ export const job_desc = {
         let arc = (p_on['arcology'] || 0) * 75;
         let supress = (armyRating(global.portal.guard_post.on,'hellArmy',0) + arc) / 5000;
         supress = supress > 1 ? 1 : supress;
-        let know = Math.round(250000 * supress);
+        let value = 250000;
+        if (global.race['high_pop']){
+            value *= traits.high_pop.vars()[1] / 100;
+        }
+        let know = Math.round(value * supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
     crew(){
@@ -256,6 +274,13 @@ export function defineJobs(define){
     if (!define){
         loadFoundry();
     }
+}
+
+export function jobScale(num){
+    if (global.race['high_pop']){
+        return num * traits.high_pop.vars()[0];
+    }
+    return num;
 }
 
 export function setJobName(job){
@@ -396,7 +421,7 @@ function loadJob(job, define, impact, stress, color){
             },
             adjust(v,j){
                 if (j === 'titan_colonist' && p_on['ai_colonist']){
-                    return v + p_on['ai_colonist'];
+                    return v + jobScale(p_on['ai_colonist']);
                 }
                 return v;
             }
@@ -487,9 +512,15 @@ export function loadFoundry(){
                     let tMax = -1;
                     if (res === 'Scarletite'){
                         tMax = (p_on['hell_forge'] || 0);
+                        if (global.race['high_pop']){
+                            tMax *= traits.high_pop.vars()[0];
+                        }
                     }
                     else if (res === 'Quantium'){
                         tMax = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
+                        if (global.race['high_pop']){
+                            tMax *= traits.high_pop.vars()[0];
+                        }
                     }
                     for (let i=0; i<keyMult; i++){
                         if (global.city.foundry.crafting < global.civic.craftsman.max
@@ -543,10 +574,18 @@ export function loadFoundry(){
             },
             filters: {
                 maxScar(v){
-                    return (p_on['hell_forge'] || 0);
+                    let cap = (p_on['hell_forge'] || 0);
+                    if (global.race['high_pop']){
+                        cap *= traits.high_pop.vars()[0];
+                    }
+                    return cap;
                 },
                 maxQuantium(v){
-                    return (support_on['zero_g_lab'] || 0);
+                    let cap = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
+                    if (global.race['high_pop']){
+                        cap *= traits.high_pop.vars()[0];
+                    }
+                    return cap;
                 }
             }
         });

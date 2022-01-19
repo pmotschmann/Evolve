@@ -1248,10 +1248,20 @@ export function calcPrestige(type,inputs){
                 garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
             }
         }
-        pop = global.resource[global.race.species].amount + garrisoned;
+        if (global.race['high_pop']){
+            pop = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars()[0]) + Math.round(garrisoned / traits.high_pop.vars()[0]);
+        }
+        else {
+            pop = global.resource[global.race.species].amount + garrisoned;
+        }
     }
     else {
-        pop = inputs.cit + inputs.sol;
+        if (global.race['high_pop']){
+            pop = Math.round(inputs.cit / traits.high_pop.vars()[0]) + Math.round(inputs.sol / traits.high_pop.vars()[0]);
+        }
+        else {
+            pop = inputs.cit + inputs.sol;
+        }
     }
 
     let pop_divisor = 999;
@@ -1590,6 +1600,13 @@ function craftAdjust(costs, offset, wiki){
         return newCosts;
     }
     return costs;
+}
+
+export function popCost(p){
+    if (global.race['high_pop']){
+        p *= traits.high_pop.vars()[0];
+    }
+    return p;
 }
 
 function heavyAdjust(costs, offset, wiki){
@@ -2347,43 +2364,9 @@ export function getShrineBonus(type) {
 
 	return shrine_bonus;
 }
-
-const valAdjust = {
-    fibroblast: [5],
-    imitation: [races[global.race['srace'] || 'protoplasm'].name],
-    detritivore: false,
-    elusive: false,
-    promiscuous: false,
-    revive: false,
-    fast_growth: false,
-    blood_thirst: false,
-    frail: false,
-    sappy: false,
-    spores: false,
-    terrifying: false,
-    shapeshifter: false,
-    freespirit: false,
-    selenophobia: false,
-    infectious: false,
-    infiltrator: false,
-};
-
-function getTraitVals(trait,rank){
-    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
-    if (valAdjust.hasOwnProperty(trait)){
-        if (trait === 'fibroblast'){
-            for (let i=0; i<vals.length; i++){
-                vals[i] = vals[i] * valAdjust[trait][i];
-            }
-        }
-        else if (valAdjust[trait]){
-            vals = valAdjust[trait];
-        }
-        else {
-            vals = [];
-        }
-    }
-    return vals;
+function rName(r){
+    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
+    return `<span class="has-text-warning">${res}</span>`;
 }
 
 const traitExtra = {
@@ -2430,12 +2413,54 @@ const traitExtra = {
             global.tech.hasOwnProperty('science') ? global.tech.science : 0,
             global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
         ]),
+    ],
+    high_pop: [
+        loc(`wiki_trait_effect_high_pop_ex1`)
     ]
 };
 
-function rName(r){
-    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
-    return `<span class="has-text-warning">${res}</span>`;
+const valAdjust = {
+    fibroblast: [5],
+    hivemind: [10],
+    imitation: [races[global.race['srace'] || 'protoplasm'].name],
+    detritivore: false,
+    elusive: false,
+    promiscuous: false,
+    revive: false,
+    fast_growth: false,
+    blood_thirst: false,
+    frail: false,
+    sappy: false,
+    spores: false,
+    terrifying: false,
+    shapeshifter: false,
+    freespirit: false,
+    selenophobia: false,
+    infectious: false,
+    infiltrator: false,
+};
+
+function getTraitVals(trait,rank){
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
+    if (valAdjust.hasOwnProperty(trait)){
+        if (trait === 'fibroblast'){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * valAdjust[trait][i];
+            }
+        }
+        else if (trait === 'hivemind' && global.race['high_pop']){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * traits.high_pop.vars()[0];
+            }
+        }
+        else if (valAdjust[trait]){
+            vals = valAdjust[trait];
+        }
+        else {
+            vals = [];
+        }
+    }
+    return vals;
 }
 
 export function getTraitDesc(info,trait,fanatic,tpage,trank){
@@ -2461,7 +2486,7 @@ export function getTraitDesc(info,trait,fanatic,tpage,trank){
         color = traits[trait].val >= 0 ? 'success' : 'danger';
     }
     if (tpage && ['genus','major'].includes(traits[trait].type)){
-        info.append(`<div class="has-text-${color} effect" v-html="getTraitDesc(rank)"></div>`);
+        info.append(`<div class="has-text-${color} effect" v-html="traitDesc(rank)"></div>`);
     }
     else {
         info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
@@ -2478,7 +2503,7 @@ export function getTraitDesc(info,trait,fanatic,tpage,trank){
             el: `#${traits[trait].type}_${trait}`,
             data: data,
             methods: {
-                getTraitDesc(rk){
+                traitDesc(rk){
                     return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
                 },
                 up(){
