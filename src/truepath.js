@@ -402,6 +402,9 @@ export const outerTruth = {
             },
             effect(){
                 let graphene = 0.05;
+                if (global.race['high_pop']){
+                    graphene = +(highPopAdjust(graphene)).toFixed(3);
+                }
                 return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
             support(){ return -1; },
@@ -946,7 +949,7 @@ export const outerTruth = {
                 if (global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
                     data = `<div>${loc(`space_lander_effect3`,[production('lander'),global.resource.Cipher.name])}</div>`;
                 }
-                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[3])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
+                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[jobScale(3)])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){

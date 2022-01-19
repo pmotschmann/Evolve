@@ -2157,7 +2157,7 @@ function fortressDefenseRating(v){
     }
     if (p_on['war_droid']){
         let droids = p_on['war_droid'] - global.portal.fortress.patrols > 0 ? p_on['war_droid'] - global.portal.fortress.patrols : 0;
-        army += global.tech['hdroid'] ? droids * 2 : droids;
+        army += global.tech['hdroid'] ? jobScale(droids * 2) : jobScale(droids);
     }
     let turret = global.tech['turret'] ? (global.tech['turret'] >= 2 ? 70 : 50) : 35;
     return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
@@ -2280,7 +2280,7 @@ export function bloodwar(){
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
-                pat_size += global.tech['hdroid'] ? 2 : 1;
+                pat_size += global.tech['hdroid'] ? jobScale(2) : jobScale(1);
                 terminators--;
             }
             let pat_rating = Math.round(armyRating(pat_size,'hellArmy',hurt));

@@ -1695,13 +1695,14 @@ function fastLoop(){
                 support_on['lander'] = global.space.lander.on;
 
                 let total = garrisonSize(false,true);
-                let deployed = support_on['lander'] * 3;
+                let troopReq = jobScale(3);
+                let deployed = support_on['lander'] * troopReq;
                 if (deployed <= total){
                     global.space.fob.troops = deployed;
                 }
                 else {
-                    support_on['lander'] -= Math.ceil((deployed - total) / 3);
-                    global.space.fob.troops = support_on['lander'] * 3;
+                    support_on['lander'] -= Math.ceil((deployed - total) / troopReq);
+                    global.space.fob.troops = support_on['lander'] * troopReq;
                 }
 
                 let mb_consume = support_on['lander'] * fuel;
