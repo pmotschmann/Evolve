@@ -421,7 +421,7 @@ function loadJob(job, define, impact, stress, color){
             },
             adjust(v,j){
                 if (j === 'titan_colonist' && p_on['ai_colonist']){
-                    return v + p_on['ai_colonist'];
+                    return v + jobScale(p_on['ai_colonist']);
                 }
                 return v;
             }

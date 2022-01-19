@@ -198,11 +198,13 @@ export function production(id,val){
             switch (val){
                 case 'adamantite':
                 {
-                    return 0.02 * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
+                    let base = highPopAdjust(0.02);
+                    return base * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
                 }
                 case 'aluminium':
                 {
-                    return 0.12 * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
+                    let base = highPopAdjust(0.12);
+                    return base * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
                 }
             }
         }

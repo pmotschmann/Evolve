@@ -4101,8 +4101,12 @@ function fastLoop(){
                 }
 
                 if (global.race['truepath']){
-                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
-                    graphene_production *= 0.05 * titan_colonists;
+                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+                    let gain = 0.05 * titan_colonists;
+                    if (global.race['high_pop']){
+                        gain = highPopAdjust(gain);
+                    }
+                    graphene_production *= gain;
                 }
                 else {
                     graphene_production *= 0.6;
@@ -4874,7 +4878,7 @@ function fastLoop(){
             // Aluminium Titan Mines
             if (global.resource.Aluminium.display && global.space['titan_mine']){
                 let synd = syndicate('spc_titan');
-                let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+                let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
                 let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * titan_colonists;
                 let alum_delta = alum_base * shrineMetal.mult * global_multiplier * synd * zigVal;
                 alum_delta *= 1 + (refinery / 100);
@@ -5333,7 +5337,7 @@ function fastLoop(){
 
         if (global.resource.Adamantite.display && global.space['titan_mine']){
             let synd = syndicate('spc_titan');
-            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
             let adam_base = production('titan_mine','adamantite') * support_on['titan_mine'] * titan_colonists;
             let adam_delta = adam_base * shrineMetal.mult * global_multiplier * synd * zigVal;
             adamantite_bd[loc('city_mine')] = adam_base + 'v';
@@ -6336,7 +6340,7 @@ function midLoop(){
         if (global.space['titan_quarters']){
             let gain = Math.round(support_on['titan_quarters'] * actions.space.spc_titan.titan_quarters.citizens());
             caps[global.race.species] += gain;
-            lCaps['titan_colonist'] += support_on['titan_quarters'];
+            lCaps['titan_colonist'] += jobScale(support_on['titan_quarters']);
             bd_Citizen[`${genusVars[races[global.race.species].type].solar.titan}`] = gain + 'v';
         }
 
@@ -7251,8 +7255,11 @@ function midLoop(){
             }
         }
         if (support_on['decoder']){
-            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + p_on['ai_colonist'] : global.civic.titan_colonist.workers;
+            let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
             let gain = support_on['decoder'] * titan_colonists * 2500;
+            if (global.race['high_pop']){
+                gain = highPopAdjust(gain);
+            }
             if (p_on['ai_core2']){
                 gain *= 1.25;
             }
