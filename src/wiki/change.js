@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.8`,
+        date: `1/19/2022`,
+        changes: [
+            `Insectoid genus redesigned with High Population trait.`,
+            `Fixed bug that caused incorrect timer calculations when using Slow or Hyper trait at any rank other then 1.`
+        ]
+    },
+    {
         version: `1.2.7`,
         revision: `a`,
         date: `1/11/2022`,

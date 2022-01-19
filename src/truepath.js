@@ -3,7 +3,8 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, genusVars, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
-import { production } from './prod.js';
+import { jobScale } from './jobs.js';
+import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, drawTech, bank_vault } from './actions.js';
 import { fuel_adjust, spaceTech, renderSpace } from './space.js';
 import { loc } from './locale.js';
@@ -174,8 +175,8 @@ export const outerTruth = {
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
             effect(){
-                let gain = 1;
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
+                let gain = jobScale(1);
+                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
             },
             support(){ return -1; },
             support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: 500 }]; },
@@ -195,6 +196,13 @@ export const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let gain = 1;
+                if (global.race['high_pop']){
+                    gain *= traits.high_pop.vars()[0];
+                }
+                return gain;
             }
         },
         titan_mine: {
@@ -394,6 +402,9 @@ export const outerTruth = {
             },
             effect(){
                 let graphene = 0.05;
+                if (global.race['high_pop']){
+                    graphene = +(highPopAdjust(graphene)).toFixed(3);
+                }
                 return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
             support(){ return -1; },
@@ -469,6 +480,9 @@ export const outerTruth = {
             effect(){
                 let cipher = $(this)[0].support_fuel().a;
                 let know = 2500;
+                if (global.race['high_pop']){
+                    know = highPopAdjust(know);
+                }
                 if (p_on['ai_core2']){
                     know *= 1.25;
                 }
@@ -604,7 +618,7 @@ export const outerTruth = {
                 Cipher(offset){ return spaceCostMultiplier('ai_colonist', offset, 10000, 1.35); },
             },
             effect(){
-                return `<div>${loc('plus_max_resource',[1,global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[1,genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[jobScale(1),genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(10); },
             action(){
@@ -718,7 +732,7 @@ export const outerTruth = {
 
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.resource.Quantium.display){
-                    desc = desc + `<div>${loc('space_zero_g_lab_effect',[1])}</div>`;
+                    desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
                 }
                 if (global.resource.Cipher.display){
                     desc = desc + `<div>${loc('plus_max_resource',[10000,global.resource.Cipher.name])}</div>`;
@@ -757,7 +771,7 @@ export const outerTruth = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
                 desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
-                desc += loc('plus_max_resource',[4,loc('civics_garrison_soldiers')]);
+                desc += loc('plus_max_resource',[jobScale(4),loc('civics_garrison_soldiers')]);
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return -1; },
@@ -887,7 +901,7 @@ export const outerTruth = {
                 let troops = garrisonSize();
                 let max_troops = garrisonSize(true);
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[500])}</div>`;
-                desc += loc('plus_max_resource',[10,loc('civics_garrison_soldiers')]);
+                desc += loc('plus_max_resource',[jobScale(10),loc('civics_garrison_soldiers')]);
                 desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}:</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
                 desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic['garrison'] ? global.civic.garrison.wounded : 0}</span></div>`;
                 desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space['fob'] ? global.space.fob.troops : 0])}</div>`;
@@ -935,7 +949,7 @@ export const outerTruth = {
                 if (global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
                     data = `<div>${loc(`space_lander_effect3`,[production('lander'),global.resource.Cipher.name])}</div>`;
                 }
-                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[3])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
+                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[jobScale(3)])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1570,17 +1584,17 @@ function updateCosts(){
 export function shipCrewSize(ship){
     switch (ship.class){
         case 'corvette':
-            return 2;
+            return jobScale(2);
         case 'frigate':
-            return 3;
+            return jobScale(3);
         case 'destroyer':
-            return 4;
+            return jobScale(4);
         case 'cruiser':
-            return 6;
+            return jobScale(6);
         case 'battlecruiser':
-            return 8;
+            return jobScale(8);
         case 'dreadnought':
-            return 10;
+            return jobScale(10);
     }
 }
 
