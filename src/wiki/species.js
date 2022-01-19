@@ -188,6 +188,9 @@ const traitExtra = {
             global.tech.hasOwnProperty('science') ? global.tech.science : 0,
             global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
         ]),
+    ],
+    high_pop: [
+        loc(`wiki_trait_effect_high_pop_ex1`)
     ]
 };
 

@@ -6426,6 +6426,7 @@
   "wiki_trait_effect_hollow_bones": "-%0% crafted material costs.",
   "wiki_trait_effect_rigid": "-%0% crafting material production.",
   "wiki_trait_effect_high_pop": "Population numbers are %0x higher, but citizens contribute only %1% of their normal work value individually. Population growth is %2x faster.",
+  "wiki_trait_effect_high_pop_ex1": "The High Population trait will not be gained from using Mimic to emulate Insectoid.",
   "wiki_trait_effect_fast_growth": "Faster population growth.",
   "wiki_trait_effect_high_metabolism": "+%0% food consumption.",
   "wiki_trait_effect_photosynth": "-%0% food consumption when Sunny, -%1% food consumption when Cloudy, -%2% food consumption when Rainy.",
