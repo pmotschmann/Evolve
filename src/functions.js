@@ -2367,6 +2367,7 @@ export function getShrineBonus(type) {
 
 const valAdjust = {
     fibroblast: [5],
+    hivemind: [10],
     imitation: [races[global.race['srace'] || 'protoplasm'].name],
     detritivore: false,
     elusive: false,
@@ -2391,6 +2392,11 @@ function getTraitVals(trait,rank){
         if (trait === 'fibroblast'){
             for (let i=0; i<vals.length; i++){
                 vals[i] = vals[i] * valAdjust[trait][i];
+            }
+        }
+        else if (trait === 'hivemind' && global.race['high_pop']){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * traits.high_pop.vars()[0];
             }
         }
         else if (valAdjust[trait]){
@@ -2447,6 +2453,9 @@ const traitExtra = {
             global.tech.hasOwnProperty('science') ? global.tech.science : 0,
             global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
         ]),
+    ],
+    high_pop: [
+        loc(`wiki_trait_effect_high_pop_ex1`)
     ]
 };
 
