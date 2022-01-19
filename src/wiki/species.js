@@ -196,7 +196,7 @@ const traitExtra = {
 
 const valAdjust = {
     fibroblast: [5],
-    hivemind: [1],
+    hivemind: [10],
     imitation: [races[global.race['srace'] || 'protoplasm'].name],
     detritivore: false,
     elusive: false,
