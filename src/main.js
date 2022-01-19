@@ -4375,6 +4375,9 @@ function fastLoop(){
                 let stone_bd = {};
 
                 let stone_base = global.resource[global.race.species].amount * traits.sappy.vars()[0];
+                if (global.race['high_pop']){
+                    stone_base = highPopAdjust(stone_base);
+                }
                 stone_bd[flib('name')] = stone_base + 'v';
                 if (global.city.hasOwnProperty('basic_housing')){
                     let grove = global.city.basic_housing.count * 0.025;
@@ -4384,7 +4387,10 @@ function fastLoop(){
 
                 let soldiers = 0;
                 if (global.civic.hasOwnProperty('garrison')){
-                    soldiers = global.civic.garrison.workers * 0.6;
+                    soldiers = global.civic.garrison.workers * traits.sappy.vars()[0];
+                    if (global.race['high_pop']){
+                        soldiers = highPopAdjust(soldiers);
+                    }
                     stone_bd[loc('soldiers')] = soldiers + 'v';
                 }
 
@@ -5181,10 +5187,10 @@ function fastLoop(){
             let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier * synd * zigVal;
             if (p_values.b > 0){
                 neutronium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
-                neutronium_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                neutronium_bd[`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
-                    neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}+0`] = '-50%';
                 }
             }
 
@@ -5200,7 +5206,7 @@ function fastLoop(){
                 neutronium_bd[`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
-                    neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
+                    neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}+1`] = '-50%';
                 }
             }
 
