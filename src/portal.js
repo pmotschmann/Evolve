@@ -71,7 +71,7 @@ const fortressModules = {
             id: 'portal-carport',
             title: loc('portal_carport_title'),
             desc(){
-                return loc('portal_carport_desc');
+                return loc('portal_carport_desc',[1]);
             },
             reqs: { portal: 2 },
             cost: {
@@ -88,7 +88,7 @@ const fortressModules = {
                 return Math.round(repair);
             },
             effect(){
-                return `${loc('portal_carport_effect')}`;
+                return `${loc('portal_carport_effect',[1])}`;
             },
             action(){
                 if (payCosts($(this)[0])){
