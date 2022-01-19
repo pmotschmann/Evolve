@@ -310,8 +310,7 @@ export function challengesPage(content){
                     3: [false,'wiki.html#resets-prestige-mad']
                 }
             });
-            addAchievements(failed,false,['extinct_sludge','gross'],{gross: true});
-            addAchievements(failed,true,['slime_lord']);
+            addAchievements(failed,false,['extinct_sludge']);
             addRequirements(failed,[
                 {
                     text: `wiki_challenges_reqs_achieve`,
@@ -322,7 +321,9 @@ export function challengesPage(content){
                         }
                     ]
                     
-                },
+                }
+            ]);
+            addRequirements(failed,[
                 {
                     text: `wiki_challenges_reqs_reset`,
                     subreqs: [

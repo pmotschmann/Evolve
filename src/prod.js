@@ -1,13 +1,6 @@
 import { global } from './vars.js';
-import { biomes, traits } from './races.js';
+import { biomes } from './races.js';
 import { govRelationFactor } from './civics.js';
-
-export function highPopAdjust(v){
-    if (global.race['high_pop']){
-        v *= traits.high_pop.vars()[1] / 100;
-    }
-    return v;
-}
 
 export function production(id,val){
     switch (id){
@@ -71,7 +64,7 @@ export function production(id,val){
             switch (val){
                 case 'copper':
                 {
-                    let base = highPopAdjust(0.25);
+                    let base = 0.25;
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -81,7 +74,7 @@ export function production(id,val){
                 }
                 case 'titanium':
                 {
-                    let base = highPopAdjust(0.02);
+                    let base = 0.02;
                     let gov = govRelationFactor(3);
                     return {
                         b: base,
@@ -90,22 +83,22 @@ export function production(id,val){
                     };
                 }
                 case 'stone':
-                    return highPopAdjust(0.75);
+                    return 0.75;
                 case 'asbestos':
-                    return highPopAdjust(1.25);
+                    return 1.25;
                 case 'aluminium':
-                    return highPopAdjust(0.066);
+                    return 0.066;
             }
         }
         case 'biodome':
         {
             switch (val){
                 case 'food':
-                    return highPopAdjust(0.25);
+                    return 0.25;
                 case 'cat_food':
                     return 2;
                 case 'lumber':
-                    return highPopAdjust(1.5);
+                    return 1.5;
             }
         }
         case 'gas_mining':
@@ -198,13 +191,11 @@ export function production(id,val){
             switch (val){
                 case 'adamantite':
                 {
-                    let base = highPopAdjust(0.02);
-                    return base * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
+                    return 0.02 * (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50) / 100;
                 }
                 case 'aluminium':
                 {
-                    let base = highPopAdjust(0.12);
-                    return base * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
+                    return 0.12 * (100 - (global.space['titan_mine'] ? global.space.titan_mine.ratio : 50)) / 100;
                 }
             }
         }

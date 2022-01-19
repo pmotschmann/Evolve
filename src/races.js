@@ -4,7 +4,6 @@ import { defineIndustry } from './civics.js';
 import { setJobName } from './jobs.js'; 
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
-import { highPopAdjust } from './prod.js';
 import { buildGarrison } from './civics.js';
 import { govActive } from './governor.js';
 import { unlockAchieve } from './achieve.js';
@@ -107,7 +106,6 @@ export const genus_traits = {
         rigid: 1
     },
     insectoid: {
-        high_pop: 1,
         fast_growth: 1,
         high_metabolism: 1
     },
@@ -445,32 +443,11 @@ export const traits = {
             }
         },
     },
-    high_pop: { // Population is higher, but less productive
-        name: loc('trait_high_pop_name'),
-        desc: loc('trait_high_pop'),
-        type: 'genus',
-        val: 3,
-        vars(r){
-            // [Citizen Cap, Worker Effectiveness, Growth Multiplier]
-            switch (r || global.race.high_pop || 1){
-                case 0.25:
-                    return [2, 50, 1.5];
-                case 0.5:
-                    return [3, 34, 2.5];
-                case 1:
-                    return [4, 26, 3.5];
-                case 2:
-                    return [5, 21.2, 4.5];
-                case 3:
-                    return [6, 18, 5.5];
-            }
-        },
-    },
     fast_growth: { // Greatly increases odds of population growth each cycle
         name: loc('trait_fast_growth_name'),
         desc: loc('trait_fast_growth'),
         type: 'genus',
-        val: 2,
+        val: 3,
         vars(r){
             // [bound multi, bound add]
             switch (r || global.race.fast_growth || 1){
@@ -4122,19 +4099,13 @@ export function racialTrait(workers,type){
         modifier *= 1 + (traits.artifical.vars()[0] / 100);
     }
     if (global.race['hivemind'] && type !== 'farmer'){
-        let breakpoint = traits.hivemind.vars()[0];
-        let scale = 0.05;
-        if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy'){
-            breakpoint *= traits.high_pop.vars()[0];
-            scale = 0.75 / (traits.hivemind.vars()[0] * traits.high_pop.vars()[0]);
-        }
-        if (workers <= breakpoint){
-            let start = 1 - (breakpoint * scale);
-            modifier *= (workers * scale) + start;
+        if (workers <= traits.hivemind.vars()[0]){
+            let start = 1 - (traits.hivemind.vars()[0] * 0.05);
+            modifier *= (workers * 0.05) + start;
         }
         else {
-            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
-            modifier *= 1 + (1 - (mod ** (workers - breakpoint)));
+            let mod = type === 'army' || type === 'hellArmy' ? 0.99 : 0.98;
+            modifier *= 1 + (1 - (mod ** (workers - traits.hivemind.vars()[0])));
         }
     }
     if (global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
@@ -4219,9 +4190,6 @@ export function racialTrait(workers,type){
     }
     if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
         modifier *= 1.25;
-    }
-    if (global.race['high_pop']){
-        modifier = highPopAdjust(modifier);
     }
     return modifier;
 }
@@ -4917,7 +4885,7 @@ export function shapeShift(genus,setup){
     if (genus){
         if (genus !== 'none'){
             Object.keys(genus_traits[genus]).forEach(function (trait) {
-                if (!global.race[trait] && trait !== 'high_pop'){
+                if (!global.race[trait]){
                     if (traits[trait].val >= 0){
                         global.race[trait] = traits.shapeshifter.vars()[0];
                     }

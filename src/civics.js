@@ -6,7 +6,6 @@ import { races, racialTrait, traits, planetTraits } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
-import { jobScale } from './jobs';
 import { warhead } from './resets.js';
 
 // Sets up government in civics tab
@@ -999,9 +998,6 @@ function mercCost(){
     if (global.race['inflation']){
         cost *= 1 + (global.race.inflation / 500);
     }
-    if (global.race['high_pop']){
-        cost *= traits.high_pop.vars()[1] / 100;
-    }
     return Math.round(cost);
 }
 
@@ -1449,18 +1445,15 @@ function war_campaign(gov){
             death += traits.frail.vars()[0];
         }
         let armor = 0;
+        if (global.race['armored']){
+            let armored = 1 - (traits.armored.vars()[0] / 100);
+            armor += Math.floor(death *armored);
+        }
         if (global.race['scales']){
             armor += traits.scales.vars()[0];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
-        }
-        if (global.race['high_pop']){
-            armor += Math.floor(Math.seededRandom(0, armor * traits.high_pop.vars()[0],true));
-        }
-        if (global.race['armored']){
-            let armored = 1 - (traits.armored.vars()[0] / 100);
-            armor += Math.floor(death *armored);
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
@@ -1503,8 +1496,7 @@ function war_campaign(gov){
             Cement: 0,
             Steel: 0,
             Titanium: 0,
-            Crystal: 0,
-            Chrysotile: 0,
+            Crystal: 0
         };
 
         let basic = gov === 3 && global.race['truepath'] ? ['Food','Lumber','Stone','Copper','Iron'] : ['Food','Lumber','Stone'];
@@ -1613,7 +1605,6 @@ function war_campaign(gov){
                     gains[goods] += Math.floor(Math.seededRandom(25,100,true));
                     break;
                 case 'Steel':
-                case 'Chrysotile':
                     gains[goods] += Math.floor(Math.seededRandom(20,65,true));
                     break;
                 case 'Titanium':
@@ -1760,18 +1751,15 @@ function war_campaign(gov){
             death += global.civic.garrison.tactic + traits.frail.vars()[1];;
         }
         let armor = 0;
+        if (global.race['armored']){
+            let armored = traits.armored.vars()[0] / 100;
+            armor += Math.floor(death * armored);
+        }
         if (global.race['scales']){
             armor += traits.scales.vars()[1];
         }
         if (global.tech['armor']){
             armor += global.tech['armor'];
-        }
-        if (global.race['high_pop']){
-            armor += Math.floor(Math.seededRandom(0, Math.floor(armor * traits.high_pop.vars()[0] / 2),true));
-        }
-        if (global.race['armored']){
-            let armored = traits.armored.vars()[0] / 100;
-            armor += Math.floor(death * armored);
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
@@ -1850,9 +1838,6 @@ function looters(){
             cap = 999;
             break;
     }
-    if (global.race['high_pop']){
-        cap = jobScale(cap);
-    }
     if (looting > cap){
         looting = cap;
     }
@@ -1861,9 +1846,6 @@ function looters(){
 
 function lootModify(val,gov){
     let looting = looters();
-    if (global.race['high_pop']){
-        looting = looting / jobScale(1);
-    }
     let loot = val * Math.log(looting + 1);
     if (global.race['invertebrate']){
         loot *= 1 - (traits.invertebrate.vars()[0] / 100);

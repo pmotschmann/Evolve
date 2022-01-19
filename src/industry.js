@@ -68,7 +68,7 @@ export const f_rate = {
     }
 };
 
-function loadSmelter(parent,bind){
+function loadSmelter(parent,bind){    
     let fuel = $(`<div><span class="has-text-warning">${loc('modal_smelter_fuel')}:</span> <span :class="level()">{{s.count | on}}/{{ s.cap }}</span></div>`);
     parent.append(fuel);
 
@@ -429,13 +429,13 @@ function loadSmelter(parent,bind){
         });
     }
 
-    if ((global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']) || (global.resource.Iridium.display && irid_smelt)){
+    if ((global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']) || (global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2)){
         let id = parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`;
         ['iron','steel','iridium'].forEach(function(mat){
             if (mat === 'steel' && (!global.resource.Steel.display || global.race['steelen'])){
                 return;
             }
-            else if (mat === 'iridium' && !(global.resource.Iridium.display && irid_smelt)){
+            else if (mat === 'iridium' && !(global.resource.Iridium.display && global.tech['m_smelting'] && global.tech.m_smelting >= 2)){
                 return;
             }
             popover(`${id}${mat}`,function(){
@@ -1246,7 +1246,7 @@ export function setPowerGrid(){
 
     clearElement($('#powerGrid'));
     $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
-
+    
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
             return;
@@ -1279,7 +1279,7 @@ export function setPowerGrid(){
             let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
-
+            
             let title = typeof c_action.title === 'function' ? c_action.title() : c_action.title;
             let extra = ``;
             switch (parts[1]){

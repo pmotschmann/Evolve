@@ -1,6 +1,6 @@
 import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
+import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
 import { races, genusVars, checkAltPurgatory } from './races.js';
@@ -4532,7 +4532,7 @@ const techs = {
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
         grant: ['waygate',4],
         cost: {
-            Species(){ return popCost(1000); },
+            Species(){ return 1000; },
             Knowledge(){ return 55000000; },
             Demonic_Essence(){ return 1; }
         },
@@ -4617,7 +4617,7 @@ const techs = {
         reqs: { high_tech: 16, corrupt: 1 },
         grant: ['corrupt',2],
         cost: {
-            Species(){ return 1; }, // Not scaled intentionally
+            Species(){ return 1; },
             Knowledge(){ return 22000000; },
             Corrupt_Gem(){ return 1; }
         },
