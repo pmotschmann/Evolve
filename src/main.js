@@ -833,8 +833,8 @@ function fastLoop(){
         breakdown.p['Global'][loc('cold')] = `-${cold}%`;
         global_multiplier *= 1 - (cold / 100);
     }
-    if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount >= 10){
-        let chaos = (global.resource[global.race.species].amount - 9) * 0.25;
+    if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount >= jobScale(10)){
+        let chaos = (global.resource[global.race.species].amount - (jobScale(10) - 1)) * (global.race['high_pop'] ? (0.25 / traits.high_pop.vars()[0]) : 0.25);
         breakdown.p['Global'][loc('govern_anarchy')] = `-${chaos}%`;
         global_multiplier *= 1 - (chaos / 100);
     }

@@ -9,7 +9,8 @@ const changeList = [
         changes: [
             `Fixed Farmer per Farm scaling with High Pop trait.`,
             `Adjusted low end scaling of High Pop Hivemind trait.`,
-            `Wireless Signal cost for Symposium lowered.`
+            `Wireless Signal cost for Symposium lowered.`,
+            `Added Anarchy scaling with High Pop`
         ]
     },
     {
