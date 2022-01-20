@@ -4557,7 +4557,7 @@ const galaxyProjects = {
             reqs: { xeno: 6 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('symposium', offset, 8000000, 1.25, 'galaxy'); },
-                Food(offset){ return global.race['ravenous'] ? 0 : spaceCostMultiplier('symposium', offset, 125000, 1.25, 'galaxy'); },
+                Food(offset){ return global.race['ravenous'] ? 0 : spaceCostMultiplier('symposium', offset, global.race['artifical'] ? 45000 : 125000, 1.25, 'galaxy'); },
                 Lumber(offset){ return spaceCostMultiplier('symposium', offset, 460000, 1.25, 'galaxy'); },
                 Brick(offset){ return spaceCostMultiplier('symposium', offset, 261600, 1.25, 'galaxy'); },
             },
