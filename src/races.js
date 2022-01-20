@@ -4126,7 +4126,7 @@ export function racialTrait(workers,type){
         let scale = 0.05;
         if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy'){
             breakpoint *= traits.high_pop.vars()[0];
-            scale = 0.75 / (traits.hivemind.vars()[0] * traits.high_pop.vars()[0]);
+            scale = 0.5 / (traits.hivemind.vars()[0] * traits.high_pop.vars()[0]);
         }
         if (workers <= breakpoint){
             let start = 1 - (breakpoint * scale);

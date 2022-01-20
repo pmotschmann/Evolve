@@ -429,6 +429,7 @@
   "job_default": "%0 is the default job for new citizens.",
   "job_farmer": "Farmer",
   "job_farmer_desc": "Farmers create %1 to feed your population. Each farmer generates %0 %1 per second. Farmers in excess of the %2 Farms constructed generate only %3 %1 per second.",
+  "job_farmer_desc_hp": "Farmers create %1 to feed your population. Each farmer generates %0 %1 per second. Each Farm supports %2 Farmers, extra farmers above %4 generate only %3 %1 per second.",
   "job_lumberjack": "Lumberjack",
   "job_lumberjack_desc": "Lumberjacks harvest %1 from the forests. Each lumberjack generates %0 %1 per second.",
   "job_reclaimer": "Reclaimer",

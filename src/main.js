@@ -2789,9 +2789,9 @@ function fastLoop(){
                     if (global.city['farm']){
                         let farmers = global.civic.farmer.workers;
                         let farmhands = 0;
-                        if (farmers > global.city.farm.count){
-                            farmhands = farmers - global.city.farm.count;
-                            farmers = global.city.farm.count;
+                        if (farmers > jobScale(global.city.farm.count)){
+                            farmhands = farmers - jobScale(global.city.farm.count);
+                            farmers = jobScale(global.city.farm.count);
                         }
 
                         let mill_multiplier = 1;

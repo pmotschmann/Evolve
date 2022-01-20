@@ -4,6 +4,15 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.8`,
+        revision: `a`,
+        date: `1/19/2022`,
+        changes: [
+            `Fixed Farmer per Farm scaling with High Pop trait.`,
+            `Adjusted low end scaling of High Pop Hivemind trait.`,
+        ]
+    },
+    {
+        version: `1.2.8`,
         date: `1/19/2022`,
         changes: [
             `Insectoid genus redesigned with High Population trait.`,

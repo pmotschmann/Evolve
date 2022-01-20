@@ -36,7 +36,9 @@ export const job_desc = {
     farmer: function(){
         let farmer = +farmerValue(true).toFixed(2);
         let farmhand = +farmerValue(false).toFixed(2);
-        let desc = loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
+        let desc = global.race['high_pop'] 
+            ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
+            : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
         if (global.civic.d_job === 'farmer'){
             desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
         }

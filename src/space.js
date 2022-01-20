@@ -356,7 +356,7 @@ const spaceProjects = {
             effect(){
                 let prof = '';
                 if (global.race['cataclysm']){
-                    prof = `<div>${loc('city_university_effect')}</div>`;
+                    prof = `<div>${loc('city_university_effect',[jobScale(1)])}</div>`;
                 }
                 let gain = 5000;
                 if (global.race['cataclysm'] && global.space['satellite'] && global.space.satellite.count > 0){
@@ -950,7 +950,7 @@ const spaceProjects = {
                 let scientist = '';
                 let lab = '';
                 if (global.race['cataclysm']){
-                    scientist = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div>`;
+                    scientist = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                     sci *= 1 + (support_on['observatory'] * 0.25);
                     if (global.tech.science >= 15){
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
@@ -2375,7 +2375,7 @@ const interstellarProjects = {
                 know = Math.round(know);
                 let sci = '';
                 if (global.tech.science >= 16){
-                    sci = `<div>${loc('city_wardenclyffe_effect1',[global.civic.scientist.name])}</div>`;
+                    sci = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                 }
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[loc('interstellar_alpha_name')])}</div>${sci}<div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.tech['science'] >= 13){
