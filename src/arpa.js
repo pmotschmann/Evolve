@@ -2014,6 +2014,7 @@ function genetics(){
                         else {
                             global.race.Plasmid.count -= cost;
                         }
+                        let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
                             global.race['modified'] = 1;
@@ -2021,7 +2022,7 @@ function genetics(){
                         else {
                             global.race['modified']++;
                         }
-                        cleanRemoveTrait(t);
+                        cleanRemoveTrait(t,rank);
                         genetics();
                         drawTech();
                         drawCity();
