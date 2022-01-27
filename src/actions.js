@@ -3753,7 +3753,7 @@ export const actions = {
                     return `<div>${loc('city_mine_effect1',[jobScale(1)])}</div><div class="has-text-caution">${loc('city_mine_effect2',[$(this)[0].powered(),5])}</div>`;
                 }
                 else {
-                    return loc('city_mine_effect1');
+                    return loc('city_mine_effect1',[jobScale(1)]);
                 }
             },
             powered(){ return powerCostMod(1); },
