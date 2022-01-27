@@ -56,9 +56,9 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
-            if (eventActive('firework') && ( 
-                (!global.race['cataclysm'] && global.city.firework.on > 0) || 
-                (global.race['cataclysm'] && global.space.firework.on > 0) 
+            if (eventActive('firework') && (
+                (!global.race['cataclysm'] && global.city.firework.on > 0) ||
+                (global.race['cataclysm'] && global.space.firework.on > 0)
                 )){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
@@ -301,9 +301,9 @@ export function messageQueue(msg,color,dnr,tags,reload){
     if (!reload && !tags.includes('all')){
         tags.push('all');
     }
-    
+
     color = color || 'warning';
-    
+
     if (tags.includes(message_logs.view)){
         let new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
         $('#msgQueueLog').prepend(new_message);
@@ -317,7 +317,7 @@ export function messageQueue(msg,color,dnr,tags,reload){
             message_logs[tag].pop();
         }
     });
-    
+
     if (!dnr){
         tags.forEach(function (tag){
             if (global.lastMsg[tag]){
@@ -359,7 +359,7 @@ export function calcQueueMax(){
     if (pragVal){
         max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
     }
-    
+
     global.queue.max = max_queue;
 }
 
@@ -376,7 +376,7 @@ export function calcRQueueMax(){
     if (theoryVal){
         max_queue = Math.round(max_queue * (1 + (theoryVal / 100)));
     }
-    
+
     global.r_queue.max = max_queue;
 }
 
@@ -476,7 +476,7 @@ export function buildQueue(){
                     for (let i=0; i<global.queue.queue.length; i++){
                         used += Math.ceil(global.queue.queue[i].q / global.queue.queue[i].qs);
                     }
-                    
+
                     return used;
                 }
             }
@@ -1234,12 +1234,12 @@ export function calcPrestige(type,inputs){
         artifact: 0,
         cores: 0,
     };
-    
+
     if (!inputs) { inputs = {}; }
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
-    
+
     let pop = 0;
     if (inputs.cit === undefined){
         let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
@@ -1350,7 +1350,7 @@ export function calcPrestige(type,inputs){
             exotic = global.interstellar.stellar_engine.exotic;
             mass = global.interstellar.stellar_engine.mass;
         }
-        
+
         let new_dark = +(Math.log(1 + (exotic * 40))).toFixed(3);
         new_dark += +(Math.log2(mass - 7)/2.5).toFixed(3);
         new_dark = challenge_multiplier(new_dark,'bigbang',3,challenge,universe);
@@ -1363,7 +1363,7 @@ export function calcPrestige(type,inputs){
         gains.dark = new_dark;
     }
 
-    
+
     if (type === 'ascend' || type === 'descend'){
         let harmony = 1;
         if (challenge === undefined){
@@ -1375,7 +1375,7 @@ export function calcPrestige(type,inputs){
         else {
             harmony = challenge + 1;
         }
-        
+
         if (type === 'ascend'){
             switch (universe){
                 case 'micro':
@@ -1409,7 +1409,7 @@ export function calcPrestige(type,inputs){
             gains.artifact = artifact;
         }
     }
-    
+
     if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
     }
@@ -1458,7 +1458,7 @@ function truthAdjust(costs, c_action, offset, wiki){
     }
     return costs;
 }
-                
+
 function inflationAdjust(costs, offset, wiki){
     if (global.race['inflation']){
         var newCosts = {};
@@ -2273,7 +2273,7 @@ export function getEaster(){
             easter.solve = true;
         }
     }
-    
+
     return easter;
 }
 
@@ -2363,4 +2363,189 @@ export function getShrineBonus(type) {
 	}
 
 	return shrine_bonus;
+}
+
+const valAdjust = {
+    fibroblast: [5],
+    hivemind: [10],
+    imitation: [races[global.race['srace'] || 'protoplasm'].name],
+    detritivore: false,
+    elusive: false,
+    promiscuous: false,
+    revive: false,
+    fast_growth: false,
+    blood_thirst: false,
+    frail: false,
+    sappy: false,
+    spores: false,
+    terrifying: false,
+    shapeshifter: false,
+    freespirit: false,
+    selenophobia: false,
+    infectious: false,
+    infiltrator: false,
+};
+
+function getTraitVals(trait,rank){
+    let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
+    if (valAdjust.hasOwnProperty(trait)){
+        if (trait === 'fibroblast'){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * valAdjust[trait][i];
+            }
+        }
+        else if (trait === 'hivemind' && global.race['high_pop']){
+            for (let i=0; i<vals.length; i++){
+                vals[i] = vals[i] * traits.high_pop.vars()[0];
+            }
+        }
+        else if (valAdjust[trait]){
+            vals = valAdjust[trait];
+        }
+        else {
+            vals = [];
+        }
+    }
+    return vals;
+}
+
+const traitExtra = {
+    infiltrator: [
+        loc(`wiki_trait_effect_infiltrator_ex1`),
+        loc(`wiki_trait_effect_infiltrator_ex2`,[
+            [
+                `<span class="has-text-warning">${loc('tech_steel')}</span>`, `<span class="has-text-warning">${loc('tech_electricity')}</span>`, `<span class="has-text-warning">${loc('tech_electronics')}</span>`, `<span class="has-text-warning">${loc('tech_fission')}</span>`,
+                `<span class="has-text-warning">${loc('tech_rocketry')}</span>`, `<span class="has-text-warning">${loc('tech_artificial_intelligence')}</span>`, `<span class="has-text-warning">${loc('tech_quantum_computing')}</span>`,
+                `<span class="has-text-warning">${loc('tech_virtual_reality')}</span>`, `<span class="has-text-warning">${loc('tech_shields')}</span>`, `<span class="has-text-warning">${loc('tech_ai_core')}</span>`, `<span class="has-text-warning">${loc('tech_graphene_processing')}</span>`,
+                `<span class="has-text-warning">${loc('tech_nanoweave')}</span>`, `<span class="has-text-warning">${loc('tech_orichalcum_analysis')}</span>`, `<span class="has-text-warning">${loc('tech_infernium_fuel')}</span>`
+            ].join(', ')
+        ])
+    ],
+    heavy: [
+        loc(`wiki_trait_effect_heavy_ex1`,[rName('Stone'),rName('Cement'),rName('Wrought_Iron')])
+    ],
+    sniper: [
+        loc(`wiki_trait_effect_sniper_ex1`),
+    ],
+    hooved: [
+        loc(`wiki_trait_effect_hooved_ex1`),
+        loc(`wiki_trait_effect_hooved_ex2`,[
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Iron') ? global.resource.Iron.name : loc('resource_Iron_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Steel') ? global.resource.Steel.name : loc('resource_Steel_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Adamantite') ? global.resource.Adamantite.name : loc('resource_Adamantite_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Orichalcum') ? global.resource.Orichalcum.name : loc('resource_Orichalcum_name')}</span>`,
+            12,75,150,500,5000
+        ]),
+        loc(`wiki_trait_effect_hooved_ex3`),
+        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`]),
+        loc(`wiki_trait_effect_hooved_ex5`,[
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
+            `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`
+        ]),
+    ],
+    instinct: [
+        loc(`wiki_trait_effect_instinct_ex1`,[6.67,loc('galaxy_chthonian'),10])
+    ],
+    logical: [
+        loc(`wiki_trait_effect_logical_ex1`,[
+            global.tech.hasOwnProperty('science') ? global.tech.science : 0,
+            global.tech.hasOwnProperty('high_tech') ? global.tech.high_tech : 0
+        ]),
+    ],
+    high_pop: [
+        loc(`wiki_trait_effect_high_pop_ex1`)
+    ]
+};
+
+function rName(r){
+    let res = global.hasOwnProperty('resource') && global.resource.hasOwnProperty(r) ? global.resource[r].name : loc(`resource_${r}_name`);
+    return `<span class="has-text-warning">${res}</span>`;
+}
+
+export function getTraitDesc(info,trait,fanatic,tpage,trank){
+    let rank = '';
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
+    }
+    info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
+    if (tpage && traits[trait].hasOwnProperty('val')){
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
+    }
+    else {
+        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+    }
+
+    if (fanatic){
+        info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
+    }
+    info.append(`<div class="desc">${traits[trait].desc}</div>`);
+
+    let color = 'warning';
+    if (traits[trait].hasOwnProperty('val')){
+        color = traits[trait].val >= 0 ? 'success' : 'danger';
+    }
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        info.append(`<div class="has-text-${color} effect" v-html="getTraitDesc(rank)"></div>`);
+    }
+    else {
+        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
+    }
+    if (traitExtra[trait]){
+        traitExtra[trait].forEach(function(te){
+            info.append(`<div class="effect">${te}</div>`);
+        });
+    }
+
+    if (tpage && ['genus','major'].includes(traits[trait].type)){
+        let data = { rank: global.race[trait] || 1 };
+        vBind({
+            el: `#${traits[trait].type}_${trait}`,
+            data: data,
+            methods: {
+                getTraitDesc(rk){
+                    return loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,rk));
+                },
+                up(){
+                    switch (data.rank){
+                        case 0.25:
+                            data.rank = 0.5;
+                            break;
+                        case 0.5:
+                            data.rank =  1;
+                            break;
+                        case 1:
+                            data.rank =  2;
+                            break;
+                        case 2:
+                            data.rank =  3;
+                            break;
+                        case 3:
+                            data.rank =  3;
+                            break;
+                    }
+                },
+                down(){
+                    switch (data.rank){
+                        case 0.25:
+                            data.rank = 0.25;
+                            break;
+                        case 0.5:
+                            data.rank =  0.25;
+                            break;
+                        case 1:
+                            data.rank =  0.5;
+                            break;
+                        case 2:
+                            data.rank =  1;
+                            break;
+                        case 3:
+                            data.rank =  2;
+                            break;
+                    }
+                },
+            },
+        });
+    }
 }
