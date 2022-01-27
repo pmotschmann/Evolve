@@ -757,6 +757,7 @@ const fortressModules = {
                         calcPillar(true);
                         towerSize(true);
                         unlockAchieve('resonance');
+                        vBind({el: `#portal-ancient_pillars`},'update');
                         return true;
                     }
                 }

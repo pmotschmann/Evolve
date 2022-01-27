@@ -4327,11 +4327,15 @@ function purgeLumber(){
         global.interstellar.mass_ejector.total -= global.interstellar.mass_ejector.Lumber;
         global.interstellar.mass_ejector.Lumber = 0;
     }
+    if (global.city['nanite_factory']){
+        global.city.nanite_factory.Lumber = 0;
+    }
 }
 
 function adjustFood() {
     let farmersEnabled = checkTechQualifications(actions.tech.agriculture);
     let huntingEnabled = checkTechQualifications(actions.tech.smokehouse);
+    let lumberEnabled = checkTechQualifications(actions.tech.reclaimer) || checkTechQualifications(actions.tech.stone_axe);
     let altLodge = checkTechQualifications(actions.tech.alt_lodge);
     let altMill = checkTechQualifications(actions.tech.wind_plant);
     let disabledCity = [], disabledTech = [];
@@ -4459,6 +4463,12 @@ function adjustFood() {
         jobDisabled.push('hunter');
         jobEnabled.push('unemployed');
     }
+    if (lumberEnabled) {
+        jobEnabled.push('lumberjack');
+    }
+    else {
+        jobDisabled.push('lumberjack');
+    }
 
     jobEnabled.forEach(function(job) {
         if (!global.civic[job].display) {
@@ -4492,6 +4502,12 @@ function adjustFood() {
 
 export function cleanAddTrait(trait){
     switch (trait){
+        case 'high_pop':
+            global.resource[global.race.species].amount = Math.round(global.resource[global.race.species].amount * traits.high_pop.vars()[0]);
+            if (global.civic.hasOwnProperty('garrison')) {
+                global.civic.garrison.workers = Math.round(global.civic.garrison.workers * traits.high_pop.vars()[0]);
+            }
+            break;
         case 'kindling_kindred':
             if (global.race['smoldering']){
                 break;
@@ -4676,8 +4692,14 @@ export function cleanAddTrait(trait){
     }
 }
 
-export function cleanRemoveTrait(trait){
+export function cleanRemoveTrait(trait,rank){
     switch (trait){
+        case 'high_pop':
+            global.resource[global.race.species].amount = Math.round(global.resource[global.race.species].amount / traits.high_pop.vars(rank)[0]);
+            if (global.civic.hasOwnProperty('garrison')) {
+                global.civic.garrison.workers = Math.round(global.civic.garrison.workers / traits.high_pop.vars(rank)[0]);
+            }
+            break;
         case 'kindling_kindred':
             if (global.race['smoldering']){
                 break;
@@ -4695,7 +4717,7 @@ export function cleanRemoveTrait(trait){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if (global.tech['axe']){
+            if (global.tech['axe'] || global.tech['reclaimer']){
                 global.civic.lumberjack.display = true;
             }
             break;
@@ -4737,6 +4759,9 @@ export function cleanRemoveTrait(trait){
                     global.civic.quarry_worker.display = true;
                 }
             }
+            break;
+        case 'apex_predator':
+            checkPurgatory('tech','armor');
             break;
         case 'environmentalist':
             delete power_generated[loc('city_hydro_power')];
@@ -4830,8 +4855,9 @@ export function cleanRemoveTrait(trait){
                 Object.keys(global.race.iTraits).forEach(function (t){
                     if (t !== 'imitation'){
                         if (global.race.iTraits[t] === 0){
+                            let rank = global.race[t];
                             delete global.race[t];
-                            cleanRemoveTrait(t);
+                            cleanRemoveTrait(t,rank);
                             global.race['iTraits'];
                         }
                         else {
@@ -4908,8 +4934,9 @@ export function shapeShift(genus,setup){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
     if (!setup){
         shifted.forEach(function(trait){
+            let rank = global.race[trait];
             delete global.race[trait];
-            cleanRemoveTrait(trait);
+            cleanRemoveTrait(trait,rank);
         });
         shifted = [];
     }
