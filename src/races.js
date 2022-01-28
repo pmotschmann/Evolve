@@ -1667,17 +1667,18 @@ export const traits = {
         type: 'major',
         val: -6,
         vars(r){
+            // [Max bonus]
             switch (r || global.race.selenophobia || 1){
                 case 0.25:
-                    return [6];
+                    return [2];
                 case 0.5:
-                    return [5];
+                    return [3];
                 case 1:
                     return [4];
                 case 2:
-                    return [3];
+                    return [5];
                 case 3:
-                    return [2];
+                    return [6];
             }
         },
     },
@@ -1943,18 +1944,18 @@ export const traits = {
         desc: loc('trait_infiltrator'),
         type: 'major',
         val: 4,
-        vars(r){
+        vars(r){ // [Steal Cap]
             switch (r || global.race.infiltrator || 1){
                 case 0.25:
-                    return [120];
-                case 0.5:
                     return [110];
-                case 1:
+                case 0.5:
                     return [100];
-                case 2:
-                    return [95];
-                case 3:
+                case 1:
                     return [90];
+                case 2:
+                    return [85];
+                case 3:
+                    return [80];
             }
         }
     },
@@ -1964,7 +1965,7 @@ export const traits = {
         type: 'major',
         val: -3,
         vars(r){
-            // [Food Consumption, Prodction]
+            // [Food Consumption, Production]
             switch (r || global.race.hibernator || 1){
                 case 0.25:
                     return [15,8];
@@ -2129,15 +2130,15 @@ export const traits = {
             // [Cap]
             switch (r || global.race.blood_thirst || 1){
                 case 0.25:
-                    return [500000];
+                    return [250000];
                 case 0.5:
-                    return [750000];
+                    return [500000];
                 case 1:
                     return [1000000];
                 case 2:
-                    return [1250000];
+                    return [2000000];
                 case 3:
-                    return [1400000];
+                    return [4000000];
             }
         }
     },

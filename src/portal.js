@@ -942,7 +942,7 @@ const fortressModules = {
                 }
                 let min = global.tech.hell_gun >= 2 ? 65 : 40;
                 let max = global.tech.hell_gun >= 2 ? 100 : 60;
-                return `<div>${loc('portal_gate_turret_effect',[security])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_gate_turret_effect',[Math.round(security)])}</div><div>${loc('portal_gate_turret_effect2',[min,max])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
