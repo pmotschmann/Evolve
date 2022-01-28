@@ -3867,7 +3867,7 @@ span.inline {
 
     .trait {
         .gene {
-            min-width: 4.5rem;
+            min-width: 5rem;
             padding-bottom: .125rem;
         }
     }
@@ -3875,11 +3875,16 @@ span.inline {
         margin-left: 4rem;
     }
 
-    .traitRow {
-        display: table;
+    .traitListing {
+        display: flex;
+        flex-wrap: wrap;
+        > .traitRow {
+            width: 25rem;
+        }
+    }
 
-        >span {
-            display: table-cell;
+    .traitRow {
+        > span {
             vertical-align: middle;
         }
 
