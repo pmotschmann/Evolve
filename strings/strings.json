@@ -556,6 +556,7 @@
   "event_scandal": "Scandal",
   "event_spy": "A spy was caught and executed in the %0.",
   "event_spy_fail": "A spy failed their mission in the %0.",
+  "event_spy_sellout": "A spy was caught in the %0 and sold you out to save themself.",
   "event_shooting_star": "A shooting star has been spotted.",
   "event_tumbleweed": "Some tumbleweed has blown through your city.",
   "event_flashmob": "A sudden flashmob appeared and executed a flawless dance routine.",

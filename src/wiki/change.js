@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.9`,
+        date: `1/??/2022`,
+        changes: [
+            `Spies may now sell you out when caught or escape when failing a mission.`,
+        ]
+    },
+    {
         version: `1.2.8`,
         revision: `a`,
         date: `1/19/2022`,
