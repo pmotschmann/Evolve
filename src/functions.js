@@ -2366,43 +2366,41 @@ export function getShrineBonus(type) {
 }
 
 const valAdjust = {
-    fibroblast: [5],
-    hivemind: [10],
-    imitation: [races[global.race['srace'] || 'protoplasm'].name],
-    detritivore: false,
-    elusive: false,
     promiscuous: false,
     revive: false,
     fast_growth: false,
-    blood_thirst: false,
-    frail: false,
-    sappy: false,
     spores: false,
     terrifying: false,
-    shapeshifter: false,
-    freespirit: false,
-    selenophobia: false,
-    infectious: false,
-    infiltrator: false,
+    fibroblast: true,
+    hivemind: true,
+    imitation: true,
+    elusive: true,
+    blood_thirst: true,
+    selenophobia: true
 };
 
 function getTraitVals(trait,rank){
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
-            for (let i=0; i<vals.length; i++){
-                vals[i] = vals[i] * valAdjust[trait][i];
-            }
+            vals = [vals[0] * 5];
         }
         else if (trait === 'hivemind' && global.race['high_pop']){
-            for (let i=0; i<vals.length; i++){
-                vals[i] = vals[i] * traits.high_pop.vars()[0];
-            }
+            vals = [vals[0] * traits.high_pop.vars()[0]];
         }
-        else if (valAdjust[trait]){
-            vals = valAdjust[trait];
+        else if (trait === 'imitation') {
+            vals.push(races[global.race['srace'] || 'protoplasm'].name);
         }
-        else {
+        else if (trait === 'elusive') {
+            vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
+        }
+        else if (trait === 'blood_thirst') {
+            vals = [Math.ceil(Math.log2(vals[0]))];
+        }
+        else if (trait === 'selenophobia') {
+            vals = [14 - vals[0], vals[0]];
+        }
+        else if (!valAdjust[trait]){
             vals = [];
         }
     }

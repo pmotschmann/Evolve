@@ -1588,8 +1588,8 @@ function war_campaign(gov){
                 break;
         }
 
-        let titanium_low = global.race['terrifying'] ? traits.terrifying.vars()[0] : 12;
-        let titanium_high = global.race['terrifying'] ? traits.terrifying.vars()[1] : 32;
+        let titanium_low = global.race['terrifying'] && gov !== 3 ? traits.terrifying.vars()[0] : 12;
+        let titanium_high = global.race['terrifying'] && gov !== 3 ? traits.terrifying.vars()[1] : 32;
 
         looted.forEach(function(goods){
             switch (goods){
