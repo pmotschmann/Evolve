@@ -9613,11 +9613,11 @@ function resourceAlt(){
 }
 
 function spyCaught(i){
-    if (global.civic.foreign[`gov${i}`].spy > 0){
-        global.civic.foreign[`gov${i}`].spy -= global.race['elusive'] ? 0 : 1;
-    }
     let escape = global.race['elusive'] || Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
     if (!escape && Math.floor(Math.seededRandom(0,4)) === 0){
+        if (global.civic.foreign[`gov${i}`].spy > 0){
+            global.civic.foreign[`gov${i}`].spy -= global.race['elusive'] ? 0 : 1;
+        }
         messageQueue(loc('event_spy_sellout',[govTitle(i)]),'danger',false,['spy']);
         let max = global.race['mistrustful'] ? 5 + traits.mistrustful.vars()[0] : 5;
         global.civic.foreign[`gov${i}`].hstl += Math.floor(Math.seededRandom(1,max));
