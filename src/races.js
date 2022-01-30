@@ -5026,6 +5026,25 @@ export function setTraitRank(trait,opts){
     return false;
 }
 
+export function traitSkin(type,trait){
+    switch (type){
+        case 'name':
+        {
+            let name = {
+                hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
+            };
+            return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
+        } 
+        case 'desc':
+        {
+            let desc = {
+                hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+            };
+            return trait ? (desc[trait] ? desc[trait] : traits[trait].name) : desc;
+        }
+    }
+}
+
 export const biomes = {
     grassland: {
         label: loc('biome_grassland_name'),

@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits } from './races.js';
+import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
@@ -2376,7 +2376,8 @@ const valAdjust = {
     imitation: true,
     elusive: true,
     blood_thirst: true,
-    selenophobia: true
+    selenophobia: true,
+    hooved: true,
 };
 
 function getTraitVals(trait,rank){
@@ -2399,6 +2400,9 @@ function getTraitVals(trait,rank){
         }
         else if (trait === 'selenophobia') {
             vals = [14 - vals[0], vals[0]];
+        }
+        else if (trait === 'hooved') {
+            vals = [global.race['sludge'] ? loc('resource_Beaker_name') : loc('resource_Horseshoe_name')];
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -2468,11 +2472,15 @@ export function getTraitDesc(info,trait,opts){
     let trank = opts['trank'] || false;
     let wiki = opts['wiki'] || false;
     let rank = '';
+
+    let traitName = traitSkin('name',trait);
+    let traitDesc = traitSkin('desc',trait);
+
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
     }
     if (wiki){
-        info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
+        info.append(`<div class="type"><h2 class="has-text-warning">${traitName}</h2>${rank}</div>`);
     }
     if (wiki){
         if (tpage && traits[trait].hasOwnProperty('val')){
@@ -2486,7 +2494,8 @@ export function getTraitDesc(info,trait,opts){
     if (fanatic && wiki){
         info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
     }
-    info.append(`<div class="desc">${traits[trait].desc}</div>`);
+
+    info.append(`<div class="desc">${traitDesc}</div>`);
 
     let color = 'warning';
     if (traits[trait].hasOwnProperty('val')){

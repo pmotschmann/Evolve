@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive } from './governor.js';
@@ -1813,12 +1813,7 @@ function genetics(){
 
         breakdown.append(`<div class="trait major has-text-success">${loc('arpa_race_genetic_traids',[flib('name')])}</div>`)
 
-        let traitName = {
-            hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
-        };
-        let traitDesc = {
-            hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
-        };
+        let traitName = traitSkin('name');
 
         let remove_list = [];
         let null_list = [];

@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { clearElement, popover, getEaster, getTraitDesc } from './../functions.js';
-import { races, traits, genus_traits } from './../races.js';
+import { races, traits, genus_traits, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
@@ -134,12 +134,12 @@ export function traitsPage(content){
 
     let types = [['genus','major'],['minor'],['special']];
     for (let i=0; i<types.length; i++){
-        Object.keys(traits).sort( (a,b) => traits[a].name.localeCompare(traits[b].name) ).forEach(function (trait){
+        Object.keys(traits).sort( (a,b) => traitSkin('name',a).localeCompare(traitSkin('name',b)) ).forEach(function (trait){
             if (types[i].includes(traits[trait].type)){
                 let info = $(`<div id="${traits[trait].type}_${trait}" class="infoBox"></div>`);
                 content.append(info);
                 getTraitDesc(info, trait, { tpage: true, wiki: true });
-                sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traits[trait].name);
+                sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traitSkin('name',trait));
             }
         });
     }
