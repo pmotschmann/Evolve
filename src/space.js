@@ -6527,13 +6527,14 @@ export function ascendLab(wiki){
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);
-                        getTraitDesc(des, t, false, false, 1);
+                        getTraitDesc(des, t, { trank: 1 });
                         desc.append(des);
                     }
                 });
                 return desc;
             },{
                 elm: `#celestialLab .genus_selection .${type}`,
+                classes: `w30`
             });
         }
     });
@@ -6542,10 +6543,11 @@ export function ascendLab(wiki){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             popover(`celestialLabtraitSelection${trait}`, function(){
                 let desc = $(`<div></div>`);
-                getTraitDesc(desc, trait, false, false, 1);
+                getTraitDesc(desc, t, { trank: 1 });
                 return desc;
             },{
                 elm: `#celestialLab .trait_selection .t${trait}`,
+                classes: `w30`
             });
         }
     });

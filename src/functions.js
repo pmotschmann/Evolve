@@ -2462,20 +2462,28 @@ function rName(r){
     return `<span class="has-text-warning">${res}</span>`;
 }
 
-export function getTraitDesc(info,trait,fanatic,tpage,trank){
+export function getTraitDesc(info,trait,opts){
+    let fanatic = opts['fanatic'] || false;
+    let tpage = opts['tpage'] || false;
+    let trank = opts['trank'] || false;
+    let wiki = opts['wiki'] || false;
     let rank = '';
     if (tpage && ['genus','major'].includes(traits[trait].type)){
         rank = `<span><span role="button" @click="down()">&laquo;</span><span class="has-text-warning">${loc(`wiki_trait_rank`)} {{ rank }}</span><span role="button" @click="up()">&raquo;</span></span>`;
     }
-    info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
-    if (tpage && traits[trait].hasOwnProperty('val')){
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
+    if (wiki){
+        info.append(`<div class="type"><h2 class="has-text-warning">${traits[trait].name}</h2>${rank}</div>`);
     }
-    else {
-        info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+    if (wiki){
+        if (tpage && traits[trait].hasOwnProperty('val')){
+            info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}<span>${loc(`wiki_trait_value`,[traits[trait].val])}</span></div>`);
+        }
+        else {
+            info.append(`<div class="type has-text-caution">${loc(`wiki_trait_${traits[trait].type}`)}</div>`);
+        }
     }
 
-    if (fanatic){
+    if (fanatic && wiki){
         info.append(`<div class="has-text-danger">${loc(`wiki_trait_fanaticism`,[fanatic])}</div>`);
     }
     info.append(`<div class="desc">${traits[trait].desc}</div>`);
@@ -2490,7 +2498,7 @@ export function getTraitDesc(info,trait,fanatic,tpage,trank){
     else {
         info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
     }
-    if (traitExtra[trait]){
+    if (traitExtra[trait] && wiki){
         traitExtra[trait].forEach(function(te){
             info.append(`<div class="effect">${te}</div>`);
         });

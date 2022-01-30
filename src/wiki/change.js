@@ -4,9 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.9`,
-        date: `1/??/2022`,
+        date: `1/29/2022`,
         changes: [
             `Spies may now sell you out when caught or escape when failing a mission.`,
+            `Infiltrator can now steal Quantium tech inside True Path.`,
+            `Genetics Lab UI updated.`
         ]
     },
     {

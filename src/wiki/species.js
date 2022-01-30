@@ -1,6 +1,6 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, vBind, popover, getEaster, getTraitDesc } from './../functions.js';
+import { clearElement, popover, getEaster, getTraitDesc } from './../functions.js';
 import { races, traits, genus_traits } from './../races.js';
 import { ascendLab } from './../space.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
@@ -90,7 +90,13 @@ export function racesPage(content){
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i].t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, traitList[i].t, traitList[i].t === races[race].fanaticism ? races[race].name : false, false, traitList[i].r);
+
+            getTraitDesc(desc, traitList[i].t, {
+                fanatic: traitList[i].t === races[race].fanaticism ? races[race].name : false, 
+                trank: traitList[i].r,
+                wiki: true
+            });
+
             popover(id,desc,{ wide: true, classes: 'w25' });
         }
     });
@@ -132,7 +138,7 @@ export function traitsPage(content){
             if (types[i].includes(traits[trait].type)){
                 let info = $(`<div id="${traits[trait].type}_${trait}" class="infoBox"></div>`);
                 content.append(info);
-                getTraitDesc(info,trait,false,true);
+                getTraitDesc(info, trait, { tpage: true, wiki: true });
                 sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traits[trait].name);
             }
         });

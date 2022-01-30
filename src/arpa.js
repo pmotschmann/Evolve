@@ -2154,8 +2154,8 @@ function genetics(){
 
             let id = `raceTrait${t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, false, false, global.race[t]);
-            popover(id,desc,{ wide: true, classes: 'w25' });
+            getTraitDesc(desc, t, { trank: global.race[t] });
+            popover(id,desc,{ wide: true, classes: 'w30' });
         });
 
         trait_list.forEach(function (t){
@@ -2169,8 +2169,8 @@ function genetics(){
 
             let id = `raceTrait${t}`;
             let desc = $(`<div></div>`);
-            getTraitDesc(desc, t, false, false, global.race[t]);
-            popover(id,desc,{ wide: true, classes: 'w25' });
+            getTraitDesc(desc, t, { trank: global.race[t] });
+            popover(id,desc,{ wide: true, classes: 'w30' });
         });
 
         dragGeneticsList();
