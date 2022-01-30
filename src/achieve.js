@@ -2294,7 +2294,7 @@ export const perkList = {
             let rank = global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0 ? Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']) : 1;
             let rna = wiki ? "0.5/1/1.5/2/2.5" : rank / 2;
             let dna = wiki ? "0.25/0.5/0.75/1/1.25" : rank / 4;
-            return loc("achieve_perks_novice",[rna,dna]);
+            return `<div>${loc("achieve_perks_novice",[rna,dna])}</div><div>${loc("achieve_perks_novice2")}</div>`;
         },
         active(){
             return global.stats.feat['novice'] && global.stats.mad > 0 ? true : false;
@@ -2311,10 +2311,10 @@ export const perkList = {
             if (rank > 1){
                 let rqueue = wiki ? "1/2/3" : rank >= 3 ? (rank >= 5 ? 3 : 2) : 1;
                 let queue = wiki ? "1/2" : rank >= 4 ? 2 : 1;
-                return loc("achieve_perks_journeyman2",[rqueue,queue]);
+                return `<div>${loc("achieve_perks_journeyman2",[rqueue,queue])}</div><div>${loc("achieve_perks_journeyman3")}</div>`;
             }
             else {
-                return loc("achieve_perks_journeyman1",[1]);
+                return `<div>${loc("achieve_perks_journeyman1",[1])}</div><div>${loc("achieve_perks_journeyman3")}</div>`;
             }
         },
         active(){

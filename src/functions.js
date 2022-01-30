@@ -2496,7 +2496,9 @@ export function getTraitDesc(info,trait,opts){
         info.append(`<div class="has-text-${color} effect" v-html="getTraitDesc(rank)"></div>`);
     }
     else {
-        info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
+        if (wiki || (global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0)){
+            info.append(`<div class="has-text-${color} effect">${loc(`wiki_trait_effect_${trait}`,getTraitVals(trait,trank))}</div>`);
+        }
     }
     if (traitExtra[trait] && wiki){
         traitExtra[trait].forEach(function(te){

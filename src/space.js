@@ -6534,7 +6534,8 @@ export function ascendLab(wiki){
                 return desc;
             },{
                 elm: `#celestialLab .genus_selection .${type}`,
-                classes: `w30`
+                classes: `w30`,
+                wide: true
             });
         }
     });
@@ -6543,11 +6544,12 @@ export function ascendLab(wiki){
         if (traits.hasOwnProperty(trait) && traits[trait].type === 'major'){
             popover(`celestialLabtraitSelection${trait}`, function(){
                 let desc = $(`<div></div>`);
-                getTraitDesc(desc, t, { trank: 1 });
+                getTraitDesc(desc, trait, { trank: 1 });
                 return desc;
             },{
                 elm: `#celestialLab .trait_selection .t${trait}`,
-                classes: `w30`
+                classes: `w30`,
+                wide: true
             });
         }
     });
