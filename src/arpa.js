@@ -1821,6 +1821,7 @@ function genetics(){
         };
 
         let remove_list = [];
+        let null_list = [];
         let traitListing = $(`<div class="traitListing"></div>`);
         breakdown.append(traitListing);
         Object.keys(global.race).forEach(function (trait){
@@ -1843,7 +1844,8 @@ function genetics(){
                     traitListing.append(major);
                 }
                 else {
-                    traitListing.append(`<div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div>`);
+                    null_list.push(trait);
+                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div></div>`);
                 }
             }
         });
@@ -2156,6 +2158,13 @@ function genetics(){
             let desc = $(`<div></div>`);
             getTraitDesc(desc, t, { trank: global.race[t] });
             popover(id,desc,{ wide: true, classes: 'w30' });
+        });
+
+        null_list.forEach(function (t){
+            let id = `raceTrait${t}`;
+            let desc = $(`<div></div>`);
+            getTraitDesc(desc, t, { trank: global.race[t] });
+            popover(id, desc, { elm: `#geneticBreakdown .trait${t}`, wide: true, classes: 'w30' });
         });
 
         trait_list.forEach(function (t){
