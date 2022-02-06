@@ -562,7 +562,7 @@ const spaceProjects = {
             },
             special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
             action(){
-                if (payCosts($(this)[0].cost)){
+                if (payCosts($(this)[0])){
                     global.space['pylon'].count++;
                     global.resource.Mana.max += spatialReasoning(2);
                     return true;
