@@ -94,7 +94,7 @@ export const job_desc = {
     crystal_miner: function(){
         let multiplier = 1;
         multiplier *= racialTrait(global.civic.crystal_miner.workers,'miner');
-        let gain = +(global.civic.crystal_miner.impact * multiplier).toFixed(1);
+        let gain = +(global.civic.crystal_miner.impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
         if (global.civic.d_job === 'crystal_miner'){
             desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);

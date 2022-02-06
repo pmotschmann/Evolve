@@ -763,8 +763,9 @@ function fastLoop(){
         global_multiplier *= harmonic[0];
     }
     if (global.race['suction_grip']){
-        breakdown.p['Global'][loc('trait_suction_grip_bd')] = '8%';
-        global_multiplier *= 1 + (traits.suction_grip.vars()[0] / 100);
+        let bonus = traits.suction_grip.vars()[0];
+        breakdown.p['Global'][loc('trait_suction_grip_bd')] = bonus+'%';
+        global_multiplier *= 1 + (bonus / 100);
     }
     if (global.race['intelligent']){
         let bonus = (global.civic.scientist.workers * traits.intelligent.vars()[1]) + (global.civic.professor.workers * traits.intelligent.vars()[0]);
@@ -9621,8 +9622,8 @@ function spyCaught(i){
         messageQueue(loc('event_spy_sellout',[govTitle(i)]),'danger',false,['spy']);
         let max = global.race['mistrustful'] ? 5 + traits.mistrustful.vars()[0] : 5;
         global.civic.foreign[`gov${i}`].hstl += Math.floor(Math.seededRandom(1,max));
-        if (global.civic.foreign[`gov${gov}`].hstl > 100){
-            global.civic.foreign[`gov${gov}`].hstl = 100;
+        if (global.civic.foreign[`gov${i}`].hstl > 100){
+            global.civic.foreign[`gov${i}`].hstl = 100;
         }
     }
     else {
