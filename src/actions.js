@@ -4689,11 +4689,11 @@ export const actions = {
             },
             reqs: { genesis: 4 },
             cost: {
-                Money(offset){ return costMultiplier('probes', offset, 350000, 1.25,'starDock'); },
-                Alloy(offset){ return costMultiplier('probes', offset, 75000, 1.25,'starDock'); },
-                Polymer(offset){ return costMultiplier('probes', offset, 85000, 1.25,'starDock'); },
-                Iridium(offset){ return costMultiplier('probes', offset, 12000, 1.25,'starDock'); },
-                Mythril(offset){ return costMultiplier('probes', offset, 3500, 1.25,'starDock'); },
+                Money(offset){ return costMultiplier('probes', offset, 350000, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
+                Alloy(offset){ return costMultiplier('probes', offset, 75000, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
+                Polymer(offset){ return costMultiplier('probes', offset, 85000, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
+                Iridium(offset){ return costMultiplier('probes', offset, 12000, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
+                Mythril(offset){ return costMultiplier('probes', offset, 3500, global.race['truepath'] ? 1.125 : 1.25,'starDock'); },
             },
             effect(){
                 return `<div>${loc('star_dock_probe_effect')}</div>`;

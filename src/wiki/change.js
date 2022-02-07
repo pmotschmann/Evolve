@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.10`,
+        date: `2/??/2022`,
+        changes: [
+            `Bioseed probes now have significantly less cost creep inside True Path scenario.`,
+            `Minor bug fixes`
+        ]
+    },
+    {
         version: `1.2.9`,
         date: `1/29/2022`,
         changes: [
