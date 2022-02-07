@@ -7202,6 +7202,9 @@ function midLoop(){
                 cm = 600;
             }
             let gain = cm * (global.resource[global.race.species].amount + global.civic.garrison.workers);
+            if (global.race['high_pop']){
+                gain = highPopAdjust(gain);
+            }
             caps['Money'] += gain;
             bd_Money[loc('tech_bonds')] = gain+'v';
         }

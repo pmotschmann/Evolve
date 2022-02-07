@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Bioseed probes now have significantly less cost creep inside True Path scenario.`,
             `You can no longer manually buy or sell resources while the game is paused.`,
+            `Fixed bug with High Pop trait and Savings Bonds granting too much money.`,
             `Minor bug fixes`
         ]
     },
