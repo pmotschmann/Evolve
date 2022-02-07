@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.10`,
-        date: `2/??/2022`,
+        date: `2/7/2022`,
         changes: [
             `Bioseed probes now have significantly less cost creep inside True Path scenario.`,
             `You can no longer manually buy or sell resources while the game is paused.`,

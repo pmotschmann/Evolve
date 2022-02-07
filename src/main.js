@@ -4255,10 +4255,14 @@ function fastLoop(){
             let shock_base = support_on['shock_trooper'] * production('shock_trooper');
             let tank_base = support_on['tank'] * production('tank');
 
-            cipher_bd[loc('space_shock_trooper_title')] = shock_base + 'v';
-            cipher_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
-            cipher_bd[loc('space_tank_title')] = tank_base + 'v';
-            cipher_bd[`ᄂ${loc('space_syndicate')}+2`] = -((1 - synd) * 100) + '%';
+            if (support_on['shock_trooper']){
+                cipher_bd[loc('space_shock_trooper_title')] = shock_base + 'v';
+                cipher_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
+            }
+            if (support_on['tank']){
+                cipher_bd[loc('space_tank_title')] = tank_base + 'v';
+                cipher_bd[`ᄂ${loc('space_syndicate')}+2`] = -((1 - synd) * 100) + '%';
+            }
 
             let delta = (shock_base + tank_base) * global_multiplier * synd;
             modRes('Cipher', delta * time_multiplier);
