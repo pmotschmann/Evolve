@@ -1161,7 +1161,7 @@ export function marketItem(mount,market_item,name,color,full){
                 return loc('resource_market_auto_buy_desc',[rate,unit,price]);
             },
             purchase(res){
-                if (!global.race['no_trade']){
+                if (!global.race['no_trade'] && !global.settings.pause){
                     let qty = global.city.market.qty;
                     let value = global.resource[res].value;
                     if (global.race['arrogant']){
@@ -1181,7 +1181,7 @@ export function marketItem(mount,market_item,name,color,full){
                 }
             },
             sell(res){
-                if (!global.race['no_trade']){
+                if (!global.race['no_trade'] && !global.settings.pause){
                     let qty = global.city.market.qty;
                     let divide = 4;
                     if (global.race['merchant']){
