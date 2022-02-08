@@ -6233,7 +6233,7 @@
   "wiki_faq_q_update": "어떻게 새 버전으로 업데이트 하나요?",
   "wiki_faq_a_update": "새 버전이 나왔을 경우 위에 알람이 나옵니다. Ctrl+F5을 눌러 업데이트 하세요. The game maintains backwards compatibility with older save files.",
   "wiki_faq_q_hotkeys": "What are the hotkeys for multipliers?",
-  "wiki_faq_a_hotkeys": "You can hold these hotkeys to increase the amount of clicks on certain buttons: Ctrl = 10x, Shift = 25x, Alt = 100x. You can combine hotkeys; ctrl + alt = 1000x.",
+  "wiki_faq_a_hotkeys": "단축키를 누르고 있으면 특정 버튼의 배수를 늘릴 수 있습니다.(Ctrl = 10x, Shift = 25x, Alt = 100x) 또한 단축키를 합칠 수 있습니다.(Ctrl + Alt = 1000x)",
   "wiki_faq_q_sethotkeys": "단축키를 바꿀 수 있나요?",
   "wiki_faq_a_sethotkeys": "네, 설정 탭에서 바꿀 수 있습니다.",
   "wiki_faq_q_offline": "오프라인에서도 게임이 작동하나요?",
