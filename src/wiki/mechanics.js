@@ -3,11 +3,11 @@ import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
 import { job_desc } from './../jobs.js';
-import { races, planetTraits } from './../races.js';
+import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { sideMenu, infoBoxBuilder, createCalcSection } from './functions.js';
+import { sideMenu, infoBoxBuilder, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -330,12 +330,12 @@ export function mechanicsPage(content){
                 1: [loc('tab_arpa_crispr'),loc('arpa_genepool_mutation_title'),loc('resource_Plasmid_plural_name')],
                 3: [loc('tech_arpa'),loc('tab_arpa_genetics'),],
                 4: ['5x',loc('wiki_mechanics_crispr_mutation_para4_note1')],
-                5: [loc('wiki_mechanics_custom'),'10x']
+                5: [loc('wiki_mechanics_custom'),loc('race_sludge'),'10x']
             },
             data_link: {
                 1: [false,'wiki.html#crispr-prestige-mutation','wiki.html#resources-prestige-plasmids'],
                 4: [false,'wiki.html#traits-species'],
-                5: ['wiki.html#custom-species']
+                5: ['wiki.html#custom-species','wiki.html#races-species-sludge']
             }
         });
         sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));
@@ -727,11 +727,12 @@ function jobStressCalc(info){
     let inputs = {
         job: { val: undefined },
         content: { vis: false, val: undefined },
-        freespirit: { vis: false, val: false },
+        freespirit: { vis: false, val: undefined },
         mellow: { val: false },
         dense: { vis: false, val: false, formVis: false },
         workers: { val: undefined },
         playful: { vis: false, val: false },
+        emotionless: { val: undefined },
         government: { val: undefined },
         annexed: { vis: false, val: undefined },
         electricity: { vis: false, val: false },
@@ -769,13 +770,13 @@ function jobStressCalc(info){
             <h2 class="has-text-caution">${loc('wiki_calc_job_stress_divisor')}</h2>
         </div>
         <div>
-            <span v-show="i.freespirit.vis && i.freespirit.val">(</span><span>{{ i.job.val | stressDiv }}</span><span v-show="i.content.vis"> + ({{ i.content.val, 'content' | generic }} * {{ i.job.val | contentVal }})</span><span v-show="i.mellow.val"> {{ i.job.val | mellowOp }}</span><span v-show="i.dense.vis && i.dense.val"> - 1</span><span v-show="i.freespirit.vis && i.freespirit.val">) / 1.5</span><span v-show="s.result.vis"> = {{ | calc }}</span>
+            <span v-show="i.freespirit.vis && i.freespirit.val">(</span><span>{{ i.job.val | stressDiv }}</span><span v-show="i.content.vis"> + ({{ i.content.val, 'content' | generic }} * {{ i.job.val | contentVal }})</span><span v-show="i.mellow.val"> {{ i.job.val | mellowOp }}</span><span v-show="i.dense.vis && i.dense.val"> - 1</span><span v-show="i.freespirit.vis && i.freespirit.val">) / {{ i.freespirit.val, 'freespirit', 0 | traitVal }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
         </div>
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_job_stress_generated')}</h2>
         </div>
         <div>
-            <span v-show="i.playful.vis && i.playful.val">0 * </span><span>{{ i.workers.val, 'workers' | generic }} / {{ s.result.val, 'divisor' | generic }} * {{ i.government.val, i.electricity.val, i.virtual_reality.val | govVal }}</span><span v-show="i.annexed.vis"> * {{ i.annexed.val | anxVal }}</span><span v-show="s.total.vis"> = -{{ | calcTotal }}%</span>
+            <span v-show="i.playful.vis && i.playful.val">0 * </span><span>{{ i.workers.val, 'workers' | generic }} / {{ s.result.val, 'divisor' | generic }}<span v-show="i.emotionless.val"> * {{ i.emotionless.val, 'emotionless', 1 | traitVal }}</span><span> * {{ i.government.val, i.electricity.val, i.virtual_reality.val | govVal }}</span><span v-show="i.annexed.vis"> * {{ i.annexed.val | anxVal }}</span><span v-show="s.total.vis"> = -{{ | calcTotal }}%</span>
         </div>
     `);
     
@@ -784,7 +785,18 @@ function jobStressCalc(info){
             <div class="calcInput"><span>${loc('wiki_calc_job_stress_content')}</span> <b-numberinput :input="val('content')" min="0" v-model="i.content.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><b-checkbox class="patrol" v-model="i.mellow.val">${loc('planet_mellow')}</b-checkbox></div>
             <div class="calcInput" v-show="i.dense.vis"><b-checkbox class="patrol" v-model="i.dense.val">${loc('planet_dense')}</b-checkbox></div>
-            <div class="calcInput" v-show="i.freespirit.vis"><b-checkbox class="patrol" v-model="i.freespirit.val">${loc('trait_freespirit_name')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.freespirit.vis"><span>${loc('trait_freespirit_name')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.freespirit.val | traitLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickTrait(0, 'freespirit')">{{ 0 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.25, 'freespirit')">{{ 0.25 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.5, 'freespirit')">{{ 0.5 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1, 'freespirit')">{{ 1 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(2, 'freespirit')">{{ 2 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(3, 'freespirit')">{{ 3 | traitLabel }}</b-dropdown-item>
+            </b-dropdown></div>
         </div>
         <div>
             <div class="calcInput"><span>{{ i.job.val | workersLabel }}</span> <b-numberinput :input="val('workers')" min="0" v-model="i.workers.val" :controls="false"></b-numberinput></div>
@@ -803,6 +815,18 @@ function jobStressCalc(info){
             <div class="calcInput" v-show="i.electricity.vis"><b-checkbox class="patrol" v-model="i.electricity.val">${loc('tech_electricity')}</b-checkbox></div>
             <div class="calcInput" v-show="i.electricity.vis && i.electricity.val"><b-checkbox class="patrol" v-model="i.virtual_reality.val">${loc('tech_virtual_reality')}</b-checkbox></div>
             <div class="calcInput" v-show="i.playful.vis"><b-checkbox class="patrol" v-model="i.playful.val">${loc('trait_playful_name')}</b-checkbox></div>
+            <div class="calcInput"><span>${loc('trait_emotionless_name')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.emotionless.val | traitLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickTrait(0, 'emotionless')">{{ 0 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.25, 'emotionless')">{{ 0.25 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.5, 'emotionless')">{{ 0.5 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1, 'emotionless')">{{ 1 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(2, 'emotionless')">{{ 2 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(3, 'emotionless')">{{ 3 | traitLabel }}</b-dropdown-item>
+            </b-dropdown></div>
         </div>
         <div class="calcButton">
             <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
@@ -837,11 +861,14 @@ function jobStressCalc(info){
                 inputs.annexed.vis = gov !== 'federation';
                 inputs.electricity.vis = gov === 'autocracy';
             },
+            pickTrait(rank, trait){
+                inputs[trait].val = rank;
+            },
             resetInputs(){
                 inputs.job.val = undefined;
                 inputs.content.val = undefined;
                 inputs.content.vis = false;
-                inputs.freespirit.val = false;
+                inputs.freespirit.val = undefined;
                 inputs.freespirit.vis = false;
                 inputs.mellow.val = false;
                 inputs.dense.val = false;
@@ -855,18 +882,20 @@ function jobStressCalc(info){
                 inputs.electricity.val = false;
                 inputs.electricity.vis = false;
                 inputs.virtual_reality.val = false;
+                inputs.emotionless.val = undefined;
                 show.result.val = undefined;
             },
             importInputs(){
                 inputs.content.val = global.race['content'] ? global.race.content : 0;
-                inputs.freespirit.val = global.race['freespirit'] ? true : false;
+                inputs.freespirit.val = global.race['freespirit'] ? global.race['freespirit'] : 0;
                 inputs.mellow.val = global.city['ptrait'] && global.city.ptrait === 'mellow' ? true : false;
                 inputs.dense.val = global.city['ptrait'] && global.city.ptrait === 'dense' ? true : false;
                 inputs.workers.val = inputs.job.val === 'soldier' ? (global.civic['garrison'] && global.civic.garrison['max'] ? global.civic.garrison.max : 0) : global.civic[inputs.job.val] ? global.civic[inputs.job.val].workers : 0;
                 inputs.playful.val = global.race['playful'] ? true : false;
+                inputs.emotionless.val = global.race['emotionless'] ? global.race['emotionless'] : 0;
                 if (global.civic['govern']){
                     let gov = global.civic.govern.type;
-                    switch (gov){
+                    switch (gov){ 
                         case 'autocracy':
                         case 'anarchy':
                         case 'socialist':
@@ -906,6 +935,9 @@ function jobStressCalc(info){
                 if (job === 'soldier'){
                     return loc('governor_soldier');
                 }
+                else if (job === 'titan_colonist'){
+                    return loc('job_colonist_tp',[getSolarName('titan')]);
+                }
                 return loc('job_'+job);
             },
             workersLabel(job){
@@ -924,6 +956,9 @@ function jobStressCalc(info){
                     return loc('wiki_calc_job_stress_government_other');
                 }
                 return loc('govern_'+gov);
+            },
+            traitLabel(rank){
+                return rank === undefined ? loc('wiki_calc_trait_undefined') : rank === 0 ? loc('wiki_calc_trait_unowned') : rank;
             },
             stressDiv(job){
                 if (!job){
@@ -951,9 +986,9 @@ function jobStressCalc(info){
                 switch (job){
                     case 'hunter':
                     case 'soldier':
-                        return `* ${planetTraits.mellow.vars[0]}`;
+                        return `* ${planetTraits.mellow.vars()[0]}`;
                     default:
-                        return `+ ${planetTraits.mellow.vars[1]}`;
+                        return `+ ${planetTraits.mellow.vars()[1]}`;
                 }
             },
             govVal(gov, elec, vr){
@@ -974,9 +1009,17 @@ function jobStressCalc(info){
             anxVal(num){
                 return num !== undefined ? +(1.1 ** num).toFixed(5) : loc('civics_spy_purchase_bd');
             },
+            traitVal(rank, trait, varNum){
+                switch (trait){
+                    case 'freespirit':
+                        return 1 + (traits.freespirit.vars(rank)[varNum] / 100);
+                    case 'emotionless':
+                        return 1 - (traits.emotionless.vars(rank)[varNum] / 100);
+                }
+            },
             calc(){
-                let vis = inputs.job.val !== undefined;
-                if (inputs.job.val !== 'hunter' & inputs.job.val !== 'soldier'){
+                let vis = inputs.job.val !== undefined && inputs.freespirit.val !== undefined;
+                if (inputs.job.val !== 'hunter' && inputs.job.val !== 'soldier'){
                     vis = vis && inputs.content.val !== undefined;
                 }
                 show.result.vis = vis;
@@ -985,19 +1028,19 @@ function jobStressCalc(info){
                     let div = inputs.job.val === 'hunter' ? 5 : inputs.job.val === 'soldier' ? 2 : global.civic[inputs.job.val].stress;
                     if (inputs.job.val === 'hunter' || inputs.job.val === 'soldier'){
                         if (inputs.mellow.val){
-                            div *= planetTraits.mellow.vars[0];
+                            div *= planetTraits.mellow.vars()[0];
                         }
                     }
                     else {
                         if (inputs.mellow.val){
-                            div += planetTraits.mellow.vars[1];
+                            div += planetTraits.mellow.vars()[1];
                         }
                         div += (inputs.job.val === 'hell_surveyor' ? 0.2 : 0.4) * inputs.content.val;
                         if (inputs.dense.val && inputs.job.val === 'miner'){
-                            div -= planetTraits.dense.vars[1];
+                            div -= planetTraits.dense.vars()[1];
                         }
                         if (inputs.freespirit.val && !['farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(inputs.job.val)){
-                            div /= 1.5;
+                            div /= 1 + (traits.freespirit.vars(inputs.freespirit.val)[0] / 100);
                         }
                     }
                     show.result.val = +(div).toFixed(4);
@@ -1014,7 +1057,7 @@ function jobStressCalc(info){
                     show.total.val = 0;
                 }
                 else {
-                    vis = show.result.vis && inputs.government.val && inputs.workers.val !== undefined;
+                    vis = show.result.vis && inputs.government.val && inputs.workers.val !== undefined && inputs.emotionless.val !== undefined;
                     if (inputs.government.val !== 'federation'){
                         vis = vis && inputs.annexed.val !== undefined;
                     }
@@ -1034,6 +1077,9 @@ function jobStressCalc(info){
                                     total *= 1.1;
                                     break;
                             }
+                        }
+                        if (inputs.emotionless.val){
+                            total *= 1 - (traits.emotionless.vars(inputs.emotionless.val)[1] / 100);
                         }
                         show.total.val = +(total).toFixed(3);
                     }

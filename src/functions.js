@@ -6,7 +6,7 @@ import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
-import { universeLevel, alevel } from './achieve.js';
+import { universeLevel, universeAffix, alevel } from './achieve.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -139,17 +139,8 @@ export function gameLoop(act){
                 }
                 webWorker.mt = main_timer;
 
-                let dt = Date.now();
-                let timeDiff = dt - global.stats.current;
-                if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
-                    if (timeDiff >= 120000){
-                        global.settings.at += Math.floor(timeDiff / 3333);
-                    }
-                    if (global.settings.at > 11520){
-                        global.settings.at = 11520;
-                    }
-                }
-
+                calcATime();
+                
                 if (global.settings.at > 0){
                     main_timer = Math.ceil(main_timer * 0.5);
                     mid_timer = Math.ceil(mid_timer * 0.5);
@@ -178,10 +169,24 @@ export function gameLoop(act){
     }
 }
 
+function calcATime(){
+    let dt = Date.now();
+    let timeDiff = dt - global.stats.current;
+    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
+        if (timeDiff >= 120000){
+            global.settings.at += Math.floor(timeDiff / 3333);
+        }
+        if (global.settings.at > 11520){
+            global.settings.at = 11520;
+        }
+    }
+}
+
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return 'Export is not available during Race Creation';
     }
+    calcATime();
     global.stats['current'] = Date.now();
     return LZString.compressToBase64(JSON.stringify(global));
 }
@@ -1007,6 +1012,7 @@ export function darkEffect(universe, flag, info, inputs){
     if (!inputs) { inputs = {}; }
     let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
     let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
+    let sludge = inputs.sludge !== undefined ? inputs.sludge : (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge[universeAffix(universe)]) ? global.stats.achieve.extinct_sludge[universeAffix(universe)] : 0;
 
     switch (universe){
         case 'standard':
@@ -1014,8 +1020,8 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.001);
                 }
-                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['l']){
-                    dark *= 1 + (global.stats.achieve.extinct_sludge.l * 0.03);
+                if (sludge){
+                    dark *= 1 + (sludge * 0.03);
                 }
                 return 1 + (dark / 200);
             }
@@ -1026,8 +1032,8 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
-                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['e']){
-                    dark *= 1 + (global.stats.achieve.extinct_sludge.e * 0.03);
+                if (sludge){
+                    dark *= 1 + (sludge * 0.03);
                 }
                 return (1 + ((Math.log2(10 + dark) - 3.321928094887362) / 5));
             }
@@ -1040,8 +1046,8 @@ export function darkEffect(universe, flag, info, inputs){
                         dark *= 1 + (harmony * 0.01);
                     }
                     dark = 0.01 + (Math.log(100 + dark) - 4.605170185988092) / 35;
-                    if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['m']){
-                        dark *= 1 + (global.stats.achieve.extinct_sludge.m * 0.03);
+                    if (sludge){
+                        dark *= 1 + (sludge * 0.03);
                     }
                     if (dark > 0.04){
                         dark = 0.04;
@@ -1053,8 +1059,8 @@ export function darkEffect(universe, flag, info, inputs){
                         dark *= 1 + (harmony * 0.01);
                     }
                     dark = 0.02 + (Math.log(100 + dark) - 4.605170185988092) / 20;
-                    if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['m']){
-                        dark *= 1 + (global.stats.achieve.extinct_sludge.m * 0.03);
+                    if (sludge){
+                        dark *= 1 + (sludge * 0.03);
                     }
                     if (dark > 0.06){
                         dark = 0.06;
@@ -1069,8 +1075,8 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
-                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['h']){
-                    dark *= 1 + (global.stats.achieve.extinct_sludge.h * 0.03);
+                if (sludge){
+                    dark *= 1 + (sludge * 0.03);
                 }
                 return 0.995 ** dark;
             }
@@ -1081,8 +1087,8 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
-                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['a']){
-                    dark *= 1 + (global.stats.achieve.extinct_sludge.a * 0.03);
+                if (sludge){
+                    dark *= 1 + (sludge * 0.03);
                 }
                 return 1 + (Math.log(50 + dark) - 3.912023005428146) / 5;
             }
@@ -1093,8 +1099,8 @@ export function darkEffect(universe, flag, info, inputs){
                 if (harmony > 0){
                     dark *= 1 + (harmony * 0.01);
                 }
-                if (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge['mg']){
-                    dark *= 1 + (global.stats.achieve.extinct_sludge.mg * 0.03);
+                if (sludge){
+                    dark *= 1 + (sludge * 0.03);
                 }
                 return 1 + (Math.log(50 + dark) - 3.912023005428146) / 3;
             }
@@ -1176,16 +1182,18 @@ export const calcPillar = (function(){
     }
 })();
 
-export function challenge_multiplier(value,type,decimals,challenge,universe){
+export function challenge_multiplier(value,type,decimals,inputs){
     decimals = decimals || 0;
-    let challenge_level = challenge;
-    if (challenge === undefined){
+    inputs = inputs || {};
+    
+    let challenge_level = inputs.genes;
+    if (challenge_level === undefined){
         challenge_level = alevel() - 1;
         if (challenge_level > 4){
             challenge_level = 4;
         }
     }
-    universe = universe || global.race.universe;
+    let universe = inputs.uni || global.race.universe;
 
     if (universe === 'micro'){ value = value * 0.25; }
     if (universe === 'antimatter'){ value = value * 1.1; }
@@ -1208,7 +1216,7 @@ export function challenge_multiplier(value,type,decimals,challenge,universe){
                 break;
         }
     }
-    if (global.race['truepath']){
+    if (inputs.tp !== undefined ? inputs.tp : global.race['truepath']){
         value = value * 1.1;
     }
     switch (challenge_level){
@@ -1256,8 +1264,8 @@ export function calcPrestige(type,inputs){
         }
     }
     else {
-        if (global.race['high_pop']){
-            pop = Math.round(inputs.cit / traits.high_pop.vars()[0]) + Math.round(inputs.sol / traits.high_pop.vars()[0]);
+        if (inputs.high_pop){
+            pop = Math.round(inputs.cit / traits.high_pop.vars(inputs.high_pop)[0]) + Math.round(inputs.sol / traits.high_pop.vars(inputs.high_pop)[0]);
         }
         else {
             pop = inputs.cit + inputs.sol;
@@ -1276,7 +1284,7 @@ export function calcPrestige(type,inputs){
             k_inc = 100000;
             k_mult = 1.1;
             plasmid_cap = 150;
-            if (races[global.race.species].type === 'synthetic'){
+            if (inputs.synth !== undefined ? inputs.synth : races[global.race.species].type === 'synthetic'){
                 pop_divisor = 5;
                 k_inc = 125000;
                 plasmid_cap = 100;
@@ -1314,7 +1322,12 @@ export function calcPrestige(type,inputs){
             break;
     }
 
-    plasmid_cap = Math.floor(plasmid_cap * (1 + (alevel() - (global.race['truepath'] ? 0 : 1)) / 8));
+    if (challenge !== undefined){
+        plasmid_cap = Math.floor(plasmid_cap * (1 + (challenge + (inputs.tp ? 1 : 0)) / 8));
+    }
+    else {
+        plasmid_cap = Math.floor(plasmid_cap * (1 + (alevel() - (global.race['truepath'] ? 0 : 1)) / 8));
+    }
 
     if (inputs.plas === undefined){
         let k_base = inputs.know !== undefined ? inputs.know : global.stats.know;
@@ -1329,9 +1342,9 @@ export function calcPrestige(type,inputs){
             new_plasmid += 300;
         }
 
-        gains.plasmid = challenge_multiplier(new_plasmid,type,false,challenge,universe);
+        gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);
 
-        if (gains.plasmid > plasmid_cap){
+        if (!inputs.rawPlasmids && gains.plasmid > plasmid_cap){
             let overflow = gains.plasmid - plasmid_cap;
             gains.plasmid = plasmid_cap;
             overflow = Math.floor(overflow / (overflow + plasmid_cap) * plasmid_cap);
@@ -1341,7 +1354,7 @@ export function calcPrestige(type,inputs){
     else {
         gains.plasmid = inputs.plas;
     }
-    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type,false,challenge,universe) : 0;
+    gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type,false,inputs) : 0;
 
     if (type === 'bigbang'){
         let exotic = inputs.exotic;
@@ -1353,13 +1366,13 @@ export function calcPrestige(type,inputs){
 
         let new_dark = +(Math.log(1 + (exotic * 40))).toFixed(3);
         new_dark += +(Math.log2(mass - 7)/2.5).toFixed(3);
-        new_dark = challenge_multiplier(new_dark,'bigbang',3,challenge,universe);
+        new_dark = challenge_multiplier(new_dark,'bigbang',3,inputs);
         gains.dark = new_dark;
     }
     else if (type === 'vacuum'){
         let mana = inputs.mana !== undefined ? inputs.mana : global.resource.Mana.gen;
         let new_dark = +(Math.log2(mana)/5).toFixed(3);
-        new_dark = challenge_multiplier(new_dark,'vacuum',3,challenge,universe);
+        new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
     }
 

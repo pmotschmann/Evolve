@@ -299,7 +299,7 @@ export function challengesPage(content){
             let failed = infoBoxBuilder(modes,{ name: 'modes_sludge', template: 'challenges', paragraphs: 7, break: [3,4,5,6,7], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_sludge`),loc(`wiki_challenges_challenge`),loc(`race_sludge`)],
-                    3: [loc(`race_sludge`)],
+                    3: [loc(`race_sludge`),'10x',loc('trait_ooze_name')],
                     4: [loc(`evo_challenge_sludge`)],
                     5: [loc(`race_sludge`),loc(`wiki_resets_mad`)],
                     6: [loc(`race_sludge`),loc(`wiki_resets_cataclysm`)],
@@ -307,7 +307,8 @@ export function challengesPage(content){
                 },
                 data_link: {
                     1: [false,false,'wiki.html#races-species-sludge'],
-                    3: [false,'wiki.html#resets-prestige-mad']
+                    3: [false,false,'wiki.html#traits-species-major_ooze'],
+                    5: [false,'wiki.html#resets-prestige-mad']
                 }
             });
             addAchievements(failed,false,['extinct_sludge','gross'],{gross: true});

@@ -121,7 +121,14 @@ function mainEventsPage(content){
                 2: [`25%`],
             }
         });
-        infoBoxBuilder(mainContent, { name: 'raid_condition', template: 'events', label: loc('wiki_events_raid'), paragraphs: 1, h_level: 2 }, section);
+        infoBoxBuilder(mainContent, { name: 'raid_condition', template: 'events', label: loc('wiki_events_raid'), paragraphs: 2, h_level: 2,
+            para_data: {
+                2: [loc(`wiki_challenges_scenarios_truepath`)],
+            },
+            data_link: {
+                2: ['wiki.html#challenges-gameplay-scenarios_truepath']
+            }
+        }, section);
         infoBoxBuilder(mainContent, { name: 'raid_examples', template: 'events', label: loc('wiki_events_raid'), h_level: 2, 
             examples: [
                 loc(`event_raid1`,[10,31]),
@@ -137,7 +144,14 @@ function mainEventsPage(content){
                 2: [`50%`],
             }
         });
-        infoBoxBuilder(mainContent, { name: 'siege_condition', template: 'events', label: loc('wiki_events_siege'), paragraphs: 2, h_level: 2 }, section);
+        infoBoxBuilder(mainContent, { name: 'siege_condition', template: 'events', label: loc('wiki_events_siege'), paragraphs: 3, h_level: 2,
+            para_data: {
+                3: [loc(`wiki_challenges_scenarios_truepath`)],
+            },
+            data_link: {
+                3: ['wiki.html#challenges-gameplay-scenarios_truepath']
+            }
+        }, section);
         infoBoxBuilder(mainContent, { name: 'siege_examples', template: 'events', label: loc('wiki_events_siege'), h_level: 2, 
             examples: [
                 loc(`event_siege1`,[30,49]),
@@ -149,7 +163,14 @@ function mainEventsPage(content){
 
     {   // Terrorist
         let section = infoBoxBuilder(mainContent,{ name: 'terrorist', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'terrorist_condition', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 1, h_level: 2 }, section);
+        infoBoxBuilder(mainContent, { name: 'terrorist_condition', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 2, h_level: 2,
+            para_data: {
+                2: [loc(`wiki_challenges_scenarios_truepath`)],
+            },
+            data_link: {
+                2: ['wiki.html#challenges-gameplay-scenarios_truepath']
+            }
+        }, section);
         infoBoxBuilder(mainContent, { name: 'terrorist_examples', template: 'events', label: loc('wiki_events_terrorist'), h_level: 2, 
             examples: [
                 loc(`event_terrorist1`,[14]),
@@ -157,6 +178,56 @@ function mainEventsPage(content){
             ]
         }, section);
         sideMenu('add',`major-events`,`terrorist`,loc('wiki_events_terrorist'));
+    }
+
+    {   // Pillage
+        let section = infoBoxBuilder(mainContent,{ name: 'pillage', template: 'events', label: loc('wiki_events_pillage'), paragraphs: 6, break: [5], h_level: 2,
+            para_data: {
+                2: [`25%`],
+                3: [`50%`],
+                5: [loc(`civics_gov_relations`),`40%`]
+            }
+        });
+        infoBoxBuilder(mainContent, { name: 'pillage_condition', template: 'events', label: loc('wiki_events_pillage'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`wiki_challenges_scenarios_truepath`)],
+            },
+            data_link: {
+                1: ['wiki.html#challenges-gameplay-scenarios_truepath']
+            }
+        }, section);
+        infoBoxBuilder(mainContent, { name: 'pillage_examples', template: 'events', label: loc('wiki_events_pillage'), h_level: 2, 
+            examples: [
+                loc(`event_pillaged1`,[loc(`civics_gov2`,[loc(`civics_gov_name4`)]),10,55]),
+                loc(`event_pillaged2`,[loc(`civics_gov6`,[loc(`civics_gov_name9`)]),40,25,[
+                    `5704490 ${loc('resource_Lumber_name')}`,
+                    `2177130 ${loc('resource_Stone_name')}`,
+                    `4259421 ${loc('resource_Furs_name')}`,
+                    `6033892 ${loc('resource_Copper_name')}`,
+                    `602938 ${loc('resource_Iron_name')}`,
+                    `3389580 ${loc('resource_Aluminium_name')}`,
+                    `3292455 ${loc('resource_Cement_name')}`,
+                    `5394173 ${loc('resource_Coal_name')}`,
+                    `47231 ${loc('resource_Oil_name')}`,
+                    `9390 ${loc('resource_Uranium_name')}`,
+                    `7016884 ${loc('resource_Steel_name')}`,
+                    `52801 ${loc('resource_Titanium_name')}`,
+                    `1163086 ${loc('resource_Alloy_name')}`,
+                    `2053980 ${loc('resource_Polymer_name')}`,
+                    `3179901 ${loc('resource_Iridium_name')}`,
+                    `792693 ${loc('resource_Helium_3_name')}`,
+                    `1219 ${loc('resource_Elerium_name')}`,
+                    `65078 ${loc('resource_Water_name')}`,
+                    `290451 ${loc('resource_Neutronium_name')}`,
+                    `3059577 ${loc('resource_Adamantite_name')}`,
+                    `5736560 ${loc('resource_Nano_Tube_name')}`,
+                    `2494390 ${loc('resource_Graphene_name')}`,
+                    `6836006 ${loc('resource_Stanene_name')}`,
+                    `2264649 ${loc('resource_Orichalcum_name')}`,
+                    `$19235850`].join(', ')])
+            ]
+        }, section);
+        sideMenu('add',`major-events`,`pillage`,loc('wiki_events_pillage'));
     }
 
     {   // Quake
@@ -864,6 +935,14 @@ function minorEventsPage(content){
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_llama'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
+            }
+        }, section);
+        infoBoxBuilder(mainContent, { name: 'llama_condition', template: 'events', label: loc('wiki_events_llama'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`),loc(`trait_detritivore_name`),loc(`trait_artifical_name`)]
+            },
+            data_link: {
+                1: ['wiki.html#traits-species-genus_carnivore','wiki.html#traits-species-special_soul_eater','wiki.html#traits-species-genus_detritivore','wiki.html#traits-species-genus_artifical']
             }
         }, section);
         infoBoxBuilder(mainContent, { name: 'llama_examples', template: 'events', label: loc('wiki_events_llama'), h_level: 2, 

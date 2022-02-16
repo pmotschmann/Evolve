@@ -2,6 +2,7 @@ import { global } from './../vars.js';
 import { universeAffix, alevel } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, challenge_multiplier, calcPrestige, darkEffect } from './../functions.js';
+import { races, traits } from './../races.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 
 export function pResPage(content){
@@ -107,17 +108,22 @@ export function pResPage(content){
             1: ['wiki.html#resets-prestige-ai'],
         }
     });
+    subSection = createCalcSection(section,'cores','gain');
+    prestigeCalc(subSection,'cores');
+    subSection = createCalcSection(section,'cores','bonus');
+    coresQuantumCalc(subSection);
     sideMenu('add',`resources-prestige`,'ai_core',loc('wiki_p_res_ai_core'));
 }
 
 const calcVars = {
-    plasmid: ['cit', 'sol', 'know', 'genes', 'reset', 'uni'],
-    anti: ['cit', 'sol', 'know', 'genes', 'reset'],
-    phage: ['plas', 'genes', 'reset', 'uni'],
+    plasmid: ['cit', 'sol', 'know', 'genes', 'reset', 'uni', 'high_pop', 'synth', 'tp'],
+    anti: ['cit', 'sol', 'know', 'genes', 'reset', 'high_pop', 'synth', 'tp'],
+    phage: ['plas', 'genes', 'reset', 'uni', 'tp'],
     dark: ['mass', 'exotic', 'genes', 'uni'],
     vacuum: ['mana', 'genes'],
     harmony: ['genes', 'uni'],
-    artifact: ['genes', 'floor', 'micro']
+    artifact: ['genes', 'floor', 'micro'],
+    cores: ['micro']
 }
 
 export function prestigeCalc(info,resource,extraType,resetType){
@@ -145,6 +151,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'descend':
             title += loc('wiki_resets_infusion') + " ";
             break;
+        case 'ai':
+            title += loc('wiki_resets_ai') + " ";
+            break;
         default:
             break;
     }
@@ -168,6 +177,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'artifact':
             title += loc('resource_Artifact_name');
             break;
+        case 'cores':
+            title += loc('resource_AICore_name');
+            break;
     }
     calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_gains',[title])}</h2>`);
     
@@ -188,7 +200,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         floor: 0,
         genes: 0,
         uni: 'standard'
-    }
+    };
     
     let inputs = {
         cit: { val: undefined, use: false },
@@ -202,8 +214,11 @@ export function prestigeCalc(info,resource,extraType,resetType){
         genes: { val: undefined, use: false },
         reset: { val: undefined, use: false },
         uni: { val: undefined, use: false },
-        micro: { val: false, use: false }
-    }
+        micro: { val: false, use: false },
+        high_pop: { val: undefined, use: false },
+        synth: { val: false, use: false },
+        tp: { val: false, use: false, enabled: true }
+    };
     let universes = {
         standard: { use: true },
         evil: { use: true },
@@ -211,7 +226,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         micro: { use: true },
         heavy: { use: true },
         magic: { use: true }
-    }
+    };
     let resets = {
         mad: { use: true },
         bioseed: { use: true },
@@ -219,9 +234,11 @@ export function prestigeCalc(info,resource,extraType,resetType){
         bigbang: { use: true },
         vacuum: { use: true },
         ascend: { use: true },
-        descend: { use: false }
-    }
-    let showEval = { vis: false }
+        descend: { use: false },
+        ai: { use: true }
+    };
+    let showEval = { vis: false };
+    let plasExtra = { capVis: false, overflowVis: false, totalVis: false, capVal: undefined, overflow: undefined, rawGains: undefined };
     
     calcVars[prestigeType].forEach(function(type){
         inputs[type].use = true;
@@ -229,9 +246,21 @@ export function prestigeCalc(info,resource,extraType,resetType){
     if (resetType){
         inputs.reset.val = resetType;
         inputs.reset.use = false;
+        if (resetType !== 'mad'){
+            inputs.synth.use = false;
+            inputs.synth.val = false;
+        }
         if (resetType === 'vacuum'){
             inputs.uni.use = false;
             inputs.uni.val = 'magic';
+        }
+        if (resetType === 'ai'){
+            inputs.tp.use = false;
+            inputs.tp.val = true;
+        }
+        else if (!['mad','bioseed','cataclysm'].includes(resetType)){
+            inputs.tp.use = false;
+            inputs.tp.val = false;
         }
     }
     
@@ -242,16 +271,14 @@ export function prestigeCalc(info,resource,extraType,resetType){
             if (!resetType){
                 universes.antimatter.use = false;
             }
-            equation += `<span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * {{ i.uni.val | universe }}</span>`;
             break;
         case 'anti':
             resets.vacuum.use = false;
-            equation += `<span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }}) / {{ i.reset.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * 1.1</span>`;
             break;
         case 'phage':
             resets.mad.use = false;
             resets.descend.use = false;
-            equation += `<span>log2({{ i.plas.val, 'plasmids' | generic }}) * {{ i.reset.val | phageMulti }} * e * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span>`;
+            equation += `<span>log2({{ i.plas.val, 'plasmids' | generic }}) * {{ i.reset.val | phageMulti }} * e * {{ i.genes.val | challenge}} * {{ i.uni.val | universe }}</span><span v-show="i.tp.val"> * 1.1</span>`;
             break;
         case 'dark':
             inputs.reset.val = 'bigbang';
@@ -271,9 +298,54 @@ export function prestigeCalc(info,resource,extraType,resetType){
             inputs.reset.val = 'descend';
             equation += `<span>1 + </span><span v-show="!i.micro.val">{{ i.genes.val, 'genes' | generic }} + </span><span>{{ i.floor.val | floor }}</span>`;
             break;
+        case 'cores':
+            inputs.reset.val = 'ai';
+            equation += `<span v-show="!i.micro.val">5</span><span v-show="i.micro.val">2</span>`;
+            break;
     }
-    
-    equation += `<span v-show="s.vis"> = {{  | calc }}</span>`;
+    if (resource === 'plasmid'){
+        equation += `
+            <div>
+                <h3 class="has-text-caution">${loc('wiki_calc_plasmid_cap_total',[prestigeType === 'anti' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')])}</h2>
+            </div>
+            <div>
+                <span>{{ i.reset.val, i.synth.val | plasmidCap }} * (1 + (({{ i.genes.val, 'genes' | generic }}</span><span v-show="i.tp.val"> + 1</span><span>) / 8))</span><span v-show="pe.capVis"> = {{ | plasmidCapCalc }} = {{ pe.capVal }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-caution">${loc('wiki_calc_plasmid_gains_raw',[prestigeType === 'anti' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')])}</h2>
+            </div>
+            <div>
+        `;
+        if (prestigeType === 'plasmid'){
+            equation += `
+                    <span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }})</span><span v-show="i.high_pop.val"> / {{ i.high_pop.val | highPopDivisor }}</span><span> / {{ i.reset.val, i.synth.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val, i.synth.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * {{ i.uni.val | universe }}</span><span v-show="i.tp.val"> * 1.1</span>
+            `;
+        }
+        else {
+            equation += `
+                    <span>((({{ i.cit.val, 'citizens' | generic }} + {{ i.sol.val, 'soldiers' | generic }})</span><span v-show="i.high_pop.val"> / {{ i.high_pop.val | highPopDivisor }}</span><span> / {{ i.reset.val, i.synth.val | popDivisor }}) + (ln(1 + (({{ i.reset.val | knowMulti }} - 1) * {{ i.know.val, 'knowledge' | generic }} / {{ i.reset.val, i.synth.val | knowInc }})) / ln({{ i.reset.val | knowMulti }}))) * {{ i.genes.val | challenge }} * 1.1</span><span v-show="i.tp.val"> * 1.1</span>
+            `;
+        }
+        equation += `
+                <span v-show="s.vis"> = {{  | calc }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-caution">${loc('wiki_calc_overflow')} </h2>
+            </div>
+            <div>
+                <span>{{ pe.rawGains, 'plasmid_gains_raw' | generic }} - {{ pe.capVal, 'plasmid_cap_total' | generic }}</span><span v-show="pe.overflowVis"> = {{ pe.overflow, 'no_overflow' | generic }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-caution">${loc('wiki_calc_plasmid_gains_total',[prestigeType === 'anti' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')])}</h2>
+            </div>
+            <div>
+                <span>{{ pe.capVal, 'plasmid_cap_total' | generic }} + ({{ pe.overflow, 'overflow' | generic }} / ({{ pe.overflow, 'overflow' | generic }} + {{ pe.capVal, 'plasmid_cap_total' | generic }}) * {{ pe.capVal, 'plasmid_cap_total' | generic }})</span><span v-show="pe.totalVis"> = {{ | plasmidTotalCalc }}</span>
+            </div>
+        `;
+    }
+    else {
+        equation += `<span v-show="s.vis"> = {{  | calc }}</span>`;
+    }
     formula.append(equation);
     
     variables.append(`
@@ -299,6 +371,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 <b-dropdown-item v-show="r.vacuum.use" v-on:click="pickReset('vacuum')">{{ 'vacuum' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.ascend.use" v-on:click="pickReset('ascend')">{{ 'ascend' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.descend.use" v-on:click="pickReset('descend')">{{ 'descend' | resetLabel }}</b-dropdown-item>
+                <b-dropdown-item v-show="r.ai.use" v-on:click="pickReset('ai')">{{ 'ai' | resetLabel }}</b-dropdown-item>
             </b-dropdown></div>
             <div class="calcInput" v-show="i.uni.use"><span>${loc('wiki_calc_universe')}</span> <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
@@ -312,7 +385,21 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 <b-dropdown-item v-show="u.heavy.use" v-on:click="pickUniverse('heavy')">{{ 'heavy' | uniLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="u.magic.use" v-on:click="pickUniverse('magic')">{{ 'magic' | uniLabel }}</b-dropdown-item>
             </b-dropdown></div>
+            <div class="calcInput" v-show="i.high_pop.use"><span>${loc('trait_high_pop_name')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.high_pop.val | highPopLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickHighPop(0)">{{ 0 | highPopLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(0.25)">{{ 0.25 | highPopLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(0.5)">{{ 0.5 | highPopLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(1)">{{ 1 | highPopLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(2)">{{ 2 | highPopLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickHighPop(3)">{{ 3 | highPopLabel }}</b-dropdown-item>
+            </b-dropdown></div>
             <div class="calcInput" v-show="i.micro.use"><b-checkbox class="patrol" v-model="i.micro.val">${loc('universe_micro')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.synth.use"><b-checkbox class="patrol" v-model="i.synth.val">${loc('wiki_calc_synth')}</b-checkbox></div>
+            <div class="calcInput" v-show="i.tp.use"><b-checkbox class="patrol" v-model="i.tp.val" :disabled="!i.tp.enabled">${loc('wiki_calc_tp')}</b-checkbox></div>
         </div>
         <div class="calcButton">
             <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
@@ -326,7 +413,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
             i: inputs,
             u: universes,
             r: resets,
-            s: showEval
+            s: showEval,
+            pe: plasExtra
         },
         methods: {
             val(type){
@@ -373,6 +461,14 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 if (resource === 'plasmid'){
                     universes.antimatter.use = false;
                 }
+                inputs.synth.use = reset === 'mad';
+                if (!['mad','bioseed','cataclysm'].includes(reset)){
+                    inputs.tp.enabled = false;
+                    inputs.tp.val = reset === 'ai';
+                }
+                else {
+                    inputs.tp.enabled = true;
+                }
             },
             pickUniverse(uni){
                 inputs.uni.val = uni;
@@ -391,13 +487,22 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     inputs.micro.val = false;
                 }
             },
+            pickHighPop(rank){
+                inputs.high_pop.val = rank;
+            },
             resetInputs(){
                 Object.keys(inputs).forEach(function(type){
                     if (inputs[type].use){
                         inputs[type].val = undefined;
                     }
                 });
-                inputs.micro.val = false;
+                inputs.synth.use = resource === 'plasmid';
+                ['micro','synth','tp'].forEach(function(type){
+                    if (inputs[type].use){
+                        inputs[type].val = false;
+                    }
+                });
+                inputs.tp.enabled = true;
             },
             importInputs(){
                 inputs.cit.val = global.resource[global.race.species].amount;
@@ -437,19 +542,28 @@ export function prestigeCalc(info,resource,extraType,resetType){
                         inputs.micro.val = false;
                     }
                 }
+                inputs.high_pop.val = global.race['high_pop'] ? global.race.high_pop : 0;
+                inputs.synth.val = races[global.race.species].type === 'synthetic';
+                if (inputs.tp.use){
+                    if (inputs.reset.val && ['mad','bioseed','cataclysm'].includes(inputs.reset.val)){
+                        inputs.tp.val = global.race['truepath'] ? true : false;
+                    }
+                }
                 if (inputs.reset.val && inputs.reset.val !== 'mad' && inputs.reset.val !== 'descend'){
                     inputs.plas.val = calcPrestige(inputs.reset.val,
                                                    {cit: inputs.cit.val,
                                                     sol: inputs.sol.val,
                                                     know: inputs.know.val,
                                                     uni: inputs.uni.val,
-                                                    genes: inputs.genes.val}).plasmid;
+                                                    genes: inputs.genes.val,
+                                                    high_pop: inputs.high_pop.val,
+                                                    tp: inputs.tp.val}).plasmid;
                 }
             }
         },
         filters: {
             generic(num, type){
-                return num !== undefined ? num : loc('wiki_calc_' + type);
+                return num !== undefined ? num : (type === 'plasmid_gains_raw' || type === 'plasmid_cap_total') ? loc('wiki_calc_' + type,[prestigeType === 'anti' ? loc('resource_AntiPlasmid_name') : loc('resource_Plasmid_name')]) : loc('wiki_calc_' + type);
             },
             floor(num){
                 if (num === undefined){
@@ -463,9 +577,15 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 });
                 return bonus;
             },
-            popDivisor(type){
+            highPopDivisor(rank){
+                return rank ? traits.high_pop.vars(rank)[0] : 1;
+            },
+            popDivisor(type,synth){
                 switch (type){
                     case 'mad':
+                        if (synth){
+                            return 5;
+                        }
                     case 'cataclysm':
                     case 'bioseed':
                         return 3;
@@ -494,9 +614,12 @@ export function prestigeCalc(info,resource,extraType,resetType){
                         return loc('wiki_calc_know_multi');
                 }
             },
-            knowInc(type){
+            knowInc(type,synth){
                 switch (type){
                     case 'mad':
+                        if (synth){
+                            return 125000;
+                        }
                         return 100000;
                     case 'cataclysm':
                     case 'bioseed':
@@ -524,8 +647,69 @@ export function prestigeCalc(info,resource,extraType,resetType){
                         return loc('wiki_calc_phage_multi');
                 }
             },
+            plasmidCap(type,synth){
+                switch (type){
+                    case 'mad':
+                        if (synth){
+                            return 100;
+                        }
+                        return 150;
+                    case 'cataclysm':
+                    case 'bioseed':
+                        return 400;
+                    case 'ai':
+                        return 600;
+                    case 'vacuum':
+                    case 'bigbang':
+                        return 800;
+                    case 'ascend':
+                        return 2000;
+                    default:
+                        return loc('wiki_calc_plasmid_cap');
+                }
+            },
+            plasmidCapCalc(){
+                plasExtra.capVis = inputs.reset.val && inputs.genes.val !== undefined;
+                if (plasExtra.capVis){
+                    let cap = 0;
+                    switch (inputs.reset.val){
+                        case 'mad':
+                            cap = 150;
+                            if (inputs.synth.val){
+                                cap = 100;
+                            }
+                            break;
+                        case 'cataclysm':
+                        case 'bioseed':
+                            cap = 400;
+                            break;
+                        case 'ai':
+                            cap = 600;
+                            break;
+                        case 'vacuum':
+                        case 'bigbang':
+                            cap = 800;
+                            break;
+                        case 'ascend':
+                            cap = 2000;
+                            break;
+                    }
+                    cap *= (1 + ((inputs.genes.val + 1 - (inputs.tp.val ? 0 : 1)) / 8));
+                    plasExtra.capVal = Math.floor(cap);
+                    return cap;
+                }
+                else {
+                    plasExtra.capVal = undefined;
+                }
+            },
+            plasmidTotalCalc(){
+                plasExtra.totalVis = plasExtra.overflow && plasExtra.capVal;
+                if (plasExtra.totalVis) {
+                    return plasExtra.capVal + Math.floor(plasExtra.overflow / (plasExtra.overflow + plasExtra.capVal) * plasExtra.capVal);
+                }
+            },
             challenge(num){
-                return num !== undefined ? challenge_multiplier(1,'mad',2,num,'standard') : loc('wiki_calc_challenge_multi');
+                return num !== undefined ? challenge_multiplier(1,'mad',2,{genes: num, uni: 'standard'}) : loc('wiki_calc_challenge_multi');
             },
             universe(type){
                 if (!type){
@@ -536,7 +720,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     proxyInput.uni = inputs.uni.val;
                     return calcPrestige(inputs.reset.val,proxyInput)[resource];
                 }
-                return +(challenge_multiplier(1,inputs.reset.val,2,genes,type) / challenge_multiplier(1,'mad',2,genes,'standard')).toFixed(2)
+                return +(challenge_multiplier(1,inputs.reset.val,2,{genes: genes, uni: type}) / challenge_multiplier(1,'mad',2,{genes: genes, uni: 'standard'})).toFixed(2)
             },
             calc(){
                 let show = true;
@@ -564,8 +748,24 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     else if (prestigeType === 'vacuum'){
                         calcInputs.uni = 'magic';
                     }
+                    if (resource === 'plasmid'){
+                        calcInputs.rawPlasmids = true;
+                    }
                     
-                    return calcPrestige(inputs.reset.val,calcInputs)[resource];
+                    let gains = calcPrestige(inputs.reset.val,calcInputs)[resource];
+                    
+                    if (resource === 'plasmid'){
+                        plasExtra.rawGains = gains;
+                        plasExtra.overflow = (plasExtra.capVal !== undefined && gains > plasExtra.capVal) ? gains - plasExtra.capVal : undefined;
+                        plasExtra.overflowVis = plasExtra.rawGains !== undefined && plasExtra.capVal !== undefined;
+                    }
+                    
+                    return gains;
+                }
+                else if (resource === 'plasmid'){
+                    plasExtra.rawGains = undefined;
+                    plasExtra.overflow = undefined;
+                    plasExtra.overflowVis = false;
                 }
             },
             resetLabel(lbl){
@@ -575,6 +775,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bioseed':
                     case 'cataclysm':
                     case 'vacuum':
+                    case 'ai':
                         return loc('wiki_resets_' + lbl);
                     case 'bigbang':
                         return loc('wiki_resets_blackhole');
@@ -587,6 +788,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
             },
             uniLabel(lbl){
                 return lbl ? loc('universe_' + lbl) : loc('wiki_calc_universe');
+            },
+            highPopLabel(lbl){
+                return lbl === undefined ? loc('wiki_calc_trait_undefined') : lbl === 0 ? loc('wiki_calc_trait_unowned') : lbl;
             }
         }
     });
@@ -954,6 +1158,7 @@ function darkBonusCalc(info){
     let inputs = {
         dark: { val: undefined },
         harmony: { val: undefined },
+        sludge: { val: undefined },
         uni: { val: 'standard' }
     }
     
@@ -987,7 +1192,7 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_bonuses',[loc('wiki_calc_dark_standard')])}:</span>
             </div>
             <div>
-                <span>({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.001))) / 200</span><span v-show="s.standard.result"> = {{ 'standard', false | calc }} = +{{ 'standard', true | calc }}%</span>
+                <span>({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.001)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03))) / 200</span><span v-show="s.standard.result"> = {{ 'standard', false | calc }} = +{{ 'standard', true | calc }}%</span>
             </div>
         </div>
         <div v-show="s.evil.vis">
@@ -995,7 +1200,7 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_bonuses',[loc('wiki_calc_dark_evil')])}:</span>
             </div>
             <div>
-                <span>(log2(10 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 3.321928094887362) / 5</span><span v-show="s.evil.result"> = {{ 'evil', false | calc }} = +{{ 'evil', true | calc }}%</span>
+                <span>(log2(10 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03)))) - 3.321928094887362) / 5</span><span v-show="s.evil.result"> = {{ 'evil', false | calc }} = +{{ 'evil', true | calc }}%</span>
             </div>
         </div>
         <div v-show="s.antimatter.vis">
@@ -1003,7 +1208,7 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_bonuses',[loc('wiki_calc_dark_antimatter')])}:</span>
             </div>
             <div>
-                <span>(ln(50 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 3.912023005428146) / 5</span><span v-show="s.antimatter.result"> = {{ 'antimatter', false | calc }} = +{{ 'antimatter', true | calc }}%</span>
+                <span>(ln(50 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03)))) - 3.912023005428146) / 5</span><span v-show="s.antimatter.result"> = {{ 'antimatter', false | calc }} = +{{ 'antimatter', true | calc }}%</span>
             </div>
         </div>
         <div v-show="s.micro.vis">
@@ -1011,13 +1216,13 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_home')])} (${loc('wiki_calc_cap',[0.06])}):</span>
             </div>
             <div>
-                <span>0.02 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 20) </span><span v-show="s.micro.result"> = {{ 'micro', false, 2 | calc }}</span>
+                <span>(0.02 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 20)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03))</span><span v-show="s.micro.result"> = {{ 'micro', false, 2 | calc }}</span>
             </div>
             <div>
                 <span>${loc('wiki_calc_creep_reduction',[loc('wiki_calc_not_home')])} (${loc('wiki_calc_cap',[0.04])}):</span>
             </div>
             <div>
-                <span>0.01 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 35) </span><span v-show="s.micro.result"> = {{ 'micro', false, 1 | calc }}</span>
+                <span>(0.01 + ((ln(100 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 4.605170185988092) / 35)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03))</span><span v-show="s.micro.result"> = {{ 'micro', false, 1 | calc }}</span>
             </div>
         </div>
         <div v-show="s.heavy.vis">
@@ -1025,13 +1230,13 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_dark_heavy',[loc('wiki_menu_space')])}:</span>
             </div>
             <div>
-                <span>0.25 + (0.5 * 0.995^({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01))))</span><span v-show="s.heavy.result"> = {{ 'heavy', false, 1 | calc }} = +{{ 'heavy', true, 1 | calc }}%</span>
+                <span>0.25 + (0.5 * 0.995^({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03))))</span><span v-show="s.heavy.result"> = {{ 'heavy', false, 1 | calc }} = +{{ 'heavy', true, 1 | calc }}%</span>
             </div>
             <div>
                 <span>${loc('wiki_calc_dark_heavy',[loc('wiki_tech_req_or',[loc('wiki_menu_interstellar'),loc('wiki_menu_intergalactic')])])}:</span>
             </div>
             <div>
-                <span>0.2 + (0.3 * 0.995^({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01))))</span><span v-show="s.heavy.result"> = {{ 'heavy', false, 2 | calc }} = +{{ 'heavy', true, 2 | calc }}%</span>
+                <span>0.2 + (0.3 * 0.995^({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03))))</span><span v-show="s.heavy.result"> = {{ 'heavy', false, 2 | calc }} = +{{ 'heavy', true, 2 | calc }}%</span>
             </div>
         </div>
         <div v-show="s.magic.vis">
@@ -1039,7 +1244,7 @@ function darkBonusCalc(info){
                 <span>${loc('wiki_calc_bonuses',[loc('wiki_calc_dark_magic')])}:</span>
             </div>
             <div>
-                <span>(ln(50 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)))) - 3.912023005428146) / 3</span><span v-show="s.magic.result"> = {{ 'magic', false | calc }} = +{{ 'magic', true | calc }}%</span>
+                <span>(ln(50 + ({{ i.dark.val, 'dark' | generic }} * (1 + ({{ i.harmony.val, 'harmony' | generic }} * 0.01)) * (1 + ({{ i.sludge.val | sludgeLabel }} * 0.03)))) - 3.912023005428146) / 3</span><span v-show="s.magic.result"> = {{ 'magic', false | calc }} = +{{ 'magic', true | calc }}%</span>
             </div>
         </div>
     `);
@@ -1048,6 +1253,7 @@ function darkBonusCalc(info){
         <div>
             <div class="calcInput"><span>${loc('wiki_p_res_dark')}</span> <b-numberinput :input="val('dark')" min="0" v-model="i.dark.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_p_res_harmony')}</span> <b-numberinput :input="val('harmony')" min="0" v-model="i.harmony.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_sludge_level')}</span> <b-numberinput :input="val('sludge')" min="0" max="5" v-model="i.sludge.val" :controls="false"></b-numberinput></div>
         </div>
         <div class="calcButton">
             <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
@@ -1066,6 +1272,11 @@ function darkBonusCalc(info){
                 if (inputs[type].val && inputs[type].val < 0){
                     inputs[type].val = 0;
                 }
+                else if (type === 'sludge'){
+                    if (inputs.sludge.val && inputs.sludge.val > 5){
+                        inputs.sludge.val = 5;
+                    }
+                }
             },
             pickUniverse(uni){
                 show[inputs.uni.val].vis = false;
@@ -1075,6 +1286,7 @@ function darkBonusCalc(info){
             resetInputs(){
                 inputs.dark.val = undefined;
                 inputs.harmony.val = undefined;
+                inputs.sludge.val = undefined;
                 show[inputs.uni.val].vis = false;
                 inputs.uni.val = 'standard';
                 show.standard.vis = true;
@@ -1087,11 +1299,15 @@ function darkBonusCalc(info){
                     inputs.uni.val = global.race.universe;
                     show[inputs.uni.val].vis = true;
                 }
+                inputs.sludge.val = global.stats.achieve['extinct_sludge'] && global.stats.achieve['extinct_sludge'][universeAffix(inputs.uni.val)] ? global.stats.achieve['extinct_sludge'][universeAffix(inputs.uni.val)] : 0;
             }
         },
         filters: {
             generic(num, type){
                 return num !== undefined ? num : loc('wiki_p_res_' + type);
+            },
+            sludgeLabel(num){
+                return num !== undefined ? num : loc('wiki_calc_sludge_level');
             },
             uniLabel(lbl){
                 return lbl ? loc('universe_' + lbl) : loc('wiki_calc_universe');
@@ -1114,13 +1330,13 @@ function darkBonusCalc(info){
                         case 'evil':
                         case 'antimatter':
                         case 'magic':
-                            show[uni].val = +(darkEffect(uni,false,true,{ dark: inputs.dark.val, harmony: inputs.harmony.val }) - 1).toFixed(6);
+                            show[uni].val = +(darkEffect(uni,false,true,{ dark: inputs.dark.val, harmony: inputs.harmony.val, sludge: inputs.sludge.val }) - 1).toFixed(6);
                             return show[uni].val;
                         case 'micro':
-                            show[uni][`val${valNum}`] = darkEffect(uni,(valNum === 1 ? true : false),true,{ dark: inputs.dark.val, harmony: inputs.harmony.val });
+                            show[uni][`val${valNum}`] = darkEffect(uni,(valNum === 1 ? true : false),true,{ dark: inputs.dark.val, harmony: inputs.harmony.val, sludge: inputs.sludge.val });
                             return show[uni][`val${valNum}`];
                         case 'heavy':
-                            let bonus = darkEffect(uni,false,true,{ dark: inputs.dark.val, harmony: inputs.harmony.val });
+                            let bonus = darkEffect(uni,false,true,{ dark: inputs.dark.val, harmony: inputs.harmony.val, sludge: inputs.sludge.val });
                             if (valNum === 1){
                                 bonus = 0.25 + (0.5 * bonus);
                             }
@@ -1213,6 +1429,82 @@ function harmonyCreepCalc(info){
                 
                 if (show.result.vis){
                     show.result.val = +((Math.log(50 + inputs.harmony.val * inputs.ascended.val) - 3.912023005428146) * 0.01).toFixed(5);
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+
+function coresQuantumCalc(info){
+    let calc = $(`<div class="calc" id="coresQuantumCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_core_quantum')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        cores: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    //1 - (0.99 ** global.race.AICore.count);
+    formula.append(`
+        <div>
+            <span>1 - (0.99^{{ i.cores.val, 'cores' | generic }})</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_cores')}</span> <b-numberinput :input="val('cores')" min="0" v-model="i.cores.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#coresQuantumCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.cores.val = undefined;
+            },
+            importInputs(){
+                inputs.cores.val = global.race.AICore.count;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_' + type);
+            },
+            calc(percent){
+                if (percent){
+                    return +(show.result.val * 100).toFixed(2);
+                }
+                show.result.vis = inputs.cores.val !== undefined;
+                
+                if (show.result.vis){
+                    show.result.val = +(1 - (0.99 ** inputs.cores.val)).toFixed(4);
                     
                     return show.result.val;
                 }
