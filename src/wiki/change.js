@@ -3,6 +3,21 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.11`,
+        date: `2/16/2022`,
+        changes: [
+            `Added Doomed achievement to the perks lists.`,
+            `Added Governor CRISPR tree to perks list.`,
+            `Updated prestige gain/bonus calculators.`,
+            `Fixed Ritual Casting not showing up in Industry in Cataclysm.`,
+            `Detritivores no longer see the Farming ritual.`,
+            `Fixed Entertainer tooltip showing twice the effect of Musical.`,
+            `Fixed Gauss Rifles showing the effect for Disruptor Rifles.`,
+            `Fixed Water Freighter tooltip showing half the Helium-3 cost.`,
+            `Fixed some affordability checks.`
+        ]
+    },
+    {
         version: `1.2.10`,
         date: `2/7/2022`,
         changes: [
