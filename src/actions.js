@@ -5758,10 +5758,10 @@ export function setAction(c_action,action,type,old){
     let id = c_action.id;
     removeAction(id);
     let parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
-    if (!checkAffordable(c_action)){
+    if (!checkAffordable(c_action,false,(['genes','blood'].includes(action)))){
         parent.addClass('cna');
     }
-    if (!checkAffordable(c_action,true)){
+    if (!checkAffordable(c_action,true,(['genes','blood'].includes(action)))){
         parent.addClass('cnam');
     }
     let element;
@@ -6659,13 +6659,14 @@ export function payCosts(c_action, costs){
     return false;
 }
 
-export function checkAffordable(c_action,max){
+export function checkAffordable(c_action,max,raw){
     if (c_action.cost){
+        let cost = raw ? c_action.cost : adjustCosts(c_action);
         if (max){
-            return checkMaxCosts(adjustCosts(c_action));
+            return checkMaxCosts(cost);
         }
         else {
-            return checkCosts(adjustCosts(c_action));
+            return checkCosts(cost);
         }
     }
     return true;

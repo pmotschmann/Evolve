@@ -1042,7 +1042,7 @@ function loadPylon(parent,bind){
         ritualList.forEach(function (spell){
             if (
                 (spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') ||
-                (spell === 'farmer' && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']) ||
+                (spell === 'farmer' && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']) ||
                 (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']) ||
                 (spell === 'crafting' && global.tech.magic >= 4)
                 ){

@@ -6639,7 +6639,7 @@ const techs = {
             Knowledge(){ return 9500000; },
             Bolognium(){ return 100000; }
         },
-        effect(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill_effect') : loc('tech_disruptor_rifles_effect'); },
+        effect(){ return global.race.universe === 'magic' ? loc('tech_magicword_kill_effect') : loc('tech_gauss_rifles_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 let tech = $(this)[0].grant[0];

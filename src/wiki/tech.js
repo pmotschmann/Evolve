@@ -1451,6 +1451,9 @@ const extraInformation = {
     bribe_sphinx: [
         loc(`wiki_tech_bribe_sphinx`)
     ],
+    alien_biotech: [
+        loc(`wiki_tech_alien_biotech`)
+    ],
     zero_g_lab: [
         loc(`wiki_tech_building_unlock`,[loc('tech_zero_g_lab')])
     ],

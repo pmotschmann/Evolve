@@ -41,7 +41,7 @@ export const outerTruth = {
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +fuel_adjust(250000).toFixed(0); },
+                Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
                 Elerium(){ return 100; }
             },
             effect(){
@@ -665,7 +665,7 @@ export const outerTruth = {
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +fuel_adjust(250000).toFixed(0); },
+                Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
                 Elerium(){ return 100; }
             },
             effect(){
@@ -694,8 +694,8 @@ export const outerTruth = {
                 Nano_Tube(offset){ return spaceCostMultiplier('water_freighter', offset, 125000, 1.25); },
                 Sheet_Metal(offset){ return spaceCostMultiplier('water_freighter', offset, 75000, 1.25); }
             },
-            effect(){
-                let helium = +fuel_adjust(5).toFixed(2);
+            effect(wiki){
+                let helium = +fuel_adjust(5,true,wiki).toFixed(2);
                 let water = +(production('water_freighter')).toFixed(2);
                 return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
             },
@@ -860,7 +860,7 @@ export const outerTruth = {
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +fuel_adjust(600000).toFixed(0); },
+                Helium_3(offset,wiki){ return +fuel_adjust(600000,false,wiki).toFixed(0); },
                 Elerium(){ return 2500; }
             },
             effect(){
@@ -897,7 +897,7 @@ export const outerTruth = {
                 Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 500000, 1.1); },
                 Horseshoe(offset){ return global.race['hooved'] && ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) < 1 ? 10 : 0; }
             },
-            effect(){
+            effect(wiki){
                 let troops = garrisonSize();
                 let max_troops = garrisonSize(true);
                 let desc = `<div>${loc('galaxy_defense_platform_effect',[500])}</div>`;
@@ -905,7 +905,7 @@ export const outerTruth = {
                 desc += `<div class="has-text-warning"><span class="soldier">${loc('civics_garrison_soldiers')}:</span> <span>${troops}</span> / <span>${max_troops}<span></div>`;
                 desc += `<div class="has-text-warning"><span class="wounded">${loc('civics_garrison_wounded')}:</span> <span>${global.civic['garrison'] ? global.civic.garrison.wounded : 0}</span></div>`;
                 desc += `<div class="has-text-warning">${loc('space_fob_landed',[global.space['fob'] ? global.space.fob.troops : 0])}</div>`;
-                let helium = +(fuel_adjust(125,true)).toFixed(2);
+                let helium = +(fuel_adjust(125,true,wiki)).toFixed(2);
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),helium,global.resource.Helium_3.name])}</div>`;
             },
             powered(){ return powerCostMod(50); },
@@ -923,9 +923,9 @@ export const outerTruth = {
                 if (global.tech['triton'] === 2){
                     global.tech['triton'] = 3;
                     drawTech();
+                    renderSpace();
                     messageQueue(loc('space_fob_msg'),'info',false,['progress']);
                 }
-                vBind({el: `#spc_tritonsynd`},'update');
             }
         },
         lander: {
@@ -943,8 +943,8 @@ export const outerTruth = {
                 Nano_Tube(offset){ return spaceCostMultiplier('lander', offset, 158000, 1.15); },
             },
             powered(){ return powerCostMod(1); },
-            effect(){
-                let oil = +fuel_adjust(50,true).toFixed(2);
+            effect(wiki){
+                let oil = +fuel_adjust(50,true,wiki).toFixed(2);
                 let data = ``;
                 if (global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
                     data = `<div>${loc(`space_lander_effect3`,[production('lander'),global.resource.Cipher.name])}</div>`;
@@ -1004,7 +1004,7 @@ export const outerTruth = {
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +fuel_adjust(1000000).toFixed(0); },
+                Helium_3(offset,wiki){ return +fuel_adjust(1000000,false,wiki).toFixed(0); },
                 Elerium(){ return 1000; }
             },
             effect(){
@@ -1037,9 +1037,9 @@ export const outerTruth = {
                 Mythril(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 450000, 1.25); },
                 Quantium(offset){ return spaceCostMultiplier('orichalcum_mine', offset, 150000, 1.25); },
             },
-            effect(){
+            effect(wiki){
                 let mineral = +(production('orichalcum_mine')).toFixed(3);
-                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
                 let desc = `<div>${loc('gain',[mineral,loc('resource_Orichalcum_name')])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -1070,9 +1070,9 @@ export const outerTruth = {
                 Iridium(offset){ return spaceCostMultiplier('uranium_mine', offset, 250000, 1.25); },
                 Steel(offset){ return spaceCostMultiplier('uranium_mine', offset, 620000, 1.25); }
             },
-            effect(){
+            effect(wiki){
                 let mineral = +(production('uranium_mine')).toFixed(3);
-                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
                 let desc = `<div>${loc('gain',[mineral,loc('resource_Uranium_name')])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -1102,9 +1102,9 @@ export const outerTruth = {
                 Adamantite(offset){ return spaceCostMultiplier('neutronium_mine', offset, 650000, 1.25); },
                 Stanene(offset){ return spaceCostMultiplier('neutronium_mine', offset, 1250000, 1.25); },
             },
-            effect(){
+            effect(wiki){
                 let mineral = +(production('neutronium_mine')).toFixed(3);
-                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
                 let desc = `<div>${loc('gain',[mineral,loc('resource_Neutronium_name')])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -1135,9 +1135,9 @@ export const outerTruth = {
                 Neutronium(offset){ return spaceCostMultiplier('elerium_mine', offset, 120000, 1.25); },
                 Orichalcum(offset){ return spaceCostMultiplier('elerium_mine', offset, 175000, 1.25); },
             },
-            effect(){
+            effect(wiki){
                 let mineral = +(production('elerium_mine')).toFixed(3);
-                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true).toFixed(1);
+                let fuel = +fuel_adjust($(this)[0].p_fuel().a,true,wiki).toFixed(1);
                 let desc = `<div>${loc('gain',[mineral,loc('resource_Elerium_name')])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
@@ -1190,7 +1190,7 @@ export const outerTruth = {
             path: ['truepath'],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(){ return +fuel_adjust(1250000).toFixed(0); },
+                Helium_3(offset,wiki){ return +fuel_adjust(1250000,false,wiki).toFixed(0); },
                 Elerium(){ return 1250; }
             },
             effect(){

@@ -89,12 +89,14 @@ export function resetsPage(content){
     prestigeCalc(section,'dark',false,'bigbang');
     sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'));
 
-    section = infoBoxBuilder(mainContent,{ name: 'ascension', template: 'resets', paragraphs: 7, break: [3,5,7], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'ascension', template: 'resets', paragraphs: 10, break: [3,5,7,10], h_level: 2,
         para_data: {
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
             3: [loc('interstellar_ascension_machine'),'10,000',loc('interstellar_thermal_collector')],
             4: [100,25],
-            7: [loc('wiki_resets_ascension')]
+            7: [`+2%`],
+            8: [`+2`,`+5%`,`+10%`],
+            10: [loc('wiki_resets_ascension')]
         },
         data_color: {
             2: ['danger','danger','danger'],
@@ -181,5 +183,9 @@ export function resetsPage(content){
             5: ['#space-tp_structures-ai_colonist','#space-tp_structures-decoder','#space-tp_structures-shock_trooper','#space-tp_structures-tank'],
         }
     });
+    section = createCalcSection(section,'ai','gain');
+    prestigeCalc(section,'plasmid',false,'ai');
+    prestigeCalc(section,'phage',false,'ai');
+    prestigeCalc(section,'cores',false,'ai');
     sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
 }
