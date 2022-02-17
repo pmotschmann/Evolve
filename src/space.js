@@ -32,7 +32,7 @@ const spaceProjects = {
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
                 Money(){ return 100000; },
-                Oil(offset,wiki){ return fuel_adjust(7500,wiki); }
+                Oil(offset,wiki){ return fuel_adjust(7500,false,wiki); }
             },
             effect: loc('space_home_test_launch_effect'),
             action(){
@@ -62,7 +62,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('satellite', offset, 72000, 1.22); },
                 Knowledge(offset){ return spaceCostMultiplier('satellite', offset, 28000, 1.22); },
-                Oil(offset,wiki){ return spaceCostMultiplier('satellite', offset, fuel_adjust(3200,wiki), 1.22); },
+                Oil(offset,wiki){ return spaceCostMultiplier('satellite', offset, fuel_adjust(3200,false,wiki), 1.22); },
                 Alloy(offset){ return spaceCostMultiplier('satellite', offset, 8000, 1.22); }
             },
             effect(){
@@ -100,7 +100,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gps', offset, 75000, 1.18); },
                 Knowledge(offset){ return spaceCostMultiplier('gps', offset, 50000, 1.18); },
                 Copper(offset){ return spaceCostMultiplier('gps', offset, 6500, 1.18); },
-                Oil(offset,wiki){ return spaceCostMultiplier('gps', offset, fuel_adjust(3500,wiki), 1.18); },
+                Oil(offset,wiki){ return spaceCostMultiplier('gps', offset, fuel_adjust(3500,false,wiki), 1.18); },
                 Titanium(offset){ return spaceCostMultiplier('gps', offset, 8000, 1.18); }
             },
             effect(wiki){
@@ -128,7 +128,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('propellant_depot', offset, 55000, 1.35); },
                 Aluminium(offset){ return spaceCostMultiplier('propellant_depot', offset, 22000, 1.35); },
-                Oil(offset,wiki){ return spaceCostMultiplier('propellant_depot', offset, fuel_adjust(5500,wiki), 1.35); },
+                Oil(offset,wiki){ return spaceCostMultiplier('propellant_depot', offset, fuel_adjust(5500,false,wiki), 1.35); },
             },
             effect(){
                 let oil = spatialReasoning(1250) * (global.tech['world_control'] ? 1.5 : 1);
@@ -159,7 +159,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('nav_beacon', offset, 75000, 1.32); },
                 Copper(offset){ return spaceCostMultiplier('nav_beacon', offset, 38000, 1.32); },
                 Aluminium(offset){ return spaceCostMultiplier('nav_beacon', offset, 44000, 1.32); },
-                Oil(offset,wiki){ return spaceCostMultiplier('nav_beacon', offset, fuel_adjust(12500,wiki), 1.32); },
+                Oil(offset,wiki){ return spaceCostMultiplier('nav_beacon', offset, fuel_adjust(12500,false,wiki), 1.32); },
                 Iridium(offset){ return spaceCostMultiplier('nav_beacon', offset, 1200, 1.32); }
             },
             powered(){ return powerCostMod(2); },
@@ -198,7 +198,7 @@ const spaceProjects = {
             grant: ['space',3],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Oil(offset,wiki){ return +fuel_adjust(12000,wiki).toFixed(0); }
+                Oil(offset,wiki){ return +fuel_adjust(12000,false,wiki).toFixed(0); }
             },
             effect: loc('space_moon_mission_effect'),
             action(){
@@ -222,9 +222,9 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('moon_base', offset, 7800, 1.32); },
                 Polymer(offset){ return spaceCostMultiplier('moon_base', offset, 12500, 1.32); }
             },
-            effect(){
+            effect(wiki){
                 let iridium = spatialReasoning(500);
-                let oil = +(fuel_adjust(2,true)).toFixed(2);
+                let oil = +(fuel_adjust(2,true,wiki)).toFixed(2);
                 return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
@@ -403,7 +403,7 @@ const spaceProjects = {
             grant: ['space',4],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(4500,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(4500,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_red_mission_effect',[races[global.race.species].solar.red]);
@@ -431,8 +431,8 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('spaceport', offset, 25, 1.32); },
                 Titanium(offset){ return spaceCostMultiplier('spaceport', offset, 22500, 1.32); }
             },
-            effect(){
-                let helium = +(fuel_adjust(1.25,true)).toFixed(2);
+            effect(wiki){
+                let helium = +(fuel_adjust(1.25,true,wiki)).toFixed(2);
                 let bank = ``;
                 if (global.race['cataclysm']){
                     let vault = spatialReasoning(bank_vault() * 4);
@@ -817,12 +817,12 @@ const spaceProjects = {
                 Coal(offset){ return spaceCostMultiplier('red_factory', offset, 7500, 1.32); },
                 Mythril(offset){ return spaceCostMultiplier('red_factory', offset, 50, 1.32); }
             },
-            effect(){
+            effect(wiki){
                 let desc = `<div>${loc('space_red_factory_effect1')}</div>`;
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
                 }
-                let helium = +(fuel_adjust(1,true)).toFixed(2);
+                let helium = +(fuel_adjust(1,true,wiki)).toFixed(2);
                 desc = desc + `<div class="has-text-caution">${loc('space_red_factory_effect3',[helium,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1047,8 +1047,8 @@ const spaceProjects = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('space_barracks', offset, 12500, 1.28); },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
-            effect(){
-                let oil = +fuel_adjust(2,true).toFixed(2);
+            effect(wiki){
+                let oil = +fuel_adjust(2,true,wiki).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
                 return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
@@ -1144,7 +1144,7 @@ const spaceProjects = {
             grant: ['hell',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(6500,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(6500,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_hell_mission_effect1',[races[global.race.species].solar.hell]);
@@ -1170,8 +1170,8 @@ const spaceProjects = {
                 Steel(offset){ return spaceCostMultiplier('geothermal', offset, 15000, 1.35); },
                 Polymer(offset){ return spaceCostMultiplier('geothermal', offset, 9500, 1.35); }
             },
-            effect(){
-                let helium = +(fuel_adjust(0.5,true)).toFixed(2);
+            effect(wiki){
+                let helium = +(fuel_adjust(0.5,true,wiki)).toFixed(2);
                 let smelter = global.race['cataclysm'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
                 return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
@@ -1318,7 +1318,7 @@ const spaceProjects = {
             grant: ['solar',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(15000,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(15000,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_sun_mission_effect1');
@@ -1341,7 +1341,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('swarm_control', offset, 100000, 1.3); },
                 Knowledge(offset){ return spaceCostMultiplier('swarm_control', offset, 60000, 1.3); },
                 Alloy(offset){ return spaceCostMultiplier('swarm_control', offset, 7500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_control', offset, fuel_adjust(2000,wiki), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_control', offset, fuel_adjust(2000,false,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('swarm_control', offset, 250, 1.3); }
             },
             effect(){
@@ -1368,7 +1368,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(5000), 1.1); },
                 Copper(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(2500), 1.1); },
                 Iridium(offset){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(150), 1.1); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50,wiki)), 1.1); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('swarm_satellite', offset, swarm_adjust(fuel_adjust(50,false,wiki)), 1.1); }
             },
             effect(){
                 let solar = 0.35;
@@ -1416,7 +1416,7 @@ const spaceProjects = {
             grant: ['space',5],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(12500,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(12500,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_mission_effect',[races[global.race.species].solar.gas]);
@@ -1443,7 +1443,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gas_mining', offset, 250000, 1.32); },
                 Uranium(offset){ return spaceCostMultiplier('gas_mining', offset, 500, 1.32); },
                 Alloy(offset){ return spaceCostMultiplier('gas_mining', offset, 10000, 1.32); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_mining', offset, fuel_adjust(2500,wiki), 1.32); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_mining', offset, fuel_adjust(2500,false,wiki), 1.32); },
                 Mythril(offset){ return spaceCostMultiplier('gas_mining', offset, 25, 1.32); }
             },
             effect(){
@@ -1473,7 +1473,7 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('gas_storage', offset, 125000, 1.32); },
                 Iridium(offset){ return spaceCostMultiplier('gas_storage', offset, 3000, 1.32); },
                 Sheet_Metal(offset){ return spaceCostMultiplier('gas_storage', offset, 2000, 1.32); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_storage', offset, fuel_adjust(1000,wiki), 1.32); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('gas_storage', offset, fuel_adjust(1000,false,wiki), 1.32); },
             },
             effect(){
                 let oil = spatialReasoning(3500) * (global.tech['world_control'] ? 1.5 : 1);
@@ -1501,7 +1501,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 1500000 : 0; },
                 Steel(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 500000 : 0; },
-                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(10000,wiki)) : 0; },
+                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(10000,false,wiki)) : 0; },
                 Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 250000 : 0; },
                 Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 10000 : 0; },
             },
@@ -1541,7 +1541,7 @@ const spaceProjects = {
             grant: ['space',6],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(30000,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(30000,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_gas_moon_mission_effect',[races[global.race.species].solar.gas_moon]);
@@ -1567,13 +1567,13 @@ const spaceProjects = {
                 Money(offset){ return spaceCostMultiplier('outpost', offset, 666000, 1.3); },
                 Titanium(offset){ return spaceCostMultiplier('outpost', offset, 18000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('outpost', offset, 2500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('outpost', offset, fuel_adjust(6000,wiki), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('outpost', offset, fuel_adjust(6000,false,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('outpost', offset, 300, 1.3); }
             },
-            effect(){
+            effect(wiki){
                 let neutronium = +(production('outpost')).toFixed(3);
                 let max = spatialReasoning(500);
-                let oil = +(fuel_adjust(2,true)).toFixed(2);
+                let oil = +(fuel_adjust(2,true,wiki)).toFixed(2);
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('space_gas_moon_outpost_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
@@ -1625,7 +1625,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('oil_extractor', offset, 666000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('oil_extractor', offset, 7500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('oil_extractor', offset, fuel_adjust(2500,wiki), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('oil_extractor', offset, fuel_adjust(2500,false,wiki), 1.3); },
                 Wrought_Iron(offset){ return spaceCostMultiplier('oil_extractor', offset, 5000, 1.3); },
             },
             effect(){
@@ -1671,7 +1671,7 @@ const spaceProjects = {
             grant: ['asteroid',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(25000,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(25000,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_belt_mission_effect1');
@@ -1697,11 +1697,11 @@ const spaceProjects = {
                 Iron(offset){ return spaceCostMultiplier('space_station', offset, 85000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('space_station', offset, 18000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('space_station', offset, 2800, 1.28); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('space_station', offset, fuel_adjust(2000,wiki), 1.3); },
+                Helium_3(offset,wiki){ return spaceCostMultiplier('space_station', offset, fuel_adjust(2000,false,wiki), 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('space_station', offset, 75, 1.25); }
             },
-            effect(){
-                let helium = +(fuel_adjust(2.5,true)).toFixed(2);
+            effect(wiki){
+                let helium = +(fuel_adjust(2.5,true,wiki)).toFixed(2);
                 let food = global.race['cataclysm'] ? 1 : 10;
                 let elerium_cap = spatialReasoning(5);
                 let elerium = global.tech['asteroid'] >= 5 ? `<div>${loc('plus_max_resource',[elerium_cap, loc('resource_Elerium_name')])}</div>` : '';
@@ -1745,7 +1745,7 @@ const spaceProjects = {
                 Uranium(offset){ return spaceCostMultiplier('elerium_ship', offset, 2500, 1.3); },
                 Titanium(offset){ return spaceCostMultiplier('elerium_ship', offset, 10000, 1.3); },
                 Mythril(offset){ return spaceCostMultiplier('elerium_ship', offset, 500, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('elerium_ship', offset, fuel_adjust(5000,wiki), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('elerium_ship', offset, fuel_adjust(5000,false,wiki), 1.3); }
             },
             effect(){
                 let elerium = +(production('elerium_ship')).toFixed(4);
@@ -1776,7 +1776,7 @@ const spaceProjects = {
                 Uranium(offset){ return spaceCostMultiplier('iridium_ship', offset, 1000, 1.3); },
                 Alloy(offset){ return spaceCostMultiplier('iridium_ship', offset, 48000, 1.3); },
                 Iridium(offset){ return spaceCostMultiplier('iridium_ship', offset, 2800, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('iridium_ship', offset, fuel_adjust(1800,wiki), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('iridium_ship', offset, fuel_adjust(1800,false,wiki), 1.3); }
             },
             effect(){
                 let iridium = +(production('iridium_ship')).toFixed(3);
@@ -1807,7 +1807,7 @@ const spaceProjects = {
                 Steel(offset){ return spaceCostMultiplier('iron_ship', offset, 42000, 1.3); },
                 Aluminium(offset){ return spaceCostMultiplier('iron_ship', offset, 38000, 1.3); },
                 Polymer(offset){ return spaceCostMultiplier('iron_ship', offset, 16000, 1.3); },
-                Helium_3(offset,wiki){ return spaceCostMultiplier('iron_ship', offset, fuel_adjust(1200,wiki), 1.3); }
+                Helium_3(offset,wiki){ return spaceCostMultiplier('iron_ship', offset, fuel_adjust(1200,false,wiki), 1.3); }
             },
             effect(){
                 let iron = +(production('iron_ship')).toFixed(2);
@@ -1855,7 +1855,7 @@ const spaceProjects = {
             grant: ['dwarf',1],
             no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(45000,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(45000,false,wiki).toFixed(0); }
             },
             effect(){
                 return loc('space_dwarf_mission_effect1',[races[global.race.species].solar.dwarf]);
@@ -6139,7 +6139,7 @@ export function setUniverse(){
 }
 
 export function ascendLab(wiki){
-    if (!wiki){
+    if (!wiki && !global.race['noexport']){
         if (webWorker.w){
             webWorker.w.terminate();
         }

@@ -5040,7 +5040,7 @@ export function traitSkin(type,trait){
             let desc = {
                 hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
             };
-            return trait ? (desc[trait] ? desc[trait] : traits[trait].name) : desc;
+            return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
     }
 }

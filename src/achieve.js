@@ -1005,6 +1005,18 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_mass_extinction_name`)}</span>`])
         ]
     },
+    doomed: {
+        name: loc(`achieve_doomed_name`),
+        desc(wiki){
+            return loc("achieve_perks_doomed");
+        },
+        active(){
+            return global.stats.portals >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_doomed_name`)}</span>`])
+        ]
+    },
     explorer: {
         name: loc(`achieve_explorer_name`),
         desc(wiki){
@@ -1736,6 +1748,18 @@ export const perkList = {
             ])
         ]
     },
+    governor: {
+        name: loc(`wiki_arpa_crispr_governor`),
+        desc(){
+            return loc("arpa_perks_governor");
+        },
+        active(){
+            return global.genes['governor'] ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_crispr_note`,[`<span class="has-text-caution">${loc(`arpa_genepool_governance_title`)}</span>`])
+        ]
+    },
     synthesis: {
         name: loc(`wiki_arpa_crispr_synthesis`),
         desc(wiki){
@@ -2308,7 +2332,7 @@ export const perkList = {
         name: loc(`perk_journeyman`),
         desc(wiki){
             let rank = global.stats.feat['journeyman'] && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l > 0 ? Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']) : 1;
-            if (rank > 1){
+            if (wiki || rank > 1){
                 let rqueue = wiki ? "1/2/3" : rank >= 3 ? (rank >= 5 ? 3 : 2) : 1;
                 let queue = wiki ? "1/2" : rank >= 4 ? 2 : 1;
                 return `<div>${loc("achieve_perks_journeyman2",[rqueue,queue])}</div><div>${loc("achieve_perks_journeyman3")}</div>`;

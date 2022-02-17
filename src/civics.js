@@ -94,7 +94,7 @@ export function defineIndustry(){
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
     }
-    if (global.race['casting'] && global.city['pylon']){
+    if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'])){
         var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
