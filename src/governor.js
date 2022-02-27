@@ -1005,8 +1005,11 @@ export const gov_tasks = {
             return global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.count >= 1 ? true : false;
         },
         task(){
+            let mass = function(m){
+                return global.race.universe === 'magic' ? atomic_mass[m] : (['Elerium','Infernite'].includes(m) ? atomic_mass[m] * 10 : atomic_mass[m]);
+            };
             let remain = global.interstellar.mass_ejector.on * 1000;
-            Object.keys(atomic_mass).sort((a,b) => (atomic_mass[a] < atomic_mass[b]) ? 1 : -1).forEach(function(res){
+            Object.keys(atomic_mass).sort((a,b) => (mass(a) < mass(b)) ? 1 : -1).forEach(function(res){
                 let trade = breakdown.p.consume[res].hasOwnProperty(loc('trade')) ? breakdown.p.consume[res][loc('trade')]: 0;
                 let craft = breakdown.p.consume[res].hasOwnProperty(loc('job_craftsman')) ? breakdown.p.consume[res][loc('job_craftsman')]: 0;
                 if (trade < 0){ trade = 0; }

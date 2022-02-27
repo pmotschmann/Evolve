@@ -6,7 +6,7 @@ const changeList = [
         version: `1.2.12`,
         date: `2/28/2022`,
         changes: [
-            `.`,
+            `Exotic materials are now ranked higher by the Mass Optimizer governor task.`,
         ]
     },
     {
