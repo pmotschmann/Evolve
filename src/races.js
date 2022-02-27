@@ -4859,14 +4859,13 @@ export function cleanRemoveTrait(trait,rank){
                             let rank = global.race[t];
                             delete global.race[t];
                             cleanRemoveTrait(t,rank);
-                            global.race['iTraits'];
                         }
                         else {
                             global.race[t] = global.race.iTraits[t];
-                            delete global.race['iTraits'];
                         }
                     }
                 });
+                delete global.race['iTraits'];
             }
             break;
         case 'evil':
