@@ -8952,6 +8952,21 @@ function longLoop(){
             }
         }
 
+        if (global.portal['archaeology'] && global.tech.hasOwnProperty('hell_ruins') && global.tech.hell_ruins >= 2 && !global.tech['hell_vault']){
+            let sup = hellSupression('ruins');
+            let value = 250000;
+            if (global.race['high_pop']){
+                value = highPopAdjust(value);
+            }
+            value = Math.round(value * sup.supress) * global.civic.archaeologist.workers / 1000;
+            
+            if (Math.rand(0,10000) <= value){
+                global.tech['hell_vault'] = 1;
+                messageQueue(loc('portal_ruins_vault'),'info',false,['progress']);
+                renderFortress();
+            }
+        }
+
         if (global.tech['syndicate'] && global.race['truepath']){
             let regions = spaceTech();
             Object.keys(regions).forEach(function(region){

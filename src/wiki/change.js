@@ -7,6 +7,8 @@ const changeList = [
         date: `2/28/2022`,
         changes: [
             `Exotic materials are now ranked higher by the Mass Optimizer governor task.`,
+            `Repair droid effect on Carport repairs buffed from 5% to 8%.`,
+            `You must now discover the Hell Vault through Archaeology.`
         ]
     },
     {

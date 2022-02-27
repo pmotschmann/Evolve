@@ -83,7 +83,7 @@ const fortressModules = {
             repair(){
                 let repair = 180;
                 if (p_on['repair_droid']){
-                    repair *= 0.95 ** p_on['repair_droid'];
+                    repair *= 0.92 ** p_on['repair_droid'];
                 }
                 return Math.round(repair);
             },
@@ -150,7 +150,7 @@ const fortressModules = {
             },
             powered(){ return powerCostMod(3); },
             effect(){
-                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[5])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('portal_repair_droid_effect',[5])}</div><div>${loc('portal_repair_droid_effect2',[8])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -502,7 +502,7 @@ const fortressModules = {
             id: 'portal-vault',
             title: loc('portal_vault_title'),
             desc: loc('portal_vault_title'),
-            reqs: { hell_ruins: 2 },
+            reqs: { hell_ruins: 2, hell_vault: 1 },
             condition(){
                 return global.portal.vault.count >= 2 ? false : true;
             },
