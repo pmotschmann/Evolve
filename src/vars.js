@@ -967,9 +967,15 @@ if (convertVersion(global['version']) < 102007){
     }
 }
 
+if (convertVersion(global['version']) < 102012){
+    if (global.city.hasOwnProperty('ptrait')){
+        global.city.ptrait = [global.city.ptrait];
+    }
+}
+
 global['version'] = '1.2.12';
 delete global['revision'];
-delete global['beta'];
+global['beta'] = 1;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       

@@ -1435,7 +1435,7 @@ function war_campaign(gov){
     if (army > enemy){
         let deathCap = Math.floor(global.civic.garrison.raid / (5 - global.civic.garrison.tactic));
         deathCap += wounded;
-        if (global.city.ptrait === 'rage'){
+        if (global.city.ptrait.includes('rage')){
             deathCap += planetTraits.rage.vars()[2];
         }
         if (deathCap < 1){
@@ -1746,7 +1746,7 @@ function war_campaign(gov){
         if (global.civic.garrison.tactic === 0){
             deathCap = Math.floor(deathCap / 2);
         }
-        if (global.city.ptrait === 'rage'){
+        if (global.city.ptrait.includes('rage')){
             deathCap += planetTraits.rage.vars()[2];
         }
         if (deathCap < 1){
@@ -1959,7 +1959,7 @@ export function armyRating(val,type,wound){
         if (tacVal){
             army *= 1 + (tacVal / 100);
         }
-        if (global.city.ptrait === 'rage'){
+        if (global.city.ptrait.includes('rage')){
             army *= planetTraits.rage.vars()[0];
         }
         if (global.race['parasite']){
@@ -1988,7 +1988,7 @@ export function armyRating(val,type,wound){
         if (global.race['fragrant']){
             army *= 1 - (traits.fragrant.vars()[0] / 100);
         }
-        if (global.city.ptrait === 'rage'){
+        if (global.city.ptrait.includes('rage')){
             army *= planetTraits.rage.vars()[1];
         }
         if (global.race['cunning']){

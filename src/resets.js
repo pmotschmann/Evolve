@@ -259,7 +259,7 @@ export function bioseed(){
 
 // Cataclysm
 export function cataclysm_end(){
-    if (global.city.ptrait === 'unstable' && global.tech['quaked']){
+    if (global.city.ptrait.includes('unstable') && global.tech['quaked']){
         if (webWorker.w){
             webWorker.w.terminate();
         }

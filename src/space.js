@@ -6003,7 +6003,7 @@ export function fuel_adjust(fuel,drain,wiki){
     if (global.stats.achieve['heavyweight']){
         fuel *= 0.96 ** global.stats.achieve['heavyweight'].l;
     }
-    if (global.city.ptrait === 'dense'){
+    if (global.city.ptrait.includes('dense')){
         fuel *= planetTraits.dense.vars()[2];
     }
     if (global.race['cataclysm']){

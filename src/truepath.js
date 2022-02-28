@@ -2482,7 +2482,7 @@ export function calcAIDrift(){
 function xPosition(x,p){
     if (spacePlanetStats[p].orbit !== -2){
         let e = 1.075 + (spacePlanetStats[p].dist / 100);
-        if (global.city.ptrait === 'elliptical'){
+        if (global.city.ptrait.includes('elliptical')){
             switch (p){
                 case 'spc_home':
                     e = 1.5;
@@ -2500,7 +2500,7 @@ function xPosition(x,p){
 function xShift(id){
     if (spacePlanetStats[id].orbit !== -2){
         let x = spacePlanetStats[id].dist / 3;
-        if (global.city.ptrait === 'elliptical' && id === 'spc_home'){
+        if (global.city.ptrait.includes('elliptical') && id === 'spc_home'){
             x += 0.15;
         }
         if (id === 'spc_eris'){

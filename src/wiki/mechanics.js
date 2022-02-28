@@ -888,8 +888,8 @@ function jobStressCalc(info){
             importInputs(){
                 inputs.content.val = global.race['content'] ? global.race.content : 0;
                 inputs.freespirit.val = global.race['freespirit'] ? global.race['freespirit'] : 0;
-                inputs.mellow.val = global.city['ptrait'] && global.city.ptrait === 'mellow' ? true : false;
-                inputs.dense.val = global.city['ptrait'] && global.city.ptrait === 'dense' ? true : false;
+                inputs.mellow.val = global.city['ptrait'] && global.city.ptrait.includes('mellow') ? true : false;
+                inputs.dense.val = global.city['ptrait'] && global.city.ptrait.includes('dense') ? true : false;
                 inputs.workers.val = inputs.job.val === 'soldier' ? (global.civic['garrison'] && global.civic.garrison['max'] ? global.civic.garrison.max : 0) : global.civic[inputs.job.val] ? global.civic[inputs.job.val].workers : 0;
                 inputs.playful.val = global.race['playful'] ? true : false;
                 inputs.emotionless.val = global.race['emotionless'] ? global.race['emotionless'] : 0;

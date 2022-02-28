@@ -411,7 +411,7 @@ const techs = {
         trait: ['forager'],
         grant: ['foraging',3],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 1650 : 3300; },
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 1650 : 3300; },
             Iron(){ return 375; }
         },
         effect: loc('tech_bronze_spear_effect'),
@@ -1784,7 +1784,7 @@ const techs = {
         reqs: { mining: 2 },
         grant: ['mining',3],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 500 : 2500; }
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 500 : 2500; }
         },
         effect: loc('tech_iron_mining_effect'),
         action(){
@@ -4202,7 +4202,7 @@ const techs = {
         grant: ['high_tech',7],
         cost: {
             Knowledge(){ return 112500; },
-            Oil(){ return global.city.ptrait === 'dense' ? 8000 : 6800; }
+            Oil(){ return global.city.ptrait.includes('dense') ? 8000 : 6800; }
         },
         effect: loc('tech_rocketry_effect'),
         action(){
@@ -5784,7 +5784,7 @@ const techs = {
         reqs: { axe: 2, mining: 3 },
         grant: ['axe',3],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
             Iron(){ return 250; }
         },
         effect: loc('tech_iron_axes_effect'),
@@ -5888,7 +5888,7 @@ const techs = {
         not_trait: ['cataclysm','sappy'],
         grant: ['hammer',2],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 1350 : 2700; },
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
             Iron(){ return 250; }
         },
         effect: loc('tech_iron_sledgehammer_effect'),
@@ -5972,7 +5972,7 @@ const techs = {
         not_trait: ['cataclysm'],
         grant: ['pickaxe',2],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 1600 : 3200; },
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 1600 : 3200; },
             Iron(){ return 250; }
         },
         effect: loc('tech_iron_pickaxe_effect'),
@@ -6094,7 +6094,7 @@ const techs = {
         reqs: { hoe: 1, mining: 3, agriculture: 1 },
         grant: ['hoe',2],
         cost: {
-            Knowledge(){ return global.city.ptrait === 'unstable' ? 1800 : 3600; },
+            Knowledge(){ return global.city.ptrait.includes('unstable') ? 1800 : 3600; },
             Iron(){ return 500; }
         },
         effect: loc('tech_iron_hoe_effect'),
@@ -6945,7 +6945,7 @@ const techs = {
         },
         cost: {
             Knowledge(){ return 120000; },
-            Oil(){ return global.city.ptrait === 'dense' ? 10000 : 8500; },
+            Oil(){ return global.city.ptrait.includes('dense') ? 10000 : 8500; },
             Uranium(){ return 1250; }
         },
         effect: loc('tech_mad_effect'),

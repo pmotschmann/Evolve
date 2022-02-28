@@ -61,6 +61,9 @@ export const job_desc = {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
             multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
             let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * biomes.forest.vars()[0]) : global.civic.lumberjack.impact;
+            if (global.city.biome === 'savanna'){
+                impact *= biomes.savanna.vars()[2];
+            }
             if (global.city.biome === 'desert'){
                 impact *= biomes.desert.vars()[2];
             }
@@ -447,6 +450,8 @@ export function farmerValue(farm){
     }
     farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
+    farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
+    farming *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;
     farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
     farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
     farming *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars()[0] : 1;

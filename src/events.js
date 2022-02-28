@@ -68,7 +68,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.city.ptrait === 'flare' ? true : false;
+            return global.city.ptrait.includes('flare') ? true : false;
         },
         effect(){
             let at_risk = 0;
@@ -307,7 +307,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.city.ptrait === 'unstable' ? true : false;
+            return global.city.ptrait.includes('unstable') ? true : false;
         },
         effect(){
             global.tech['quaked'] = 1;

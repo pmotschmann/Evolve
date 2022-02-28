@@ -1,7 +1,7 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
-import { unlockAchieve, challengeIcon, alevel } from './achieve.js';
+import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs, jobScale } from './jobs.js';
@@ -440,23 +440,23 @@ export const actions = {
                     global.evolution['eggshell'] = { count: 0 };
                     addAction('evolution','eggshell');
 
-                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
+                    if (['oceanic','swamp'].includes(global.city.biome) || global.blood['unbound']){
                         global.evolution['aquatic'] = { count: 0 };
                         addAction('evolution','aquatic');
                     }
-                    if (global.city.biome === 'forest' || global.blood['unbound']){
+                    if (['forest','swamp','taiga'].includes(global.city.biome) || global.blood['unbound']){
                         global.evolution['fey'] = { count: 0 };
                         addAction('evolution','fey');
                     }
-                    if (global.city.biome === 'desert' || global.blood['unbound']){
+                    if (['desert','ashland'].includes(global.city.biome) || global.blood['unbound']){
                         global.evolution['sand'] = { count: 0 };
                         addAction('evolution','sand');
                     }
-                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
+                    if (['volcanic','ashland'].includes(global.city.biome) || global.blood['unbound']){
                         global.evolution['heat'] = { count: 0 };
                         addAction('evolution','heat');
                     }
-                    if (global.city.biome === 'tundra' || global.blood['unbound']){
+                    if (['tundra','taiga'].includes(global.city.biome) || global.blood['unbound']){
                         global.evolution['polar'] = { count: 0 };
                         addAction('evolution','polar');
                     }
@@ -569,23 +569,23 @@ export const actions = {
                     removeAction(actions.evolution.eggshell.id);
                     delete global.evolution.athropods;
                     delete global.evolution.eggshell;
-                    if (global.city.biome === 'oceanic' || global.blood['unbound']){
+                    if (['oceanic','swamp'].includes(global.city.biome) || global.blood['unbound']){
                         removeAction(actions.evolution.aquatic.id);
                         delete global.evolution.aquatic;
                     }
-                    if (global.city.biome === 'forest' || global.blood['unbound']){
+                    if (['forest','swamp','taiga'].includes(global.city.biome) || global.blood['unbound']){
                         removeAction(actions.evolution.fey.id);
                         delete global.evolution.fey;
                     }
-                    if (global.city.biome === 'desert' || global.blood['unbound']){
+                    if (['desert','ashland'].includes(global.city.biome) || global.blood['unbound']){
                         removeAction(actions.evolution.sand.id);
                         delete global.evolution.sand;
                     }
-                    if (global.city.biome === 'volcanic' || global.blood['unbound']){
+                    if (['volcanic','ashland'].includes(global.city.biome) || global.blood['unbound']){
                         removeAction(actions.evolution.heat.id);
                         delete global.evolution.heat;
                     }
-                    if (global.city.biome === 'tundra' || global.blood['unbound']){
+                    if (['tundra','taiga'].includes(global.city.biome) || global.blood['unbound']){
                         removeAction(actions.evolution.polar.id);
                         delete global.evolution.polar;
                     }
@@ -2491,7 +2491,7 @@ export const actions = {
                 Plywood(offset){ return costMultiplier('cottage', offset, 25, 1.25); },
                 Brick(offset){ return costMultiplier('cottage', offset, 20, 1.25); },
                 Wrought_Iron(offset){ return costMultiplier('cottage', offset, 15, 1.25); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cottage', offset, 5, 1.25) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('cottage', offset, 5, 1.25) : 0; },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
@@ -2803,10 +2803,12 @@ export const actions = {
             },
             effect(){
                 let generated = 1.2 + ((global.tech['compost'] ? global.tech['compost'] : 0) * 0.8);
-                generated *= global.city.biome === 'grassland' ? 1.2 : 1;
-                generated *= global.city.biome === 'volcanic' ? 0.9 : 1;
-                generated *= global.city.biome === 'hellscape' ? 0.25 : 1;
-                generated *= global.city.ptrait === 'trashed' ? 0.75 : 1;
+                generated *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
+                generated *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
+                generated *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;
+                generated *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
+                generated *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
+                generated *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
                 generated = +(generated).toFixed(2);
                 let store = BHStorageMulti(spatialReasoning(200));
                 let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
@@ -2906,7 +2908,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('silo', offset, 85, 1.32); },
                 Lumber(offset){ return costMultiplier('silo', offset, 65, 1.36) },
                 Stone(offset){ return costMultiplier('silo', offset, 50, 1.36); },
-                Iron(offset){ return ((global.city.silo ? global.city.silo.count : 0) + (offset || 0)) >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('silo', offset, 10, 1.36) : 0; }
+                Iron(offset){ return ((global.city.silo ? global.city.silo.count : 0) + (offset || 0)) >= 4 && global.city.ptrait.includes('unstable') ? costMultiplier('silo', offset, 10, 1.36) : 0; }
             },
             effect(){
                 let food = BHStorageMulti(spatialReasoning(500));
@@ -2932,7 +2934,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('garrison', offset, 240, 1.5); },
                 Stone(offset){ return costMultiplier('garrison', offset, 260, 1.46); },
-                Iron(offset){ return ((global.city['garrison'] ? global.city.garrison.count : 0) + (offset || 0)) >= 4 && global.city.ptrait === 'unstable' ? costMultiplier('garrison', offset, 50, 1.4) : 0; },
+                Iron(offset){ return ((global.city['garrison'] ? global.city.garrison.count : 0) + (offset || 0)) >= 4 && global.city.ptrait.includes('unstable') ? costMultiplier('garrison', offset, 50, 1.4) : 0; },
                 Horseshoe(){ return global.race['hooved'] ? (global.race['chameleon'] ? 1 : 2) : 0; }
             },
             effect(){
@@ -2978,7 +2980,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('hospital', offset, 22000, 1.32); },
                 Furs(offset){ return costMultiplier('hospital', offset, 4000, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('hospital', offset, 500, 1.32) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('hospital', offset, 500, 1.32) : 0; },
                 Aluminium(offset){ return costMultiplier('hospital', offset, 10000, 1.32); },
             },
             effect(){
@@ -3005,7 +3007,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('boot_camp', offset, 50000, 1.32); },
                 Lumber(offset){ return costMultiplier('boot_camp', offset, 21500, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('boot_camp', offset, 300, 1.32) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('boot_camp', offset, 300, 1.32) : 0; },
                 Aluminium(offset){ return costMultiplier('boot_camp', offset, 12000, 1.32); },
                 Brick(offset){ return costMultiplier('boot_camp', offset, 1400, 1.32); },
             },
@@ -3302,7 +3304,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('bank', offset, 250, 1.35); },
                 Lumber(offset){ return costMultiplier('bank', offset, 75, 1.32); },
                 Stone(offset){ return costMultiplier('bank', offset, 100, 1.35); },
-                Iron(offset){ return ((global.city['bank'] ? global.city.bank.count : 0) + (offset || 0)) >= 2 && global.city.ptrait === 'unstable' ? costMultiplier('bank', offset, 30, 1.3) : 0; }
+                Iron(offset){ return ((global.city['bank'] ? global.city.bank.count : 0) + (offset || 0)) >= 2 && global.city.ptrait.includes('unstable') ? costMultiplier('bank', offset, 30, 1.3) : 0; }
             },
             effect(){
                 let vault = bank_vault();
@@ -3528,7 +3530,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('cement_plant', offset, 3000, 1.5); },
                 Lumber(offset){ return costMultiplier('cement_plant', offset, 1800, 1.36); },
                 Stone(offset){ return costMultiplier('cement_plant', offset, 2000, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('cement_plant', offset, 275, 1.32) : 0; }
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('cement_plant', offset, 275, 1.32) : 0; }
             },
             effect(){
                 if (global.tech['cement'] >= 5){
@@ -3566,7 +3568,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('foundry', offset, 750, 1.36); },
                 Stone(offset){ return costMultiplier('foundry', offset, 100, 1.36); },
                 Copper(offset){ return costMultiplier('foundry', offset, 250, 1.36); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('foundry', offset, 40, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('foundry', offset, 40, 1.36) : 0; },
             },
             effect(){
                 let desc = `<div>${loc('city_foundry_effect1',[jobScale(1)])}</div>`;
@@ -3708,7 +3710,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('metal_refinery', offset, 2500, 1.35); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('metal_refinery', offset, 125, 1.35) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('metal_refinery', offset, 125, 1.35) : 0; },
                 Steel(offset){ return costMultiplier('metal_refinery', offset, 350, 1.35); }
             },
             powered(){ return powerCostMod(2); },
@@ -3782,7 +3784,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('coal_mine', offset, 480, dirt_adjust(1.4)); },
                 Lumber(offset){ return costMultiplier('coal_mine', offset, 250, dirt_adjust(1.36)); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_mine', offset, 28, dirt_adjust(1.36)) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('coal_mine', offset, 28, dirt_adjust(1.36)) : 0; },
                 Wrought_Iron(offset){ return costMultiplier('coal_mine', offset, 18, dirt_adjust(1.36)); }
             },
             effect(){
@@ -3818,7 +3820,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('oil_well', offset, 5000, dirt_adjust(1.5)); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_well', offset, 450, dirt_adjust(1.5)) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('oil_well', offset, 450, dirt_adjust(1.5)) : 0; },
                 Cement(offset){ return costMultiplier('oil_well', offset, 5250, dirt_adjust(1.5)); },
                 Steel(offset){ return costMultiplier('oil_well', offset, 6000, dirt_adjust(1.5)); }
             },
@@ -3850,7 +3852,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('oil_depot', offset, 2500, dirt_adjust(1.46)); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_depot', offset, 325, dirt_adjust(1.36)) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('oil_depot', offset, 325, dirt_adjust(1.36)) : 0; },
                 Cement(offset){ return costMultiplier('oil_depot', offset, 3750, dirt_adjust(1.46)); },
                 Sheet_Metal(offset){ return costMultiplier('oil_depot', offset, 100, dirt_adjust(1.45)); }
             },
@@ -3896,7 +3898,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('trade', offset, 500, 1.36); },
                 Lumber(offset){ return costMultiplier('trade', offset, 125, 1.36); },
                 Stone(offset){ return costMultiplier('trade', offset, 50, 1.36); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('trade', offset, 15, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('trade', offset, 15, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('trade', offset, 65, 1.36); }
             },
             effect(){
@@ -3930,7 +3932,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('wharf', offset, 62000, 1.32); },
                 Lumber(offset){ return costMultiplier('wharf', offset, 44000, 1.32); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wharf', offset, 200, 1.32) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('wharf', offset, 200, 1.32) : 0; },
                 Cement(offset){ return costMultiplier('wharf', offset, 3000, 1.32); },
                 Oil(offset){ return costMultiplier('wharf', offset, 750, 1.32); }
             },
@@ -3972,7 +3974,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('tourist_center', offset, 100000, 1.36); },
                 Stone(offset){ return costMultiplier('tourist_center', offset, 25000, 1.36); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('tourist_center', offset, 1000, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('tourist_center', offset, 1000, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('tourist_center', offset, 7500, 1.36); },
                 Plywood(offset){ return costMultiplier('tourist_center', offset, 5000, 1.36); },
             },
@@ -4019,7 +4021,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('amphitheatre', offset, 500, 1.55); },
                 Lumber(offset){ return costMultiplier('amphitheatre', offset, 50, 1.75); },
                 Stone(offset){ return costMultiplier('amphitheatre', offset, 200, 1.75); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('amphitheatre', offset, 18, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('amphitheatre', offset, 18, 1.36) : 0; },
             },
             effect(){
                 let athVal1 = govActive('athleticism',0);
@@ -4049,7 +4051,7 @@ export const actions = {
             not_trait: ['cataclysm'],
             cost: {
                 Money(offset){ return costMultiplier('casino', offset, 350000, 1.35); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('casino', offset, 2000, 1.35) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('casino', offset, 2000, 1.35) : 0; },
                 Furs(offset){ return costMultiplier('casino', offset, 60000, 1.35); },
                 Plywood(offset){ return costMultiplier('casino', offset, 10000, 1.35); },
                 Brick(offset){ return costMultiplier('casino', offset, 6000, 1.35); }
@@ -4089,7 +4091,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('temple', offset, 50, 1.36); },
                 Lumber(offset){ return costMultiplier('temple', offset, 25, 1.36); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('temple', offset, 6, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('temple', offset, 6, 1.36) : 0; },
                 Furs(offset){ return costMultiplier('temple', offset, 15, 1.36); },
                 Cement(offset){ return costMultiplier('temple', offset, 10, 1.36); }
             },
@@ -4225,7 +4227,7 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('university', offset, 500, 1.36) - 200; },
                 Stone(offset){ return costMultiplier('university', offset, 750, 1.36) - 350; },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('university', offset, 5, 1.36) : 0; },
-                Iron(offset){ return ((global.city['university'] ? global.city.university.count : 0) + (offset || 0)) >= 3 && global.city.ptrait === 'unstable' ? costMultiplier('university', offset, 25, 1.36) : 0; }
+                Iron(offset){ return ((global.city['university'] ? global.city.university.count : 0) + (offset || 0)) >= 3 && global.city.ptrait.includes('unstable') ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
             effect(){
                 let multiplier = 1;
@@ -4301,7 +4303,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('library', offset, 45, 1.2); },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('library', offset, 2, 1.2) : 0; },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('library', offset, 4, 1.2) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('library', offset, 4, 1.2) : 0; },
                 Furs(offset){ return costMultiplier('library', offset, 22, 1.2); },
                 Plywood(offset){ return costMultiplier('library', offset, 20, 1.2); },
                 Brick(offset){ return costMultiplier('library', offset, 15, 1.2); }
@@ -4389,14 +4391,14 @@ export const actions = {
                 Knowledge(offset){ return costMultiplier('wardenclyffe', offset, global.race['logical'] ? (1000 - traits.logical.vars()[0]) : 1000, 1.22); },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('wardenclyffe', offset, 100, 1.22) : 0; },
                 Copper(offset){ return costMultiplier('wardenclyffe', offset, 500, 1.22); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('wardenclyffe', offset, 75, 1.22) : 0; },
                 Cement(offset){ return costMultiplier('wardenclyffe', offset, 350, 1.22); },
                 Sheet_Metal(offset){ return costMultiplier('wardenclyffe', offset, 125, 1.2); },
                 Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('wardenclyffe', offset, 50, 1.18) : 0; },
             },
             effect(){
                 let gain = 1000;
-                if (global.city.ptrait === 'magnetic'){
+                if (global.city.ptrait.includes('magnetic')){
                     gain += planetTraits.magnetic.vars()[1];
                 }
                 if (global.tech['supercollider']){
@@ -4415,7 +4417,7 @@ export const actions = {
                 let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
-                    if (global.city.ptrait === 'magnetic'){
+                    if (global.city.ptrait.includes('magnetic')){
                         pgain += planetTraits.magnetic.vars()[1];
                     }
                     if (global.space['satellite']){
@@ -4483,7 +4485,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('biolab', offset, 25000, 1.3); },
                 Knowledge(offset){ return costMultiplier('biolab', offset, 5000, 1.3); },
                 Copper(offset){ return costMultiplier('biolab', offset, 1250, 1.3); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('biolab', offset, 160, 1.3) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('biolab', offset, 160, 1.3) : 0; },
                 Alloy(offset){ return costMultiplier('biolab', offset, 350, 1.3); }
             },
             effect(){
@@ -4533,7 +4535,7 @@ export const actions = {
                 Money(offset){ return costMultiplier('coal_power', offset, 10000, dirt_adjust(1.22)); },
                 Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('coal_power', offset, 125, dirt_adjust(1.22)) : 0; },
                 Copper(offset){ return costMultiplier('coal_power', offset, 1800, dirt_adjust(1.22)) - 1000; },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('coal_power', offset, 175, dirt_adjust(1.22)) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('coal_power', offset, 175, dirt_adjust(1.22)) : 0; },
                 Cement(offset){ return costMultiplier('coal_power', offset, 600, dirt_adjust(1.22)); },
                 Steel(offset){ return costMultiplier('coal_power', offset, 2000, dirt_adjust(1.22)) - 1000; }
             },
@@ -4573,7 +4575,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('oil_power', offset, 50000, dirt_adjust(1.22)); },
                 Copper(offset){ return costMultiplier('oil_power', offset, 6500, dirt_adjust(1.22)) + 1000; },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('oil_power', offset, 180, dirt_adjust(1.22)) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('oil_power', offset, 180, dirt_adjust(1.22)) : 0; },
                 Aluminium(offset){ return costMultiplier('oil_power', offset, 12000, dirt_adjust(1.22)); },
                 Cement(offset){ return costMultiplier('oil_power', offset, 5600, dirt_adjust(1.22)) + 1000; }
             },
@@ -4621,7 +4623,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('fission_power', offset, 250000, 1.36); },
                 Copper(offset){ return costMultiplier('fission_power', offset, 13500, 1.36); },
-                Iron(offset){ return global.city.ptrait === 'unstable' ? costMultiplier('fission_power', offset, 1750, 1.36) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('fission_power', offset, 1750, 1.36) : 0; },
                 Cement(offset){ return costMultiplier('fission_power', offset, 10800, 1.36); },
                 Titanium(offset){ return costMultiplier('fission_power', offset, 7500, 1.36); }
             },
@@ -6137,24 +6139,44 @@ function runAction(c_action,action,type){
 export function setPlanet(hell){
     var biome = 'grassland';
     let max_bound = !hell && global.stats.portals >= 1 ? 7 : 6;
+    let subbiome = Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
+    let uAffix = universeAffix();
     switch (Math.floor(Math.seededRandom(0,max_bound))){
         case 0:
-            biome = 'grassland';
+            {
+                let sb = subbiome && global.stats.achieve['biome_grassland'] && global.stats.achieve.biome_grassland[uAffix] && global.stats.achieve.biome_grassland[uAffix] > 0;
+                biome = sb ? 'savanna' : 'grassland';
+            }
             break;
         case 1:
-            biome = 'oceanic';
+            {
+                let sb = subbiome && global.stats.achieve['biome_oceanic'] && global.stats.achieve.biome_oceanic[uAffix] && global.stats.achieve.biome_oceanic[uAffix] > 0;
+                biome = sb ? 'swamp' : 'oceanic';
+            }
             break;
         case 2:
-            biome = 'forest';
+            {
+                let sb = subbiome && global.stats.achieve['biome_forest'] && global.stats.achieve.biome_forest[uAffix] && global.stats.achieve.biome_forest[uAffix] > 0;
+                biome = sb ? (Math.floor(Math.seededRandom(0,2)) === 0 ? 'taiga' : 'swamp') : 'forest';
+            }
             break;
         case 3:
-            biome = 'desert';
+            {
+                let sb = subbiome && global.stats.achieve['biome_desert'] && global.stats.achieve.biome_desert[uAffix] && global.stats.achieve.biome_desert[uAffix] > 0;
+                biome = sb ? 'ashland' : 'desert';
+            }
             break;
         case 4:
-            biome = 'volcanic';
+            {
+                let sb = subbiome && global.stats.achieve['biome_volcanic'] && global.stats.achieve.biome_volcanic[uAffix] && global.stats.achieve.biome_volcanic[uAffix] > 0;
+                biome = sb ? 'ashland' : 'volcanic';
+            }
             break;
         case 5:
-            biome = 'tundra';
+            {
+                let sb = subbiome && global.stats.achieve['biome_tundra'] && global.stats.achieve.biome_tundra[uAffix] && global.stats.achieve.biome_tundra[uAffix] > 0;
+                biome = sb ? 'taiga' : 'tundra';
+            }
             break;
         case 6:
             biome = global.race.universe === 'evil' ? 'eden' : 'hellscape';
@@ -6164,45 +6186,71 @@ export function setPlanet(hell){
             break;
     }
 
-    let trait = 'none';
-    switch (Math.floor(Math.seededRandom(0,16))){
-        case 0:
-            trait = 'toxic';
-            break;
-        case 1:
-            trait = 'mellow';
-            break;
-        case 2:
-            trait = 'rage';
-            break;
-        case 3:
-            trait = 'stormy';
-            break;
-        case 4:
-            trait = 'ozone';
-            break;
-        case 5:
-            trait = 'magnetic';
-            break;
-        case 6:
-            trait = 'trashed';
-            break;
-        case 7:
-            trait = 'elliptical';
-            break;
-        case 8:
-            trait = 'flare';
-            break;
-        case 9:
-            trait = 'dense';
-            break;
-        case 10:
-            trait = 'unstable';
-            break;
-        default:
-            trait = 'none';
-            break;
+    let trait = [];
+    for (let i=0; i<2; i++){
+        let top = 16 + (8 * i);
+        switch (Math.floor(Math.seededRandom(0,top))){
+            case 0:
+                if (!trait.includes('toxic')){
+                    trait.push('toxic');
+                }
+                break;
+            case 1:
+                if (!trait.includes('mellow')){
+                    trait.push('mellow');
+                }
+                break;
+            case 2:
+                if (!trait.includes('rage')){
+                    trait.push('rage');
+                }
+                break;
+            case 3:
+                if (!trait.includes('stormy')){
+                    trait.push('stormy');
+                }
+                break;
+            case 4:
+                if (!trait.includes('ozone')){
+                    trait.push('ozone');
+                }
+                break;
+            case 5:
+                if (!trait.includes('magnetic')){
+                    trait.push('magnetic');
+                }
+                break;
+            case 6:
+                if (!trait.includes('trashed')){
+                    trait.push('trashed');
+                }
+                break;
+            case 7:
+                if (!trait.includes('elliptical')){
+                    trait.push('elliptical');
+                }
+                break;
+            case 8:
+                if (!trait.includes('flare')){
+                    trait.push('flare');
+                }
+                break;
+            case 9:
+                if (!trait.includes('dense')){
+                    trait.push('dense');
+                }
+                break;
+            case 10:
+                if (!trait.includes('unstable')){
+                    trait.push('unstable');
+                }
+                break;
+            default:
+                break;
+        }
     }
+    
+    trait.sort();
 
     let geology = {};
     let max = Math.floor(Math.seededRandom(0,3));
@@ -6265,7 +6313,12 @@ export function setPlanet(hell){
             break;
     }
 
-    let title = trait === 'none' ? `${biomes[biome].label} ${num}` : `${planetTraits[trait].label} ${biomes[biome].label} ${num}`;
+    let traits = '';
+    trait.forEach(function(t){
+        traits += `${planetTraits[t].label} `;
+    });
+
+    let title = `${traits}${biomes[biome].label} ${num}`;
     var parent = $(`<div id="${id}" class="action"></div>`);
     var element = $(`<a class="button is-dark" v-on:click="action"><span class="aTitle">${title}</span></a>`);
     parent.append(element);
@@ -6286,8 +6339,10 @@ export function setPlanet(hell){
     popover(id,function(obj){
         obj.popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
         obj.popper.append($(`<div>${biomes[biome].desc}</div>`));
-        if (trait !== 'none'){
-            obj.popper.append($(`<div>${planetTraits[trait].desc}</div>`));
+        if (trait.length > 0){
+            trait.forEach(function(t){
+                obj.popper.append($(`<div>${planetTraits[t].desc}</div>`));
+            });
         }
 
         let good = $('<div></div>');
@@ -7036,7 +7091,7 @@ function basicHousingLabel(){
         case 'kamel':
             return loc('city_basic_housing_sand_title');
         default:
-            return global.city.ptrait === 'trashed' ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
+            return global.city.ptrait.includes('trashed') ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
     }
 }
 

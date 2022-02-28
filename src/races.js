@@ -4179,7 +4179,7 @@ export function racialTrait(workers,type){
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
         modifier *= 1.2;
     }
-    if (global.city.ptrait === 'magnetic' && type === 'miner'){
+    if (global.city.ptrait.includes('magnetic') && type === 'miner'){
         modifier *= planetTraits.magnetic.vars()[2];
     }
     if (global.race['weak'] && (type === 'miner' || type === 'lumberjack')){
@@ -5080,6 +5080,30 @@ export const biomes = {
         desc: loc('biome_tundra'),
         vars(){ return [1.25,0.9]; }, // [Hunting Fur, Oil Well]
         wiki: ['%','%']
+    },
+    savanna: {
+        label: loc('biome_savanna_name'),
+        desc: loc('biome_savanna'),
+        vars(){ return [1.10, 1.2, 0.8]; }, // [Agriculture, Fur, Lumberjack]
+        wiki: ['%','%','%']
+    },
+    swamp: {
+        label: loc('biome_swamp_name'),
+        desc: loc('biome_swamp'),
+        vars(){ return [1]; }, // [Lumberjack Lumber]
+        wiki: ['%']
+    },
+    ashland: {
+        label: loc('biome_ashland_name'),
+        desc: loc('biome_ashland'),
+        vars(){ return [0.65,1.25,1.12]; }, // [Agriculture, Titanium, Iron & Copper]
+        wiki: ['%','%','%']
+    },
+    taiga: {
+        label: loc('biome_taiga_name'),
+        desc: loc('biome_taiga'),
+        vars(){ return [1]; }, // [Lumberjack Lumber]
+        wiki: ['%']
     },
     hellscape: {
         label: loc('biome_hellscape_name'),
