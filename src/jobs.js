@@ -106,7 +106,7 @@ export const job_desc = {
     },
     scavenger: function(){
         let scavenger = traits.scavenger.vars()[0];
-        if (global.city.ptrait === 'trashed' && global.race['scavenger']){
+        if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
             scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
         if (global.race['high_pop']){
@@ -454,7 +454,7 @@ export function farmerValue(farm){
     farming *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;
     farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
     farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
-    farming *= global.city.ptrait === 'trashed' ? planetTraits.trashed.vars()[0] : 1;
+    farming *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
     farming *= racialTrait(global.civic.farmer.workers,'farmer');
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
     farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;

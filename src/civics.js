@@ -1994,6 +1994,9 @@ export function armyRating(val,type,wound){
         if (global.race['cunning']){
             army *= 1 + (traits.cunning.vars()[0] * global.race['cunning'] / 100);
         }
+        if (global.city.biome === 'savanna'){
+            army *= biomes.savanna.vars()[1];
+        }
     }
     if (global.civic.govern.type === 'autocracy'){
         army *= 1.35;

@@ -5084,13 +5084,13 @@ export const biomes = {
     savanna: {
         label: loc('biome_savanna_name'),
         desc: loc('biome_savanna'),
-        vars(){ return [1.10, 1.2, 0.8]; }, // [Agriculture, Fur, Lumberjack]
+        vars(){ return [1.10, 1.18, 0.8]; }, // [Agriculture, Hunting, Lumberjack]
         wiki: ['%','%','%']
     },
     swamp: {
         label: loc('biome_swamp_name'),
         desc: loc('biome_swamp'),
-        vars(){ return [1]; }, // [Lumberjack Lumber]
+        vars(){ return [1]; }, // [??]
         wiki: ['%']
     },
     ashland: {
@@ -5102,7 +5102,7 @@ export const biomes = {
     taiga: {
         label: loc('biome_taiga_name'),
         desc: loc('biome_taiga'),
-        vars(){ return [1]; }, // [Lumberjack Lumber]
+        vars(){ return [1]; }, // [??]
         wiki: ['%']
     },
     hellscape: {

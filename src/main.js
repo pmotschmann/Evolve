@@ -1136,7 +1136,7 @@ function fastLoop(){
 
         let divisor = 5;
         global.city.morale.unemployed = 0;
-        if (global.city.ptrait !== 'mellow'){
+        if (!global.city.ptrait.includes('mellow')){
             morale -= global.civic.unemployed.workers;
             global.city.morale.unemployed = -(global.civic.unemployed.workers);
         }
@@ -2756,6 +2756,9 @@ function fastLoop(){
                     if (global.race['ghostly']){
                         food_hunt *= 1 + (traits.ghostly.vars()[0] / 100);
                     }
+                    if (global.city.biome === 'savanna'){
+                        food_hunt *= biomes.savanna.vars()[1];
+                    }
                     food_bd[loc('job_hunter')] = food_hunt + 'v';
 
                     if (global.race['carnivore'] && global.city['lodge'] && food_hunt > 0){
@@ -3151,6 +3154,9 @@ function fastLoop(){
             if (global.race['evil'] || global.race['artifical']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.hunter.workers * weapons / 20;
+                if (global.city.biome === 'savanna'){
+                    hunters *= biomes.savanna.vars()[1];
+                }
                 fur_bd[loc('job_hunter')] = hunters  + 'v';
                 modRes('Furs', hunters * hunger * global_multiplier * time_multiplier);
 
@@ -3168,9 +3174,6 @@ function fastLoop(){
             }
             else if (global.city.biome === 'tundra'){
                 hunting *= biomes.tundra.vars()[0];
-            }
-            else if (global.city.biome === 'savanna'){
-                hunting *= biomes.savanna.vars()[1];
             }
 
             fur_bd[loc('soldiers')] = hunting  + 'v';
@@ -4303,6 +4306,9 @@ function fastLoop(){
                 let lumber_bd = {};
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = global.civic.hunter.workers * weapons / 2;
+                if (global.city.biome === 'savanna'){
+                    hunters *= biomes.savanna.vars()[1];
+                }
 
                 let soldiers = armyRating(garrisonSize(),'hunting') / 3;
 

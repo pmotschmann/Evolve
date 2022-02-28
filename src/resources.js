@@ -116,6 +116,7 @@ export const atomic_mass = {
     Bolognium: 75.898,
     Vitreloy: 41.08,
     Orichalcum: 237.8,
+    Water: 18.01,
     Plywood: 7.666,
     Brick: 20.009,
     Wrought_Iron: 55.845,
