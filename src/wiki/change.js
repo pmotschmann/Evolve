@@ -7,7 +7,8 @@ const changeList = [
         revision: `a`,
         date: `3/1/2022`,
         changes: [
-            `Fixed some bugs with planet traits.`
+            `Fixed some bugs with planet traits.`,
+            `Fixed bug with attaching on Swamp planets.`
         ]
     },
     {
