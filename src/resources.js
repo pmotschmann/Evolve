@@ -920,6 +920,14 @@ export function setResourceName(name){
         }
     }
 
+    if (global.city.biome === 'ashland'){
+        switch(name){
+            case 'Cement':
+                global['resource'][name].name = loc('resource_Ashcrete_name');
+                break;
+        }
+    }
+
     let hallowed = eventActive('halloween');
     if (hallowed.active){
         switch(name){

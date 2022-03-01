@@ -1339,6 +1339,9 @@ function battleAssessment(gov){
     if (global.race['banana']){
         enemy *= 2;
     }
+    if (global.city.biome === 'swamp'){
+        enemy *= biomes.swamp.vars()[0];
+    }
 
     if (eventActive('fool',2021)){
         enemy /= 1.25;
@@ -1410,6 +1413,9 @@ function war_campaign(gov){
     enemy = Math.floor(enemy * global.civic.foreign[`gov${gov}`].mil / 100);
     if (global.race['banana']){
         enemy *= 2;
+    }
+    if (global.city.biome === 'swamp'){
+        enemy *= biomes.swamp.vars()[0];
     }
     if (global.race['mistrustful']){
         global.civic.foreign[`gov${gov}`].hstl += traits.mistrustful.vars()[0];
@@ -1889,6 +1895,9 @@ function lootModify(val,gov){
 
     if (global.race['banana']){
         loot *= 0.5;
+    }
+    if (global.city.biome === 'swamp'){
+        loot *= biomes.swamp.vars()[1];
     }
 
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);

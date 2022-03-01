@@ -5060,7 +5060,7 @@ export const biomes = {
     forest: {
         label: loc('biome_forest_name'),
         desc: loc('biome_forest'),
-        vars(){ return [1.15]; }, // [Lumberjack Lumber]
+        vars(){ return [1.2]; }, // [Lumberjack Lumber]
         wiki: ['%']
     },
     desert: {
@@ -5084,19 +5084,19 @@ export const biomes = {
     savanna: {
         label: loc('biome_savanna_name'),
         desc: loc('biome_savanna'),
-        vars(){ return [1.10, 1.18, 0.8]; }, // [Agriculture, Hunting, Lumberjack]
+        vars(){ return [1.1, 1.18, 0.8]; }, // [Agriculture, Hunting, Lumberjack]
         wiki: ['%','%','%']
     },
     swamp: {
         label: loc('biome_swamp_name'),
         desc: loc('biome_swamp'),
-        vars(){ return [1]; }, // [??]
-        wiki: ['%']
+        vars(){ return [1.4,1.25,1.1,0.88]; }, // [City Defense, War Loot, Lumber, Stone]
+        wiki: ['%','%','%','%']
     },
     ashland: {
         label: loc('biome_ashland_name'),
         desc: loc('biome_ashland'),
-        vars(){ return [0.65,1.25,1.12]; }, // [Agriculture, Titanium, Iron & Copper]
+        vars(){ return [0.62,1.25,1.1]; }, // [Agriculture, Ashcrete, Iron & Copper]
         wiki: ['%','%','%']
     },
     taiga: {

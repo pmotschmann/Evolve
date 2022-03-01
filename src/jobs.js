@@ -67,6 +67,9 @@ export const job_desc = {
             if (global.city.biome === 'desert'){
                 impact *= biomes.desert.vars()[2];
             }
+            if (global.city.biome === 'swamp'){
+                impact *= biomes.swamp.vars()[2];
+            }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack'){
@@ -80,6 +83,9 @@ export const job_desc = {
         multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
         if (global.city.biome === 'desert'){
             multiplier *= biomes.desert.vars()[0];
+        }
+        if (global.city.biome === 'swamp'){
+            multiplier *= biomes.swamp.vars()[3];
         }
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
@@ -139,9 +145,15 @@ export const job_desc = {
     },
     cement_worker: function(){
         let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
+        if (global.city.biome === 'ashland'){
+            unit_price *= biomes.ashland.vars()[1];
+        }
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
         let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
+        if (global.city.biome === 'ashland'){
+            gain *= biomes.ashland.vars()[1];
+        }
         gain = +(gain).toFixed(2);
         return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
     },

@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Planets can now have upto two traits.`,
             `Advanced Biomes: Savanna, Swamp, Ashland, and Taiga can now appear.`,
+            `Forest Biome lumber bonus changed from 15% to 20%.`,
             `Exotic materials are now ranked higher by the Mass Optimizer governor task.`,
             `Repair droid effect on Carport repairs buffed from 5% to 8%.`,
             `You must now discover the Hell Vault through Archaeology.`,

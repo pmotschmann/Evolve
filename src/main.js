@@ -3726,6 +3726,9 @@ function fastLoop(){
         // Cement
         if (global.resource.Cement.display){
             let unit_price = global.race['high_pop'] ? 3 / traits.high_pop.vars()[0] : 3;
+            if (global.city.biome === 'ashland'){
+                unit_price *= biomes.ashland.vars()[1];
+            }
             let stone_cost = global.civic.cement_worker.workers * unit_price;
             let workDone = global.civic.cement_worker.workers;
             while (stone_cost * time_multiplier > global.resource.Stone.amount && stone_cost > 0){
@@ -3739,6 +3742,9 @@ function fastLoop(){
             let cement_base = global.tech['cement'] >= 4 ? 1.2 : 1;
             cement_base *= global.civic.cement_worker.impact;
             cement_base *= racialTrait(global.civic.cement_worker.workers,'factory');
+            if (global.city.biome === 'ashland'){
+                cement_base *= biomes.ashland.vars()[1];
+            }
 
             let factory_output = workDone * cement_base;
             if (global.civic.govern.type === 'corpocracy'){
@@ -4068,9 +4074,6 @@ function fastLoop(){
                     if (global.city.biome === 'oceanic'){
                         delta *= biomes.oceanic.vars()[1];
                     }
-                    else if (global.city.biome === 'ashland'){
-                        delta *= biomes.ashland.vars()[1];
-                    }
                     delta *= shrineMetal.mult;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;
                     modRes('Titanium', (delta * time_multiplier) / divisor);
@@ -4350,6 +4353,7 @@ function fastLoop(){
                 lumber_base *= global.city.biome === 'forest' ? biomes.forest.vars()[0] : 1;
                 lumber_base *= global.city.biome === 'savanna' ? biomes.savanna.vars()[2] : 1;
                 lumber_base *= global.city.biome === 'desert' ? biomes.desert.vars()[2] : 1;
+                lumber_base *= global.city.biome === 'swamp' ? biomes.swamp.vars()[2] : 1;
                 lumber_base *= global.civic.lumberjack.impact;
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
@@ -4438,6 +4442,9 @@ function fastLoop(){
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
             if (global.city.biome === 'desert'){
                 stone_base *= biomes.desert.vars()[0];
+            }
+            if (global.city.biome === 'swamp'){
+                stone_base *= biomes.swamp.vars()[3];
             }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 stone_base *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
@@ -4830,9 +4837,6 @@ function fastLoop(){
                     }
                     if (global.city.biome === 'oceanic'){
                         delta *= biomes.oceanic.vars()[0];
-                    }
-                    else if (global.city.biome === 'ashland'){
-                        delta *= biomes.ashland.vars()[1];
                     }
                     delta *= shrineMetal.mult;
                     let divisor = global.tech['titanium'] >= 3 ? 10 : 25;

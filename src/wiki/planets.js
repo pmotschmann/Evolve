@@ -35,7 +35,7 @@ const extraInfo = {
     volcanic: ['weather','genus'],
     tundra: ['weather','genus'],
     savanna: ['condition'],
-    swamp: ['trait','genus','condition'],
+    swamp: ['trait','trait2','genus','condition'],
     ashland: ['weather','trait','genus','condition'],
     taiga: ['weather','genus','condition'],
     hellscape: ['weather','genus','universe'],
