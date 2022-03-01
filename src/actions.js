@@ -4232,6 +4232,9 @@ export const actions = {
             effect(){
                 let multiplier = 1;
                 let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+                if (global.city.ptrait.includes('permafrost')){
+                    gain += planetTraits.permafrost.vars()[1];
+                }
                 if (global.tech['science'] >= 4){
                     multiplier += (global.city['library'].count * 0.02);
                 }
@@ -6188,7 +6191,7 @@ export function setPlanet(hell){
 
     let trait = [];
     for (let i=0; i<2; i++){
-        let top = 16 + (8 * i);
+        let top = 18 + (9 * i);
         switch (Math.floor(Math.seededRandom(0,top))){
             case 0:
                 if (!trait.includes('toxic')){
@@ -6243,6 +6246,11 @@ export function setPlanet(hell){
             case 10:
                 if (!trait.includes('unstable')){
                     trait.push('unstable');
+                }
+                break;
+            case 11:
+                if (!trait.includes('permafrost') && !['volcanic','ashland','hellscape'].includes(biome)){
+                    trait.push('permafrost');
                 }
                 break;
             default:

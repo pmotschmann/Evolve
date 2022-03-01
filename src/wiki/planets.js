@@ -44,7 +44,8 @@ const extraInfo = {
     ozone: ['trait'],
     trashed: ['trait'],
     elliptical: ['trait'],
-    unstable: ['trait']
+    unstable: ['trait'],
+    permafrost: ['trait']
 };
 
 function infoForFeature(planetFeatures, content) {

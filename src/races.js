@@ -5173,7 +5173,13 @@ export const planetTraits = {
     unstable: {
         label: loc('planet_unstable'),
         desc: loc('planet_unstable_desc')
-    }
+    },
+    permafrost: {
+        label: loc('planet_permafrost'),
+        desc: loc('planet_permafrost_desc'),
+        vars(){ return [0.75,100]; }, // [Mining Production, University Base]
+        wiki: ['%','A']
+    },
 };
 
 function shellColor(){

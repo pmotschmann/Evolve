@@ -4699,6 +4699,9 @@ function fastLoop(){
             if (global.city.ptrait.includes('dense')){
                 miner_base *= planetTraits.dense.vars()[0];
             }
+            if (global.city.ptrait.includes('permafrost')){
+                miner_base *= planetTraits.permafrost.vars()[0];
+            }
             miner_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 miner_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
@@ -6932,6 +6935,9 @@ function midLoop(){
         if (global.city['university']){
             let multiplier = 1;
             let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+            if (global.city.ptrait.includes('permafrost')){
+                base += planetTraits.permafrost.vars()[1];
+            }
             if (global.tech['science'] >= 4){
                 multiplier += global.city['library'].count * 0.02;
             }
