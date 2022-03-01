@@ -450,11 +450,13 @@ popover('topBarPlanet',
             if (trait.length > 0){
                 let traits = '';
                 trait.forEach(function(t){
-                    if (t === 'mellow' && global.race.species === 'entish'){
-                        traits += `${loc('planet_mellow_eg')} `;
-                    }
-                    else {
-                        traits += `${planetTraits[t].label} `;
+                    if (planetTraits.hasOwnProperty(t)){
+                        if (t === 'mellow' && global.race.species === 'entish'){
+                            traits += `${loc('planet_mellow_eg')} `;
+                        }
+                        else {
+                            traits += `${planetTraits[t].label} `;
+                        }
                     }
                 });
                 planet_label = `${traits}${planet_label}`;

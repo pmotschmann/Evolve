@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.12`,
+        revision: `a`,
+        date: `3/1/2022`,
+        changes: [
+            `Fixed some bugs with planet traits.`
+        ]
+    },
+    {
+        version: `1.2.12`,
         date: `2/28/2022`,
         changes: [
             `Planets can now have upto two traits.`,

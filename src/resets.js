@@ -1,6 +1,6 @@
 import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
-import { races } from './races.js';
+import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
 
 // Mutual Assured Destruction
@@ -144,7 +144,9 @@ export function bioseed(){
     unlockAchieve(`seeder`);
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
-        unlockAchieve(`atmo_${a}`);
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
     });
     unlockAchieve(`genus_${genus}`);
     
@@ -649,7 +651,9 @@ export function ascend(){
     global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
 
     atmo.forEach(function(a){
-        unlockAchieve(`atmo_${a}`);
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
     });
 
     if (typeof global.tech['world_control'] === 'undefined'){

@@ -6317,13 +6317,15 @@ export function setPlanet(hell){
             orbit = 777;
             break;
         default:
-            orbit = Math.floor(Math.seededRandom(200,trait === 'elliptical' ? 800 : 600));
+            orbit = Math.floor(Math.seededRandom(200,trait.includes('elliptical') ? 800 : 600));
             break;
     }
 
     let traits = '';
     trait.forEach(function(t){
-        traits += `${planetTraits[t].label} `;
+        if (planetTraits.hasOwnProperty(t)){
+            traits += `${planetTraits[t].label} `;
+        }
     });
 
     let title = `${traits}${biomes[biome].label} ${num}`;

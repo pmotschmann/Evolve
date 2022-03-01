@@ -969,7 +969,7 @@ if (convertVersion(global['version']) < 102007){
 
 if (convertVersion(global['version']) < 102012){
     if (global.city.hasOwnProperty('ptrait')){
-        global.city.ptrait = [global.city.ptrait];
+        global.city.ptrait = global.city.ptrait === 'none' ? [] : [global.city.ptrait];
     }
     if (global.tech['hell_ruins'] && global.tech.hell_ruins >= 3){
         global.tech['hell_vault'] = 1;
@@ -977,7 +977,7 @@ if (convertVersion(global['version']) < 102012){
 }
 
 global['version'] = '1.2.12';
-delete global['revision'];
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
