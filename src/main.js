@@ -3015,6 +3015,9 @@ function fastLoop(){
                 if (global.race['high_pop']){
                     lowerBound *= traits.high_pop.vars()[2];
                 }
+                if (global.city.biome === 'taiga'){
+                    lowerBound *= biomes.taiga.vars()[1];
+                }
                 let base = global.city.ptrait.includes('toxic') ? global['resource'][global.race.species].amount * planetTraits.toxic.vars()[1] : global['resource'][global.race.species].amount;
                 if (global.race['parasite'] && global.race['cataclysm']){
                     lowerBound = Math.round(lowerBound / 5);
@@ -4354,6 +4357,7 @@ function fastLoop(){
                 lumber_base *= global.city.biome === 'savanna' ? biomes.savanna.vars()[2] : 1;
                 lumber_base *= global.city.biome === 'desert' ? biomes.desert.vars()[2] : 1;
                 lumber_base *= global.city.biome === 'swamp' ? biomes.swamp.vars()[2] : 1;
+                lumber_base *= global.city.biome === 'taiga' ? biomes.taiga.vars()[0] : 1;
                 lumber_base *= global.civic.lumberjack.impact;
                 lumber_base *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
                 lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;

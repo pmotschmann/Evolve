@@ -70,6 +70,9 @@ export const job_desc = {
             if (global.city.biome === 'swamp'){
                 impact *= biomes.swamp.vars()[2];
             }
+            if (global.city.biome === 'taiga'){
+                impact *= biomes.taiga.vars()[0];
+            }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack'){

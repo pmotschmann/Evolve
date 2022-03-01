@@ -33,6 +33,9 @@ export function production(id,val){
             else if (global.city.biome === 'tundra'){
                 oil *= biomes.tundra.vars()[1];
             }
+            else if (global.city.biome === 'taiga'){
+                oil *= biomes.taiga.vars()[2];
+            }
             return oil;
         }
         case 'iridium_mine':

@@ -5102,8 +5102,8 @@ export const biomes = {
     taiga: {
         label: loc('biome_taiga_name'),
         desc: loc('biome_taiga'),
-        vars(){ return [1]; }, // [??]
-        wiki: ['%']
+        vars(){ return [1.1,1.5,0.92]; }, // [Lumber, Pop Growth Speed, Oil Well]
+        wiki: ['%','%','%']
     },
     hellscape: {
         label: loc('biome_hellscape_name'),
