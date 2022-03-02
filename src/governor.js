@@ -1152,8 +1152,8 @@ export const gov_tasks = {
                                         global.portal.mechbay.mechs[i].equip.push(equip);
                                     }
                                 }
+                                break;
                             }
-                            break;
                         }
                     }
                 }
