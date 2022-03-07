@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.12`,
+        revision: `c`,
+        date: `3/7/2022`,
+        changes: [
+            `Fixed Double Density achievement.`,
+        ]
+    },
+    {
+        version: `1.2.12`,
         revision: `b`,
         date: `3/2/2022`,
         changes: [

@@ -153,7 +153,7 @@ export function bioseed(){
     if (global.race['truepath']){
         unlockAchieve(`exodus`);
     }
-    if (atmo === 'dense' && global.race.universe === 'heavy'){
+    if (atmo.includes('dense') && global.race.universe === 'heavy'){
         unlockAchieve(`double_density`);
     }
     if (global.race['junker'] && global.race.species === 'junker'){
