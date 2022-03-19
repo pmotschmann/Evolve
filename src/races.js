@@ -5180,6 +5180,10 @@ export const planetTraits = {
         vars(){ return [0.75,100]; }, // [Mining Production, University Base]
         wiki: ['%','A']
     },
+    retrograde: {
+        label: loc('planet_retrograde'),
+        desc: loc('planet_retrograde_desc')
+    },
 };
 
 function shellColor(){

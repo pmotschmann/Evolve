@@ -4,7 +4,7 @@ import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, cle
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
-import { loadFoundry, defineJobs, jobScale } from './jobs.js';
+import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
@@ -1772,6 +1772,31 @@ export const actions = {
             emblem(){ return format_emblem('extinct_sludge'); },
             flair: loc('evo_challenge_sludge_flair'),
             highlight(){ return global.race['sludge'] ? true : false; }
+        },
+        orbit_decay: {
+            id: 'evolution-orbit_decay',
+            title: loc('evo_challenge_orbit_decay'),
+            desc(){ return global.race.universe === 'micro' ? `<div class="has-text-danger">${loc('evo_challenge_micro_warn')}</div><div>${loc('evo_challenge_orbit_decay_desc')}</div>` : loc('evo_challenge_orbit_decay_desc'); },
+            cost: {
+                DNA(){ return 25; }
+            },
+            effect(){
+                if (calc_mastery() >= 100){
+                    return `<div>${loc('evo_challenge_orbit_decay_effect',[5000])}</div><div class="has-text-caution">${loc('evo_challenge_scenario_failwarn')}</div>`;
+                }
+                else {
+                    return `<div>${loc('evo_challenge_orbit_decay_effect',[5000])}</div><div class="has-text-caution">${loc('evo_challenge_scenario_failwarn')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    setChallenge('orbit_decay');
+                }
+                return false;
+            },
+            emblem(){ return format_emblem('lamentis'); },
+            flair: loc('evo_challenge_orbit_decay_flair'),
+            highlight(){ return global.race['orbit_decay'] ? true : false; }
         },
         junker: {
             id: 'evolution-junker',
@@ -4844,6 +4869,7 @@ export function setChallengeScreen(){
     }
     if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
         global.evolution['banana'] = { count: 0 };
+        global.evolution['orbit_decay'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
         global.evolution['truepath'] = { count: 0 };
@@ -4885,6 +4911,9 @@ export function setChallengeScreen(){
     }
     if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker']){
         addAction('evolution','sludge');
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+        addAction('evolution','orbit_decay');
     }
     scenarioActionHeader();
     addAction('evolution','junker');
@@ -6253,6 +6282,11 @@ export function setPlanet(hell){
                     trait.push('permafrost');
                 }
                 break;
+            case 12:
+                if (!trait.includes('retrograde')){
+                    trait.push('retrograde');
+                }
+                break;
             default:
                 break;
         }
@@ -7053,6 +7087,53 @@ function naniteModal(modal){
     loadIndustry('nanite_factory',modal);
 }
 
+
+export function orbitDecayed(){
+    if (global.race['orbit_decay'] && global.stats.hasOwnProperty('days') && global.stats.days >= global.race['orbit_decay'] && !global.race['orbit_decayed']){
+        global.race['orbit_decayed'] = true;
+
+        messageQueue(loc('evo_challenge_orbit_decayed_msg',[races[global.race.species].home]),'info',false,['progress']);
+
+        Object.keys(actions.city).forEach(function (k){
+            if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
+                global.city[k].count = 0;
+                if (global.city[k].hasOwnProperty('on')){
+                    global.city[k].on = 0;
+                }
+            }
+        });
+
+        Object.keys(actions.space.spc_moon).forEach(function (k){
+            if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('count')){
+                global.space[k].count = 0;
+                if (global.space[k].hasOwnProperty('on')){
+                    global.space[k].on = 0;
+                }
+            }
+        });
+
+        Object.keys(job_desc).forEach(function (job){
+            global.civic[job].workers = 0;
+            global.civic[job].assigned = 0;
+        });
+
+        ['forager','farmer','lumberjack','quarry_worker'].forEach(function (job){
+            global.civic[job].display = false;
+        });
+
+        if (global.civic.hunter.display){
+            global.civic.d_job = 'hunter';
+        }
+        else {
+            global.civic.d_job = 'unemployed';
+        }
+
+        global.settings.spaceTabs = 1;
+        global.settings.space.moon = false;
+        global.settings.showCity = false;
+    }
+}
+
 export function evoProgress(){
     clearElement($('#evolution .evolving'),true);
     let progress = $(`<div class="evolving"><progress class="progress" value="${global.evolution.final}" max="100">${global.evolution.final}%</progress></div>`);
@@ -7310,6 +7391,10 @@ function sentience(){
     if (global.race['unified']){
         global.tech['world_control'] = 1;
         global.tech['unify'] = 2;
+    }
+
+    if (global.race['orbit_decay']){
+        global.race['orbit_decay'] = 5000;
     }
 
     clearElement($('#resources'));

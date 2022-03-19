@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList } from './actions.js';
+import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
@@ -520,6 +520,10 @@ popover('topBarPlanet',
             }
             if (global.race['banana']){
                 challenges = challenges + `<div>${loc('evo_challenge_banana_desc')} ${loc('wiki_achieve_banana1')}. ${loc('wiki_achieve_banana2')}. ${loc('wiki_achieve_banana3')}. ${loc('wiki_achieve_banana4',[500])}. ${loc('wiki_achieve_banana5',[50])}.</div>`;
+            }
+            if (global.race['orbit_decay']){
+                let impact = global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
+                challenges = challenges + `<div>${loc('evo_challenge_orbit_decay_desc')} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
             }
 
             if (global.race['cataclysm']){
@@ -2417,6 +2421,9 @@ function fastLoop(){
             }
         });
         global.civic[global.civic.d_job].workers += global.resource[global.race.species].amount - total;
+        if (global.civic[global.civic.d_job].workers < 0){
+            global.civic[global.civic.d_job].workers = 0;
+        }
 
         Object.keys(job_desc).forEach(function (job){
             if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
@@ -2834,7 +2841,7 @@ function fastLoop(){
             let biodome = 0;
             if (global.tech['mars']){
                 biodome = support_on['biodome'] * global.civic.colonist.workers * production('biodome','food');
-                if (global.race['cataclysm']){
+                if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     biodome += support_on['biodome'] * production('biodome','cat_food');
                 }
             }
@@ -2894,7 +2901,7 @@ function fastLoop(){
 
             let spaceport = 0;
             if (global.space['spaceport']){
-                spaceport = p_on['spaceport'] * (global.race['cataclysm'] ? 2 : 25);
+                spaceport = p_on['spaceport'] * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 25);
                 breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
             }
 
@@ -3218,7 +3225,7 @@ function fastLoop(){
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(global.civic.professor.workers,'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-                professors_base *= 1 + (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
+                professors_base *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
             }
             if (global.civic.govern.type === 'theocracy'){
                 professors_base *= 0.75;
@@ -3798,7 +3805,7 @@ function fastLoop(){
         let star_forge = 0;
         let iridium_smelter = 0;
         let titanium_bd = {};
-        if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
+        if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
             let capacity = global.city.smelter.count;
             if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech['star_forge'] >= 2){
                 capacity += p_on['stellar_forge'] * 2;
@@ -3809,7 +3816,7 @@ function fastLoop(){
             if (global.tech['m_smelting'] && global.space['hell_smelter']){
                 capacity += global.space.hell_smelter.count * 2;
             }
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 capacity += global.space.geothermal.on;
             }
             global.city.smelter.cap = capacity;
@@ -4295,7 +4302,7 @@ function fastLoop(){
 
         // Lumber
         { //block scope
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.tech['mars'] && support_on['biodome'] && !global.race['kindling_kindred'] && !global.race['smoldering']){
                     let lumber_bd = {};
                     let lumber = support_on['biodome'] * global.civic.colonist.workers * production('biodome','lumber');
@@ -4495,7 +4502,7 @@ function fastLoop(){
                 }
             }
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.tech['mars'] && support_on['red_mine']){
                     stone_base = support_on['red_mine'] * global.civic.colonist.workers * production('red_mine','stone');
                     stone_bd[loc('space_red_mine_title')] = stone_base + 'v';
@@ -4540,7 +4547,7 @@ function fastLoop(){
             }
 
             // Aluminium
-            if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
+            if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed']){
                 let base = stone_base * rock_quarry * power_mult * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
@@ -4554,7 +4561,7 @@ function fastLoop(){
 
                 delta *= 1 + (refinery / 100);
 
-                alumina_bd[global.race['cataclysm'] ? loc('space_red_mine_title') : loc('workers')] = base + 'v';
+                alumina_bd[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('workers')] = base + 'v';
                 alumina_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
                 alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -4604,11 +4611,11 @@ function fastLoop(){
             }
 
             if (global.city['pylon'] || global.space['pylon']){
-                let mana_base = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * (global.race['cataclysm'] ? 0.005 : 0.01);
+                let mana_base = (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.pylon.count : global.city.pylon.count) * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 0.005 : 0.01);
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
-                mana_bd[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = mana_base+'v';
+                mana_bd[loc(global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space_red_pylon' : 'city_pylon')] = mana_base+'v';
 
                 if (global.tech['nexus']){
                     let nexus = global.tech['nexus'] * 5;
@@ -4856,9 +4863,9 @@ function fastLoop(){
 
             if (global.race['sappy']){
                 // Alt Aluminium
-                if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm']){
+                if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed']){
                     let base = 0;
-                    if (global.race['cataclysm']){
+                    if (global.race['cataclysm'] || global.race['orbit_decayed']){
                         if (global.tech['mars'] && support_on['red_mine']){
                             base = support_on['red_mine'] * global.civic.colonist.workers * production('red_mine','aluminium');
                         }
@@ -4879,8 +4886,8 @@ function fastLoop(){
 
                     delta *= 1 + (refinery / 100);
 
-                    alumina_bd[global.race['cataclysm'] ? loc('space_red_mine_title') : loc('job_miner')] = base + 'v';
-                    if (global.race['cataclysm'] && base > 0 && zigVal > 0){
+                    alumina_bd[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('job_miner')] = base + 'v';
+                    if (global.race['cataclysm'] || global.race['orbit_decayed'] && base > 0 && zigVal > 0){
                         delta *= zigVal;
                         alumina_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                     }
@@ -5575,7 +5582,7 @@ function fastLoop(){
                     modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
                 }
                 else {
-                    temple_mult += (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.025;
+                    temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count) * 0.025;
                 }
             }
 
@@ -5596,7 +5603,7 @@ function fastLoop(){
             money_bd[loc('morale_tax')] = (income_base) + 'v';
             if (income_base > 0){
                 money_bd[`ᄂ${loc('civics_spy_purchase_bd')}`] = -(upkeep) + 'v';
-                money_bd[global.race['cataclysm'] ? `ᄂ${loc('space_red_ziggurat_title')}` : `ᄂ${loc('city_temple')}`] = ((temple_mult - 1) * 100) + '%';
+                money_bd[global.race['cataclysm'] || global.race['orbit_decayed'] ? `ᄂ${loc('space_red_ziggurat_title')}` : `ᄂ${loc('city_temple')}`] = ((temple_mult - 1) * 100) + '%';
                 money_bd[`ᄂ${loc('city_shrine')}`] = ((getShrineResult.mult - 1) * 100) + '%';
             }
             money_bd[loc('city_factory')] = FactoryMoney + 'v';
@@ -6119,9 +6126,9 @@ function midLoop(){
             bd_Food[loc('city_transmitter')] = gain+'v';
         }
         if (global.city['pylon'] || global.space['pylon']){
-            let gain = (global.race['cataclysm'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
+            let gain = (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
             caps['Mana'] += gain;
-            bd_Mana[loc(global.race['cataclysm'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
+            bd_Mana[loc(global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
         }
         if (global.city['farm']){
             if (global.tech['farm']){
@@ -6380,8 +6387,8 @@ function midLoop(){
             lCaps['colonist'] += jobScale(support_on['living_quarters']);
             bd_Citizen[`${races[global.race.species].solar.red}`] = gain + 'v';
 
-            if (global.race['cataclysm'] && global.tech['home_safe']){
-                let gain = (support_on['living_quarters']  * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 100000 : 50000) : 25000));
+            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['home_safe']){
+                let gain = (support_on['living_quarters'] * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 100000 : 50000) : 25000));
                 caps['Money'] += gain;
                 bd_Money[loc('space_red_living_quarters_title')] = gain+'v';
             }
@@ -6695,7 +6702,7 @@ function midLoop(){
         }
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-            multiplier *= global.tech['world_control'] || global.race['cataclysm'] ? 2 : 1;
+            multiplier *= global.tech['world_control'] || global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 1;
             if (global.tech['shelving'] && global.tech.shelving >= 3){ multiplier *= 1.5; }
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
             let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
@@ -6742,7 +6749,7 @@ function midLoop(){
                 bd_Infernite[loc('space_red_garage_title')] = gain+'v';
             }
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 gain = (global.space.garage.count * (spatialReasoning(2500 * multiplier)));
                 caps['Polymer'] += gain;
                 bd_Polymer[loc('space_red_garage_title')] = gain+'v';
@@ -6999,7 +7006,7 @@ function midLoop(){
                 shelving *= 1 + (sci_val * 0.12);
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                shelving *= 1 + (global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
+                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
             }
             let teachVal = govActive('teacher',0);
             if (teachVal){
@@ -7297,7 +7304,7 @@ function midLoop(){
             if (global.race['cataclysm'] && support_on['observatory']){
                 sci *= 1 + (support_on['observatory'] * 0.25);
             }
-            if (global.race['cataclysm'] && global.portal['sensor_drone'] && global.tech['science'] >= 14){
+            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.portal['sensor_drone'] && global.tech['science'] >= 14){
                 sci *= 1 + (p_on['sensor_drone'] * 0.02);
             }
             if (global.tech['science'] >= 21){
@@ -7310,7 +7317,7 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('tech_exotic_bd')] = gain+'v';
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 lCaps['scientist'] += jobScale(support_on['exotic_lab']);
             }
         }
@@ -7502,7 +7509,7 @@ function midLoop(){
                 messageQueue(loc('abandon1',[pop_loss]),'danger');
             }
             else {
-                messageQueue(loc('abandon2',[pop_loss]),'danger');
+                messageQueue(loc(global.race['orbit_decayed'] ? 'tragic_death' : 'abandon2',[pop_loss]),'danger');
             }
         }
 
@@ -8918,9 +8925,17 @@ function longLoop(){
             }
 
             // Moon Phase
-            global.city.calendar.moon++;
-            if (global.city.calendar.moon > 27){
-                global.city.calendar.moon = 0;
+            if (global.city.ptrait.includes('retrograde')){
+                global.city.calendar.moon--;
+                if (global.city.calendar.moon < 0){
+                    global.city.calendar.moon = 27;
+                }
+            }
+            else {
+                global.city.calendar.moon++;
+                if (global.city.calendar.moon > 27){
+                    global.city.calendar.moon = 0;
+                }
             }
 
             setWeather();
@@ -9334,6 +9349,10 @@ function longLoop(){
             buildGene();
         }
 
+        if (global.race['orbit_decay']){
+            orbitDecayed();
+        }
+
         govern();
     }
 
@@ -9523,63 +9542,94 @@ function setWeather(){
     // Moon Phase
     switch(global.city.calendar.moon){
         case 0:
-            $('#moon').removeClass('wi-moon-waning-crescent-6');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-1')
+                : $('#moon').removeClass('wi-moon-waning-crescent-6');
             $('#moon').addClass('wi-moon-new');
             break;
         case 1:
-            $('#moon').removeClass('wi-moon-new');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-2')
+                : $('#moon').removeClass('wi-moon-new');
             $('#moon').addClass('wi-moon-waxing-crescent-1');
             break;
         case 2:
-            $('#moon').removeClass('wi-moon-waxing-crescent-1');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-3')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-1');
             $('#moon').addClass('wi-moon-waxing-crescent-2');
             break;
         case 3:
-            $('#moon').removeClass('wi-moon-waxing-crescent-2');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-4')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-2');
             $('#moon').addClass('wi-moon-waxing-crescent-3');
             break;
         case 4:
-            $('#moon').removeClass('wi-moon-waxing-crescent-3');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-5')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-3');
             $('#moon').addClass('wi-moon-waxing-crescent-4');
             break;
         case 5:
-            $('#moon').removeClass('wi-moon-waxing-crescent-4');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-crescent-6')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-4');
             $('#moon').addClass('wi-moon-waxing-crescent-5');
             break;
         case 6:
-            $('#moon').removeClass('wi-moon-waxing-crescent-5');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-first-quarter')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-5');
             $('#moon').addClass('wi-moon-waxing-crescent-6');
             break;
         case 7:
-            $('#moon').removeClass('wi-moon-waxing-crescent-6');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-1')
+                : $('#moon').removeClass('wi-moon-waxing-crescent-6');
             $('#moon').addClass('wi-moon-first-quarter');
             break;
         case 8:
-            $('#moon').removeClass('wi-moon-first-quarter');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-2')
+                : $('#moon').removeClass('wi-moon-first-quarter');
             $('#moon').addClass('wi-moon-waxing-gibbous-1');
             break;
         case 9:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-1');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-3')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-1');
             $('#moon').addClass('wi-moon-waxing-gibbous-2');
             break;
         case 10:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-2');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-4')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-2');
             $('#moon').addClass('wi-moon-waxing-gibbous-3');
             break;
         case 11:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-3');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-5')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-3');
             $('#moon').addClass('wi-moon-waxing-gibbous-4');
             break;
         case 12:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-4');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waxing-gibbous-6')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-4');
             $('#moon').addClass('wi-moon-waxing-gibbous-5');
             break;
         case 13:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-5');
+            clearElement($('#moon'));
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-full')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-5');
             $('#moon').addClass('wi-moon-waxing-gibbous-6');
             break;
         case 14:
-            $('#moon').removeClass('wi-moon-waxing-gibbous-6');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-1')
+                : $('#moon').removeClass('wi-moon-waxing-gibbous-6');
             let egg = easterEgg(2);
             if (egg.length > 0){
                 $('#moon').append(egg);
@@ -9590,55 +9640,81 @@ function setWeather(){
             break;
         case 15:
             clearElement($('#moon'));
-            $('#moon').removeClass('wi-moon-full');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-2')
+                : $('#moon').removeClass('wi-moon-full');
             $('#moon').addClass('wi-moon-waning-gibbous-1');
             break;
         case 16:
-            $('#moon').removeClass('wi-moon-waning-gibbous-1');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-3')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-1');
             $('#moon').addClass('wi-moon-waning-gibbous-2');
             break;
         case 17:
-            $('#moon').removeClass('wi-moon-waning-gibbous-2');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-4')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-2');
             $('#moon').addClass('wi-moon-waning-gibbous-3');
             break;
         case 18:
-            $('#moon').removeClass('wi-moon-waning-gibbous-3');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-5')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-3');
             $('#moon').addClass('wi-moon-waning-gibbous-4');
             break;
         case 19:
-            $('#moon').removeClass('wi-moon-waning-gibbous-4');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-gibbous-6')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-4');
             $('#moon').addClass('wi-moon-waning-gibbous-5');
             break;
         case 20:
-            $('#moon').removeClass('wi-moon-waning-gibbous-5');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-third-quarter')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-5');
             $('#moon').addClass('wi-moon-waning-gibbous-6');
             break;
         case 21:
-            $('#moon').removeClass('wi-moon-waning-gibbous-6');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-1')
+                : $('#moon').removeClass('wi-moon-waning-gibbous-6');
             $('#moon').addClass('wi-moon-third-quarter');
             break;
         case 22:
-            $('#moon').removeClass('wi-moon-third-quarter');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-2')
+                : $('#moon').removeClass('wi-moon-third-quarter');
             $('#moon').addClass('wi-moon-waning-crescent-1');
             break;
         case 23:
-            $('#moon').removeClass('wi-moon-waning-crescent-1');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-3')
+                : $('#moon').removeClass('wi-moon-waning-crescent-1');
             $('#moon').addClass('wi-moon-waning-crescent-2');
             break;
         case 24:
-            $('#moon').removeClass('wi-moon-waning-crescent-2');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-4')
+                : $('#moon').removeClass('wi-moon-waning-crescent-2');
             $('#moon').addClass('wi-moon-waning-crescent-3');
             break;
         case 25:
-            $('#moon').removeClass('wi-moon-waning-crescent-3');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-5')
+                : $('#moon').removeClass('wi-moon-waning-crescent-3');
             $('#moon').addClass('wi-moon-waning-crescent-4');
             break;
         case 26:
-            $('#moon').removeClass('wi-moon-waning-crescent-4');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-waning-crescent-6')
+                : $('#moon').removeClass('wi-moon-waning-crescent-4');
             $('#moon').addClass('wi-moon-waning-crescent-5');
             break;
         case 27:
-            $('#moon').removeClass('wi-moon-waning-crescent-5');
+            global.city.ptrait.includes('retrograde')
+                ? $('#moon').removeClass('wi-moon-new')
+                : $('#moon').removeClass('wi-moon-waning-crescent-5');
             $('#moon').addClass('wi-moon-waning-crescent-6');
             break;
     }

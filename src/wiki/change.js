@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.13`,
+        date: `3/??/2022`,
+        changes: [
+            `Added Orbit Decay Challenge.`,
+            `Added Retrograde planetary trait.`,
+        ]
+    },
+    {
         version: `1.2.12`,
         revision: `c`,
         date: `3/7/2022`,
