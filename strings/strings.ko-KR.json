@@ -6789,7 +6789,7 @@
   "wiki_tech_screw_conveyor": "Powered Cement Plants increase Cement production from Cement Plant Workers by %0%.",
   "wiki_tech_hunter_process": "Titanium is produced from %0 Smelting at 1/%1 the rate that %0 is produced from it.",
   "wiki_tech_matter_compression": "Doubles %0 gains from %1 buildings.",
-  "wiki_tech_higgs_boson": "Increases bonus to Max Knowledge of Wardenclyffes and Universities from Supercolliders to +8%.",
+  "wiki_tech_higgs_boson": "입자 가속기 레벨당 연구소 및 대학의 지식 최대치 보너스가 +8% 로 증가합니다.",
   "wiki_tech_dimensional_compression": "입자 가속기 레벨당 차고의 용량 +5%, 컨테이너 +1.",
   "wiki_tech_fanaticism": "Gain the inheritable Major Trait of the species that you prestiged with on the previous run.",
   "wiki_tech_study": "The effect of Ziggurats is increased to 0.06% per Colonist.",
