@@ -9397,6 +9397,8 @@ function longLoop(){
         delete global.tech['santa'];
     }
 
+    global.settings.restoreCheck = false;
+
     if (eventActive('fool')){
         if (!$(`body`).hasClass('fool')){
             $(`body`).addClass('fool');

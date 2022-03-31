@@ -3,11 +3,18 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.2.13`,
-        date: `3/??/2022`,
+        version: `1.2.14`,
+        date: `4/??/2022`,
         changes: [
             `Added Orbit Decay Challenge.`,
             `Added Retrograde planetary trait.`,
+        ]
+    },
+    {
+        version: `1.2.13`,
+        date: `3/31/2022`,
+        changes: [
+            `Restore Backup must now be clicked twice to trigger.`,
         ]
     },
     {
