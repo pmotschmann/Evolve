@@ -870,6 +870,62 @@ export function setResourceName(name){
         global.resource[name].name = name === 'Money' ? '$' : loc(`resource_${name}_name`);
     }
     
+    if (eventActive('fool',2022)){
+        switch(name){
+            case 'Lumber':
+                global['resource'][name].name = loc('resource_Stone_name');
+                break;
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Lumber_name');
+                break;
+            case 'Copper':
+                global['resource'][name].name = loc('resource_Iron_name');
+                break;
+            case 'Iron':
+                global['resource'][name].name = loc('resource_Copper_name');
+                break;
+            case 'Steel':
+                global['resource'][name].name = loc('resource_Titanium_name');
+                break;
+            case 'Titanium':
+                global['resource'][name].name = loc('resource_Steel_name');
+                break;
+            case 'Coal':
+                global['resource'][name].name = loc('resource_Oil_name');
+                break;
+            case 'Oil':
+                global['resource'][name].name = loc('resource_Coal_name');
+                break;
+            case 'Alloy':
+                global['resource'][name].name = loc('resource_Polymer_name');
+                break;
+            case 'Polymer':
+                global['resource'][name].name = loc('resource_Alloy_name');
+                break;
+            case 'Graphene':
+                global['resource'][name].name = loc('resource_Stanene_name');
+                break;
+            case 'Stanene':
+                global['resource'][name].name = loc('resource_Graphene_name');
+                break;
+            case 'Plywood':
+                global['resource'][name].name = loc('resource_Brick_name');
+                break;
+            case 'Brick':
+                global['resource'][name].name = loc('resource_Plywood_name');
+                break;
+            case 'Genes':
+                global['resource'][name].name = loc('resource_Soul_Gem_name');
+                break;
+            case 'Soul_Gem':
+                global['resource'][name].name = loc('resource_Genes_name');
+                break;
+            case 'Slave':
+                global['resource'][name].name = loc('resource_Peon_name');
+                break;
+        }
+    }
+
     if (global.race['sludge']){
         if (name === 'Horseshoe'){
             global.resource[name].name = loc(`resource_Beaker_name`);

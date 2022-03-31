@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -35,11 +35,14 @@ export function arpa(type) {
 
 export const arpaProjects = {
     lhc: {
-        title: loc('arpa_projects_lhc_title'),
-        desc: loc('arpa_projects_lhc_desc'),
+        title(){ return eventActive('fool',2022) ? loc('arpa_projects_railway_title') : loc('arpa_projects_lhc_title'); },
+        desc(){ return eventActive('fool',2022) ? loc('arpa_projects_railway_desc') : loc('arpa_projects_lhc_desc'); },
         reqs: { high_tech: 6 },
         grant: 'supercollider',
-        effect(){
+        effect(nofool){
+            if (eventActive('fool',2022) && !nofool){
+                return arpaProjects.railway.effect(true);
+            }
             let sc = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
@@ -165,11 +168,14 @@ export const arpaProjects = {
         }
     },
     railway: {
-        title: loc('arpa_projects_railway_title'),
-        desc: loc('arpa_projects_railway_desc'),
+        title(){ return eventActive('fool',2022) ? loc('arpa_projects_lhc_title') : loc('arpa_projects_railway_title'); },
+        desc(){ return eventActive('fool',2022) ? loc('arpa_projects_lhc_desc') : loc('arpa_projects_railway_desc'); },
         reqs: { high_tech: 6, trade: 3 },
         grant: 'railway',
-        effect(){
+        effect(nofool){
+            if (eventActive('fool',2022) && !nofool){
+                return arpaProjects.lhc.effect(true);
+            }
             let routes = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? 1 : 0;
             let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
             if (global.race['cataclysm']){

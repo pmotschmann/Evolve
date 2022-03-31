@@ -107,9 +107,14 @@ export function mainVue(){
                 }
             },
             restoreGame(){
-                let restore_data = save.getItem('evolveBak') || false;
-                if (restore_data){
-                    importGame(restore_data,true);
+                if (global.settings.restoreCheck){
+                    let restore_data = save.getItem('evolveBak') || false;
+                    if (restore_data){
+                        importGame(restore_data,true);
+                    }
+                }
+                else {
+                    global.settings.restoreCheck = true;
                 }
             },
             lChange(locale){
