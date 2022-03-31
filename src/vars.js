@@ -1040,7 +1040,7 @@ if (!global['settings']){
     };
 }
 
-if (!global.settings['showMechLab']){
+if (!global.settings['restoreCheck']){
     global.settings['restoreCheck'] = false;
 }
 
