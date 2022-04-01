@@ -2424,7 +2424,7 @@ function initEjector(){
         let eject = $(`<span class="trade"></span>`);
         ejector.append(eject);
 
-        eject.append($(`<span>{{ total }} / {{ on | max }}</span><span class="mass">${loc('interstellar_mass_ejector_mass')}: {{ mass | approx }} kt/s</span>`));
+        eject.append($(`<span>{{ total }} / {{ on | max }}{{ on | real }}</span><span class="mass">${loc('interstellar_mass_ejector_mass')}: {{ mass | approx }} kt/s</span>`));
 
         vBind({
             el: `#eject`,
@@ -2432,6 +2432,12 @@ function initEjector(){
             filters: {
                 max(num){
                     return num * 1000;
+                },
+                real(num){
+                    if (p_on['mass_ejector'] < num){
+                        return ` (${loc('interstellar_mass_ejector_active',[p_on['mass_ejector'] * 1000])})`;
+                    }
+                    return '';
                 },
                 approx(tons){
                     return sizeApproximation(tons,2);
@@ -2477,8 +2483,8 @@ export function loadEjector(name,color){
             methods: {
                 ejectMore(r){
                     let keyMutipler = keyMultiplier();
-                    if (keyMutipler + global.interstellar.mass_ejector.total > global.interstellar.mass_ejector.on * 1000){
-                        keyMutipler = global.interstellar.mass_ejector.on * 1000 - global.interstellar.mass_ejector.total;
+                    if (keyMutipler + global.interstellar.mass_ejector.total > p_on['mass_ejector'] * 1000){
+                        keyMutipler = p_on['mass_ejector'] * 1000 - global.interstellar.mass_ejector.total;
                     }
                     global.interstellar.mass_ejector[r] += keyMutipler;
                     global.interstellar.mass_ejector.total += keyMutipler;

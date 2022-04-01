@@ -1909,10 +1909,6 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
     global.tech['space'] = 1;
 }
 
-if (!(save.getItem('evolveBak'))){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-}
-
 function newGameData(){
     global['race'] = { species : 'protoplasm', gods: 'none', old_gods: 'none', seeded: false };
     Math.seed = Math.rand(0,10000);

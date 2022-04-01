@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { universeAffix } from './../achieve.js';
 import { loc } from './../locale.js';
-import { vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
+import { timeFormat, vBind, svgIcons, svgViewBox, calcGenomeScore } from './../functions.js';
 import { job_desc } from './../jobs.js';
 import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
@@ -393,7 +393,7 @@ export function mechanicsPage(content){
 
         infoBoxBuilder(quantum,{ name: 'quantum_swarm_ai', template: 'mechanics', label: loc('tech_swarm_control_ai'), paragraphs: 2, h_level: 2,
             para_data: {
-                1: [loc('tech_swarm_control_ai'),loc('space_sun_swarm_satellite_title'),loc('space_sun_swarm_control_title')],
+                1: [loc('tech_quantum_computing'),loc('space_sun_swarm_satellite_title'),loc('space_sun_swarm_control_title')],
                 2: [loc('space_sun_swarm_control_title'),11,loc('wiki_mechanics_quantum')]
             },
             data_link: {
@@ -782,7 +782,7 @@ function jobStressCalc(info){
     
     variables.append(`
         <div>
-            <div class="calcInput"><span>${loc('wiki_calc_job_stress_content')}</span> <b-numberinput :input="val('content')" min="0" v-model="i.content.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.content.vis"><span>${loc('wiki_calc_job_stress_content')}</span> <b-numberinput :input="val('content')" min="0" v-model="i.content.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><b-checkbox class="patrol" v-model="i.mellow.val">${loc('planet_mellow')}</b-checkbox></div>
             <div class="calcInput" v-show="i.dense.vis"><b-checkbox class="patrol" v-model="i.dense.val">${loc('planet_dense')}</b-checkbox></div>
             <div class="calcInput" v-show="i.freespirit.vis"><span>${loc('trait_freespirit_name')}</span> <b-dropdown hoverable>
@@ -1372,7 +1372,8 @@ function massCalc(info){
         result: {
             vis: false, kt: undefined, solar: undefined, MW: undefined,
             exoVis: false, exotic: undefined,
-            MWVis: false, MWTot: undefined
+            MWVis: false, MWTot: undefined,
+            timeVis: false, timeTot: undefined
         }
     }
     
@@ -1430,6 +1431,12 @@ function massCalc(info){
         </div>
         <div>
             <span>20 + (({{ i.solar_tot.val, 'solar_tot' | generic }} - 8) * {{ false | amountMW }}) + ({{ i.exotic_tot.val, 'exotic_tot' | generic }} * {{ true | amountMW }})</span><span v-show="s.result.MWVis"> = {{ | calcMW }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_mass_time_to_explode')}</h2>
+        </div>
+        <div>
+            <span>(0.025 - {{ i.exotic_tot.val, 'exotic_tot' | generic }}) / {{ s.result.exotic, 'exotic' | generic }}</span><span v-show="s.result.timeVis"> = {{ | calcTime }}</span>
         </div>
     `);
     
@@ -1563,6 +1570,26 @@ function massCalc(info){
                 else {
                     show.result.MWVis = false;
                     show.result.MWTot = undefined;
+                }
+            },
+            calcTime(){
+                if (inputs.exotic_tot.val !== undefined && show.result.exoVis){
+                    show.result.timeVis = true;
+                    if (inputs.exotic_tot.val >= 0.025){
+                        show.result.timeTot = loc('wiki_calc_mass_time_reached');
+                    }
+                    else if (show.result.exotic === 0){
+                        show.result.timeTot = loc('time_never');
+                    }
+                    else {
+                        show.result.timeTot = timeFormat(Math.round((0.025 - inputs.exotic_tot.val) / show.result.exotic));
+                    }
+                    
+                    return show.result.timeTot;
+                }
+                else {
+                    show.result.timeVis = false;
+                    show.result.timeTot = undefined;
                 }
             }
         }

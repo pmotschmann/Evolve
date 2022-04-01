@@ -96,6 +96,10 @@ export function actionDesc(info, c_action, extended, isStruct){
     if (extended){
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2><span class="has-text-caution">${extended}</span></div>`);
     }
+    else if (!isStruct){
+        let owned = global.tech[c_action.grant[0]] && global.tech[c_action.grant[0]] >= c_action.grant[1];
+        info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_tech_tree_${c_action.grant[0]}`)}: ${c_action.grant[1]}</span></div>`);
+    }
     else {
         info.append(`<div class="type"><h2 class="has-text-warning">${title}</h2></div>`);
     }

@@ -243,7 +243,16 @@ export function hellPage(content){
     }
 
     { // Hazards
-        let hazard = infoBoxBuilder(mainContent,{ name: 'hazard', template: 'hell', paragraphs: 2 });
+        let hazard = infoBoxBuilder(mainContent,{ name: 'hazard', template: 'hell', paragraphs: 8, break: [3,4,5,6,7],
+            para_data: {
+                3: [`+1`,`10+`],
+                4: [`6/(105-${loc('wiki_hell_hazard_para3_note')})`,`+1`,`25-100`],
+                5: [`11/(260-${loc('wiki_hell_hazard_para3_note')})`,`+1`,`101-250`],
+                6: [`26/(1025-${loc('wiki_hell_hazard_para3_note')})`,`+1`,`251-1000`],
+                7: [`-1`],
+                8: [loc('portal_spire_status_freeze'),loc('portal_spire_status_hot'),loc('portal_spire_status_rain'),loc('portal_spire_status_hail')],
+            }
+        });
 
         let counter_text = {
             1: 'wiki_hell_hazard_effect',

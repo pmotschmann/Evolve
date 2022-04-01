@@ -1008,7 +1008,7 @@ export const gov_tasks = {
             let mass = function(m){
                 return global.race.universe === 'magic' ? atomic_mass[m] : (['Elerium','Infernite'].includes(m) ? atomic_mass[m] * 10 : atomic_mass[m]);
             };
-            let remain = global.interstellar.mass_ejector.on * 1000;
+            let remain = p_on['mass_ejector'] * 1000;
             Object.keys(atomic_mass).sort((a,b) => (mass(a) < mass(b)) ? 1 : -1).forEach(function(res){
                 let trade = breakdown.p.consume[res].hasOwnProperty(loc('trade')) ? breakdown.p.consume[res][loc('trade')]: 0;
                 let craft = breakdown.p.consume[res].hasOwnProperty(loc('job_craftsman')) ? breakdown.p.consume[res][loc('job_craftsman')]: 0;
@@ -1033,7 +1033,7 @@ export const gov_tasks = {
                     global.interstellar.mass_ejector[res] = 0;
                 }
             });
-            global.interstellar.mass_ejector.total = global.interstellar.mass_ejector.on * 1000 - remain;
+            global.interstellar.mass_ejector.total = p_on['mass_ejector'] * 1000 - remain;
         }
     },
     mech: { // Mech Builder

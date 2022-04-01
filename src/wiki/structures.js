@@ -256,6 +256,9 @@ function addCalcInputs(parent,key,section,region,path){
                     if (resources[res].creep === 1){
                         resources[res].creep = loc('wiki_calc_none');
                     }
+                    else if (resources[res].creep < 1.005){
+                        resources[res].creep = 1.005;
+                    }
                     creep = creep || resources[res].vis;
                 }
             });

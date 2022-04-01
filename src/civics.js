@@ -104,6 +104,11 @@ export function defineIndustry(){
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');
     }
+    if (global.space['titan_mine'] && global.space['titan_mine'].count > 0){
+        var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('titan_mine',ratio,'#iTMine');
+    }
     if (global.race['deconstructor'] && global.city['nanite_factory']){
         var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
         $(`#industry`).append(nanite);

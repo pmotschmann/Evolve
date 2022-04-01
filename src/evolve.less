@@ -1307,6 +1307,19 @@ Misc ---------> Main template
         .modal .actionSpace {
             background-color: @html-background;
         }
+        
+        // .modal-card
+        .modal-card-head,
+        .modal-card-body,
+        .modal-card-foot {
+            background-color: @modalBox-background;
+        }
+        
+        .modal-card-head {
+            p {
+                color: @has-text-warning;
+            }
+        }
 
         // .industry
         .modalBox,
