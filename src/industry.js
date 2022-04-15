@@ -3,6 +3,7 @@ import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, genusVars } from './races.js';
+import { atomic_mass } from './resources.js';
 import { checkRequirements, checkSpaceRequirements } from './space.js';
 import { fortressTech } from './portal.js';
 
@@ -736,6 +737,22 @@ function loadNFactory(parent,bind){
                 return global.city.nanite_factory.count * 50;
             }
         }
+    });
+
+    function tooltip(res){
+        let base_conversion = +(atomic_mass[res] / 100 * (traits.deconstructor.vars()[0] / 100)).toFixed(4);
+        let curr_conversion = +(global.city.nanite_factory[res] * base_conversion).toFixed(4);
+        return loc('modal_nfactory_resource_label',[1,global.resource[res].name,base_conversion,global.resource.Nanite.name,global.city.nanite_factory[res],curr_conversion]);
+    }
+
+    nf_resources.forEach(function(type){
+        let id = parent.hasClass('modalBody') ? `specialModal` : `iNFactory`;
+        popover(`${id}${type}`,function(){
+            return tooltip(type);
+        }, {
+            elm: $(`#${id} > .fuels > .${type}`),
+            attach: '#main',
+        });
     });
 }
 

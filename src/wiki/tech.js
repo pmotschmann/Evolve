@@ -925,7 +925,7 @@ const extraInformation = {
         loc(`wiki_tech_building_unlock`,[loc(`city_boot_camp`)])
     ],
     vr_training: [
-        loc(`wiki_tech_vr_training`,[races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp`) : loc(`tech_hospital`)])
+        loc(`wiki_tech_vr_training`,[races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`city_boot_camp`)])
     ],
     bows: [
         loc(`wiki_tech_bows`,[100])

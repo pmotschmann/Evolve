@@ -1382,6 +1382,7 @@ function fastLoop(){
                             breakdown.p.consume[r][loc('city_nanite_factory')] = -(vol / time_multiplier);
                             let trait = traits.deconstructor.vars()[0] / 100;
                             let nanite_vol = vol * atomic_mass[r] / 100 * trait;
+                            breakdown.p.consume['Nanite'][global.resource[r].name] = nanite_vol / time_multiplier;
                             modRes('Nanite',nanite_vol);
                         }
                     }
@@ -8945,22 +8946,22 @@ function longLoop(){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;
-                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
                 messageQueue(loc('deterioration1',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 1 && deterioration < 20000000){
                 global.race.deterioration = 2;
-                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
                 messageQueue(loc('deterioration2',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 2 && deterioration < 5000000){
                 global.race.deterioration = 3;
-                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
                 messageQueue(loc('deterioration3',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 3 && deterioration < 1000000){
                 global.race.deterioration = 4;
-                let death_clock = Math.round(deterioration / (global.city.calendar.orbit * (1 + global.race.mutation)));
+                let death_clock = Math.round(deterioration / global.city.calendar.orbit);
                 messageQueue(loc('deterioration4',[flib('name'),death_clock]),'danger',false,['progress']);
             }
             else if (global.race.deterioration === 4 && deterioration <= 0){
@@ -9037,7 +9038,7 @@ function longLoop(){
             }
             value = Math.round(value * sup.supress) * global.civic.archaeologist.workers / 1000;
             
-            if (Math.rand(0,10000) <= value){
+            if (Math.rand(0,10000) + 1 <= value){
                 global.tech['hell_vault'] = 1;
                 messageQueue(loc('portal_ruins_vault'),'info',false,['progress']);
                 renderFortress();

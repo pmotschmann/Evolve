@@ -109,9 +109,23 @@ export function mainVue(){
             restoreGame(){
                 if (global.settings.restoreCheck){
                     let restore_data = save.getItem('evolveBak') || false;
-                    if (restore_data){
-                        importGame(restore_data,true);
-                    }
+                    this.$buefy.dialog.confirm({
+                        title: loc('restore'),
+                        message: loc('restore_warning'),
+                        ariaModal: true,
+                        confirmText: loc('restore'),
+                        onConfirm() {
+                            if (restore_data){
+                                importGame(restore_data,true);
+                            }
+                            else {
+                                global.settings.restoreCheck = false;
+                            }
+                        },
+                        onCancel(){
+                            global.settings.restoreCheck = false;
+                        }
+                    });
                 }
                 else {
                     global.settings.restoreCheck = true;

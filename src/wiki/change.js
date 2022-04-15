@@ -3,11 +3,23 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.2.14`,
+        version: `1.2.??`,
         date: `4/??/2022`,
         changes: [
             `Added Orbit Decay Challenge.`,
             `Added Retrograde planetary trait.`,
+        ]
+    },
+    {
+        version: `1.2.14`,
+        date: `4/1/2022`,
+        changes: [
+            `Added Titan Mine slider to Industry tab.`,
+            `Added additional popup confirmation to Restore Backup.`,
+            `Nanite Factory interface now has tooltips for each resource`,
+            `The Vault Discovery event can no longer occur if there are 0 Archaeologists and/or if Suppression is at 0%`,
+            `Fixed bugs related to unlocking the Fool feat.`,
+            `Fixed bugs with Mass Ejector optimizor governor task.`,
         ]
     },
     {

@@ -379,7 +379,12 @@ export function setupStats(){
     $('#achieve').append(achieve);
     drawStats();
     drawPerks();
-    drawAchieve();
+    if ($(`body`).hasClass('fool')){
+        drawAchieve({fool: true});
+    }
+    else {
+        drawAchieve();
+    }
 }
 
 export function drawAchieve(args){

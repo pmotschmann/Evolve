@@ -555,6 +555,7 @@ export const outerTruth = {
                                 global.space.ai_core2.on++;
                             }
                             renderSpace();
+                            drawTech();
                         }
                         return true;
                     }
@@ -2035,7 +2036,7 @@ function drawShips(){
 
         let location = typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
-        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable>
+        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable position="is-bottom-left">
             <button class="button is-info" slot="trigger">
                 <span>${location}</span>
             </button>${values}

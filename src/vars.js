@@ -1040,7 +1040,7 @@ if (!global['settings']){
     };
 }
 
-if (!global.settings['showMechLab']){
+if (!global.settings['restoreCheck']){
     global.settings['restoreCheck'] = false;
 }
 
@@ -1907,10 +1907,6 @@ global.settings.disableReset = false;
 
 if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facility.rank > 0 && !global.tech['space']){
     global.tech['space'] = 1;
-}
-
-if (!(save.getItem('evolveBak'))){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
 }
 
 function newGameData(){
