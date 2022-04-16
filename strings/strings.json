@@ -8634,7 +8634,7 @@
   "wiki_events_steel_para2": "For each resource you have a trade route assigned to, there are four %0 chances each game second of this event triggering.",
   "wiki_events_steel_condition_para1": "Requires not already having unlocked %0.",
   "wiki_events_elerium": "Elerium Discovery",
-  "wiki_events_elerium_para1": "A space miner discovers a new resource called %0 and brings back a sample, unlocking the resoure and the %1 tech.",
+  "wiki_events_elerium_para1": "A space miner discovers a new resource called %0 and brings back a sample, unlocking the resource and the %1 tech.",
   "wiki_events_elerium_para2": "For each active %0 and %1, there is a %2 chance each game second of this event triggering.",
   "wiki_events_oil": "Space Oil Discovery",
   "wiki_events_oil_para1": "A source of %0 is found on %1, unlocking the %2 building.",
