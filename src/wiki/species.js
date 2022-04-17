@@ -111,7 +111,7 @@ function extraTraitList(race){
     switch (race){
         case 'wolven':
             let easter = getEaster();
-            return easter.active ? ['hyper','fast_growth','rainbow','optimistic'] : [];
+            return easter.active ? [{t: 'hyper', r: 1},{t: 'fast_growth', r: 1},{t: 'rainbow', r: 1},{t: 'optimistic', r: 1}] : [];
         case 'elven':
             return date.getMonth() === 11 && date.getDate() >= 17 ? [{t: 'slaver', r: 2},{t: 'resourceful', r: 0.5},{t: 'small', r: 0.25}] : [];
         case 'capybara':
