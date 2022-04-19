@@ -4,6 +4,15 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.14`,
+        revision: `a`,
+        date: `4/19/2022`,
+        changes: [
+            `Fixed some minor bugs.`,
+            `Updated some translations.`
+        ]
+    },
+    {
+        version: `1.2.14`,
         date: `4/1/2022`,
         changes: [
             `Added Titan Mine slider to Industry tab.`,
