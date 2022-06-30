@@ -9,6 +9,7 @@ export var global = {
     space: {},
     interstellar: {},
     portal: {},
+    tauceti: {},
     civic: {},
     race: {},
     genes: {},
@@ -976,6 +977,12 @@ if (convertVersion(global['version']) < 102012){
     }
 }
 
+if (convertVersion(global['version']) < 103000){
+    if (!global.hasOwnProperty('tauceti')){
+        global['tauceti'] = {};
+    }
+}
+
 global['version'] = '1.2.14';
 global['revision'] = 'a';
 delete global['beta'];
@@ -1157,6 +1164,10 @@ if (!global.settings['showOuter']){
     global.settings['showOuter'] = false;
 }
 
+if (!global.settings['showTau']){
+    global.settings['showTau'] = false;
+}
+
 if (!global.settings['portal']){
     global.settings['portal'] = {
         fortress : false,
@@ -1170,6 +1181,13 @@ if (!global.settings.portal.hasOwnProperty('ruins')){
     global.settings.portal['gate'] = false;
     global.settings.portal['lake'] = false;
     global.settings.portal['spire'] = false;
+}
+
+if (!global.settings['tau']){
+    global.settings['tau'] = {
+        home : false,
+        red : false
+    };
 }
 
 if (!global.settings.hasOwnProperty('touch')){
@@ -2257,6 +2275,7 @@ export function clearStates(){
     global.settings.showGalactic = false;
     global.settings.showPortal = false;
     global.settings.showOuter = false;
+    global.settings.showTau = false;
     global.settings.showEjector = false;
     global.settings.showCargo = false;
     global.settings.showAlchemy  = false;
@@ -2294,6 +2313,8 @@ export function clearStates(){
     global.settings.portal.gate = false;
     global.settings.portal.lake = false;
     global.settings.portal.spire = false;
+    global.settings.tau.home = false;
+    global.settings.tau.red = false;
     global.settings.arpa = false;
     global.settings.civTabs = 0;
     global.settings.govTabs = 0;

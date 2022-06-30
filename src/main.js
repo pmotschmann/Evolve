@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -9050,6 +9050,8 @@ function longLoop(){
 
             if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                 let eScan = 0;
+                let tScan = 0;
+                let tShip = false;
                 global.space.shipyard.ships.forEach(function(ship){
                     if (ship.transit > 0 && ship.fueled){
                         ship.transit--;
@@ -9085,11 +9087,25 @@ function longLoop(){
                     if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
                         eScan += sensorRange(ship.sensor) * 2;
                     }
+                    if (global.tech.hasOwnProperty('tauceti') && ship.location === 'tauceti' && ship.transit === 0){
+                        tScan += sensorRange(ship.sensor);
+                        tShip = ship.name;
+                    }
                 });
                 if (global.tech.hasOwnProperty('eris_scan') && global.tech.hasOwnProperty('eris') && global.tech.eris === 1 && eScan >= 100){
                     global.tech.eris = 2;
                     messageQueue(loc('space_eris_scan',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
                     renderSpace();
+                }
+                if (global.tech.hasOwnProperty('tauceti') && global.tech.tauceti >= 1 && tScan >= 1){
+                    if (global.tech.tauceti === 1){
+                        global.tech.tauceti = 2;
+                        global.settings.showTau = true;
+                        global.settings.tau.home = true;
+                        global.settings.tau.red = true;
+                        messageQueue(loc('tau_scan',[tShip]),'info',false,['progress']);
+                        renderTauCeti();
+                    }
                 }
                 if (global.space.hasOwnProperty('position')){
                     Object.keys(spacePlanetStats).forEach(function(planet){

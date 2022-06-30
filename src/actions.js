@@ -9,6 +9,7 @@ import { loadIndustry } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
+import { tauCetiTech } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -4800,7 +4801,8 @@ export const actions = {
             },
         },
     },
-    portal: fortressTech()
+    portal: fortressTech(),
+    tauceti: tauCetiTech()
 };
 
 export function setChallengeScreen(){

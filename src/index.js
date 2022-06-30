@@ -11,7 +11,7 @@ import { races, shapeShift } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
-import { drawShipYard, clearShipDrag } from './truepath.js';
+import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
 export function mainVue(){
@@ -363,6 +363,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'outer_local_space' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="tauceti" :visible="s.showTau">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_tauceti' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -378,6 +384,7 @@ export function loadTab(tab){
                                 clearElement($(`#galaxy`));
                                 clearElement($(`#portal`));
                                 clearElement($(`#outerSol`));
+                                clearElement($(`#tauCeti`));
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -390,6 +397,9 @@ export function loadTab(tab){
                                         break;
                                     case 4:
                                         renderFortress();
+                                        break;
+                                    case 6:
+                                        renderTauCeti();
                                         break;
                                 }
                             }
@@ -406,6 +416,7 @@ export function loadTab(tab){
                     drawCity();
                     renderSpace();
                     renderFortress();
+                    renderTauCeti();
                 }
                 if (global.race['noexport']){
                     clearElement($(`#city`));

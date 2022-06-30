@@ -10780,11 +10780,11 @@ const techs = {
         category: 'space_exploration',
         era: 'solar',
         path: ['truepath'],
-        reqs: { outer: 7, locked: 1 },
+        reqs: { outer: 7 },
         grant: ['outer',8],
         cost: {
-            Knowledge(){ return 5000000; },
-            Cipher(){ return 80000; }
+            Knowledge(){ return 3500000; },
+            Cipher(){ return 65000; }
         },
         effect: loc('tech_sensor_logs_effect'),
         action(){
@@ -11592,6 +11592,28 @@ const techs = {
             Quantium(){ return 10000; }
         },
         effect: loc('tech_quantum_signatures_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    interstellar_drive: {
+        id: 'tech-interstellar_drive',
+        title: loc('tech_interstellar_drive'),
+        desc: loc('tech_interstellar_drive'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { outer: 8, titan_ai_core: 2 },
+        grant: ['tauceti',1],
+        cost: {
+            Knowledge(){ return 4500000; },
+            Quantium(){ return 250000; },
+            Cipher(){ return 75000; }
+        },
+        effect: loc('tech_interstellar_drive_effect'),
         action(){
             if (payCosts($(this)[0])){
                 return true;
