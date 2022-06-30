@@ -2388,6 +2388,7 @@ const valAdjust = {
     hivemind: true,
     imitation: true,
     elusive: true,
+    chameleon: true,
     blood_thirst: true,
     selenophobia: true,
     hooved: true,
@@ -2407,6 +2408,9 @@ function getTraitVals(trait,rank){
         }
         else if (trait === 'elusive') {
             vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
+        }
+        else if (trait === 'chameleon') {
+            vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
         }
         else if (trait === 'blood_thirst') {
             vals = [Math.ceil(Math.log2(vals[0]))];

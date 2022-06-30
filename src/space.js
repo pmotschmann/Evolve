@@ -537,11 +537,7 @@ const spaceProjects = {
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                     gain += pop * support_on['biodome'];
                 }
-                gain = +(gain).toFixed(2);
-                if (global.race['high_pop']){
-                    gain *= traits.high_pop.vars()[0];
-                }
-                return gain;
+                return +(jobScale(gain)).toFixed(2);
             }
         },
         pylon: {
@@ -884,7 +880,7 @@ const spaceProjects = {
                 let cat_wd = global.race['cataclysm'] && !global.race['kindling_kindred'] ? `<div>${loc('space_red_mine_effect',[+(production('biodome','lumber')).toFixed(2),global.resource.Lumber.name])}</div>` : ``;
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 let sig_cap = global.race['artifical'] ? `<div>${loc('city_transmitter_effect',[spatialReasoning(500)])}</div` : '';
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[pop])}</div>${cat_wd}${sig_cap}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[jobScale(pop)])}</div>${cat_wd}${sig_cap}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -1067,59 +1063,7 @@ const spaceProjects = {
             }
         },
         bonfire: buildTemplate(`bonfire`,'space'),
-        horseshoe: {
-            id: 'space-horseshoe',
-            title: loc('city_horseshoe'),
-            desc(){
-                return loc(`city_horseshoe_desc`);
-            },
-            reqs: { primitive: 3 },
-            trait: ['hooved','cataclysm'],
-            inflation: false,
-            cost: {
-                Lumber(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    let active = !global.race['kindling_kindred'] && !global.race['smoldering']
-                        && (!global.resource.Copper.display || shoes <= 12) ? true : false;
-                    return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
-                },
-                Copper(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
-                    let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
-                        && (!global.resource.Iron.display || shoes <= 75) ? true : false;
-                    return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
-                },
-                Iron(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
-                },
-                Steel(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
-                },
-                Adamantite(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
-                },
-                Orichalcum(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
-                }
-            },
-            action(n){
-                let keyMult = n || keyMultiplier();
-                let shoed = false;
-                for (var i=0; i<keyMult; i++){
-                    if (global.resource.Horseshoe.display && payCosts($(this)[0])){
-                        global.resource.Horseshoe.amount++;
-                        global.race.shoecnt++;
-                        shoed = true;
-                    }
-                }
-                return shoed;
-            }
-        },
+        horseshoe: buildTemplate(`horseshoe`,'space'),
     },
     spc_hell: {
         info: {
@@ -3215,7 +3159,7 @@ const interstellarProjects = {
                 Aerogel(offset){ return spaceCostMultiplier('stellar_forge', offset, 75000, 1.25, 'interstellar'); },
             },
             effect(){
-                let desc = `<div>${loc('city_foundry_effect1',[2])}</div><div>${loc('interstellar_stellar_forge_effect',[10])}</div><div>${loc('interstellar_stellar_forge_effect2',[5])}</div>`;
+                let desc = `<div>${loc('city_foundry_effect1',[jobScale(2)])}</div><div>${loc('interstellar_stellar_forge_effect',[10])}</div><div>${loc('interstellar_stellar_forge_effect2',[5])}</div>`;
                 if (global.tech['star_forge'] && global.tech['star_forge'] >= 2){
                     desc += `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
                 }

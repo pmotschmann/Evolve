@@ -869,7 +869,7 @@ export const actions = {
             cost: {
                 DNA(){ return 255; }
             },
-            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_omnivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_herbivore_effect'); },
+            effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_omnivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_omnivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
                     global.evolution['omnivore'].count++;
@@ -2251,59 +2251,7 @@ export const actions = {
             },
             touchlabel: loc(`kill`)
         },
-        horseshoe: {
-            id: 'city-horseshoe',
-            title(){ return loc(global.race['sludge'] ? 'city_beaker' : 'city_horseshoe'); },
-            desc(){ return loc(global.race['sludge'] ? 'city_beaker_desc' : `city_horseshoe_desc`); },
-            category: 'outskirts',
-            reqs: { primitive: 3 },
-            trait: ['hooved'],
-            not_trait: ['cataclysm'],
-            inflation: false,
-            cost: {
-                Lumber(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    let active = !global.race['kindling_kindred'] && !global.race['smoldering']
-                        && (!global.resource.Copper.display || shoes <= 12) ? true : false;
-                    return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
-                },
-                Copper(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
-                    let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
-                        && (!global.resource.Iron.display || shoes <= 75) ? true : false;
-                    return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
-                },
-                Iron(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
-                },
-                Steel(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
-                },
-                Adamantite(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
-                },
-                Orichalcum(offset){
-                    let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                    return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
-                }
-            },
-            action(n){
-                let keyMult = n || keyMultiplier();
-                let shoed = false;
-                for (var i=0; i<keyMult; i++){
-                    if (global.resource.Horseshoe.display && payCosts($(this)[0])){
-                        global.resource.Horseshoe.amount++;
-                        global.race.shoecnt++;
-                        shoed = true;
-                    }
-                }
-                return shoed;
-            },
-        },
+        horseshoe: buildTemplate(`horseshoe`,'city'),
         bonfire: buildTemplate(`bonfire`,'city'),
         firework: buildTemplate(`firework`,'city'),
         slave_market: {
@@ -5050,6 +4998,69 @@ export function buildTemplate(key, region){
             }
             return action;
         }
+        case 'horseshoe':
+        {
+            let id = region === 'space' ? 'space-horseshoe' : 'city-horseshoe';
+            let action = {
+                id: id,
+                title(){ return loc(global.race['sludge'] ? 'city_beaker' : 'city_horseshoe'); },
+                desc(){ return loc(global.race['sludge'] ? 'city_beaker_desc' : 'city_horseshoe_desc'); },
+                category: 'outskirts',
+                reqs: { primitive: 3 },
+                trait: ['hooved'],
+                cost: {
+                    Lumber(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        let active = !global.race['kindling_kindred'] && !global.race['smoldering']
+                            && (!global.resource.Copper.display || shoes <= 12) ? true : false;
+                        return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
+                    },
+                    Copper(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
+                        let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
+                            && (!global.resource.Iron.display || shoes <= 75) ? true : false;
+                        return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
+                    },
+                    Iron(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
+                    },
+                    Steel(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
+                    },
+                    Adamantite(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
+                    },
+                    Orichalcum(offset){
+                        let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
+                        return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
+                    }
+                },
+                action(n){
+                    let keyMult = n || keyMultiplier();
+                    let shoed = false;
+                    for (var i=0; i<keyMult; i++){
+                        if (global.resource.Horseshoe.display && payCosts($(this)[0])){
+                            global.resource.Horseshoe.amount++;
+                            global.race.shoecnt++;
+                            shoed = true;
+                        }
+                    }
+                    return shoed;
+                }
+            };
+
+            if (region === 'space'){
+                action.trait.push('cataclysm');
+            }
+            else {
+                action['not_trait'] = ['cataclysm'];
+            }
+            return action;
+        }
     }
 }
 
@@ -5452,14 +5463,16 @@ export function checkCityRequirements(action){
     return isMet;
 }
 
-export function checkTechRequirements(tech){
-    let isMet = true;
-
+function checkTechPath(tech){
     let path = global.race['truepath'] ? 'truepath' : 'standard';
     if ((!techPath[path].includes(actions.tech[tech].era) && !actions.tech[tech].hasOwnProperty('path')) || (actions.tech[tech].hasOwnProperty('path') && !actions.tech[tech].path.includes(path))){
         return false;
     }
+    return true;
+}
 
+function checkTechRequirements(tech){
+    let isMet = true;
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
@@ -5649,6 +5662,9 @@ export function drawTech(){
     };
 
     Object.keys(actions.tech).forEach(function (tech_name){
+        if (!checkTechPath(tech_name)){
+            return;
+        }
         removeAction(actions.tech[tech_name].id);
 
         let isOld = checkOldTech(tech_name);
@@ -7715,13 +7731,19 @@ function aiStart(){
         global.resource.Containers.display = true;
 
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
-            global.tech['axe'] = 3;
-            global.tech['saw'] = 2;
+            if (global.race['evil']){
+                global.tech['reclaimer'] = 3;
+                global.city['graveyard'] = { count: 1 };
+            }
+            else {
+                global.tech['axe'] = 3;
+                global.tech['saw'] = 2;
+                global.city['lumber_yard'] = { count: 1 };
+                global.city['sawmill'] = { count: 0, on: 0 };
+            }
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
             global.civic.lumberjack.display = true;
-            global.city['lumber_yard'] = { count: 1 };
-            global.city['sawmill'] = { count: 0, on: 0 };
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
@@ -8004,6 +8026,9 @@ function cataclysm(){
         global.city['power'] = 0;
         global.city['powered'] = true;
 
+        if (global.race['artifical']){
+            global.city['transmitter'] = { count: 0, on: 0 };
+        }
         global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
         global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0 };
         global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
