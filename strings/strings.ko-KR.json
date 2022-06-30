@@ -78,6 +78,7 @@
   "theme_gruvboxLight": "밝은 골판지",
   "theme_gruvboxDark": "어두운 골판지",
   "theme_orangeSoda": "오렌지 소다",
+  "theme_dracula": "드라큘라",
   "units": "숫자 표기법",
   "metric": "SI 접두어",
   "scientific": "지수 표기법",

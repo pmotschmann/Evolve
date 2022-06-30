@@ -6,6 +6,8 @@ Themes  ------> Dark theme
                 Night theme
                 Red Green CB theme
                 Dark Night theme
+                Orange Soda Theme
+                Dracula Theme
 Theme colors -> Theme colors
 Components  --> .has-text-xxx
                 .popper
@@ -722,6 +724,129 @@ Misc ---------> Main template
 
             // .market-item
             @market-item-background: #292929;
+            @market-item-order-hover-background: @secondary-color;
+            @market-item-order-hover-border: @link-hover;
+
+            // .modalBox
+            @modalBox-background: @html-background;
+
+            // Stars
+            @star-2-fill: @white;
+            @star-3-fill: #cd7f32;
+            @star-4-fill: #c0c0c0;
+            @star-5-fill: #d4af37;
+
+            // -webkit-scrollbar
+            @webkit-scrollbar-background: @html-background;
+            @webkit-scrollbar-thumb-background: @primary-border;
+        }
+
+        // Dracula
+        .dracula() {
+            // Theme colors {
+            @html-background: #282a36;
+            @primary-border: #44475a;
+            @secondary-border: #44475a;
+            @primary-color: #f8f8f2;
+            @secondary-color: #6272a4;
+            @dark-background: #1a1c24;
+
+            @link: #bd93f9;
+            @link-hover: #9573c5;
+            @enabled: #50fa7b;
+            @disabled: #ff5555;
+            // }
+
+            // .has-text-xxx
+            @has-text-advanced: #8be9fd !important;
+            @has-text-alert: #e0a361 !important;
+            @has-text-caution: #ffa26c !important;
+            @has-text-danger: @disabled  !important;
+            @has-text-fade: #6272a4 !important;
+            @has-text-flair: @has-text-special;
+            @has-text-info: #bd93f9 !important;
+            @has-text-label: #7dcbdd !important;
+            @has-text-special: #ff79c6 !important;
+            @has-text-success: @enabled  !important;
+            @has-text-warning: #f1fa8c  !important;
+
+            // .popper
+            @popper: @primary-color  !important;
+            @popper-has-text-label: @has-text-label  !important;
+            @popper-has-text-success: @has-text-success  !important;
+            @popper-has-text-warning: @has-text-warning  !important;
+            @modal-child-popper-background: @dark-background !important;
+            @modal-child-popper-border: @secondary-border;
+
+            /* AFP 2021
+            // .fool
+            @fool-has-text-danger: @has-text-success;
+            @fool-has-text-success: @has-text-danger;
+            @fool-popper-has-text-danger: @popper-has-text-success;
+            @fool-span-on: @disabled;
+            @fool-span-off: @enabled;
+            */
+
+            // .tabs
+            @tabs-li-is-active-link-border: @link;
+            @tabs-li-is-active-link: @link;
+
+            // .button
+            @button-background: #3f4253;
+            @button: @primary-color;
+            @button-hover-background: @secondary-border;
+            @button-hover: @link-hover;
+            @button-focus-border: @secondary-border;
+
+            // .basic-button
+            @basic-button-border-hover-background: @dark-background;
+            @basic-button-border-hover: @link;
+
+            // .label
+            @label: @primary-color;
+
+            // .checkbox
+            @checkbox-hover: @link;
+
+            // .dropdown
+            @dropdown-content-background: @button-background;
+
+            // .b-tooltip
+            @b-tooltip-accent: #282828;
+            @b-tooltip-is-primary-background: @b-tooltip-accent;
+            @b-tooltip-is-primary-border: @primary-border;
+            @b-tooltip-is-primary: @primary-color;
+
+            // UI Bars
+            @bars-background: @secondary-color;
+
+            // .meter
+            @meter-low: @disabled;
+            @meter-neutral: @has-text-warning;
+            @meter-high: @has-text-info;
+
+            // .main
+            @div-special-border: @primary-border;
+            @div-special-gear-fill: #f09d51;
+            @div-special-hover-border: @secondary-color;
+            @div-special-hover-gear-fill: @link;
+            @span-on-border: @primary-border;
+            @span-on: @enabled;
+            @span-on-warn: #af5d00;
+            @span-off-border: @primary-border;
+            @span-off: @disabled;
+            @span-on-off-hover-border: @secondary-color;
+            @hl-button-border: @enabled;
+            @link-button-background: @dark-background;
+            @special-on-off-border: @primary-border;
+            @oldTech: @primary-color;
+            @cnam-aTitle: @disabled;
+
+            // .fort
+            @fort-patrol-check-background: @black  !important;
+
+            // .market-item
+            @market-item-background: #1d2021;
             @market-item-order-hover-background: @secondary-color;
             @market-item-order-hover-border: @link-hover;
 
@@ -1749,6 +1874,30 @@ html.orangeSoda {
     textarea,
     .notification {
         background: @primary-color;
+    }
+}
+
+// Dracula theme
+html.dracula {
+    #lib.themes.dracula(); // Highest priority
+    #lib.themes.dark(); // Lowest priority
+    #lib.mainTemplate();
+
+    input,
+    select,
+    textarea,
+    .notification {
+        background: @primary-color;
+    }
+
+    .add,
+    .sub {
+        border: @secondary-border solid .0625rem;
+    }
+
+    .current {
+        border-top: @secondary-border solid .0625rem;
+        border-bottom: @secondary-border solid .0625rem;
     }
 }
 
