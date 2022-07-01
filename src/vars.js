@@ -976,6 +976,17 @@ if (convertVersion(global['version']) < 102012){
     }
 }
 
+if (convertVersion(global['version']) < 102015){
+    if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks')){
+        for (let task in global.race.governor.tasks) {
+            if (global.race.governor.tasks[task] === 'asssemble'){
+                global.race.governor.tasks[task] = 'assemble';
+            }
+        }
+    }
+    delete global.settings['restoreCheck'];
+}
+
 global['version'] = '1.2.15';
 delete global['revision'];
 delete global['beta'];
@@ -1038,10 +1049,6 @@ if (!global['settings']){
         locale: 'en-US',
         icon: 'star'
     };
-}
-
-if (!global.settings['restoreCheck']){
-    global.settings['restoreCheck'] = false;
 }
 
 if (!global.settings.hasOwnProperty('showMechLab')){

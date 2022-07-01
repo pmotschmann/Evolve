@@ -849,8 +849,8 @@ export const gov_tasks = {
             }
         }
     },
-    asssemble: { // Asssemble Citizens
-        name: loc(`gov_task_asssemble`),
+    assemble: { // Assemble Citizens
+        name: loc(`gov_task_assemble`),
         req(){
             return global.race['artifical'] ? true : false;
         },
@@ -994,7 +994,7 @@ export const gov_tasks = {
                     }
                 });
                 if (global.resource[res].amount > amount && (global.resource[res].diff >= amount || global.resource[res].amount + global.resource[res].diff >= global.resource[res].max) ){
-                    actions.city.horseshoe.action();
+                    actions.city.horseshoe.action(1);
                 }
             }
         }
