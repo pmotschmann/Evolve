@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.15`,
+        revision: `a`,
+        date: `7/1/2022`,
+        changes: [
+            `Fixed bug that prevented games without save data from loading.`,
+        ]
+    },
+    {
+        version: `1.2.15`,
         date: `7/1/2022`,
         changes: [
             `Firework Festival now starts on July 1st and ends July 4th.`,

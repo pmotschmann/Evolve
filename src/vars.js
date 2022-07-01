@@ -984,11 +984,13 @@ if (convertVersion(global['version']) < 102015){
             }
         }
     }
-    delete global.settings['restoreCheck'];
+    if (global['settings'] && global.settings.hasOwnProperty('restoreCheck')){
+        delete global.settings['restoreCheck'];
+    }
 }
 
 global['version'] = '1.2.15';
-delete global['revision'];
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
