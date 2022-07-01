@@ -6,13 +6,13 @@ const changeList = [
         version: `1.2.15`,
         date: `7/1/2022`,
         changes: [
-            `Firework Feastival now starts on July 1st and ends July 4th.`,
+            `Firework Festival now starts on July 1st and ends July 4th.`,
             `Added Dracula theme by azzzertyy.`,
             `Fixed bug with Horseshoe governor and multiplier keys.`,
             `Fixed issues with starting Cataclysm as Synth.`,
             `Fixed bugs with wrong path techs being displayed.`,
             `Evil Synth now start with a Graveyard instead of a Lumberyard.`,
-            `Deify and study can no longer be queued at same time`,
+            `Deify and study can no longer be queued at same time.`,
             `Restore backup no longer requires double clicking to trigger confirmation box.`,
         ]
     },
