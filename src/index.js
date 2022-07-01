@@ -107,29 +107,18 @@ export function mainVue(){
                 }
             },
             restoreGame(){
-                if (global.settings.restoreCheck){
-                    let restore_data = save.getItem('evolveBak') || false;
-                    this.$buefy.dialog.confirm({
-                        title: loc('restore'),
-                        message: loc('restore_warning'),
-                        ariaModal: true,
-                        confirmText: loc('restore'),
-                        onConfirm() {
-                            if (restore_data){
-                                importGame(restore_data,true);
-                            }
-                            else {
-                                global.settings.restoreCheck = false;
-                            }
-                        },
-                        onCancel(){
-                            global.settings.restoreCheck = false;
+                let restore_data = save.getItem('evolveBak') || false;
+                this.$buefy.dialog.confirm({
+                    title: loc('restore'),
+                    message: loc('restore_warning'),
+                    ariaModal: true,
+                    confirmText: loc('restore'),
+                    onConfirm() {
+                        if (restore_data){
+                            importGame(restore_data,true);
                         }
-                    });
-                }
-                else {
-                    global.settings.restoreCheck = true;
-                }
+                    }
+                });
             },
             lChange(locale){
                 global.settings.locale = locale;
@@ -1254,6 +1243,7 @@ export function index(){
                 <b-dropdown-item v-on:click="setTheme('gruvboxLight')">{{ 'theme_gruvboxLight' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('gruvboxDark')">{{ 'theme_gruvboxDark' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ 'theme_orangeSoda' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('dracula')">{{ 'theme_dracula' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>
