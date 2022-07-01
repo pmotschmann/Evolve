@@ -2186,7 +2186,7 @@ export function eventActive(event,val){
         case 'firework':
             {
                 const date = new Date();
-                if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8].includes(date.getDate()) ){
+                if (!global.settings.boring && date.getMonth() === 6 && [1,2,3,4].includes(date.getDate()) ){
                     let region = global.race['cataclysm'] ? 'space' : 'city';
                     if (!global[region].hasOwnProperty('firework')){
                         global[region]['firework'] = {
