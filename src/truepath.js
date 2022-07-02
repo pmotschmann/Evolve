@@ -39,7 +39,7 @@ export const outerTruth = {
             reqs: { outer: 1 },
             grant: ['titan',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.titan >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
                 Elerium(){ return 100; }
@@ -519,7 +519,6 @@ export const outerTruth = {
             condition(){
                 return global.space.ai_core.count >= 100 ? false : true;
             },
-            no_queue(){ return global.space.ai_core.count < 100 ? false : true },
             queue_size: 10,
             queue_complete(){ return 100 - global.space.ai_core.count; },
             cost: {
@@ -575,7 +574,7 @@ export const outerTruth = {
                 return global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? true : false;
             },
             wiki: false,
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             cost: {},
             powered(){
                 return powerCostMod(100);
@@ -664,7 +663,7 @@ export const outerTruth = {
             reqs: { outer: 1 },
             grant: ['enceladus',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.enceladus >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(250000,false,wiki).toFixed(0); },
                 Elerium(){ return 100; }
@@ -859,7 +858,7 @@ export const outerTruth = {
             reqs: { outer: 2 },
             grant: ['triton',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.triton >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(600000,false,wiki).toFixed(0); },
                 Elerium(){ return 2500; }
@@ -886,8 +885,7 @@ export const outerTruth = {
             },
             reqs: { triton: 2 },
             path: ['truepath'],
-            no_queue(){ return global.space.fob.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            q_once: true,
+            queue_complete(){ return 1 - global.space.fob.count; },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1  ? 0 : spaceCostMultiplier('fob', offset, 250000000, 1.1); },
                 Copper(offset){ return ((offset || 0) + (global.space.hasOwnProperty('fob') ? global.space.fob.count : 0)) >= 1 ? 0 : spaceCostMultiplier('fob', offset, 8000000, 1.1); },
@@ -969,7 +967,7 @@ export const outerTruth = {
             },
             reqs: { triton: 3 },
             path: ['truepath'],
-            no_queue(){ return true; },
+            queue_complete(){ return 0; },
             cost: {},
             effect(){
                 let control = global.space['crashed_ship'] ? global.space.crashed_ship.count : 0;
@@ -1003,7 +1001,7 @@ export const outerTruth = {
             reqs: { outer: 7 },
             grant: ['kuiper',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.kuiper >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(1000000,false,wiki).toFixed(0); },
                 Elerium(){ return 1000; }
@@ -1189,7 +1187,7 @@ export const outerTruth = {
             reqs: { outer: 7 },
             grant: ['eris',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.eris >= 1 ? 0 : 1; },
             cost: {
                 Helium_3(offset,wiki){ return +fuel_adjust(1250000,false,wiki).toFixed(0); },
                 Elerium(){ return 1250; }
@@ -1319,7 +1317,7 @@ export const outerTruth = {
             },
             reqs: { eris: 3 },
             path: ['truepath'],
-            no_queue(){ return true; },
+            queue_complete(){ return 0; },
             cost: {},
             effect(){
                 let control = global.space['digsite'] ? global.space.digsite.count : 0;

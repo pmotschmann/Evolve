@@ -30,7 +30,8 @@ export const actions = {
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
                 }
                 return false;
-            }
+            },
+            queue_complete(){ return 0; }
         },
         dna: {
             id: 'evolution-dna',
@@ -44,7 +45,8 @@ export const actions = {
                 }
                 return false;
             },
-            effect: loc('evo_dna_effect')
+            effect: loc('evo_dna_effect'),
+            queue_complete(){ return 0; }
         },
         membrane: {
             id: 'evolution-membrane',
@@ -62,8 +64,7 @@ export const actions = {
                     return true;
                 }
                 return false;
-            },
-            queueable: true
+            }
         },
         organelles: {
             id: 'evolution-organelles',
@@ -86,8 +87,7 @@ export const actions = {
                     return true;
                 }
                 return false;
-            },
-            queueable: true
+            }
         },
         nucleus: {
             id: 'evolution-nucleus',
@@ -107,8 +107,7 @@ export const actions = {
                     return true;
                 }
                 return false;
-            },
-            queueable: true
+            }
         },
         eukaryotic_cell: {
             id: 'evolution-eukaryotic_cell',
@@ -129,8 +128,7 @@ export const actions = {
                     return true;
                 }
                 return false;
-            },
-            queueable: true
+            }
         },
         mitochondria: {
             id: 'evolution-mitochondria',
@@ -147,8 +145,7 @@ export const actions = {
                     return true;
                 }
                 return false;
-            },
-            queueable: true
+            }
         },
         sexual_reproduction: {
             id: 'evolution-sexual_reproduction',
@@ -175,15 +172,11 @@ export const actions = {
                     }
                     global.evolution['final'] = 20;
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.sexual_reproduction.count}
         },
         phagocytosis: {
             id: 'evolution-phagocytosis',
@@ -209,15 +202,11 @@ export const actions = {
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.phagocytosis.count; }
         },
         chloroplasts: {
             id: 'evolution-chloroplasts',
@@ -243,15 +232,11 @@ export const actions = {
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.chloroplasts.count; }
         },
         chitin: {
             id: 'evolution-chitin',
@@ -277,15 +262,11 @@ export const actions = {
                     global.evolution['final'] = 40;
                     addAction('evolution','multicellular');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.chitin.count; }
         },
         exterminate: {
             id: 'evolution-exterminate',
@@ -320,15 +301,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.exterminate.count; }
         },
         multicellular: {
             id: 'evolution-multicellular',
@@ -357,15 +334,11 @@ export const actions = {
                         addAction('evolution','spores');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.multicellular.count; }
         },
         spores: {
             id: 'evolution-spores',
@@ -383,15 +356,11 @@ export const actions = {
                     global.evolution['final'] = 80;
                     addAction('evolution','bryophyte');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.spores.count; }
         },
         poikilohydric: {
             id: 'evolution-poikilohydric',
@@ -409,15 +378,11 @@ export const actions = {
                     global.evolution['final'] = 80;
                     addAction('evolution','bryophyte');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.poikilohydric.count; }
         },
         bilateral_symmetry: {
             id: 'evolution-bilateral_symmetry',
@@ -462,15 +427,11 @@ export const actions = {
                     }
 
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.bilateral_symmetry.count; }
         },
         bryophyte: {
             id: 'evolution-bryophyte',
@@ -508,15 +469,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.bryophyte.count; }
         },
         athropods: {
             id: 'evolution-athropods',
@@ -543,15 +500,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.athropods.count; }
         },
         mammals: {
             id: 'evolution-mammals',
@@ -607,15 +560,11 @@ export const actions = {
                     addAction('evolution','dwarfism');
                     addAction('evolution','animalism');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.mammals.count; }
         },
         humanoid: {
             id: 'evolution-humanoid',
@@ -650,15 +599,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.humanoid.count; }
         },
         gigantism: {
             id: 'evolution-gigantism',
@@ -693,15 +638,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.gigantism.count; }
         },
         dwarfism: {
             id: 'evolution-dwarfism',
@@ -736,15 +677,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.dwarfism.count; }
         },
         animalism: {
             id: 'evolution-animalism',
@@ -774,15 +711,11 @@ export const actions = {
                     addAction('evolution','herbivore');
                     //addAction('evolution','omnivore');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.animalism.count; }
         },
         carnivore: {
             id: 'evolution-carnivore',
@@ -813,15 +746,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.carnivore.count; }
         },
         herbivore: {
             id: 'evolution-herbivore',
@@ -852,15 +781,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.herbivore.count; }
         },
         omnivore: {
             id: 'evolution-omnivore',
@@ -891,15 +816,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.omnivore.count; }
         },
         celestial: {
             id: 'evolution-celestial',
@@ -926,15 +847,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.celestial.count; }
         },
         demonic: {
             id: 'evolution-demonic',
@@ -961,15 +878,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.demonic.count; }
         },
         aquatic: {
             id: 'evolution-aquatic',
@@ -996,15 +909,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.aquatic.count; }
         },
         fey: {
             id: 'evolution-fey',
@@ -1031,15 +940,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.fey.count; },
         },
         heat: {
             id: 'evolution-heat',
@@ -1066,15 +971,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.heat.count; }
         },
         polar: {
             id: 'evolution-polar',
@@ -1101,15 +1002,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.polar.count; }
         },
         sand: {
             id: 'evolution-sand',
@@ -1136,15 +1033,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.sand.count; }
         },
         eggshell: {
             id: 'evolution-eggshell',
@@ -1164,15 +1057,11 @@ export const actions = {
                     addAction('evolution','endothermic');
                     addAction('evolution','ectothermic');
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.eggshell.count; }
         },
         endothermic: {
             id: 'evolution-endothermic',
@@ -1201,15 +1090,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.endothermic.count; }
         },
         ectothermic: {
             id: 'evolution-ectothermic',
@@ -1238,15 +1123,11 @@ export const actions = {
                         addAction('evolution','bunker');
                     }
                     evoProgress();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.ectothermic.count; }
         },
         sentience: {
             id: 'evolution-sentience',
@@ -1609,12 +1490,7 @@ export const actions = {
                     return '';
                 }
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true
+            queue_complete(){ return 1 - global.evolution.sentience.count; }
         },
         custom: {
             id: 'evolution-custom',
@@ -1631,16 +1507,10 @@ export const actions = {
                     removeAction(actions.evolution.sentience.id);
                     global.race.species = 'custom';
                     sentience();
-                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true,
+            queue_complete(){ return 1 - global.evolution.sentience.count; },
             emblem(){ return format_emblem('extinct_custom'); }
         },
         bunker: {
@@ -1654,15 +1524,11 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     setChallengeScreen();
+                    return true;
                 }
                 return false;
             },
-            no_queue(){
-                let key = $(this)[0].id.split('-')[1];
-                return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-            },
-            queue_complete(){ return 1; },
-            queueable: true,
+            queue_complete(){ return 1 - global.evolution.bunker.count; },
             flair: loc('evo_bunker_flair')
         },
         joyless: {
@@ -1679,6 +1545,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('joyless'); },
             flair: loc('evo_challenge_joyless_flair'),
             highlight(){ return global.race['joyless'] ? true : false; }
@@ -1697,6 +1564,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('steelen'); },
             flair: loc('evo_challenge_steelen_flair'),
             highlight(){ return global.race['steelen'] ? true : false; }
@@ -1715,6 +1583,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('dissipated'); },
             flair: loc('evo_challenge_decay_flair'),
             highlight(){ return global.race['decay'] ? true : false; }
@@ -1733,6 +1602,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('technophobe'); },
             flair: loc('evo_challenge_emfield_flair'),
             highlight(){ return global.race['emfield'] ? true : false; }
@@ -1751,6 +1621,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('wheelbarrow'); },
             flair: loc('evo_challenge_inflation_flair'),
             highlight(){ return global.race['inflation'] ? true : false; }
@@ -1769,6 +1640,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('extinct_sludge'); },
             flair: loc('evo_challenge_sludge_flair'),
             highlight(){ return global.race['sludge'] ? true : false; }
@@ -1794,6 +1666,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('lamentis'); },
             flair: loc('evo_challenge_orbit_decay_flair'),
             highlight(){ return global.race['orbit_decay'] ? true : false; }
@@ -1813,6 +1686,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('extinct_junker'); },
             flair: loc('evo_challenge_junker_flair'),
             highlight(){ return global.race['junker'] ? true : false; }
@@ -1838,6 +1712,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('iron_will'); },
             flair: loc('evo_challenge_cataclysm_flair'),
             highlight(){ return global.race['cataclysm'] ? true : false; }
@@ -1856,6 +1731,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('banana'); },
             flair: loc('evo_challenge_banana_flair'),
             highlight(){ return global.race['banana'] ? true : false; }
@@ -1874,6 +1750,7 @@ export const actions = {
                 }
                 return false;
             },
+            queue_complete(){ return 0; },
             emblem(){ return format_emblem('pathfinder'); },
             flair: loc('evo_challenge_truepath_flair'),
             highlight(){ return global.race['truepath'] ? true : false; }
@@ -1887,7 +1764,7 @@ export const actions = {
             wiki: false,
             category: 'outskirts',
             reqs: { primitive: 1 },
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             not_tech: ['santa'],
             not_trait: ['cataclysm'],
             class: ['hgift'],
@@ -2059,7 +1936,7 @@ export const actions = {
             category: 'outskirts',
             reqs: { primitive: 1 },
             not_trait: ['soul_eater','cataclysm','artifical'],
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             cost: {
                 Mana(){ return global.tech['conjuring'] ? 1 : 0; },
             },
@@ -2110,7 +1987,7 @@ export const actions = {
             category: 'outskirts',
             reqs: {},
             not_trait: ['evil','cataclysm'],
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             cost: {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
@@ -2159,7 +2036,7 @@ export const actions = {
             category: 'outskirts',
             reqs: { primitive: 2 },
             not_trait: ['cataclysm'],
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             cost: {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
@@ -2209,7 +2086,7 @@ export const actions = {
             reqs: { primitive: 2 },
             trait: ['smoldering'],
             not_trait: ['cataclysm'],
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             cost: {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
@@ -2249,7 +2126,7 @@ export const actions = {
             reqs: {},
             trait: ['evil'],
             not_trait: ['kindling_kindred','smoldering','cataclysm'],
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             action(){
                 let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
                 if (global.genes['enhance']){
@@ -2290,7 +2167,7 @@ export const actions = {
             cost: {
                 Money(){ return 25000; },
             },
-            no_queue(){ return true },
+            queue_complete(){ return 0; },
             action(){
                 if (global.race['slaver'] && global.city['slave_pen']){
                     let max = global.city.slave_pen.count * 4;
@@ -4697,7 +4574,6 @@ export const actions = {
                 }
             },
             reqs: { genesis: 5 },
-            no_queue(){ return global.starDock.seeder.count < 100 ? false : true },
             queue_size: 10,
             queue_complete(){ return 100 - global.starDock.seeder.count; },
             cost: {
@@ -4734,8 +4610,8 @@ export const actions = {
                 return `<div>${label}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
             },
             reqs: { genesis: 6 },
+            queue_complete(){ return 0; },
             cost: {},
-            no_queue(){ return true },
             effect(){
                 let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
@@ -4759,8 +4635,8 @@ export const actions = {
                 return `<div>${label}</div><div class="has-text-danger">${loc('star_dock_genesis_desc2')}</div>`;
             },
             reqs: { genesis: 7 },
+            queue_complete(){ return 0; },
             cost: {},
-            no_queue(){ return true },
             effect(){
                 let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
@@ -4894,7 +4770,7 @@ export function buildTemplate(key, region){
                     return eventActive(`summer`);
                 },
                 [tKey]: [tName],
-                no_queue(){ return true },
+                queue_complete(){ return 0; },
                 effect(){
                     let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
                     let thermite = 100000 + global.stats.reset * 9000;
@@ -4929,7 +4805,7 @@ export function buildTemplate(key, region){
                     Iron(){ return global[region].firework.count === 0 ? 7500 : 0; },
                     Cement(){ return global[region].firework.count === 0 ? 10000 : 0; }
                 },
-                no_queue(){ return true },
+                queue_complete(){ return 0; },
                 switchable(){ return true; },
                 effect(){
                     return global[region].firework.count === 0 ? loc(`city_firework_build`) : loc(`city_firework_effect`);
@@ -4956,7 +4832,7 @@ export function buildTemplate(key, region){
                 category: 'military',
                 reqs: {},
                 trait: ['artifical'],
-                no_queue(){ return global.resource[global.race.species].max > global.resource[global.race.species].amount ? false : true; },
+                queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
                 cost: {
                     Money(offset){ return global['resource'][global.race.species].amount ? costMultiplier('citizen', offset, assemblyCostAdjust(125), 1.01) : 0; },
                     Copper(offset){ return global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? costMultiplier('citizen', offset, assemblyCostAdjust(50), 1.01) : 0; },
@@ -5038,6 +4914,7 @@ export function buildTemplate(key, region){
                 category: 'outskirts',
                 reqs: { primitive: 3 },
                 trait: ['hooved'],
+                inflation: false,
                 cost: {
                     Lumber(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
@@ -5077,6 +4954,14 @@ export function buildTemplate(key, region){
                             global.resource.Horseshoe.amount++;
                             global.race.shoecnt++;
                             shoed = true;
+
+                            if ((global.race.shoecnt === 5001 && global.resource.Orichalcum.display) ||
+                                (global.race.shoecnt === 501 && global.resource.Adamantite.display) ||
+                                (global.race.shoecnt === 151 && global.resource.Steel.display) ||
+                                (global.race.shoecnt === 76 && global.resource.Iron.display) ||
+                                (global.race.shoecnt === 13 && global.resource.Copper.display && global.resource.Lumber.display)){
+                                return 0;
+                            }
                         }
                     }
                     return shoed;
@@ -5111,16 +4996,10 @@ raceList.forEach(race => actions.evolution[race] = {
             removeAction(actions.evolution.sentience.id);
             global.race.species = race;
             sentience();
-            return true;
         }
         return false;
     },
-    no_queue(){
-        let key = $(this)[0].id.split('-')[1];
-        return !global.evolution.hasOwnProperty(key) || global.evolution[key].count >= 1 ? true : false;
-    },
-    queue_complete(){ return 1; },
-    queueable: true,
+    queue_complete(){ return 1 - global.evolution.sentience.count; },
     emblem(){ return format_emblem(`extinct_${race}`); }
 });
 
@@ -5164,7 +5043,8 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
         }
         return false;
     },
-    highlight(){ return global.race[challengeList[challenge]] ? true : false; }
+    highlight(){ return global.race[challengeList[challenge]] ? true : false; },
+    queue_complete(){ return 0; }
 });
 
 function challengeEffect(c){
@@ -6096,29 +5976,20 @@ function runAction(c_action,action,type){
                     }
                     let grant = false;
                     let add_queue = false;
-                    let no_queue = (action === 'evolution' && !c_action['queueable']) || (c_action['no_queue'] && c_action['no_queue']()) ? true : false;
                     let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
                     for (let i=0; i<loopNum; i++){
                         let res = false;
                         if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action(1)))){
-                            if (res !== 0 && !no_queue && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
-                                let max_queue = global.tech['queue'] >= 2 ? (global.tech['queue'] >= 3 ? 8 : 5) : 3;
-                                if (global.stats.feat['journeyman'] && global.stats.feat['journeyman'] >= 2 && global.stats.achieve['seeder'] && global.stats.achieve.seeder.l >= 2){
-                                    let rank = Math.min(global.stats.achieve.seeder.l,global.stats.feat['journeyman']);
-                                    max_queue += rank >= 4 ? 2 : 1;
-                                }
-                                if (global.genes['queue'] && global.genes['queue'] >= 2){
-                                    max_queue *= 2;
-                                }
-                                let pragVal = govActive('pragmatist',0);
-                                if (pragVal){
-                                    max_queue = Math.round(max_queue * (1 + (pragVal / 100)));
-                                }
+                            if (res !== 0 && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
                                 let used = 0;
+                                let buid_max = c_action['queue_complete'] ? c_action.queue_complete() : Number.MAX_SAFE_INTEGER;
                                 for (let j=0; j<global.queue.queue.length; j++){
                                     used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                    if (global.queue.queue[j].id === c_action.id) {
+                                        buid_max -= global.queue.queue[j].q;
+                                    }
                                 }
-                                if (used < global.queue.max){
+                                if (used < global.queue.max && buid_max > 0){
                                     let repeat = global.settings.qKey ? keyMult : 1;
                                     if (repeat > global.queue.max - used){
                                         repeat = global.queue.max - used;
@@ -6126,15 +5997,16 @@ function runAction(c_action,action,type){
                                     let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
                                     if (global.settings.q_merge !== 'merge_never'){
                                         if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
-                                            global.queue.queue[global.queue.queue.length-1].q += q_size * repeat;
+                                            global.queue.queue[global.queue.queue.length-1].q += Math.min(buid_max, q_size * repeat);
                                         }
                                         else {
-                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size * repeat, qs: q_size, t_max: 0 });
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size * repeat), qs: q_size, t_max: 0 });
                                         }
                                     }
                                     else {
-                                        for (let k=0; k<repeat; k++){
-                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: q_size, qs: q_size, t_max: 0 });
+                                        for (let k=0; k<repeat && buid_max > 0; k++){
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size), qs: q_size, t_max: 0 });
+                                            buid_max -= q_size;
                                         }
                                     }
                                     add_queue = true;
@@ -6142,7 +6014,7 @@ function runAction(c_action,action,type){
                             }
                             break;
                         }
-                        else if (!(global.settings.qKey && keyMap.q)){
+                        else {
                             if (global.race['inflation'] && global.tech['primitive']){
                                 if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
                                     global.race.inflation++;
@@ -6151,32 +6023,29 @@ function runAction(c_action,action,type){
                         }
                         grant = true;
                     }
-                    if (!checkAffordable(c_action)){
-                        let id = c_action.id;
-                        $(`#${id}`).addClass('cna');
+                    if (grant){
+                        postBuild(c_action,action,type);
+                        if (global.tech['queue'] && c_action['queue_complete']) {
+                            let buid_max = c_action.queue_complete();
+                            for (let i=0, j=0; j<global.queue.queue.length; i++, j++){
+                                let item = global.queue.queue[j];
+                                if (item.id === c_action.id) {
+                                    if (buid_max < 1) {
+                                        clearPopper(`q${item.id.id}${i}`);
+                                        global.queue.queue.splice(j--,1);
+                                        add_queue = true;
+                                    }
+                                    else if (item.q > buid_max) {
+                                        item.q = buid_max;
+                                        buid_max = 0;
+                                    }
+                                    else {
+                                        buid_max -= item.q;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (c_action['grant'] && grant){
-                        let tech = c_action.grant[0];
-                        global.tech[tech] = c_action.grant[1];
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    else if (c_action['refresh']){
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
-                    }
-                    updateDesc(c_action,action,type);
                     if (add_queue){
                         buildQueue();
                     }
@@ -6184,6 +6053,30 @@ function runAction(c_action,action,type){
                 }
         }
     }
+}
+
+export function postBuild(c_action,action,type){
+    if (!checkAffordable(c_action)){
+        let id = c_action.id;
+        $(`#${id}`).addClass('cna');
+    }
+    if (c_action['grant']){
+        let tech = c_action.grant[0];
+        global.tech[tech] = c_action.grant[1];
+    }
+    if (c_action['grant'] || c_action['refresh']){
+        removeAction(c_action.id);
+        drawCity();
+        drawTech();
+        renderSpace();
+        renderFortress();
+    }
+    if (c_action['post']){
+        setTimeout(function(){
+            c_action.post();
+        }, 250);
+    }
+    updateDesc(c_action,action,type);
 }
 
 export function setPlanet(hell){

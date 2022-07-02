@@ -271,7 +271,7 @@ const fortressModules = {
             desc: loc('portal_pit_mission_title'),
             reqs: { hell_pit: 1 },
             grant: ['hell_pit',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_pit >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 5000000; },
                 Helium_3(){ return 300000; },
@@ -292,7 +292,7 @@ const fortressModules = {
             desc: loc('portal_assault_forge_title'),
             reqs: { hell_pit: 2 },
             grant: ['hell_pit',3],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_pit >= 3 ? 0 : 1; },
             cost: {
                 Money(){ return 10000000; },
                 HellArmy(){
@@ -319,8 +319,6 @@ const fortressModules = {
                 return `<div>${loc('portal_soul_forge_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { hell_pit: 4 },
-            no_queue(){ return global.portal.soul_forge.count >= 1 || global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            q_once: true,
             queue_complete(){ return 1 - global.portal.soul_forge.count; },
             powered(){ return powerCostMod(30); },
             postPower(o){
@@ -448,7 +446,7 @@ const fortressModules = {
             desc: loc('portal_ruins_mission_title'),
             reqs: { hell_ruins: 1 },
             grant: ['hell_ruins',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_ruins >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 100000000; },
                 Oil(){ return 500000; },
@@ -506,14 +504,13 @@ const fortressModules = {
             condition(){
                 return global.portal.vault.count >= 2 ? false : true;
             },
+            queue_complete(){ return 2 - global.portal.vault.count; },
             cost: {
                 Soul_Gem(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 0 ? 100 : 0; },
                 Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 250000000 : 0; },
                 Adamantite(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 12500000 : 0; },
                 Orichalcum(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0)) === 1 ? 30000000 : 0; },
             },
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
-            q_once: true,
             effect(wiki){
                 let count = (wiki || 0) + (global.portal.hasOwnProperty('vault') ? global.portal.vault.count : 0);
                 return count < 1 ? loc('portal_vault_effect',[100]) : loc('portal_vault_effect2'); },
@@ -717,6 +714,7 @@ const fortressModules = {
             title: loc('portal_ancient_pillars_title'),
             desc: loc('portal_ancient_pillars_desc'),
             reqs: { hell_ruins: 2 },
+            queue_complete(){ return global.tech['pillars'] && global.tech.pillars === 1 && global.race.universe !== 'micro' ? 1 : 0; },
             cost: {
                 Harmony(wiki){
                     if (wiki !== undefined){
@@ -732,7 +730,6 @@ const fortressModules = {
                     return global.race.universe !== 'micro' && global.tech['pillars'] && global.tech.pillars === 1 ? Object.keys(global.pillars).length * 125000 + 1000000 : 0;
                 },
             },
-            no_queue(){ return true },
             count(){
                 return Object.keys(races).length - 1;
             },
@@ -795,7 +792,7 @@ const fortressModules = {
             desc: loc('portal_gate_mission_title'),
             reqs: { high_tech: 18 },
             grant: ['hell_gate',1],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_gate >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 250000000; },
                 Knowledge(){ return 27500000; }
@@ -822,7 +819,6 @@ const fortressModules = {
                 }
             },
             reqs: { hell_gate: 2 },
-            no_queue(){ return global.portal.west_tower.count < towerSize() ? false : true },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.west_tower.count; },
             cost: {
@@ -878,7 +874,6 @@ const fortressModules = {
                 }
             },
             reqs: { hell_gate: 2 },
-            no_queue(){ return global.portal.east_tower.count < towerSize() ? false : true },
             queue_size: 25,
             queue_complete(){ return towerSize() - global.portal.east_tower.count; },
             cost: {
@@ -1001,7 +996,7 @@ const fortressModules = {
             desc: loc('portal_lake_mission_title'),
             reqs: { hell_lake: 1 },
             grant: ['hell_lake',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_lake >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; },
                 Oil(){ return 750000; },
@@ -1249,7 +1244,7 @@ const fortressModules = {
             desc: loc('portal_spire_mission_title'),
             reqs: { hell_spire: 1 },
             grant: ['hell_spire',2],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_spire >= 2 ? 0 : 1; },
             cost: {
                 Species(){ return popCost(50); },
                 Oil(){ return 900000; },
@@ -1381,7 +1376,6 @@ const fortressModules = {
                 }
             },
             reqs: { hell_spire: 5 },
-            no_queue(){ return global.portal.bridge.count < 10 ? false : true },
             queue_size: 1,
             queue_complete(){ return 10 - global.portal.bridge.count; },
             cost: {
@@ -1418,7 +1412,7 @@ const fortressModules = {
             title(){ return global.tech.hell_spire === 7 ? loc('portal_sphinx_solve') : loc('portal_sphinx_title'); },
             desc: loc('portal_sphinx_desc'),
             reqs: { hell_spire: 6 },
-            no_queue(){ return global.tech.hell_spire < 8 ? false : true; },
+            queue_complete(){ return 8 - global.tech.hell_spire; },
             cost: {
                 Knowledge(offset){
                     let count = (offset || 0) + (!global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2);
@@ -1494,7 +1488,7 @@ const fortressModules = {
             desc: loc('portal_spire_survey_title'),
             reqs: { hell_spire: 8 },
             grant: ['hell_spire',9],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.hell_spire >= 9 ? 0 : 1; },
             cost: {
                 Oil(){ return 1200000; },
                 Helium_3(){ return 900000; },
@@ -1569,7 +1563,7 @@ const fortressModules = {
             title: loc('portal_spire_title'),
             desc: loc('portal_spire_title'),
             reqs: { hell_spire: 9 },
-            no_queue(){ return true; },
+            queue_complete(){ return 0; },
             cost: {},
             effect(){
                 let floor = global.portal.hasOwnProperty('spire') ? global.portal.spire.count : 0;
@@ -1627,9 +1621,8 @@ const fortressModules = {
                 }
             },
             reqs: { waygate: 1 },
-            no_queue(){ return global.tech['waygate'] && global.tech.waygate < 2 ? false : true },
             queue_size: 1,
-            queue_complete(){ return global.tech['waygate'] && global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
+            queue_complete(){ return global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
             cost: {
                 Species(offset){
                     if (offset){
