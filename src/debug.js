@@ -2,7 +2,7 @@ import { global, breakdown } from './vars.js';
 import { deepClone, adjustCosts, messageQueue } from './functions.js';
 import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
-import { actions, checkTechRequirements, checkAffordable } from './actions.js';
+import { actions, checkAffordable } from './actions.js';
 import { fuel_adjust, int_fuel_adjust } from './space.js';
 import { f_rate } from './industry.js';
 import { armyRating } from './civics.js';
@@ -19,7 +19,6 @@ export function enableDebug(){
             craftCost: deepClone(craftCost()),
             atomic_mass: deepClone(atomic_mass),
             f_rate: deepClone(f_rate),
-            checkTechRequirements: deepClone(checkTechRequirements),
             checkAffordable: deepClone(checkAffordable),
             adjustCosts: deepClone(adjustCosts),
             armyRating: deepClone(armyRating),

@@ -2166,14 +2166,8 @@ const techs = {
         },
         effect() {
             if (global.race['smoldering'] || global.race['kindling_kindred'] || global.race['evil']){
-                let res = loc('resource_Bones_name');
-                if (global.race['smoldering']){
-                    res = loc('resource_Chrysotile_name');
-                }
-                else if (global.race['kindling_kindred']){
-                    res = loc('resource_Stone_name');
-                }
-                return loc('tech_steel_containers_alt_effect',[res]);
+                let res = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
+                return loc('tech_steel_containers_alt_effect',[global.resource[res].name]);
             }
             else {
                 return loc('tech_steel_containers_effect');
@@ -7339,6 +7333,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-deify') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
         },
@@ -7381,6 +7376,7 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 4 },
         grant: ['theology',5],
+        no_queue(){ return global.r_queue.queue.some(item => item.id === 'tech-study') ? true : false; },
         cost: {
             Knowledge(){ return 195000; }
         },

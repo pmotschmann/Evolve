@@ -1587,17 +1587,18 @@ export const traits = {
         type: 'major',
         val: 6,
         vars(r){
+            // [Combat Rating Bonus, Ambush Avoid]
             switch (r || global.race.chameleon || 1){
                 case 0.25:
-                    return [5];
+                    return [5,10];
                 case 0.5:
-                    return [10];
+                    return [10,15];
                 case 1:
-                    return [20];
+                    return [20,20];
                 case 2:
-                    return [25];
+                    return [25,25];
                 case 3:
-                    return [30];
+                    return [30,30];
             }
         },
     },
