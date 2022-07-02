@@ -21,7 +21,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted'
+        'corrupted','red_dead'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',

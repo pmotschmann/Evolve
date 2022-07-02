@@ -400,6 +400,10 @@ export function big_bang(){
             break;
     }
 
+    if (global.space.hasOwnProperty('spaceport') && global.space.spaceport.count === 0){
+        unlockAchieve(`red_dead`);
+    }
+
     unlockAchieve(`squished`,true);
     if (global.race.universe === 'evil' && races[global.race.species].type === 'angelic'){
         unlockFeat('nephilim');
@@ -512,6 +516,9 @@ export function vacuumCollapse(){
         unlockAchieve(`extinct_${global.race.species}`);
         unlockAchieve(`pw_apocalypse`);
 
+        if (global.space.hasOwnProperty('spaceport') && global.space.spaceport.count === 0){
+            unlockAchieve(`red_dead`);
+        }
         if (!global.race['modified'] && global.race.species === 'balorg'){
             unlockAchieve('pass');
         }

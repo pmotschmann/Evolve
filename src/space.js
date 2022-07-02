@@ -253,6 +253,10 @@ const spaceProjects = {
                             messageQueue(msg,'info',false,['progress']);
                         }
                     }
+                    if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 2500){
+                        global.race.orbit_decay = global.stats.days + 2500;
+                        messageQueue(loc('evo_challenge_orbit_decayed_accelerated',[global.race.orbit_decay - global.stats.days]),'info',false,['progress']);
+                    }
                     return true;
                 }
                 return false;
@@ -1676,6 +1680,10 @@ const spaceProjects = {
                             global.civic.space_miner.workers += hired;
                         }
                     }
+                    if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 1000){
+                        global.race.orbit_decay = global.stats.days + 1000;
+                        messageQueue(loc('evo_challenge_orbit_decayed_accelerated',[global.race.orbit_decay - global.stats.days]),'info',false,['progress']);
+                    }
                     return true;
                 }
                 return false;
@@ -2158,6 +2166,10 @@ const interstellarProjects = {
                     if (global.tech['alpha'] === 1){
                         global.tech['alpha'] = 2;
                         global.interstellar['mining_droid'] = { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 };
+                    }
+                    if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 100){
+                        global.race.orbit_decay = global.stats.days + 100;
+                        messageQueue(loc('evo_challenge_orbit_decayed_accelerated',[global.race.orbit_decay - global.stats.days]),'info',false,['progress']);
                     }
                     return true;
                 }
