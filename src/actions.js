@@ -4877,6 +4877,7 @@ export function setChallengeScreen(){
 }
 
 export function buildTemplate(key, region){
+    let tName = global.race['orbit_decay'] ? 'orbit_decayed' : 'cataclysm';
     let tKey = region === 'space' ? 'trait' : 'not_trait';
     switch (key){
         case 'bonfire':
@@ -4892,7 +4893,7 @@ export function buildTemplate(key, region){
                 condition(){
                     return eventActive(`summer`);
                 },
-                [tKey]: ['cataclysm'],
+                [tKey]: [tName],
                 no_queue(){ return true },
                 effect(){
                     let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
@@ -4922,7 +4923,7 @@ export function buildTemplate(key, region){
                 condition(){
                     return eventActive(`firework`);
                 },
-                [tKey]: ['cataclysm'],
+                [tKey]: [tName],
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
                     Iron(){ return global[region].firework.count === 0 ? 7500 : 0; },
@@ -4979,10 +4980,10 @@ export function buildTemplate(key, region){
             };
 
             if (region === 'space'){
-                action.trait.push('cataclysm');
+                action.trait.push(tName);
             }
             else {
-                action['not_trait'] = ['cataclysm'];
+                action['not_trait'] = [tName];
             }
             return action;
         }
@@ -5020,10 +5021,10 @@ export function buildTemplate(key, region){
             };
 
             if (region === 'space'){
-                action.trait.push('cataclysm');
+                action.trait.push(tName);
             }
             else {
-                action['not_trait'] = ['cataclysm'];
+                action['not_trait'] = [tName];
             }
             return action;
         }
@@ -5083,10 +5084,10 @@ export function buildTemplate(key, region){
             };
 
             if (region === 'space'){
-                action.trait.push('cataclysm');
+                action.trait.push(tName);
             }
             else {
-                action['not_trait'] = ['cataclysm'];
+                action['not_trait'] = [tName];
             }
             return action;
         }
