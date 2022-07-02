@@ -67,7 +67,7 @@ const spaceProjects = {
             },
             effect(){
                 let knowledge = global.race['cataclysm'] ? 2000 : 750;
-                if (global.race['cataclysm'] && global.tech['supercollider']){
+                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 5 : 10;
                     knowledge *= (global.tech['supercollider'] / ratio) + 1;
                 }
@@ -540,7 +540,7 @@ const spaceProjects = {
                 return false;
             },
             citizens(){
-                let gain = global.race['cataclysm'] ? 2 : 1;
+                let gain = global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 1;
                 if (support_on['biodome']){
                     let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                     gain += pop * support_on['biodome'];
@@ -757,10 +757,11 @@ const spaceProjects = {
                     }
                 }
 
+                let decayed = global.race['orbit_decayed'] ? `<div>${loc('city_mine_effect1',[jobScale(1)])}</div><div>${loc('city_coal_mine_effect1',[jobScale(1)])}</div>` : '';
                 let cat_stone = global.race['cataclysm'] || global.race['orbit_decayed'] && !global.race['sappy'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','stone')).toFixed(2),global.resource.Stone.name])}</div>` : ``;
                 let cat_asbestos = global.race['cataclysm'] || global.race['orbit_decayed'] && global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','asbestos')).toFixed(2),global.resource.Chrysotile.name])}</div>` : ``;
                 let cat_alum = global.race['cataclysm'] || global.race['orbit_decayed'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','aluminium')).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${rival}${cat_asbestos}${cat_stone}${cat_alum}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${decayed}<div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${rival}${cat_asbestos}${cat_stone}${cat_alum}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -825,6 +826,9 @@ const spaceProjects = {
                 let desc = `<div>${loc('space_red_factory_effect1')}</div>`;
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
+                }
+                if (global.race['orbit_decayed']){
+                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
                 }
                 let helium = +(fuel_adjust(1,true,wiki)).toFixed(2);
                 desc = desc + `<div class="has-text-caution">${loc('space_red_factory_effect3',[helium,$(this)[0].powered()])}</div>`;
@@ -918,6 +922,74 @@ const spaceProjects = {
                     return global.race['soul_eater'] ? loc('space_red_asphodel_flair') : (global.race['carnivore'] ? loc('space_red_biodome_flair_carn') : loc('space_red_biodome_flair'));
                 }
             }
+        },
+        red_university: {
+            id: 'space-red_university',
+            title: loc('city_university'),
+            desc(){
+                return loc('city_university_desc',[races[global.race.species].solar.red]);
+            },
+            reqs: { mars: 1 },
+            trait: ['orbit_decayed'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('university', offset, 900, 1.5, 'city') - 500; },
+                Lumber(offset){ return spaceCostMultiplier('university', offset, 500, 1.36, 'city') - 200; },
+                Stone(offset){ return spaceCostMultiplier('university', offset, 750, 1.36, 'city') - 350; },
+                Crystal(offset){ return global.race.universe === 'magic' ? spaceCostMultiplier('university', offset, 5, 1.36, 'city') : 0; },
+            },
+            effect(){
+                let multiplier = 1;
+                let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+                if (global.city.ptrait.includes('permafrost')){
+                    gain += planetTraits.permafrost.vars()[1];
+                }
+                if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
+                    multiplier += (p_on['sensor_drone'] * 0.02);
+                }
+                if (global.race['hard_of_hearing']){
+                    multiplier *= 1 - (traits.hard_of_hearing.vars()[0] / 100);
+                }
+                if (global.race['curious']){
+                    multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
+                }
+                if (p_on['s_gate'] && gal_on['scavenger']){
+                    let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
+                    multiplier *= 1 + uni;
+                }
+                let teachVal = govActive('teacher',0);
+                if (teachVal){
+                    multiplier *= 1 + (teachVal / 100);
+                }
+                let athVal = govActive('athleticism',2);
+                if (athVal){
+                    multiplier *= 1 - (athVal / 100);
+                }
+                gain *= multiplier;
+                if (global.tech['supercollider']){
+                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                    gain *= (global.tech['supercollider'] / ratio) + 1;
+                }
+                gain = +(gain).toFixed(0);
+                return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+                    if (global.tech['supercollider']){
+                        let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                        gain *= (global.tech['supercollider'] / ratio) + 1;
+                    }
+                    global['resource']['Knowledge'].max += gain;
+                    global.city.university.count++;
+                    global.civic.professor.display = true;
+                    global.civic.professor.max = global.city.university.count;
+                    return true;
+                }
+                return false;
+            },
+            count(){
+                return global.city.university.count;
+            },
         },
         exotic_lab: {
             id: 'space-exotic_lab',

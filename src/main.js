@@ -6261,12 +6261,18 @@ function midLoop(){
         }
         if (global.space['spc_casino']){
             lCaps['entertainer'] += jobScale(global.space.spc_casino.count);
+            if (global.race['orbit_decayed']){
+                lCaps['banker'] += jobScale(global.space.spc_casino.count);
+            }
         }
         if (global.galaxy['resort']){
             lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
         }
         if (global.city['cement_plant']){
             lCaps['cement_worker'] += jobScale(global.city.cement_plant.count * 2);
+        }
+        if (global.race['orbit_decayed'] && p_on['red_factory']){
+            lCaps['cement_worker'] += jobScale(p_on['red_factory']);
         }
         if (global.race['parasite']){
             lCaps['garrison'] += jobScale(2);
@@ -6287,6 +6293,10 @@ function midLoop(){
         if (p_on['s_gate'] && global.galaxy['starbase']){
             let soldiers = global.tech.marines >= 2 ? jobScale(8) : jobScale(5);
             lCaps['garrison'] += p_on['starbase'] * soldiers;
+        }
+        if (global.race['orbit_decayed'] && global.space.hasOwnProperty('red_mine')){
+            lCaps['miner'] += jobScale(support_on['red_mine']);
+            lCaps['coal_miner'] += jobScale(support_on['red_mine']);
         }
         if (!global.tech['world_control']){
             let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20
@@ -7077,7 +7087,7 @@ function midLoop(){
         }
         if (global.space['satellite']){
             let gain = (global.space.satellite.count * (global.race['cataclysm'] ? 2000 : 750));
-            if (global.race['cataclysm'] && global.tech['supercollider']){
+            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['supercollider']){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 5: 10;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
@@ -7184,8 +7194,8 @@ function midLoop(){
         }
 
         if (global.city['bank'] || (global.race['cataclysm'] && p_on['spaceport'])){
-            let vault = global.race['cataclysm'] ? bank_vault() * 4 : bank_vault();
-            let banks = global.race['cataclysm'] ? p_on['spaceport'] : global.city['bank'].count;
+            let vault = global.race['cataclysm'] || global.race['orbit_decayed'] ? bank_vault() * 4 : bank_vault();
+            let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? p_on['spaceport'] : global.city['bank'].count;
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
 

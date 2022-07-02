@@ -3,7 +3,7 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.2.??`,
+        version: `1.2.16`,
         date: `7/??/2022`,
         changes: [
             `Added Orbit Decay Challenge.`,

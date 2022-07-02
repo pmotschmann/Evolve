@@ -57,8 +57,8 @@ export function popover(id,content,opts){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
             if (eventActive('firework') && (
-                (!global.race['cataclysm'] && global.city.firework.on > 0) ||
-                (global.race['cataclysm'] && global.space.firework.on > 0)
+                (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.firework.on > 0) ||
+                ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space.firework.on > 0)
                 )){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
