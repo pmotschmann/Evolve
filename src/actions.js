@@ -2164,27 +2164,17 @@ export const actions = {
             reqs: { slaves: 2 },
             trait: ['slaver'],
             not_trait: ['cataclysm'],
+            inflation: false,
             cost: {
                 Money(){ return 25000; },
             },
-            queue_complete(){ return 0; },
+            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.city.slave_pen.slaves : 0; },
             action(){
-                if (global.race['slaver'] && global.city['slave_pen']){
-                    let max = global.city.slave_pen.count * 4;
-                    let keyMult = keyMultiplier();
-                    for (var i=0; i<keyMult; i++){
-                        if (max > global.city.slave_pen.slaves){
-                            if (payCosts($(this)[0])){
-                                global.city.slave_pen.slaves++;
-                                global.resource.Slave.amount = global.city.slave_pen.slaves;
-                            }
-                            else {
-                                break;
-                            }
-                        }
-                        else {
-                            break;
-                        }
+                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.city.slave_pen.slaves){
+                    if (payCosts($(this)[0])){
+                        global.city.slave_pen.slaves++;
+                        global.resource.Slave.amount = global.city.slave_pen.slaves;
+                        return true;
                     }
                 }
                 return false;
@@ -4946,25 +4936,21 @@ export function buildTemplate(key, region){
                         return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
                     }
                 },
-                action(n){
-                    let keyMult = n || keyMultiplier();
-                    let shoed = false;
-                    for (var i=0; i<keyMult; i++){
-                        if (global.resource.Horseshoe.display && payCosts($(this)[0])){
-                            global.resource.Horseshoe.amount++;
-                            global.race.shoecnt++;
-                            shoed = true;
+                action(){
+                    if (global.resource.Horseshoe.display && payCosts($(this)[0])){
+                        global.resource.Horseshoe.amount++;
+                        global.race.shoecnt++;
 
-                            if ((global.race.shoecnt === 5001 && global.resource.Orichalcum.display) ||
-                                (global.race.shoecnt === 501 && global.resource.Adamantite.display) ||
-                                (global.race.shoecnt === 151 && global.resource.Steel.display) ||
-                                (global.race.shoecnt === 76 && global.resource.Iron.display) ||
-                                (global.race.shoecnt === 13 && global.resource.Copper.display && global.resource.Lumber.display)){
-                                return 0;
-                            }
+                        if ((global.race.shoecnt === 5001 && global.resource.Orichalcum.display) ||
+                            (global.race.shoecnt === 501 && global.resource.Adamantite.display) ||
+                            (global.race.shoecnt === 151 && global.resource.Steel.display) ||
+                            (global.race.shoecnt === 76 && global.resource.Iron.display) ||
+                            (global.race.shoecnt === 13 && global.resource.Copper.display && global.resource.Lumber.display)){
+                            return 0;
                         }
+                        return true;
                     }
-                    return shoed;
+                    return false;
                 }
             };
 
@@ -5979,7 +5965,7 @@ function runAction(c_action,action,type){
                     let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
                     for (let i=0; i<loopNum; i++){
                         let res = false;
-                        if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action(1)))){
+                        if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action()))){
                             if (res !== 0 && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
                                 let used = 0;
                                 let buid_max = c_action['queue_complete'] ? c_action.queue_complete() : Number.MAX_SAFE_INTEGER;
@@ -6031,7 +6017,7 @@ function runAction(c_action,action,type){
                                 let item = global.queue.queue[j];
                                 if (item.id === c_action.id) {
                                     if (buid_max < 1) {
-                                        clearPopper(`q${item.id.id}${i}`);
+                                        clearPopper(`q${item.id}${i}`);
                                         global.queue.queue.splice(j--,1);
                                         add_queue = true;
                                     }

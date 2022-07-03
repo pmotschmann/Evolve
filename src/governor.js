@@ -994,7 +994,7 @@ export const gov_tasks = {
                     }
                 });
                 if (global.resource[res].amount > amount && (global.resource[res].diff >= amount || global.resource[res].amount + global.resource[res].diff >= global.resource[res].max) ){
-                    actions.city.horseshoe.action(1);
+                    actions.city.horseshoe.action();
                 }
             }
         }
