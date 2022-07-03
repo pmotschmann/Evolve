@@ -66,12 +66,14 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('satellite', offset, 8000, 1.22); }
             },
             effect(){
-                let knowledge = global.race['cataclysm'] ? 2000 : 750;
+                let knowledge = global.race['cataclysm'] || global.race['orbit_decayed'] ? 2000 : 750;
                 if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['supercollider']){
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 5 : 10;
                     knowledge *= (global.tech['supercollider'] / ratio) + 1;
                 }
-                let synergy = global.race['cataclysm'] ? `<div>${loc('space_home_satellite_effect2',[loc('space_moon_observatory_title'),25])}</div>` : `<div>${loc('space_home_satellite_effect2',[wardenLabel(), 4])}</div>`;
+                let label = global.race['cataclysm'] ? loc('space_moon_observatory_title') : (global.race['orbit_decayed'] ? loc('city_university') : wardenLabel());
+                let amount = global.race['cataclysm'] ? 25 : (global.race['orbit_decayed'] ? 12 : 4);
+                let synergy = `<div>${loc('space_home_satellite_effect2',[label, amount])}</div>`;
                 return `<div>${loc('plus_max_resource',[knowledge,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[global.civic.scientist.name])}</div>`
             },
             action(){
@@ -923,8 +925,8 @@ const spaceProjects = {
                 }
             }
         },
-        red_university: {
-            id: 'space-red_university',
+        university: {
+            id: 'space-university',
             title: loc('city_university'),
             desc(){
                 return loc('city_university_desc',[races[global.race.species].solar.red]);
@@ -969,6 +971,9 @@ const spaceProjects = {
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
+                if (global.race['orbit_decayed'] && global.space['satellite']){
+                    gain *= 1 + (global.space.satellite.count * 0.12);
+                }
                 gain = +(gain).toFixed(0);
                 return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
             },
@@ -987,9 +992,7 @@ const spaceProjects = {
                 }
                 return false;
             },
-            count(){
-                return global.city.university.count;
-            },
+            region: 'city'
         },
         exotic_lab: {
             id: 'space-exotic_lab',

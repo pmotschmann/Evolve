@@ -6995,6 +6995,9 @@ function midLoop(){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech.particles >= 3) ? 12.5: 25;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
+            if (global.race['orbit_decayed'] && global.space['satellite']){
+                gain *= 1 + (global.space.satellite.count * 0.12);
+            }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
         }
@@ -7086,7 +7089,7 @@ function midLoop(){
             bd_Knowledge[loc('portal_sensor_drone_title')] = gain+'v';
         }
         if (global.space['satellite']){
-            let gain = (global.space.satellite.count * (global.race['cataclysm'] ? 2000 : 750));
+            let gain = (global.space.satellite.count * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2000 : 750));
             if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['supercollider']){
                 let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? 5: 10;
                 gain *= (global.tech['supercollider'] / ratio) + 1;
