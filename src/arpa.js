@@ -117,7 +117,7 @@ export const arpaProjects = {
         },
         grant: 'launch_facility',
         rank: 1,
-        no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+        queue_complete(){ return global.tech.space >= 1 ? 0 : 1; },
         effect(){
             return loc('arpa_projects_launch_facility_effect1');
         },
@@ -2262,27 +2262,27 @@ function addProject(parent,project){
             data: global.arpa[project],
             methods: {
                 queue(pro){
-                    let keyMult = keyMultiplier();
                     if (global.tech['queue']){
+                        let keyMult = keyMultiplier();
                         for (let i=0; i<keyMult; i++){
-                            if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
-                                let arpaId = `arpa${pro}`;
-                                let used = 0;
-                                for (var j=0; j<global.queue.queue.length; j++){
-                                    used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                            let arpaId = `arpa${pro}`;
+                            let used = 0;
+                            let buid_max = arpaProjects[pro]['queue_complete'] ? arpaProjects[pro].queue_complete() : Number.MAX_SAFE_INTEGER;
+                            for (var j=0; j<global.queue.queue.length; j++){
+                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                if (global.queue.queue[j].id === arpaId) {
+                                    buid_max -= global.queue.queue[j].q;
                                 }
-                                if (used < global.queue.max){
-                                    if (global.settings.q_merge !== 'merge_never' && global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
-                                        global.queue.queue[global.queue.queue.length-1].q++;
-                                    }
-                                    else {
-                                        global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
-                                    }
-                                    buildQueue();
+                            }
+                            if (used < global.queue.max && buid_max > 0){
+                                if (global.settings.q_merge !== 'merge_never' && global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                    global.queue.queue[global.queue.queue.length-1].q++;
                                 }
                                 else {
-                                    break;
+                                    let title = typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title();
+                                    global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: title, cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
                                 }
+                                buildQueue();
                             }
                             else {
                                 break;
@@ -2377,7 +2377,6 @@ export function buildArpa(pro,num,update){
                     updateQueueNames(false, ['arparoid_eject']);
                 }
                 if (pro === 'launch_facility'){
-                    removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
                     clearPopper('popArpalaunch_facility');
@@ -2397,10 +2396,12 @@ export function buildArpa(pro,num,update){
     }
     if (update){
         let amounts = [1,10,25,100];
+        let popper = $('#popper');
+        let pid = popper.data('id');
         for (let i=0; i<amounts.length; i++){
-            if ($('#popper').data('id') === `popArpa${pro}${amounts[i]}`){
-                clearElement($(`#popper`));
-                $(`#popper`).append(arpaProjectCosts(amounts[i],pro));
+            if (pid === `popArpa${pro}${amounts[i]}`){
+                clearElement(popper);
+                popper.append(arpaProjectCosts(amounts[i],pro));
                 break;
             }
         }

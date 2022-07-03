@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed } from './actions.js';
+import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
@@ -8154,7 +8154,7 @@ function midLoop(){
                         global.r_queue.queue[i].cna = false;
                         let t_time = global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
                         if (t_time >= 0){
-                            if (checkAffordable(t_action) && !stop){
+                            if (!stop && checkAffordable(t_action)){
                                 c_action = t_action;
                                 idx = i;
                             }
@@ -8216,7 +8216,6 @@ function midLoop(){
         let time = 0;
         let spent = { t: 0, r: {}, id: {}};
         let arpa = false;
-        let queued = {};
         for (let i=0; i<global.queue.queue.length; i++){
             if (global.settings.qAny){
                 spent = { t: 0, r: {}, id: {}};
@@ -8226,154 +8225,100 @@ function midLoop(){
 
             let t_action = false;
             if (deepScan.includes(struct.action)){
-                let scan = true;
-                Object.keys(actions[struct.action]).forEach(function (region){
-                    if (actions[struct.action][region][struct.type] && scan){
+                for (let region in actions[struct.action]) {
+                    if (actions[struct.action][region][struct.type]){
                         t_action = actions[struct.action][region][struct.type];
-                        scan = false;
+                        break;
                     }
-                });
+                }
             }
             else {
                 t_action = actions[struct.action][struct.type];
             }
 
-            if (t_action && t_action['no_queue'] && t_action.no_queue() && !t_action['grant'] && !t_action['q_once']){
-                clearPopper(`q${t_action.id}${i}`);
-                global.queue.queue.splice(i,1);
-                buildQueue();
-                break;
-            }
-
-            if (t_action){
-                if (queued.hasOwnProperty(global.queue.queue[i].id)){
-                    queued[global.queue.queue[i].id] += global.queue.queue[i].q;
-                }
-                else {
-                    queued[global.queue.queue[i].id] = global.queue.queue[i].q;
-                }
-                if (t_action['queue_complete']){
-                    if (queued[global.queue.queue[i].id] > t_action.queue_complete()){
-                        clearPopper(`q${t_action.id}${i}`);
-                        global.queue.queue[i].q -= queued[global.queue.queue[i].id] - t_action.queue_complete();
-                        if (global.queue.queue[i].q <= 0){
-                            global.queue.queue.splice(i,1);
-                            buildQueue();
-                            break;
-                        }
-                    }
-                }
-            }
-
             if (struct.action === 'arpa'){
-                let remain = (100 - global.arpa[global.queue.queue[i].type].complete) / 100;
-                let spent_r = spent.r;
+                let remain = (100 - global.arpa[struct.type].complete) / 100;
                 let t_time = arpaTimeCheck(t_action, remain, spent);
                 if (t_time >= 0){
                     time += t_time;
-                    global.queue.queue[i]['time'] = time;
-                    if (global.queue.queue[i].q > 1){
-                        for (let j=1; j<global.queue.queue[i].q; j++){
-                            time += arpaTimeCheck(t_action, 1, spent);
-                        }
+                    struct['time'] = time;
+                    for (let j=1; j<struct.q; j++){
+                        time += arpaTimeCheck(t_action, 1, spent);
                     }
-                    global.queue.queue[i]['t_max'] = time;
-                    if (global.settings.qAny && !global.queue.pause){
-                        if (Math.floor(global.queue.queue[i]['time']) <= 1){
-                            if (!stop){
-                                c_action = t_action;
-                                idx = i;
-                                arpa = true;
-                            }
-                            stop = true;
-                        }
-                        else {
-                            buildArpa(global.queue.queue[i].type,100,true);
-                        }
-                    }
-                    else {
-                        if (!stop){
-                            c_action = t_action;
-                            idx = i;
-                            arpa = true;
-                        }
+                    struct['t_max'] = time;
+                }
+                else {
+                    struct['time'] = -1;
+                }
+
+                if (global.settings.qAny && !global.queue.pause && Math.floor(struct['time']) !== 0){
+                    buildArpa(struct.type,100,true);
+                }
+                else {
+                    if (!stop){
+                        c_action = t_action;
+                        idx = i;
+                        arpa = true;
                         stop = true;
                     }
                 }
-                else {
-                    global.queue.queue[i]['time'] = t_time;
-                }
-            }
-            else if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
-                clearPopper(`q${t_action.id}${i}`);
-                global.queue.queue.splice(i,1);
-                buildQueue();
-                break;
             }
             else {
                 if (checkAffordable(t_action,true)){
-                    global.queue.queue[i].cna = false;
+                    struct.cna = false;
                     let t_time = timeCheck(t_action, spent);
                     if (t_time >= 0){
-                        if (checkAffordable(t_action) && !stop){
+                        if (!stop && checkAffordable(t_action)){
                             c_action = t_action;
                             idx = i;
                             arpa = false;
+                            stop = true;
                         }
                         else {
                             time += t_time;
                         }
-                        global.queue.queue[i]['time'] = time;
-                        stop = global.settings.qAny ? false : true;
-                        if (global.queue.queue[i].q > 1){
-                            for (let j=1; j<global.queue.queue[i].q; j++){
-                                time += timeCheck(t_action, spent);
-                            }
+                        struct['time'] = time;
+                        for (let j=1; j<struct.q; j++){
+                            time += timeCheck(t_action, spent);
                         }
-                        global.queue.queue[i]['t_max'] = time;
+                        struct['t_max'] = time;
                     }
                     else {
-                        global.queue.queue[i]['time'] = t_time;
+                        struct['time'] = t_time;
                     }
                 }
                 else {
-                    global.queue.queue[i].cna = true;
-                    global.queue.queue[i]['time'] = -1;
+                    struct.cna = true;
+                    struct['time'] = -1;
                 }
             }
-            global.queue.queue[i].qa = global.settings.qAny ? true : false;
+            struct.qa = global.settings.qAny ? true : false;
         }
         if (idx >= 0 && c_action && !global.queue.pause){
+            let triggerd = false;
             if (arpa){
                 let label = global.queue.queue[idx].label;
                 let id = global.queue.queue[idx].id;
                 if (buildArpa(global.queue.queue[idx].type,100,true)){
                     messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
-                    if (id !== 'arpalaunch_facility') {
-                        if (global.queue.queue[idx].q > 1){
-                            global.queue.queue[idx].q--;
-                        }
-                        else {
-                            clearPopper(`q${c_action.id}${idx}`);
-                            global.queue.queue.splice(idx,1);
-                            buildQueue();
-                        }
+                    if (global.queue.queue[idx].q > 1){
+                        global.queue.queue[idx].q--;
+                    }
+                    else {
+                        clearPopper(`q${c_action.id}${idx}`);
+                        global.queue.queue.splice(idx,1);
+                        buildQueue();
                     }
                 }
             }
             else {
                 let attempts = global.queue.queue[idx].q;
                 let struct = global.queue.queue[idx];
-                let triggerd = false;
-                for (var i=0; i<attempts; i++){
+                let report_in = c_action['queue_complete'] ? c_action.queue_complete() : 1;
+                for (let i=0; i<attempts; i++){
                     if (c_action.action()){
                         triggerd = true;
-                        if (c_action['queue_complete']){
-                            if (c_action.queue_complete() <= 0){
-                                messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
-                            }
-                        }
-                        else {
+                        if (report_in - i <= 1){
                             messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
                         }
                         if (global.queue.queue[idx].q > 1){
@@ -8395,28 +8340,7 @@ function midLoop(){
                     }
                 }
                 if (triggerd){
-                    if (c_action['grant']){
-                        let tech = c_action.grant[0];
-                        global.tech[tech] = c_action.grant[1];
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    else if (c_action['refresh']){
-                        removeAction(c_action.id);
-                        drawCity();
-                        drawTech();
-                        renderSpace();
-                        renderFortress();
-                    }
-                    updateDesc(c_action,struct.action,struct.type);
-                    if (c_action['post']){
-                        setTimeout(function(){
-                            c_action.post();
-                        }, 250);
-                    }
+                    postBuild(c_action,struct.action,struct.type);
                 }
             }
         }
