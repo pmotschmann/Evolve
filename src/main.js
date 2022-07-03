@@ -5583,7 +5583,7 @@ function fastLoop(){
                     modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
                 }
                 else {
-                    temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count) * 0.025;
+                    temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.025;
                 }
             }
 
@@ -7020,7 +7020,7 @@ function midLoop(){
                 shelving *= 1 + (sci_val * 0.12);
             }
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 2){
-                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count) * 0.05;
+                shelving *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.05;
             }
             let teachVal = govActive('teacher',0);
             if (teachVal){
