@@ -8316,7 +8316,7 @@ function midLoop(){
                 let struct = global.queue.queue[idx];
                 let report_in = c_action['queue_complete'] ? c_action.queue_complete() : 1;
                 for (let i=0; i<attempts; i++){
-                    if (c_action.action()){
+                    if (c_action.action() !== false){
                         triggerd = true;
                         if (report_in - i <= 1){
                             messageQueue(loc('build_success',[global.queue.queue[idx].label]),'success',false,['queue','building_queue']);
