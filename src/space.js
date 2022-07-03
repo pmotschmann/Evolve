@@ -500,6 +500,94 @@ const spaceProjects = {
                 return false;
             }
         },
+        terraformer: {
+            id: 'space-terraformer',
+            title: loc('space_terraformer'),
+            desc(wiki){
+                if (!global.space.hasOwnProperty('terraformer') || global.space.terraformer.count < 100 || wiki){
+                    return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.space.hasOwnProperty('terraformer') && global.space.terraformer.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                }
+                else {
+                    return `<div>${loc('space_terraformer')}</div>`;
+                }
+            },
+            reqs: { terraforming: 1 },
+            condition(){
+                return global.space.terraformer.count >= 100 ? false : true;
+            },
+            queue_size: 5,
+            queue_complete(){ return 100 - global.space.terraformer.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 75000000 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 750000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 1000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 100000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 250000 : 0; },
+                Nanoweave(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 75000 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('space_terraformer_effect',[flib('name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return interstellarProjects.int_sirius.ascension_trigger.effect();
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.space.terraformer.count < 100){
+                        incrementStruct('terraformer','space');
+                        if (global.space.terraformer.count >= 100){
+                            global.tech['terraforming'] = 2;
+                            global.space['atmo_terraformer'] = { count: 1, on: 0 };
+                            renderSpace();
+                            clearPopper();
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        atmo_terraformer: {
+            id: 'space-atmo_terraformer',
+            title: loc('space_terraformer'),
+            desc(){ return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            wiki: false,
+            reqs: { terraforming: 2 },
+            condition(){
+                return global.space.terraformer.count >= 100 ? true : false;
+            },
+            queue_complete(){ return 0; },
+            cost: {},
+            powered(){
+                return powerCostMod(5000);
+            },
+            postPower(o){
+                if (o){
+                    setTimeout(function(){
+                        global.tech.terraforming = p_on['space_terraformer'] ? 3 : 2;
+                        renderSpace();
+                    }, 250);
+                }
+                else {
+                    global.tech.terraforming = 2;
+                    renderSpace();
+                }
+            },
+            effect(){
+                let reward = astrialProjection();
+                let power = $(this)[0].powered();
+                let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
+                return `<div>${loc('space_terraformer_effect2')}</div>${reward}${power_label}`;
+            },
+            action(){
+                return false;
+            }
+        },
         assembly: buildTemplate(`assembly`,'space'),
         living_quarters: {
             id: 'space-living_quarters',

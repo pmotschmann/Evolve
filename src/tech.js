@@ -4807,6 +4807,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { science: 19 },
         grant: ['ascension',1],
+        not_trait: ['orbit_decay'],
         cost: {
             Knowledge(){ return 17500000; },
             Phage(){ return 25; }
@@ -4827,6 +4828,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { ascension: 1 },
         grant: ['ascension',2],
+        not_trait: ['orbit_decay'],
         cost: {
             Knowledge(){ return 18500000; },
             Plasmid(){ return 100; }
@@ -4835,6 +4837,26 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.space.sirius = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    terraforming: {
+        id: 'tech-terraforming',
+        title: loc('tech_terraforming'),
+        desc: loc('tech_terraforming'),
+        category: 'special',
+        era: 'intergalactic',
+        reqs: { science: 19 },
+        grant: ['terraforming',1],
+        trait: ['orbit_decay'],
+        cost: {
+            Knowledge(){ return 18000000; },
+        },
+        effect(){ return loc('tech_terraforming_effect',[races[global.race.species].solar.red]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;

@@ -3817,7 +3817,7 @@ function fastLoop(){
             if (global.tech['m_smelting'] && global.space['hell_smelter']){
                 capacity += global.space.hell_smelter.count * 2;
             }
-            if (global.race['cataclysm'] || global.race['orbit_decayed']){
+            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['geothermal']){
                 capacity += global.space.geothermal.on;
             }
             global.city.smelter.cap = capacity;
