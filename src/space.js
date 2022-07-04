@@ -5,7 +5,7 @@ import { races, traits, genus_traits, planetTraits } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
+import { actions, payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { outerTruth, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive } from './governor.js';
@@ -1013,8 +1013,8 @@ const spaceProjects = {
                 }
             }
         },
-        university: {
-            id: 'space-university',
+        red_university: {
+            id: 'space-red_university',
             title: loc('city_university'),
             desc(){
                 return loc('city_university_desc',[races[global.race.species].solar.red]);
@@ -1028,42 +1028,7 @@ const spaceProjects = {
                 Crystal(offset){ return global.race.universe === 'magic' ? spaceCostMultiplier('university', offset, 5, 1.36, 'city') : 0; },
             },
             effect(){
-                let multiplier = 1;
-                let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
-                if (global.city.ptrait.includes('permafrost')){
-                    gain += planetTraits.permafrost.vars()[1];
-                }
-                if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
-                    multiplier += (p_on['sensor_drone'] * 0.02);
-                }
-                if (global.race['hard_of_hearing']){
-                    multiplier *= 1 - (traits.hard_of_hearing.vars()[0] / 100);
-                }
-                if (global.race['curious']){
-                    multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
-                }
-                if (p_on['s_gate'] && gal_on['scavenger']){
-                    let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
-                    multiplier *= 1 + uni;
-                }
-                let teachVal = govActive('teacher',0);
-                if (teachVal){
-                    multiplier *= 1 + (teachVal / 100);
-                }
-                let athVal = govActive('athleticism',2);
-                if (athVal){
-                    multiplier *= 1 - (athVal / 100);
-                }
-                gain *= multiplier;
-                if (global.tech['supercollider']){
-                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
-                    gain *= (global.tech['supercollider'] / ratio) + 1;
-                }
-                if (global.race['orbit_decayed'] && global.space['satellite']){
-                    gain *= 1 + (global.space.satellite.count * 0.12);
-                }
-                gain = +(gain).toFixed(0);
-                return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                return actions.city.university.effect();
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1074,13 +1039,13 @@ const spaceProjects = {
                     }
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
+                    global.space.red_university.count = global.city.university.count;
                     global.civic.professor.display = true;
                     global.civic.professor.max = global.city.university.count;
                     return true;
                 }
                 return false;
             },
-            region: 'city'
         },
         exotic_lab: {
             id: 'space-exotic_lab',
@@ -2532,8 +2497,8 @@ const interstellarProjects = {
                 Graphene(offset){ return spaceCostMultiplier('exchange', offset, 78000, 1.28, 'interstellar'); }
             },
             effect(){
-                let banks = global.race['cataclysm'] ? p_on['spaceport'] : (global.city['bank'] ? global.city.bank.count : 0);
-                let b_vault = global.race['cataclysm'] ? (bank_vault() * 4) : bank_vault();
+                let banks = global.race['cataclysm'] || global.race['orbit_decayed'] ? p_on['spaceport'] : (global.city['bank'] ? global.city.bank.count : 0);
+                let b_vault = global.race['cataclysm'] || global.race['orbit_decayed']  ? (bank_vault() * 4) : bank_vault();
                 let vault = spatialReasoning(global.city['bank'] ? b_vault * banks / 18 : 0);
                 if (global.race['inflation']){
                     vault *= 2;

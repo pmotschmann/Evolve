@@ -6993,12 +6993,30 @@ export function orbitDecayed(){
 
         Object.keys(actions.city).forEach(function (k){
             if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
+                if (global.race['hooved']){
+                    if (actions.city[k].cost.hasOwnProperty('Horseshoe')){
+                        global.race['shoecnt'] -= actions.city[k].cost.Horseshoe() * global.city[k].count;
+                    }
+                }
                 global.city[k].count = 0;
                 if (global.city[k].hasOwnProperty('on')){
                     global.city[k].on = 0;
                 }
             }
         });
+
+        if (global.race['hooved'] && global.race['shoecnt'] < 5){
+            global.race.shoecnt = 5;
+        }
+        if (global.resource.Zen.display){
+            global.resource.Zen.display = false;
+        }
+        if (global.resource.Slave.display){
+            global.resource.Slave.display = false;
+            global.resource.Slave.amount = 0;
+        }
+
+        global.space['red_university'] = { count: 0 };
 
         Object.keys(actions.space.spc_moon).forEach(function (k){
             if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('count')){
