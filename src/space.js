@@ -1180,10 +1180,11 @@ const spaceProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(wiki){
+                let train = global.race['orbit_decayed'] ? actions.city.boot_camp.effect() : '';
                 let oil = +fuel_adjust(2,true,wiki).toFixed(2);
                 let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
                 let food = global.race['cataclysm'] ? `` : `<div class="has-text-caution">${loc('space_red_space_barracks_effect3',[global.resource.Food.name])}</div>`;
-                return `<div>${loc('plus_max_soldiers',[soldiers])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
+                return `<div>${loc('plus_max_soldiers',[soldiers])}</div>${train}<div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>${food}`;
             },
             powered(){ return powerCostMod(1); },
             action(){

@@ -5846,7 +5846,7 @@ function fastLoop(){
             if (milVal){
                 train *= 1 + (milVal / 100);
             }
-            rate *= 1 + (global.city['boot_camp'].count * train);
+            rate *= 1 + ((global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * train);
         }
         if (global.race['beast']){
             rate *= 1 + (traits.beast.vars()[2] / 100);
