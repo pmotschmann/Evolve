@@ -8275,11 +8275,11 @@ function midLoop(){
                             c_action = t_action;
                             idx = i;
                             arpa = false;
-                            stop = true;
                         }
                         else {
                             time += t_time;
                         }
+                        stop = global.settings.qAny_res ? false : true;
                         struct['time'] = time;
                         for (let j=1; j<struct.q; j++){
                             time += timeCheck(t_action, spent);
