@@ -2462,6 +2462,9 @@ function fastLoop(){
         if (support_on['vr_center']){
             let gasVal = govActive('gaslighter',1);
             let vr_morale = gasVal ? gasVal + 1 : 1;
+            if (global.race['orbit_decayed']){
+                vr_morale += 2;
+            }
             global.city.morale.vr = support_on['vr_center'] * vr_morale;
             morale += support_on['vr_center'] * vr_morale;
         }

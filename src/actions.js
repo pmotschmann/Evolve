@@ -4107,6 +4107,9 @@ export const actions = {
                     let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
+                if (global.race['orbit_decayed'] && global.space['satellite']){
+                    gain *= 1 + (global.space.satellite.count * 0.12);
+                }
                 if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
                     let shrineBonus = getShrineBonus('know');
                     gain *= shrineBonus.mult;

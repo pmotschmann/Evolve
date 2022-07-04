@@ -5294,6 +5294,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { mass: 1, science: 19 },
         grant: ['mass',2],
+        not_trait: ['orbit_decayed'],
         cost: {
             Knowledge(){ return 14000000; },
             Orichalcum(){ return 400000; }
@@ -5301,6 +5302,7 @@ const techs = {
         effect(){ return loc('tech_orichalcum_driver_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                global.space['terraformer'] = { count: 0 };
                 return true;
             }
             return false;

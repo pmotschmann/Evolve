@@ -530,7 +530,7 @@ const spaceProjects = {
                 let count = (wiki || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0);
                 if (count < 100){
                     let remain = 100 - count;
-                    return `<div>${loc('space_terraformer_effect',[flib('name')])}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                    return `<div>${loc('space_terraformer_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
                     return interstellarProjects.int_sirius.ascension_trigger.effect();
@@ -680,6 +680,9 @@ const spaceProjects = {
             effect(){
                 let gasVal = govActive('gaslighter',1);
                 let morale = gasVal ? gasVal + 1 : 1;
+                if (global.race['orbit_decayed']){
+                    morale += 2;
+                }
                 return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[morale])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
             },
             support(){ return -1; },
