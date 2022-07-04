@@ -4795,7 +4795,7 @@ export function buildTemplate(key, region){
                     Iron(){ return global[region].firework.count === 0 ? 7500 : 0; },
                     Cement(){ return global[region].firework.count === 0 ? 10000 : 0; }
                 },
-                queue_complete(){ return 0; },
+                queue_complete(){ return 1 - global[region].firework.count; },
                 switchable(){ return true; },
                 effect(){
                     return global[region].firework.count === 0 ? loc(`city_firework_build`) : loc(`city_firework_effect`);
