@@ -8257,11 +8257,11 @@ function midLoop(){
                     struct['time'] = -1;
                 }
 
-                if (global.settings.qAny && !global.queue.pause && Math.floor(struct['time']) !== 0){
-                    buildArpa(struct.type,100,true);
-                }
-                else {
-                    if (!stop){
+                if (arpaTimeCheck(t_action, 0.01) >= 0){
+                    if (global.settings.qAny && !global.queue.pause && struct['time'] > 1){
+                        buildArpa(struct.type,100,true);
+                    }
+                    else if (!stop){
                         c_action = t_action;
                         idx = i;
                         arpa = true;
