@@ -8146,12 +8146,15 @@ function fanaticTrait(trait){
             randomMinorTrait(5);
             arpa('Genetics');
         }
+        else if (trait === 'imitation'){
+            setImitation(true);
+        }
+        else if (trait === 'shapeshifter'){
+            shapeShift(global.race['ss_genus']);
+        }
     }
     else {
         global.race[trait] = 1;
-        if (trait === 'imitation'){
-            setImitation(true);
-        }
         cleanAddTrait(trait);
     }
 }
