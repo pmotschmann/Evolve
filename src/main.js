@@ -9038,13 +9038,17 @@ function longLoop(){
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
                     if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
-                        eScan += sensorRange(ship.sensor) * 2;
+                        eScan += sensorRange(ship.sensor);
                     }
                 });
-                if (global.tech.hasOwnProperty('eris_scan') && global.tech.hasOwnProperty('eris') && global.tech.eris === 1 && eScan >= 100){
-                    global.tech.eris = 2;
-                    messageQueue(loc('space_eris_scan',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
-                    renderSpace();
+                if (global.tech.hasOwnProperty('eris_scan') && global.tech.hasOwnProperty('eris') && global.tech.eris === 1 && eScan > 50){
+                    global.tech.eris_scan += eScan - 50;
+                    if (global.tech.eris_scan >= 100){
+                        global.tech.eris_scan = 100;
+                        global.tech.eris = 2;
+                        messageQueue(loc('space_eris_scan',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
+                        renderSpace();
+                    }
                 }
                 if (global.space.hasOwnProperty('position')){
                     Object.keys(spacePlanetStats).forEach(function(planet){
