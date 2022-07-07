@@ -4676,7 +4676,10 @@ export function cleanAddTrait(trait){
             });
             break;
         case 'shapeshifter':
-            shapeShift();
+            shapeShift(false,true);
+            break;
+        case 'imitation':
+            setImitation(true);
             break;
         case 'evil':
             setResourceName('Lumber');
@@ -4888,11 +4891,14 @@ export function setImitation(mod){
         if (!global.race['iTraits']){
             global.race['iTraits'] = {};
         }
+        if (global.race['shapeshifter']){
+            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true);
+        }
+
+        let i_traits = [];
         Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
             if (!global.race[trait]){
-                global.race.iTraits[trait] = 0;
-                setTraitRank(trait,{ set: traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod){ cleanAddTrait(trait); }
+                i_traits.push(trait);
             }
         });
         if (global.race['srace'] === 'custom'){
@@ -4905,28 +4911,21 @@ export function setImitation(mod){
                     list[1] = trait;
                 }
             });
-            if (!['evil','imitation'].includes(list[0])){
-                let set = global.race[list[0]] ? false : true;
-                global.race.iTraits[list[0]] = global.race[list[0]] ? global.race[list[0]] : 0;
-                setTraitRank(list[0],{ set: traits[list[0]].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod && set){ cleanAddTrait(list[0]); }
-            }
-            if (!['evil','imitation'].includes(list[1])){
-                let set = global.race[list[1]] ? false : true;
-                global.race.iTraits[list[1]] = global.race[list[1]] ? global.race[list[1]] : 0;
-                setTraitRank(list[1],{ set: traits[list[1]].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod && set){ cleanAddTrait(list[1]); }
-            }
+            i_traits.push(...list);
         }
         else {
-            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                if (!['evil','imitation'].includes(trait)){
-                    let set = global.race[trait] ? false : true;
-                    global.race.iTraits[trait] = global.race[trait] ? global.race[trait] : 0;
-                    setTraitRank(trait,{ set: traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                    if (mod && set){ cleanAddTrait(trait); }
-                }
-            });
+            i_traits.push(...Object.keys(races[global.race['srace']].traits));
+        }
+
+        for (let trait of i_traits) {
+            if (!['evil','imitation'].includes(trait)){
+                let set = global.race[trait] ? false : true;
+                let added = global.race.iTraits[trait] ? false : true;
+                let rank = traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0];
+                global.race.iTraits[trait] = global.race.iTraits[trait] || global.race[trait] || 0;
+                setTraitRank(trait,{ set: rank, force: added });
+                if (mod && set){ cleanAddTrait(trait); }
+            }
         }
     }
 }
@@ -4966,7 +4965,7 @@ export function shapeShift(genus,setup){
 
         let drop = ``;
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && gen !== races[global.race.species].type && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+            if (gen !== 'synthetic' && gen !== races[global.race.species].type && (!global.race['imitation'] || gen !== races[global.race['srace']].type) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
@@ -5000,7 +4999,7 @@ export function shapeShift(genus,setup){
 
 export function setTraitRank(trait,opts){
     opts = opts || {};
-    if (global.race[trait]){
+    if (global.race[trait] && !opts['force']){
         switch (global.race[trait]){
             case 0.25:
                 global.race[trait] = opts['down'] ? 0.25 : 0.5;
