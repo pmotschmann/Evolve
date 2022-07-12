@@ -1,7 +1,7 @@
 import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, planetTraits } from './races.js';
+import { races, traits, genus_traits, planetTraits, biomes } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
@@ -524,6 +524,7 @@ const spaceProjects = {
                 Elerium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 1000 : 0; },
                 Bolognium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 100000 : 0; },
                 Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 250000 : 0; },
+                Soul_Gem(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 1 : 0; },
                 Nanoweave(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? 75000 : 0; },
             },
             effect(wiki){
@@ -569,7 +570,7 @@ const spaceProjects = {
             postPower(o){
                 if (o){
                     setTimeout(function(){
-                        global.tech.terraforming = p_on['space_terraformer'] ? 3 : 2;
+                        global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
                         renderSpace();
                     }, 250);
                 }
@@ -579,12 +580,30 @@ const spaceProjects = {
                 }
             },
             effect(){
-                let reward = astrialProjection();
+                let reward = terraformProjection();
                 let power = $(this)[0].powered();
                 let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
                 return `<div>${loc('space_terraformer_effect2')}</div>${reward}${power_label}`;
             },
             action(){
+                return false;
+            }
+        },
+        terraform: {
+            id: 'space-terraform',
+            title: loc('space_terraform'),
+            desc: loc('space_terraform'),
+            reqs: { terraforming: 3 },
+            cost: {},
+            effect(){
+                let reward = terraformProjection();
+                return `<div>${loc('space_terraform_effect')}</div>${reward}`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    terraformLab();
+                    return true;
+                }
                 return false;
             }
         },
@@ -3934,6 +3953,12 @@ function astrialProjection(){
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
 }
 
+function terraformProjection(){
+    let gains = calcPrestige('ascend');
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('space_terraformer_effect3')}</div>`;
+}
+
 const galaxyProjects = {
     gxy_gateway: {
         info: {
@@ -6629,4 +6654,147 @@ export function ascendLab(wiki){
             });
         }
     });
+}
+
+export function terraformLab(wiki){
+    if (!wiki && !global.race['noexport']){
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+
+        unlockAchieve(`biome_${global.city.biome}`);
+        unlockAchieve(`genus_${races[global.race.species].type}`);
+        unlockAchieve(`lamentis`);
+        if (global.race.species === 'junker'){
+            unlockFeat('the_misery');
+        }
+        global.race['noexport'] = 1;
+        clearElement($(`#city`));
+        global.settings.showCity = true;
+        global.settings.showCivic = false;
+        global.settings.showResearch = false;
+        global.settings.showResources = false;
+        global.settings.showGenetics = false;
+        global.settings.showSpace = false;
+        global.settings.showDeep = false;
+        global.settings.showGalactic = false;
+        global.settings.showPortal = false;
+        global.settings.spaceTabs = 0;
+    }
+
+    let lab = $(`<div id="celestialLab" class="celestialLab"></div>`);
+
+    let wikiVars = {
+        ascended: {},
+        lamentis: global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l ? global.stats.achieve.lamentis.l : 0
+    };
+
+    if (wiki){
+        wiki.append(lab);
+    }
+    else {
+        $(`#city`).append(lab);
+    }
+
+    lab.append(`<div><h3 class="has-text-danger">${loc('planetlab_title')}</h3> - <span class="has-text-warning">${loc('planetlab_points')} {{ p.pts }}</span></div>`);
+
+    let pBiome = $(`<div class="sequence"></div>`);
+    lab.append(pBiome);
+
+    let dBiome = false;
+    let biome = `<div class="genus_selection"><div class="has-text-caution">${loc('wiki_planet_biome')}</div><template><section>`;
+    Object.keys(biomes).forEach(function (type){
+        if (wiki || (global.stats.achieve[`biome_${type}`] && global.stats.achieve[`biome_${type}`].l > 0)){
+            if (!dBiome){ dBiome = type; }
+            biome = biome + `<div class="field ${type}"><b-radio v-model="p.biome" native-value="${type}">${biomes[type].label}</b-radio></div>`;
+        }
+    });
+    biome = biome + `</section></template></div>`;
+    pBiome.append($(biome));
+
+    let trait_list = `<div class="planet_selection"><div class="has-text-warning">${loc('wiki_planet_trait')}</div><template><section>`;
+    Object.keys(planetTraits).forEach(function (trait){
+        if (
+            wiki
+                ||
+            (global.stats.achieve[`atmo_${trait}`] && global.stats.achieve[`atmo_${trait}`].l > 0)
+            ){
+            trait_list = trait_list + `<div class="field t${trait}"><b-checkbox :input="pEdit()" v-model="p.traitlist" native-value="${trait}"><span class="has-text-success">${planetTraits[trait].label}</span></b-checkbox></div>`;
+        }
+    });
+    trait_list = trait_list + `</section></template></div>`;
+    pBiome.append($(trait_list));
+
+    let geology = {};
+    let geoList = ['Copper','Iron','Aluminium','Coal','Oil','Titanium','Uranium'];
+    if (global.stats.achieve['whitehole']){
+        geoList.push('Iridium');
+    }
+
+    let geo_list = `<div class="res_selection"><div class="has-text-warning">${loc('planetlab_res')}</div><template><section>`;
+    geoList.forEach(function (res){
+        geology[res] = 0;
+        geo_list = geo_list + `<div class="field t${res}"><div>${global.resource[res].name}</div><div>`;
+        geo_list = geo_list + `<span role="button" aria-label="export ${res}" class="sub has-text-danger" @click="less('${res}')"><span>-</span></span>`;
+        geo_list = geo_list + `<span class="current" v-html="$options.filters.res('${res}')"></span>`;
+        geo_list = geo_list + `<span role="button" aria-label="import ${res}" class="add has-text-success" @click="more('${res}')"><span>+</span></span>`;
+        geo_list = geo_list + `</div></div>`;
+    });
+    geo_list = geo_list + `</section></template></div>`;
+    pBiome.append($(geo_list));
+
+    let planet = {
+        biome: dBiome,
+        pts: 0,
+        traitlist: [],
+        geology: geology
+    };
+    planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
+
+    vBind({
+        el: '#celestialLab',
+        data: {
+            p: planet,
+            w: wikiVars
+        },
+        methods: {
+            pEdit(){
+                planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
+            },
+            less(r){
+                planet.geology[r] -= keyMultiplier();
+                if (planet.geology[r] < -20){
+                    planet.geology[r] = -20;
+                }
+            },
+            more(r){
+                planet.geology[r] += keyMultiplier();
+                let max = 30;
+                if (global.stats.achieve['whitehole']){
+                    max += global.stats.achieve['whitehole'].l * 5;
+                }
+                if (planet.biome === 'eden'){
+                    max += 5;
+                }
+                if (planet.geology[r] > max){
+                    planet.geology[r] = max;
+                }
+            }
+        },
+        filters: {
+            res(r){
+                return planet.geology[r];
+            }
+        }
+    });
+}
+
+function terraformScore(planet,wiki){
+    let pts = (planet.biome === 'eden' ? 0 : 10) + (global.stats.achieve['lamentis'] ? global.stats.achieve.lamentis.l * 10 : 0);
+    pts -= planet.traitlist.length ** 3;
+    Object.keys(planet.geology).forEach(function (res){
+        pts -= planet.geology[res]
+    });
+    return pts;
 }

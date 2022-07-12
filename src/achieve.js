@@ -48,7 +48,7 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross'],
+    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross','lamentis'],
 };
 
 const flairData = {
