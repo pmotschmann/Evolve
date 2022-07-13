@@ -4437,6 +4437,8 @@
   "trait_promiscuous": "Your race has an elevated birth rate.",
   "trait_promiscuous_name": "Promiscuous",
   "trait_promiscuous_effect": "Elevated birth rate.",
+  "trait_promiscuous_synth": "Your race is designed for mass production.",
+  "trait_promiscuous_synth_name": "Standartization",
   "trait_resilient": "Natural resilience to harsh conditions makes your species more adept at coal mining.",
   "trait_resilient_name": "Resilient",
   "trait_resilient_effect": "Coal mining efficiency increased.",

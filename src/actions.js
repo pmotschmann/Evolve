@@ -4816,7 +4816,11 @@ export function buildTemplate(key, region){
         {
             let id = region === 'space' ? 'space-assembly' : 'city-assembly';
             let assemblyCostAdjust = function(v){
-                return Math.round(highPopAdjust(v));
+                let cost = highPopAdjust(v);
+                if (global.race['promiscuous']){
+                    cost /= 1 + traits.promiscuous.vars()[1] * global.race['promiscuous'];
+                }
+                return Math.round(cost);
             }
             let action = {
                 id: id,
