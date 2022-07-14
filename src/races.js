@@ -2894,11 +2894,11 @@ export const traits = {
         type: 'minor',
         vars(r){ return [1]; },
     },
-    promiscuous: { // Population Growth Bonus
+    promiscuous: { // Organics Growth Bonus, Synths Population Discount
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
         type: 'minor',
-        vars(r){ return [1]; },
+        vars(r){ return [1,0.02]; },
     },
     resilient: { // Coal Mining Bonus
         name: loc('trait_resilient_name'),
@@ -5031,6 +5031,7 @@ export function traitSkin(type,trait){
         {
             let name = {
                 hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
+                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
@@ -5038,6 +5039,7 @@ export function traitSkin(type,trait){
         {
             let desc = {
                 hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
