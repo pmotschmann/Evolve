@@ -858,6 +858,122 @@ export function descension(){
     window.location.reload();
 }
 
+// Terraform
+export function terraform(planet){
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'terraform'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let orbit = global.city.calendar.orbit;
+    let biome = planet.biome;
+    let atmo = planet.traitlist;
+    let geo = planet.geology;
+    let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
+    let phage = global.race.Phage.count;
+    let harmony = global.race.Harmony.count;
+
+    let gains = calcPrestige('ascend');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+    let new_harmony = gains.harmony;
+
+    phage += new_phage;
+    harmony += new_harmony;
+    harmony = parseFloat(harmony.toFixed(2));
+
+    global.stats.terraform++;
+    updateResetStats();
+
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
+    global.stats.phage += new_phage;
+    global.stats.harmony += new_harmony;
+    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
+
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+
+    if (typeof global.tech['world_control'] === 'undefined'){
+        unlockAchieve(`cult_of_personality`);
+    }
+
+    let good_rocks = 0;
+    Object.keys(global.city.geology).forEach(function (g){
+        if (global.city.geology[g] > 0){
+            good_rocks++;
+        }
+    });
+    if (good_rocks >= 4) {
+        unlockAchieve('miners_dream');
+    }
+
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+
+    checkAchievements();
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        Plasmid: { count: plasmid, anti: antiplasmid },
+        Phage: { count: phage },
+        Dark: { count: global.race.Dark.count },
+        Harmony: { count: harmony },
+        AICore: { count: global.race.AICore.count },
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
+    };
+    global.tech = { theology: 1 };
+    clearStates();
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
 // AI Appocalypse
 export function aiApocalypse(){
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));

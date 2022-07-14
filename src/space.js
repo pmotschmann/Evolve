@@ -9,7 +9,7 @@ import { actions, payCosts, setAction, setPlanet, storageMultipler, drawTech, ba
 import { outerTruth, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive } from './governor.js';
-import { ascend } from './resets.js';
+import { ascend, terraform } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -6264,7 +6264,7 @@ export function ascendLab(wiki){
         if (global.race['cataclysm']){
             unlockFeat(`finish_line`);
         }
-        global.race['noexport'] = 1;
+        global.race['noexport'] = `Race`;
         clearElement($(`#city`));
         global.settings.showCity = true;
         global.settings.showCivic = false;
@@ -6669,7 +6669,7 @@ export function terraformLab(wiki){
         if (global.race.species === 'junker'){
             unlockFeat('the_misery');
         }
-        global.race['noexport'] = 1;
+        global.race['noexport'] = `Planet`;
         clearElement($(`#city`));
         global.settings.showCity = true;
         global.settings.showCivic = false;
@@ -6752,6 +6752,21 @@ export function terraformLab(wiki){
     };
     planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
 
+    let buttons = `<div class="buttons">
+        <div class="reset">
+            <button class="button" @click="reset()">${loc('genelab_reset')}</button>
+        </div>
+    `;
+    if (!wiki){
+        buttons += `
+            <div class="create">
+                <button class="button" @click="setPlanet()">${loc('planetlab_create')}</button>
+            </div>
+        `;
+    }
+    buttons += `</div>`;
+    lab.append(buttons);
+
     vBind({
         el: '#celestialLab',
         data: {
@@ -6760,6 +6775,26 @@ export function terraformLab(wiki){
         },
         methods: {
             pEdit(){
+                planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
+            },
+            setPlanet(){
+                if (terraformScore(planet) >= 0){
+                    Object.keys(planet.geology).forEach(function (res){
+                        if (planet.geology[res] === 0){
+                            delete planet.geology[res];
+                        }
+                        else {
+                            planet.geology[res] /= 100;
+                        }
+                    });
+                    terraform(planet);
+                }
+            },
+            reset(){
+                planet.traitlist = [];
+                Object.keys(planet.geology).forEach(function (res){
+                    planet.geology[res] = 0;
+                });
                 planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
             },
             less(r){
@@ -6793,8 +6828,15 @@ export function terraformLab(wiki){
 function terraformScore(planet,wiki){
     let pts = (planet.biome === 'eden' ? 0 : 10) + (global.stats.achieve['lamentis'] ? global.stats.achieve.lamentis.l * 10 : 0);
     pts -= planet.traitlist.length ** 3;
+    let ts = 0;
     Object.keys(planet.geology).forEach(function (res){
-        pts -= planet.geology[res]
+        if (planet.geology[res] !== 0){
+            pts -= planet.geology[res];
+            ts++;
+        }
     });
+    if (ts > 3){
+        pts -= (ts - 3) ** 2;
+    }
     return pts;
 }

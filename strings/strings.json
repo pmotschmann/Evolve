@@ -6177,6 +6177,7 @@
   "planetlab_title": "Planet Generator",
   "planetlab_points": "Creation Points Remaining:",
   "planetlab_res": "Resource Deposits",
+  "planetlab_create": "Create Planet",
   "genelab_title": "Species Generator",
   "genelab_genes": "Genes Remaining:",
   "genelab_name": "Species Name",

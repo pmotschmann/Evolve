@@ -9,7 +9,7 @@ import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { races, shapeShift } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
-import { renderSpace, ascendLab } from './space.js';
+import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
 import { drawShipYard, clearShipDrag } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
@@ -397,8 +397,14 @@ export function loadTab(tab){
                     renderFortress();
                 }
                 if (global.race['noexport']){
-                    clearElement($(`#city`));
-                    ascendLab();
+                    if (global.race['noexport'] === 'Race'){
+                        clearElement($(`#city`));
+                        ascendLab();
+                    }
+                    else if (global.race['noexport'] === 'Planet'){
+                        clearElement($(`#city`));
+                        terraformLab();
+                    }
                 }
             }
             break;

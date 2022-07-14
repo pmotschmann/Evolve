@@ -9,6 +9,7 @@ const changeList = [
             `Added Orbit Decay Challenge.`,
             `Added Retrograde planetary trait.`,
             `New achievement: Better dead then red.`,
+            `Other stuff the dev was too lazy to document.`
         ]
     },
     {

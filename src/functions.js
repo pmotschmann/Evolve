@@ -184,7 +184,7 @@ function calcATime(){
 
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
-        return 'Export is not available during Race Creation';
+        return `Export is not available during ${global.race['noexport']} Creation`;
     }
     calcATime();
     global.stats['current'] = Date.now();
