@@ -8169,12 +8169,17 @@ function midLoop(){
                             if (!stop && checkAffordable(t_action)){
                                 c_action = t_action;
                                 idx = i;
+                                if (global.settings.qAny_res){
+                                    stop = true;
+                                }
                             }
                             else {
                                 time += t_time;
                             }
+                            if (!global.settings.qAny_res){
+                                stop = true;
+                            }
                             global.r_queue.queue[i]['time'] = time;
-                            stop = global.settings.qAny_res ? false : true;
                         }
                         else {
                             global.r_queue.queue[i]['time'] = t_time;
@@ -8284,11 +8289,16 @@ function midLoop(){
                             c_action = t_action;
                             idx = i;
                             arpa = false;
+                            if (global.settings.qAny){
+                                stop = true;
+                            }
                         }
                         else {
                             time += t_time;
                         }
-                        stop = global.settings.qAny_res ? false : true;
+                        if (!global.settings.qAny){
+                            stop = true;
+                        }
                         struct['time'] = time;
                         for (let j=1; j<struct.q; j++){
                             time += timeCheck(t_action, spent);
