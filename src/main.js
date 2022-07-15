@@ -3761,6 +3761,9 @@ function fastLoop(){
             if (global.city.biome === 'ashland'){
                 cement_base *= biomes.ashland.vars()[1];
             }
+            if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 3){
+                cement_base *= 1.1;
+            }
 
             let factory_output = workDone * cement_base;
             if (global.civic.govern.type === 'corpocracy'){
@@ -4047,6 +4050,9 @@ function fastLoop(){
                 if (global.stats.achieve['steelen'] && global.stats.achieve['steelen'].l >= 1){
                     let steelen_bonus = (global.stats.achieve['steelen'].l * 2) / 100;
                     steel_base *= (1 + steelen_bonus);
+                }
+                if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 2){
+                    steel_base *= 1.1;
                 }
                 for (i = 4; i <= 6; i++) {
                     if (global.tech['smelting'] >= i){

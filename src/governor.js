@@ -262,7 +262,11 @@ function genGovernor(setSize){
 export function govern(){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
         let cnt = [0,1,2];
-        if (govActive('organizer',0)){ cnt.push(3); }
+        if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4){
+            cnt.push(cnt.length);
+            if (govActive('organizer',0)){ cnt.push(cnt.length); }
+        }
+        if (govActive('organizer',0)){ cnt.push(cnt.length); }
         cnt.forEach(function(n){
             if (gov_tasks[global.race.governor.tasks[`t${n}`]] && gov_tasks[global.race.governor.tasks[`t${n}`]].req()){
                 gov_tasks[global.race.governor.tasks[`t${n}`]].task();
@@ -325,7 +329,11 @@ export function drawnGovernOffice(){
     govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
 
     let cnt = [0,1,2];
-    if (govActive('organizer',0)){ cnt.push(3); }
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4){
+        cnt.push(cnt.length);
+        if (govActive('organizer',0)){ cnt.push(cnt.length); }
+    }
+    if (govActive('organizer',0)){ cnt.push(cnt.length); }
     cnt.forEach(function(num){
         let options = `<b-dropdown-item v-on:click="setTask('none',${num})">{{ 'none' | label }}</b-dropdown-item>`;
         Object.keys(gov_tasks).forEach(function(task){
@@ -613,7 +621,7 @@ function appointGovernor(){
                     global.race.governor['g'] = gov;
                     delete global.race.governor.candidates;
                     global.race.governor['tasks'] = {
-                        t0: 'none', t1: 'none', t2: 'none', t3: 'none'
+                        t0: 'none', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none'
                     };
                     updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
                     calcQueueMax();

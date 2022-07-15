@@ -4849,6 +4849,7 @@ const techs = {
         category: 'special',
         era: 'intergalactic',
         reqs: { science: 19 },
+        path: ['standard'],
         grant: ['terraforming',1],
         trait: ['orbit_decay'],
         cost: {
@@ -10609,6 +10610,27 @@ const techs = {
         },
         flair: loc('tech_protocol66a_flair'),
         class: 'synth'
+    },
+    terraforming_tp: {
+        id: 'tech-terraforming_tp',
+        title: loc('tech_terraforming'),
+        desc: loc('tech_terraforming'),
+        category: 'special',
+        era: 'solar',
+        reqs: { dig_control: 1, eris: 2, titan_ai_core: 2 },
+        path: ['truepath'],
+        grant: ['terraforming',1],
+        trait: ['orbit_decay'],
+        cost: {
+            Knowledge(){ return 5000000; },
+        },
+        effect(){ return loc('tech_terraforming_effect',[races[global.race.species].solar.red]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     },
     quantium: {
         id: 'tech-quantium',

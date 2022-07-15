@@ -402,6 +402,13 @@ export const craftingRatio = (function(){
                     auto: 1 + ((global.genes.crafty - 1) * 0.5)
                 });
             }
+            if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 1){
+                crafting.general.multi.push({
+                    name: loc(`evo_challenge_orbit_decay`),
+                    manual: 0,
+                    auto: 1.1
+                });
+            }
             if (global.race['ambidextrous']){
                 crafting.general.multi.push({
                     name: loc(`trait_ambidextrous_name`),
