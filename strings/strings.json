@@ -95,7 +95,7 @@
   "add": "Add",
   "remove": "Remove",
   "unavailable_content": "Not available in current game version",
-  "multitab_warning": "Warning you have Evolve running in multiple tabs, this can cause loss of save data. Run the game in one tab at a time only.",
+  "multitab_warning": "Warning: you have Evolve running in multiple tabs, this can cause loss of save data. Run the game in one tab at a time only.",
   "backup_warning": "Have you Exported your save data recently? Making regular backups of your game data prevents permanent loss of progress in the event your browser cache is cleared.",
   "settings1": "Enable Control (10x) / Shift (25x) / Alt (100x) Multiplier keys",
   "settings2": "Enable tab transition animations",
