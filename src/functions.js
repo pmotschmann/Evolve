@@ -1280,45 +1280,45 @@ export function calcPrestige(type,inputs){
 
     switch (type){
         case 'mad':
-            pop_divisor = 3;
+            pop_divisor = 2;
             k_inc = 100000;
             k_mult = 1.1;
-            plasmid_cap = 150;
+            plasmid_cap = 200;
             if (inputs.synth !== undefined ? inputs.synth : races[global.race.species].type === 'synthetic'){
-                pop_divisor = 5;
+                pop_divisor = 4;
                 k_inc = 125000;
-                plasmid_cap = 100;
+                plasmid_cap = 150;
             }
             break;
         case 'cataclysm':
         case 'bioseed':
-            pop_divisor = 3;
+            pop_divisor = 2;
             k_inc = 50000;
             k_mult = 1.015;
             phage_mult = 1;
-            plasmid_cap = 400;
+            plasmid_cap = 500;
             break;
         case 'ai':
-            pop_divisor = 2.5;
+            pop_divisor = 2;
             k_inc = 45000;
             k_mult = 1.014;
-            phage_mult = 2;
-            plasmid_cap = 600;
+            phage_mult = 2.5;
+            plasmid_cap = 700;
             break;
         case 'vacuum':
         case 'bigbang':
-            pop_divisor = 2.2;
+            pop_divisor = 1.8;
             k_inc = 40000;
             k_mult = 1.012;
-            phage_mult = 2.5;
-            plasmid_cap = 800;
+            phage_mult = 3;
+            plasmid_cap = 900;
             break;
         case 'ascend':
-            pop_divisor = 1.15;
+            pop_divisor = 1.1;
             k_inc = 30000;
             k_mult = 1.008;
-            phage_mult = 4;
-            plasmid_cap = 2000;
+            phage_mult = 5;
+            plasmid_cap = 2500;
             break;
     }
 
