@@ -7035,9 +7035,20 @@ export function orbitDecayed(){
         });
 
         Object.keys(job_desc).forEach(function (job){
-            global.civic[job].workers = 0;
-            global.civic[job].assigned = 0;
+            if (job !== 'colonist'){
+                global.civic[job].workers = 0;
+                global.civic[job].assigned = 0;
+            }
         });
+
+        ['bolognium_ship','scout_ship','corvette_ship','frigate_ship','cruiser_ship','dreadnought','freighter','super_freighter','armed_miner','scavenger'].forEach(function(ship){
+            if (global.galaxy[ship]){
+                global.galaxy[ship].on = 0;
+            }
+        });
+        if (global.portal['transport']){
+            global.portal.transport.on = 0;
+        }
 
         ['forager','farmer','lumberjack','quarry_worker'].forEach(function (job){
             global.civic[job].display = false;
@@ -7049,6 +7060,15 @@ export function orbitDecayed(){
         else {
             global.civic.d_job = 'unemployed';
         }
+
+        if (global.arpa['sequence']){
+            global.arpa.sequence.on = false;
+            global.arpa.sequence.boost = false;
+        }
+
+        global.city.calendar.moon = 0;
+        document.getElementById('moon').removeAttribute('class');
+        $('#moon').addClass('moon wi wi-moon-new');
 
         global.settings.spaceTabs = 1;
         global.settings.space.moon = false;

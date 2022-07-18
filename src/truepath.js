@@ -2026,8 +2026,10 @@ function drawShips(){
         Object.keys(spaceRegions).forEach(function(region){
             if (ship.location !== region){
                 if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
-                    let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-                    values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+                    if (!global.race['orbit_decayed'] || (global.race['orbit_decayed'] && region !== 'spc_moon')){
+                        let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+                        values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+                    }
                 }
             }
         });
@@ -2532,6 +2534,9 @@ function drawMap(scale, translatePos) {
     ctx.lineWidth = 1 / scale;
     ctx.strokeStyle = "#c0c0c0";
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        if (global.race['orbit_decayed'] && id === 'spc_home'){
+            continue;
+        }
         if (!planet.moon && planet.orbit !== -2) {
             ctx.beginPath();
             if (planet.belt){
@@ -2561,6 +2566,9 @@ function drawMap(scale, translatePos) {
 
     // Planets and moons
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
+        if (global.race['orbit_decayed'] && ['spc_home','spc_moon'].includes(id)){
+            continue;
+        }
         let color = '558888';
         if (actions.space[id] && actions.space[id].info.syndicate() && global.settings.space[id.substring(4)]){
             let shift = syndicate(id);

@@ -166,8 +166,9 @@ const spaceProjects = {
             },
             powered(){ return powerCostMod(2); },
             effect(){
+                let effect1 = global.race['orbit_decayed'] ? '' : `<div>${loc('space_home_nav_beacon_effect1')}</div>`;
                 let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,1])}</div>` : '';
-                return `<div>${loc('space_home_nav_beacon_effect1')}</div>${effect3}<div class="has-text-caution">${loc('space_home_nav_beacon_effect2',[$(this)[0].powered()])}</div>`;
+                return `${effect1}${effect3}<div class="has-text-caution">${loc('space_home_nav_beacon_effect2',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -567,7 +568,7 @@ const spaceProjects = {
             queue_complete(){ return 0; },
             cost: {},
             powered(){
-                return powerCostMod(global.race['truepath'] ? 250 : 5000);
+                return powerCostMod(global.race['truepath'] ? 500 : 5000);
             },
             postPower(o){
                 if (o){
@@ -6829,6 +6830,7 @@ export function terraformLab(wiki){
 
 function terraformScore(planet,wiki){
     let pts = (planet.biome === 'eden' ? 0 : 10) + (global.stats.achieve['lamentis'] ? global.stats.achieve.lamentis.l * 10 : 0);
+    if (global.race['truepath']){ pts *= 2; }
     pts -= planet.traitlist.length ** 3;
     let ts = 0;
     Object.keys(planet.geology).forEach(function (res){

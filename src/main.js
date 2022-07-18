@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, removeAction, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
+import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
@@ -368,7 +368,10 @@ vBind({
             }
         },
         moon(){
-            if (global.city.calendar.moon === 0){
+            if (global.race['orbit_decayed']){
+                return loc('moon0'); // New Moon
+            }
+            else if (global.city.calendar.moon === 0){
                 return loc('moon1'); // New Moon
             }
             else if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
@@ -468,6 +471,7 @@ popover('topBarPlanet',
                 let good = ``;
                 let bad = ``;
                 let numShow = global.stats.achieve['miners_dream'] ? (global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l) : 0;
+                if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 0){ numShow++; }
                 for (let key in global.city.geology){
                     if (key !== 0){
                         if (global.city.geology[key] > 0) {
@@ -8731,7 +8735,7 @@ function longLoop(){
             }
 
             // Weather
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 global.city.calendar.wind = 0;
                 global.city.calendar.temp = 1;
                 global.city.calendar.weather = -1;
@@ -8882,16 +8886,18 @@ function longLoop(){
             }
 
             // Moon Phase
-            if (global.city.ptrait.includes('retrograde')){
-                global.city.calendar.moon--;
-                if (global.city.calendar.moon < 0){
-                    global.city.calendar.moon = 27;
+            if (!global.race['orbit_decayed']){
+                if (global.city.ptrait.includes('retrograde')){
+                    global.city.calendar.moon--;
+                    if (global.city.calendar.moon < 0){
+                        global.city.calendar.moon = 27;
+                    }
                 }
-            }
-            else {
-                global.city.calendar.moon++;
-                if (global.city.calendar.moon > 27){
-                    global.city.calendar.moon = 0;
+                else {
+                    global.city.calendar.moon++;
+                    if (global.city.calendar.moon > 27){
+                        global.city.calendar.moon = 0;
+                    }
                 }
             }
 
