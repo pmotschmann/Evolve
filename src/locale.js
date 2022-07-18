@@ -92,6 +92,7 @@ export const locales = {
     'es-ES': 'Spanish (ESP)',
     'pt-BR': 'Português (BR)',
     'zh-CN': '简体中文',
+    'zh-TW': '繁體中文',
     'ko-KR': '한국어',
     'cs-CZ': 'Čeština',
     'ru-RU': 'Русский',
