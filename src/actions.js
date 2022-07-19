@@ -7073,6 +7073,8 @@ export function orbitDecayed(){
         global.settings.spaceTabs = 1;
         global.settings.space.moon = false;
         global.settings.showCity = false;
+
+        clearElement($(`infoTimer`));
     }
 }
 
@@ -7337,6 +7339,14 @@ function sentience(){
 
     if (global.race['orbit_decay']){
         global.race['orbit_decay'] = 5000;
+
+        popover(`infoTimer`, function(){
+            return global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
+        },
+        {
+            elm: `#infoTimer`,
+            classes: `has-background-light has-text-dark`
+        });
     }
 
     clearElement($('#resources'));

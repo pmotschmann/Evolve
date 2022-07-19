@@ -560,6 +560,16 @@ popover('topBarUniverse',
     }
 );
 
+if (global.race['orbit_decay'] && !global.race['orbit_decayed']){
+    popover(`infoTimer`, function(){
+        return global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
+    },
+    {
+        elm: `#infoTimer`,
+        classes: `has-background-light has-text-dark`
+    });
+}
+
 challengeIcon();
 
 if (global.race.species === 'protoplasm'){
@@ -9317,6 +9327,9 @@ function longLoop(){
         }
 
         if (global.race['orbit_decay']){
+            if (!global.race['orbit_decayed']){
+                $(`#infoTimer`).html(`T-${global.race['orbit_decay'] - global.stats.days}`);
+            }
             orbitDecayed();
         }
 

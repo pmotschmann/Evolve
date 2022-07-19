@@ -850,6 +850,7 @@ export function index(){
         <h2 class="is-sr-only">Top Bar</h2>
         <span class="planetWrap"><span class="planet">{{ race.species | planet }}</span><span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span></span>
         <span class="calendar">
+            <span class="infoTimer" id="infoTimer"></span>
             <span v-show="city.calendar.day">
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>

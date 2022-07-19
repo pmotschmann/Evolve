@@ -2640,6 +2640,9 @@ function drawMap(scale, translatePos) {
     // Planet names
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         if (actions.space[id] && global.settings.space[id.substring(4)]){
+            if (global.race['orbit_decayed'] && ['spc_home'].includes(id)){
+                continue;
+            }
             let nameRef = actions.space[id].info.name;
             let nameText = typeof nameRef === "function" ? nameRef() : nameRef;
             if (planet.moon) {
