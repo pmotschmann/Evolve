@@ -4585,7 +4585,7 @@ function fastLoop(){
 
                 delta *= 1 + (refinery / 100);
 
-                alumina_bd[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('workers')] = base + 'v';
+                alumina_bd[`${global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('workers')}+1`] = base + 'v';
                 alumina_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
                 alumina_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -4910,7 +4910,7 @@ function fastLoop(){
 
                     delta *= 1 + (refinery / 100);
 
-                    alumina_bd[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('job_miner')] = base + 'v';
+                    alumina_bd[`${global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('job_miner')}+2`] = base + 'v';
                     if (global.race['cataclysm'] || global.race['orbit_decayed'] && base > 0 && zigVal > 0){
                         delta *= zigVal;
                         alumina_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -4967,7 +4967,7 @@ function fastLoop(){
                 let alum_base = production('titan_mine','aluminium') * support_on['titan_mine'] * titan_colonists;
                 let alum_delta = alum_base * shrineMetal.mult * global_multiplier * synd * zigVal;
                 alum_delta *= 1 + (refinery / 100);
-                alumina_bd[loc('city_mine')] = +(alum_base).toFixed(3) + 'v';
+                alumina_bd[`${loc('city_mine')}+0`] = +(alum_base).toFixed(3) + 'v';
                 if (alum_base > 0){
                     alumina_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                     alumina_bd[`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';

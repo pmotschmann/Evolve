@@ -3174,7 +3174,7 @@ export const actions = {
             desc: loc('city_pylon'),
             category: 'industrial',
             reqs: { magic: 2 },
-            not_trait: ['cataclysm'],
+            not_trait: ['cataclysm','orbit_decayed'],
             cost: {
                 Money(offset){
                     offset = offset || 0;
@@ -7064,6 +7064,10 @@ export function orbitDecayed(){
         if (global.arpa['sequence']){
             global.arpa.sequence.on = false;
             global.arpa.sequence.boost = false;
+        }
+
+        if (global.race.universe === 'magic' && global.city['pylon']){
+            global.space['pylon'] = { count: Math.ceil(global.city.pylon.count / 2) };
         }
 
         global.city.calendar.moon = 0;
