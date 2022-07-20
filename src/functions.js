@@ -1315,6 +1315,7 @@ export function calcPrestige(type,inputs){
             plasmid_cap = 800;
             break;
         case 'ascend':
+        case 'terraform':
             pop_divisor = 1.15;
             k_inc = 30000;
             k_mult = 1.008;
@@ -1378,7 +1379,7 @@ export function calcPrestige(type,inputs){
     }
 
 
-    if (type === 'ascend' || type === 'descend'){
+    if (['ascend','descend','terraform'].includes(type)){
         let harmony = 1;
         if (challenge === undefined){
             harmony = alevel();
@@ -1390,7 +1391,7 @@ export function calcPrestige(type,inputs){
             harmony = challenge + 1;
         }
 
-        if (type === 'ascend'){
+        if (type === 'ascend' || type === 'terraform'){
             switch (universe){
                 case 'micro':
                     harmony *= 0.25;

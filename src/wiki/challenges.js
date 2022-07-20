@@ -342,6 +342,47 @@ export function challengesPage(content){
             ]);
             subSideMenu('add',`challenges-gameplay`,'modes_sludge',loc('wiki_challenges_modes_sludge'));
         }
+
+        {   // Orbital Decay
+            let orbit = infoBoxBuilder(modes,{ name: 'modes_orbitdecay', template: 'challenges', paragraphs: 14, break: [5,8,9,10,11,12,13,14], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_orbit_decay`)],
+                    2: [5000],
+                    5: [loc(`evo_challenge_orbit_decay`)],
+                    6: [loc(`tech_era_intergalactic`)],
+
+                    11: [loc(`space_moon_base_title`), 2500],
+                    12: [loc(`space_red_spaceport_title`), loc(`space_belt_station_title`), 1000],
+                    13: [loc(`interstellar_alpha_starport_title`), 100],
+
+                    14: [loc(`wiki_challenges_scenarios_cataclysm`)]
+                },
+                data_link: {
+                    1: [false,false,'wiki.html#races-species-sludge'],
+                    3: [false,false,'wiki.html#traits-species-major_ooze'],
+                    5: [false,'wiki.html#resets-prestige-mad']
+                }
+            });
+            addAchievements(orbit,false,['lamentis']);
+            addRequirements(orbit,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_blackhole`),
+                            color: global.stats.achieve['blackhole'] ? true : false,
+                            link: 'wiki.html#resets-prestige-blackhole'
+                        },
+                        {
+                            text: loc(`wiki_resets_ascension`),
+                            color: global.stats.achieve['ascended'] ? true : false,
+                            link: 'wiki.html#resets-prestige-ascension'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_orbitdecay',loc('wiki_challenges_modes_orbitdecay'));
+        }
     }
     
     // Scenarios

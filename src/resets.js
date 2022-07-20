@@ -877,7 +877,7 @@ export function terraform(planet){
     let phage = global.race.Phage.count;
     let harmony = global.race.Harmony.count;
 
-    let gains = calcPrestige('ascend');
+    let gains = calcPrestige('terraform');
     let new_plasmid = gains.plasmid;
     let new_phage = gains.phage;
     let new_harmony = gains.harmony;

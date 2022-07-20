@@ -1509,6 +1509,55 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_failed_history`,[`<span class="has-text-caution">${loc(`evo_challenge_cataclysm`)}</span>`])
         ]
     },
+    lamentis: {
+        name: loc(`achieve_lamentis_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis1",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis2",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis3",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis4",[1,2]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis5");
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 ? true : false;
+                }
+            },
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`])
+        ]
+    },
     gladiator: {
         name: loc(`achieve_gladiator_name`),
         desc(wiki){
