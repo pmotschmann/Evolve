@@ -4858,6 +4858,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[races[global.race.species].solar.red]); },
         action(){
             if (payCosts($(this)[0])){
+                global.space.terraformer = { count: 0 }
                 return true;
             }
             return false;
@@ -10627,6 +10628,7 @@ const techs = {
         effect(){ return loc('tech_terraforming_effect',[races[global.race.species].solar.red]); },
         action(){
             if (payCosts($(this)[0])){
+                global.space.terraformer = { count: 0 };
                 return true;
             }
             return false;
