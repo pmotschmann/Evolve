@@ -528,6 +528,12 @@ popover('topBarPlanet',
             if (global.race['orbit_decay']){
                 let impact = global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
                 challenges = challenges + `<div>${loc('evo_challenge_orbit_decay_desc')} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
+                if (calc_mastery() >= 100 && global.race.universe !== 'antimatter'){
+                    challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
+                }
+                else {
+                    challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
+                }
             }
 
             if (global.race['cataclysm']){
@@ -2469,9 +2475,10 @@ function fastLoop(){
 
         if (global.tech['broadcast']){
             let gasVal = govActive('gaslighter',0);
+            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : global.city.wardenclyffe.on;
             let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
-            global.city.morale.broadcast = global.city.wardenclyffe.on * mVal;
-            morale += global.city.wardenclyffe.on * mVal;
+            global.city.morale.broadcast = signalVal * mVal;
+            morale += signalVal * mVal;
         }
         if (support_on['vr_center']){
             let gasVal = govActive('gaslighter',1);
@@ -6976,51 +6983,8 @@ function midLoop(){
         }
         let pirate_alien2 = piracy('gxy_alien2');
         if (global.city['university']){
-            let multiplier = 1;
-            let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
-            if (global.city.ptrait.includes('permafrost')){
-                base += planetTraits.permafrost.vars()[1];
-            }
-            if (global.tech['science'] >= 4){
-                multiplier += global.city['library'].count * 0.02;
-            }
-            if (global.space['observatory'] && global.space.observatory.count > 0){
-                multiplier += (support_on['observatory'] * 0.05);
-            }
-            if (global.portal['sensor_drone'] && global.tech['science'] >= 14){
-                multiplier += (p_on['sensor_drone'] * 0.02);
-            }
-            if (global.race['hard_of_hearing']){
-                multiplier *= 1 - (traits.hard_of_hearing.vars()[0] / 100);
-            }
-            if (global.race['curious']){
-                multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
-            }
-            if (p_on['s_gate'] && gal_on['scavenger']){
-                let uni = gal_on['scavenger'] * pirate_alien2 / 4;
-                multiplier *= 1 + uni;
-            }
-            let teachVal = govActive('teacher',0);
-            if (teachVal){
-                multiplier *= 1 + (teachVal / 100);
-            }
-            let athVal = govActive('athleticism',2);
-            if (athVal){
-                multiplier *= 1 - (athVal / 100);
-            }
-            if (shrineBonusActive()){
-                let shrineBonus = getShrineBonus('know');
-                multiplier *= shrineBonus.mult;
-            }
-            let gain = (global.city.university.count * base * multiplier);
+            let gain = actions.city.university.knowVal() * global.city.university.count;
             lCaps['professor'] += jobScale(global.city.university.count);
-            if (global.tech['supercollider']){
-                let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech.particles >= 3) ? 12.5: 25;
-                gain *= (global.tech['supercollider'] / ratio) + 1;
-            }
-            if (global.race['orbit_decayed'] && global.space['satellite']){
-                gain *= 1 + (global.space.satellite.count * 0.12);
-            }
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
         }
@@ -7933,7 +7897,7 @@ function midLoop(){
         }
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
-            let labs = global.race['cataclysm'] ? support_on['exotic_lab'] : p_on['biolab'];
+            let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
             if (labs > 0 && global.city.ptrait.includes('toxic')){
                 labs += planetTraits.toxic.vars()[0];
             }
@@ -8710,7 +8674,7 @@ function longLoop(){
                 global.city.calendar.year++;
             }
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 global.city.calendar.season = -1;
             }
             else {
@@ -8914,7 +8878,7 @@ function longLoop(){
             setWeather();
         }
 
-        if (!global.race['cataclysm']){
+        if (!global.race['cataclysm'] && !global.race['orbit_decayed']){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;

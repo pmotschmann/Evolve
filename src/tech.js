@@ -9964,7 +9964,7 @@ const techs = {
         effect(){ return loc('tech_ley_lines_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                if (global.race['cataclysm']){
+                if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     global.space['pylon'] = { count: 0 };
                 }
                 else {
@@ -10286,12 +10286,13 @@ const techs = {
         era: 'solar',
         reqs: { genetics: 8, kuiper: 1 },
         grant: ['biotech',1],
+        path: ['truepath'],
         cost: {
             Knowledge(){ return 2400000; },
             Orichalcum(){ return 125000; },
             Cipher(){ return 15000; }
         },
-        effect(){ return loc('tech_alien_biotech_effect'); },
+        effect(){ return loc(global.race['orbit_decayed'] ? 'tech_alien_biotech_effect_alt' : 'tech_alien_biotech_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

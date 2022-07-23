@@ -1,6 +1,6 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
@@ -4070,13 +4070,17 @@ export const actions = {
                 Iron(offset){ return ((global.city['university'] ? global.city.university.count : 0) + (offset || 0)) >= 3 && global.city.ptrait.includes('unstable') ? costMultiplier('university', offset, 25, 1.36) : 0; }
             },
             effect(){
+                let gain = +($(this)[0].knowVal()).toFixed(0);
+                return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+            },
+            knowVal(){
                 let multiplier = 1;
-                let gain = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
+                let base = global.tech['science'] && global.tech['science'] >= 8 ? 700 : 500;
                 if (global.city.ptrait.includes('permafrost')){
-                    gain += planetTraits.permafrost.vars()[1];
+                    base += planetTraits.permafrost.vars()[1];
                 }
                 if (global.tech['science'] >= 4){
-                    multiplier += (global.city['library'].count * 0.02);
+                    multiplier += global.city['library'].count * 0.02;
                 }
                 if (global.space['observatory'] && global.space.observatory.count > 0){
                     multiplier += (support_on['observatory'] * 0.05);
@@ -4091,7 +4095,7 @@ export const actions = {
                     multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
                 }
                 if (p_on['s_gate'] && gal_on['scavenger']){
-                    let uni = gal_on['scavenger'] * +(piracy('gxy_alien2') / 4).toFixed(1);
+                    let uni = gal_on['scavenger'] * pirate_alien2 / 4;
                     multiplier *= 1 + uni;
                 }
                 let teachVal = govActive('teacher',0);
@@ -4102,20 +4106,24 @@ export const actions = {
                 if (athVal){
                     multiplier *= 1 - (athVal / 100);
                 }
-                gain *= multiplier;
+                if (shrineBonusActive()){
+                    let shrineBonus = getShrineBonus('know');
+                    multiplier *= shrineBonus.mult;
+                }
+                let gain = (base * multiplier);
                 if (global.tech['supercollider']){
-                    let ratio = global.tech['particles'] && global.tech['particles'] >= 3 ? 12.5: 25;
+                    let ratio = global.tech['tp_particles'] || (global.tech['particles'] && global.tech.particles >= 3) ? 12.5: 25;
                     gain *= (global.tech['supercollider'] / ratio) + 1;
                 }
-                if (global.race['orbit_decayed'] && global.space['satellite']){
-                    gain *= 1 + (global.space.satellite.count * 0.12);
+                if (global.race['orbit_decayed']){
+                    if (global.space['satellite']){
+                        gain *= 1 + (global.space.satellite.count * 0.12);
+                    }
+                    if (global.tech['biotech'] && global.tech['biotech'] >= 1){
+                        gain *= 2;
+                    }
                 }
-                if (global.race['magnificent'] && global.city['shrine'] && global.city.shrine.count > 0){
-                    let shrineBonus = getShrineBonus('know');
-                    gain *= shrineBonus.mult;
-                }
-                gain = +(gain).toFixed(0);
-                return `<div>${loc('city_university_effect',[jobScale(1)])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                return gain;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -6998,6 +7006,17 @@ export function orbitDecayed(){
 
         messageQueue(loc('evo_challenge_orbit_decayed_msg',[races[global.race.species].home]),'info',false,['progress']);
 
+        if (global.race.universe === 'magic'){
+            if (global.city['pylon']){
+                global.space['pylon'] = { count: Math.ceil(global.city.pylon.count / 2) };
+            }
+            if (global.race['casting']){
+                Object.keys(global.race.casting).forEach(function (c){
+                    global.race.casting[0] = 0;
+                });
+            }
+        }
+
         Object.keys(actions.city).forEach(function (k){
             if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
                 if (global.race['hooved']){
@@ -7066,10 +7085,6 @@ export function orbitDecayed(){
             global.arpa.sequence.boost = false;
         }
 
-        if (global.race.universe === 'magic' && global.city['pylon']){
-            global.space['pylon'] = { count: Math.ceil(global.city.pylon.count / 2) };
-        }
-
         global.city.calendar.moon = 0;
         document.getElementById('moon').removeAttribute('class');
         $('#moon').addClass('moon wi wi-moon-new');
@@ -7079,6 +7094,8 @@ export function orbitDecayed(){
         global.settings.showCity = false;
 
         clearElement($(`infoTimer`));
+
+        renderSpace();
     }
 }
 
