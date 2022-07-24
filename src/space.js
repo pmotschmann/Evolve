@@ -6225,9 +6225,14 @@ export function setUniverse(){
             }
             else {
                 let hell = false;
+                let custom = false;
                 for (let i=0; i<global.race.probes; i++){
-                    if (setPlanet(hell) === 'hellscape'){
+                    let result = setPlanet({ hell: hell, custom: custom });
+                    if (result === 'hellscape'){
                         hell = true;
+                    }
+                    else if (result === 'custom'){
+                        custom = true;
                     }
                 }
             }
@@ -6755,7 +6760,8 @@ export function terraformLab(wiki){
         biome: dBiome,
         pts: 0,
         traitlist: [],
-        geology: geology
+        geology: geology,
+        orbit: global.city.calendar.orbit,
     };
     planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
 
@@ -6794,6 +6800,7 @@ export function terraformLab(wiki){
                             planet.geology[res] /= 100;
                         }
                     });
+                    global.custom['planet'] = planet;
                     terraform(planet);
                 }
             },

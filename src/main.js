@@ -591,9 +591,14 @@ if (global.race.species === 'protoplasm'){
         }
         else {
             let hell = false;
+            let custom = false;
             for (let i=0; i<global.race.probes; i++){
-                if (setPlanet(hell) === 'hellscape'){
+                let result = setPlanet({ hell: hell, custom: custom });
+                if (result === 'hellscape'){
                     hell = true;
+                }
+                else if (result === 'custom'){
+                    custom = true;
                 }
             }
         }
@@ -8753,7 +8758,7 @@ function longLoop(){
                         if (global.city.calendar.season === 1){
                             temp = 2;
                         }
-                        else if (Math.rand(0,2) === 0 && temp < 2){
+                        else if (Math.rand(0,2) === 0 && temp < 2 && !global.city.ptrait.includes('permafrost')){
                             temp++;
                         }
                         break;
@@ -8816,7 +8821,7 @@ function longLoop(){
                     if (global.city.calendar.season === 1 && new_temp === 0){
                         new_temp = 1;
                     }
-                    if (new_temp === 0 && global.city.biome === 'hellscape'){
+                    if (new_temp === 0 && global.city.biome === 'hellscape' && !global.city.ptrait.includes('permafrost')){
                         new_temp = 1;
                     }
                     if (new_temp === 0 && global.city.biome === 'eden' && global.city.calendar.season !== 3){
