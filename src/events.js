@@ -821,6 +821,9 @@ function slaveLoss(type,string){
             trait: 'slaver',
             tech: 'slaves'
         },
+        condition(){
+            return global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true;
+        },
         type: type,
         effect(){
             if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){

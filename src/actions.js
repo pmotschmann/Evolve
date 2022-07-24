@@ -4095,6 +4095,7 @@ export const actions = {
                     multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
                 }
                 if (p_on['s_gate'] && gal_on['scavenger']){
+                    let pirate_alien2 = piracy('gxy_alien2');
                     let uni = gal_on['scavenger'] * pirate_alien2 / 4;
                     multiplier *= 1 + uni;
                 }

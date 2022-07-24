@@ -736,7 +736,7 @@ function fastLoop(){
         global_multiplier += pBonus[0];
     }
     if (global.race['no_plasmid'] || global.race.universe === 'antimatter'){
-        if ((global.race['cataclysm'] && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
+        if (((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['ziggurat'] && global.space.ziggurat.count) || (global.city['temple'] && global.city['temple'].count)){
             let faith = faithBonus();
             breakdown.p['Global'][loc('faith')] = (faith * 100) + '%';
             global_multiplier *= (1 + faith);
@@ -2476,6 +2476,7 @@ function fastLoop(){
         if (global.tech['broadcast']){
             let gasVal = govActive('gaslighter',0);
             let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : global.city.wardenclyffe.on;
+            if (global.race['orbit_decayed']){ signalVal /= 2; }
             let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
             global.city.morale.broadcast = signalVal * mVal;
             morale += signalVal * mVal;
