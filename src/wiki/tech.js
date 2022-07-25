@@ -3304,6 +3304,16 @@ const specialRequirements = {
                 }
             ]
         }
+    ],
+    terraforming: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'orbitdecay'
+                }
+            ]
+        }
     ]
 };
 
@@ -3543,6 +3553,11 @@ function addRequirements(parent,key,keyName,path){
                     case 'scenario':
                         subText = loc(`wiki_challenges_scenarios_${subreq.name}`);
                         link = `wiki.html#challenges-gameplay-scenarios_${subreq.name}`;
+                        color = global.race[subreq.name];
+                        break;
+                    case 'challenge':
+                        subText = loc(`wiki_challenges_modes_${subreq.name}`);
+                        link = `wiki.html#challenges-gameplay-modes_${subreq.name}`;
                         color = global.race[subreq.name];
                         break;
                     case 'unique':
