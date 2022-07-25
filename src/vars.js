@@ -991,7 +991,7 @@ if (convertVersion(global['version']) < 102015){
 
 global['version'] = '1.2.16';
 delete global['revision'];
-global['beta'] = 13;
+global['beta'] = 14;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1595,6 +1595,13 @@ if (!global.civic['govern']){
     };
 }
 global.civic.govern.fr = 0;
+
+if (!global.hasOwnProperty('custom')){
+    global['custom'] = {};
+}
+if (global.custom.hasOwnProperty('planet') && global.custom.planet.hasOwnProperty('biome')){
+    delete global.custom.planet;
+}
 
 if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('cap')){
     global.city.smelter['cap'] = 0;

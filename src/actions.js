@@ -1,6 +1,6 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
@@ -6088,14 +6088,23 @@ export function setPlanet(opt){
     let geology = {};
     let custom = false;
 
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.custom['planet'] && !opt.custom && Math.floor(Math.seededRandom(0,10)) === 0){
-        custom = true;
-        biome = global.custom.planet.biome;
-        trait = global.custom.planet.traitlist;
-        orbit = global.custom.planet.orbit;
-        geology = global.custom.planet.geology;
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,8)) === 0){
+        custom = opt.custom[Math.floor(Math.seededRandom(0,opt.custom.length))];
+        let target = custom.split(':');
+
+        if (global.custom.planet[target[0]] && global.custom.planet[target[0]][target[1]]){
+            let p = deepClone(global.custom.planet[target[0]][target[1]]);
+            biome = p.biome;
+            trait = p.traitlist;
+            orbit = p.orbit;
+            geology = p.geology;
+            trait.sort();
+        }
+        else {
+            custom = false;
+        }
     }
-    else {
+    if (!custom){
         let max_bound = !opt.hell && global.stats.portals >= 1 ? 7 : 6;
         let subbiome = Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
         let uAffix = universeAffix();
@@ -6359,7 +6368,7 @@ export function setPlanet(opt){
     },{
         classes: `has-background-light has-text-dark`
     });
-    return custom ? 'custom' : (biome === 'eden' ? 'hellscape' : biome);
+    return custom ? custom : (biome === 'eden' ? 'hellscape' : biome);
 }
 
 function srDesc(c_action,old){

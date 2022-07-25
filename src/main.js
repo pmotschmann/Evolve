@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
-import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
+import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -586,22 +586,7 @@ if (global.race.species === 'protoplasm'){
     }
     else if (global.race.seeded && !global.race['chose']){
         Math.seed = global.race.seed;
-        if (global.race.probes === 0){
-            setPlanet();
-        }
-        else {
-            let hell = false;
-            let custom = false;
-            for (let i=0; i<global.race.probes; i++){
-                let result = setPlanet({ hell: hell, custom: custom });
-                if (result === 'hellscape'){
-                    hell = true;
-                }
-                else if (result === 'custom'){
-                    custom = true;
-                }
-            }
-        }
+        genPlanets();
     }
     else {
         addAction('evolution','rna');

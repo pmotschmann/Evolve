@@ -1,5 +1,5 @@
 import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
-import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc } from './functions.js';
+import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, planetTraits, biomes } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
@@ -6202,6 +6202,40 @@ export const universe_types = {
     }
 };
 
+export function genPlanets(){
+    let avail = [];
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5){
+        Object.keys(universe_types).forEach(function(u){
+            let uafx = universeAffix(u);
+            console.log(uafx);
+            if (global.custom.planet.hasOwnProperty(uafx)){
+                if (global.custom.planet[uafx].s){
+                    avail.push(`${uafx}:s`);
+                }
+                if (global.custom.planet[uafx].tp){
+                    avail.push(`${uafx}:tp`);
+                }
+            }
+        });
+    }
+
+    if (global.race.probes === 0){
+        setPlanet({ custom: avail });
+    }
+    else {
+        let hell = false;
+        for (let i=0; i<global.race.probes; i++){
+            let result = setPlanet({ hell: hell, custom: avail });
+            if (result === 'hellscape'){
+                hell = true;
+            }
+            else if (avail.includes(result)){
+                avail.splice(avail.indexOf(result), 1);
+            }
+        }
+    }
+}
+
 export function setUniverse(){
     let universes = ['standard','heavy','antimatter','evil','micro','magic'];
 
@@ -6219,24 +6253,7 @@ export function setUniverse(){
         $('#'+id).on('click',function(){
             global.race['universe'] = universe;
             clearElement($('#evolution'));
-
-            if (global.race.probes === 0){
-                setPlanet();
-            }
-            else {
-                let hell = false;
-                let custom = false;
-                for (let i=0; i<global.race.probes; i++){
-                    let result = setPlanet({ hell: hell, custom: custom });
-                    if (result === 'hellscape'){
-                        hell = true;
-                    }
-                    else if (result === 'custom'){
-                        custom = true;
-                    }
-                }
-            }
-
+            genPlanets();
             clearPopper();
         });
 
@@ -6478,21 +6495,19 @@ export function ascendLab(wiki){
             setRace(){
                 if (calcGenomeScore(genome) >= 0 && genome.name.length > 0 && genome.desc.length > 0 && genome.entity.length > 0 && genome.home.length > 0
                     && genome.red.length > 0 && genome.hell.length > 0 && genome.gas.length > 0 && genome.gas_moon.length > 0 && genome.dwarf.length > 0){
-                    global['custom'] = {
-                        race0: {
-                            name: genome.name,
-                            desc: genome.desc,
-                            entity: genome.entity,
-                            home: genome.home,
-                            red: genome.red,
-                            hell: genome.hell,
-                            gas: genome.gas,
-                            gas_moon: genome.gas_moon,
-                            dwarf: genome.dwarf,
-                            genus: genome.genus,
-                            traits: genome.traitlist
-                        }
-                    }
+                    global.custom['race0'] = {
+                        name: genome.name,
+                        desc: genome.desc,
+                        entity: genome.entity,
+                        home: genome.home,
+                        red: genome.red,
+                        hell: genome.hell,
+                        gas: genome.gas,
+                        gas_moon: genome.gas_moon,
+                        dwarf: genome.dwarf,
+                        genus: genome.genus,
+                        traits: genome.traitlist
+                    };
                     ascend();
                 }
             },
@@ -6800,7 +6815,16 @@ export function terraformLab(wiki){
                             planet.geology[res] /= 100;
                         }
                     });
-                    global.custom['planet'] = planet;
+                    if (!global.custom.hasOwnProperty('planets')){
+                        global.custom['planet'] = {};
+                    }
+                    let universe = universeAffix();
+                    if (!global.custom.planet.hasOwnProperty(universe)){
+                        global.custom.planet[universe] = {s: false, tp: false};
+                    }
+                    let type = global.race['truepath'] ? 'tp' : 's';
+                    global.custom.planet[universe][type] = deepClone(planet);
+                    delete global.custom.planet[universe][type].pts;
                     terraform(planet);
                 }
             },
