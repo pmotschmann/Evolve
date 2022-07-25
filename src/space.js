@@ -6207,7 +6207,6 @@ export function genPlanets(){
     if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5){
         Object.keys(universe_types).forEach(function(u){
             let uafx = universeAffix(u);
-            console.log(uafx);
             if (global.custom.planet.hasOwnProperty(uafx)){
                 if (global.custom.planet[uafx].s){
                     avail.push(`${uafx}:s`);
@@ -6815,7 +6814,7 @@ export function terraformLab(wiki){
                             planet.geology[res] /= 100;
                         }
                     });
-                    if (!global.custom.hasOwnProperty('planets')){
+                    if (!global.custom.hasOwnProperty('planet')){
                         global.custom['planet'] = {};
                     }
                     let universe = universeAffix();
