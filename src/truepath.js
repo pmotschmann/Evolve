@@ -2512,7 +2512,8 @@ function xShift(id){
     return 0;
 }
 
-function drawMap(scale, translatePos) {
+var mapScale, mapShift;
+export function drawMap() {
     let canvas = document.getElementById("mapCanvas");
     let ctx = canvas.getContext("2d");
     canvas.width = canvas.getBoundingClientRect().width;
@@ -2521,8 +2522,8 @@ function drawMap(scale, translatePos) {
     ctx.save();
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(translatePos.x, translatePos.y);
-    ctx.scale(scale, scale);
+    ctx.translate(mapShift.x, mapShift.y);
+    ctx.scale(mapScale, mapScale);
 
     // Calculate positions
     let planetLocation = {};
@@ -2531,15 +2532,12 @@ function drawMap(scale, translatePos) {
     }
 
     // Draw orbits
-    ctx.lineWidth = 1 / scale;
+    ctx.lineWidth = 1 / mapScale;
     ctx.strokeStyle = "#c0c0c0";
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
-        if (global.race['orbit_decayed'] && id === 'spc_home'){
-            continue;
-        }
         if (!planet.moon && planet.orbit !== -2) {
             ctx.beginPath();
-            if (planet.belt){
+            if (planet.belt || (global.race['orbit_decayed'] && id === 'spc_home')){
                 ctx.setLineDash([0.01, 0.01]);
             }
             else {
@@ -2627,7 +2625,7 @@ function drawMap(scale, translatePos) {
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
 
     ctx.fillStyle = "#009aff";
-    ctx.font = `${20 / scale}px serif`;
+    ctx.font = `${20 / mapScale}px serif`;
     // Ship names
     for (let ship of global.space.shipyard.ships) {
         if (ship.transit > 0) {
@@ -2636,7 +2634,7 @@ function drawMap(scale, translatePos) {
     }
 
     ctx.fillStyle = "#ffa500";
-    ctx.font = `${25 / scale}px serif`;
+    ctx.font = `${25 / mapScale}px serif`;
     // Planet names
     for (let [id, planet] of Object.entries(spacePlanetStats)) {
         if (actions.space[id] && global.settings.space[id.substring(4)]){
@@ -2674,65 +2672,65 @@ function drawMap(scale, translatePos) {
 
 function buildSolarMap(parentNode) {
     let currentNode = $(`<div style="margin-top: 10px; margin-bottom: 10px;"></div>`).appendTo(parentNode);
-    let scale = 20.0;
-    let translatePos = {};
     let canvasOffset = {};
     let dragOffset = {};
     let mouseDown = false;
+    mapShift = {};
+    mapScale = 20.0;
 
     currentNode.append(
       $(`<canvas id="mapCanvas" style="width: 100%; height: 75vh"></canvas>`)
         .on("mouseup mouseover mouseout", () => mouseDown = false)
         .on("mousedown", (e) => {
             mouseDown = true;
-            dragOffset.x = e.clientX - translatePos.x;
-            dragOffset.y = e.clientY - translatePos.y;
+            dragOffset.x = e.clientX - mapShift.x;
+            dragOffset.y = e.clientY - mapShift.y;
         })
         .on("mousemove", (e) => {
             if (mouseDown) {
-                translatePos.x = e.clientX - dragOffset.x;
-                translatePos.y = e.clientY - dragOffset.y;
-                drawMap(scale, translatePos);
+                mapShift.x = e.clientX - dragOffset.x;
+                mapShift.y = e.clientY - dragOffset.y;
+                drawMap();
             }
         })
         .on("wheel", (e) => {
             if(e.originalEvent.deltaY < 0) {
-                scale /= 0.8;
-                translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) / 0.8;
-                translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) / 0.8;
-                drawMap(scale, translatePos);
+                mapScale /= 0.8;
+                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+                drawMap();
             }
             else {
-                scale *= 0.8;
-                translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) * 0.8;
-                translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) * 0.8;
-                drawMap(scale, translatePos);
+                mapScale *= 0.8;
+                mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+                mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+                drawMap();
             }
             return false;
         }),
       $(`<input type="button" value="+" style="position: absolute; width: 30px; height: 30px; top: 32px; right: 2px;">`)
         .on("click", () => {
-            scale /= 0.8;
-            translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) / 0.8;
-            translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) / 0.8;
-            drawMap(scale, translatePos);
+            mapScale /= 0.8;
+            mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) / 0.8;
+            mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) / 0.8;
+            drawMap();
         }),
       $(`<input type="button" value="-" style="position: absolute; width: 30px; height: 30px; top: 64px; right: 2px;">`)
         .on("click", () => {
-            scale *= 0.8;
-            translatePos.x = canvasOffset.x + (translatePos.x - canvasOffset.x) * 0.8;
-            translatePos.y = canvasOffset.y + (translatePos.y - canvasOffset.y) * 0.8;
-            drawMap(scale, translatePos);
+            mapScale *= 0.8;
+            mapShift.x = canvasOffset.x + (mapShift.x - canvasOffset.x) * 0.8;
+            mapShift.y = canvasOffset.y + (mapShift.y - canvasOffset.y) * 0.8;
+            drawMap();
         })
     );
 
     let bounds = document.getElementById("mapCanvas").getBoundingClientRect();
     canvasOffset.x = bounds.width / 2;
     canvasOffset.y = bounds.height / 2;
-    translatePos.x = canvasOffset.x;
-    translatePos.y = canvasOffset.y;
+    mapShift.x = canvasOffset.x;
+    mapShift.y = canvasOffset.y;
 
-    drawMap(scale, translatePos);
+    drawMap();
 }
 
 function solarModal(){
