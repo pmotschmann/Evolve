@@ -6,7 +6,7 @@ import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, g
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
 import { buildGarrison } from './civics.js';
-import { govActive } from './governor.js';
+import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { actions, checkTechQualifications } from './actions.js';
 
@@ -4343,21 +4343,12 @@ function adjustFood() {
     let disabledCity = [], disabledTech = [];
 
     if (!global.race['artifical']) {
-        setPurgatory('tech','agriculture');
-        setPurgatory('tech','farm');
-        setPurgatory('tech','hunting');
-        setPurgatory('tech','s_lodge');
-        setPurgatory('tech','wind_plant');
-        setPurgatory('tech','compost');
-        setPurgatory('tech','soul_eater');
-        setPurgatory('city','silo');
-        setPurgatory('city','farm');
-        setPurgatory('city','mill');
-        setPurgatory('city','windmill');
-        setPurgatory('city','smokehouse');
-        setPurgatory('city','lodge');
-        setPurgatory('city','compost');
-        setPurgatory('city','soul_well');
+        ['agriculture','farm','hunting','s_lodge','wind_plant','compost','soul_eater'].forEach(function (tech){
+            setPurgatory('tech',tech);
+        });
+        ['silo','farm','mill','windmill','smokehouse','lodge','compost','soul_well'].forEach(function (city){
+            setPurgatory('city',city);
+        });
 
         if (altLodge) {
             checkPurgatory('tech','s_lodge');
@@ -4450,8 +4441,9 @@ function adjustFood() {
         }
     }
 
+
     let jobEnabled = [], jobDisabled = [];
-    if (farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
+    if (!global.race['orbit_decayed'] && farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
         jobEnabled.push('farmer');
     }
     else {
@@ -4465,7 +4457,7 @@ function adjustFood() {
         jobDisabled.push('hunter');
         jobEnabled.push('unemployed');
     }
-    if (lumberEnabled) {
+    if (!global.race['orbit_decayed'] && lumberEnabled) {
         jobEnabled.push('lumberjack');
     }
     else {
@@ -4611,13 +4603,8 @@ export function cleanAddTrait(trait){
                 global.civic.foreign[`gov${i}`].sab = 0;
                 global.civic.foreign[`gov${i}`].act = 'none';
             }
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                Object.keys(global.race.governor.tasks).forEach(function (task){
-                    if (global.race.governor.tasks[task] === 'spy' || global.race.governor.tasks[task] === 'spyop'){
-                        global.race.governor.tasks[task] = 'none';
-                    }
-                });
-            }
+            removeTask('spy');
+            removeTask('spyop');
             break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {
@@ -4785,26 +4772,14 @@ export function cleanRemoveTrait(trait,rank){
             global.resource.Slave.amount = 0;
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'slave'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('slave');
             break;
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
             removeFromRQueue(['sacrifice']);
             setPurgatory('tech','sacrifice');
             delete global.city['s_alter'];
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'sacrifice'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('sacrifice');
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
@@ -4818,13 +4793,7 @@ export function cleanRemoveTrait(trait,rank){
         case 'hooved':
             removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'horseshoe'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('horseshoe');
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

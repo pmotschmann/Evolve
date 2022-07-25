@@ -5,14 +5,14 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.j
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
-import { loadIndustry } from './industry.js';
+import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive } from './governor.js';
+import { govActive, removeTask } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -3432,7 +3432,7 @@ export const actions = {
                         }
                     }
                     global.city['foundry'].count++;
-                    global.civic.craftsman.max++;
+                    global.civic.craftsman.max += jobScale(1);
                     global.civic.craftsman.display = true;
                     if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                         global.resource.Plywood.display = true;
@@ -7062,7 +7062,16 @@ export function orbitDecayed(){
         if (global.resource.Slave.display){
             global.resource.Slave.display = false;
             global.resource.Slave.amount = 0;
+            removeTask('slave');
         }
+        if (global.race['deconstructor']){
+            nf_resources.forEach(function (res){
+                global.city.nanite_factory[res] = 0;
+            });
+        }
+        Object.keys(global.resource).forEach(function (res){
+            global.resource[res].trade = 0;
+        });
 
         global.space['red_university'] = { count: 0 };
 
@@ -7102,6 +7111,16 @@ export function orbitDecayed(){
             global.civic.d_job = 'unemployed';
         }
 
+        global.race.purgatory.city = {};
+        if (global.queue.hasOwnProperty('queue')){
+            for (let i = global.queue.queue.length-1; i >= 0; i--){
+                let item = global.queue.queue[i];
+                if (item.action === 'city' || (item.action === 'space' && actions.space.spc_moon[item.type])){
+                    global.queue.queue.splice(i,1);
+                }
+            }
+        }
+
         if (global.arpa['sequence']){
             global.arpa.sequence.on = false;
             global.arpa.sequence.boost = false;
@@ -7115,7 +7134,7 @@ export function orbitDecayed(){
         global.settings.space.moon = false;
         global.settings.showCity = false;
 
-        clearElement($(`infoTimer`));
+        clearElement($(`#infoTimer`));
 
         renderSpace();
     }

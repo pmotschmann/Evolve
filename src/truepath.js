@@ -2098,18 +2098,22 @@ function drawShips(){
                     }
                 },
                 setLoc(l,id){
-                    if (l !== global.space.shipyard.ships[id].location){
-                        let crew = shipCrewSize(global.space.shipyard.ships[id]);
-                        if (global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                    let ship = global.space.shipyard.ships[id];
+                    if (l !== ship.location){
+                        let crew = shipCrewSize(ship);
+                        let manned = ship.transit > 0 || ship.location !== 'spc_dwarf';
+                        if (manned || global.civic.garrison.workers - global.civic.garrison.crew >= crew){
                             let dest = calcLandingPoint(ship, l);
-                            let distance = transferWindow(global.space.shipyard.ships[id].xy,dest);
-                            let speed = shipSpeed(global.space.shipyard.ships[id]);
-                            global.space.shipyard.ships[id].location = l;
-                            global.space.shipyard.ships[id].transit = Math.round(distance / speed);
-                            global.space.shipyard.ships[id].dist = Math.round(distance / speed);
-                            global.space.shipyard.ships[id].origin = deepClone(ship.xy);
-                            global.space.shipyard.ships[id].destination = {x: dest.x, y: dest.y};
-                            global.civic.garrison.crew += crew;
+                            let distance = transferWindow(ship.xy,dest);
+                            let speed = shipSpeed(ship);
+                            ship.location = l;
+                            ship.transit = Math.round(distance / speed);
+                            ship.dist = Math.round(distance / speed);
+                            ship.origin = deepClone(ship.xy);
+                            ship.destination = {x: dest.x, y: dest.y};
+                            if (!manned){
+                                global.civic.garrison.crew += crew;
+                            }
                             drawShips();
                             clearPopper(`ship${id}loc${l}`);
                         }

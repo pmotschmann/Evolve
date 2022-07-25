@@ -21,8 +21,6 @@ export function renderAchievePage(zone){
 }
 
 const universeExclusives = {
-    biome_hellscape: ['standard', 'micro', 'heavy', 'antimatter', 'magic'],
-    biome_eden: ['evil'],
     cross: ['antimatter'],
     vigilante: ['evil'],
     squished: ['micro'],

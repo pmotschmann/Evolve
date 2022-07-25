@@ -11,7 +11,7 @@ import { renderSpace } from './space.js';
 import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
-import { defineGovernor } from './governor.js';
+import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
 const techs = {
@@ -2638,7 +2638,7 @@ const techs = {
         },
         effect: loc('tech_governor_effect'),
         action(){
-            if (payCosts($(this)[0]) && global.genes['governor']){
+            if (payCosts($(this)[0])){
                 global.settings.showGovernor = true;
                 return true;
             }
@@ -11664,13 +11664,8 @@ function uniteEffect(){
         global.civic.foreign[`gov${i}`].sab = 0;
         global.civic.foreign[`gov${i}`].act = 'none';
     }
-    if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-        for (let i=0; i<global.race.governor.tasks.length; i++){
-            if (global.race.governor.tasks[`t${i}`] === 'spy' || global.race.governor.tasks[`t${i}`] === 'spyop'){
-                global.race.governor.tasks[`t${i}`] = 'none';
-            }
-        }
-    }
+    removeTask('spy');
+    removeTask('spyop');
 }
 
 export function swissKnife(cheeseOnly,cheeseList){

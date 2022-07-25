@@ -656,6 +656,16 @@ export function govActive(trait,val){
     return false;
 }
 
+export function removeTask(task){
+    if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+        for (let i=0; i<global.race.governor.tasks.length; i++){
+            if (global.race.governor.tasks[`t${i}`] === task){
+                global.race.governor.tasks[`t${i}`] = 'none';
+            }
+        }
+    }
+}
+
 export const gov_tasks = {
     tax: { // Dynamic Taxes
         name: loc(`gov_task_tax`),
@@ -951,7 +961,7 @@ export const gov_tasks = {
     slave: { // Replace Slaves
         name: loc(`gov_task_slave`),
         req(){
-            return checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
+            return !global.race['orbit_decayed'] && checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
         },
         task(){
             let cashCap = global.resource.Money.max * (global.race.governor.config.slave.reserve / 100);
