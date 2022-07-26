@@ -4558,6 +4558,9 @@ export function cleanAddTrait(trait){
             checkPurgatory('tech','slaves');
             if (global.tech['slaves'] >= 1) {
                 checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+                if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
+                    global.resource.Slave.display = true;
+                }
             }
             break;
         case 'cannibalize':
@@ -4643,9 +4646,11 @@ export function cleanAddTrait(trait){
             }
             window.location.reload();
         case 'calm':
-            global.resource.Zen.display = true;
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
+                if (!global.race['orbit_decayed']){
+                    global.resource.Zen.display = true;
+                }
             }
             break;
         case 'blood_thirst':
@@ -4709,7 +4714,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if (global.tech['axe'] || global.tech['reclaimer']){
+            if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
             break;
@@ -4731,7 +4736,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if (global.tech['axe']){
+            if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
             break;
