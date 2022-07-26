@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift } from './truepath.js';
+import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -9052,6 +9052,10 @@ function longLoop(){
                             }
                         }
                     });
+                }
+
+                if ($('#mapCanvas').length > 0) {
+                    drawMap();
                 }
             }
 

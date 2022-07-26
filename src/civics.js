@@ -74,7 +74,7 @@ export function defineIndustry(){
     }
     clearElement($('#industry'));
 
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
@@ -99,7 +99,7 @@ export function defineIndustry(){
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
     }
-    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm']){
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
         var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');

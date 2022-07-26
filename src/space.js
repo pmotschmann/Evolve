@@ -909,7 +909,7 @@ const spaceProjects = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('fabrication', offset, 1200, 1.32); }
             },
             effect(){
-                let c_worker = global.race['cataclysm'] || global.race['orbit_decayed'] ? `<div>${loc('city_cement_plant_effect1',[1])}</div>` : ``;
+                let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>` : ``;
                 let fab = global.race['cataclysm'] ? 5 : 2;
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
@@ -923,7 +923,7 @@ const spaceProjects = {
                     incrementStruct('fabrication');
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['fabrication'].on++;
-                        global.civic.craftsman.max++;
+                        global.civic.craftsman.max += jobScale(1);
                     }
                     return true;
                 }
@@ -1357,7 +1357,7 @@ const spaceProjects = {
                 if (payCosts($(this)[0])){
                     global.space.spc_casino.count++;
                     if (!global.race['joyless']){
-                        global.civic.entertainer.max++;
+                        global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
