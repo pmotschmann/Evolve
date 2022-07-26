@@ -6777,6 +6777,18 @@ export function terraformLab(wiki){
         geology: geology,
         orbit: global.city.calendar.orbit,
     };
+
+    if (global.custom.hasOwnProperty('planet')){
+        let uni = universeAffix();
+        if (global.custom.planet.hasOwnProperty(uni)){
+            let type = global.race['truepath'] ? 'tp' : 's';
+            if (global.custom.planet[uni][type]){
+                planet = deepClone(global.custom.planet[uni][type]);
+                planet['pts'] = 0;
+            }
+        }
+    }
+
     planet.pts = terraformScore(planet,(wiki ? wikiVars : false));
 
     let buttons = `<div class="buttons">

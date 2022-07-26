@@ -2802,7 +2802,9 @@ export const plasmidBonus = (function (){
             global.race['no_plasmid'] || '0',
             global.genes['ancients'] || '0',
             global.city['temple'] ? global.city.temple.count : '0',
+            global.space['ziggurat'] ? global.space.ziggurat.count : '0',
             global.civic['priest'] ? global.civic.priest.workers : '0',
+            global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
             global.race['spiritual'] || '0'
         ].join('-');
 
@@ -2831,7 +2833,15 @@ export const plasmidBonus = (function (){
                     standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
                 }
 
-                if (global.city['temple'] && global.city['temple'].count && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
+                let shrines = 0;
+                if (global.race['orbit_decayed'] && global.space['ziggurat']){
+                    shrines = global.space.ziggurat.count;
+                }
+                else if (global.city['temple']){
+                    shrines = global.city.temple.count;
+                }
+
+                if (shrines > 0 && !global.race['no_plasmid'] && global.race.universe !== 'antimatter'){
                     let temple_bonus = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 0.08 : 0.05;
                     if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
                         let indoc = global.civic.professor.workers * 0.002;
@@ -2856,7 +2866,10 @@ export const plasmidBonus = (function (){
                     if (global.race['ooze']){
                         temple_bonus *= 1 - (traits.ooze.vars()[1] / 100);
                     }
-                    standard *= 1 + (global.city.temple.count * temple_bonus);
+                    if (global.race['orbit_decayed'] && global.race['truepath']){
+                        temple_bonus *= 0.1;
+                    }
+                    standard *= 1 + (shrines * temple_bonus);
                 }
             }
 

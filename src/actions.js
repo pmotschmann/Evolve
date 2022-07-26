@@ -5139,6 +5139,9 @@ export function templeEffect(){
         if (global.race['ooze']){
             plasmid *= 1 - (traits.ooze.vars()[1] / 100);
         }
+        if (global.race['orbit_decayed'] && global.race['truepath']){
+            plasmid *= 0.1;
+        }
         plasmid = +(plasmid).toFixed(3);
         desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
     }
