@@ -1942,24 +1942,24 @@ export const actions = {
                 Mana(){ return global.tech['conjuring'] ? 1 : 0; },
             },
             action(){
-                if(global['resource']['Food'].amount < global['resource']['Food'].max){
-                    modRes('Food',$(this)[0].val(true),true);
+                if (!global.settings.pause){
+                    if(global['resource']['Food'].amount < global['resource']['Food'].max){
+                        modRes('Food',$(this)[0].val(true),true);
+                    }
+                    global.stats.cfood++;
+                    global.stats.tfood++;
                 }
-                global.stats.cfood++;
-                global.stats.tfood++;
                 return false;
             },
             val(spend){
-                if (!global.settings.pause){
-                    let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
-                    if (global.genes['enhance']){
-                        gain *= 2;
-                    }
-                    if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
-                        gain *= 10;
-                        if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
-                            modRes('Mana',-1,true);
-                        }
+                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
+                if (global.genes['enhance']){
+                    gain *= 2;
+                }
+                if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
+                    gain *= 10;
+                    if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
+                        modRes('Mana',-1,true);
                     }
                 }
                 return gain;
