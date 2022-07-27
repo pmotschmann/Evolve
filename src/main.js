@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, setPlanet, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
+import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap } from './truepath.js';
@@ -466,42 +466,7 @@ popover('topBarPlanet',
             }
             let orbit = global.city.calendar.orbit;
 
-            let geo_traits = ``;
-            if (Object.keys(global.city.geology).length > 0){
-                let good = ``;
-                let bad = ``;
-                let numShow = global.stats.achieve['miners_dream'] ? (global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l) : 0;
-                if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 0){ numShow++; }
-                for (let key in global.city.geology){
-                    if (key !== 0){
-                        if (global.city.geology[key] > 0) {
-                            let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
-                            if (numShow > 0) {
-                                res_val += `: <span class="has-text-success">+${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
-                                numShow--;
-                            }
-                            else {
-                                res_val += `: <span class="has-text-success">${loc('bonus')}</span>`;
-                            }
-                            res_val += `</div>`;
-                            good = good + res_val;
-                        }
-                        else if (global.city.geology[key] < 0){
-                            let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
-                            if (numShow > 0) {
-                                res_val += `: <span class="has-text-danger">${Math.round((global.city.geology[key] + 1) * 100 - 100)}%</span>`;
-                                numShow--;
-                            }
-                            else {
-                                res_val += `: <span class="has-text-danger">${loc('malus')}</span>`;
-                            }
-                            res_val += `</div>`;
-                            bad = bad + res_val
-                        }
-                    }
-                }
-                geo_traits = `<div class="flexAround">${good}${bad}</div>`;
-            }
+            let geo_traits = planetGeology(global.city.geology);
 
             let challenges = '';
             if (global.race['junker']){

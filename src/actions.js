@@ -1795,118 +1795,119 @@ export const actions = {
                 return gift_count;
             },
             action(){
-                const date = new Date();
+                if (!global.settings.pause){
+                    const date = new Date();
 
-                let active_gift = false;
-                if (global['special'] && global.special['gift']){
-                    Object.keys(global.special.gift).forEach(function(g){
-                        if (global.special.gift[g]){
-                            active_gift = g;
-                        }
-                    });
-                }
-                
-                if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
-                    if (active_gift === `g2019`){
-                        if (global['special'] && global.special['gift']){
-                            delete global.special.gift[active_gift];
-                            if (global.race.universe === 'antimatter'){
-                                global.race.Plasmid.anti += 100;
-                                global.stats.antiplasmid += 100;
-                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info',false,['events']);
+                    let active_gift = false;
+                    if (global['special'] && global.special['gift']){
+                        Object.keys(global.special.gift).forEach(function(g){
+                            if (global.special.gift[g]){
+                                active_gift = g;
                             }
-                            else {
-                                global.race.Plasmid.count += 100;
-                                global.stats.plasmid += 100;
-                                messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
-                            }
-                            drawCity();
-                        }
+                        });
                     }
-                    else {
-                        if (global['special'] && global.special['gift']){
-                            delete global.special.gift[active_gift];
-                            
-                            let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
-                            let mad = global.stats.hasOwnProperty('mad') ? global.stats.mad : 0;
-                            let bioseed = global.stats.hasOwnProperty('bioseed') ? global.stats.bioseed : 0;
-                            let cataclysm = global.stats.hasOwnProperty('cataclysm') ? global.stats.cataclysm : 0;
-    
-                            let plasmid = 100 + resets + mad;
-                            let phage = bioseed + cataclysm;
-                            let gift = [];
-
-                            if (global.stats.died + global.stats.tdied > 0){
-                                let dead = global.stats.died + global.stats.tdied;
-                                global.resource.Coal.amount += dead;
-                                gift.push(`${dead.toLocaleString()} ${loc(`resource_Coal_name`)}`);
+                    
+                    if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
+                        if (active_gift === `g2019`){
+                            if (global['special'] && global.special['gift']){
+                                delete global.special.gift[active_gift];
+                                if (global.race.universe === 'antimatter'){
+                                    global.race.Plasmid.anti += 100;
+                                    global.stats.antiplasmid += 100;
+                                    messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info',false,['events']);
+                                }
+                                else {
+                                    global.race.Plasmid.count += 100;
+                                    global.stats.plasmid += 100;
+                                    messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
+                                }
+                                drawCity();
                             }
-
-                            if (global.race.universe === 'antimatter'){
-                                global.race.Plasmid.anti += plasmid;
-                                global.stats.antiplasmid += plasmid;
-                                gift.push(`${plasmid.toLocaleString()} ${loc(`resource_AntiPlasmid_plural_name`)}`);
-                            }
-                            else {
-                                global.race.Plasmid.count += plasmid;
-                                global.stats.plasmid += plasmid;
-                                gift.push(`${plasmid.toLocaleString()} ${loc(`resource_Plasmid_plural_name`)}`);
-                            }
-                            if (phage > 0){
-                                global.race.Phage.count += phage;
-                                global.stats.phage += phage;
-                                gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
-                            }
-    
-                            if (global.stats.hasOwnProperty('achieve')){
-                                let universe = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l : 0;
-                                universe += global.stats.achieve['heavy'] ? global.stats.achieve['heavy'].l : 0;
-                                universe += global.stats.achieve['canceled'] ? global.stats.achieve['canceled'].l : 0;
-                                universe += global.stats.achieve['eviltwin'] ? global.stats.achieve['eviltwin'].l : 0;
-                                universe += global.stats.achieve['microbang'] ? global.stats.achieve['microbang'].l : 0;
-                                universe += global.stats.achieve['pw_apocalypse'] ? global.stats.achieve['pw_apocalypse'].l : 0;
-    
-                                let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
-                                let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
-                                let ai = global.stats.achieve['obsolete'] ? global.stats.achieve['obsolete'].l : 0;
-    
-                                if (universe > 30){ universe = 30; }
-                                if (ascended > 5){ ascended = 5; }
-                                if (descend > 5){ descend = 5; }
+                        }
+                        else {
+                            if (global['special'] && global.special['gift']){
+                                delete global.special.gift[active_gift];
                                 
-                                if (universe > 0){
-                                    let dark = +(universe / 7.5).toFixed(2);
-                                    global.race.Dark.count += dark;
-                                    global.stats.dark += dark;
-                                    gift.push(`${dark} ${loc(`resource_Dark_name`)}`);
-                                }
-                                if (ascended > 0){
-                                    global.race.Harmony.count += ascended;
-                                    global.stats.harmony += ascended;
-                                    gift.push(`${ascended} ${loc(`resource_Harmony_name`)}`);
-                                }
-                                if (descend > 0){
-                                    let blood = descend * 5;
-                                    let art = descend;
-                                    global.resource.Blood_Stone.amount += blood;
-                                    global.stats.blood += blood;
-                                    global.resource.Artifact.amount += art;
-                                    global.stats.artifact += art;
-                                    gift.push(`${blood} ${loc(`resource_Blood_Stone_name`)}`);
-                                    gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
-                                }
-                                if (active_gift !== `g2020` && ai > 0){
-                                    global.race.AICore.count += ai;
-                                    global.stats.cores += ai;
-                                    gift.push(`${ai} ${loc(`resource_AICore_name`)}`);
-                                }
-                            }
+                                let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
+                                let mad = global.stats.hasOwnProperty('mad') ? global.stats.mad : 0;
+                                let bioseed = global.stats.hasOwnProperty('bioseed') ? global.stats.bioseed : 0;
+                                let cataclysm = global.stats.hasOwnProperty('cataclysm') ? global.stats.cataclysm : 0;
+        
+                                let plasmid = 100 + resets + mad;
+                                let phage = bioseed + cataclysm;
+                                let gift = [];
 
-                            messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
-                            drawCity();
+                                if (global.stats.died + global.stats.tdied > 0){
+                                    let dead = global.stats.died + global.stats.tdied;
+                                    global.resource.Coal.amount += dead;
+                                    gift.push(`${dead.toLocaleString()} ${loc(`resource_Coal_name`)}`);
+                                }
+
+                                if (global.race.universe === 'antimatter'){
+                                    global.race.Plasmid.anti += plasmid;
+                                    global.stats.antiplasmid += plasmid;
+                                    gift.push(`${plasmid.toLocaleString()} ${loc(`resource_AntiPlasmid_plural_name`)}`);
+                                }
+                                else {
+                                    global.race.Plasmid.count += plasmid;
+                                    global.stats.plasmid += plasmid;
+                                    gift.push(`${plasmid.toLocaleString()} ${loc(`resource_Plasmid_plural_name`)}`);
+                                }
+                                if (phage > 0){
+                                    global.race.Phage.count += phage;
+                                    global.stats.phage += phage;
+                                    gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
+                                }
+        
+                                if (global.stats.hasOwnProperty('achieve')){
+                                    let universe = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l : 0;
+                                    universe += global.stats.achieve['heavy'] ? global.stats.achieve['heavy'].l : 0;
+                                    universe += global.stats.achieve['canceled'] ? global.stats.achieve['canceled'].l : 0;
+                                    universe += global.stats.achieve['eviltwin'] ? global.stats.achieve['eviltwin'].l : 0;
+                                    universe += global.stats.achieve['microbang'] ? global.stats.achieve['microbang'].l : 0;
+                                    universe += global.stats.achieve['pw_apocalypse'] ? global.stats.achieve['pw_apocalypse'].l : 0;
+        
+                                    let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
+                                    let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
+                                    let ai = global.stats.achieve['obsolete'] ? global.stats.achieve['obsolete'].l : 0;
+        
+                                    if (universe > 30){ universe = 30; }
+                                    if (ascended > 5){ ascended = 5; }
+                                    if (descend > 5){ descend = 5; }
+                                    
+                                    if (universe > 0){
+                                        let dark = +(universe / 7.5).toFixed(2);
+                                        global.race.Dark.count += dark;
+                                        global.stats.dark += dark;
+                                        gift.push(`${dark} ${loc(`resource_Dark_name`)}`);
+                                    }
+                                    if (ascended > 0){
+                                        global.race.Harmony.count += ascended;
+                                        global.stats.harmony += ascended;
+                                        gift.push(`${ascended} ${loc(`resource_Harmony_name`)}`);
+                                    }
+                                    if (descend > 0){
+                                        let blood = descend * 5;
+                                        let art = descend;
+                                        global.resource.Blood_Stone.amount += blood;
+                                        global.stats.blood += blood;
+                                        global.resource.Artifact.amount += art;
+                                        global.stats.artifact += art;
+                                        gift.push(`${blood} ${loc(`resource_Blood_Stone_name`)}`);
+                                        gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
+                                    }
+                                    if (active_gift !== `g2020` && ai > 0){
+                                        global.race.AICore.count += ai;
+                                        global.stats.cores += ai;
+                                        gift.push(`${ai} ${loc(`resource_AICore_name`)}`);
+                                    }
+                                }
+
+                                messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
+                                drawCity();
+                            }
                         }
                     }
-
                 }
                 return false;
             },
@@ -1949,14 +1950,16 @@ export const actions = {
                 return false;
             },
             val(spend){
-                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
-                if (global.genes['enhance']){
-                    gain *= 2;
-                }
-                if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
-                    gain *= 10;
-                    if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
-                        modRes('Mana',-1,true);
+                if (!global.settings.pause){
+                    let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
+                    }
+                    if (global.tech['conjuring'] && global.resource.Mana.amount >= 1){
+                        gain *= 10;
+                        if (global['resource']['Food'].amount < global['resource']['Food'].max && spend){
+                            modRes('Mana',-1,true);
+                        }
                     }
                 }
                 return gain;
@@ -1992,11 +1995,13 @@ export const actions = {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
             action(){
-                if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                    modRes('Lumber',$(this)[0].val(true),true);
+                if (!global.settings.pause){
+                    if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                        modRes('Lumber',$(this)[0].val(true),true);
+                    }
+                    global.stats.clumber++;
+                    global.stats.tlumber++;
                 }
-                global.stats.clumber++;
-                global.stats.tlumber++;
                 return false;
             },
             val(spend){
@@ -2041,11 +2046,13 @@ export const actions = {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
             action(){
-                if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
-                    modRes('Stone',$(this)[0].val(true),true);
+                if (!global.settings.pause){
+                    if (global['resource']['Stone'].amount < global['resource']['Stone'].max){
+                        modRes('Stone',$(this)[0].val(true),true);
+                    }
+                    global.stats.cstone++;
+                    global.stats.tstone++;
                 }
-                global.stats.cstone++;
-                global.stats.tstone++;
                 return false;
             },
             val(spend){
@@ -2091,8 +2098,10 @@ export const actions = {
                 Mana(){ return global.tech['conjuring'] && global.tech['conjuring'] >= 2 ? 1 : 0; },
             },
             action(){
-                if (global['resource']['Chrysotile'].amount < global['resource']['Chrysotile'].max){
-                    modRes('Chrysotile',$(this)[0].val(true),true);
+                if (!global.settings.pause){
+                    if (global['resource']['Chrysotile'].amount < global['resource']['Chrysotile'].max){
+                        modRes('Chrysotile',$(this)[0].val(true),true);
+                    }
                 }
                 return false;
             },
@@ -2128,26 +2137,28 @@ export const actions = {
             not_trait: ['kindling_kindred','smoldering','cataclysm'],
             queue_complete(){ return 0; },
             action(){
-                let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
-                if (global.genes['enhance']){
-                    gain *= 2;
-                }
-                if (!global.race['smoldering']){
-                    if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
-                        modRes('Lumber',gain,true);
+                if (!global.settings.pause){
+                    let gain = global.race['strong'] ? traits.strong.vars()[0] : 1;
+                    if (global.genes['enhance']){
+                        gain *= 2;
                     }
-                    global.stats.clumber++;
-                    global.stats.tlumber++;
-                }
-                if (global.race['soul_eater']){
-                    if (global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
-                        modRes('Food',gain,true);
+                    if (!global.race['smoldering']){
+                        if (global['resource']['Lumber'].amount < global['resource']['Lumber'].max){
+                            modRes('Lumber',gain,true);
+                        }
+                        global.stats.clumber++;
+                        global.stats.tlumber++;
                     }
-                    global.stats.cfood++;
-                    global.stats.tfood++;
-                }
-                if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
-                    modRes('Furs',gain,true);
+                    if (global.race['soul_eater']){
+                        if (global.tech['primitive'] && global['resource']['Food'].amount < global['resource']['Food'].max){
+                            modRes('Food',gain,true);
+                        }
+                        global.stats.cfood++;
+                        global.stats.tfood++;
+                    }
+                    if (global.resource.Furs.display && global['resource']['Furs'].amount < global['resource']['Furs'].max){
+                        modRes('Furs',gain,true);
+                    }
                 }
                 return false;
             },
@@ -6325,53 +6336,57 @@ export function setPlanet(opt){
             });
         }
 
-        let good = $('<div></div>');
-        let bad = $('<div></div>');
-        let goodCnt = 0;
-        let badCnt = 0;
         let numShow = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
         if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 0){ numShow++; }
-        for (let key in geology){
-            if (key !== 0){
-                if (geology[key] > 0) {
-                    goodCnt++;
-                    if (goodCnt === 1) {
-                        good.append($(`<div>${loc('set_planet_extra_rich')}</div>`));
-                    }
-                    let res_val = `<div class="has-text-advanced">${loc(`resource_${key}_name`)}`;
-                    if (numShow > 0) {
-                        res_val += `: <span class="has-text-success">+${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
-                        numShow--;
-                    }
-                    res_val += `</div>`;
-                    good.append(res_val);
-                }
-                else if (geology[key] < 0){
-                    badCnt++;
-                    if (badCnt === 1) {
-                        bad.append($(`<div>${loc('set_planet_extra_poor')}</div>`));
-                    }
-                    let res_val = `<div class="has-text-caution">${loc(`resource_${key}_name`)}`;
-                    if (numShow > 0) {
-                        res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
-                        numShow--;
-                    }
-                    res_val += `</div>`;
-                    bad.append(res_val);
-                }
-            }
-        }
-        if (badCnt > 0){
-            good.append(bad);
-        }
-        if (goodCnt > 0 || badCnt > 0) {
-            obj.popper.append(good);
+        let pg = planetGeology(geology);
+        if (pg.length > 0){
+            obj.popper.append($(`<div>${pg}</div>`));
         }
         return undefined;
     },{
         classes: `has-background-light has-text-dark`
     });
     return custom ? custom : (biome === 'eden' ? 'hellscape' : biome);
+}
+
+export function planetGeology(geology){
+    let geo_traits = ``;
+    if (Object.keys(geology).length > 0){
+        let good = ``;
+        let bad = ``;
+        let numShow = global.stats.achieve['miners_dream'] ? (global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l) : 0;
+        if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 0){ numShow++; }
+        for (let key in geology){
+            if (key !== 0){
+                if (geology[key] > 0) {
+                    let res_val = `<div class="has-text-advanced pGeo">${loc(`resource_${key}_name`)}`;
+                    if (numShow > 0) {
+                        res_val += `: <span class="has-text-success">+${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                        numShow--;
+                    }
+                    else {
+                        res_val += `: <span class="has-text-success">${loc('bonus')}</span>`;
+                    }
+                    res_val += `</div>`;
+                    good = good + res_val;
+                }
+                else if (geology[key] < 0){
+                    let res_val = `<div class="has-text-caution pGeo">${loc(`resource_${key}_name`)}`;
+                    if (numShow > 0) {
+                        res_val += `: <span class="has-text-danger">${Math.round((geology[key] + 1) * 100 - 100)}%</span>`;
+                        numShow--;
+                    }
+                    else {
+                        res_val += `: <span class="has-text-danger">${loc('malus')}</span>`;
+                    }
+                    res_val += `</div>`;
+                    bad = bad + res_val
+                }
+            }
+        }
+        geo_traits = `<div class="pGeoList flexAround">${good}${bad}</div>`;
+    }
+    return geo_traits;
 }
 
 function srDesc(c_action,old){
