@@ -10717,6 +10717,10 @@ const techs = {
         effect: loc('tech_long_range_probes_effect'),
         action(){
             if (payCosts($(this)[0])){
+                global.settings.space.titan = true;
+                global.settings.space.enceladus = true;
+                global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
                 return true;
             }
             return false;
