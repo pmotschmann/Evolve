@@ -1420,7 +1420,7 @@ const extraInformation = {
         loc(`wiki_tech_job_unlock`,[loc(`job_crystal_miner`)])
     ],
     ley_lines: [
-        loc(`wiki_tech_building_unlock`,[global.race['cataclysm'] ? loc(`space_red_pylon`) : loc(`city_pylon`)])
+        loc(`wiki_tech_building_unlock`,[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc(`space_red_pylon`) : loc(`city_pylon`)])
     ],
     rituals: [
         loc(`wiki_tech_rituals`)

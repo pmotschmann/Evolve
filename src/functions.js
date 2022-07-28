@@ -56,10 +56,8 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
-            if (eventActive('firework') && (
-                (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.firework.on > 0) ||
-                ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space.firework.on > 0)
-                )){
+
+            if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
         });

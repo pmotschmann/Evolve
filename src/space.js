@@ -807,7 +807,7 @@ const spaceProjects = {
                     incrementStruct('garage');
                     let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
                     let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
-                    if (global.tech['world_control'] || global.race['cataclysm'] || global.race['orbit_decayed']){
+                    if (global.tech['world_control'] || global.race['cataclysm']){
                         multiplier *= 2;
                         containers += 10;
                     }

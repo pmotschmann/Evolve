@@ -569,10 +569,7 @@ export function checkAchievements(){
         }
     }
 
-    if (eventActive('firework') && ( 
-        (!global.race['cataclysm'] && global.city.firework.on > 0) || 
-        (global.race['cataclysm'] && global.space.firework.on > 0) 
-        )){
+    if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
         unlockFeat('firework',global.race.universe === 'micro' ? true : false);
     }
 
@@ -2529,7 +2526,7 @@ export function drawStats(){
     let hallowed = getHalloween();
     if (hallowed.active){
         let trick = '';
-        if (global.stats.cfood >= 13 || global.race['cataclysm']){
+        if (global.stats.cfood >= 13 || global.race['cataclysm'] || global.race['orbit_decayed']){
             trick = `<span>${trickOrTreat(7,12,true)}</span>`;
         }
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);

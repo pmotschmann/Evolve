@@ -235,7 +235,7 @@ function mainEventsPage(content){
         infoBoxBuilder(mainContent, { name: 'quake_condition', template: 'events', label: loc('wiki_events_quake'), paragraphs: 2, break: [2], h_level: 2 }, section);
         infoBoxBuilder(mainContent, { name: 'quake_examples', template: 'events', label: loc('wiki_events_quake'), h_level: 2, 
             examples: [
-                loc('event_quake',[global.race['cataclysm'] ? races[global.race.species].solar.red : races[global.race.species].home])
+                loc('event_quake',[global.race['cataclysm'] || global.race['orbit_decayed'] ? races[global.race.species].solar.red : races[global.race.species].home])
             ]
         }, section);
         sideMenu('add',`major-events`,`quake`,loc('wiki_events_quake'));
