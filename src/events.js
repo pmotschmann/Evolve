@@ -312,7 +312,7 @@ export const events = {
         effect(){
             global.tech['quaked'] = 1;
             drawTech();
-            return loc('event_quake',[global.race['cataclysm'] ? races[global.race.species].solar.red : races[global.race.species].home]);
+            return loc('event_quake',[global.race['cataclysm'] || global.race['orbit_decayed'] ? races[global.race.species].solar.red : races[global.race.species].home]);
         }
     },
     doom: {
@@ -633,7 +633,7 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && global.city.calendar.temp !== 2){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 2){
                 return true;
             }
             return false;
@@ -650,7 +650,7 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && global.city.calendar.temp !== 0){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 0){
                 return true;
             }
             return false;
@@ -708,7 +708,7 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && global.city.calendar.weather !== 0){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.weather !== 0){
                 return true;
             }
             return false;
@@ -724,7 +724,7 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && global.city.calendar.weather !== 1){
+            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.weather !== 1){
                 return true;
             }
             return false;

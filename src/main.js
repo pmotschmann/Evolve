@@ -2972,7 +2972,7 @@ function fastLoop(){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
-            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm']){
+            else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
                 // Do Nothing
             }
             else {
@@ -3009,7 +3009,7 @@ function fastLoop(){
                     lowerBound *= biomes.taiga.vars()[1];
                 }
                 let base = global.city.ptrait.includes('toxic') ? global['resource'][global.race.species].amount * planetTraits.toxic.vars()[1] : global['resource'][global.race.species].amount;
-                if (global.race['parasite'] && global.race['cataclysm']){
+                if (global.race['parasite'] && (global.race['cataclysm'] || global.race['orbit_decayed'])){
                     lowerBound = Math.round(lowerBound / 5);
                     base *= 3;
                 }
@@ -6699,7 +6699,7 @@ function midLoop(){
         }
         if (global.space['garage']){
             let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-            multiplier *= global.tech['world_control'] || global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 1;
+            multiplier *= global.tech['world_control'] || global.race['cataclysm'] ? 2 : 1;
             if (global.tech['shelving'] && global.tech.shelving >= 3){ multiplier *= 1.5; }
             multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
             let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;

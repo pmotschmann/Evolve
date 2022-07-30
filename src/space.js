@@ -807,7 +807,7 @@ const spaceProjects = {
                     incrementStruct('garage');
                     let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
                     let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
-                    if (global.tech['world_control'] || global.race['cataclysm'] || global.race['orbit_decayed']){
+                    if (global.tech['world_control'] || global.race['cataclysm']){
                         multiplier *= 2;
                         containers += 10;
                     }
@@ -1977,12 +1977,6 @@ const spaceProjects = {
                 if (payCosts($(this)[0])){
                     messageQueue(loc('space_dwarf_mission_action',[races[global.race.species].solar.dwarf]),'info',false,['progress']);
                     global.space['elerium_contain'] = { count: 0, on: 0 };
-                    if (global.race['truepath']){
-                        global.settings.space.titan = true;
-                        global.settings.space.enceladus = true;
-                        global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                        global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
-                    }
                     return true;
                 }
                 return false;

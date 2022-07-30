@@ -1242,13 +1242,13 @@ export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
         case 'city':
-            isOk = global.race['cataclysm'] ? false : checkCityRequirements(p1);
+            isOk = global.race['cataclysm'] || global.race['orbit_decayed'] ? false : checkCityRequirements(p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
             break;
         default:
-            isOk = checkSpaceRequirements(region,p0,p1);
+            isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
     }
     return global[region][p1] && isOk && checkPowerRequirements(c_action) ? true : false;
