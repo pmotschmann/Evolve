@@ -152,6 +152,7 @@ export function resetsPage(content){
             2: [loc('wiki_resets_ascension')],
             3: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
             7: [loc('achieve_lamentis_name')],
+            8: [1],
             10: [loc('wiki_resets_terraform')],
         }
     });

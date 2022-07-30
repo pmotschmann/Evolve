@@ -6205,9 +6205,6 @@ export function genPlanets(){
                 if (global.custom.planet[uafx].s){
                     avail.push(`${uafx}:s`);
                 }
-                if (global.custom.planet[uafx].tp){
-                    avail.push(`${uafx}:tp`);
-                }
             }
         });
     }
@@ -6825,9 +6822,9 @@ export function terraformLab(wiki){
                     }
                     let universe = universeAffix();
                     if (!global.custom.planet.hasOwnProperty(universe)){
-                        global.custom.planet[universe] = {s: false, tp: false};
+                        global.custom.planet[universe] = {s: false};
                     }
-                    let type = global.race['truepath'] ? 'tp' : 's';
+                    let type = 's';
                     global.custom.planet[universe][type] = deepClone(planet);
                     delete global.custom.planet[universe][type].pts;
                     terraform(planet);
