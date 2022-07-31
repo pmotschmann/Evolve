@@ -146,14 +146,19 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'cataclysm');
     sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'));
 
-    section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 7, break: [3,6,7,10], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 18, break: [3,6,7,10,12,18], h_level: 2,
         para_data: {
             1: [loc('wiki_resets_terraform'),loc(`evo_challenge_orbit_decay`)],
             2: [loc('wiki_resets_ascension')],
             3: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
             7: [loc('achieve_lamentis_name')],
             8: [1],
-            10: [loc('wiki_resets_terraform')],
+            10: [loc('rejuvenated')],
+            13: ['10%'],
+            14: ['5%'],
+            16: ['2%'],
+            17: ['50%'],
+            18: [loc('wiki_resets_terraform')],
         }
     });
     section = createCalcSection(section,'terraform','gain');

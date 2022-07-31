@@ -4114,6 +4114,9 @@ export function racialTrait(workers,type){
     if (inspireVal && (type === 'farmer' || type === 'factory' || type === 'miner' || type === 'lumberjack')){
         modifier *= 1 + (inspireVal / 100);
     }
+    if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
+        modifier *= 1.1;
+    }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
     }

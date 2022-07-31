@@ -697,15 +697,6 @@ function fastLoop(){
             global_multiplier *= (1 + faith);
         }
     }
-    if (global.race['ascended']){
-        breakdown.p['Global'][loc('achieve_ascended_name')] = `5%`;
-        global_multiplier *= 1.05;
-    }
-    if (global.race['corruption']){
-        let corruption = global.race['corruption'] * 2;
-        breakdown.p['Global'][loc('achieve_corrupted_name')] = `${corruption}%`;
-        global_multiplier *= 1 + (corruption / 100);
-    }
     if (global.race['untapped']){
         if (global.race['untapped'] > 0){
             let untapped = +(global.race.untapped / (global.race.untapped + 20) / 10 + 0.00024).toFixed(4);
@@ -746,6 +737,19 @@ function fastLoop(){
         let harmonic = calcPillar();
         breakdown.p['Global'][loc('harmonic')] = `${(harmonic[0] - 1) * 100}%`;
         global_multiplier *= harmonic[0];
+    }
+    if (global.race['ascended']){
+        breakdown.p['Global'][loc('achieve_ascended_name')] = `5%`;
+        global_multiplier *= 1.05;
+    }
+    if (global.race['corruption']){
+        let corruption = global.race['corruption'] * 2;
+        breakdown.p['Global'][loc('achieve_corrupted_name')] = `${corruption}%`;
+        global_multiplier *= 1 + (corruption / 100);
+    }
+    if (global.race['rejuvenated']){
+        breakdown.p['Global'][loc('rejuvenated')] = `2%`;
+        global_multiplier *= 1.02;
     }
     if (global.race['suction_grip']){
         let bonus = traits.suction_grip.vars()[0];
@@ -855,18 +859,19 @@ function fastLoop(){
         (races[global.race.species].type === 'demonic' && global.city.biome !== 'hellscape') ||
         (races[global.race.species].type === 'angelic' && global.city.biome !== 'eden')
     ){
+        let unsuited = 1;
         if (global.blood['unbound'] && global.blood.unbound >= 4){
-            breakdown.p['Global'][loc('unsuited')] = `-${5}%`;
-            global_multiplier *= 0.95;
+            unsuited = global.race['rejuvenated'] ? 0.975 : 0.95;
         }
         else if (global.blood['unbound'] && global.blood.unbound >= 2){
-            breakdown.p['Global'][loc('unsuited')] = `-${10}%`;
-            global_multiplier *= 0.9;
+            unsuited = global.race['rejuvenated'] ? 0.95 : 0.9;
         }
         else {
-            breakdown.p['Global'][loc('unsuited')] = `-${20}%`;
-            global_multiplier *= 0.8;
+            unsuited = global.race['rejuvenated'] ? 0.9 : 0.8;
         }
+
+        breakdown.p['Global'][loc('unsuited')] = `-${Math.round((1 - unsuited) * 100)}%`;
+        global_multiplier *= unsuited;
     }
 
     if (global.race['hibernator'] && global.city.calendar.season === 3){
@@ -8567,6 +8572,11 @@ function longLoop(){
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
+            if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
+                let bonus = global.stats.achieve.lamentis.l;
+                if (bonus > 5){ bonus = 5; }
+                hc += bonus;
+            }
             if (global.race['artifical'] && global.city['boot_camp']){
                 hc = global.city.boot_camp.count;
             }

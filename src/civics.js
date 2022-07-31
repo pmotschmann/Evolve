@@ -2012,6 +2012,9 @@ export function armyRating(val,type,wound){
             army *= biomes.savanna.vars()[1];
         }
     }
+    if (global.race['rejuvenated']){
+        army *= 1.05;
+    }
     if (global.civic.govern.type === 'autocracy'){
         army *= 1.35;
     }

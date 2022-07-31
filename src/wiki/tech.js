@@ -1639,7 +1639,10 @@ const extraInformation = {
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
-    ]
+    ],
+    geck: [
+        loc(`wiki_tech_geck`)
+    ],
 };
 
 const extraInformationTP = {
@@ -3311,6 +3314,17 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'orbitdecay'
+                }
+            ]
+        }
+    ],
+    geck: [
+        {
+            category: 'achieve',
+            subreqs: [
+                {
+                    name: 'lamentis',
+                    val: 5
                 }
             ]
         }

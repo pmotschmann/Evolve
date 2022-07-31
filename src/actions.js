@@ -4589,7 +4589,7 @@ export const actions = {
             cost: {
                 Money(offset){ return costMultiplier('geck', offset, 1000000, 1.25,'starDock'); },
                 Elerium(offset){ return costMultiplier('geck', offset, 1000, 1.25,'starDock'); },
-                Plasmid(offset){ return costMultiplier('geck', offset, 25, 1.75,'starDock'); },
+                Plasmid(offset){ return costMultiplier('geck', offset, 25, 1.4,'starDock'); },
             },
             effect(){
                 return `<div>${loc('star_dock_geck_effect')}</div>`;
@@ -6233,17 +6233,20 @@ export function setPlanet(opt){
     $('#evolution').append(parent);
 
     let popper = false;
+    let gecked = 0;
     popover(id,function(obj){
         popper = obj;
-        planetDesc(obj,title,biome,orbit,trait,geology);
+        planetDesc(obj,title,biome,orbit,trait,geology,gecked);
         return undefined;
     },{
         classes: `has-background-light has-text-dark`
     });
 
-    let gecked = 0;
     $('#'+id).on('click',function(){
         if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.race.hasOwnProperty('geck') && global.race.geck > 0){
+            Object.keys(geology).forEach(function (g){
+                geology[g] += Math.floor(Math.seededRandom(0,7)) / 100;
+            });
             if (gecked > 0){
                 let odds = 8 - gecked;
                 if (odds < 1){ odds = 1; }
@@ -6271,13 +6274,10 @@ export function setPlanet(opt){
             }
             title = `${traits}${biomes[biome].label} ${num}`;
             $(`#${id} .aTitle`).html(title);
-            Object.keys(geology).forEach(function (g){
-                geology[g] += Math.floor(Math.seededRandom(0,7)) / 100;
-            });
             gecked++;
             global.race.geck--;
             clearElement(popper.popper);
-            planetDesc(popper,title,biome,orbit,trait,geology);
+            planetDesc(popper,title,biome,orbit,trait,geology,gecked);
         }
         else {
             delete global.race['geck'];
@@ -6298,7 +6298,7 @@ export function setPlanet(opt){
     return custom ? custom : (biome === 'eden' ? 'hellscape' : biome);
 }
 
-function planetDesc(obj,title,biome,orbit,trait,geology){
+function planetDesc(obj,title,biome,orbit,trait,geology,gecked){
     obj.popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
     obj.popper.append($(`<div>${biomes[biome].desc}</div>`));
     if (trait.length > 0){
@@ -6310,6 +6310,9 @@ function planetDesc(obj,title,biome,orbit,trait,geology){
     let pg = planetGeology(geology);
     if (pg.length > 0){
         obj.popper.append($(`<div>${pg}</div>`));
+    }
+    if (gecked && gecked > 0){
+        obj.popper.append($(`<div class="has-text-special">${loc(`rejuvenated`)}</div>`));
     }
     return undefined;
 }
