@@ -262,7 +262,7 @@ function genGovernor(setSize){
 export function govern(){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
         let cnt = [0,1,2];
-        if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4){
+        if (global.genes.governor >= 2){
             cnt.push(cnt.length);
             if (govActive('organizer',0)){ cnt.push(cnt.length); }
         }
@@ -329,7 +329,7 @@ export function drawnGovernOffice(){
     govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
 
     let cnt = [0,1,2];
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4){
+    if (global.genes['governor'] && global.genes.governor >= 2){
         cnt.push(cnt.length);
         if (govActive('organizer',0)){ cnt.push(cnt.length); }
     }

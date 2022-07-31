@@ -6,7 +6,7 @@ import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
-import { jobScale } from './jobs';
+import { jobScale } from './jobs.js';
 import { warhead } from './resets.js';
 
 // Sets up government in civics tab

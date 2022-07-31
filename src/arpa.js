@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -755,6 +755,23 @@ export const genePool = {
         },
         action(){
             if (payCrispr('governance')){
+                return true;
+            }
+            return false;
+        }
+    },
+    civil_service: {
+        id: 'genes-civil_service',
+        title: loc('arpa_genepool_civil_service_title'),
+        desc: loc('arpa_genepool_civil_service_desc'),
+        reqs: { governor: 1 },
+        grant: ['governor',2],
+        cost: {
+            Plasmid(){ return 1000; },
+            Harmony(){ return 1; }
+        },
+        action(){
+            if (payCrispr('civil_service')){
                 return true;
             }
             return false;

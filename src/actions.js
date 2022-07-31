@@ -4574,6 +4574,34 @@ export const actions = {
                 return false;
             },
         },
+        geck: {
+            id: 'starDock-geck',
+            title: loc('tech_geck'),
+            desc(){
+                return `<div>${loc('tech_geck_desc')}</div>`;
+            },
+            reqs: { geck: 1 },
+            condition(){
+                return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 ? true : false;
+            },
+            queue_complete(){ return 0; },
+            no_multi: true,
+            cost: {
+                Money(offset){ return costMultiplier('geck', offset, 1000000, 1.25,'starDock'); },
+                Elerium(offset){ return costMultiplier('geck', offset, 1000, 1.25,'starDock'); },
+                Plasmid(offset){ return costMultiplier('geck', offset, 25, 1.75,'starDock'); },
+            },
+            effect(){
+                return `<div>${loc('star_dock_geck_effect')}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.starDock.geck.count++;
+                    return true;
+                }
+                return false;
+            },
+        },
         seeder: {
             id: 'starDock-seeder',
             title(){ return global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder'); },
@@ -5254,6 +5282,9 @@ function setChallenge(challenge){
                 delete global.race['junker'];
             }
         }
+        if (challenge === 'orbit_decay'){
+            delete global.race['cataclysm'];
+        }
     }
     setChallengeScreen();
     challengeIcon();
@@ -5291,6 +5322,10 @@ function setScenario(scenario){
             if (global.race['sludge']){
                 delete global.race['sludge'];
             }
+        }
+
+        if (scenario === 'cataclysm'){
+            delete global.race['orbit_decay'];
         }
 
         if (scenario === 'truepath'){
@@ -5986,7 +6021,7 @@ function runAction(c_action,action,type){
                 break;
             default:
                 {
-                    let keyMult = keyMultiplier();
+                    let keyMult = c_action['no_multi'] ? 1 : keyMultiplier();
                     if (c_action['grant']){
                         keyMult = 1;
                     }
@@ -6102,7 +6137,7 @@ export function setPlanet(opt){
     let geology = {};
     let custom = false;
 
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,8)) === 0){
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,8)) === 0){
         custom = opt.custom[Math.floor(Math.seededRandom(0,opt.custom.length))];
         let target = custom.split(':');
 
@@ -6119,127 +6154,8 @@ export function setPlanet(opt){
         }
     }
     if (!custom){
-        let max_bound = !opt.hell && global.stats.portals >= 1 ? 7 : 6;
-        let subbiome = Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
-        let uAffix = universeAffix();
-        switch (Math.floor(Math.seededRandom(0,max_bound))){
-            case 0:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_grassland'] && global.stats.achieve.biome_grassland[uAffix] && global.stats.achieve.biome_grassland[uAffix] > 0;
-                    biome = sb ? 'savanna' : 'grassland';
-                }
-                break;
-            case 1:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_oceanic'] && global.stats.achieve.biome_oceanic[uAffix] && global.stats.achieve.biome_oceanic[uAffix] > 0;
-                    biome = sb ? 'swamp' : 'oceanic';
-                }
-                break;
-            case 2:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_forest'] && global.stats.achieve.biome_forest[uAffix] && global.stats.achieve.biome_forest[uAffix] > 0;
-                    biome = sb ? (Math.floor(Math.seededRandom(0,2)) === 0 ? 'taiga' : 'swamp') : 'forest';
-                }
-                break;
-            case 3:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_desert'] && global.stats.achieve.biome_desert[uAffix] && global.stats.achieve.biome_desert[uAffix] > 0;
-                    biome = sb ? 'ashland' : 'desert';
-                }
-                break;
-            case 4:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_volcanic'] && global.stats.achieve.biome_volcanic[uAffix] && global.stats.achieve.biome_volcanic[uAffix] > 0;
-                    biome = sb ? 'ashland' : 'volcanic';
-                }
-                break;
-            case 5:
-                {
-                    let sb = subbiome && global.stats.achieve['biome_tundra'] && global.stats.achieve.biome_tundra[uAffix] && global.stats.achieve.biome_tundra[uAffix] > 0;
-                    biome = sb ? 'taiga' : 'tundra';
-                }
-                break;
-            case 6:
-                biome = global.race.universe === 'evil' ? 'eden' : 'hellscape';
-                break;
-            default:
-                biome = 'grassland';
-                break;
-        }
-
-        for (let i=0; i<2; i++){
-            let top = 18 + (9 * i);
-            switch (Math.floor(Math.seededRandom(0,top))){
-                case 0:
-                    if (!trait.includes('toxic')){
-                        trait.push('toxic');
-                    }
-                    break;
-                case 1:
-                    if (!trait.includes('mellow')){
-                        trait.push('mellow');
-                    }
-                    break;
-                case 2:
-                    if (!trait.includes('rage')){
-                        trait.push('rage');
-                    }
-                    break;
-                case 3:
-                    if (!trait.includes('stormy')){
-                        trait.push('stormy');
-                    }
-                    break;
-                case 4:
-                    if (!trait.includes('ozone')){
-                        trait.push('ozone');
-                    }
-                    break;
-                case 5:
-                    if (!trait.includes('magnetic')){
-                        trait.push('magnetic');
-                    }
-                    break;
-                case 6:
-                    if (!trait.includes('trashed')){
-                        trait.push('trashed');
-                    }
-                    break;
-                case 7:
-                    if (!trait.includes('elliptical')){
-                        trait.push('elliptical');
-                    }
-                    break;
-                case 8:
-                    if (!trait.includes('flare')){
-                        trait.push('flare');
-                    }
-                    break;
-                case 9:
-                    if (!trait.includes('dense')){
-                        trait.push('dense');
-                    }
-                    break;
-                case 10:
-                    if (!trait.includes('unstable')){
-                        trait.push('unstable');
-                    }
-                    break;
-                case 11:
-                    if (!trait.includes('permafrost') && !['volcanic','ashland','hellscape'].includes(biome)){
-                        trait.push('permafrost');
-                    }
-                    break;
-                case 12:
-                    if (!trait.includes('retrograde')){
-                        trait.push('retrograde');
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        
+        biome = buildPlanet('biome',opt);
+        trait = buildPlanet('trait',opt);
         trait.sort();
 
         let max = Math.floor(Math.seededRandom(0,3));
@@ -6316,37 +6232,217 @@ export function setPlanet(opt){
 
     $('#evolution').append(parent);
 
-    $('#'+id).on('click',function(){
-        global.race['chose'] = id;
-        global.city.biome = biome;
-        global.city.calendar.orbit = orbit;
-        global.city.geology = geology;
-        global.city.ptrait = trait;
-        clearElement($('#evolution'));
-        clearPopper();
-        addAction('evolution','rna');
-    });
-
+    let popper = false;
     popover(id,function(obj){
-        obj.popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
-        obj.popper.append($(`<div>${biomes[biome].desc}</div>`));
-        if (trait.length > 0){
-            trait.forEach(function(t){
-                obj.popper.append($(`<div>${planetTraits[t].desc}</div>`));
-            });
-        }
-
-        let numShow = global.stats.achieve['miners_dream'] ? global.stats.achieve['miners_dream'].l >= 4 ? global.stats.achieve['miners_dream'].l * 2 - 3 : global.stats.achieve['miners_dream'].l : 0;
-        if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 0){ numShow++; }
-        let pg = planetGeology(geology);
-        if (pg.length > 0){
-            obj.popper.append($(`<div>${pg}</div>`));
-        }
+        popper = obj;
+        planetDesc(obj,title,biome,orbit,trait,geology);
         return undefined;
     },{
         classes: `has-background-light has-text-dark`
     });
+
+    let gecked = 0;
+    $('#'+id).on('click',function(){
+        if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.race.hasOwnProperty('geck') && global.race.geck > 0){
+            if (gecked > 0){
+                let odds = 8 - gecked;
+                if (odds < 1){ odds = 1; }
+                if (Math.floor(Math.seededRandom(0,odds)) === 0){
+                    biome = buildPlanet('biome',opt);
+                }
+            }
+            if (Math.floor(Math.seededRandom(0,2)) === 0){
+                let pT = buildPlanet('trait',opt,1);
+                if (pT.length > 0){
+                    if (trait.includes(pT[0])){
+                        let idx = trait.indexOf(pT[0]);
+                        trait.splice(idx, 1);
+                    }
+                    else if (pT[0] !== undefined){
+                        trait.push(pT[0]);
+                    }
+                    traits = '';
+                    trait.forEach(function(t){
+                        if (planetTraits.hasOwnProperty(t)){
+                            traits += `${planetTraits[t].label} `;
+                        }
+                    });
+                }
+            }
+            title = `${traits}${biomes[biome].label} ${num}`;
+            $(`#${id} .aTitle`).html(title);
+            Object.keys(geology).forEach(function (g){
+                geology[g] += Math.floor(Math.seededRandom(0,6)) / 100;
+            });
+            gecked++;
+            global.race.geck--;
+            clearElement(popper.popper);
+            planetDesc(popper,title,biome,orbit,trait,geology);
+        }
+        else {
+            delete global.race['geck'];
+            global.race['chose'] = id;
+            global.city.biome = biome;
+            global.city.calendar.orbit = orbit;
+            global.city.geology = geology;
+            global.city.ptrait = trait;
+            if (gecked > 0){
+                global.race['rejuvenated'] = true;
+            }
+            clearElement($('#evolution'));
+            clearPopper();
+            addAction('evolution','rna');
+        }
+    });
+
     return custom ? custom : (biome === 'eden' ? 'hellscape' : biome);
+}
+
+function planetDesc(obj,title,biome,orbit,trait,geology){
+    obj.popper.append($(`<div>${loc('set_planet',[title,biomes[biome].label,orbit])}</div>`));
+    obj.popper.append($(`<div>${biomes[biome].desc}</div>`));
+    if (trait.length > 0){
+        trait.forEach(function(t){
+            obj.popper.append($(`<div>${planetTraits[t].desc}</div>`));
+        });
+    }
+
+    let pg = planetGeology(geology);
+    if (pg.length > 0){
+        obj.popper.append($(`<div>${pg}</div>`));
+    }
+    return undefined;
+}
+
+function buildPlanet(aspect,opt,val){
+    if (aspect === 'biome'){
+        let biome = 'grassland';
+        let max_bound = !opt.hell && global.stats.portals >= 1 ? 7 : 6;
+        let subbiome = Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
+        let uAffix = universeAffix();
+        switch (Math.floor(Math.seededRandom(0,max_bound))){
+            case 0:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_grassland'] && global.stats.achieve.biome_grassland[uAffix] && global.stats.achieve.biome_grassland[uAffix] > 0;
+                    biome = sb ? 'savanna' : 'grassland';
+                }
+                break;
+            case 1:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_oceanic'] && global.stats.achieve.biome_oceanic[uAffix] && global.stats.achieve.biome_oceanic[uAffix] > 0;
+                    biome = sb ? 'swamp' : 'oceanic';
+                }
+                break;
+            case 2:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_forest'] && global.stats.achieve.biome_forest[uAffix] && global.stats.achieve.biome_forest[uAffix] > 0;
+                    biome = sb ? (Math.floor(Math.seededRandom(0,2)) === 0 ? 'taiga' : 'swamp') : 'forest';
+                }
+                break;
+            case 3:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_desert'] && global.stats.achieve.biome_desert[uAffix] && global.stats.achieve.biome_desert[uAffix] > 0;
+                    biome = sb ? 'ashland' : 'desert';
+                }
+                break;
+            case 4:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_volcanic'] && global.stats.achieve.biome_volcanic[uAffix] && global.stats.achieve.biome_volcanic[uAffix] > 0;
+                    biome = sb ? 'ashland' : 'volcanic';
+                }
+                break;
+            case 5:
+                {
+                    let sb = subbiome && global.stats.achieve['biome_tundra'] && global.stats.achieve.biome_tundra[uAffix] && global.stats.achieve.biome_tundra[uAffix] > 0;
+                    biome = sb ? 'taiga' : 'tundra';
+                }
+                break;
+            case 6:
+                biome = global.race.universe === 'evil' ? 'eden' : 'hellscape';
+                break;
+            default:
+                biome = 'grassland';
+                break;
+        }
+        return biome;
+    }
+    else if (aspect === 'trait'){
+        let trait = [];
+        val = val || 2;
+        for (let i=0; i<val; i++){
+            let top = 18 + (9 * i);
+            switch (Math.floor(Math.seededRandom(0,top))){
+                case 0:
+                    if (!trait.includes('toxic')){
+                        trait.push('toxic');
+                    }
+                    break;
+                case 1:
+                    if (!trait.includes('mellow')){
+                        trait.push('mellow');
+                    }
+                    break;
+                case 2:
+                    if (!trait.includes('rage')){
+                        trait.push('rage');
+                    }
+                    break;
+                case 3:
+                    if (!trait.includes('stormy')){
+                        trait.push('stormy');
+                    }
+                    break;
+                case 4:
+                    if (!trait.includes('ozone')){
+                        trait.push('ozone');
+                    }
+                    break;
+                case 5:
+                    if (!trait.includes('magnetic')){
+                        trait.push('magnetic');
+                    }
+                    break;
+                case 6:
+                    if (!trait.includes('trashed')){
+                        trait.push('trashed');
+                    }
+                    break;
+                case 7:
+                    if (!trait.includes('elliptical')){
+                        trait.push('elliptical');
+                    }
+                    break;
+                case 8:
+                    if (!trait.includes('flare')){
+                        trait.push('flare');
+                    }
+                    break;
+                case 9:
+                    if (!trait.includes('dense')){
+                        trait.push('dense');
+                    }
+                    break;
+                case 10:
+                    if (!trait.includes('unstable')){
+                        trait.push('unstable');
+                    }
+                    break;
+                case 11:
+                    if (!trait.includes('permafrost') && !['volcanic','ashland','hellscape'].includes(biome)){
+                        trait.push('permafrost');
+                    }
+                    break;
+                case 12:
+                    if (!trait.includes('retrograde')){
+                        trait.push('retrograde');
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return trait;
+    }
 }
 
 export function planetGeology(geology){
@@ -6990,6 +7086,11 @@ function starDockModal(modal){
 
     let c_action = actions.starDock.probes;
     setAction(c_action,'starDock','probes');
+
+    if (global.tech['geck'] && global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5){
+        let c_action = actions.starDock.geck;
+        setAction(c_action,'starDock','geck');
+    }
 
     if (global.tech['genesis'] >= 5){
         let c_action = actions.starDock.seeder;

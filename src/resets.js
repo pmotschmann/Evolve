@@ -211,6 +211,7 @@ export function bioseed(){
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     let probes = global.starDock.probes.count + 1;
+    let gecks = global.starDock.hasOwnProperty('geck') ? global.starDock.geck.count : 0;
     if (global.stats.achieve['explorer']){
         probes += global.stats.achieve['explorer'].l;
     }
@@ -226,6 +227,7 @@ export function bioseed(){
         universe: global.race.universe,
         seeded: true,
         probes: probes,
+        geck: gecks,
         seed: Math.floor(Math.seededRandom(10000)),
         ascended: false,
     };
@@ -942,6 +944,7 @@ export function terraform(planet){
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        rejuvenated: true,
     };
     if (corruption > 0){
         global.race['corruption'] = corruption;

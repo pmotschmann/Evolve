@@ -9,6 +9,7 @@ const changeList = [
             `Added Orbit Decay Challenge.`,
             `Added Retrograde planetary trait.`,
             `New achievement: Better dead then red.`,
+            `New CRISPR upgrade: Civil Service.`,
             `Other stuff the dev was too lazy to document.`
         ]
     },

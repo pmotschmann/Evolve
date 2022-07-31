@@ -1535,7 +1535,7 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("achieve_perks_lamentis4",[1,2]);
+                    return loc("achieve_perks_lamentis4");
                 },
                 active(){
                     return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 ? true : false;

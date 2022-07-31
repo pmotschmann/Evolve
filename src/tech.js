@@ -8544,6 +8544,29 @@ const techs = {
             return false;
         }
     },
+    geck: {
+        id: 'tech-geck',
+        title(){ return loc('tech_geck'); },
+        desc(){ return loc('tech_geck_desc'); },
+        category: 'special',
+        era: 'deep_space',
+        reqs: { genesis: 5 },
+        grant: ['geck',1],
+        condition(){
+            return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 ? true : false;
+        },
+        cost: {
+            Knowledge(){ return 500000; },
+        },
+        effect(){ return loc('tech_geck_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.starDock['geck'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     genetic_decay: {
         id: 'tech-genetic_decay',
         title: loc('tech_genetic_decay'),

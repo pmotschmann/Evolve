@@ -6198,7 +6198,7 @@ export const universe_types = {
 
 export function genPlanets(){
     let avail = [];
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5){
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom.hasOwnProperty('planet')){
         Object.keys(universe_types).forEach(function(u){
             let uafx = universeAffix(u);
             if (global.custom.planet.hasOwnProperty(uafx)){
@@ -6206,6 +6206,16 @@ export function genPlanets(){
                     avail.push(`${uafx}:s`);
                 }
             }
+        });
+    }
+
+    if (global.race['geck'] && global.race.geck > 0){
+        let geck = $(`<div id="geck" class="geck"><span class="has-text-caution">${loc(`gecks_remaining`)}</span>: <span class="has-text-warning">{{ geck }}</span></div>`);
+        $('#evolution').append(geck);
+
+        vBind({
+            el: '#geck',
+            data: global.race,
         });
     }
 

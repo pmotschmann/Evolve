@@ -9314,7 +9314,9 @@ function longLoop(){
 
     // Save game state
     global.stats['current'] = Date.now();
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global.race.hasOwnProperty('geck')){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    }
 
     if (global.race.species !== 'protoplasm' && (global.stats.days + global.stats.tdays) % 100000 === 99999){
         messageQueue(loc(`backup_warning`), 'advanced', true);
