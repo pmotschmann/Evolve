@@ -6155,7 +6155,7 @@ export function setPlanet(opt){
     }
     if (!custom){
         biome = buildPlanet('biome',opt);
-        trait = buildPlanet('trait',opt);
+        trait = buildPlanet('trait',opt,{biome: biome});
         trait.sort();
 
         let max = Math.floor(Math.seededRandom(0,3));
@@ -6252,7 +6252,7 @@ export function setPlanet(opt){
                 }
             }
             if (Math.floor(Math.seededRandom(0,2)) === 0){
-                let pT = buildPlanet('trait',opt,1);
+                let pT = buildPlanet('trait',opt,{biome: biome, cap: 1});
                 if (pT.length > 0){
                     if (trait.includes(pT[0])){
                         let idx = trait.indexOf(pT[0]);
@@ -6272,7 +6272,7 @@ export function setPlanet(opt){
             title = `${traits}${biomes[biome].label} ${num}`;
             $(`#${id} .aTitle`).html(title);
             Object.keys(geology).forEach(function (g){
-                geology[g] += Math.floor(Math.seededRandom(0,6)) / 100;
+                geology[g] += Math.floor(Math.seededRandom(0,7)) / 100;
             });
             gecked++;
             global.race.geck--;
@@ -6314,7 +6314,8 @@ function planetDesc(obj,title,biome,orbit,trait,geology){
     return undefined;
 }
 
-function buildPlanet(aspect,opt,val){
+function buildPlanet(aspect,opt,args){
+    args = args || {};
     if (aspect === 'biome'){
         let biome = 'grassland';
         let max_bound = !opt.hell && global.stats.portals >= 1 ? 7 : 6;
@@ -6368,8 +6369,8 @@ function buildPlanet(aspect,opt,val){
     }
     else if (aspect === 'trait'){
         let trait = [];
-        val = val || 2;
-        for (let i=0; i<val; i++){
+        let cap = args['cap'] || 2;
+        for (let i=0; i<cap; i++){
             let top = 18 + (9 * i);
             switch (Math.floor(Math.seededRandom(0,top))){
                 case 0:
@@ -6428,7 +6429,7 @@ function buildPlanet(aspect,opt,val){
                     }
                     break;
                 case 11:
-                    if (!trait.includes('permafrost') && !['volcanic','ashland','hellscape'].includes(biome)){
+                    if (!trait.includes('permafrost') && !['volcanic','ashland','hellscape'].includes(args['biome'])){
                         trait.push('permafrost');
                     }
                     break;
