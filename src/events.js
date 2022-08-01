@@ -79,14 +79,13 @@ export const events = {
             }
             else {
                 if (global.city.hasOwnProperty('basic_housing')){
-                    at_risk += global.city.basic_housing.count;
+                    at_risk += global.city.basic_housing.count * actions.city.basic_housing.citizens();
                 }
                 if (global.city.hasOwnProperty('cottage')){
-                    at_risk += global.city.cottage.count * 2;
+                    at_risk += global.city.cottage.count * actions.city.cottage.citizens();
                 }
                 if (global.city.hasOwnProperty('apartment')){
-                    let extraVal = govActive('extravagant',2);
-                    at_risk += p_on['apartment'] * (extraVal ? 5 + extraVal : 5);
+                    at_risk += p_on['apartment'] * actions.city.apartment.citizens();
                 }
             }
             if (at_risk > global.resource[global.race.species].amount){

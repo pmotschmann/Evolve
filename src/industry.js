@@ -1055,7 +1055,7 @@ function loadPylon(parent,bind){
 
     let ritualList = [];
     if (global.race['orbit_decayed']){
-        ritualList = ['miner','lumberjack','science','factory','army','hunting','crafting'];
+        ritualList = ['miner','science','factory','army','hunting','crafting'];
     }
     else if (global.race['cataclysm']){
         ritualList = ['science','factory','army','hunting','crafting'];
