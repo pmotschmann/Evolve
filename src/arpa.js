@@ -4,7 +4,7 @@ import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction,
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
-import { govActive } from './governor.js';
+import { govActive, defineGovernor } from './governor.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
 
@@ -178,7 +178,7 @@ export const arpaProjects = {
             }
             let routes = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? 1 : 0;
             let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
                 return loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
@@ -775,6 +775,16 @@ export const genePool = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks')){
+                for (let i=0; i<6; i++){
+                    if (!global.race.governor.tasks.hasOwnProperty(`t${i}`)){
+                        global.race.governor.tasks[`t${i}`] = 'none';
+                    }
+                }
+            }
+            defineGovernor();
         }
     },
     hardened_genes: {

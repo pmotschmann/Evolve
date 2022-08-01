@@ -7401,7 +7401,7 @@ function midLoop(){
         }
         if (global.tech['railway']){
             let routes = 0;
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 routes = global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
             }
             else {
@@ -8575,13 +8575,13 @@ function longLoop(){
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
+            if (global.race['artifical'] && global.city['boot_camp']){
+                hc = global.city.boot_camp.count;
+            }
             if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
                 let bonus = global.stats.achieve.lamentis.l;
                 if (bonus > 5){ bonus = 5; }
                 hc += bonus;
-            }
-            if (global.race['artifical'] && global.city['boot_camp']){
-                hc = global.city.boot_camp.count;
             }
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];

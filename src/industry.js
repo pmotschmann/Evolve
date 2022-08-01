@@ -1053,7 +1053,16 @@ function loadPylon(parent,bind){
     let spellTypes = $('<div class="pylon wrap"></div>');
     parent.append(spellTypes);
 
-    let ritualList = global.race['cataclysm'] ? ['science','factory','army','hunting','crafting'] : ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    let ritualList = [];
+    if (global.race['orbit_decayed']){
+        ritualList = ['miner','lumberjack','science','factory','army','hunting','crafting'];
+    }
+    else if (global.race['cataclysm']){
+        ritualList = ['science','factory','army','hunting','crafting'];
+    }
+    else {
+        ritualList = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    }
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ritualList.forEach(function (spell){

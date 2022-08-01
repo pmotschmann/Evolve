@@ -1,8 +1,8 @@
-import { global, p_on } from './vars.js';
+import { global, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
-import { housingLabel, drawTech } from './actions.js';
+import { housingLabel, drawTech, actions } from './actions.js';
 import { tradeRatio } from './resources.js';
 import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
@@ -72,15 +72,22 @@ export const events = {
         },
         effect(){
             let at_risk = 0;
-            if (global.city.hasOwnProperty('basic_housing')){
-                at_risk += global.city.basic_housing.count;
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
+                if (global.space.hasOwnProperty('living_quarters')){
+                    at_risk += Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
+                }
             }
-            if (global.city.hasOwnProperty('cottage')){
-                at_risk += global.city.cottage.count * 2;
-            }
-            if (global.city.hasOwnProperty('apartment')){
-                let extraVal = govActive('extravagant',2);
-                at_risk += p_on['apartment'] * (extraVal ? 5 + extraVal : 5);
+            else {
+                if (global.city.hasOwnProperty('basic_housing')){
+                    at_risk += global.city.basic_housing.count;
+                }
+                if (global.city.hasOwnProperty('cottage')){
+                    at_risk += global.city.cottage.count * 2;
+                }
+                if (global.city.hasOwnProperty('apartment')){
+                    let extraVal = govActive('extravagant',2);
+                    at_risk += p_on['apartment'] * (extraVal ? 5 + extraVal : 5);
+                }
             }
             if (at_risk > global.resource[global.race.species].amount){
                 at_risk = global.resource[global.race.species].amount;
