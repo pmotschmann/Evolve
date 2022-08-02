@@ -72,10 +72,12 @@ export const events = {
         },
         effect(){
             let at_risk = 0;
+            let planet = races[global.race.species].home;
             if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 if (global.space.hasOwnProperty('living_quarters')){
                     at_risk += Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
                 }
+                planet = races[global.race.species].solar.red;
             }
             else {
                 if (global.city.hasOwnProperty('basic_housing')){
@@ -111,7 +113,7 @@ export const events = {
                 global.city['firestorm'] = Math.rand(time,time * 10);
             }
 
-            return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[races[global.race.species].home, loss.toLocaleString()]);
+            return loc(global.city.biome === 'oceanic' ? 'event_flare2' : 'event_flare',[planet, loss.toLocaleString()]);
         }
     },
     raid: {

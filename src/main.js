@@ -6398,8 +6398,8 @@ function midLoop(){
                 bd_Money[loc('space_red_living_quarters_title')] = gain+'v';
             }
         }
-        if (support_on['biodome'] && global.race['artifical']){
-            let gain = support_on['biodome'] * spatialReasoning(500);
+        if (support_on['biodome'] && (global.race['artifical'] || global.race['orbit_decayed'])){
+            let gain = support_on['biodome'] * spatialReasoning(global.race['artifical'] ? 500 : 100);
             caps['Food'] += gain;
             bd_Food[loc('space_red_signal_tower_title')] = gain+'v';
         }
