@@ -7829,7 +7829,8 @@ function midLoop(){
             let location = spc_locations[i];
             Object.keys(actions[location]).forEach(function (region){
                 Object.keys(actions[location][region]).forEach(function (action){
-                    if ((global[location][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
+                    let s_region = actions[location][region][action] && actions[location][region][action].hasOwnProperty('region') ? actions[location][region][action].region : location;
+                    if ((global[s_region][action] || actions[location][region][action].grant) && actions[location][region][action] && actions[location][region][action].cost){
                         let c_action = actions[location][region][action];
                         let element = $('#'+c_action.id);
                         if (checkAffordable(c_action)){
@@ -7848,8 +7849,8 @@ function midLoop(){
                         else if (!element.hasClass('cnam')){
                             element.addClass('cnam');
                         }
-                        if (global[location][action]){
-                            global[location][action]['time'] = timeFormat(timeCheck(c_action));
+                        if (global[s_region][action]){
+                            global[s_region][action]['time'] = timeFormat(timeCheck(c_action));
                         }
                     }
                 });
@@ -8262,7 +8263,6 @@ function midLoop(){
             let triggerd = false;
             if (arpa){
                 let label = global.queue.queue[idx].label;
-                let id = global.queue.queue[idx].id;
                 if (buildArpa(global.queue.queue[idx].type,100,true)){
                     messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
                     if (global.queue.queue[idx].q > 1){

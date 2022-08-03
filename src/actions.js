@@ -6046,6 +6046,9 @@ function runAction(c_action,action,type){
                                         repeat = global.queue.max - used;
                                     }
                                     let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
+                                    if (c_action['region']){
+                                        action = c_action.id.split("-")[0];
+                                    }
                                     if (global.settings.q_merge !== 'merge_never'){
                                         if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
                                             global.queue.queue[global.queue.queue.length-1].q += Math.min(buid_max, q_size * repeat);
@@ -6137,7 +6140,7 @@ export function setPlanet(opt){
     let geology = {};
     let custom = false;
 
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,8)) === 0){
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,10)) === 0){
         custom = opt.custom[Math.floor(Math.seededRandom(0,opt.custom.length))];
         let target = custom.split(':');
 
