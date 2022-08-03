@@ -4,11 +4,11 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.16`,
-        date: `7/??/2022`,
+        date: `8/3/2022`,
         changes: [
             `Added Orbit Decay Challenge.`,
             `Added Retrograde planetary trait.`,
-            `New achievement: Better dead then red.`,
+            `New achievement: Better dead than red.`,
             `New CRISPR upgrade: Civil Service.`,
             `Other stuff the dev was too lazy to document.`
         ]
