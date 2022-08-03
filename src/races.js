@@ -4066,7 +4066,7 @@ export function setJType(){
 }
 
 function customRace(){
-    if (global.hasOwnProperty('custom')){
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0')){
         let trait = {};
         for (let i=0; i<global.custom.race0.traits.length; i++){
             trait[global.custom.race0.traits[i]] = 1;
