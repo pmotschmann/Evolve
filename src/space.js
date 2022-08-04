@@ -6428,7 +6428,7 @@ export function ascendLab(wiki){
     }
     lab.append(buttons);
 
-    var genome = global.hasOwnProperty('custom') ? {
+    var genome = global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0') ? {
         name: global.custom.race0.name,
         desc: global.custom.race0.desc,
         entity: global.custom.race0.entity,
