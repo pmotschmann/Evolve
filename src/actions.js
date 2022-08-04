@@ -1153,7 +1153,7 @@ export const actions = {
                         else {
                             races.push('synth');
                             races.push('nano');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'synthetic'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'synthetic'){
                                 races.push('custom');
                             }
                         }
@@ -1167,7 +1167,7 @@ export const actions = {
                             races.push('elven');
                             races.push('orc');
                             races.push('human');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'humanoid'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'humanoid'){
                                 races.push('custom');
                             }
                         }
@@ -1181,7 +1181,7 @@ export const actions = {
                             races.push('troll');
                             races.push('ogre');
                             races.push('cyclops');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'giant'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'giant'){
                                 races.push('custom');
                             }
                         }
@@ -1195,7 +1195,7 @@ export const actions = {
                             races.push('kobold');
                             races.push('goblin');
                             races.push('gnome');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'small'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'small'){
                                 races.push('custom');
                             }
                         }
@@ -1209,7 +1209,7 @@ export const actions = {
                             races.push('cath');
                             races.push('wolven');
                             races.push('vulpine');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'carnivore'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'carnivore'){
                                 races.push('custom');
                             }
                         }
@@ -1223,7 +1223,7 @@ export const actions = {
                             races.push('centaur');
                             races.push('rhinotaur');
                             races.push('capybara');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'herbivore'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'herbivore'){
                                 races.push('custom');
                             }
                         }
@@ -1237,7 +1237,7 @@ export const actions = {
                             races.push('bearkin');
                             races.push('porkenari');
                             races.push('hedgeoken');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'omnivore'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'omnivore'){
                                 races.push('custom');
                             }
                         }
@@ -1251,7 +1251,7 @@ export const actions = {
                             races.push('tortoisan');
                             races.push('gecko');
                             races.push('slitheryn');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'reptilian'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'reptilian'){
                                 races.push('custom');
                             }
                         }
@@ -1265,7 +1265,7 @@ export const actions = {
                             races.push('arraak');
                             races.push('pterodacti');
                             races.push('dracnid');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'avian'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'avian'){
                                 races.push('custom');
                             }
                         }
@@ -1279,7 +1279,7 @@ export const actions = {
                             races.push('sporgar');
                             races.push('shroomi');
                             races.push('moldling');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fungi'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'fungi'){
                                 races.push('custom');
                             }
                         }
@@ -1293,7 +1293,7 @@ export const actions = {
                             races.push('mantis');
                             races.push('scorpid');
                             races.push('antid');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'insectoid'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'insectoid'){
                                 races.push('custom');
                             }
                         }
@@ -1307,7 +1307,7 @@ export const actions = {
                             races.push('entish');
                             races.push('cacti');
                             races.push('pinguicula');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'plant'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'plant'){
                                 races.push('custom');
                             }
                         }
@@ -1320,7 +1320,7 @@ export const actions = {
                         else {
                             races.push('sharkin');
                             races.push('octigoran');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'aquatic'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'aquatic'){
                                 races.push('custom');
                             }
                         }
@@ -1333,7 +1333,7 @@ export const actions = {
                         else {
                             races.push('dryad');
                             races.push('satyr');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'fey'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'fey'){
                                 races.push('custom');
                             }
                         }
@@ -1346,7 +1346,7 @@ export const actions = {
                         else {
                             races.push('phoenix');
                             races.push('salamander');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'heat'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'heat'){
                                 races.push('custom');
                             }
                         }
@@ -1359,7 +1359,7 @@ export const actions = {
                         else {
                             races.push('yeti');
                             races.push('wendigo');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'polar'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'polar'){
                                 races.push('custom');
                             }
                         }
@@ -1372,7 +1372,7 @@ export const actions = {
                         else {
                             races.push('tuskin');
                             races.push('kamel');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'sand'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'sand'){
                                 races.push('custom');
                             }
                         }
@@ -1385,7 +1385,7 @@ export const actions = {
                         else {
                             races.push('balorg');
                             races.push('imp');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'demonic'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'demonic'){
                                 races.push('custom');
                             }
                         }
@@ -1398,7 +1398,7 @@ export const actions = {
                         else {
                             races.push('seraph');
                             races.push('unicorn');
-                            if (global.hasOwnProperty('custom') && global.custom.race0.genus === 'angelic'){
+                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'angelic'){
                                 races.push('custom');
                             }
                         }
@@ -4618,11 +4618,11 @@ export const actions = {
             queue_size: 10,
             queue_complete(){ return 100 - global.starDock.seeder.count; },
             cost: {
-                Money(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 100000 : 0; },
-                Steel(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 25000 : 0; },
-                Neutronium(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 240 : 0; },
-                Elerium(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 10 : 0; },
-                Nano_Tube(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 12000 : 0; },
+                Money(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 100000 : 0; },
+                Steel(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 25000 : 0; },
+                Neutronium(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 240 : 0; },
+                Elerium(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 10 : 0; },
+                Nano_Tube(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 12000 : 0; },
             },
             effect(){
                 let count = global.starDock['seeder'] ? global.starDock.seeder.count : 0;
@@ -7571,7 +7571,7 @@ function sentience(){
         }
     }
 
-    if (global.race.species === 'custom'){
+    if (global.race.species === 'custom' && global.custom.hasOwnProperty('race0')){
         global.race['untapped'] = calcGenomeScore({
             name: global.custom.race0.name,
             desc: global.custom.race0.desc,

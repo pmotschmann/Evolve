@@ -63,7 +63,7 @@ export function resetsPage(content){
     });
     let universe_labels = universes.map(x => `<span class="has-text-caution">${loc(`universe_${x}`)}</span>`);
 
-    section = infoBoxBuilder(mainContent,{ name: 'blackhole', template: 'resets', paragraphs: 13, break: [3,6,9,12,13], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'blackhole', template: 'resets', paragraphs: 12, break: [3,6,9,12], h_level: 2,
         para_data: {
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark')],
             3: [loc('tech_dist_stellar_engine')],

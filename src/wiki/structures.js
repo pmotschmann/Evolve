@@ -43,7 +43,6 @@ const extraInformation = {
     starDock: {
         geck: [
             loc(`wiki_structure_stardock_geck`),
-            loc(`wiki_structure_stardock_geck2`)
         ]
     },
     interstellar: {},
