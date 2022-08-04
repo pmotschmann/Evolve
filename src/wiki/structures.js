@@ -36,7 +36,10 @@ const extraInformation = {
     planetary: {
         slaughter: [loc(`wiki_structure_planetary_slaughter`)],
     },
-    space: {},
+    space: {
+        terraformer: [loc(`wiki_structure_space_terraformer`)],
+        terraform: [loc(`wiki_structure_space_terraformer`)],
+    },
     starDock: {
         geck: [
             loc(`wiki_structure_stardock_geck`),
@@ -81,6 +84,7 @@ const calcInfo = {
         },
         space: {
             star_dock: 1,
+            terraformer: 100,
             world_collider: 1859,
             shipyard: 1,
             mass_relay: 100,
