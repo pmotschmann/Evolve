@@ -4607,7 +4607,7 @@ export const actions = {
             title(){ return global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder'); },
             desc(){
                 let label = global.race['cataclysm'] ? loc('star_dock_exodus') : loc('star_dock_seeder');
-                if (global.starDock.seeder.count >= 100){
+                if (global.starDock['seeder'] && global.starDock.seeder.count >= 100){
                     return `<div>${label}</div><div class="has-text-special">${loc('star_dock_seeder_desc2')}</div>`;
                 }
                 else {
@@ -4618,14 +4618,15 @@ export const actions = {
             queue_size: 10,
             queue_complete(){ return 100 - global.starDock.seeder.count; },
             cost: {
-                Money(){ return global.starDock.seeder.count < 100 ? 100000 : 0; },
-                Steel(){ return global.starDock.seeder.count < 100 ? 25000 : 0; },
-                Neutronium(){ return global.starDock.seeder.count < 100 ? 240 : 0; },
-                Elerium(){ return global.starDock.seeder.count < 100 ? 10 : 0; },
-                Nano_Tube(){ return global.starDock.seeder.count < 100 ? 12000 : 0; },
+                Money(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 100000 : 0; },
+                Steel(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 25000 : 0; },
+                Neutronium(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 240 : 0; },
+                Elerium(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 10 : 0; },
+                Nano_Tube(offset,wiki){ return wiki || (global.space['seeder'] && global.starDock.seeder.count < 100) ? 12000 : 0; },
             },
             effect(){
-                let remain = global.starDock.seeder.count < 100 ? loc('star_dock_seeder_status1',[100 - global.starDock.seeder.count]) : loc('star_dock_seeder_status2');
+                let count = global.starDock['seeder'] ? global.starDock.seeder.count : 0;
+                let remain = count < 100 ? loc('star_dock_seeder_status1',[100 - count]) : loc('star_dock_seeder_status2');
                 return `<div>${global.race['cataclysm'] ? loc('star_dock_exodus_effect') : loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
             action(){

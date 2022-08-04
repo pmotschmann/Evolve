@@ -454,6 +454,7 @@ export function big_bang(){
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    let gecks = global.starDock.hasOwnProperty('geck') ? global.starDock.geck.count : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
@@ -467,6 +468,7 @@ export function big_bang(){
         seeded: true,
         bigbang: true,
         probes: 4,
+        geck: gecks,
         seed: Math.floor(Math.seededRandom(10000)),
         ascended: false
     };
@@ -569,6 +571,7 @@ export function vacuumCollapse(){
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
         let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+        let gecks = global.starDock.hasOwnProperty('geck') ? global.starDock.geck.count : 0;
         global['race'] = {
             species : 'protoplasm',
             gods: god,
@@ -582,6 +585,7 @@ export function vacuumCollapse(){
             seeded: true,
             bigbang: true,
             probes: 4,
+            geck: gecks,
             seed: Math.floor(Math.seededRandom(10000)),
             ascended: false,
         };
