@@ -6279,11 +6279,18 @@ export function setPlanet(opt){
             $(`#${id} .aTitle`).html(title);
             gecked++;
             global.race.geck--;
+            if (!global.race.hasOwnProperty('gecked')){
+                global.race['gecked'] = 0;
+            }
+            global.race.gecked++;
             clearElement(popper.popper);
             planetDesc(popper,title,biome,orbit,trait,geology,gecked);
         }
         else {
             delete global.race['geck'];
+            if (global.race['gecked']){
+                global.stats.geck += global.race.gecked;
+            }
             global.race['chose'] = id;
             global.city.biome = biome;
             global.city.calendar.orbit = orbit;

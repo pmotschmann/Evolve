@@ -751,8 +751,9 @@ function fastLoop(){
         global_multiplier *= 1 + (corruption / 100);
     }
     if (global.race['rejuvenated']){
-        breakdown.p['Global'][loc('rejuvenated')] = `2%`;
-        global_multiplier *= 1.02;
+        let decay = global.stats.days < 996 ? (1000 - global.stats.days) / 2000 : 0.02;
+        breakdown.p['Global'][loc('rejuvenated')] = `${decay * 100}%`;
+        global_multiplier *= 1 + decay;
     }
     if (global.race['suction_grip']){
         let bonus = traits.suction_grip.vars()[0];
@@ -777,6 +778,9 @@ function fastLoop(){
         if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
             bonus *= 1 + (traits.scavenger.vars()[1] / 100);
         }
+        if (global.city.ptrait.includes('trashed')){
+            bonus *= 1 + (planetTraits.trashed.vars()[1] / 100);
+        }
         if (global.race['high_pop']){
             bonus = highPopAdjust(bonus);
         }
@@ -788,7 +792,7 @@ function fastLoop(){
         global_multiplier *= planetTraits.mellow.vars()[2];
     }
     if (global.city.ptrait.includes('ozone') && global.city['sun']){
-        let uv = global.city['sun'] * 0.25;
+        let uv = global.city['sun'] * planetTraits.ozone.vars()[0];
         breakdown.p['Global'][loc('planet_ozone_bd')] = `-${uv}%`;
         global_multiplier *= 1 - (uv / 100);
     }
@@ -8754,8 +8758,10 @@ function longLoop(){
                         break;
                 }
 
-                if (global.city.ptrait.includes('stormy') && wind > 0 && Math.rand(0,2) === 0){
-                    wind--;
+                if (global.city.ptrait.includes('stormy') && wind > 0){
+                    if (global.race['rejuvenated'] || Math.rand(0,2) === 0){
+                        wind--;
+                    }
                 }
 
                 if (sky === 0){

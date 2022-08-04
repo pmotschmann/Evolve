@@ -6,7 +6,7 @@ import { prestigeCalc } from './p_res.js';
 export function resetsPage(content){
     let mainContent = sideMenu('create',content);
 
-    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion'];
+    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion','ai','terraform'];
     let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(mainContent,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
@@ -146,7 +146,7 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'cataclysm');
     sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'));
 
-    section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 18, break: [3,6,7,10,12,18], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 19, break: [3,6,7,10,12,19], h_level: 2,
         para_data: {
             1: [loc('wiki_resets_terraform'),loc(`evo_challenge_orbit_decay`)],
             2: [loc('wiki_resets_ascension')],
@@ -156,9 +156,9 @@ export function resetsPage(content){
             10: [loc('rejuvenated')],
             13: ['10%'],
             14: ['5%'],
-            16: ['2%'],
+            16: ['2%','50%'],
             17: ['50%'],
-            18: [loc('wiki_resets_terraform')],
+            19: [loc('wiki_resets_terraform')],
         }
     });
     section = createCalcSection(section,'terraform','gain');

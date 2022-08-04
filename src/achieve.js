@@ -2505,6 +2505,12 @@ export function drawStats(){
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
     }
+    if (global.stats.terraform > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ s.terraform | format }}</div>`);
+    }
+    if (global.stats.geck > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_gecks")}</span> {{ s.geck | format }}</div>`);
+    }
 
     // Current Run Stats
     stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);

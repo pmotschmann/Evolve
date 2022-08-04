@@ -991,7 +991,7 @@ if (convertVersion(global['version']) < 102015){
 
 global['version'] = '1.2.16';
 delete global['revision'];
-delete global['beta'];
+global['beta'] = 23;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1470,6 +1470,9 @@ if (!global.stats['terraform']){
 }
 if (!global.stats['aiappoc']){
     global.stats['aiappoc'] = 0;
+}
+if (!global.stats['geck']){
+    global.stats['geck'] = 0;
 }
 if (!global.stats['dark']){
     global.stats['dark'] = 0;
@@ -2086,6 +2089,11 @@ window.soft_reset = function reset(){
     clearSavedMessages();
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let gecks = global.race.hasOwnProperty('geck') ? global.race.geck : 0;
+    if (global.race.hasOwnProperty('gecked')){
+        gecks += global.race.gecked;
+        global.stats.geck -= global.race.gecked;
+    }
     let replace = {
         species : 'protoplasm',
         Plasmid: { count: global.race.Plasmid.count },
@@ -2099,6 +2107,8 @@ window.soft_reset = function reset(){
         probes: global.race.probes,
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.ascended : false,
+        geck: gecks > 0 ? gecks : false,
     }
     if (srace){
         replace['srace'] = srace;
