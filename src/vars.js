@@ -2108,7 +2108,9 @@ window.soft_reset = function reset(){
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
         rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.ascended : false,
-        geck: gecks > 0 ? gecks : false,
+    }
+    if (gecks > 0){
+        replace['geck'] = gecks;
     }
     if (srace){
         replace['srace'] = srace;
