@@ -6193,7 +6193,7 @@ function midLoop(){
             }
             caps['Containers'] += (global.space.garage.count * g_vol);
             bd_Containers[loc('space_red_garage_title')] = (global.space.garage.count * g_vol) + 'v';
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 caps['Crates'] += (global.space.garage.count * g_vol);
                 bd_Crates[loc('space_red_garage_title')] = (global.space.garage.count * g_vol) + 'v';
             }
@@ -7383,7 +7383,7 @@ function midLoop(){
             global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
-                let r_count = global.race['cataclysm'] ? global.space.ziggurat.count : global.city.temple.count;
+                let r_count = global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.ziggurat.count : global.city.temple.count;
                 global.city.market.mtrade += r_count;
                 breakdown.t_route[global.race['cataclysm'] ? loc('space_red_ziggurat_title') : loc('city_temple')] = r_count;
             }

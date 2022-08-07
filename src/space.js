@@ -910,7 +910,7 @@ const spaceProjects = {
             },
             effect(){
                 let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>` : ``;
-                let fab = global.race['cataclysm'] ? 5 : 2;
+                let fab = global.race['cataclysm'] || global.race['orbit_decayed'] ? 5 : 2;
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
                 }
