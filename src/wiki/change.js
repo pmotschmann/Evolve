@@ -4,6 +4,15 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.16`,
+        revision: `a`,
+        date: `8/8/2022`,
+        changes: [
+            `Fixed OD bugs with Ziggurat, Garage, and Fabrication.`,
+            `Fixed Launch Facility sometimes getting stuck in queue.`
+        ]
+    },
+    {
+        version: `1.2.16`,
         date: `8/4/2022`,
         changes: [
             `Added Orbit Decay Challenge.`,
