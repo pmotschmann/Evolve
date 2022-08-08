@@ -7245,7 +7245,14 @@ export function orbitDecayed(){
             global.civic.d_job = 'unemployed';
         }
 
-        global.race.purgatory.city = {};
+        for (let building of Object.values(global.race.purgatory.city)){
+            if (building.hasOwnProperty('count')){
+                building.count = 0;
+            }
+            if (building.hasOwnProperty('on')){
+                building.on = 0;
+            }
+        }
         if (global.queue.hasOwnProperty('queue')){
             for (let i = global.queue.queue.length-1; i >= 0; i--){
                 let item = global.queue.queue[i];
