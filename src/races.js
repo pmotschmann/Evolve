@@ -6,7 +6,7 @@ import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, g
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
 import { buildGarrison } from './civics.js';
-import { govActive } from './governor.js';
+import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { actions, checkTechQualifications } from './actions.js';
 
@@ -1587,17 +1587,18 @@ export const traits = {
         type: 'major',
         val: 6,
         vars(r){
+            // [Combat Rating Bonus, Ambush Avoid]
             switch (r || global.race.chameleon || 1){
                 case 0.25:
-                    return [5];
+                    return [5,10];
                 case 0.5:
-                    return [10];
+                    return [10,15];
                 case 1:
-                    return [20];
+                    return [20,20];
                 case 2:
-                    return [25];
+                    return [25,25];
                 case 3:
-                    return [30];
+                    return [30,30];
             }
         },
     },
@@ -2893,11 +2894,11 @@ export const traits = {
         type: 'minor',
         vars(r){ return [1]; },
     },
-    promiscuous: { // Population Growth Bonus
+    promiscuous: { // Organics Growth Bonus, Synths Population Discount
         name: loc('trait_promiscuous_name'),
         desc: loc('trait_promiscuous'),
         type: 'minor',
-        vars(r){ return [1]; },
+        vars(r){ return [1,0.02]; },
     },
     resilient: { // Coal Mining Bonus
         name: loc('trait_resilient_name'),
@@ -4065,7 +4066,7 @@ export function setJType(){
 }
 
 function customRace(){
-    if (global.hasOwnProperty('custom')){
+    if (global.hasOwnProperty('custom') && global.custom.hasOwnProperty('race0')){
         let trait = {};
         for (let i=0; i<global.custom.race0.traits.length; i++){
             trait[global.custom.race0.traits[i]] = 1;
@@ -4112,6 +4113,9 @@ export function racialTrait(workers,type){
     let inspireVal = govActive('inspirational',0);
     if (inspireVal && (type === 'farmer' || type === 'factory' || type === 'miner' || type === 'lumberjack')){
         modifier *= 1 + (inspireVal / 100);
+    }
+    if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
+        modifier *= 1.1;
     }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
         modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
@@ -4342,21 +4346,12 @@ function adjustFood() {
     let disabledCity = [], disabledTech = [];
 
     if (!global.race['artifical']) {
-        setPurgatory('tech','agriculture');
-        setPurgatory('tech','farm');
-        setPurgatory('tech','hunting');
-        setPurgatory('tech','s_lodge');
-        setPurgatory('tech','wind_plant');
-        setPurgatory('tech','compost');
-        setPurgatory('tech','soul_eater');
-        setPurgatory('city','silo');
-        setPurgatory('city','farm');
-        setPurgatory('city','mill');
-        setPurgatory('city','windmill');
-        setPurgatory('city','smokehouse');
-        setPurgatory('city','lodge');
-        setPurgatory('city','compost');
-        setPurgatory('city','soul_well');
+        ['agriculture','farm','hunting','s_lodge','wind_plant','compost','soul_eater'].forEach(function (tech){
+            setPurgatory('tech',tech);
+        });
+        ['silo','farm','mill','windmill','smokehouse','lodge','compost','soul_well'].forEach(function (city){
+            setPurgatory('city',city);
+        });
 
         if (altLodge) {
             checkPurgatory('tech','s_lodge');
@@ -4449,8 +4444,9 @@ function adjustFood() {
         }
     }
 
+
     let jobEnabled = [], jobDisabled = [];
-    if (farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
+    if (!global.race['orbit_decayed'] && farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
         jobEnabled.push('farmer');
     }
     else {
@@ -4464,7 +4460,7 @@ function adjustFood() {
         jobDisabled.push('hunter');
         jobEnabled.push('unemployed');
     }
-    if (lumberEnabled) {
+    if (!global.race['orbit_decayed'] && lumberEnabled) {
         jobEnabled.push('lumberjack');
     }
     else {
@@ -4565,6 +4561,9 @@ export function cleanAddTrait(trait){
             checkPurgatory('tech','slaves');
             if (global.tech['slaves'] >= 1) {
                 checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+                if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
+                    global.resource.Slave.display = true;
+                }
             }
             break;
         case 'cannibalize':
@@ -4610,13 +4609,8 @@ export function cleanAddTrait(trait){
                 global.civic.foreign[`gov${i}`].sab = 0;
                 global.civic.foreign[`gov${i}`].act = 'none';
             }
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                Object.keys(global.race.governor.tasks).forEach(function (task){
-                    if (global.race.governor.tasks[task] === 'spy' || global.race.governor.tasks[task] === 'spyop'){
-                        global.race.governor.tasks[task] = 'none';
-                    }
-                });
-            }
+            removeTask('spy');
+            removeTask('spyop');
             break;
         case 'noble':
             if (global.civic.taxes.tax_rate < 10) {
@@ -4655,9 +4649,11 @@ export function cleanAddTrait(trait){
             }
             window.location.reload();
         case 'calm':
-            global.resource.Zen.display = true;
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
+                if (!global.race['orbit_decayed']){
+                    global.resource.Zen.display = true;
+                }
             }
             break;
         case 'blood_thirst':
@@ -4675,7 +4671,10 @@ export function cleanAddTrait(trait){
             });
             break;
         case 'shapeshifter':
-            shapeShift();
+            shapeShift(false,true);
+            break;
+        case 'imitation':
+            setImitation(true);
             break;
         case 'evil':
             setResourceName('Lumber');
@@ -4718,7 +4717,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if (global.tech['axe'] || global.tech['reclaimer']){
+            if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
             break;
@@ -4740,7 +4739,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','axe');
             checkPurgatory('tech','reclaimer');
             checkPurgatory('tech','saw');
-            if (global.tech['axe']){
+            if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
             break;
@@ -4781,26 +4780,14 @@ export function cleanRemoveTrait(trait,rank){
             global.resource.Slave.amount = 0;
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'slave'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('slave');
             break;
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
             removeFromRQueue(['sacrifice']);
             setPurgatory('tech','sacrifice');
             delete global.city['s_alter'];
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'sacrifice'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('sacrifice');
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
@@ -4814,13 +4801,7 @@ export function cleanRemoveTrait(trait,rank){
         case 'hooved':
             removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
-            if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
-                for (let i=0; i<global.race.governor.tasks.length; i++){
-                    if (global.race.governor.tasks[`t${i}`] === 'horseshoe'){
-                        global.race.governor.tasks[`t${i}`] = 'none';
-                    }
-                }
-            }
+            removeTask('horseshoe');
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -4887,11 +4868,14 @@ export function setImitation(mod){
         if (!global.race['iTraits']){
             global.race['iTraits'] = {};
         }
+        if (global.race['shapeshifter']){
+            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true);
+        }
+
+        let i_traits = [];
         Object.keys(genus_traits[races[global.race['srace']].type]).forEach(function (trait) {
             if (!global.race[trait]){
-                global.race.iTraits[trait] = 0;
-                setTraitRank(trait,{ set: traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod){ cleanAddTrait(trait); }
+                i_traits.push(trait);
             }
         });
         if (global.race['srace'] === 'custom'){
@@ -4904,28 +4888,21 @@ export function setImitation(mod){
                     list[1] = trait;
                 }
             });
-            if (!['evil','imitation'].includes(list[0])){
-                let set = global.race[list[0]] ? false : true;
-                global.race.iTraits[list[0]] = global.race[list[0]] ? global.race[list[0]] : 0;
-                setTraitRank(list[0],{ set: traits[list[0]].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod && set){ cleanAddTrait(list[0]); }
-            }
-            if (!['evil','imitation'].includes(list[1])){
-                let set = global.race[list[1]] ? false : true;
-                global.race.iTraits[list[1]] = global.race[list[1]] ? global.race[list[1]] : 0;
-                setTraitRank(list[1],{ set: traits[list[1]].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                if (mod && set){ cleanAddTrait(list[1]); }
-            }
+            i_traits.push(...list);
         }
         else {
-            Object.keys(races[global.race['srace']].traits).forEach(function (trait) {
-                if (!['evil','imitation'].includes(trait)){
-                    let set = global.race[trait] ? false : true;
-                    global.race.iTraits[trait] = global.race[trait] ? global.race[trait] : 0;
-                    setTraitRank(trait,{ set: traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0] });
-                    if (mod && set){ cleanAddTrait(trait); }
-                }
-            });
+            i_traits.push(...Object.keys(races[global.race['srace']].traits));
+        }
+
+        for (let trait of i_traits) {
+            if (!['evil','imitation'].includes(trait)){
+                let set = global.race[trait] ? false : true;
+                let added = global.race.iTraits[trait] ? false : true;
+                let rank = traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0];
+                global.race.iTraits[trait] = global.race.iTraits[trait] || global.race[trait] || 0;
+                setTraitRank(trait,{ set: rank, force: added });
+                if (mod && set){ cleanAddTrait(trait); }
+            }
         }
     }
 }
@@ -4965,7 +4942,7 @@ export function shapeShift(genus,setup){
 
         let drop = ``;
         Object.keys(genus_traits).forEach(function (gen) {
-            if (gen !== 'synthetic' && gen !== races[global.race.species].type && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+            if (gen !== 'synthetic' && gen !== races[global.race.species].type && (!global.race['imitation'] || gen !== races[global.race['srace']].type) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
                 drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
             }
         });
@@ -4999,7 +4976,7 @@ export function shapeShift(genus,setup){
 
 export function setTraitRank(trait,opts){
     opts = opts || {};
-    if (global.race[trait]){
+    if (global.race[trait] && !opts['force']){
         switch (global.race[trait]){
             case 0.25:
                 global.race[trait] = opts['down'] ? 0.25 : 0.5;
@@ -5031,6 +5008,7 @@ export function traitSkin(type,trait){
         {
             let name = {
                 hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
+                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
         } 
@@ -5038,6 +5016,7 @@ export function traitSkin(type,trait){
         {
             let desc = {
                 hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+                promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
@@ -5048,67 +5027,89 @@ export const biomes = {
     grassland: {
         label: loc('biome_grassland_name'),
         desc: loc('biome_grassland'),
-        vars(){ return [1.2]; }, // [Agriculture]
+        vars(){
+            return global.race['rejuvenated'] ? [1.25] : [1.2];
+        }, // [Agriculture]
         wiki: ['%']
     },
     oceanic: {
         label: loc('biome_oceanic_name'),
         desc: loc('biome_oceanic'),
-        vars(){ return [1.12,1.06,0.95]; }, // [Iron Titanium,  cSteel Titanium, Hunting Fur]
+        vars(){
+            return global.race['rejuvenated'] ? [1.25,1.12,0.92] : [1.12,1.06,0.95];
+        }, // [Iron Titanium, cSteel Titanium, Hunting Fur]
         wiki: ['%','%','%']
     },
     forest: {
         label: loc('biome_forest_name'),
         desc: loc('biome_forest'),
-        vars(){ return [1.2]; }, // [Lumberjack Lumber]
+        vars(){
+            return global.race['rejuvenated'] ? [1.35] : [1.2];
+        }, // [Lumberjack Lumber]
         wiki: ['%']
     },
     desert: {
         label: loc('biome_desert_name'),
         desc: loc('biome_desert'),
-        vars(){ return [1.2,1.1,0.75]; }, // [Quarry Worker, Oil Well, Lumberjack]
+        vars(){
+            return global.race['rejuvenated'] ? [1.35,1.18,0.6] : [1.2,1.1,0.75];
+        }, // [Quarry Worker, Oil Well, Lumberjack]
         wiki: ['%','%','%']
     },
     volcanic: {
         label: loc('biome_volcanic_name'),
         desc: loc('biome_volcanic'),
-        vars(){ return [0.9,1.12,1.08]; }, // [Agriculture, Copper, Iron]
+        vars(){
+            return global.race['rejuvenated'] ? [0.8,1.25,1.15] : [0.9,1.12,1.08];
+        }, // [Agriculture, Copper, Iron]
         wiki: ['%','%','%']
     },
     tundra: {
         label: loc('biome_tundra_name'),
         desc: loc('biome_tundra'),
-        vars(){ return [1.25,0.9]; }, // [Hunting Fur, Oil Well]
+        vars(){
+            return global.race['rejuvenated'] ? [1.5,0.8] : [1.25,0.9];
+        }, // [Hunting Fur, Oil Well]
         wiki: ['%','%']
     },
     savanna: {
         label: loc('biome_savanna_name'),
         desc: loc('biome_savanna'),
-        vars(){ return [1.1, 1.18, 0.8]; }, // [Agriculture, Hunting, Lumberjack]
+        vars(){
+            return global.race['rejuvenated'] ? [1.18, 1.25, 0.75] : [1.1, 1.18, 0.8];
+        }, // [Agriculture, Hunting, Lumberjack]
         wiki: ['%','%','%']
     },
     swamp: {
         label: loc('biome_swamp_name'),
         desc: loc('biome_swamp'),
-        vars(){ return [1.4,1.25,1.1,0.88]; }, // [City Defense, War Loot, Lumber, Stone]
+        vars(){
+            return global.race['rejuvenated'] ? [1.6,1.35,1.15,0.78] : [1.4,1.25,1.1,0.88];
+        }, // [City Defense, War Loot, Lumber, Stone]
         wiki: ['%','%','%','%']
     },
     ashland: {
         label: loc('biome_ashland_name'),
         desc: loc('biome_ashland'),
-        vars(){ return [0.62,1.25,1.1]; }, // [Agriculture, Ashcrete, Iron & Copper]
+        vars(){
+            return global.race['rejuvenated'] ? [0.55,1.35,1.2] : [0.62,1.25,1.1];
+        }, // [Agriculture, Ashcrete, Iron & Copper]
         wiki: ['%','%','%']
     },
     taiga: {
         label: loc('biome_taiga_name'),
         desc: loc('biome_taiga'),
-        vars(){ return [1.1,1.5,0.92]; }, // [Lumber, Pop Growth Speed, Oil Well]
+        vars(){
+            return global.race['rejuvenated'] ? [1.2,1.65,0.88] : [1.1,1.5,0.92];
+        }, // [Lumber, Pop Growth Speed, Oil Well]
         wiki: ['%','%','%']
     },
     hellscape: {
         label: loc('biome_hellscape_name'),
         desc: loc('biome_hellscape'),
-        vars(){ return [0.25]; }, // [Agriculture]
+        vars(){
+            return global.race['rejuvenated'] ? [0.2] : [0.25];
+        }, // [Agriculture]
         wiki: ['%']
     },
     eden: {
@@ -5121,19 +5122,25 @@ export const planetTraits = {
     toxic: {
         label: loc('planet_toxic'),
         desc: loc('planet_toxic_desc'),
-        vars(){ return [1,1.25]; }, // [Mutation Bonus, Birth Rate]
+        vars(){
+            return global.race['rejuvenated'] ? [2,1.5] : [1,1.25];
+        }, // [Mutation Bonus, Birth Rate]
         wiki: ['A','-%']
     },
     mellow: {
         label: loc('planet_mellow'),
         desc: loc('planet_mellow_desc'),
-        vars(){ return [1.5,2,0.9]; }, // [Mutation Bonus, Production]
+        vars(){
+            return global.race['rejuvenated'] ? [2,3,0.88] : [1.5,2,0.9];
+        }, // [Unemployed and Soldier Stress Divisor, Job Stress Reduction, Production]
         wiki: ['%','A','%']
     },
     rage: {
         label: loc('planet_rage'),
         desc: loc('planet_rage_desc'),
-        vars(){ return [1.05,1.02,1]; }, // [Combat, Hunting, Death]
+        vars(){
+            return global.race['rejuvenated'] ? [1.1,1.05,1] : [1.05,1.02,1];
+        }, // [Combat, Hunting, Death]
         wiki: ['%','%','A']
     },
     stormy: {
@@ -5142,19 +5149,27 @@ export const planetTraits = {
     },
     ozone: {
         label: loc('planet_ozone'),
-        desc: loc('planet_ozone_desc')
+        desc: loc('planet_ozone_desc'),
+        vars(){
+            return global.race['rejuvenated'] ? [0.18] : [0.25];
+        }, // [Ozone Penalty]
+        wiki: ['%']
     },
     magnetic: {
         label: loc('planet_magnetic'),
         desc: loc('planet_magnetic_desc'),
-        vars(){ return [1,100,0.985]; }, // [Sundial, Wardenclyffe]
+        vars(){
+            return global.race['rejuvenated'] ? [2,150,0.98] : [1,100,0.985];
+        }, // [Sundial, Wardenclyffe, Miner]
         wiki: ['A','A','%']
     },
     trashed: {
         label: loc('planet_trashed'),
         desc: loc('planet_trashed_desc'),
-        vars(){ return [0.75]; }, // [Agriculture]
-        wiki: ['%']
+        vars(){
+            return global.race['rejuvenated'] ? [0.8,1.2] : [0.75,1];
+        }, // [Agriculture, Scavenger Bonus]
+        wiki: ['%','%']
     },
     elliptical: {
         label: loc('planet_elliptical'),
@@ -5167,7 +5182,9 @@ export const planetTraits = {
     dense: {
         label: loc('planet_dense'),
         desc: loc('planet_dense_desc'),
-        vars(){ return [1.2,1,1.2]; }, // [Mining Production, Miner Stress, Solar Fuel Cost]
+        vars(){
+            return global.race['rejuvenated'] ? [1.5,1.2,1.35] : [1.2,1,1.2];
+        }, // [Mining Production, Miner Stress, Solar Fuel Cost]
         wiki: ['%','A','%']
     },
     unstable: {
@@ -5177,8 +5194,14 @@ export const planetTraits = {
     permafrost: {
         label: loc('planet_permafrost'),
         desc: loc('planet_permafrost_desc'),
-        vars(){ return [0.75,100]; }, // [Mining Production, University Base]
+        vars(){
+            return global.race['rejuvenated'] ? [0.7,125] : [0.75,100];
+        }, // [Mining Production, University Base]
         wiki: ['%','A']
+    },
+    retrograde: {
+        label: loc('planet_retrograde'),
+        desc: loc('planet_retrograde_desc')
     },
 };
 

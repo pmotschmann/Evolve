@@ -6,7 +6,7 @@ import { prestigeCalc } from './p_res.js';
 export function resetsPage(content){
     let mainContent = sideMenu('create',content);
 
-    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion'];
+    let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion','ai','terraform'];
     let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(mainContent,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
@@ -89,6 +89,27 @@ export function resetsPage(content){
     prestigeCalc(section,'dark',false,'bigbang');
     sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'));
 
+    section = infoBoxBuilder(mainContent,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
+        para_data: {
+            4: [80],
+            6: [loc('arpa_syphon_damage')],
+            7: [80],
+            8: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark')],
+            9: [loc('wiki_p_res_dark')],
+            10: [loc('wiki_resets_vacuum')],
+        },
+        data_color: {
+            6: ['danger'],
+            8: ['danger','danger','danger'],
+            9: ['danger'],
+        }
+    });
+    section = createCalcSection(section,'vacuum','gain');
+    prestigeCalc(section,'plasmid',false,'vacuum');
+    prestigeCalc(section,'phage',false,'vacuum');
+    prestigeCalc(section,'dark','vacuum','vacuum');
+    sideMenu('add',`resets-prestige`,'vacuum',loc('wiki_resets_vacuum'));
+
     section = infoBoxBuilder(mainContent,{ name: 'ascension', template: 'resets', paragraphs: 10, break: [3,5,7,10], h_level: 2,
         para_data: {
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
@@ -125,26 +146,26 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'cataclysm');
     sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'));
 
-    section = infoBoxBuilder(mainContent,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 19, break: [3,6,7,10,12,19], h_level: 2,
         para_data: {
-            4: [80],
-            6: [loc('arpa_syphon_damage')],
-            7: [80],
-            8: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_dark')],
-            9: [loc('wiki_p_res_dark')],
-            10: [loc('wiki_resets_vacuum')],
-        },
-        data_color: {
-            6: ['danger'],
-            8: ['danger','danger','danger'],
-            9: ['danger'],
+            1: [loc('wiki_resets_terraform'),loc(`evo_challenge_orbit_decay`)],
+            2: [loc('wiki_resets_ascension')],
+            3: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
+            7: [loc('achieve_lamentis_name')],
+            8: [1],
+            10: [loc('rejuvenated')],
+            13: ['10%'],
+            14: ['5%'],
+            16: ['2%','50%'],
+            17: ['50%'],
+            19: [loc('wiki_resets_terraform')],
         }
     });
-    section = createCalcSection(section,'vacuum','gain');
-    prestigeCalc(section,'plasmid',false,'vacuum');
-    prestigeCalc(section,'phage',false,'vacuum');
-    prestigeCalc(section,'dark','vacuum','vacuum');
-    sideMenu('add',`resets-prestige`,'vacuum',loc('wiki_resets_vacuum'));
+    section = createCalcSection(section,'terraform','gain');
+    prestigeCalc(section,'plasmid',false,'terraform');
+    prestigeCalc(section,'phage',false,'terraform');
+    prestigeCalc(section,'harmony',false,'terraform');
+    sideMenu('add',`resets-prestige`,'terraform',loc('wiki_resets_terraform'));
 
     section = infoBoxBuilder(mainContent,{ name: 'infusion', template: 'resets', paragraphs: 8, break: [4,8], h_level: 2,
         para_data: {

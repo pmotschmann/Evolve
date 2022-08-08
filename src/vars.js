@@ -977,13 +977,26 @@ if (convertVersion(global['version']) < 102012){
     }
 }
 
+if (convertVersion(global['version']) < 102015){
+    if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks')){
+        for (let task in global.race.governor.tasks) {
+            if (global.race.governor.tasks[task] === 'asssemble'){
+                global.race.governor.tasks[task] = 'assemble';
+            }
+        }
+    }
+    if (global['settings'] && global.settings.hasOwnProperty('restoreCheck')){
+        delete global.settings['restoreCheck'];
+    }
+}
+
 if (convertVersion(global['version']) < 103000){
     if (!global.hasOwnProperty('tauceti')){
         global['tauceti'] = {};
     }
 }
 
-global['version'] = '1.2.14';
+global['version'] = '1.2.16';
 global['revision'] = 'a';
 delete global['beta'];
 
@@ -1045,10 +1058,6 @@ if (!global['settings']){
         locale: 'en-US',
         icon: 'star'
     };
-}
-
-if (!global.settings['restoreCheck']){
-    global.settings['restoreCheck'] = false;
 }
 
 if (!global.settings.hasOwnProperty('showMechLab')){
@@ -1474,8 +1483,14 @@ if (!global.stats['ascend']){
 if (!global.stats['descend']){
     global.stats['descend'] = 0;
 }
+if (!global.stats['terraform']){
+    global.stats['terraform'] = 0;
+}
 if (!global.stats['aiappoc']){
     global.stats['aiappoc'] = 0;
+}
+if (!global.stats['geck']){
+    global.stats['geck'] = 0;
 }
 if (!global.stats['dark']){
     global.stats['dark'] = 0;
@@ -1601,6 +1616,13 @@ if (!global.civic['govern']){
     };
 }
 global.civic.govern.fr = 0;
+
+if (!global.hasOwnProperty('custom')){
+    global['custom'] = {};
+}
+if (global.custom.hasOwnProperty('planet') && global.custom.planet.hasOwnProperty('biome')){
+    delete global.custom.planet;
+}
 
 if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty('cap')){
     global.city.smelter['cap'] = 0;
@@ -2085,6 +2107,11 @@ window.soft_reset = function reset(){
     clearSavedMessages();
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let gecks = global.race.hasOwnProperty('geck') ? global.race.geck : 0;
+    if (global.race.hasOwnProperty('gecked')){
+        gecks += global.race.gecked;
+        global.stats.geck -= global.race.gecked;
+    }
     let replace = {
         species : 'protoplasm',
         Plasmid: { count: global.race.Plasmid.count },
@@ -2098,6 +2125,10 @@ window.soft_reset = function reset(){
         probes: global.race.probes,
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+        rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.ascended : false,
+    }
+    if (gecks > 0){
+        replace['geck'] = gecks;
     }
     if (srace){
         replace['srace'] = srace;

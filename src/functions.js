@@ -56,10 +56,8 @@ export function popover(id,content,opts){
             if (opts.hasOwnProperty('in') && typeof opts['in'] === 'function'){
                 opts['in']({ this: this, popper: popper, id: `popper` });
             }
-            if (eventActive('firework') && (
-                (!global.race['cataclysm'] && global.city.firework.on > 0) ||
-                (global.race['cataclysm'] && global.space.firework.on > 0)
-                )){
+
+            if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
                 $(popper).append(`<span class="pyro"><span class="before"></span><span class="after"></span></span>`);
             }
         });
@@ -184,7 +182,7 @@ function calcATime(){
 
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
-        return 'Export is not available during Race Creation';
+        return `Export is not available during ${global.race['noexport']} Creation`;
     }
     calcATime();
     global.stats['current'] = Date.now();
@@ -237,7 +235,8 @@ export function powerGrid(type,reset){
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
-                'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay'
+                'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
+                'spc_red:atmo_terraformer'
             ];
             break;
         case 'moon':
@@ -1314,6 +1313,7 @@ export function calcPrestige(type,inputs){
             plasmid_cap = 800;
             break;
         case 'ascend':
+        case 'terraform':
             pop_divisor = 1.15;
             k_inc = 30000;
             k_mult = 1.008;
@@ -1377,7 +1377,7 @@ export function calcPrestige(type,inputs){
     }
 
 
-    if (type === 'ascend' || type === 'descend'){
+    if (['ascend','descend','terraform'].includes(type)){
         let harmony = 1;
         if (challenge === undefined){
             harmony = alevel();
@@ -1389,7 +1389,7 @@ export function calcPrestige(type,inputs){
             harmony = challenge + 1;
         }
 
-        if (type === 'ascend'){
+        if (type === 'ascend' || type === 'terraform'){
             switch (universe){
                 case 'micro':
                     harmony *= 0.25;
@@ -2186,8 +2186,8 @@ export function eventActive(event,val){
         case 'firework':
             {
                 const date = new Date();
-                if (!global.settings.boring && date.getMonth() === 6 && [4,5,6,7,8].includes(date.getDate()) ){
-                    let region = global.race['cataclysm'] ? 'space' : 'city';
+                if (!global.settings.boring && date.getMonth() === 6 && [1,2,3,4].includes(date.getDate()) ){
+                    let region = global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city';
                     if (!global[region].hasOwnProperty('firework')){
                         global[region]['firework'] = {
                             count: 0,
@@ -2388,6 +2388,7 @@ const valAdjust = {
     hivemind: true,
     imitation: true,
     elusive: true,
+    chameleon: true,
     blood_thirst: true,
     selenophobia: true,
     hooved: true,
@@ -2407,6 +2408,9 @@ function getTraitVals(trait,rank){
         }
         else if (trait === 'elusive') {
             vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
+        }
+        else if (trait === 'chameleon') {
+            vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
         }
         else if (trait === 'blood_thirst') {
             vals = [Math.ceil(Math.log2(vals[0]))];

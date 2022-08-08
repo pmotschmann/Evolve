@@ -1053,7 +1053,16 @@ function loadPylon(parent,bind){
     let spellTypes = $('<div class="pylon wrap"></div>');
     parent.append(spellTypes);
 
-    let ritualList = global.race['cataclysm'] ? ['science','factory','army','hunting','crafting'] : ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    let ritualList = [];
+    if (global.race['orbit_decayed']){
+        ritualList = ['miner','science','factory','army','hunting','crafting'];
+    }
+    else if (global.race['cataclysm']){
+        ritualList = ['science','factory','army','hunting','crafting'];
+    }
+    else {
+        ritualList = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    }
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ritualList.forEach(function (spell){
@@ -1242,13 +1251,13 @@ export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
         case 'city':
-            isOk = global.race['cataclysm'] ? false : checkCityRequirements(p1);
+            isOk = global.race['cataclysm'] || global.race['orbit_decayed'] ? false : checkCityRequirements(p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
             break;
         default:
-            isOk = checkSpaceRequirements(region,p0,p1);
+            isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
     }
     return global[region][p1] && isOk && checkPowerRequirements(c_action) ? true : false;

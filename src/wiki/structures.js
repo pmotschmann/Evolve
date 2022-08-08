@@ -36,7 +36,15 @@ const extraInformation = {
     planetary: {
         slaughter: [loc(`wiki_structure_planetary_slaughter`)],
     },
-    space: {},
+    space: {
+        terraformer: [loc(`wiki_structure_space_terraformer`)],
+        terraform: [loc(`wiki_structure_space_terraformer`)],
+    },
+    starDock: {
+        geck: [
+            loc(`wiki_structure_stardock_geck`),
+        ]
+    },
     interstellar: {},
     intergalactic: {},
     hell: {},
@@ -75,6 +83,7 @@ const calcInfo = {
         },
         space: {
             star_dock: 1,
+            terraformer: 100,
             world_collider: 1859,
             shipyard: 1,
             mass_relay: 100,
@@ -175,6 +184,10 @@ function addCalcInputs(parent,key,section,region,path){
         case 'space':
             action = actions.space[region][key];
             inputs.real_owned = global.space[key] ? global.space[key].count : 0;
+            break;
+        case 'starDock':
+            action = actions.starDock[key];
+            inputs.real_owned = global.starDock[key] ? global.starDock[key].count : 0;
             break;
         case 'interstellar':
             action = actions.interstellar[region][key];
@@ -364,6 +377,7 @@ function planetaryPage(content,path){
 
 function spacePage(content,path){
     let affix = path === 'truepath' ? 'tp_structures' : 'structures';
+
     Object.keys(actions.space).forEach(function (region){        
         let name = typeof actions.space[region].info.name === 'string' ? actions.space[region].info.name : actions.space[region].info.name();
         let desc = typeof actions.space[region].info.desc === 'string' ? actions.space[region].info.desc : actions.space[region].info.desc();
@@ -382,6 +396,21 @@ function spacePage(content,path){
                 popover(`pop${actions.space[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
+    });
+
+    Object.keys(actions.starDock).forEach(function (struct){
+        if (struct !== 'info' && 
+            (!actions.starDock[struct].hasOwnProperty('wiki') || actions.starDock[struct].wiki) && 
+            (!actions.starDock[struct].hasOwnProperty('path') || actions.starDock[struct].path.includes(path)) ){
+            let id = actions.starDock[struct].id.split('-');
+            let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+            content.append(info);
+            actionDesc(info, actions.starDock[struct],`<span id="pop${actions.starDock[struct].id}">${loc('space_gas_star_dock_title')}</span>`, true);
+            addInfomration(info,'starDock',struct);
+            addCalcInputs(info,struct,'starDock',false,path);
+            sideMenu('add',`space-${affix}`,id[1],typeof actions.starDock[struct].title === 'function' ? actions.starDock[struct].title() : actions.starDock[struct].title);
+            popover(`pop${actions.starDock[struct].id}`,$(`<div>${loc(`space_gas_star_dock_wiki`)}</div>`));
+        }
     });
 }
 

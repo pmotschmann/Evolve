@@ -21,7 +21,7 @@ const achieve_list = {
         'laser_shark','infested','mass_starvation','colonist','world_domination','illuminati',
         'syndicate','cult_of_personality','doomed','pandemonium','blood_war','landfill','seeder',
         'miners_dream','shaken','blacken_the_sun','trade','resonance','enlightenment','gladiator',
-        'corrupted'
+        'corrupted','red_dead'
     ],
     species: [
         'mass_extinction','extinct_human','extinct_elven','extinct_orc','extinct_cath','extinct_wolven','extinct_vulpine','extinct_centaur',
@@ -42,13 +42,13 @@ const achieve_list = {
         'explorer','biome_grassland','biome_oceanic','biome_forest','biome_desert','biome_volcanic','biome_tundra',
         'biome_savanna','biome_swamp','biome_ashland','biome_taiga','biome_hellscape','biome_eden',
         'atmo_toxic','atmo_mellow','atmo_rage','atmo_stormy','atmo_ozone','atmo_magnetic','atmo_trashed','atmo_elliptical','atmo_flare','atmo_dense',
-        'atmo_unstable','atmo_permafrost'
+        'atmo_unstable','atmo_permafrost','atmo_retrograde'
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross'],
+    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross','lamentis'],
 };
 
 const flairData = {
@@ -569,10 +569,7 @@ export function checkAchievements(){
         }
     }
 
-    if (eventActive('firework') && ( 
-        (!global.race['cataclysm'] && global.city.firework.on > 0) || 
-        (global.race['cataclysm'] && global.space.firework.on > 0) 
-        )){
+    if (eventActive('firework') && global[global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space' : 'city'].firework.on > 0){
         unlockFeat('firework',global.race.universe === 'micro' ? true : false);
     }
 
@@ -1507,6 +1504,55 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_failed_history_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_failed_history`,[`<span class="has-text-caution">${loc(`evo_challenge_cataclysm`)}</span>`])
+        ]
+    },
+    lamentis: {
+        name: loc(`achieve_lamentis_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis1",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis2",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis3",[`10%`]);
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis4");
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_lamentis5");
+                },
+                active(){
+                    return global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 ? true : false;
+                }
+            },
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`])
         ]
     },
     gladiator: {
@@ -2459,6 +2505,12 @@ export function drawStats(){
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
     }
+    if (global.stats.terraform > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ s.terraform | format }}</div>`);
+    }
+    if (global.stats.geck > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_gecks")}</span> {{ s.geck | format }}</div>`);
+    }
 
     // Current Run Stats
     stats.append(`<div class="cstat"><span class="has-text-success">${loc("achieve_stats_current_game")}</span></div>`);
@@ -2480,7 +2532,7 @@ export function drawStats(){
     let hallowed = getHalloween();
     if (hallowed.active){
         let trick = '';
-        if (global.stats.cfood >= 13 || global.race['cataclysm']){
+        if (global.stats.cfood >= 13 || global.race['cataclysm'] || global.race['orbit_decayed']){
             trick = `<span>${trickOrTreat(7,12,true)}</span>`;
         }
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_trickortreat")}</span> {{ s.cfood | format }} ${trick}</div>`);

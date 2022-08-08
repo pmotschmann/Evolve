@@ -1,10 +1,10 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, removeFromQueue, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, setImitation, traitSkin } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
-import { govActive } from './governor.js';
+import { govActive, defineGovernor } from './governor.js';
 import { unlockFeat } from './achieve.js';
 import { loc } from './locale.js';
 
@@ -46,14 +46,14 @@ export const arpaProjects = {
             let sc = global.tech['tp_particles'] || (global.tech['particles'] && global.tech['particles'] >= 3) ? (global.race['cataclysm'] ? 20 : 8) : (global.race['cataclysm'] ? 10 : 4);
             if (global.tech['storage'] >= 6){
                 if (global.tech['particles'] && global.tech['particles'] >= 4){
-                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,wardenLabel()]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm3',[sc]) : loc('arpa_projects_lhc_effect3',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
                 }
                 else {
-                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm2',[sc]) : loc('arpa_projects_lhc_effect2',[sc,wardenLabel()]);
+                    return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm2',[sc]) : loc('arpa_projects_lhc_effect2',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,wardenLabel()]);
+                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
             }
         },
         cost: {
@@ -117,7 +117,7 @@ export const arpaProjects = {
         },
         grant: 'launch_facility',
         rank: 1,
-        no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+        queue_complete(){ return global.tech.space >= 1 ? 0 : 1; },
         effect(){
             return loc('arpa_projects_launch_facility_effect1');
         },
@@ -178,7 +178,7 @@ export const arpaProjects = {
             }
             let routes = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 2 ? 1 : 0;
             let profit = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 3 : 2;
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 routes += global.space['gps'] ? Math.floor(global.space.gps.count / 3) : 0;
                 return loc('arpa_projects_railway_cataclysm1',[routes,profit,3,1]);
             }
@@ -758,6 +758,33 @@ export const genePool = {
                 return true;
             }
             return false;
+        }
+    },
+    civil_service: {
+        id: 'genes-civil_service',
+        title: loc('arpa_genepool_civil_service_title'),
+        desc: loc('arpa_genepool_civil_service_desc'),
+        reqs: { governor: 1 },
+        grant: ['governor',2],
+        cost: {
+            Plasmid(){ return 1000; },
+            Harmony(){ return 1; }
+        },
+        action(){
+            if (payCrispr('civil_service')){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks')){
+                for (let i=0; i<6; i++){
+                    if (!global.race.governor.tasks.hasOwnProperty(`t${i}`)){
+                        global.race.governor.tasks[`t${i}`] = 'none';
+                    }
+                }
+            }
+            defineGovernor();
         }
     },
     hardened_genes: {
@@ -1915,7 +1942,7 @@ function genetics(){
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_remove',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            return loc('arpa_remove',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
         };
 
         let addCost = function(t){
@@ -1926,19 +1953,19 @@ function genetics(){
             if (cost < 0){
                 cost *= -1;
             }
-            return loc('arpa_gain',[loc('trait_' + t + '_name'),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
+            return loc('arpa_gain',[traitSkin('name',t),cost,global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name')]);
         };
 
         let mGeneCost = function(t){
             let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
             if (t === 'mastery'){ cost *= 5; }
-            return loc('arpa_gene_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost),global.resource.Genes.name]);
+            return loc('arpa_gene_buy',[traitSkin('name',t),sizeApproximation(cost),global.resource.Genes.name]);
         };
 
         let mPhageCost = function(t){
             let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
             if (t === 'mastery'){ cost *= 2; }
-            return loc('arpa_phage_buy',[loc('trait_' + t + '_name'),sizeApproximation(cost),loc(`resource_Phage_name`)]);
+            return loc('arpa_phage_buy',[traitSkin('name',t),sizeApproximation(cost),loc(`resource_Phage_name`)]);
         };
 
         vBind({
@@ -2076,9 +2103,6 @@ function genetics(){
                         else {
                             global.race['modified']++;
                         }
-                        if (t === 'imitation'){
-                            setImitation(true);
-                        }
                         cleanAddTrait(t);
                         genetics();
                         drawTech();
@@ -2134,10 +2158,10 @@ function genetics(){
 
             popover(`popGenetrait${t}`, function(){
                 if (global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0){
-                    return `<div>${traits[t].desc}</div><div>${loc(`trait_${t}_effect`)}</div>`;
+                    return `<div>${traitSkin('desc',t)}</div><div>${loc(`trait_${t}_effect`)}</div>`;
                 }
                 else {
-                    return traits[t].desc;
+                    return traitSkin('desc',t);
                 }
             },
             {
@@ -2197,7 +2221,7 @@ function bindTrait(breakdown,trait){
     }
 
     let total = global.race[trait] > 1 ? `(${global.race[trait]}) ` : '';
-    m_trait.append(`<span class="has-text-warning name">${total}${traits[trait].name}</span>`);
+    m_trait.append(`<span class="has-text-warning name">${total}${traitSkin('name',trait)}</span>`);
 
     breakdown.append(m_trait);
 }
@@ -2262,27 +2286,27 @@ function addProject(parent,project){
             data: global.arpa[project],
             methods: {
                 queue(pro){
-                    let keyMult = keyMultiplier();
                     if (global.tech['queue']){
+                        let keyMult = keyMultiplier();
                         for (let i=0; i<keyMult; i++){
-                            if (!(arpaProjects[pro]['no_queue'] && arpaProjects[pro].no_queue())) {
-                                let arpaId = `arpa${pro}`;
-                                let used = 0;
-                                for (var j=0; j<global.queue.queue.length; j++){
-                                    used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                            let arpaId = `arpa${pro}`;
+                            let used = 0;
+                            let buid_max = arpaProjects[pro]['queue_complete'] ? arpaProjects[pro].queue_complete() : Number.MAX_SAFE_INTEGER;
+                            for (var j=0; j<global.queue.queue.length; j++){
+                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                if (global.queue.queue[j].id === arpaId) {
+                                    buid_max -= global.queue.queue[j].q;
                                 }
-                                if (used < global.queue.max){
-                                    if (global.settings.q_merge !== 'merge_never' && global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
-                                        global.queue.queue[global.queue.queue.length-1].q++;
-                                    }
-                                    else {
-                                        global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title(), cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
-                                    }
-                                    buildQueue();
+                            }
+                            if (used < global.queue.max && buid_max > 0){
+                                if (global.settings.q_merge !== 'merge_never' && global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === arpaId){
+                                    global.queue.queue[global.queue.queue.length-1].q++;
                                 }
                                 else {
-                                    break;
+                                    let title = typeof arpaProjects[pro].title === 'string' ? arpaProjects[pro].title : arpaProjects[pro].title();
+                                    global.queue.queue.push({ id: arpaId, action: 'arpa', type: pro, label: title, cna: false, time: 0, q: 1, qs: 1, t_max: 0 });
                                 }
+                                buildQueue();
                             }
                             else {
                                 break;
@@ -2377,13 +2401,13 @@ export function buildArpa(pro,num,update){
                     updateQueueNames(false, ['arparoid_eject']);
                 }
                 if (pro === 'launch_facility'){
-                    removeFromQueue(['arpalaunch_facility']);
                     global.settings.showSpace = true;
                     global.tech['space'] = 1;
                     clearPopper('popArpalaunch_facility');
                     [1,10,25,100].forEach(function(amount){
                         clearPopper(`popArpalaunch_facility${amount}`);
                     });
+                    removeFromQueue(['arpalaunch_facility']);
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);
@@ -2397,10 +2421,12 @@ export function buildArpa(pro,num,update){
     }
     if (update){
         let amounts = [1,10,25,100];
+        let popper = $('#popper');
+        let pid = popper.data('id');
         for (let i=0; i<amounts.length; i++){
-            if ($('#popper').data('id') === `popArpa${pro}${amounts[i]}`){
-                clearElement($(`#popper`));
-                $(`#popper`).append(arpaProjectCosts(amounts[i],pro));
+            if (pid === `popArpa${pro}${amounts[i]}`){
+                clearElement(popper);
+                popper.append(arpaProjectCosts(amounts[i],pro));
                 break;
             }
         }

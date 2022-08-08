@@ -140,6 +140,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'bioseed':
         case 'cataclysm':
         case 'vacuum':
+        case 'terraform':
             title += loc('wiki_resets_' + resetType) + " ";
             break;
         case 'bigbang':
@@ -233,6 +234,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
         cataclysm: { use: true },
         bigbang: { use: true },
         vacuum: { use: true },
+        terraform: { use: true },
         ascend: { use: true },
         descend: { use: false },
         ai: { use: true }

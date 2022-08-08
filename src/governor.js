@@ -262,7 +262,11 @@ function genGovernor(setSize){
 export function govern(){
     if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
         let cnt = [0,1,2];
-        if (govActive('organizer',0)){ cnt.push(3); }
+        if (global.genes.governor >= 2){
+            cnt.push(cnt.length);
+            if (govActive('organizer',0)){ cnt.push(cnt.length); }
+        }
+        if (govActive('organizer',0)){ cnt.push(cnt.length); }
         cnt.forEach(function(n){
             if (gov_tasks[global.race.governor.tasks[`t${n}`]] && gov_tasks[global.race.governor.tasks[`t${n}`]].req()){
                 gov_tasks[global.race.governor.tasks[`t${n}`]].task();
@@ -325,7 +329,11 @@ export function drawnGovernOffice(){
     govHeader.append($(`<div class="fire"><b-button v-on:click="fire" v-html="fireText()">${loc(`governor_fire`)}</b-button></div>`));
 
     let cnt = [0,1,2];
-    if (govActive('organizer',0)){ cnt.push(3); }
+    if (global.genes['governor'] && global.genes.governor >= 2){
+        cnt.push(cnt.length);
+        if (govActive('organizer',0)){ cnt.push(cnt.length); }
+    }
+    if (govActive('organizer',0)){ cnt.push(cnt.length); }
     cnt.forEach(function(num){
         let options = `<b-dropdown-item v-on:click="setTask('none',${num})">{{ 'none' | label }}</b-dropdown-item>`;
         Object.keys(gov_tasks).forEach(function(task){
@@ -613,7 +621,7 @@ function appointGovernor(){
                     global.race.governor['g'] = gov;
                     delete global.race.governor.candidates;
                     global.race.governor['tasks'] = {
-                        t0: 'none', t1: 'none', t2: 'none', t3: 'none'
+                        t0: 'none', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none'
                     };
                     updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
                     calcQueueMax();
@@ -646,6 +654,16 @@ export function govActive(trait,val){
         return gmen[global.race.governor.g.bg].traits[trait] ? gov_traits[trait].vars()[val] : false;
     }
     return false;
+}
+
+export function removeTask(task){
+    if (global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+        for (let i=0; i<global.race.governor.tasks.length; i++){
+            if (global.race.governor.tasks[`t${i}`] === task){
+                global.race.governor.tasks[`t${i}`] = 'none';
+            }
+        }
+    }
 }
 
 export const gov_tasks = {
@@ -849,8 +867,8 @@ export const gov_tasks = {
             }
         }
     },
-    asssemble: { // Asssemble Citizens
-        name: loc(`gov_task_asssemble`),
+    assemble: { // Assemble Citizens
+        name: loc(`gov_task_assemble`),
         req(){
             return global.race['artifical'] ? true : false;
         },
@@ -943,7 +961,7 @@ export const gov_tasks = {
     slave: { // Replace Slaves
         name: loc(`gov_task_slave`),
         req(){
-            return checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
+            return !global.race['orbit_decayed'] && checkCityRequirements('slave_market') && global.race['slaver'] && global.city['slave_pen'] ? true : false;
         },
         task(){
             let cashCap = global.resource.Money.max * (global.race.governor.config.slave.reserve / 100);

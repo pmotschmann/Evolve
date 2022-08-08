@@ -6,7 +6,7 @@ import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
-import { jobScale } from './jobs';
+import { jobScale } from './jobs.js';
 import { warhead } from './resets.js';
 
 // Sets up government in civics tab
@@ -74,7 +74,7 @@ export function defineIndustry(){
     }
     clearElement($('#industry'));
 
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'])){
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
@@ -99,7 +99,7 @@ export function defineIndustry(){
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
     }
-    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm']){
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
         var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');
@@ -678,7 +678,7 @@ function trainSpy(i){
             global.resource.Money.amount -= cost;
             let time = 300;
             if (global.tech['spy'] >= 3 && global.city['boot_camp']){
-                time -= global.city['boot_camp'].count * 10;
+                time -= (global.race['orbit_decayed'] && global.space['space_barracks'] ? global.space.space_barracks.on : global.city['boot_camp'].count) * 10;
                 if (time < 10){
                     time = 10;
                 }
@@ -2011,6 +2011,9 @@ export function armyRating(val,type,wound){
         if (global.city.biome === 'savanna'){
             army *= biomes.savanna.vars()[1];
         }
+    }
+    if (global.race['rejuvenated']){
+        army *= 1.05;
     }
     if (global.civic.govern.type === 'autocracy'){
         army *= 1.35;

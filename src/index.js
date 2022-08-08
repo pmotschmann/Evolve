@@ -9,7 +9,7 @@ import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { races, shapeShift } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
-import { renderSpace, ascendLab } from './space.js';
+import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
@@ -107,29 +107,18 @@ export function mainVue(){
                 }
             },
             restoreGame(){
-                if (global.settings.restoreCheck){
-                    let restore_data = save.getItem('evolveBak') || false;
-                    this.$buefy.dialog.confirm({
-                        title: loc('restore'),
-                        message: loc('restore_warning'),
-                        ariaModal: true,
-                        confirmText: loc('restore'),
-                        onConfirm() {
-                            if (restore_data){
-                                importGame(restore_data,true);
-                            }
-                            else {
-                                global.settings.restoreCheck = false;
-                            }
-                        },
-                        onCancel(){
-                            global.settings.restoreCheck = false;
+                let restore_data = save.getItem('evolveBak') || false;
+                this.$buefy.dialog.confirm({
+                    title: loc('restore'),
+                    message: loc('restore_warning'),
+                    ariaModal: true,
+                    confirmText: loc('restore'),
+                    onConfirm() {
+                        if (restore_data){
+                            importGame(restore_data,true);
                         }
-                    });
-                }
-                else {
-                    global.settings.restoreCheck = true;
-                }
+                    }
+                });
             },
             lChange(locale){
                 global.settings.locale = locale;
@@ -419,8 +408,14 @@ export function loadTab(tab){
                     renderTauCeti();
                 }
                 if (global.race['noexport']){
-                    clearElement($(`#city`));
-                    ascendLab();
+                    if (global.race['noexport'] === 'Race'){
+                        clearElement($(`#city`));
+                        ascendLab();
+                    }
+                    else if (global.race['noexport'] === 'Planet'){
+                        clearElement($(`#city`));
+                        terraformLab();
+                    }
                 }
             }
             break;
@@ -866,6 +861,7 @@ export function index(){
         <h2 class="is-sr-only">Top Bar</h2>
         <span class="planetWrap"><span class="planet">{{ race.species | planet }}</span><span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span></span>
         <span class="calendar">
+            <span class="infoTimer" id="infoTimer"></span>
             <span v-show="city.calendar.day">
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
@@ -1265,6 +1261,7 @@ export function index(){
                 <b-dropdown-item v-on:click="setTheme('gruvboxLight')">{{ 'theme_gruvboxLight' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('gruvboxDark')">{{ 'theme_gruvboxDark' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setTheme('orangeSoda')">{{ 'theme_orangeSoda' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setTheme('dracula')">{{ 'theme_dracula' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
             <span>{{ 'units' | label }} </span>

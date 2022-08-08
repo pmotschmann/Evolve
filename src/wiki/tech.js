@@ -1420,7 +1420,7 @@ const extraInformation = {
         loc(`wiki_tech_job_unlock`,[loc(`job_crystal_miner`)])
     ],
     ley_lines: [
-        loc(`wiki_tech_building_unlock`,[global.race['cataclysm'] ? loc(`space_red_pylon`) : loc(`city_pylon`)])
+        loc(`wiki_tech_building_unlock`,[global.race['cataclysm'] || global.race['orbit_decayed'] ? loc(`space_red_pylon`) : loc(`city_pylon`)])
     ],
     rituals: [
         loc(`wiki_tech_rituals`)
@@ -1639,7 +1639,10 @@ const extraInformation = {
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
-    ]
+    ],
+    geck: [
+        loc(`wiki_tech_geck`)
+    ],
 };
 
 const extraInformationTP = {
@@ -3304,6 +3307,27 @@ const specialRequirements = {
                 }
             ]
         }
+    ],
+    terraforming: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'orbitdecay'
+                }
+            ]
+        }
+    ],
+    geck: [
+        {
+            category: 'achieve',
+            subreqs: [
+                {
+                    name: 'lamentis',
+                    val: 5
+                }
+            ]
+        }
     ]
 };
 
@@ -3543,6 +3567,11 @@ function addRequirements(parent,key,keyName,path){
                     case 'scenario':
                         subText = loc(`wiki_challenges_scenarios_${subreq.name}`);
                         link = `wiki.html#challenges-gameplay-scenarios_${subreq.name}`;
+                        color = global.race[subreq.name];
+                        break;
+                    case 'challenge':
+                        subText = loc(`wiki_challenges_modes_${subreq.name}`);
+                        link = `wiki.html#challenges-gameplay-modes_${subreq.name}`;
                         color = global.race[subreq.name];
                         break;
                     case 'unique':
