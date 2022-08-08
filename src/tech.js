@@ -9120,6 +9120,60 @@ const techs = {
                 else {
                     unlockAchieve('pandemonium');
                 }
+                global.portal.observe = {
+                    settings: {
+                        expanded: false,
+                        average: false,
+                        hyperSlow: false,
+                        display: 'game_days',
+                        dropKills: true,
+                        dropGems: true
+                    },
+                    stats: {
+                        total: {
+                            start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                            days: 0,
+                            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                            kills: {
+                                drones: 0,
+                                patrols: 0,
+                                sieges: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                turrets: 0
+                            },
+                            gems: {
+                                patrols: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                crafted: 0,
+                                turrets: 0
+                            },
+                        },
+                        period: {
+                            start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                            days: 0,
+                            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                            kills: {
+                                drones: 0,
+                                patrols: 0,
+                                sieges: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                turrets: 0
+                            },
+                            gems: {
+                                patrols: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                crafted: 0,
+                                turrets: 0
+                            },
+                        }
+                    },
+                    graphID: 0,
+                    graphs: {}
+                };
                 return true;
             }
             return false;

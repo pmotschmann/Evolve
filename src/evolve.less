@@ -1088,6 +1088,12 @@ Misc ---------> Main template
             border: @basic-button-border-hover solid .0625rem;
             background-color: @basic-button-border-hover-background;
         }
+        
+        .text-button:hover {
+            cursor: pointer;
+            color: @link-hover;
+            text-decoration: underline;
+        }
 
         // .label
         .label {
@@ -1205,7 +1211,9 @@ Misc ---------> Main template
         }
 
         // .msgQueue
-        .msgQueue{
+        // .graphContainer
+        .msgQueue,
+        .graphContainer {
             span.special {
                 .gear {
                     fill: @div-special-gear-fill;
@@ -1521,6 +1529,10 @@ Misc ---------> Main template
 
         .star5 {
             fill: @star-5-fill;
+        }
+        
+        .refresh svg {
+            fill: @has-text-advanced;
         }
 
         // -webkit-scrollbar
@@ -2757,6 +2769,7 @@ a {
             margin-top: .25rem;
         }
 
+        .observe,
         .merc {
             height: 1.25rem;
             margin-left: .25rem;
@@ -2907,6 +2920,122 @@ a {
         margin-left: 1rem;
     }
 
+    #hellTabs>section {
+        height: 100vh;
+    }
+    
+    .hellReports {
+        display: flex;
+        justify-content: space-between;
+        
+        > div {
+            height: ~"calc(100vh - 10rem)";
+        }
+
+        .reportList {
+            top: 0;
+            width: 25%;
+            box-sizing: border-box;
+            border-right: .0625rem solid;
+            margin-right: 1rem;
+        }
+
+        .reportDisplay {
+            width: 75%;
+            font-size: .9rem;
+
+            span:not(:last-child) {
+                margin-right: .5rem;
+            }
+            
+            p {
+                margin-bottom: 0;
+            }
+            
+            .reportStats {
+                padding-bottom: .5rem;
+                border-bottom: .0625rem solid;
+                margin-bottom: .5rem;
+                
+                h2 {
+                    margin-top: 0;
+                }
+                
+                h2:not(:last-child) {
+                    margin-right: 1rem;
+                }
+            }
+
+        }
+
+        .right {
+            margin-left: .5rem;
+            padding-left: .5rem;
+            border-left: .0625rem solid;
+        }
+    }
+    
+    .hellAnalysis {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        
+        .analysisColumn {
+            width: 50%;
+            margin: 0 10px;
+        }
+            
+        .analysisColumn:not(:last-child) {
+            border-right: .0625rem solid;
+        }
+        
+        h2:not(:first-child) {
+            margin: 0 0 0 1rem;
+        }
+    }
+    
+    #hellAnalysis {
+        height: ~"calc(100vh - 10rem)";
+        
+        > div:not(:last-child) {
+            margin-bottom: .5rem;
+            border-bottom: .0625rem solid;
+            padding-bottom: .5rem;
+        }
+    }
+    
+    .graphingArea {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        width: 100%;
+    }
+    
+    .graphContainer {
+        width: 45%;
+    }
+    
+    .graphControls {
+        div {
+            display: flex;
+            justify-content: space-between;
+            
+            h2 {
+                margin: 0;
+            }
+        }
+        
+        .graphTitle {
+            justify-content: center;
+        }
+    }
+    
+    .graph {
+        margin: 1%;
+        padding: 3%;
+        border: .0625rem solid;
+    }
+    
     .mechAssembly {
         padding-bottom: .5rem;
         margin-bottom: .5rem;
@@ -3344,6 +3473,11 @@ a {
     }
 }
 
+.graphCreator > div:not(:last-child) {
+    margin-bottom: .5rem;
+    border-bottom: .0625rem solid;
+    padding-bottom: .5rem;
+}
 
 .pylon {
     .current {
@@ -4540,4 +4674,15 @@ div.bigbang {
     position: absolute;
     bottom: 0;
     z-index: 100;
+}
+
+.refresh {
+    position: relative;
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: .5rem;
+    top: .2rem;
 }

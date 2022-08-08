@@ -10,7 +10,7 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commis
 import { races, shapeShift } from './races.js';
 import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
-import { renderFortress, buildFortress, drawMechLab, clearMechDrag } from './portal.js';
+import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
 import { drawShipYard, clearShipDrag } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
@@ -279,6 +279,7 @@ export function initTabs(){
         loadTab(`mTabResource`);
         loadTab(`mTabArpa`);
         loadTab(`mTabStats`);
+        loadTab(`mTabObserve`);
     }
     else {
         loadTab(global.settings.civTabs);
@@ -299,6 +300,7 @@ export function loadTab(tab){
         clearElement($(`#mTabResource`));
         clearElement($(`#mTabArpa`));
         clearElement($(`#mTabStats`));
+        clearElement($(`#mTabObserve`));
     }
     else {
         tagEvent('page_view',{ page_title: `Evolve - All Tabs` });
@@ -833,6 +835,13 @@ export function loadTab(tab){
                 tagEvent('page_view',{ page_title: `Evolve - Settings` });
             }
             break;
+        case 'mTabObserve':
+        default:
+            if (!global.settings.tabLoad){
+                tagEvent('page_view',{ page_title: `Evolve - Hell Observation` });
+            }
+            drawHellObservations(true);
+            break;
     }
     if ($(`#popper`).length > 0 && $(`#${$(`#popper`).data('id')}`).length === 0){
         clearPopper();
@@ -1102,7 +1111,7 @@ export function index(){
     mainColumn.append(content);
 
     content.append(`<h2 class="is-sr-only">Tab Navigation</h2>`);
-    let tabs = $(`<b-tabs v-model="s.civTabs" :animated="s.animated" @input="swapTab"></b-tabs>`);
+    let tabs = $(`<b-tabs id="mainTabs" v-model="s.civTabs" :animated="s.animated" @input="swapTab"></b-tabs>`);
     content.append(tabs);
 
     // Evolution Tab
@@ -1371,6 +1380,13 @@ export function index(){
     </b-tab-item>`);
 
     tabs.append(settings);
+
+    // (Hidden Last Tab) Hell Observation Tab
+    let observe = $(`<b-tab-item disabled>
+        <template slot="header"></template>
+        <div id="mTabObserve"></div>
+    </b-tab-item>`);
+    tabs.append(observe);
 
     // Right Column
     columns.append(`<div id="queueColumn" class="queueCol column"></div>`);
