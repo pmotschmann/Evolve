@@ -8,6 +8,7 @@ import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace } from './space.js';
+import { drawHellObservations } from './portal.js';
 import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
@@ -3562,7 +3563,7 @@ const techs = {
         cost: {
             Knowledge(){ return 36000; }
         },
-        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist.name]); },
+        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -3897,9 +3898,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.arpa.genetics = true;
-                if (global.race['cataclysm']){
-                    global.arpa.sequence.on = false;
-                }
                 return true;
             }
             return false;
@@ -9177,6 +9175,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawHellObservations();
         }
     },
     war_drones: {

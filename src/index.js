@@ -840,7 +840,9 @@ export function loadTab(tab){
             if (!global.settings.tabLoad){
                 tagEvent('page_view',{ page_title: `Evolve - Hell Observation` });
             }
-            drawHellObservations(true);
+            if (global.portal.observe){
+                drawHellObservations(true);
+            }
             break;
     }
     if ($(`#popper`).length > 0 && $(`#${$(`#popper`).data('id')}`).length === 0){

@@ -275,10 +275,13 @@ function setWindowHash(main,sub,frag){
     }
     else {
         window.location.hash = `#${sub}-${main}-${frag}`;
-        document.getElementById(frag).scrollIntoView({
-            block: 'start',
-            behavior: 'smooth'
-        });
+        setTimeout(function(){
+            document.getElementById(frag).scrollIntoView({
+                block: 'start',
+                behavior: 'smooth'
+            });
+        }, 125);
+        
     }
 }
 

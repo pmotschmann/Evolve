@@ -66,7 +66,8 @@ const calcInfo = {
     },
     exclude: {
         planetary: ['food','lumber','stone','chrysotile','slaughter','slave_market',''],
-        space: ['test_launch','moon_mission','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite'],
+        space: ['test_launch','moon_mission','terraform','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite'],
+        starDock: ['prep_ship','launch_ship'],
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
         hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire']
@@ -89,6 +90,9 @@ const calcInfo = {
             mass_relay: 100,
             fob: 1,
             ai_core: 100
+        },
+        starDock: {
+            seeder: 100
         },
         interstellar: {
             dyson: 100,
@@ -159,6 +163,11 @@ const calcInputs = {
     }
 };
 
+//Additional information to pass to an action's effect() function;
+const effectInputs ={
+    terraformer: ['truepath']
+}
+
 function addCalcInputs(parent,key,section,region,path){
     let hasMax = calcInfo.max[section] && calcInfo.max[section][key] ? calcInfo.max[section][key] : false;
     let inputs = {
@@ -216,7 +225,18 @@ function addCalcInputs(parent,key,section,region,path){
         if (action.hasOwnProperty('effect') && typeof action.effect !== 'string'){
             let effect = $(`.effect`, `#${key}`);
             clearElement(effect);
-            effect.append(action.effect(inputs.owned - inputs.real_owned));
+            let insert = inputs.owned - inputs.real_owned;
+            if (effectInputs[key]){
+                insert = { count: insert };
+                effectInputs[key].forEach(function(inp){
+                    switch (inp){
+                        case 'truepath':
+                            insert[inp] = path === 'truepath';
+                            break;
+                    }
+                });
+            }
+            effect.append(action.effect(insert));
         }
     };
     updateEffect();
