@@ -187,10 +187,11 @@ export const outerTruth = {
                     global.civic.titan_colonist.display = true;
                     if (global.space.electrolysis.support < global.space.electrolysis.s_max){
                         global.space.titan_quarters.on++;
-                        global.resource[global.race.species].max += 1;
+                        global.resource[global.race.species].max += jobScale(1);
                         if (global.civic[global.civic.d_job].workers > 0){
-                            global.civic[global.civic.d_job].workers--;
-                            global.civic.titan_colonist.workers++;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.titan_colonist.workers += hired;
                         }
                     }
                     return true;

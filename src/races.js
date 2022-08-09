@@ -1,7 +1,7 @@
 import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
-import { setJobName } from './jobs.js'; 
+import { setJobName, jobScale } from './jobs.js'; 
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
@@ -4599,7 +4599,7 @@ export function cleanAddTrait(trait){
             buildGarrison($('#c_garrison'),false);
             for (let i=0; i<3; i++){
                 if (global.civic.foreign[`gov${i}`].occ){
-                    let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+                    let occ_amount = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
                     global.civic['garrison'].max += occ_amount;
                     global.civic['garrison'].workers += occ_amount;
                     global.civic.foreign[`gov${i}`].occ = false;

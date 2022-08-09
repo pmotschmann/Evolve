@@ -2,6 +2,7 @@ import { global, save, message_logs, message_filters, webWorker, keyMultiplier, 
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
+import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
@@ -1252,7 +1253,7 @@ export function calcPrestige(type,inputs){
         let garrisoned = global.civic.hasOwnProperty('garrison') ? global.civic.garrison.workers : 0;
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].occ){
-                garrisoned += global.civic.govern.type === 'federation' ? 15 : 20;
+                garrisoned += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
             }
         }
         if (global.race['high_pop']){

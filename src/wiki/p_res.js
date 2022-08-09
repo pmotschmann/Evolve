@@ -2,6 +2,7 @@ import { global } from './../vars.js';
 import { universeAffix, alevel } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, challenge_multiplier, calcPrestige, darkEffect } from './../functions.js';
+import { jobScale } from './../jobs.js';
 import { races, traits } from './../races.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 
@@ -260,7 +261,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
             inputs.tp.use = false;
             inputs.tp.val = true;
         }
-        else if (!['mad','bioseed','cataclysm'].includes(resetType)){
+        else if (!['mad','bioseed','terraform'].includes(resetType)){
             inputs.tp.use = false;
             inputs.tp.val = false;
         }
@@ -371,6 +372,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 <b-dropdown-item v-show="r.cataclysm.use" v-on:click="pickReset('cataclysm')">{{ 'cataclysm' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.bigbang.use" v-on:click="pickReset('bigbang')">{{ 'bigbang' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.vacuum.use" v-on:click="pickReset('vacuum')">{{ 'vacuum' | resetLabel }}</b-dropdown-item>
+                <b-dropdown-item v-show="r.terraform.use" v-on:click="pickReset('terraform')">{{ 'terraform' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.ascend.use" v-on:click="pickReset('ascend')">{{ 'ascend' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.descend.use" v-on:click="pickReset('descend')">{{ 'descend' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.ai.use" v-on:click="pickReset('ai')">{{ 'ai' | resetLabel }}</b-dropdown-item>
@@ -464,7 +466,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     universes.antimatter.use = false;
                 }
                 inputs.synth.use = reset === 'mad';
-                if (!['mad','bioseed','cataclysm'].includes(reset)){
+                if (!['mad','bioseed','terraform'].includes(reset)){
                     inputs.tp.enabled = false;
                     inputs.tp.val = reset === 'ai';
                 }
@@ -511,7 +513,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 inputs.sol.val = global.civic['garrison'] ? global.civic.garrison.workers : 0;
                 for (let i=0; i<3; i++){
                     if (global.civic.foreign[`gov${i}`].occ){
-                        inputs.sol.val += global.civic.govern.type === 'federation' ? 15 : 20;
+                        inputs.sol.val += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
                     }
                 }
                 inputs.know.val = global.stats.know;
@@ -547,7 +549,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 inputs.high_pop.val = global.race['high_pop'] ? global.race.high_pop : 0;
                 inputs.synth.val = races[global.race.species].type === 'synthetic';
                 if (inputs.tp.use){
-                    if (inputs.reset.val && ['mad','bioseed','cataclysm'].includes(inputs.reset.val)){
+                    if (inputs.reset.val && ['mad','bioseed','terraform'].includes(inputs.reset.val)){
                         inputs.tp.val = global.race['truepath'] ? true : false;
                     }
                 }
@@ -597,6 +599,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bigbang':
                         return 2.2;
                     case 'ascend':
+                    case 'terraform':
                         return 1.15;
                     default:
                         return loc('wiki_calc_pop_divisor');
@@ -615,6 +618,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bigbang':
                         return 1.012;
                     case 'ascend':
+                    case 'terraform':
                         return 1.008;
                     default:
                         return loc('wiki_calc_know_multi');
@@ -636,6 +640,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bigbang':
                         return 40000;
                     case 'ascend':
+                    case 'terraform':
                         return 30000;
                     default:
                         return loc('wiki_calc_know_inc');
@@ -652,6 +657,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bigbang':
                         return 2.5;
                     case 'ascend':
+                    case 'terraform':
                         return 4;
                     default:
                         return loc('wiki_calc_phage_multi');
@@ -673,6 +679,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'bigbang':
                         return 800;
                     case 'ascend':
+                    case 'terraform':
                         return 2000;
                     default:
                         return loc('wiki_calc_plasmid_cap');
@@ -701,6 +708,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                             cap = 800;
                             break;
                         case 'ascend':
+                        case 'terraform':
                             cap = 2000;
                             break;
                     }
@@ -786,6 +794,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'cataclysm':
                     case 'vacuum':
                     case 'ai':
+                    case 'terraform':
                         return loc('wiki_resets_' + lbl);
                     case 'bigbang':
                         return loc('wiki_resets_blackhole');
@@ -1467,7 +1476,6 @@ function coresQuantumCalc(info){
     let show = {
         result: { vis: false, val: 0 }
     }
-    //1 - (0.99 ** global.race.AICore.count);
     formula.append(`
         <div>
             <span>1 - (0.99^{{ i.cores.val, 'cores' | generic }})</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>

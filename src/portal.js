@@ -558,7 +558,7 @@ const fortressModules = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.portal.archaeology.on++;
                         if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(2) < 0 ? global.civic[global.civic.d_job].workers : jobScale(2);
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.archaeologist.workers += hired;
                         }
@@ -2380,7 +2380,7 @@ export function bloodwar(){
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.round(Math.seededRandom(0,(dead / traits.revive.vars()[6]) + 0.25));
+        revive = Math.round(Math.rand(0,(dead / traits.revive.vars()[6]) + 0.25));
         day_report.revived = revive;
         day_report.stats.revived = revive;
         global.civic.garrison.workers += revive;

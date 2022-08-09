@@ -1023,11 +1023,11 @@ const extraInformation = {
         loc(`wiki_tech_hunter_process`,[loc(`resource_Steel_name`),25])
     ],
     kroll_process: [
-        loc(`wiki_tech_hunter_process`,[loc(`resource_Iron_name`),25])
+        loc(`wiki_tech_kroll_process`,[loc(`resource_Iron_name`),25])
     ],
     cambridge_process: [
         loc(`wiki_tech_hunter_process`,[loc(`resource_Steel_name`),10]),
-        loc(`wiki_tech_hunter_process`,[loc(`resource_Iron_name`),10])
+        loc(`wiki_tech_kroll_process`,[loc(`resource_Iron_name`),10])
     ],
     matter_compression: [
         loc(`wiki_tech_matter_compression`,[loc(`resource_Crates_name`),loc(`city_storage_yard`)]),
@@ -1270,6 +1270,12 @@ const extraInformation = {
     ],
     asteroid_redirect: [
         loc(`wiki_tech_project_unlock`,[loc(`arpa_projects_roid_eject_title`,[loc(`arpa_projects_roid_eject_asteroid`)])])
+    ],
+    exotic_infusion: [
+        loc(`wiki_tech_confirmation`)
+    ],
+    infusion_check: [
+        loc(`wiki_tech_confirmation`)
     ],
     infusion_confirm: [
         loc(`wiki_tech_infusion_confirm`)
@@ -1747,9 +1753,6 @@ const extraRequirements = {
     dwarf1 : {
         title: loc('wiki_tech_req_mission',[loc('space_mission_title',[getSolarName('dwarf')])]),
         link: 'wiki.html#space-structures-dwarf_mission'
-    },
-    genesis1 : {
-        title: loc('wiki_tech_req_genesis1')
     },
     science11 : {
         title: loc('wiki_tech_req_megabuilding',[loc('space_dwarf_collider_title')]),
@@ -3141,6 +3144,17 @@ const specialRequirements = {
             subreqs: [
                 {
                     name: 'terrifying'
+                }
+            ]
+        }
+    ],
+    genesis: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`wiki_tech_special_genesis`),
+                    color: global.race.deterioration >= 1 ? true : false
                 }
             ]
         }

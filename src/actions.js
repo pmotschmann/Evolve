@@ -2207,7 +2207,7 @@ export const actions = {
                 Stone(offset){ return ((offset || 0) + (global.city.hasOwnProperty('s_alter') ? global.city['s_alter'].count : 0)) >= 1 ? 0 : 100; }
             },
             effect(){
-                let sacrifices = global.civic[global.civic.d_job].workers;
+                let sacrifices = global.civic[global.civic.d_job] ? global.civic[global.civic.d_job].workers : 0;
                 let desc = `<div class="has-text-caution">${loc('city_s_alter_sacrifice',[sacrifices])}</div>`;
                 if (global.city.hasOwnProperty('s_alter') && global.city.s_alter.rage > 0){
                     desc = desc + `<div>${loc('city_s_alter_rage',[traits.cannibalize.vars()[0],timeFormat(global.city.s_alter.rage)])}</div>`;
@@ -2288,6 +2288,9 @@ export const actions = {
                 return basicHousingLabel();
             },
             desc: loc('city_basic_housing_desc'),
+            desc(){
+                return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
+            },
             category: 'residential',
             reqs: { housing: 1 },
             not_trait: ['cataclysm'],
@@ -2333,7 +2336,9 @@ export const actions = {
             title(){
                 return housingLabel('medium');
             },
-            desc: loc('city_cottage_desc'),
+            desc(){
+                return loc('city_cottage_desc',[$(this)[0].citizens()]);
+            },
             category: 'residential',
             reqs: { housing: 2 },
             not_trait: ['cataclysm'],
@@ -2377,7 +2382,7 @@ export const actions = {
                 return housingLabel('large');
             },
             desc(){
-                return `<div>${loc('city_apartment_desc',[govActive('extravagant',0) ? 6 : 5])}</div><div class="has-text-special">${loc('requires_power')}</div>`
+                return `<div>${loc('city_apartment_desc',[$(this)[0].citizens()])}</div><div class="has-text-special">${loc('requires_power')}</div>`
             },
             category: 'residential',
             reqs: { housing: 3 },
@@ -4280,7 +4285,7 @@ export const actions = {
                 }
                 gain = +(gain).toFixed(0);
 
-                let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),global.civic.scientist.name])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
+                let desc = `<div>${loc('city_wardenclyffe_effect1',[jobScale(1),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')])}</div><div>${loc('city_max_knowledge',[gain.toLocaleString()])}</div>`;
                 if (global.city.powered){
                     let pgain = global.tech['science'] >= 7 ? 2500 : 2000;
                     if (global.city.ptrait.includes('magnetic')){
@@ -4618,14 +4623,14 @@ export const actions = {
             queue_size: 10,
             queue_complete(){ return 100 - global.starDock.seeder.count; },
             cost: {
-                Money(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 100000 : 0; },
-                Steel(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 25000 : 0; },
-                Neutronium(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 240 : 0; },
-                Elerium(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 10 : 0; },
-                Nano_Tube(offset,wiki){ return wiki || (global.starDock['seeder'] && global.starDock.seeder.count < 100) ? 12000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 100000 : 0; },
+                Steel(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 25000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 240 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 10 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.starDock.hasOwnProperty('seeder') ? global.starDock.seeder.count : 0)) < 100 ? 12000 : 0; },
             },
-            effect(){
-                let count = global.starDock['seeder'] ? global.starDock.seeder.count : 0;
+            effect(wiki){
+                let count = (wiki || 0) + (global.starDock['seeder'] ? global.starDock.seeder.count : 0);
                 let remain = count < 100 ? loc('star_dock_seeder_status1',[100 - count]) : loc('star_dock_seeder_status2');
                 return `<div>${global.race['cataclysm'] ? loc('star_dock_exodus_effect') : loc('star_dock_seeder_effect')}</div><div class="has-text-special">${remain}</div>`;
             },
