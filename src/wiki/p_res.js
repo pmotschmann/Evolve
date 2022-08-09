@@ -2,6 +2,7 @@ import { global } from './../vars.js';
 import { universeAffix, alevel } from './../achieve.js';
 import { loc } from './../locale.js';
 import { vBind, challenge_multiplier, calcPrestige, darkEffect } from './../functions.js';
+import { jobScale } from './../jobs.js';
 import { races, traits } from './../races.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 
@@ -512,7 +513,7 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 inputs.sol.val = global.civic['garrison'] ? global.civic.garrison.workers : 0;
                 for (let i=0; i<3; i++){
                     if (global.civic.foreign[`gov${i}`].occ){
-                        inputs.sol.val += global.civic.govern.type === 'federation' ? 15 : 20;
+                        inputs.sol.val += jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
                     }
                 }
                 inputs.know.val = global.stats.know;

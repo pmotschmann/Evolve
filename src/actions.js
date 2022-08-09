@@ -2288,6 +2288,9 @@ export const actions = {
                 return basicHousingLabel();
             },
             desc: loc('city_basic_housing_desc'),
+            desc(){
+                return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
+            },
             category: 'residential',
             reqs: { housing: 1 },
             not_trait: ['cataclysm'],
@@ -2333,7 +2336,9 @@ export const actions = {
             title(){
                 return housingLabel('medium');
             },
-            desc: loc('city_cottage_desc'),
+            desc(){
+                return loc('city_cottage_desc',[$(this)[0].citizens()]);
+            },
             category: 'residential',
             reqs: { housing: 2 },
             not_trait: ['cataclysm'],
@@ -2377,7 +2382,7 @@ export const actions = {
                 return housingLabel('large');
             },
             desc(){
-                return `<div>${loc('city_apartment_desc',[govActive('extravagant',0) ? 6 : 5])}</div><div class="has-text-special">${loc('requires_power')}</div>`
+                return `<div>${loc('city_apartment_desc',[$(this)[0].citizens()])}</div><div class="has-text-special">${loc('requires_power')}</div>`
             },
             category: 'residential',
             reqs: { housing: 3 },

@@ -5,7 +5,7 @@ import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
 import { races, genusVars, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry } from './jobs.js';
+import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace } from './space.js';
 import { drawHellObservations } from './portal.js';
@@ -11734,7 +11734,7 @@ function uniteEffect(){
     buildGarrison($('#c_garrison'),false);
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
-            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+            let occ_amount = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
             global.civic['garrison'].max += occ_amount;
             global.civic['garrison'].workers += occ_amount;
             global.civic.foreign[`gov${i}`].occ = false;

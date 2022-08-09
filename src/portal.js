@@ -558,7 +558,7 @@ const fortressModules = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.portal.archaeology.on++;
                         if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(2) < 0 ? global.civic[global.civic.d_job].workers : jobScale(2);
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.archaeologist.workers += hired;
                         }

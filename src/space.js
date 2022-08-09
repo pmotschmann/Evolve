@@ -645,10 +645,11 @@ const spaceProjects = {
                     global.civic.colonist.display = true;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['living_quarters'].on++;
-                        global.resource[global.race.species].max += 1;
+                        global.resource[global.race.species].max += jobScale(1);
                         if (global.civic[global.civic.d_job].workers > 0){
-                            global.civic[global.civic.d_job].workers--;
-                            global.civic.colonist.workers++;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.colonist.workers += hired;
                         }
                     }
                     return true;
@@ -1156,9 +1157,6 @@ const spaceProjects = {
                 if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
-                if (global.race['high_pop']){
-                    bonus = highPopAdjust(bonus);
-                }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let faith = 0.002;
                     if (global.race['high_pop']){
@@ -1168,6 +1166,9 @@ const spaceProjects = {
                 }
                 if (global.race['ooze']){
                     bonus *= 1 - (traits.ooze.vars()[1] / 100);
+                }
+                if (global.race['high_pop']){
+                    bonus = highPopAdjust(bonus);
                 }
                 bonus = +(bonus).toFixed(2);
                 let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
@@ -4670,7 +4671,7 @@ const galaxyProjects = {
             effect(){
                 let leave = '';
                 if (global.tech.xeno >= 7){
-                    leave = `<div>${loc('galaxy_symposium_effect3',[300])}</div>`;
+                    leave = `<div>${loc('galaxy_symposium_effect3',[+highPopAdjust(300).toFixed(2)])}</div>`;
                 }
                 return `<div>${loc('galaxy_symposium_effect',[1750])}</div><div>${loc('galaxy_symposium_effect2',[650])}</div>${leave}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -6145,9 +6146,6 @@ export function zigguratBonus(){
         if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
             zig += 0.0001 * support_on['exotic_lab'];
         }
-        if (global.race['high_pop']){
-            zig = highPopAdjust(zig);
-        }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let faith = 0.00002;
             if (global.race['high_pop']){
@@ -6157,6 +6155,9 @@ export function zigguratBonus(){
         }
         if (global.race['ooze']){
             zig *= 1 - (traits.ooze.vars()[1] / 100);
+        }
+        if (global.race['high_pop']){
+            zig = highPopAdjust(zig);
         }
         bonus += (global.space.ziggurat.count * global.civic.colonist.workers * zig);
     }
