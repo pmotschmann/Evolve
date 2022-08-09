@@ -1476,7 +1476,6 @@ function coresQuantumCalc(info){
     let show = {
         result: { vis: false, val: 0 }
     }
-    //1 - (0.99 ** global.race.AICore.count);
     formula.append(`
         <div>
             <span>1 - (0.99^{{ i.cores.val, 'cores' | generic }})</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>
