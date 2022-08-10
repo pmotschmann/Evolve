@@ -8582,9 +8582,6 @@ function longLoop(){
             if (global.race['artifical'] && global.city['boot_camp']){
                 hc = global.city.boot_camp.count;
             }
-            if (global.race['high_pop']){
-                hc *= traits.high_pop.vars()[2]
-            }
             if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
                 let bonus = global.stats.achieve.lamentis.l;
                 if (bonus > 5){ bonus = 5; }
@@ -8598,6 +8595,9 @@ function longLoop(){
             }
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
+            }
+            if (global.race['high_pop']){
+                hc *= traits.high_pop.vars()[2]
             }
             let painVal = govActive('nopain',0);
             if (painVal){
