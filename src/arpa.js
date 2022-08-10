@@ -1651,15 +1651,6 @@ function genetics(){
         let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
 
-        if (!global.arpa['sequence']){
-            global.arpa['sequence'] = {
-                max: 50000,
-                progress: 0,
-                time: 50000,
-                on: global.race['cataclysm'] ? false : true
-            };
-        }
-
         if (!global.arpa.sequence['boost']){
             global.arpa.sequence['boost'] = false;
         }

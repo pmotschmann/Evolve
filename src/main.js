@@ -8582,6 +8582,9 @@ function longLoop(){
             if (global.race['artifical'] && global.city['boot_camp']){
                 hc = global.city.boot_camp.count;
             }
+            if (global.race['high_pop']){
+                hc *= traits.high_pop.vars()[2]
+            }
             if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
                 let bonus = global.stats.achieve.lamentis.l;
                 if (bonus > 5){ bonus = 5; }

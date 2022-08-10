@@ -1048,6 +1048,14 @@ if (convertVersion(global['version']) < 102017){
             graphs: {}
         };
     }
+    if (global.tech.hasOwnProperty('genetics') && global.tech.genetics > 1 && global.hasOwnProperty('arpa') && !global.arpa.hasOwnProperty('sequence')){
+        global.arpa['sequence'] = {
+            max: 50000,
+            progress: 0,
+            time: 50000,
+            on: false
+        };
+    }
 }
 
 global['version'] = '1.2.17';

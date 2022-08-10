@@ -3898,6 +3898,14 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.arpa.genetics = true;
+                if (!global.arpa['sequence']){
+                    global.arpa['sequence'] = {
+                        max: 50000,
+                        progress: 0,
+                        time: 50000,
+                        on: global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true
+                    };
+                }
                 return true;
             }
             return false;
