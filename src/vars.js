@@ -1048,13 +1048,24 @@ if (convertVersion(global['version']) < 102017){
             graphs: {}
         };
     }
-    if (global.tech.hasOwnProperty('genetics') && global.tech.genetics > 1 && global.hasOwnProperty('arpa') && !global.arpa.hasOwnProperty('sequence')){
-        global.arpa['sequence'] = {
-            max: 50000,
-            progress: 0,
-            time: 50000,
-            on: false
-        };
+    if (global.tech.hasOwnProperty('genetics') && global.tech.genetics > 1 && global.hasOwnProperty('arpa')){
+        if (!global.arpa.hasOwnProperty('sequence')){
+            global.arpa['sequence'] = {
+                max: 50000,
+                progress: 0,
+                time: 50000,
+                on: false
+            };
+        }
+        if (!global.arpa.sequence['boost']){
+            global.arpa.sequence['boost'] = false;
+        }
+        if (!global.arpa.sequence['auto']){
+            global.arpa.sequence['auto'] = false;
+        }
+        if (!global.arpa.sequence['labs']){
+            global.arpa.sequence['labs'] = 0;
+        }
     }
 }
 

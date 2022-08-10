@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.17`,
-        date: `8/9/2022`,
+        date: `8/10/2022`,
         changes: [
             `New Hell stats tracking and analytics.`,
             `Fixed Genetics not unlocking in Cataclysm.`,

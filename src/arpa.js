@@ -1651,18 +1651,6 @@ function genetics(){
         let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
 
-        if (!global.arpa.sequence['boost']){
-            global.arpa.sequence['boost'] = false;
-        }
-
-        if (!global.arpa.sequence['auto']){
-            global.arpa.sequence['auto'] = false;
-        }
-
-        if (!global.arpa.sequence['labs']){
-            global.arpa.sequence['labs'] = 0;
-        }
-
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
         if (global.race['artifical']){
             label = global.tech.genetics > 2 ? loc('arpa_code_modification') : loc('arpa_decompile_source');

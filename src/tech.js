@@ -3903,7 +3903,10 @@ const techs = {
                         max: 50000,
                         progress: 0,
                         time: 50000,
-                        on: global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true
+                        on: global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true,
+                        boost: false,
+                        auto: false,
+                        labs: 0,
                     };
                 }
                 return true;

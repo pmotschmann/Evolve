@@ -2327,7 +2327,7 @@ export function tritonWar(){
             global.space.fob.enemy += Math.rand(25,upper);
         }
 
-        let wound_cap = Math.ceil(global.space.fob.enemy / 5);
+        let wound_cap = Math.ceil(jobScale(global.space.fob.enemy) / 5);
 
         let wounded = global.civic.garrison.wounded - garrisonSize();
         if (wounded < 0){ wounded = 0; }
@@ -2343,9 +2343,9 @@ export function tritonWar(){
 
         let hurt = Math.rand(0,global.space.fob.troops + 1);
         if (hurt > wound_cap){ hurt = wound_cap; }
-        if (global.race['armored']){ hurt--; }
-        if (global.race['scales']){ hurt--; }
-        if (global.tech['armor']){ hurt -= global.tech['armor']; }
+        if (global.race['armored']){ hurt -= jobScale(1); }
+        if (global.race['scales']){ hurt -= jobScale(1); }
+        if (global.tech['armor']){ hurt -= jobScale(global.tech['armor']); }
         if (hurt < 0){ hurt = 0; }
 
         if (global.race['revive'] && died > 0){
