@@ -264,8 +264,8 @@ export const craftingRatio = (function(){
                     if (global.city.foundry[resource] && global.city.foundry[resource] > 1){
                         crafting[resource].add.push({
                             name: loc(`tech_apprentices`),
-                            manual: (global.city.foundry[resource] - 1) * 0.03,
-                            auto: (global.city.foundry[resource] - 1) * 0.03
+                            manual: (global.city.foundry[resource] - 1) * highPopAdjust(0.03),
+                            auto: (global.city.foundry[resource] - 1) * highPopAdjust(0.03)
                         });
                     }
                 });

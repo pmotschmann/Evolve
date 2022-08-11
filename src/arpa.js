@@ -1651,27 +1651,6 @@ function genetics(){
         let genome = $(`<div id="arpaSequence" class="genome"></div>`);
         parent.append(genome);
 
-        if (!global.arpa['sequence']){
-            global.arpa['sequence'] = {
-                max: 50000,
-                progress: 0,
-                time: 50000,
-                on: global.race['cataclysm'] ? false : true
-            };
-        }
-
-        if (!global.arpa.sequence['boost']){
-            global.arpa.sequence['boost'] = false;
-        }
-
-        if (!global.arpa.sequence['auto']){
-            global.arpa.sequence['auto'] = false;
-        }
-
-        if (!global.arpa.sequence['labs']){
-            global.arpa.sequence['labs'] = 0;
-        }
-
         let label = global.tech.genetics > 2 ? loc('arpa_gene_mutation') : loc('arpa_sequence_genome');
         if (global.race['artifical']){
             label = global.tech.genetics > 2 ? loc('arpa_code_modification') : loc('arpa_decompile_source');
@@ -2266,7 +2245,7 @@ function addProject(parent,project){
         parent.append(current);
 
         let title = typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title();
-        let head = $(`<div class="head"><span aria-hidden="true" class="desc has-text-warning">${title}</span><a v-on:click="srDesc" class="is-sr-only">${title}</a><span aria-hidden="true" v-show="rank" class="rank">Level - {{ rank }}</span><a v-on:click="srLevel" class="is-sr-only">Level - {{ rank }}</a></div>`);
+        let head = $(`<div class="head"><span aria-hidden="true" class="desc has-text-warning">${title}</span><a v-on:click="srDesc" class="is-sr-only">${title}</a><span aria-hidden="true" v-show="rank" class="rank">{{ rank | level }}</span><a v-on:click="srLevel" class="is-sr-only">{{ rank | level }}</a></div>`);
         current.append(head);
 
         let progress = $(`<div class="pbar"><progress class="progress" :value="complete" max="100"></progress><span class="progress-value has-text-danger">{{ complete }}%</span></div>`);
@@ -2341,6 +2320,9 @@ function addProject(parent,project){
             filters: {
                 remain(val){
                     return 100 - val;
+                },
+                level(num){
+                    return loc('arpa_level',[num]);
                 }
             }
         });

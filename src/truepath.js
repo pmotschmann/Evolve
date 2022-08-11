@@ -187,10 +187,11 @@ export const outerTruth = {
                     global.civic.titan_colonist.display = true;
                     if (global.space.electrolysis.support < global.space.electrolysis.s_max){
                         global.space.titan_quarters.on++;
-                        global.resource[global.race.species].max += 1;
+                        global.resource[global.race.species].max += jobScale(1);
                         if (global.civic[global.civic.d_job].workers > 0){
-                            global.civic[global.civic.d_job].workers--;
-                            global.civic.titan_colonist.workers++;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.titan_colonist.workers += hired;
                         }
                     }
                     return true;
@@ -2522,7 +2523,7 @@ export function tritonWar(){
             global.space.fob.enemy += Math.rand(25,upper);
         }
 
-        let wound_cap = Math.ceil(global.space.fob.enemy / 5);
+        let wound_cap = Math.ceil(jobScale(global.space.fob.enemy) / 5);
 
         let wounded = global.civic.garrison.wounded - garrisonSize();
         if (wounded < 0){ wounded = 0; }
@@ -2538,9 +2539,9 @@ export function tritonWar(){
 
         let hurt = Math.rand(0,global.space.fob.troops + 1);
         if (hurt > wound_cap){ hurt = wound_cap; }
-        if (global.race['armored']){ hurt--; }
-        if (global.race['scales']){ hurt--; }
-        if (global.tech['armor']){ hurt -= global.tech['armor']; }
+        if (global.race['armored']){ hurt -= jobScale(1); }
+        if (global.race['scales']){ hurt -= jobScale(1); }
+        if (global.tech['armor']){ hurt -= jobScale(global.tech['armor']); }
         if (hurt < 0){ hurt = 0; }
 
         if (global.race['revive'] && died > 0){

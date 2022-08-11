@@ -5,9 +5,10 @@ import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
 import { races, genusVars, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry } from './jobs.js';
+import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace } from './space.js';
+import { drawHellObservations } from './portal.js';
 import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
@@ -3562,7 +3563,7 @@ const techs = {
         cost: {
             Knowledge(){ return 36000; }
         },
-        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist.name]); },
+        effect(){ return loc('tech_adjunct_professor_effect',[wardenLabel(),global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -3897,8 +3898,16 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.arpa.genetics = true;
-                if (global.race['cataclysm']){
-                    global.arpa.sequence.on = false;
+                if (!global.arpa['sequence']){
+                    global.arpa['sequence'] = {
+                        max: 50000,
+                        progress: 0,
+                        time: 50000,
+                        on: global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true,
+                        boost: false,
+                        auto: false,
+                        labs: 0,
+                    };
                 }
                 return true;
             }
@@ -9120,9 +9129,66 @@ const techs = {
                 else {
                     unlockAchieve('pandemonium');
                 }
+                global.portal.observe = {
+                    settings: {
+                        expanded: false,
+                        average: false,
+                        hyperSlow: false,
+                        display: 'game_days',
+                        dropKills: true,
+                        dropGems: true
+                    },
+                    stats: {
+                        total: {
+                            start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                            days: 0,
+                            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                            kills: {
+                                drones: 0,
+                                patrols: 0,
+                                sieges: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                turrets: 0
+                            },
+                            gems: {
+                                patrols: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                crafted: 0,
+                                turrets: 0
+                            },
+                        },
+                        period: {
+                            start: { year: global.city.calendar.year, day: global.city.calendar.day },
+                            days: 0,
+                            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+                            kills: {
+                                drones: 0,
+                                patrols: 0,
+                                sieges: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                turrets: 0
+                            },
+                            gems: {
+                                patrols: 0,
+                                guns: 0,
+                                soul_forge: 0,
+                                crafted: 0,
+                                turrets: 0
+                            },
+                        }
+                    },
+                    graphID: 0,
+                    graphs: {}
+                };
                 return true;
             }
             return false;
+        },
+        post(){
+            drawHellObservations();
         }
     },
     war_drones: {
@@ -11701,7 +11767,7 @@ function uniteEffect(){
     buildGarrison($('#c_garrison'),false);
     for (let i=0; i<3; i++){
         if (global.civic.foreign[`gov${i}`].occ){
-            let occ_amount = global.civic.govern.type === 'federation' ? 15 : 20;
+            let occ_amount = jobScale(global.civic.govern.type === 'federation' ? 15 : 20);
             global.civic['garrison'].max += occ_amount;
             global.civic['garrison'].workers += occ_amount;
             global.civic.foreign[`gov${i}`].occ = false;

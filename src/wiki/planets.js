@@ -44,7 +44,8 @@ const extraInfo = {
     ozone: ['trait'],
     trashed: ['trait'],
     elliptical: ['trait'],
-    unstable: ['trait'],
+    flare: ['event'],
+    unstable: ['trait','event'],
     permafrost: ['trait'],
     retrograde: ['trait']
 };

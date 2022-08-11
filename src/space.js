@@ -74,7 +74,7 @@ const spaceProjects = {
                 let label = global.race['cataclysm'] ? loc('space_moon_observatory_title') : (global.race['orbit_decayed'] ? loc('city_university') : wardenLabel());
                 let amount = global.race['cataclysm'] ? 25 : (global.race['orbit_decayed'] ? 12 : 4);
                 let synergy = `<div>${loc('space_home_satellite_effect2',[label, amount])}</div>`;
-                return `<div>${loc('plus_max_resource',[knowledge,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[global.civic.scientist.name])}</div>`
+                return `<div>${loc('plus_max_resource',[knowledge,loc('resource_Knowledge_name')])}</div>${synergy}<div>${loc('space_home_satellite_effect3',[global.civic.scientist ? global.civic.scientist.name : loc('job_scientist')])}</div>`
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -535,13 +535,13 @@ const spaceProjects = {
                 Cipher(offset){ return ((offset || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0)) < 100 ? (global.race['truepath'] ? 1000 : 0) : 0; },
             },
             effect(wiki){
-                let count = (wiki || 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0);
+                let count = (wiki ? wiki.count : 0) + (global.space.hasOwnProperty('terraformer') ? global.space.terraformer.count : 0);
                 if (count < 100){
                     let remain = 100 - count;
                     return `<div>${loc('space_terraformer_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    return interstellarProjects.int_sirius.ascension_trigger.effect();
+                    return spaceProjects.spc_red.atmo_terraformer.effect(wiki);
                 }
             },
             action(){
@@ -571,8 +571,8 @@ const spaceProjects = {
             },
             queue_complete(){ return 0; },
             cost: {},
-            powered(){
-                return powerCostMod(global.race['truepath'] ? 500 : 5000);
+            powered(wiki){
+                return powerCostMod((wiki ? wiki.truepath : global.race['truepath']) ? 500 : 5000);
             },
             postPower(o){
                 if (o){
@@ -586,9 +586,9 @@ const spaceProjects = {
                     renderSpace();
                 }
             },
-            effect(){
+            effect(wiki){
                 let reward = terraformProjection();
-                let power = $(this)[0].powered();
+                let power = $(this)[0].powered(wiki);
                 let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
                 return `<div>${loc('space_terraformer_effect2')}</div>${reward}${power_label}`;
             },
@@ -645,10 +645,11 @@ const spaceProjects = {
                     global.civic.colonist.display = true;
                     if (global.space.spaceport.support < global.space.spaceport.s_max){
                         global.space['living_quarters'].on++;
-                        global.resource[global.race.species].max += 1;
+                        global.resource[global.race.species].max += jobScale(1);
                         if (global.civic[global.civic.d_job].workers > 0){
-                            global.civic[global.civic.d_job].workers--;
-                            global.civic.colonist.workers++;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
+                            global.civic[global.civic.d_job].workers -= hired;
+                            global.civic.colonist.workers += hired;
                         }
                     }
                     return true;
@@ -1156,9 +1157,6 @@ const spaceProjects = {
                 if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
-                if (global.race['high_pop']){
-                    bonus = highPopAdjust(bonus);
-                }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                     let faith = 0.002;
                     if (global.race['high_pop']){
@@ -1168,6 +1166,9 @@ const spaceProjects = {
                 }
                 if (global.race['ooze']){
                     bonus *= 1 - (traits.ooze.vars()[1] / 100);
+                }
+                if (global.race['high_pop']){
+                    bonus = highPopAdjust(bonus);
                 }
                 bonus = +(bonus).toFixed(2);
                 let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
@@ -4670,7 +4671,7 @@ const galaxyProjects = {
             effect(){
                 let leave = '';
                 if (global.tech.xeno >= 7){
-                    leave = `<div>${loc('galaxy_symposium_effect3',[300])}</div>`;
+                    leave = `<div>${loc('galaxy_symposium_effect3',[+highPopAdjust(300).toFixed(2)])}</div>`;
                 }
                 return `<div>${loc('galaxy_symposium_effect',[1750])}</div><div>${loc('galaxy_symposium_effect2',[650])}</div>${leave}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -6145,9 +6146,6 @@ export function zigguratBonus(){
         if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
             zig += 0.0001 * support_on['exotic_lab'];
         }
-        if (global.race['high_pop']){
-            zig = highPopAdjust(zig);
-        }
         if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
             let faith = 0.00002;
             if (global.race['high_pop']){
@@ -6157,6 +6155,9 @@ export function zigguratBonus(){
         }
         if (global.race['ooze']){
             zig *= 1 - (traits.ooze.vars()[1] / 100);
+        }
+        if (global.race['high_pop']){
+            zig = highPopAdjust(zig);
         }
         bonus += (global.space.ziggurat.count * global.civic.colonist.workers * zig);
     }

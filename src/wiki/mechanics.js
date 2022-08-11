@@ -167,6 +167,27 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`warmonger`,loc('wiki_mechanics_warmonger'));
     }
 
+    { // Spies
+        let spy = infoBoxBuilder(mainContent,{ name: 'spy', template: 'mechanics', label: loc('wiki_mechanics_spy'), paragraphs: 8, break: [3,4,5,6,7], h_level: 2,
+            para_data: {
+                1: [loc('tech_spy')],
+                4: [1,loc('civics_gov_relations'),loc('civics_gov_mil_rate')],
+                5: [2,loc('civics_gov_mil_rate'),loc('civics_gov_eco_rate')],
+                6: [3,loc('civics_gov_eco_rate'),loc('civics_gov_unrest')],
+                7: [4,loc('civics_gov_unrest')],
+                8: [4],
+                9: [loc('tech_espionage')]
+            },
+            data_link: {
+                1: ['wiki.html#civilized-tech-spy'],
+                9: ['wiki.html#civilized-tech-espionage']
+            }
+        });
+        let subSection = createCalcSection(spy,'mechanics','spy_cost');
+        spyCostCalc(subSection);
+        sideMenu('add',`mechanics-gameplay`,`spy`,loc('wiki_mechanics_spy'));
+    }
+
     { // Occupying Foreign Powers
         let occupation = infoBoxBuilder(mainContent,{ name: 'occupying', template: 'mechanics', label: loc('wiki_mechanics_occupying'), paragraphs: 20, break: [3,8,12,16,18,19,20], h_level: 2,
             para_data: {
@@ -389,6 +410,8 @@ export function mechanicsPage(content){
                 4: ['wiki.html#interstellar-structures-citadel']
             }
         });
+        let subSection = createCalcSection(quantum,'mechanics','quantum_level',loc('wiki_mechanics_quantum'));
+        quantumLevelCalc(subSection);
         sideMenu('add',`mechanics-gameplay`,`quantum`,loc('wiki_mechanics_quantum'));
 
         infoBoxBuilder(quantum,{ name: 'quantum_swarm_ai', template: 'mechanics', label: loc('tech_swarm_control_ai'), paragraphs: 2, h_level: 2,
@@ -578,18 +601,18 @@ export function mechanicsPage(content){
                 5: [loc('tech_scarletite'),loc('evo_challenge_genes')],
                 6: [loc('achieve_resonance_name')],
                 7: [loc('achieve_resonance_name'),loc('tech_scarletite')],
-                8: [loc('race_junker'),loc('wiki_mechanics_custom'),loc('achieve_enlightenment_name')],
+                8: [loc('race_junker'),loc('wiki_mechanics_custom'),loc('achieve_enlightenment_name'),loc('race_sludge')],
                 9: [loc('wiki_mechanics_custom')],
-                10: [loc('race_junker'),loc('genelab_genus_humanoid')]
+                10: [loc('race_junker'),loc('genelab_genus_humanoid'),loc('race_sludge')]
             },
             data_link: {
                 1: ['wiki.html#dimensional-tech-pillars'],
                 3: ['wiki.html#universes-gameplay-micro'],
                 5: ['wiki.html#dimensional-tech-scarletite'],
                 7: [false,'wiki.html#dimensional-tech-scarletite'],
-                8: ['wiki.html#races-species-junker','wiki.html#mechanics-gameplay-custom'],
+                8: ['wiki.html#races-species-junker','wiki.html#mechanics-gameplay-custom',false,'wiki.html#races-species-sludge'],
                 9: ['wiki.html#mechanics-gameplay-custom'],
-                10: ['wiki.html#races-species-junker']
+                10: ['wiki.html#races-species-junker',false,'wiki.html#races-species-sludge']
             }
         },custom);
         sideMenu('add',`mechanics-gameplay`,`pillar`,loc('wiki_mechanics_pillar'));
@@ -732,6 +755,7 @@ function jobStressCalc(info){
         dense: { vis: false, val: false, formVis: false },
         workers: { val: undefined },
         playful: { vis: false, val: false },
+        high_pop: { val: undefined },
         emotionless: { val: undefined },
         government: { val: undefined },
         annexed: { vis: false, val: undefined },
@@ -776,7 +800,7 @@ function jobStressCalc(info){
             <h2 class="has-text-caution">${loc('wiki_calc_job_stress_generated')}</h2>
         </div>
         <div>
-            <span v-show="i.playful.vis && i.playful.val">0 * </span><span>{{ i.workers.val, 'workers' | generic }} / {{ s.result.val, 'divisor' | generic }}<span v-show="i.emotionless.val"> * {{ i.emotionless.val, 'emotionless', 1 | traitVal }}</span><span> * {{ i.government.val, i.electricity.val, i.virtual_reality.val | govVal }}</span><span v-show="i.annexed.vis"> * {{ i.annexed.val | anxVal }}</span><span v-show="s.total.vis"> = -{{ | calcTotal }}%</span>
+            <span v-show="i.playful.vis && i.playful.val">0 * </span><span>{{ i.workers.val, 'workers' | generic }}<span v-show="i.high_pop.val"> / {{ i.high_pop.val, 'high_pop', 0 | traitVal }}</span> / {{ s.result.val, 'divisor' | generic }}<span v-show="i.emotionless.val"> * {{ i.emotionless.val, 'emotionless', 1 | traitVal }}</span><span> * {{ i.government.val, i.electricity.val, i.virtual_reality.val | govVal }}</span><span v-show="i.annexed.vis"> * {{ i.annexed.val | anxVal }}</span><span v-show="s.total.vis"> = -{{ | calcTotal }}%</span>
         </div>
     `);
     
@@ -815,6 +839,18 @@ function jobStressCalc(info){
             <div class="calcInput" v-show="i.electricity.vis"><b-checkbox class="patrol" v-model="i.electricity.val">${loc('tech_electricity')}</b-checkbox></div>
             <div class="calcInput" v-show="i.electricity.vis && i.electricity.val"><b-checkbox class="patrol" v-model="i.virtual_reality.val">${loc('tech_virtual_reality')}</b-checkbox></div>
             <div class="calcInput" v-show="i.playful.vis"><b-checkbox class="patrol" v-model="i.playful.val">${loc('trait_playful_name')}</b-checkbox></div>
+            <div class="calcInput"><span>${loc('trait_high_pop_name')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.high_pop.val | traitLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickTrait(0, 'high_pop')">{{ 0 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.25, 'high_pop')">{{ 0.25 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.5, 'high_pop')">{{ 0.5 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1, 'high_pop')">{{ 1 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(2, 'high_pop')">{{ 2 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(3, 'high_pop')">{{ 3 | traitLabel }}</b-dropdown-item>
+            </b-dropdown></div>
             <div class="calcInput"><span>${loc('trait_emotionless_name')}</span> <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
                     <span>{{ i.emotionless.val | traitLabel }}</span>
@@ -882,6 +918,7 @@ function jobStressCalc(info){
                 inputs.electricity.val = false;
                 inputs.electricity.vis = false;
                 inputs.virtual_reality.val = false;
+                inputs.high_pop.val = undefined;
                 inputs.emotionless.val = undefined;
                 show.result.val = undefined;
             },
@@ -892,6 +929,7 @@ function jobStressCalc(info){
                 inputs.dense.val = global.city['ptrait'] && global.city.ptrait.includes('dense') ? true : false;
                 inputs.workers.val = inputs.job.val === 'soldier' ? (global.civic['garrison'] && global.civic.garrison['max'] ? global.civic.garrison.max : 0) : global.civic[inputs.job.val] ? global.civic[inputs.job.val].workers : 0;
                 inputs.playful.val = global.race['playful'] ? true : false;
+                inputs.high_pop.val = global.race['high_pop'] ? global.race['high_pop'] : 0;
                 inputs.emotionless.val = global.race['emotionless'] ? global.race['emotionless'] : 0;
                 if (global.civic['govern']){
                     let gov = global.civic.govern.type;
@@ -1013,6 +1051,8 @@ function jobStressCalc(info){
                 switch (trait){
                     case 'freespirit':
                         return 1 + (traits.freespirit.vars(rank)[varNum] / 100);
+                    case 'high_pop':
+                        return traits.high_pop.vars(rank)[varNum];
                     case 'emotionless':
                         return 1 - (traits.emotionless.vars(rank)[varNum] / 100);
                 }
@@ -1057,7 +1097,7 @@ function jobStressCalc(info){
                     show.total.val = 0;
                 }
                 else {
-                    vis = show.result.vis && inputs.government.val && inputs.workers.val !== undefined && inputs.emotionless.val !== undefined;
+                    vis = show.result.vis && inputs.government.val && inputs.workers.val !== undefined && inputs.high_pop.val !== undefined && inputs.emotionless.val !== undefined;
                     if (inputs.government.val !== 'federation'){
                         vis = vis && inputs.annexed.val !== undefined;
                     }
@@ -1077,6 +1117,9 @@ function jobStressCalc(info){
                                     total *= 1.1;
                                     break;
                             }
+                        }
+                        if (inputs.high_pop.val){
+                            total /= traits.high_pop.vars(inputs.high_pop.val)[0];
                         }
                         if (inputs.emotionless.val){
                             total *= 1 - (traits.emotionless.vars(inputs.emotionless.val)[1] / 100);
@@ -1163,6 +1206,129 @@ function warmongerCalc(info){
                     show.result.val = Math.log2(inputs.fatigue.val + inputs.protest.val);
                     
                     return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+function spyCostCalc(info){
+    let calc = $(`<div class="calc" id="spyCostCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        military: { val: undefined },
+        relations: { val: undefined },
+        unrest: { val: undefined },
+        spies: { val: undefined },
+        infiltrator: { val: false }
+    }
+    
+    let show = {
+        base: { vis: false, val: undefined },
+        total: { vis: false, val: undefined }
+    }
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_spy_cost_base_title')}</h2>
+        </div>
+        <div>
+            <span>({{ i.military.val, 'mil_rate' | generic }} / 2) + ((100 - {{ i.relations.val, 'relations' | generic }}) / 2) - {{ i.unrest.val, 'unrest' | generic }} + 10</span><span v-show="s.base.vis"> = {{ | calcBase }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_spy_cost_total')}</h2>
+        </div>
+        <div>
+            <span v-show="i.infiltrator.val">(</span><span>{{ s.base.val, 'unrest' | generic }}</span><span v-show="i.infiltrator.val"> / 3)</span>^({{ i.spies.val, 'spies' | generic }} + 1) + 500<span v-show="s.total.vis"> = {{ | calcTotal }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('civics_gov_mil_rate')}</span> <b-numberinput :input="val('military')" min="50" v-model="i.military.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('civics_gov_relations')}</span> <b-numberinput :input="val('relations')" min="0" max ="100" v-model="i.relations.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('civics_gov_unrest')}</span> <b-numberinput :input="val('unrest')" min="0" max ="100" v-model="i.unrest.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_spy_cost_spies')}</span> <b-numberinput :input="val('spies')" min="0" v-model="i.spies.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><b-checkbox class="patrol" v-model="i.infiltrator.val">${loc('trait_infiltrator_name')}</b-checkbox></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#spyCostCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+                if (type !== 'military' && type !== 'spies' && inputs[type].val > 100){
+                    inputs[type].val = 100;
+                }
+                else if (type === 'military' && inputs[type].val < 50){
+                    inputs[type].val = 50;
+                }
+            },
+            resetInputs(){
+                inputs.military.val = undefined;
+                inputs.relations.val = undefined;
+                inputs.unrest.val = undefined;
+                inputs.spies.val = undefined;
+                inputs.infiltrator.val = false;
+                show.base.val = undefined;
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'spies':
+                    case 'base':
+                        return loc('wiki_calc_spy_cost_' + type);
+                    default:
+                        return loc('civics_gov_' + type);
+                }
+            },
+            calcBase(){
+                show.base.vis = inputs.military.val !== undefined && inputs.relations.val !== undefined && inputs.unrest.val !== undefined;
+                
+                if (show.base.vis){
+                    let base = (((inputs.military.val / 2) + ((100 - inputs.relations.val) / 2) - inputs.unrest.val) + 10);
+                    if (base < 50){
+                        base = 50;
+                    }
+                    show.base.val = +(base).toFixed(4);
+                    
+                    return show.base.val;
+                }
+            },
+            calcTotal(){
+                show.total.vis = show.base.val !== undefined && inputs.spies.val !== undefined;
+                
+                if (show.total.vis){
+                    let base = show.base.val;
+                    if (inputs.infiltrator.val){
+                        base /= 3;
+                    }
+                    show.total.val = +((base ** (inputs.spies.val + 1)) + 500).toFixed(2);
+                    
+                    return show.total.val;
                 }
             }
         }
@@ -1350,6 +1516,148 @@ function genomeDecayCalc(info){
                 else {
                     show.game.val = undefined;
                     show.real.val = undefined;
+                }
+            }
+        }
+    });
+}
+
+function quantumLevelCalc(info){
+    let calc = $(`<div class="calc" id="quantumLevelCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_mechanics_quantum')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        knowledge: { val: undefined },
+        citadels: { val: undefined },
+        cores: { val: undefined },
+        supercore: { val: false },
+        linked: { val: undefined },
+        citizens: { val: undefined },
+        
+    }
+    
+    let show = {
+        linked: { val: undefined },
+        result: { vis: false, val: 0 }
+    }
+    
+    formula.append(`
+        <div>
+            <span>(ln(1 + ((1.1 - 1) * {{ i.knowledge.val, 'knowledge' | generic }} / 250000)) / ln(1.1)) * (1 + (0.05 * {{ i.citadels.val, 'citadels' | generic }})) * (2 - (0.99^{{ i.cores.val, 'cores' | generic }}))</span><span v-show="i.supercore.val"> * 1.25</span><span v-show="i.linked.val"> * {{ s.linked.val, 'linked' | generic }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_q_level_knowledge')}</span> <b-numberinput :input="val('knowledge')" min="0" v-model="i.knowledge.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_q_level_citadels')}</span> <b-numberinput :input="val('citadels')" min="0" v-model="i.citadels.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_cores')}</span> <b-numberinput :input="val('cores')" min="0" v-model="i.cores.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><b-checkbox class="patrol" v-model="i.supercore.val">${loc('wiki_calc_q_level_supercore')}</b-checkbox></div>
+            <div class="calcInput"><span>${loc('trait_linked_name')}</span> <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ i.linked.val | traitLabel }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="pickTrait(0, 'linked')">{{ 0 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.25, 'linked')">{{ 0.25 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(0.5, 'linked')">{{ 0.5 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(1, 'linked')">{{ 1 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(2, 'linked')">{{ 2 | traitLabel }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="pickTrait(3, 'linked')">{{ 3 | traitLabel }}</b-dropdown-item>
+            </b-dropdown></div>
+            <div class="calcInput" v-show="i.linked.val"><span>${loc('wiki_calc_citizens')}</span> <b-numberinput :input="val('citizens')" min="0" v-model="i.citizens.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#quantumLevelCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            pickTrait(rank, trait){
+                inputs[trait].val = rank;
+            },
+            resetInputs(){
+                inputs.knowledge.val = undefined;
+                inputs.citadels.val = undefined;
+                inputs.cores.val = undefined;
+                inputs.supercore.val = false;
+                inputs.linked.val = undefined;
+                inputs.citizens.val = undefined;
+            },
+            importInputs(){
+                inputs.knowledge.val = global.resource.Knowledge.max;
+                inputs.citadels.val = global.interstellar['citadel'] ? global.interstellar.citadel.on : 0;
+                inputs.cores.val = global.race.AICore.count;
+                inputs.supercore.val = global.space['ai_core2'] && global.space.ai_core2.on ? true : false;
+                inputs.linked.val = global.race['linked'] ? global.race['linked'] : 0;
+                inputs.citizens.val = global.resource[global.race.species].amount;
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'cores':
+                        return loc('wiki_calc_' + type);
+                    default:
+                        return loc('wiki_calc_q_level_' + type);
+                }
+            },
+            traitLabel(rank){
+                return rank === undefined ? loc('wiki_calc_trait_undefined') : rank === 0 ? loc('wiki_calc_trait_unowned') : rank;
+            },
+            calc(){
+                let linkedComp = true;
+                if (inputs.linked.val > 0){
+                    if (inputs.citizens.val !== undefined){
+                        let factor = traits.linked.vars(inputs.linked.val)[0] / 100 * inputs.citizens.val;
+                        if (factor > traits.linked.vars(inputs.linked.val)[1] / 100){
+                            factor -= traits.linked.vars(inputs.linked.val)[1] / 100;
+                            factor = factor / (factor + 200 - traits.linked.vars(inputs.linked.val)[1]);
+                            factor += traits.linked.vars(inputs.linked.val)[1] / 100;
+                        }
+                        show.linked.val = +(1 + factor).toFixed(4);
+                    }
+                    else {
+                        show.linked.val = undefined;
+                        linkedComp = false;
+                    }
+                }
+                show.result.vis = linkedComp && inputs.knowledge.val !== undefined && inputs.citadels.val !== undefined && inputs.cores.val !== undefined;
+                
+                if (show.result.vis){
+                    let qlevel = (Math.log(1 + ((1.1 - 1) * inputs.knowledge.val / 250000)) / Math.log(1.1)) * (1 + (0.05 * inputs.citadels.val)) * (2 - (0.99 ** inputs.cores.val));
+                    if (inputs.supercore.val){
+                        qlevel *= 1.25;
+                    }
+                    if (show.linked.val){
+                        qlevel *= show.linked.val;
+                    }
+                    
+                    show.result.val = +(qlevel).toFixed(4);
+                    return show.result.val;
                 }
             }
         }

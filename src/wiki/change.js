@@ -3,6 +3,27 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.17`,
+        revision: `a`,
+        date: `8/10/2022`,
+        changes: [
+            `Cheese Event power is now scaled with your cheese level.`,
+            `Fixed Soft Reset bug with Rejuvenated.`,
+        ]
+    },
+    {
+        version: `1.2.17`,
+        date: `8/10/2022`,
+        changes: [
+            `New Hell stats tracking and analytics.`,
+            `Fixed Genetics not unlocking in Cataclysm.`,
+            `Fixed many High Pop scaling interactions.`,
+            `Fixed some loading bugs with wiki when no save data is present.`,
+            `Updated various wiki entries and calculators.`,
+            `Updated Pig Latin.`
+        ]
+    },
+    {
         version: `1.2.16`,
         revision: `a`,
         date: `8/8/2022`,

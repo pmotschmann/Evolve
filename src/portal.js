@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, sizeApproximation } from './vars.js';
+import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
@@ -558,7 +558,7 @@ const fortressModules = {
                     if (global.city.power >= $(this)[0].powered()){
                         global.portal.archaeology.on++;
                         if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - 2 < 0 ? 1 : 2;
+                            let hired = global.civic[global.civic.d_job].workers - jobScale(2) < 0 ? global.civic[global.civic.d_job].workers : jobScale(2);
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.archaeologist.workers += hired;
                         }
@@ -1872,7 +1872,7 @@ export function buildFortress(parent,full){
             fort = $(`<div id="${id}" class="fort gFort"></div>`);
             parent.append(fort);
         }
-        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3></div>`);
+        fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button></div>`);
     }
     
 
@@ -1919,7 +1919,7 @@ export function buildFortress(parent,full){
     reports.append($(`<b-checkbox class="patrol" v-model="f.nocrew"${color} v-show="s.showGalactic">${loc('fortress_nocrew')}</b-checkbox>`));
 
     if (full){
-        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        fort.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     vBind({
@@ -2062,6 +2062,12 @@ export function buildFortress(parent,full){
             },
             hireLabel(){
                 return fortressData('hireLabel');
+            },
+            observation(){
+                global.settings.civTabs = $(`#mainTabs > nav ul li`).length - 1;
+                if (!global.settings.tabLoad){
+                    drawHellObservations();
+                }
             }
         },
         filters: {
@@ -2129,6 +2135,13 @@ export function buildFortress(parent,full){
             }
         );
     });
+    popover(`hf${id}observe`, function(){
+            return loc('hell_observation_tooltip');
+        },
+        {
+            elm: `#${id} button.observe`
+        }
+    );
 }
 
 function fortressDefenseRating(v){
@@ -2157,7 +2170,7 @@ function fortressDefenseRating(v){
     return Math.round(armyRating(army,'hellArmy',wounded)) + (p_on['turret'] ? p_on['turret'] * turret : 0);
 }
 
-function casualties(demons,pat_armor,ambush){
+function casualties(demons,pat_armor,ambush,report){
     let casualties = Math.round(Math.log2((demons / global.portal.fortress.patrol_size) / (pat_armor || 1))) - Math.rand(0,pat_armor);
     let dead = 0;
     if (casualties > 0){
@@ -2172,6 +2185,8 @@ function casualties(demons,pat_armor,ambush){
             dead -= reduction;
             wounded += reduction;
         }
+        report.wounded = wounded;
+        report.died = dead;
         global.civic.garrison.wounded += wounded;
         global.civic.garrison.workers -= dead;
         global.stats.died += dead;
@@ -2180,6 +2195,28 @@ function casualties(demons,pat_armor,ambush){
 }
 
 export function bloodwar(){
+    let day_report = {
+        start: global.portal.fortress.threat,
+        foundGem: false,
+        stats: {
+            wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
+            kills: {
+                drones: 0,
+                patrols: 0,
+                sieges: 0,
+                guns: 0,
+                soul_forge: 0,
+                turrets: 0
+            },
+            gems: {
+                patrols: 0,
+                guns: 0,
+                soul_forge: 0,
+                crafted: 0,
+                turrets: 0
+            },
+        }
+    };
     let pat_armor = global.tech['armor'] ? global.tech['armor'] : 0;
     if (global.race['armored']){
         pat_armor += traits.armored.vars()[1];
@@ -2207,26 +2244,24 @@ export function bloodwar(){
 
     // Drones
     if (global.tech['portal'] >= 3 && p_on['war_drone']){
+        day_report.drones = {};
         for (let i=0; i<p_on['war_drone']; i++){
+            let drone_report = { encounter: false, kills: 0 };
             if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
                 let demons = Math.rand(Math.floor(global.portal.fortress.threat / 50), Math.floor(global.portal.fortress.threat / 10));
                 let killed = global.tech.portal >= 7 ? Math.rand(50,125) : Math.rand(25,75);
-                let remain = demons - killed;
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
+                if (demons < killed){
+                    killed = demons;
                 }
-                else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
                 }
+                drone_report = { encounter: true, kills: killed };
+                day_report.stats.kills.drones += killed;
             }
+            day_report.drones[i+1] = drone_report;
         }
     }
 
@@ -2269,11 +2304,15 @@ export function bloodwar(){
         }
     }
     let brkpnt = +(wounded % 1).toFixed(10);
+    day_report.patrols = {};
     for (let i=0; i<global.portal.fortress.patrols; i++){
+        let patrol_report = { encounter: false, droid: false, ambush: false, gem: false, kills: 0, wounded: 0, died: 0};
         let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
+            patrol_report.encounter = true;
             let pat_size = global.portal.fortress.patrol_size;
             if (terminators > 0){
+                patrol_report.droid = true;
                 pat_size += global.tech['hdroid'] ? jobScale(2) : jobScale(1);
                 terminators--;
             }
@@ -2291,41 +2330,36 @@ export function bloodwar(){
             let odds = 30 + Math.max(global.race['chameleon'] ? traits.chameleon.vars()[1] : 0,
                                      global.race['elusive'] ? traits.elusive.vars()[0] : 0);
             if (Math.rand(0,odds) === 0){
-                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true);
-                let remain = demons - Math.round(pat_rating / 2);
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
+                patrol_report.ambush = true;
+                dead += casualties(Math.round(demons * (1 + Math.random() * 3)),0,true,patrol_report);
+                let killed = Math.round(pat_rating / 2);
+                if (demons < killed){
+                    killed = demons;
                 }
-                else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
                 }
+                patrol_report.kills = killed;
             }
             else {
-                let remain = demons - pat_rating;
-                if (remain > 0){
-                    global.portal.fortress.threat -= demons - remain;
-                    global.stats.dkills += demons - remain;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons - remain;
-                    }
-                    dead += casualties(remain,pat_armor,false);
+                let killed = pat_rating;
+                if (demons <= killed){
+                    killed = demons;
                 }
                 else {
-                    global.portal.fortress.threat -= demons;
-                    global.stats.dkills += demons;
-                    if (forgeOperating){
-                        global.portal.soul_forge.kills += demons;
-                    }
+                    dead += casualties(demons-killed,pat_armor,false,patrol_report);
+                }
+                patrol_report.kills = killed;
+                global.portal.fortress.threat -= killed;
+                global.stats.dkills += killed;
+                if (forgeOperating){
+                    global.portal.soul_forge.kills += killed;
                 }
                 if (Math.rand(0,gem_chance) === 0){
+                    patrol_report.gem = true;
+                    day_report.stats.gems.patrols++;
                     global.resource.Soul_Gem.amount++;
                     global.portal.fortress.pity = 0;
                     if (!global.resource.Soul_Gem.display){
@@ -2337,12 +2371,18 @@ export function bloodwar(){
                     failed_drop = true;
                 }
             }
+            day_report.stats.kills.patrols += patrol_report.kills;
+            day_report.stats.wounded += patrol_report.wounded;
+            day_report.stats.died += patrol_report.died;
         }
+        day_report.patrols[i+1] = patrol_report;
     }
 
     let revive = 0;
     if (global.race['revive']){
-        revive = Math.round(Math.seededRandom(0,(dead / traits.revive.vars()[6]) + 0.25));
+        revive = Math.round(Math.rand(0,(dead / traits.revive.vars()[6]) + 0.25));
+        day_report.revived = revive;
+        day_report.stats.revived = revive;
         global.civic.garrison.workers += revive;
     }
 
@@ -2355,7 +2395,9 @@ export function bloodwar(){
         global.portal.fortress.garrison = garrison_size;
     }
     if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+        let patrol_start = global.portal.fortress.patrols;
         global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+        day_report.patrols_lost = patrol_start - global.portal.fortress.patrols;
     }
 
     if (dead > 0 && global.portal.fortress.notify === 'Yes'){
@@ -2376,6 +2418,7 @@ export function bloodwar(){
         global.portal.fortress.siege--;
     }
     if (global.portal.fortress.siege <= 900 && global.portal.fortress.garrison > 0 && 1 > Math.rand(0,global.portal.fortress.siege)){
+        let siege_report = { destroyed: false, damage: 0, kills: 0, surveyors: 0, soldiers: 0};
         let defense = fortressDefenseRating(global.portal.fortress.garrison);
         let defend = defense / 35 > 1 ? defense / 35 : 1;
         let siege = Math.round(global.portal.fortress.threat / 2);
@@ -2399,18 +2442,25 @@ export function bloodwar(){
                 damage++;
                 global.portal.fortress.walls--;
                 if (global.portal.fortress.walls === 0){
+                    siege_report.destroyed = true;
                     destroyed = true;
                     break;
                 }
             }
         }
-
+        siege_report.damage = damage;
+        siege_report.kills = killed;
+        day_report.stats.kills.sieges = killed;
+        
         if (destroyed){
             messageQueue(loc('fortress_lost'),false,false,['hell']);
+            siege_report.surveyors = global.civic.hell_surveyor.workers;
             global.resource[global.race.species].amount -= global.civic.hell_surveyor.workers;
             global.civic.hell_surveyor.workers = 0;
             global.civic.hell_surveyor.assigned = 0;
 
+            siege_report.soldiers = global.portal.fortress.garrison;
+            day_report.stats.died += global.portal.fortress.garrison;
             global.portal.fortress.patrols = 0;
             global.stats.died += global.portal.fortress.garrison;
             global.civic.garrison.workers -= global.portal.fortress.garrison;
@@ -2422,6 +2472,8 @@ export function bloodwar(){
         }
 
         global.portal.fortress.siege = 999;
+        day_report.stats.sieges++;
+        day_report.siege = siege_report;
     }
 
     if (global.portal.fortress.threat < 10000){
@@ -2429,7 +2481,9 @@ export function bloodwar(){
         if (global.tech['portal'] >= 4 && p_on['attractor']){
             influx *= 1 + (p_on['attractor'] * 0.22);
         }
-        global.portal.fortress.threat += Math.rand(Math.round(10 * influx),Math.round(50 * influx));
+        let demon_spawn = Math.rand(Math.round(10 * influx),Math.round(50 * influx));
+        global.portal.fortress.threat += demon_spawn;
+        day_report.demons = demon_spawn;
     }
 
     // Surveyor threats
@@ -2465,6 +2519,8 @@ export function bloodwar(){
                 messageQueue(loc('fortress_eviscerated',[dead]),false,false,['hell']);
             }
             if (dead > 0){
+                day_report.surveyors = dead;
+                day_report.stats.surveyors = dead;
                 global.civic.hell_surveyor.workers -= dead;
                 global.civic.hell_surveyor.max -= dead;
                 global.resource[global.race.species].amount -= dead;
@@ -2483,14 +2539,21 @@ export function bloodwar(){
     if (global.tech['hell_pit']){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
             let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            global.portal.soul_forge.kills += p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
+            let souls = p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
+            global.portal.soul_forge.kills += souls;
+            day_report.soul_attractors = souls;
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
+            day_report.gun_emplacements = {};
             let gunKills = 0;
             for (let i=0; i<p_on['gun_emplacement']; i++){
-                gunKills += global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
+                day_report.gun_emplacements[i+1] = { kills: 0, gem: false };
+                let kills = global.tech.hell_gun >= 2 ? Math.rand(35,75) : Math.rand(20,40);
+                gunKills += kills;
+                day_report.gun_emplacements[i+1].kills = kills;
             }
+            day_report.stats.kills.guns = gunKills;
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
@@ -2499,17 +2562,24 @@ export function bloodwar(){
             }
             for (let i=0; i<p_on['gun_emplacement']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
+                    day_report.gun_emplacements[i+1].gem = true;
+                    day_report.stats.gems.guns++;
                     global.resource.Soul_Gem.amount++;
                 }
             }
         }
 
         if (forgeOperating){
+            day_report.soul_forge = { kills: 0, gem: false, gem_craft: false, corrupt: false };
             let forgeKills = Math.rand(25,150);
+            day_report.stats.kills.soul_forge = forgeKills;
+            day_report.soul_forge.kills = forgeKills;
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
             let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
             if (Math.rand(0,forge_base) === 0){
+                day_report.soul_forge.gem = true;
+                day_report.stats.gems.soul_forge++;
                 global.resource.Soul_Gem.amount++;
             }
         }
@@ -2519,9 +2589,11 @@ export function bloodwar(){
             cap *= 0.97 ** p_on['soul_attractor'];
         }
         if (forgeOperating && global.portal.soul_forge.kills >= Math.round(cap)){
+            day_report.soul_forge.gem_craft = true;
             global.portal.soul_forge.kills = 0;
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
+                day_report.soul_forge.corrupt = true;
                 global.resource.Corrupt_Gem.amount++;                  
                 global.resource.Corrupt_Gem.display = true;
                 messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
@@ -2530,28 +2602,71 @@ export function bloodwar(){
             }
             else {
                 global.resource.Soul_Gem.amount++;
+                day_report.stats.gems.crafted++;
             }
         }
     }
 
     if (global.tech['hell_gate'] && global.tech['hell_gate'] >= 3){
         if (forgeOperating && p_on['gate_turret']){
+            day_report.gate_turrets = {};
             let gunKills = 0;
             let min = global.tech.hell_gun >= 2 ? 65 : 40;
             let max = global.tech.hell_gun >= 2 ? 100 : 60;
             for (let i=0; i<p_on['gate_turret']; i++){
-                gunKills += Math.rand(min,max);
+                day_report.gate_turrets[i+1] = { kills: 0, gem: false };
+                let kills = Math.rand(min,max);
+                gunKills += kills;
+                day_report.gate_turrets[i+1].kills = kills;
             }
+            day_report.stats.kills.turrets = gunKills;
             global.portal.soul_forge.kills += gunKills;
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){
                 if (Math.rand(0,Math.round(gun_base)) === 0){
+                    day_report.gate_turrets[i+1].gem = true;
+                    day_report.stats.gems.turrets++;
                     global.resource.Soul_Gem.amount++;
                 }
             }
         }
     }
+    
+    global.portal.observe.stats.total.days++;
+    global.portal.observe.stats.period.days++;
+    Object.keys(day_report.stats).forEach(function(stat){
+        if (['kills','gems'].includes(stat)){
+            Object.keys(day_report.stats[stat]).forEach(function(subStat){
+                if (stat === 'gems' && day_report.stats[stat][subStat]){
+                    day_report.foundGem = true;
+                }
+                global.portal.observe.stats.total[stat][subStat] += day_report.stats[stat][subStat];
+                global.portal.observe.stats.period[stat][subStat] += day_report.stats[stat][subStat];
+            });
+        }
+        else {
+            global.portal.observe.stats.total[stat] += day_report.stats[stat];
+            global.portal.observe.stats.period[stat] += day_report.stats[stat];
+        }
+    });
+    if (!hell_reports[`year-${global.city.calendar.year}`]){
+        hell_reports[`year-${global.city.calendar.year}`] = {};
+    }
+    hell_reports[`year-${global.city.calendar.year}`][`day-${global.city.calendar.day}`] = day_report;
+    
+    purgeReports();
+    
+    Object.keys(global.portal.observe.graphs).forEach(function (id){
+        if (!!document.getElementById(global.portal.observe.graphs[id].chartID)){
+            let newData = [];
+            hell_graphs[id].data.forEach(function (dataPoint){
+                newData.push(dataPoint.length === 3 ? global.portal.observe.stats[dataPoint[0]][dataPoint[1]][dataPoint[2]] : global.portal.observe.stats[dataPoint[0]][dataPoint[1]]);
+            });
+            hell_graphs[id].graph.data.datasets[0].data = newData;
+            hell_graphs[id].graph.update();
+        }
+    });
 }
 
 export function hellSupression(area, val){
@@ -4219,5 +4334,787 @@ export function mechRating(mech,boss){
             damage += rating * weaponPower(mech,effect);
         }
         return damage;
+    }
+}
+
+
+export function drawHellObservations(startup){
+    if (!global.settings.tabLoad && global.settings.civTabs !== ($(`#mainTabs > nav ul li`).length - 1) && !startup){
+        return;
+    }
+    let info = $('#mTabObserve');
+    clearElement(info);
+    
+    let observe = $(`<div id="hellObservations"></div>`);
+    info.append(observe);
+    
+    observe.append(`<b-tabs id="hellTabs" class="resTabs" v-model="s.hellTabs" :animated="s.animated" @input="swapTab">
+        <b-tab-item id="h_Report">
+            <template slot="header">
+                <span>${loc('hell_tabs_reports')}</span>
+            </template>
+        </b-tab-item>
+        <b-tab-item id="h_Analysis">
+            <template slot="header">
+                <span>${loc('hell_tabs_analysis')}</span>
+            </template>
+        </b-tab-item>
+    </b-tabs>`);
+    
+    vBind({
+        el: `#hellObservations`,
+        data: {
+            s: global.settings
+        },
+        methods: {
+            swapTab(tab){
+                if (!global.settings.tabLoad){
+                    clearElement($(`#h_Report`));
+                    clearElement($(`#h_Analysis`));
+                    switch (tab){
+                        case 0:
+                            drawHellReports();
+                            break;
+                        case 1:
+                            drawHellAnalysis();
+                            break;
+                    }
+                }
+                return tab;
+            }
+        }
+    });
+    
+    if (!global.settings.tabLoad){
+        switch (global.settings.hellTabs){
+            case 0:
+                drawHellReports();
+                break;
+            case 1:
+                drawHellAnalysis();
+                break;
+        }
+    }
+    else {
+        drawHellReports();
+        drawHellAnalysis();
+    }
+}
+
+function drawHellAnalysis(){
+    if (!global.settings.tabLoad && global.settings.hellTabs !== 1){
+        return;
+    }
+    let info = ($(`#h_Analysis`));
+    let stats = $(`<div id="hellAnalysis" class="vscroll"></div>`);
+    info.append(stats);
+    let bd_settings = $(`<div></div>`);
+    stats.append(bd_settings);
+    let analysis = $(`<div class="hellAnalysis"></div>`);
+    stats.append(analysis);
+    let breakdown = $(`<div class="hellAnalysis"></div>`);
+    analysis.append(breakdown);
+    
+    let totalAnal = $(`<div id="hellAnalysisTotal" class="analysisColumn"></div>`);
+    let partialAnal = $(`<div id="hellAnalysisPeriod" class="analysisColumn"></div>`);
+    breakdown.append(totalAnal);
+    breakdown.append(partialAnal);
+    
+    bd_settings.append(`
+        <div>
+            <h2 class="has-text-warning">${loc('tab_settings')}</h2>
+        </div>
+        <div>
+            <b-checkbox v-model="s.expanded">${loc('hell_analysis_expanded')}</b-checkbox>
+            <b-checkbox v-model="s.average">${loc('hell_analysis_average')}</b-checkbox>
+            <b-checkbox v-show="r.hyper || r.slow" v-model="s.hyperSlow">${loc('hell_analysis_hyperSlow')}</b-checkbox>
+        </div>
+        <div>
+            <b-radio v-model="s.display" native-value="game_days">${loc('hell_analysis_time_game_days')}</b-radio>
+            <b-radio v-model="s.display" native-value="seconds">${loc('hell_analysis_time_seconds')}</b-radio>
+            <b-radio v-model="s.display" native-value="minutes">${loc('hell_analysis_time_minutes')}</b-radio>
+            <b-radio v-model="s.display" native-value="hours">${loc('hell_analysis_time_hours')}</b-radio>
+            <b-radio v-model="s.display" native-value="days">${loc('hell_analysis_time_days')}</b-radio>
+        </div>
+    `);
+    
+    vBind({
+        el: '#hellAnalysis',
+        data: {
+            s: global.portal.observe.settings,
+            r: global.race
+        }
+    });
+    
+    let expandedLocaleNum = function(num,sigFigs){
+        num = num.toFixed(sigFigs);
+        let whole = Math.floor(num);
+        let decimals = (+(num - whole).toFixed(sigFigs)).toString().substring(1);
+        return whole.toLocaleString() + decimals;
+    };
+    
+    let calcAverage = function(num,gameDays,units){
+        if (num){
+            if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+                if (global.race['slow']){
+                    gameDays *= 1 + (traits.slow.vars()[0] / 100);
+                }
+                if (global.race['hyper']){
+                    gameDays *= 1 - (traits.hyper.vars()[0] / 100);
+                }
+            }
+            num /= gameDays;
+            switch (units){
+                case 'seconds':
+                    num /= 5;
+                    break;
+                case 'minutes':
+                    num *= 12;
+                    break;
+                case 'hours':
+                    num *= 720;
+                    break;
+                case 'days':
+                    num *= 17280;
+                    break;
+                default:
+                    break;
+            }
+            num = global.portal.observe.settings.expanded ? expandedLocaleNum(num,5) : sizeApproximation(num,5,true);
+        }
+        return loc('hell_analysis_time_average',[num,loc(`hell_analysis_time_${units}_abbr`)])
+    };
+    
+    let drawStats = function(id,type){
+        if (!id){
+            return;
+        }
+        let elem = $(`#${id}`)
+        clearElement(elem);
+        
+        elem.append(`
+            <div><h2 class="has-text-warning">${loc('hell_analysis_' + type)}</h2>${type === 'period' ? '<h2 id="resetHellObservation" class="text-button has-text-danger" @click="resetObservations()">{{ | resetLabel }}</h2>' : ''}</div>
+            <div><h2 class="has-text-alert">{{ st.${type}.start | startLabel }}</h2></div>
+            <div><h2>{{ st.${type}.days, s.display | time }}</h2></div>
+            <div><h2>{{ st.${type}.kills, 'kills', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('hell_analysis_toggle_bd_kills')])}" @click="toggleDropdown('dropKills')">{{ s.dropKills | dropdownLabel }}</h2></div>
+            <div v-show="s.dropKills">
+                <div v-show="p.war_drone"><h2>{{ st.${type}.kills.drones, 'kills_drones', s.average | genericSub }}</h2></div>
+                <div><h2>{{ st.${type}.kills.patrols, 'kills_patrols', s.average | genericSub }}</h2></div>
+                <div><h2>{{ st.${type}.kills.sieges, 'kills_sieges', s.average | genericSub }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.kills.guns, 'kills_guns', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.kills.soul_forge, 'kills_soul_forge', s.average | genericSub }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ st.${type}.kills.turrets, 'kills_turrets', s.average | genericSub }}</h2></div>
+            </div>
+            <div v-show="sg.display"><h2>{{ st.${type}.gems, 'gems', s.average | genericMulti }}</h2><h2 class="text-button has-text-advanced" aria-label="${loc('hell_analysis_toggle_bd',[loc('resource_Soul_Gem_name')])}" @click="toggleDropdown('dropGems')">{{ s.dropGems | dropdownLabel }}</h2></div>
+            <div v-show="sg.display && s.dropGems">
+                <div><h2>{{ st.${type}.gems.patrols, 'gems_patrols', s.average | genericSub }}</h2></div>
+                <div v-show="p.gun_emplacement"><h2>{{ st.${type}.gems.guns, 'gems_guns', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.soul_forge, 'gems_soul_forge', s.average | genericSub }}</h2></div>
+                <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.crafted, 'gems_crafted', s.average | genericSub }}</h2></div>
+                <div v-show="p.gate_turret"><h2>{{ st.${type}.gems.turrets, 'gems_turrets', s.average | genericSub }}</h2></div>
+            </div>
+            <div><h2>{{ st.${type}.wounded, 'wounded', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.died, 'died', s.average | generic }}</h2></div>
+            <div v-show="r.revive"><h2>{{ st.${type}.revived, 'revived', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.surveyors, 'surveyors', s.average | generic }}</h2></div>
+            <div><h2>{{ st.${type}.sieges, 'sieges', s.average | generic }}</h2></div>
+        `);
+    
+        vBind({
+            el: `#${id}`,
+            data: {
+                st: global.portal.observe.stats,
+                s: global.portal.observe.settings,
+                p: global.portal,
+                r: global.race,
+                sg: global.resource.Soul_Gem
+            },
+            methods: {
+                resetObservations(){
+                    Object.keys(global.portal.observe.stats.period).forEach(function(stat){
+                        if (['kills','gems'].includes(stat)){
+                            Object.keys(global.portal.observe.stats.period[stat]).forEach(function(subStat){
+                                global.portal.observe.stats.period[stat][subStat] = 0;
+                            });
+                        }
+                        else if (stat === 'start'){
+                            global.portal.observe.stats.period.start = { year: global.city.calendar.year, day: global.city.calendar.day }
+                        }
+                        else {
+                            global.portal.observe.stats.period[stat] = 0;
+                        }
+                    });
+                },
+                toggleDropdown(type){
+                    global.portal.observe.settings[type] = !global.portal.observe.settings[type];
+                }
+            },
+            filters: {
+                generic(num, name, average){
+                    if (!average){
+                        return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                    }
+                    return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                genericSub(num, name, average){
+                    if (!average){
+                        return 'ᄂ' + loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                    }
+                    return 'ᄂ' + loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                genericMulti(group, name, average){
+                    let num = 0;
+                    Object.keys(group).forEach(function(type){
+                        num += group[type];
+                    });
+                    if (!average){
+                        return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),global.portal.observe.settings.expanded ? (+(num).toFixed(5)).toLocaleString() : sizeApproximation(num,5,true)]);
+                    }
+                    return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
+                },
+                time(days, units){
+                    if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+                        if (global.race['slow']){
+                            days *= 1 + (traits.slow.vars()[0] / 100);
+                        }
+                        if (global.race['hyper']){
+                            days *= 1 - (traits.hyper.vars()[0] / 100);
+                        }
+                    }
+                    switch (units){
+                        case 'seconds':
+                            days *= 5;
+                            break;
+                        case 'minutes':
+                            days /= 12;
+                            break;
+                        case 'hours':
+                            days /= 720;
+                            break;
+                        case 'days':
+                            days /= 17280;
+                            break;
+                        default:
+                            break;
+                    }
+                    return loc('hell_analysis_time',[loc(`hell_analysis_time_${units}`),global.portal.observe.settings.expanded ? expandedLocaleNum(days,8) : sizeApproximation(days,5,true)]);
+                },
+                resetLabel(){
+                    return loc('hell_analysis_period_reset');
+                },
+                startLabel(start){
+                    return loc('hell_analysis_start',[start.year, start.day]);
+                },
+                dropdownLabel(open){
+                    return open ? '⮝' : '⮟';
+                }
+            }
+        });
+    }
+    drawStats('hellAnalysisTotal','total');
+    drawStats('hellAnalysisPeriod','period');
+    
+    stats = ($(`#hellAnalysis`));
+    let graphs = $(`<div></div>`);
+    stats.append(graphs);
+    graphs.append(`<div><h2 id="hellGraphCreator" class="text-button has-text-success" @click="createGraph()">${loc('hell_graph_create')}</h2></div>`);
+    let graphArea = $(`<div id="hellGraphingArea" class="graphingArea"></div>`);
+    graphs.append(graphArea);
+    
+    vBind({
+        el: '#hellGraphCreator',
+        methods: {
+            createGraph(){
+                let modal = {
+                    template: '<div id="modalBox" class="modalBox"></div>'
+                };
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: modal
+                });
+
+                let checkExist = setInterval(function(){
+                    if ($('#modalBox').length > 0){
+                        clearInterval(checkExist);
+                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('hell_graph_title')}</p>`));
+
+                        var body = $('<div id="specialModal" class="modalBody vscroll"></div>');
+                        $('#modalBox').append(body);
+                        let creator = $(`<div class="graphCreator"></div>`);
+                        body.append(creator);
+
+                        let settings = {
+                            chartType: 'pie',
+                            name: '',
+                            chartName: '',
+                            data: [],
+                            radioFake: '',
+                            showGroups: true
+                        };
+                        let error = {
+                            show: false,
+                            message: ''
+                        }
+                        
+                        creator.append(`
+                            <div><h2 class="has-text-warning">${loc('hell_graph_name')}</h2> <b-input v-model="s.name" :input="nameUpdate(s.name)"></b-input></div>
+                        `)
+                        creator.append(`
+                            <div>
+                                <div>
+                                    <h2 class="has-text-warning">${loc('hell_graph_type')}</h2>
+                                </div>
+                                <div>
+                                    <b-radio v-model="s.chartType" native-value="pie" @click.native="dataOptions('pie')">${loc('hell_graph_pie')}</b-radio>
+                                </div>
+                            </div>
+                        `);
+                        
+                        let dataRegion = $(`<div id="graphDataSelection"></div>`);
+                        creator.append(dataRegion); 
+                        dataRegion.append(`<div><h2 class="has-text-warning">${loc('hell_graph_data')}</h2></div>`);
+                        Object.keys(global.portal.observe.stats).forEach(function(dataSet){
+                            ['kills','gems'].forEach(function(group){
+                                dataRegion.append(`<div>
+                                    <b-radio v-show="${group === 'gems' ? 'sg.display && ' : ''}s.showGroups" v-model="s.radioFake" native-value="${dataSet}${group}" @click.native="setData('${dataSet}','${group}')">${loc('hell_graph_datapoint',[loc(`hell_analysis_${dataSet}`),loc(`hell_analysis_${group}`)])}</b-radio>
+                                </div>`);
+                            });
+                        });
+
+                        creator.append(`
+                            <div>
+                                <div v-show="e.show">
+                                    <h2 class="has-text-danger">{{ e.message }}</h2>
+                                </div>
+                                <div>
+                                    <button class="button" @click="createGraph()">${loc('hell_graph_create')}</button>
+                                </div>
+                            </div>
+                        `);
+                        
+                        vBind({
+                            el: `#specialModal`,
+                            data: {
+                                s: settings,
+                                e: error,
+                                sg: global.resource.Soul_Gem
+                            },
+                            methods: {
+                                nameUpdate(name){
+                                    if (settings.chartName !== name){
+                                        error.show = false;
+                                        settings.chartName = name;
+                                    }
+                                },
+                                dataOptions(type){
+                                    switch (type){
+                                        case 'pie':
+                                            settings.showGroups = true;
+                                            break;
+                                        case 'bar':
+                                            settings.showGroups = false;
+                                            break;
+                                    }
+                                },
+                                setData(type,group){
+                                    error.show = false;
+                                    settings.data = [type,group];
+                                },
+                                createGraph(){
+                                    if (!settings.name){
+                                        error.show = true;
+                                        error.message = loc('hell_graph_error_name_blank');
+                                        return;
+                                    }
+                                    else if (settings.data.length === 0){
+                                        error.show = true;
+                                        error.message = loc('hell_graph_error_data_missing');
+                                        return;
+                                    }
+                                    let graphLabels = [];
+                                    let graphData = [];
+                                    switch(settings.chartType){
+                                        case 'pie':
+                                            Object.keys(global.portal.observe.stats[settings.data[0]][settings.data[1]]).forEach(function(dataPoint){
+                                                graphLabels.push(loc(`hell_analysis_${settings.data[1]}_${dataPoint}`));
+                                                graphData.push([settings.data[0],settings.data[1],dataPoint]);
+                                            });
+                                            break;
+                                        case 'bar':
+                                            break;
+                                    }
+                                    let graphID = newGraph(settings.chartName,settings.chartType,graphLabels,graphData,{title: settings.chartName});
+                                    drawGraph(graphArea,global.portal.observe.graphs[graphID]);
+                                    //Exit the modal
+                                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Escape'}));
+                                    document.dispatchEvent(new KeyboardEvent('keyup', {'key': 'Escape'}));
+                                }
+                            }
+                        });
+                    }
+                }, 50);
+            }
+        }
+    });
+    
+    //Draw existing graphs.
+    Object.keys(global.portal.observe.graphs).forEach(function(id){
+        drawGraph(graphArea,global.portal.observe.graphs[id]);
+    });
+}
+
+function newGraph(name,type,labels,data,settings){
+    let id = `hellGraph-${global.portal.observe.graphID}`;
+    global.portal.observe.graphID++;
+    global.portal.observe.graphs[id] = {
+        id: id,
+        chartID: `${id}-chart`,
+        name: name,
+        type: type,
+        labels: labels,
+        data: data,
+        settings: settings
+    };
+    return id;
+}
+
+function drawGraph(info,graphInfo){
+    let id = graphInfo.id;
+    if (hell_graphs[id]){
+        hell_graphs[id].graph.destroy();
+    }
+    
+    let underscored = graphInfo.name.replaceAll(' ','-');
+    
+    let chartCont = $(`<div id="graph-${id}-container" class="graphContainer"></div>`);
+    info.append(chartCont);
+    chartCont.append(`<div id="graph-${id}-controls" class="graphControls">
+        <div>
+            <h2></h2>
+            <h2 class="text-button has-text-danger" @click="deleteGraph()">Delete</h2>
+        </div>
+        <div class="graphTitle">
+            <h2>${graphInfo.name}</h2>
+        </div>
+    </div>`);
+    let graph = $(`<div class="graph"></div>`);
+    chartCont.append(graph);
+    
+    vBind({
+        el: `#graph-${id}-controls`,
+        methods: {
+            deleteGraph(){
+                hell_graphs[id].graph.destroy();
+                delete hell_graphs[id];
+                delete global.portal.observe.graphs[id];
+                clearElement($(`#graph-${id}-container`),true);
+                return;
+            }
+        }
+    });
+    
+    let newChart = $(`<canvas id="${graphInfo.chartID}"></canvas>`);
+    graph.append(newChart);
+    
+    hell_graphs[id] = {
+        data: graphInfo.data
+    };
+    switch (graphInfo.type){
+        case 'pie':
+            hell_graphs[id].graph = drawPieChart(newChart,graphInfo.labels,graphInfo.data,graphInfo.settings);
+            break;
+        default:
+            break;
+    }
+}
+
+function drawPieChart(info,labels,data,settings){
+    let drawData = [];
+    data.forEach(function (dataPath){
+        drawData.push(dataPath.length === 3 ? global.portal.observe.stats[dataPath[0]][dataPath[1]][dataPath[2]] : global.portal.observe.stats[dataPath[0]][dataPath[1]]);
+    });
+    return new Chart(info, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: drawData,
+                backgroundColor: ['rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)',
+                'rgb(201, 203, 207)',
+                'rgb(75, 192, 192)',
+                '#B86BFF',
+                '#48c774'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+
+function drawHellReports(){
+    if (!global.settings.tabLoad && global.settings.hellTabs !== 0){
+        return;
+    }
+    purgeReports();
+    
+    let list = ``;
+    
+    let info = ($(`#h_Report`));
+    let reports = $(`<div id="hellReport" class="hellReports"></div>`);
+    info.append(reports);
+    let reportListSection = $(`<div class="reportList vscroll"></div>`);
+    reports.append(reportListSection);
+    reportListSection.append(`<div id="hellReportLogTitle"><h2 class="has-text-info">${loc('hell_report_log')}</h2><span class="refresh" @click="updateList()" aria-label="${loc('hell_report_log_refresh_aria')}">
+        <svg version="1.1" x="0px" y="0px" viewBox="0 0 492.883 492.883" enable-background="new 0 0 492.883 492.883" xml:space="preserve">
+            <path d="M122.941,374.241c-20.1-18.1-34.6-39.8-44.1-63.1c-25.2-61.8-13.4-135.3,35.8-186l45.4,45.4c2.5,2.5,7,0.7,7.6-3    l24.8-162.3c0.4-2.7-1.9-5-4.6-4.6l-162.4,24.8c-3.7,0.6-5.5,5.1-3,7.6l45.5,45.5c-75.1,76.8-87.9,192-38.6,282    c14.8,27.1,35.3,51.9,61.4,72.7c44.4,35.3,99,52.2,153.2,51.1l10.2-66.7C207.441,421.641,159.441,407.241,122.941,374.241z"/>
+		    <path d="M424.941,414.341c75.1-76.8,87.9-192,38.6-282c-14.8-27.1-35.3-51.9-61.4-72.7c-44.4-35.3-99-52.2-153.2-51.1l-10.2,66.7    c46.6-4,94.7,10.4,131.2,43.4c20.1,18.1,34.6,39.8,44.1,63.1c25.2,61.8,13.4,135.3-35.8,186l-45.4-45.4c-2.5-2.5-7-0.7-7.6,3    l-24.8,162.3c-0.4,2.7,1.9,5,4.6,4.6l162.4-24.8c3.7-0.6,5.4-5.1,3-7.6L424.941,414.341z"/>
+        </svg>
+    </span></div>`);
+    let reportList = $(`<div id="hellReportList"></div>`);
+    reportListSection.append(reportList);
+    reports.append($(`<div id="hellReportDisplay" class="reportDisplay is-vertical vscroll"></div>`));
+    
+    let recentDay = { year: 0, day: 0 };
+    if (Object.keys(hell_reports).length){
+        recentDay.year = Object.keys(hell_reports)[0].split('-')[1];
+        recentDay.day = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
+    }
+
+    let updateList = function(startYear,startDay){
+        if (purgeReports(true)){
+            list = ``;
+            startYear = Object.keys(hell_reports)[0].split('-')[1];
+            startDay = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
+        }
+        for (startYear; startYear<global.city.calendar.year; startYear++){
+            for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+                list = `
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? '<span class="has-text-advanced">&#9830</span>' : ''}</div>
+                ` + list;
+            }
+            startDay = 1;
+        }
+        //Remaining days in current year.
+        for (startDay; startDay<global.city.calendar.day; startDay++){
+            list = `
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">&#9830</span>` : ''}</div>
+            ` + list;
+        }
+        recentDay.year = startYear;
+        recentDay.day = startDay;
+        
+        let reportList = ($(`#hellReportList`));
+        clearElement(reportList);
+        reportList.append(list);
+        vBind({
+            el: '#hellReportList',
+            methods: {
+                reportLoad(year,day){
+                    loadReport(year,day);
+                }
+            }
+        });
+    }
+
+    let loadReport = function(year,day){
+        if (!year || !day){
+            return;
+        }
+        let info = $(`#hellReportDisplay`);
+        clearElement(info);
+        let curr_report = hell_reports[`year-${year}`][`day-${day}`];
+
+        let statsBar = $(`<div id="hellReportStats" class="reportStats"></div>`);
+        info.append(statsBar);
+        let kills = 0;
+        let gems = 0;
+        Object.keys(curr_report.stats.kills).forEach(function(killType){
+            kills += curr_report.stats.kills[killType];
+        });
+        Object.keys(curr_report.stats.gems).forEach(function(gemType){
+            gems += curr_report.stats.gems[gemType];
+        });
+        statsBar.append(`<div><h2 class="has-text-info">${loc('hell_report_log_stats',[year,day])}</h2></div>`);
+        statsBar.append(`<div>
+            <h2>${loc('hell_report_log_stats_kills',[kills])}</h2>
+            <h2 v-show="g.display">${loc('hell_report_log_stats_gems',[gems])}</h2>
+            <h2>${loc('hell_report_log_stats_wounded',[curr_report.stats.wounded])}</h2>
+            <h2>${loc('hell_report_log_stats_died',[curr_report.stats.died])}</h2>
+        </div>`);
+
+        info.append(`<div><h2 class="has-text-info">${loc('hell_report_log_report',[year,day])}</h2></div>`);
+        info.append(`<p class="has-text-danger">${loc('hell_report_log_start',[curr_report.start])}</p>`);
+        if (curr_report.drones){
+            Object.keys(curr_report.drones).forEach(function(num){
+                let drone = curr_report.drones[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_war_drone_title'),num]);
+                if (drone.encounter){
+                    info.append(`<p>${loc('hell_report_log_encounter',[name,drone.kills])}</p>`);
+                }
+                else {
+                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                }
+            });
+        }
+        if (curr_report.patrols){
+            Object.keys(curr_report.patrols).forEach(function(num){
+                let patrol = curr_report.patrols[num];
+                let name = loc('hell_report_log_obj_counter',[loc('hell_report_log_patrol'),num]);
+                name = patrol.droid ? loc('hell_report_log_patrol_droid',[name]) : name;
+                if (patrol.encounter){
+                    let displayText = $(`<p></p>`);
+                    if (patrol.ambush){
+                        displayText.append(`<span class="has-text-warning">${loc('hell_report_log_patrol_ambush',[name,patrol.kills])}</span>`);
+                    }
+                    else {
+                        displayText.append(`<span>${loc('hell_report_log_encounter',[name,patrol.kills])}</span>`);
+                    }
+                    if (patrol.wounded){
+                        displayText.append(`<span class="has-text-danger">${patrol.wounded > 1 ? loc('hell_report_log_patrol_wounded_plural',[patrol.wounded]) : loc('hell_report_log_patrol_wounded')}</span>`);
+                    }
+                    if (patrol.died){
+                        displayText.append(`<span class="has-text-danger">${patrol.died > 1 ? loc('hell_report_log_patrol_killed_plural',[patrol.died]) : loc('hell_report_log_patrol_killed')}</span>`);
+                    }
+                    if (patrol.gem){
+                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                    }
+                    info.append(displayText);
+                }
+                else {
+                    info.append(`<p class="has-text-warning">${loc('hell_report_log_encounter_fail',[name])}</p>`);
+                }
+            });
+        }
+        if (curr_report.revived){
+            info.append(`<p>${curr_report.revived > 1 ? loc('hell_report_log_revived_plural',[curr_report.revived]) : loc('hell_report_log_revived')}</p>`);
+        }
+        if (curr_report.patrols_lost){
+            info.append(`<p class="has-text-danger">${loc('hell_report_log_patrols_lost',[curr_report.patrols_lost])}</p>`);
+        }
+        if (curr_report.siege){
+            if (curr_report.siege.destroyed){
+                info.append(`<p class="has-text-danger">${loc('hell_report_log_siege',[curr_report.siege.surveyors,curr_report.siege.soldiers,curr_report.siege.kills])}</p>`);
+            }
+            else {
+                info.append(`<p class="has-text-warning">${loc('hell_report_log_siege_fail',[curr_report.siege.damage,curr_report.siege.kills])}</p>`);
+            }
+        }
+        if (curr_report.demons){
+            info.append(`<p class="has-text-danger">${loc('hell_report_log_demons',[curr_report.demons])}</p>`);
+        }
+        if (curr_report.surveyors){
+            info.append(`<p class="has-text-danger">${curr_report.surveyors > 1 ? loc('hell_report_log_surveyors_plural',[curr_report.surveyors]) : loc('hell_report_log_surveyors')}</p>`);
+        }
+        if (curr_report.soul_attractors){
+            info.append(`<p>${loc('hell_report_log_soul_attractors',[curr_report.soul_attractors])}</p>`);
+        }
+        if (curr_report.gun_emplacements){
+            Object.keys(curr_report.gun_emplacements).forEach(function(num){
+                let displayText = $(`<p></p>`);
+                let gun = curr_report.gun_emplacements[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_gun_emplacement_title'),num]);
+                displayText.append($(`<span>${loc('hell_report_log_misc_kills',[name,gun.kills,loc('portal_pit_name')])}</span>`));
+                if (gun.gem){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+        if (curr_report.soul_forge){
+            let displayText = $(`<p></p>`);
+            displayText.append(`<span>${loc('hell_report_log_soul_forge',[curr_report.soul_forge.kills])}</span>`);
+            if (curr_report.soul_forge.gem){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+            }
+            if (curr_report.soul_forge.gem_craft){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
+            }
+            info.append(displayText);
+        }
+        if (curr_report.gate_turrets){
+            Object.keys(curr_report.gate_turrets).forEach(function(num){
+                let displayText = $(`<p></p>`);
+                let turret = curr_report.gate_turrets[num];
+                let name = loc('hell_report_log_obj_counter',[loc('portal_gate_turret_title'),num]);
+                displayText.append(`<span>${loc('hell_report_log_misc_kills',[name,turret.kills,loc('portal_gate_name')])}</span>`);
+                if (turret.gem){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+    
+        vBind({
+            el: '#hellReportDisplay',
+            data: {
+                g: global.resource.Soul_Gem
+            }
+        });
+    }
+
+    if (recentDay.day !== 0){
+        updateList(recentDay.year, recentDay.day);
+        let lastReportYear = recentDay.year;
+        let lastReportDay = recentDay.day;
+        if (lastReportDay - 1 === 0){
+            lastReportYear--;
+            lastReportDay = global.city.calendar.orbit;
+        }
+        else {
+            lastReportDay--;
+        }
+        loadReport(lastReportYear,lastReportDay);
+    }
+    else {
+        recentDay.year = global.city.calendar.year;
+        recentDay.day = global.city.calendar.day;
+    }
+
+    vBind({
+        el: '#hellReportLogTitle',
+        methods: {
+            updateList(){
+                updateList(recentDay.year, recentDay.day);
+            }
+        }
+    });
+
+    popover(`hellReportLogs`, function(){
+            return loc(`hell_report_log_tooltip`,[2500]);
+        },
+        {
+            elm: `#hellReport .reportList div:first-child h2`
+        }
+    );
+}
+
+function purgeReports(refresh){
+    if (!(!!document.getElementById(`hellReportList`)) || refresh){
+        let removed = false;
+        let threshold = 2500;
+
+        let approx = ((Object.keys(hell_reports).length - 1) * global.city.calendar.orbit) + global.city.calendar.day;
+
+        if (approx > threshold){
+            let firstYear = Object.keys(hell_reports[Object.keys(hell_reports)[0]]).length;
+            if (approx - global.city.calendar.orbit + firstYear > threshold){
+                removed = true;
+                approx -= firstYear;
+                delete hell_reports[Object.keys(hell_reports)[0]];
+            }
+            while (approx > threshold){
+                approx -= global.city.calendar.orbit;
+                delete hell_reports[Object.keys(hell_reports)[0]];
+            }
+        }
+        return removed;
     }
 }

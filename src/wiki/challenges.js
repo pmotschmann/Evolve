@@ -370,7 +370,7 @@ export function challengesPage(content){
                     subreqs: [
                         {
                             text: loc(`wiki_resets_blackhole`),
-                            color: global.stats.achieve['blackhole'] ? true : false,
+                            color: global.stats.achieve['whitehole'] ? true : false,
                             link: 'wiki.html#resets-prestige-blackhole'
                         },
                         {

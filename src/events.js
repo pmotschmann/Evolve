@@ -789,7 +789,8 @@ export const events = {
             return false;
         },
         effect(){
-            global.race['cheese'] = Math.rand(10,25);
+            let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
+            global.race['cheese'] = Math.rand(10,10 + resets);
             return loc(`event_cheese`);
         }
     },
