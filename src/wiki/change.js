@@ -4,6 +4,15 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.17`,
+        revision: `a`,
+        date: `8/10/2022`,
+        changes: [
+            `Cheese Event power is now scaled with your cheese level.`,
+            `Fixed Soft Reset bug with Rejuvenated.`,
+        ]
+    },
+    {
+        version: `1.2.17`,
         date: `8/10/2022`,
         changes: [
             `New Hell stats tracking and analytics.`,

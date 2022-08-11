@@ -1108,9 +1108,11 @@ function minorEventsPage(content){
     }
     
     {   // Cheese
+        let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
+        let cheese = +(resets / (resets + 10) * 11).toFixed(2);
         let section = infoBoxBuilder(mainContent,{ name: 'cheese', template: 'events', label: loc('wiki_events_cheese'), paragraphs: 1, h_level: 2,
             para_data: {
-                1: [`1%`,10,25]
+                1: [`${cheese}%`,10,9+resets]
             }});
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_cheese'), paragraphs: 1, h_level: 2,
             para_data: {

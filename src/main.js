@@ -287,8 +287,10 @@ popover('morale',
         }
 
         if (global.race['cheese']){
-            total++;
-            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +1%</span></p>`);
+            let raw_cheese = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
+            let cheese = +(raw_cheese / (raw_cheese + 10) * 11).toFixed(2);
+            total += cheese;
+            obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +${cheese}%</span></p>`);
         }
 
         total = +(total).toFixed(1);
@@ -1039,7 +1041,9 @@ function fastLoop(){
         }
 
         if (global.race['cheese']){
-            morale++;
+            let raw_cheese = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
+            let cheese = +(raw_cheese / (raw_cheese + 10) * 11).toFixed(2);
+            morale += cheese;
         }
 
         if (global.tech['m_boost']){

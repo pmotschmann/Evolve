@@ -1070,7 +1070,7 @@ if (convertVersion(global['version']) < 102017){
 }
 
 global['version'] = '1.2.17';
-delete global['revision'];
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('power')){
@@ -2190,7 +2190,7 @@ window.soft_reset = function reset(){
         probes: global.race.probes,
         seed: global.race.seed,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
-        rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.ascended : false,
+        rejuvenated: global.race.hasOwnProperty('rejuvenated') ? global.race.rejuvenated : false,
     }
     if (gecks > 0){
         replace['geck'] = gecks;
