@@ -3,8 +3,8 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
-        version: `1.2.16`,
-        date: `8/??/2022`,
+        version: `1.2.18`,
+        date: `8/14/2022`,
         changes: [
             `More accurate timers when using Governor Trash Management task.`,
             `Optimistic Min Morale effect now scales with trait rank.`,
