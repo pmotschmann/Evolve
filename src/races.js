@@ -5007,7 +5007,7 @@ export function traitSkin(type,trait){
         case 'name':
         {
             let name = {
-                hooved: hoovedSkin(false),
+                hooved: hoovedReskin(false),
                 promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
