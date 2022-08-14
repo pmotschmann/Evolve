@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.16`,
+        date: `8/??/2022`,
+        changes: [
+            `More accurate timers when using Governor Trash Management task.`,
+        ]
+    },
+    {
         version: `1.2.17`,
         revision: `a`,
         date: `8/10/2022`,

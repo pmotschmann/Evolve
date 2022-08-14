@@ -802,6 +802,14 @@ export function timeCheck(c_action,track,detailed){
                 og_track_r[res] = track.r[res];
             });
         }
+        let hasTrash = false;
+        if (global.interstellar.hasOwnProperty('mass_ejector') && global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+            Object.keys(global.race.governor.tasks).forEach(function (t){
+                if (global.race.governor.tasks[t] === 'trash'){
+                    hasTrash = true;
+                }
+            });
+        }
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
@@ -810,6 +818,13 @@ export function timeCheck(c_action,track,detailed){
                     let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
                     let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[f_res].max;
                     let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[f_res].diff;
+
+                    if (hasTrash && global.interstellar.mass_ejector[res]){
+                        res_diff += global.interstellar.mass_ejector[res];
+                        if (global.race.governor.config.trash[res]){
+                            res_diff -= global.race.governor.config.trash[res];
+                        }
+                    }
 
                     if (track){
                         res_have += res_diff * track.t;
@@ -871,6 +886,14 @@ export function arpaTimeCheck(project, remain, track){
             og_track_r[res] = track.r[res];
         });
     }
+    let hasTrash = false;
+    if (global.interstellar.hasOwnProperty('mass_ejector') && global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+        Object.keys(global.race.governor.tasks).forEach(function (t){
+            if (global.race.governor.tasks[t] === 'trash'){
+                hasTrash = true;
+            }
+        });
+    }
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
             let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
@@ -878,7 +901,15 @@ export function arpaTimeCheck(project, remain, track){
                 let res_have = Number(global.resource[res].amount);
 
                 if (track){
-                    res_have += global.resource[res].diff * track.t;
+                    let res_diff = global.resource[res].diff;
+                    if (hasTrash && global.interstellar.mass_ejector[res]){
+                        res_diff += global.interstellar.mass_ejector[res];
+                        if (global.race.governor.config.trash[res]){
+                            res_diff -= global.race.governor.config.trash[res];
+                        }
+                    }
+
+                    res_have += gres_diff * track.t;
                     if (track.r[res]){
                         res_have -= Number(track.r[res]);
                         track.r[res] += allRemainingSegmentsCost;
@@ -892,8 +923,8 @@ export function arpaTimeCheck(project, remain, track){
                 }
 
                 if (allRemainingSegmentsCost > res_have){
-                    if (global.resource[res].diff > 0){
-                        let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                    if (res_diff > 0){
+                        let r_time = (allRemainingSegmentsCost - res_have) / res_diff;
                         if (r_time > allRemainingSegmentsTime){
                             allRemainingSegmentsTime = r_time;
                         }
