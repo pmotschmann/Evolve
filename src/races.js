@@ -1569,15 +1569,15 @@ export const traits = {
         vars(r){
             switch (r || global.race.optimistic || 1){
                 case 0.25:
-                    return [4];
+                    return [4,6];
                 case 0.5:
-                    return [5];
+                    return [5,8];
                 case 1:
-                    return [10];
+                    return [10,10];
                 case 2:
-                    return [15];
+                    return [15,13];
                 case 3:
-                    return [18];
+                    return [18,15];
             }
         },
     },

@@ -7,6 +7,7 @@ const changeList = [
         date: `8/??/2022`,
         changes: [
             `More accurate timers when using Governor Trash Management task.`,
+            `Optimistic Min Morale effect now scales with trait rank.`,
         ]
     },
     {

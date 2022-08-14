@@ -6677,7 +6677,7 @@
   "wiki_trait_effect_gluttony": "+%0% Food consumption.",
   "wiki_trait_effect_slow": "Game speed reduced by %0%.",
   "wiki_trait_effect_armored": "-%0% Soldier deaths. +%1 Hell Patrol Armor.",
-  "wiki_trait_effect_optimistic": "Stress reduced by %0 points.",
+  "wiki_trait_effect_optimistic": "Stress reduced by %0 points. Minimum Morale increased by %1%.",
   "wiki_trait_effect_chameleon": "Barracks house 1 less soldier. +%0% Combat Rating. Hell patrols are %1% less likely to be ambushed, effect does not combine with Elusive.",
   "wiki_trait_effect_slow_digestion": "Starvation threshold increased by %0.",
   "wiki_trait_effect_hard_of_hearing": "-%0% University Knowledge.",

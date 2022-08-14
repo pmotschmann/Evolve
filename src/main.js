@@ -2556,7 +2556,10 @@ function fastLoop(){
             moraleCap += global.stats.achieve['joyless'].l * 2;
         }
 
-        let m_min = global.race['optimistic'] ? 60 : 50;
+        let m_min = 50;
+        if (global.race['optimistic']){
+            m_min += traits.optimistic.vars()[1];
+        }
         if (global.race['truepath']){
             m_min -= 25;
         }
