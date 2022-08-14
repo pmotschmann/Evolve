@@ -1,6 +1,6 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
@@ -4960,8 +4960,8 @@ export function buildTemplate(key, region){
             let id = region === 'space' ? 'space-horseshoe' : 'city-horseshoe';
             let action = {
                 id: id,
-                title(){ return loc(global.race['sludge'] ? 'city_beaker' : 'city_horseshoe'); },
-                desc(){ return loc(global.race['sludge'] ? 'city_beaker_desc' : 'city_horseshoe_desc'); },
+                title(){ return loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]); },
+                desc(){ return loc(`city_${hoovedRename(true)}_desc`,[hoovedRename(false)]); },
                 category: 'outskirts',
                 reqs: { primitive: 3 },
                 trait: ['hooved'],

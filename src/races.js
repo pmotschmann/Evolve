@@ -5007,7 +5007,7 @@ export function traitSkin(type,trait){
         case 'name':
         {
             let name = {
-                hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
+                hooved: hoovedSkin(false),
                 promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
@@ -5015,11 +5015,26 @@ export function traitSkin(type,trait){
         case 'desc':
         {
             let desc = {
-                hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+                hooved: hoovedReskin(true),
                 promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
+    }
+}
+
+function hoovedReskin(desc){
+    if (global.race['sludge']){
+        return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
+    }
+    else if (global.race.species === 'cath'){
+        return desc ? loc('trait_hooved_cath') : loc('trait_hooved_cath_name');
+    }
+    else if (races[global.race.species].type === 'plant'){
+        return desc ? loc('trait_hooved_plant') : loc('trait_hooved_plant_name');
+    }
+    else {
+        return desc ? traits['hooved'].desc : traits['hooved'].name;
     }
 }
 

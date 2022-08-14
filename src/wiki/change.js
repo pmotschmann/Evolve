@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `More accurate timers when using Governor Trash Management task.`,
             `Optimistic Min Morale effect now scales with trait rank.`,
+            `Fixed TP loot table when Assaulting or Sieging rival.`,
         ]
     },
     {

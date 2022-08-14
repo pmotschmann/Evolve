@@ -2435,29 +2435,44 @@ function getTraitVals(trait,rank){
         else if (trait === 'hivemind' && global.race['high_pop']){
             vals = [vals[0] * traits.high_pop.vars()[0]];
         }
-        else if (trait === 'imitation') {
+        else if (trait === 'imitation'){
             vals.push(races[global.race['srace'] || 'protoplasm'].name);
         }
-        else if (trait === 'elusive') {
+        else if (trait === 'elusive'){
             vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
         }
-        else if (trait === 'chameleon') {
+        else if (trait === 'chameleon'){
             vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
         }
-        else if (trait === 'blood_thirst') {
+        else if (trait === 'blood_thirst'){
             vals = [Math.ceil(Math.log2(vals[0]))];
         }
-        else if (trait === 'selenophobia') {
+        else if (trait === 'selenophobia'){
             vals = [14 - vals[0], vals[0]];
         }
-        else if (trait === 'hooved') {
-            vals = [global.race['sludge'] ? loc('resource_Beaker_name') : loc('resource_Horseshoe_name')];
+        else if (trait === 'hooved'){
+            vals = [hoovedRename()];
         }
         else if (!valAdjust[trait]){
             vals = [];
         }
     }
     return vals;
+}
+
+export function hoovedRename(style){
+    if (global.race['sludge']){
+        return style ? 'craft' : loc('resource_Beaker_name');
+    }
+    else if (global.race.species === 'cath'){
+        return style ? 'craft' : loc('resource_Box_name');
+    }
+    else if (races[global.race.species].type === 'plant'){
+        return style ? 'craft' : loc('resource_Planter_name');
+    }
+    else {
+        return style ? 'forge' : loc('resource_Horseshoe_name');
+    }
 }
 
 const traitExtra = {
