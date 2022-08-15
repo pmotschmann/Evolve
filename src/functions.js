@@ -900,8 +900,8 @@ export function arpaTimeCheck(project, remain, track){
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
 
+                let res_diff = global.resource[res].diff;
                 if (track){
-                    let res_diff = global.resource[res].diff;
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
                         if (global.race.governor.config.trash[res]){
@@ -909,7 +909,7 @@ export function arpaTimeCheck(project, remain, track){
                         }
                     }
 
-                    res_have += gres_diff * track.t;
+                    res_have += res_diff * track.t;
                     if (track.r[res]){
                         res_have -= Number(track.r[res]);
                         track.r[res] += allRemainingSegmentsCost;

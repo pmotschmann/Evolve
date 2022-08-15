@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.18`,
+        revision: `a`,
+        date: `8/14/2022`,
+        changes: [
+            `Fixed ARPA queueing.`,
+        ]
+    },
+    {
+        version: `1.2.18`,
         date: `8/14/2022`,
         changes: [
             `More accurate timers when using Governor Trash Management task.`,
