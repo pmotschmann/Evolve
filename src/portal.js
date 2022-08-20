@@ -648,6 +648,7 @@ const fortressModules = {
                         global.portal.hell_forge.on++;
                         global.city.smelter.cap += 3;
                         global.city.smelter.Oil += 3;
+                        global.city.smelter.Iron += 3;
                     }
                     return true;
                 }

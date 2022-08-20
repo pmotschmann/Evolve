@@ -3340,6 +3340,7 @@ const interstellarProjects = {
                             global.city.smelter.cap += 2;
                             global.city.smelter.Star += 2;
                             global.city.smelter.StarCap += 2;
+                            global.city.smelter.Iron += 2;
                         }
                     }
                     return true;
