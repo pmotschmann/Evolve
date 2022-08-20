@@ -5636,6 +5636,9 @@ function space(zone){
                 }
             }
         }
+        else {
+            regionOrder.push(region);
+        }
     });
 
     regionOrder.forEach(function (region){
@@ -5645,8 +5648,9 @@ function space(zone){
                 return;
             }
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
+            let noHome = global.race['orbit_decayed'] || global.race['cataclysm'] ? true : false;
 
-            if ((global.race['orbit_decayed'] || global.race['cataclysm']) && region !== 'spc_home'){
+            if ((noHome && region !== 'spc_home') || !noHome){
                 if (spaceProjects[region].info['support']){
                     let support = spaceProjects[region].info['support'];
                     if (!global.space[support].hasOwnProperty('support')){
