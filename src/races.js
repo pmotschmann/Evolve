@@ -2760,15 +2760,15 @@ export const traits = {
             // [Knowledge Base, Knowledge Scale, Tax Bonus]
             switch (r || global.race.magnificent || 1){
                 case 0.25:
-                    return [300,1, 0.5, 0.75, 1];
+                    return [300, 1, 0.5, 0.75, 1];
                 case 0.5:
-                    return [350,2, 0.75, 0.8, 1];
+                    return [350, 2, 0.75, 0.8, 1];
                 case 1:
-                    return [400,3, 1, 1, 1];
+                    return [400, 3, 1, 1, 1];
                 case 2:
-                    return [450,3, 1.5, 1.5, 1.5];
+                    return [450, 3, 1.5, 1.5, 1.5];
                 case 3:
-                    return [500,3, 2, 2, 2];
+                    return [500, 3, 2, 2, 2];
             }
         }
     },

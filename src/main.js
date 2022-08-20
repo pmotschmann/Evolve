@@ -1538,7 +1538,6 @@ function fastLoop(){
             power_generated[loc('space_hell_geothermal_title')] = -(power);
         }
 
-
         if (global.space['hydrogen_plant'] && global.space.hydrogen_plant.on > 0){
             let output = actions.space.spc_titan.hydrogen_plant.powered();
             if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
@@ -1770,9 +1769,15 @@ function fastLoop(){
                         for (let i=0; i<p_on[sup.s]; i++){
                             if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
                                 mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
-                                p_on[sup.s] -= i;
+                                p_on[sup.s] = i;
                                 break;
                             }
+                        }
+                        if (p_on[sup.s] < global.space[sup.s].on){
+                            $(`#space-${sup.s} .on`).addClass('warn');
+                        }
+                        else {
+                            $(`#space-${sup.s} .on`).removeClass('warn');
                         }
                     }
                 }
