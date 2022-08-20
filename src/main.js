@@ -497,7 +497,8 @@ popover('topBarPlanet',
             }
             if (global.race['orbit_decay']){
                 let impact = global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
-                challenges = challenges + `<div>${loc('evo_challenge_orbit_decay_desc')} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
+                let state = global.race['orbit_decayed'] ? loc('evo_challenge_orbit_decay_impacted',[races[global.race.species].home]) : loc('evo_challenge_orbit_decay_desc');
+                challenges = challenges + `<div>${state} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
                 if (calc_mastery() >= 100 && global.race.universe !== 'antimatter'){
                     challenges = challenges + `<div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
                 }
@@ -7164,7 +7165,7 @@ function midLoop(){
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 bd_Money[loc('space_red_spaceport_title')] = gain+'v';
             }
             else {

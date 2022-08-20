@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.19`,
+        date: `8/20/2022`,
+        changes: [
+            `Structures orbiting the home planet are now moved to the Red planet after orbit decay.`,
+            `Fixed an incorrect source label for money storage in Orbit Decay.`,
+        ]
+    },
+    {
         version: `1.2.18`,
         revision: `a`,
         date: `8/14/2022`,

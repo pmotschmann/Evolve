@@ -869,6 +869,7 @@
   "evo_challenge_sludge_conditions": "Win? There is no winning.",
   "evo_challenge_orbit_decay": "Orbital Decay",
   "evo_challenge_orbit_decay_desc": "The moon is in a decaying orbit.",
+  "evo_challenge_orbit_decay_impacted": "The moon has collided with %0, destroying both.",
   "evo_challenge_orbit_decay_effect": "Your homeworlds' moon is in a decaying orbit, it will impact the planet in %0 days.",
   "evo_challenge_orbit_decay_flair": "Why is the moon getting bigger?",
   "evo_challenge_orbit_decay_conditions": "Survive and thrive.",
