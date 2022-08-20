@@ -338,7 +338,7 @@ export function drawnGovernOffice(){
         let options = `<b-dropdown-item v-on:click="setTask('none',${num})">{{ 'none' | label }}</b-dropdown-item>`;
         Object.keys(gov_tasks).forEach(function(task){
             if (gov_tasks[task].req()){
-                options += `<b-dropdown-item v-on:click="setTask('${task}',${num})">{{ '${task}' | label }}</b-dropdown-item>`;
+                options += `<b-dropdown-item v-show="activeTask('${task}')" v-on:click="setTask('${task}',${num})">{{ '${task}' | label }}</b-dropdown-item>`;
             }
         });
 
@@ -538,6 +538,17 @@ export function drawnGovernOffice(){
             },
             showTask(t){
                 return Object.values(global.race.governor.tasks).includes(t);
+            },
+            activeTask(t){
+                let activeTasks = [];
+                if (global.race.hasOwnProperty('governor')){
+                    Object.keys(global.race.governor.tasks).forEach(function(ts){
+                        if (global.race.governor.tasks[ts] !== 'none'){
+                            activeTasks.push(global.race.governor.tasks[ts]);
+                        }
+                    });
+                }
+                return !activeTasks.includes(t);
             },
             showStrRes(r){
                 return global.resource[r].display;

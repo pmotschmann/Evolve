@@ -9,6 +9,7 @@ const changeList = [
             `Added rank scaling effects to traits: Carnivore, Hooved, Leathery, Unified, & Magnificent.`,
             `Structures orbiting the home planet are now moved to the Red planet after Orbit Decay or during Cataclysm.`,
             `Fixed an incorrect source label for money storage in Orbit Decay.`,
+            `Already active Governor tasks will no longer display for assignment in other task slots.`,
         ]
     },
     {
