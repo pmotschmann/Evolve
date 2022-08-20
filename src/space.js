@@ -5627,7 +5627,7 @@ function space(zone){
 
     let regionOrder = [];
     Object.keys(spaceProjects).forEach(function (region){
-        if (global.race['orbit_decayed']){
+        if (global.race['orbit_decayed'] || global.race['cataclysm']){
             if (region !== 'spc_home'){
                 regionOrder.push(region);
                 if (region === 'spc_red'){
@@ -5645,7 +5645,7 @@ function space(zone){
             }
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
 
-            if (global.race['orbit_decayed'] && region !== 'spc_home'){
+            if ((global.race['orbit_decayed'] || global.race['cataclysm']) && region !== 'spc_home'){
                 if (spaceProjects[region].info['support']){
                     let support = spaceProjects[region].info['support'];
                     if (!global.space[support].hasOwnProperty('support')){
