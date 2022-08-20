@@ -1,6 +1,6 @@
 import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone } from './functions.js';
+import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
@@ -4962,8 +4962,8 @@ export function buildTemplate(key, region){
             let id = region === 'space' ? 'space-horseshoe' : 'city-horseshoe';
             let action = {
                 id: id,
-                title(){ return loc(global.race['sludge'] ? 'city_beaker' : 'city_horseshoe'); },
-                desc(){ return loc(global.race['sludge'] ? 'city_beaker_desc' : 'city_horseshoe_desc'); },
+                title(){ return loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]); },
+                desc(){ return loc(`city_${hoovedRename(true)}_desc`,[hoovedRename(false)]); },
                 category: 'outskirts',
                 reqs: { primitive: 3 },
                 trait: ['hooved'],
@@ -4973,30 +4973,30 @@ export function buildTemplate(key, region){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
                         let active = !global.race['kindling_kindred'] && !global.race['smoldering']
                             && (!global.resource.Copper.display || shoes <= 12) ? true : false;
-                        return active ? (shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) : 0;
+                        return active ? Math.round((shoes > 12 ? 25 : 5) * (shoes <= 5 ? 1 : shoes - 4) * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Copper(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
                         let lum = (global.race['kindling_kindred'] || global.race['smoldering']) ? false : true;
                         let active = (!lum || (lum && shoes > 12 && global.resource.Copper.display))
                             && (!global.resource.Iron.display || shoes <= 75) ? true : false;
-                        return active ? (shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) : 0;
+                        return active ? Math.round((shoes > 75 ? 20 : 5) * (shoes <= 12 ? 1 : shoes - 11) * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Iron(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                        return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? (shoes <= 150 ? 12 : 28) * shoes : 0;
+                        return global.resource.Iron.display && shoes > 75 && (!global.resource.Steel.display || shoes <= 150) ? Math.round((shoes <= 150 ? 12 : 28) * shoes * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Steel(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                        return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? (shoes <= 500 ? 40 : 100) * shoes : 0;
+                        return global.resource.Steel.display && shoes > 150 && (!global.resource.Adamantite.display || shoes <= 500) ? Math.round((shoes <= 500 ? 40 : 100) * shoes * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Adamantite(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                        return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? (shoes <= 5000 ? 5 : 25) * shoes : 0;
+                        return global.resource.Adamantite.display && shoes > 500 && (!global.resource.Orichalcum.display || shoes <= 5000) ? Math.round((shoes <= 5000 ? 5 : 25) * shoes * (traits.hooved.vars()[0] / 100)) : 0;
                     },
                     Orichalcum(offset){
                         let shoes = (global.race['shoecnt'] || 0) + (offset || 0);
-                        return global.resource.Orichalcum.display && shoes > 5000 ? 25 * shoes - 120000 : 0;
+                        return global.resource.Orichalcum.display && shoes > 5000 ? Math.round((25 * shoes - 120000) * (traits.hooved.vars()[0] / 100)) : 0;
                     }
                 },
                 action(){

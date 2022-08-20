@@ -802,6 +802,14 @@ export function timeCheck(c_action,track,detailed){
                 og_track_r[res] = track.r[res];
             });
         }
+        let hasTrash = false;
+        if (global.interstellar.hasOwnProperty('mass_ejector') && global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+            Object.keys(global.race.governor.tasks).forEach(function (t){
+                if (global.race.governor.tasks[t] === 'trash'){
+                    hasTrash = true;
+                }
+            });
+        }
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
@@ -810,6 +818,13 @@ export function timeCheck(c_action,track,detailed){
                     let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
                     let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[f_res].max;
                     let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[f_res].diff;
+
+                    if (hasTrash && global.interstellar.mass_ejector[res]){
+                        res_diff += global.interstellar.mass_ejector[res];
+                        if (global.race.governor.config.trash[res]){
+                            res_diff -= global.race.governor.config.trash[res];
+                        }
+                    }
 
                     if (track){
                         res_have += res_diff * track.t;
@@ -871,14 +886,30 @@ export function arpaTimeCheck(project, remain, track){
             og_track_r[res] = track.r[res];
         });
     }
+    let hasTrash = false;
+    if (global.interstellar.hasOwnProperty('mass_ejector') && global.genes['governor'] && global.tech['governor'] && global.race['governor'] && global.race.governor['g'] && global.race.governor['tasks']){
+        Object.keys(global.race.governor.tasks).forEach(function (t){
+            if (global.race.governor.tasks[t] === 'trash'){
+                hasTrash = true;
+            }
+        });
+    }
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
             let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
 
+                let res_diff = global.resource[res].diff;
                 if (track){
-                    res_have += global.resource[res].diff * track.t;
+                    if (hasTrash && global.interstellar.mass_ejector[res]){
+                        res_diff += global.interstellar.mass_ejector[res];
+                        if (global.race.governor.config.trash[res]){
+                            res_diff -= global.race.governor.config.trash[res];
+                        }
+                    }
+
+                    res_have += res_diff * track.t;
                     if (track.r[res]){
                         res_have -= Number(track.r[res]);
                         track.r[res] += allRemainingSegmentsCost;
@@ -892,8 +923,8 @@ export function arpaTimeCheck(project, remain, track){
                 }
 
                 if (allRemainingSegmentsCost > res_have){
-                    if (global.resource[res].diff > 0){
-                        let r_time = (allRemainingSegmentsCost - res_have) / global.resource[res].diff;
+                    if (res_diff > 0){
+                        let r_time = (allRemainingSegmentsCost - res_have) / res_diff;
                         if (r_time > allRemainingSegmentsTime){
                             allRemainingSegmentsTime = r_time;
                         }
@@ -2359,17 +2390,17 @@ export function getShrineBonus(type) {
 	if (shrineBonusActive()){
 		switch(type){
 			case 'metal':
-				shrine_bonus.mult += +(global.city.shrine.metal / 100);
+				shrine_bonus.mult += +(global.city.shrine.metal / 100 * traits.magnificent.vars()[3]);
 				break;
 			case 'tax':
-				shrine_bonus.mult += +(global.city.shrine.tax / 100);
+				shrine_bonus.mult += +(global.city.shrine.tax / 100 * traits.magnificent.vars()[2]);
 				break;
 			case 'know':
-                shrine_bonus.add += +(global.city.shrine.know * 400);
-                shrine_bonus.mult += +(global.city.shrine.know * 3 / 100);
+                shrine_bonus.add += +(global.city.shrine.know * traits.magnificent.vars()[0]);
+                shrine_bonus.mult += +(global.city.shrine.know * traits.magnificent.vars()[1] / 100);
 				break;
 			case 'morale':
-				shrine_bonus.add += global.city.shrine.morale;
+				shrine_bonus.add += global.city.shrine.morale * traits.magnificent.vars()[4];
 				break;
 			default:
 				break;
@@ -2404,29 +2435,44 @@ function getTraitVals(trait,rank){
         else if (trait === 'hivemind' && global.race['high_pop']){
             vals = [vals[0] * traits.high_pop.vars()[0]];
         }
-        else if (trait === 'imitation') {
+        else if (trait === 'imitation'){
             vals.push(races[global.race['srace'] || 'protoplasm'].name);
         }
-        else if (trait === 'elusive') {
+        else if (trait === 'elusive'){
             vals = [Math.round(((1/30)/(1/(30+vals[0]))-1)*100)];
         }
-        else if (trait === 'chameleon') {
+        else if (trait === 'chameleon'){
             vals = [vals[0], Math.round(((1/30)/(1/(30+vals[1]))-1)*100)];
         }
-        else if (trait === 'blood_thirst') {
+        else if (trait === 'blood_thirst'){
             vals = [Math.ceil(Math.log2(vals[0]))];
         }
-        else if (trait === 'selenophobia') {
+        else if (trait === 'selenophobia'){
             vals = [14 - vals[0], vals[0]];
         }
-        else if (trait === 'hooved') {
-            vals = [global.race['sludge'] ? loc('resource_Beaker_name') : loc('resource_Horseshoe_name')];
+        else if (trait === 'hooved'){
+            vals.unshift(hoovedRename());
         }
         else if (!valAdjust[trait]){
             vals = [];
         }
     }
     return vals;
+}
+
+export function hoovedRename(style){
+    if (global.race['sludge']){
+        return style ? 'craft' : loc('resource_Beaker_name');
+    }
+    else if (global.race.species === 'cath'){
+        return style ? 'craft' : loc('resource_Box_name');
+    }
+    else if (races[global.race.species].type === 'plant'){
+        return style ? 'craft' : loc('resource_Planter_name');
+    }
+    else {
+        return style ? 'forge' : loc('resource_Horseshoe_name');
+    }
 }
 
 const traitExtra = {

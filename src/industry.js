@@ -374,7 +374,7 @@ function loadSmelter(parent,bind){
             case 'oil':
                 return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
             case 'star':
-                return loc('modal_build_star',[loc('resource_Titanium_name')]);
+                return global.tech['irid_smelting'] ? loc('modal_build_star2',[loc('resource_Titanium_name'),loc('resource_Iridium_name')]) : loc('modal_build_star',[loc('resource_Titanium_name')]);
             case 'inferno':
                 {
                     let coal = 50;

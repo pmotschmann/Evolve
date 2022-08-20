@@ -1,5 +1,5 @@
 import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect } from './functions.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename } from './functions.js';
 import { traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
@@ -934,10 +934,8 @@ export function setResourceName(name){
         }
     }
 
-    if (global.race['sludge']){
-        if (name === 'Horseshoe'){
-            global.resource[name].name = loc(`resource_Beaker_name`);
-        }
+    if (name === 'Horseshoe'){
+        global.resource[name].name = hoovedRename();
     }
 
     if (global.race['artifical']){

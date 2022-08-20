@@ -207,6 +207,21 @@ export const traits = {
         desc: loc('trait_carnivore'),
         type: 'genus',
         val: 3,
+        vars(r){ 
+            // [Rot Percent]
+            switch (r || global.race.carnivore || 1){
+                case 0.25:
+                    return [65];
+                case 0.5:
+                    return [60];
+                case 1:
+                    return [50];
+                case 2:
+                    return [40];
+                case 3:
+                    return [35];
+            }
+        },
     },
     beast: { // Improved hunting and soldier training
         name: loc('trait_beast_name'),
@@ -1192,7 +1207,22 @@ export const traits = {
         name: loc('trait_hooved_name'),
         desc: loc('trait_hooved'),
         type: 'major',
-        val: -4
+        val: -4,
+        vars(r){
+            // [Cost Adjustment]
+            switch (r || global.race.hooved || 1){
+                case 0.25:
+                    return [130];
+                case 0.5:
+                    return [120];
+                case 1:
+                    return [100];
+                case 2:
+                    return [80];
+                case 3:
+                    return [70];
+            }
+        },
     },
     rage: { // Wounded soldiers rage with extra power
         name: loc('trait_rage_name'),
@@ -1569,15 +1599,15 @@ export const traits = {
         vars(r){
             switch (r || global.race.optimistic || 1){
                 case 0.25:
-                    return [4];
+                    return [4,6];
                 case 0.5:
-                    return [5];
+                    return [5,8];
                 case 1:
-                    return [10];
+                    return [10,10];
                 case 2:
-                    return [15];
+                    return [15,13];
                 case 3:
-                    return [18];
+                    return [18,15];
             }
         },
     },
@@ -1688,6 +1718,21 @@ export const traits = {
         desc: loc('trait_leathery'),
         type: 'major',
         val: 2,
+        vars(r){
+            // Morale loss (Base value is 5)
+            switch (r || global.race.leathery || 1){
+                case 0.25:
+                    return [4];
+                case 0.5:
+                    return [3];
+                case 1:
+                    return [2];
+                case 2:
+                    return [1];
+                case 3:
+                    return [0];
+            }
+        },
     },
     pessimistic: { // Minor increase to stress
         name: loc('trait_pessimistic_name'),
@@ -2670,6 +2715,21 @@ export const traits = {
         desc: loc('trait_unified'),
         type: 'major',
         val: 4,
+        vars(r){
+            // [Bonus to unification]
+            switch (r || global.race.unified || 1){
+                case 0.25:
+                    return [0];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [3];
+                case 2:
+                    return [5];
+                case 3:
+                    return [7];
+            }
+        }
     },
     rainbow: { // Gain a bonus if sunny after raining
         name: loc('trait_rainbow_name'),
@@ -2696,6 +2756,21 @@ export const traits = {
         desc: loc('trait_magnificent'),
         type: 'major',
         val: 6,
+        vars(r){
+            // [Knowledge Base, Knowledge Scale, Tax Bonus]
+            switch (r || global.race.magnificent || 1){
+                case 0.25:
+                    return [300, 1, 0.5, 0.75, 1];
+                case 0.5:
+                    return [350, 2, 0.75, 0.8, 1];
+                case 1:
+                    return [400, 3, 1, 1, 1];
+                case 2:
+                    return [450, 3, 1.5, 1.5, 1.5];
+                case 3:
+                    return [500, 3, 2, 2, 2];
+            }
+        }
     },
     noble: { // Unable to raise taxes above base value or set very low taxes
         name: loc('trait_noble_name'),
@@ -5007,7 +5082,7 @@ export function traitSkin(type,trait){
         case 'name':
         {
             let name = {
-                hooved: global.race['sludge'] ? loc('trait_hooved_slime_name') : traits['hooved'].name,
+                hooved: hoovedReskin(false),
                 promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth_name') : traits['promiscuous'].name,
             };
             return trait ? (name[trait] ? name[trait] : traits[trait].name) : name;
@@ -5015,11 +5090,26 @@ export function traitSkin(type,trait){
         case 'desc':
         {
             let desc = {
-                hooved: global.race['sludge'] ? loc('trait_hooved_slime') : traits['hooved'].desc,
+                hooved: hoovedReskin(true),
                 promiscuous: global.race['artifical'] ? loc('trait_promiscuous_synth') : traits['promiscuous'].desc,
             };
             return trait ? (desc[trait] ? desc[trait] : traits[trait].desc) : desc;
         }
+    }
+}
+
+function hoovedReskin(desc){
+    if (global.race['sludge']){
+        return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
+    }
+    else if (global.race.species === 'cath'){
+        return desc ? loc('trait_hooved_cath') : loc('trait_hooved_cath_name');
+    }
+    else if (races[global.race.species].type === 'plant'){
+        return desc ? loc('trait_hooved_plant') : loc('trait_hooved_plant_name');
+    }
+    else {
+        return desc ? traits['hooved'].desc : traits['hooved'].name;
     }
 }
 

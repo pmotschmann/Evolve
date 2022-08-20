@@ -3,6 +3,36 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.19`,
+        date: `8/20/2022`,
+        changes: [
+            `Added rank scaling effects to traits: Carnivore, Hooved, Leathery, Unified, & Magnificent.`,
+            `Structures orbiting the home planet are now moved to the Red planet after Orbit Decay or during Cataclysm.`,
+            `Fixed a bug with deactivating fuel consuming structures when fuel runs dry.`,
+            `Already active Governor tasks will no longer display for assignment in other task slots.`,
+            `Constructing a Stellar or Infernal Forge will now assign Iron as a default resource instead of nothing.`,
+            `Buffed effects of Star Forge fueled smelting.`,
+            `Fixed an incorrect source label for money storage in Orbit Decay.`,
+        ]
+    },
+    {
+        version: `1.2.18`,
+        revision: `a`,
+        date: `8/14/2022`,
+        changes: [
+            `Fixed ARPA queueing.`,
+        ]
+    },
+    {
+        version: `1.2.18`,
+        date: `8/14/2022`,
+        changes: [
+            `More accurate timers when using Governor Trash Management task.`,
+            `Optimistic Min Morale effect now scales with trait rank.`,
+            `Fixed TP loot table when Assaulting or Sieging rival.`,
+        ]
+    },
+    {
         version: `1.2.17`,
         revision: `a`,
         date: `8/10/2022`,

@@ -3340,6 +3340,7 @@ const interstellarProjects = {
                             global.city.smelter.cap += 2;
                             global.city.smelter.Star += 2;
                             global.city.smelter.StarCap += 2;
+                            global.city.smelter.Iron += 2;
                         }
                     }
                     return true;
@@ -5625,68 +5626,86 @@ function space(zone){
         return false;
     }
 
+    let regionOrder = [];
     Object.keys(spaceProjects).forEach(function (region){
+        if (global.race['orbit_decayed'] || global.race['cataclysm']){
+            if (region !== 'spc_home'){
+                regionOrder.push(region);
+                if (region === 'spc_red'){
+                    regionOrder.push('spc_home');
+                }
+            }
+        }
+        else {
+            regionOrder.push(region);
+        }
+    });
+
+    regionOrder.forEach(function (region){
         let show = region.replace("spc_","");
         if (global.settings.space[`${show}`]){
             if (global.race['truepath'] && spaceProjects[region].info.zone !== zone){
                 return;
             }
             let name = typeof spaceProjects[region].info.name === 'string' ? spaceProjects[region].info.name : spaceProjects[region].info.name();
+            let noHome = global.race['orbit_decayed'] || global.race['cataclysm'] ? true : false;
 
-            if (spaceProjects[region].info['support']){
-                let support = spaceProjects[region].info['support'];
-                if (!global.space[support].hasOwnProperty('support')){
-                    global.space[support]['support'] = 0;
-                    global.space[support]['s_max'] = 0;
-                }
-                parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
-                vBind({
-                    el: `#sr${region}`,
-                    data: global.space[support]
-                });
-            }
-            else {
-                parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
-            }
-
-            if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
-                $(`#${region}`).append(`<div id="${region}synd" v-show="${region}"></div>`);
-
-                $(`#${region}synd`).append(`<span class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}')"></span></span>`);
-                $(`#${region}synd`).append(`<span class="syndThreat has-text-caution">${loc('space_scan_effectiveness')} <span class="has-text-warning" v-html="scan('${region}')"></span></span>`);
-                $(`#${region}synd`).append(`<span v-show="overkill('${region}')" class="syndThreat has-text-caution">${loc('space_overkill')} <span class="has-text-warning" v-html="overkill('${region}')"></span></span>`);
-                vBind({
-                    el: `#${region}synd`,
-                    data: global.space.syndicate,
-                    methods: {
-                        threat(r){
-                            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                                let synd = syndicate(r,true);
-                                if (synd.s >= 10){
-                                    return synd.s >= 50 ? synd.r : Math.round(synd.r * synd.s * 0.02);
-                                }
-                            }
-                            return '???';
-                        },
-                        scan(r){
-                            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                                let synd = syndicate(r,true);
-                                return +((synd.s + 25) / 1.25).toFixed(1) + '%';
-                            }
-                            return loc(`galaxy_piracy_none`);
-                        },
-                        overkill(r){
-                            if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
-                                let synd = syndicate(r,true);
-                                return synd.s >= 100 ? synd.o : 0;
-                            }
-                            return 0;
-                        }
+            if ((noHome && region !== 'spc_home') || !noHome){
+                if (spaceProjects[region].info['support']){
+                    let support = spaceProjects[region].info['support'];
+                    if (!global.space[support].hasOwnProperty('support')){
+                        global.space[support]['support'] = 0;
+                        global.space[support]['s_max'] = 0;
                     }
-                });
+                    parent.append(`<div id="${region}" class="space"><div id="sr${region}"><h3 class="name has-text-warning">${name}</h3> <span v-show="s_max">{{ support }}/{{ s_max }}</span></div></div>`);
+                    vBind({
+                        el: `#sr${region}`,
+                        data: global.space[support]
+                    });
+                }
+                else {
+                    parent.append(`<div id="${region}" class="space"><div><h3 class="name has-text-warning">${name}</h3></div></div>`);
+                }
 
-                if (spaceProjects[region].info.hasOwnProperty('extra')){
-                    spaceProjects[region].info.extra(region);
+                if (global.race['truepath'] && spaceProjects[region].info.hasOwnProperty('syndicate') && spaceProjects[region].info.syndicate() && global.tech['syndicate']){
+                    $(`#${region}`).append(`<div id="${region}synd" v-show="${region}"></div>`);
+
+                    $(`#${region}synd`).append(`<span class="syndThreat has-text-caution">${loc('space_syndicate')} <span class="has-text-danger" v-html="threat('${region}')"></span></span>`);
+                    $(`#${region}synd`).append(`<span class="syndThreat has-text-caution">${loc('space_scan_effectiveness')} <span class="has-text-warning" v-html="scan('${region}')"></span></span>`);
+                    $(`#${region}synd`).append(`<span v-show="overkill('${region}')" class="syndThreat has-text-caution">${loc('space_overkill')} <span class="has-text-warning" v-html="overkill('${region}')"></span></span>`);
+                    vBind({
+                        el: `#${region}synd`,
+                        data: global.space.syndicate,
+                        methods: {
+                            threat(r){
+                                if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                                    let synd = syndicate(r,true);
+                                    if (synd.s >= 10){
+                                        return synd.s >= 50 ? synd.r : Math.round(synd.r * synd.s * 0.02);
+                                    }
+                                }
+                                return '???';
+                            },
+                            scan(r){
+                                if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                                    let synd = syndicate(r,true);
+                                    return +((synd.s + 25) / 1.25).toFixed(1) + '%';
+                                }
+                                return loc(`galaxy_piracy_none`);
+                            },
+                            overkill(r){
+                                if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                                    let synd = syndicate(r,true);
+                                    return synd.s >= 100 ? synd.o : 0;
+                                }
+                                return 0;
+                            }
+                        }
+                    });
+
+                    if (spaceProjects[region].info.hasOwnProperty('extra')){
+                        spaceProjects[region].info.extra(region);
+                    }
                 }
             }
 

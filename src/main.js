@@ -497,12 +497,13 @@ popover('topBarPlanet',
             }
             if (global.race['orbit_decay']){
                 let impact = global.race['orbit_decayed'] ? '' : loc('evo_challenge_orbit_decay_impact',[global.race['orbit_decay'] - global.stats.days]);
-                challenges = challenges + `<div>${loc('evo_challenge_orbit_decay_desc')} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
+                let state = global.race['orbit_decayed'] ? loc('evo_challenge_orbit_decay_impacted',[races[global.race.species].home]) : loc('evo_challenge_orbit_decay_desc');
+                challenges = challenges + `<div>${state} ${loc('evo_challenge_orbit_decay_conditions')} ${impact}</div>`;
                 if (calc_mastery() >= 100 && global.race.universe !== 'antimatter'){
-                    challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
+                    challenges = challenges + `<div class="has-text-caution">${loc('evo_challenge_cataclysm_warn')}</div>`;
                 }
                 else {
-                    challenges = challenges + `<div>${loc('evo_challenge_cataclysm_desc')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
+                    challenges = challenges + `<div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
                 }
             }
 
@@ -717,6 +718,9 @@ function fastLoop(){
         let bonus = 25;
         if (global.civic.govern.type === 'federation'){
             bonus = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32;
+        }
+        if (global.race['unified']){
+            bonus += traits.unified.vars()[0];
         }
         breakdown.p['Global'][loc('tech_unification')] = `${bonus}%`;
         global_multiplier *= 1 + (bonus / 100);
@@ -1032,8 +1036,8 @@ function fastLoop(){
                 global.city.morale.season = traits.chilled.vars()[0];
             }
             else {
-                morale -= global.race['leathery'] ? 2 : 5;
-                global.city.morale.season = global.race['leathery'] ? -2 : -5;
+                morale -= global.race['leathery'] ? traits.leathery.vars()[0] : 5;
+                global.city.morale.season = global.race['leathery'] ? -(traits.leathery.vars()[0]) : -5;
             }
         }
         else {
@@ -1095,7 +1099,7 @@ function fastLoop(){
                         weather_morale = -(traits.skittish.vars()[0]);
                     }
                     else {
-                        weather_morale = global.race['leathery'] ? -2 : -5;
+                        weather_morale = global.race['leathery'] ? -(traits.leathery.vars()[0]) : -5;
                     }
                 }
                 else {
@@ -1534,7 +1538,6 @@ function fastLoop(){
             power_generated[loc('space_hell_geothermal_title')] = -(power);
         }
 
-
         if (global.space['hydrogen_plant'] && global.space.hydrogen_plant.on > 0){
             let output = actions.space.spc_titan.hydrogen_plant.powered();
             if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
@@ -1766,9 +1769,15 @@ function fastLoop(){
                         for (let i=0; i<p_on[sup.s]; i++){
                             if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
                                 mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
-                                p_on[sup.s] -= i;
+                                p_on[sup.s] = i;
                                 break;
                             }
+                        }
+                        if (p_on[sup.s] < global.space[sup.s].on){
+                            $(`#space-${sup.s} .on`).addClass('warn');
+                        }
+                        else {
+                            $(`#space-${sup.s} .on`).removeClass('warn');
                         }
                     }
                 }
@@ -2556,7 +2565,10 @@ function fastLoop(){
             moraleCap += global.stats.achieve['joyless'].l * 2;
         }
 
-        let m_min = global.race['optimistic'] ? 60 : 50;
+        let m_min = 50;
+        if (global.race['optimistic']){
+            m_min += traits.optimistic.vars()[1];
+        }
         if (global.race['truepath']){
             m_min -= 25;
         }
@@ -2698,7 +2710,8 @@ function fastLoop(){
 
         if (global.race['carnivore'] && !global.race['herbivore'] && !global.race['soul_eater'] && !global.race['artifical']){
             if (global.resource['Food'].amount > 10){
-                let rot = +((global.resource['Food'].amount - 10) * (0.5)).toFixed(3);
+                let rotPercent = traits.carnivore.vars()[0] / 100;
+                let rot = +((global.resource['Food'].amount - 10) * (rotPercent)).toFixed(3);
                 if (global.city['smokehouse']){
                     rot *= 0.9 ** global.city.smokehouse.count;
                 }
@@ -3988,6 +4001,9 @@ function fastLoop(){
                 iron_smelter *= 1 + (inferno_bonus / 125);
                 iridium_smelter *= 1 + (inferno_bonus / 125);
             }
+            if (star_forge > 0){
+                iridium_smelter *= 1 + (star_forge / 75);
+            }
             if (global.race['pyrophobia']){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
@@ -4081,7 +4097,7 @@ function fastLoop(){
                 if (global.tech['titanium'] && global.tech['titanium'] >= 1){
                     let titanium = smelter_output * hunger;
                     if (star_forge > 0){
-                        delta *= 1 + (star_forge / 100);
+                        delta *= 1 + (star_forge / 50);
                     }
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
@@ -4849,7 +4865,7 @@ function fastLoop(){
                     let iron = labor_base * iron_smelter * 0.1;
                     delta = iron * global_multiplier;
                     if (star_forge > 0){
-                        delta *= 1 + (star_forge / 100);
+                        delta *= 1 + (star_forge / 50);
                     }
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
@@ -7161,7 +7177,7 @@ function midLoop(){
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
 
-            if (global.race['cataclysm']){
+            if (global.race['cataclysm'] || global.race['orbit_decayed']){
                 bd_Money[loc('space_red_spaceport_title')] = gain+'v';
             }
             else {

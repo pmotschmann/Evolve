@@ -1633,6 +1633,16 @@ function war_campaign(gov){
                 case 'Crystal':
                     gains[goods] += Math.floor(Math.seededRandom(1,5,true));
                     break;
+                case 'Oil':
+                    gains[goods] += Math.floor(Math.seededRandom(20,50,true));
+                    break;
+                case 'Iridium':
+                    gains[goods] += Math.floor(Math.seededRandom(2,30,true));
+                    break;
+                case 'Alloy':
+                case 'Polymer':
+                    gains[goods] += Math.floor(Math.seededRandom(5,38,true));
+                    break;
             }
         });
 
