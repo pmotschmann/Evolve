@@ -3996,6 +3996,9 @@ function fastLoop(){
                 iron_smelter *= 1 + (inferno_bonus / 125);
                 iridium_smelter *= 1 + (inferno_bonus / 125);
             }
+            if (star_forge > 0){
+                iridium_smelter *= 1 + (star_forge / 75);
+            }
             if (global.race['pyrophobia']){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
@@ -4089,7 +4092,7 @@ function fastLoop(){
                 if (global.tech['titanium'] && global.tech['titanium'] >= 1){
                     let titanium = smelter_output * hunger;
                     if (star_forge > 0){
-                        delta *= 1 + (star_forge / 100);
+                        delta *= 1 + (star_forge / 50);
                     }
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;
@@ -4857,7 +4860,7 @@ function fastLoop(){
                     let iron = labor_base * iron_smelter * 0.1;
                     delta = iron * global_multiplier;
                     if (star_forge > 0){
-                        delta *= 1 + (star_forge / 100);
+                        delta *= 1 + (star_forge / 50);
                     }
                     if (global.city.geology['Titanium']){
                         delta *= global.city.geology['Titanium'] + 1;

@@ -11,6 +11,7 @@ const changeList = [
             `Fixed an incorrect source label for money storage in Orbit Decay.`,
             `Already active Governor tasks will no longer display for assignment in other task slots.`,
             `Constructing a Stellar or Infernal Forge will now assign Iron as a default resource instead of nothing.`,
+            `Buffed effects of Star Forge fueled smelting.`,
         ]
     },
     {
