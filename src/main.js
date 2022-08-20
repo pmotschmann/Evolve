@@ -719,6 +719,9 @@ function fastLoop(){
         if (global.civic.govern.type === 'federation'){
             bonus = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32;
         }
+        if (global.race['unified']){
+            bonus += traits.unified.vars()[0];
+        }
         breakdown.p['Global'][loc('tech_unification')] = `${bonus}%`;
         global_multiplier *= 1 + (bonus / 100);
     }
@@ -1033,8 +1036,8 @@ function fastLoop(){
                 global.city.morale.season = traits.chilled.vars()[0];
             }
             else {
-                morale -= global.race['leathery'] ? 2 : 5;
-                global.city.morale.season = global.race['leathery'] ? -2 : -5;
+                morale -= global.race['leathery'] ? traits.leathery.vars()[0] : 5;
+                global.city.morale.season = global.race['leathery'] ? -(traits.leathery.vars()[0]) : -5;
             }
         }
         else {
@@ -1096,7 +1099,7 @@ function fastLoop(){
                         weather_morale = -(traits.skittish.vars()[0]);
                     }
                     else {
-                        weather_morale = global.race['leathery'] ? -2 : -5;
+                        weather_morale = global.race['leathery'] ? -(traits.leathery.vars()[0]) : -5;
                     }
                 }
                 else {
@@ -2702,7 +2705,8 @@ function fastLoop(){
 
         if (global.race['carnivore'] && !global.race['herbivore'] && !global.race['soul_eater'] && !global.race['artifical']){
             if (global.resource['Food'].amount > 10){
-                let rot = +((global.resource['Food'].amount - 10) * (0.5)).toFixed(3);
+                let rotPercent = traits.carnivore.vars()[0] / 100;
+                let rot = +((global.resource['Food'].amount - 10) * (rotPercent)).toFixed(3);
                 if (global.city['smokehouse']){
                     rot *= 0.9 ** global.city.smokehouse.count;
                 }

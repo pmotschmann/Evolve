@@ -2390,17 +2390,17 @@ export function getShrineBonus(type) {
 	if (shrineBonusActive()){
 		switch(type){
 			case 'metal':
-				shrine_bonus.mult += +(global.city.shrine.metal / 100);
+				shrine_bonus.mult += +(global.city.shrine.metal / 100 * traits.magnificent.vars()[3]);
 				break;
 			case 'tax':
-				shrine_bonus.mult += +(global.city.shrine.tax / 100);
+				shrine_bonus.mult += +(global.city.shrine.tax / 100 * traits.magnificent.vars()[2]);
 				break;
 			case 'know':
-                shrine_bonus.add += +(global.city.shrine.know * 400);
-                shrine_bonus.mult += +(global.city.shrine.know * 3 / 100);
+                shrine_bonus.add += +(global.city.shrine.know * traits.magnificent.vars()[0]);
+                shrine_bonus.mult += +(global.city.shrine.know * traits.magnificent.vars()[1] / 100);
 				break;
 			case 'morale':
-				shrine_bonus.add += global.city.shrine.morale;
+				shrine_bonus.add += global.city.shrine.morale * traits.magnificent.vars()[4];
 				break;
 			default:
 				break;
@@ -2451,7 +2451,7 @@ function getTraitVals(trait,rank){
             vals = [14 - vals[0], vals[0]];
         }
         else if (trait === 'hooved'){
-            vals = [hoovedRename()];
+            vals.unshift(hoovedRename());
         }
         else if (!valAdjust[trait]){
             vals = [];

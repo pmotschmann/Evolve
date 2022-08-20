@@ -6,6 +6,7 @@ const changeList = [
         version: `1.2.19`,
         date: `8/20/2022`,
         changes: [
+            `Added rank scaling effects to traits: Carnivore, Hooved, Leathery, Unified, & Magnificent.`,
             `Structures orbiting the home planet are now moved to the Red planet after Orbit Decay or during Cataclysm.`,
             `Fixed an incorrect source label for money storage in Orbit Decay.`,
         ]
