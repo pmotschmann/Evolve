@@ -5631,7 +5631,10 @@ function space(zone){
         if (global.race['orbit_decayed'] || global.race['cataclysm']){
             if (region !== 'spc_home'){
                 regionOrder.push(region);
-                if (region === 'spc_red'){
+                if (global.race['orbit_decayed'] && region === 'spc_red'){
+                    regionOrder.push('spc_home');
+                }
+                else if (global.race['cataclysm'] && region === 'spc_moon'){
                     regionOrder.push('spc_home');
                 }
             }
