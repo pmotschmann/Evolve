@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.19`,
+        revision: `a`,
+        date: `8/21/2022`,
+        changes: [
+            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Catacylsm.`,
+        ]
+    },
+    {
+        version: `1.2.19`,
         date: `8/20/2022`,
         changes: [
             `Added rank scaling effects to traits: Carnivore, Hooved, Leathery, Unified, & Magnificent.`,
