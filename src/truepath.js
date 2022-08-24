@@ -6,7 +6,7 @@ import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault } from './actions.js';
-import { fuel_adjust, spaceTech, renderSpace, checkRequirements } from './space.js';
+import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -1332,14 +1332,15 @@ export const outerTruth = {
 };
 
 const tauCetiModules = {
-    tauceti_home: {
+    tau_home: {
         info: {
             name(){
                 return loc('tau_planet',[races[global.race.species].home]);
             },
             desc(){
                 return loc('tau_home',[races[global.race.species].home]);
-            }
+            },
+            support: 'orbital_station',
         },
         home_mission: {
             id: 'tauceti-home_mission',
@@ -1355,21 +1356,85 @@ const tauCetiModules = {
             effect(){ return loc('tau_new_mission_effect',[races[global.race.species].home]); },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('tau_home_mission_result',[races[global.race.species].home]),'info',false,['progress','tauceti']);
+                    global.tauceti['colony'] = { count: 0, on: 0 };
+                    global.tauceti['mining_pit'] = { count: 0, on: 0 };
+                    messageQueue(loc('tau_home_mission_result',[races[global.race.species].home]),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        orbital_station: {
+            id: 'tauceti-orbital_station',
+            title: loc('tau_home_orbital_station'),
+            desc: `<div>${loc('tau_home_orbital_station')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { tau_home: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('orbital_station', offset, 1000000, 1.3, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            support_fuel(){ return { r: 'Helium_3', a: 400 }; },
+            support(){ return 3; },
+            powered(){ return powerCostMod(30); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.orbital_station.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.orbital_station.on++;
+                    }
+                    if (global.tech['tau_home'] === 1){
+                        global.tech['tau_home'] = 2;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        colony: {
+            id: 'tauceti-colony',
+            title: loc('tau_home_colony'),
+            desc(){
+                return `<div>${loc('tau_home_colony_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].home])}</div>`;
+            },
+            reqs: { tau_home: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('colony', offset, 4250000, 1.225); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                return desc;
+            },
+            support(){ return -2; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.space.colony.count++;
+                    if (global.space.orbital_station.support - $(this)[0].support() < global.space.orbital_station.s_max){
+                        global.space.colony.on++;
+                    }
                     return true;
                 }
                 return false;
             }
         },
     },
-    tauceti_red: {
+    tau_red: {
         info: {
             name(){
                 return loc('tau_planet',[races[global.race.species].solar.red]);
             },
             desc(){
                 return loc('tau_red',[races[global.race.species].solar.red]);
-            }
+            },
+            support: 'orbital_platform',
         },
         red_mission: {
             id: 'tauceti-red_mission',
@@ -1385,15 +1450,49 @@ const tauCetiModules = {
             effect(){ return loc('tau_new_mission_effect',[races[global.race.species].solar.red]); },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('tau_home_mission_result'),'info',false,['progress','tauceti']);
+                    global.tauceti['settlement'] = { count: 0, on: 0 };
+                    messageQueue(loc('tau_red_mission_result',[races[global.race.species].solar.red]),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        orbital_platform: {
+            id: 'tauceti-orbital_platform',
+            title: loc('tau_red_orbital_platform'),
+            desc: `<div>${loc('tau_red_orbital_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            reqs: { tau_red: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 1000000, 1.3, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].solar.red]),$(this)[0].support()])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            support_fuel(){ return { r: 'Oil', a: 125 }; },
+            support(){ return 2; },
+            powered(){ return powerCostMod(18); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.orbital_platform.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.orbital_platform.on++;
+                    }
+                    if (global.tech['tau_red'] === 1){
+                        global.tech['tau_red'] = 2;
+                    }
                     return true;
                 }
                 return false;
             }
         },
     },
-    //tauceti_three: {},
-    //tauceti_four: {},
+    //tau_three: {},
+    //tau_four: {},
 };
 
 export function tauCetiTech(){
@@ -1412,7 +1511,7 @@ export function renderTauCeti(){
     }
 
     Object.keys(tauCetiModules).forEach(function (region){
-        let show = region.replace("tauceti_","");
+        let show = region.replace("tau_","");
         if (global.settings.tau[`${show}`]){
             let name = typeof tauCetiModules[region].info.name === 'string' ? tauCetiModules[region].info.name : tauCetiModules[region].info.name();
             
@@ -2217,7 +2316,7 @@ function drawShips(){
             });
         }
 
-        let location = ship.class === 'explorer' ? loc('tech_era_tauceti') : typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
+        let location = ship.location === 'tauceti' ? loc('tech_era_tauceti') : typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
         let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable position="is-bottom-left">
             <button class="button is-info" slot="trigger">

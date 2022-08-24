@@ -9,7 +9,7 @@ import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
-import { tauCetiTech } from './truepath.js';
+import { tauCetiTech, renderTauCeti } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -5548,6 +5548,7 @@ export function gainTech(action){
     drawTech();
     renderSpace();
     renderFortress();
+    renderTauCeti();
 }
 
 export function drawCity(){
@@ -6132,6 +6133,7 @@ export function postBuild(c_action,action,type){
         drawTech();
         renderSpace();
         renderFortress();
+        renderTauCeti();
     }
     if (c_action['post']){
         setTimeout(function(){

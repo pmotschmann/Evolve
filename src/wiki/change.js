@@ -3,11 +3,19 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.0`,
+        date: `?/??/2022`,
+        changes: [
+            `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
+            `You can no longer unlock Anarchist by Cataclysm.`,
+        ]
+    },
+    {
         version: `1.2.19`,
         revision: `a`,
         date: `8/21/2022`,
         changes: [
-            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Catacylsm.`,
+            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Cataclysm.`,
         ]
     },
     {

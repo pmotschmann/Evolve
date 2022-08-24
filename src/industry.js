@@ -1436,6 +1436,8 @@ export function gridDefs(){
         titan: { l: global.support.titan, n: genusVars[type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
         enceladus: { l: global.support.enceladus, n: genusVars[type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
         eris: { l: global.support.eris, n: genusVars[type].solar.eris, s: global.settings.space.eris, r: 'space', rs: 'drone_control'  },
+        tau_home: { l: global.support.tau_home, n: loc(`tau_planet`,[races[global.race.species].home]), s: global.settings.tau.home, r: 'tauceti', rs: 'orbital_station'  },
+        tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[races[global.race.species].red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
     };
 }
 

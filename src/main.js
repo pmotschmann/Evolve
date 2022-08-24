@@ -737,7 +737,7 @@ function fastLoop(){
             global_multiplier *= 1 + (occupy / 100);
         }
     }
-    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+    if (global.genes['challenge'] && global.genes.challenge >= 2){
         let mastery = calc_mastery();
         breakdown.p['Global'][loc('mastery')] = mastery + '%';
         global_multiplier *= 1 + (mastery / 100);
@@ -1634,7 +1634,7 @@ function fastLoop(){
         let p_structs = global.power;
         for (var i = 0; i < p_structs.length; i++){
             let parts = p_structs[i].split(":");
-            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+            let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
             if (global[region][parts[1]] && global[region][parts[1]]['on']){
@@ -1746,26 +1746,28 @@ function fastLoop(){
             modRes('Elerium', -(number));
         }
 
-        // Moon Bases, Spaceports
+        // Moon Bases, Spaceports, Etc
         [
-            { r: 'spc_moon', s: 'moon_base', g: 'moon' },
-            { r: 'spc_red', s: 'spaceport', g: 'red' },
-            { r: 'spc_titan', s: 'electrolysis', g: 'titan' },
-            { r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
-            { r: 'spc_eris', s: 'drone_control', g: 'eris' },
+            { a: 'space', r: 'spc_moon', s: 'moon_base', g: 'moon' },
+            { a: 'space', r: 'spc_red', s: 'spaceport', g: 'red' },
+            { a: 'space', r: 'spc_titan', s: 'electrolysis', g: 'titan' },
+            { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
+            { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
+            { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
+            { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
-            if (global.space[sup.s] && global.space[sup.s].count > 0){
-                if (actions.space[sup.r][sup.s].hasOwnProperty('support_fuel')){
-                    let s_fuels = actions.space[sup.r][sup.s].support_fuel();
+            if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
+                if (actions[sup.a][sup.r][sup.s].hasOwnProperty('support_fuel')){
+                    let s_fuels = actions[sup.a][sup.r][sup.s].support_fuel();
                     if (!Array.isArray(s_fuels)){
                         s_fuels = [s_fuels];
                     }
                     for (let j=0; j<s_fuels.length; j++){
                         let fuel = s_fuels[j];
-                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? ([sup.a] === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
                         let mb_consume = p_on[sup.s] * fuel_cost;
-                        breakdown.p.consume[fuel.r][actions.space[sup.r][sup.s].title] = -(mb_consume);
+                        breakdown.p.consume[fuel.r][actions[sup.a][sup.r][sup.s].title] = -(mb_consume);
                         for (let i=0; i<p_on[sup.s]; i++){
                             if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
                                 mb_consume -= (p_on[sup.s] * fuel_cost) - (i * fuel_cost);
@@ -1773,7 +1775,7 @@ function fastLoop(){
                                 break;
                             }
                         }
-                        if (p_on[sup.s] < global.space[sup.s].on){
+                        if (p_on[sup.s] < global[sup.a][sup.s].on){
                             $(`#space-${sup.s} .on`).addClass('warn');
                         }
                         else {
@@ -1782,44 +1784,44 @@ function fastLoop(){
                     }
                 }
 
-                global.space[sup.s].s_max = p_on[sup.s] * actions.space[sup.r][sup.s].support();
+                global[sup.a][sup.s].s_max = p_on[sup.s] * actions[sup.a][sup.r][sup.s].support();
                 switch (sup.g){
                     case 'moon':
                         {
-                            global.space[sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] : 0;
+                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] : 0;
                         }
                         break;
                     case 'red':
                         {
-                            global.space[sup.s].s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? (global.race['cataclysm'] ? p_on['red_tower'] * 2 : p_on['red_tower']) : 0;
-                            global.space[sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
+                            global[sup.a][sup.s].s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? (global.race['cataclysm'] ? p_on['red_tower'] * 2 : p_on['red_tower']) : 0;
+                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
                         }
                         break;
                 }
             }
 
-            if (global.space[sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
-                global.space[sup.s].s_max = 0;
+            if (global[sup.a][sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
+                global[sup.a][sup.s].s_max = 0;
             }
 
-            if (global.space[sup.s]){
+            if (global[sup.a][sup.s]){
                 let used_support = 0;
                 let area_structs = global.support[sup.g].map(x => x.split(':')[1]);
                 for (var i = 0; i < area_structs.length; i++){
-                    if (global.space[area_structs[i]]){
-                        let operating = global.space[area_structs[i]].on;
-                        let id = actions.space[sup.r2][area_structs[i]].id;
+                    if (global[sup.a][area_structs[i]]){
+                        let operating = global[sup.a][area_structs[i]].on;
+                        let id = actions[sup.a][sup.r2][area_structs[i]].id;
 
-                        if (actions.space[sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
-                            let s_fuels = actions.space[sup.r2][area_structs[i]].support_fuel();
+                        if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
+                            let s_fuels = actions[sup.a][sup.r2][area_structs[i]].support_fuel();
                             if (!Array.isArray(s_fuels)){
                                 s_fuels = [s_fuels];
                             }
                             for (let j=0; j<s_fuels.length; j++){
                                 let fuel = s_fuels[j];
-                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? +fuel_adjust(fuel.a,true) : fuel.a;
+                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? ([sup.a] === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
                                 let mb_consume = operating * fuel_cost;
-                                breakdown.p.consume[fuel.r][actions.space[sup.r2][area_structs[i]].title] = -(mb_consume);
+                                breakdown.p.consume[fuel.r][actions[sup.a][sup.r2][area_structs[i]].title] = -(mb_consume);
                                 for (let i=0; i<operating; i++){
                                     if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
                                         mb_consume -= (operating * fuel_cost) - (i * fuel_cost);
@@ -1830,8 +1832,8 @@ function fastLoop(){
                             }
                         }
 
-                        if (used_support + operating > global.space[sup.s].s_max){
-                            operating -= (used_support + operating) - global.space[sup.s].s_max;
+                        if (used_support + operating > global[sup.a][sup.s].s_max){
+                            operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
                             $(`#${id} .on`).addClass('warn');
                         }
                         else {
@@ -1844,7 +1846,7 @@ function fastLoop(){
                         support_on[area_structs[i]] = 0;
                     }
                 }
-                global.space[sup.s].support = used_support;
+                global[sup.a][sup.s].support = used_support;
             }
         });
 
@@ -8480,6 +8482,23 @@ let sythMap = {
     3: 1.5,
 };
 
+function convertSpaceSector(part){
+    let space = 'space';
+    if (part.substr(0,4) === 'int_'){
+        space = 'interstellar';
+    }
+    else if (part.substr(0,5) === 'prtl_'){
+        space = 'portal';
+    }
+    else if (part.substr(0,4) === 'gxy_'){
+        space = 'galaxy';
+    }
+    else if (part.substr(0,4) === 'tau_'){
+        space = 'tauceti';
+    }
+    return space;
+}
+
 var kplv = 60;
 function longLoop(){
     const date = new Date();
@@ -8489,7 +8508,7 @@ function longLoop(){
         Object.keys(grids).forEach(function(grid){
             grids[grid].l.forEach(function(struct){
                 let parts = struct.split(":");
-                let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+                let space = convertSpaceSector(parts[0]);
                 let region = parts[0] === 'city' ? parts[0] : space;
                 let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
                 let breaker = $(`#pg${c_action.id}${grid}`);
@@ -9052,6 +9071,8 @@ function longLoop(){
                 }
                 if (global.tech.hasOwnProperty('tauceti') && global.tech.tauceti >= 1 && tScan >= 1){
                     if (global.tech.tauceti === 1){
+                        global.tauceti['orbital_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
+                        global.tauceti['orbital_platform'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         global.tech.tauceti = 2;
                         global.settings.showTau = true;
                         global.settings.tau.home = true;

@@ -1854,8 +1854,8 @@ export const perkList = {
             {
                 desc(wiki){
                     return loc("arpa_perks_challenge2",[
-                        wiki ? "60/80" : global.genes['challenge'] && global.genes['challenge'] >= 4 ? 80 : 60,
-                        wiki ? "60/40" : global.genes['challenge'] && global.genes['challenge'] >= 4 ? 40 : 60
+                        wiki ? "60/80" : global.genes['challenge'] && global.genes.challenge >= 4 ? 80 : 60,
+                        wiki ? "60/40" : global.genes['challenge'] && global.genes.challenge >= 4 ? 40 : 60
                     ]);
                 },
                 active(){

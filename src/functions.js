@@ -229,6 +229,7 @@ export function powerGrid(type,reset){
                 'city:transmitter','prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
                 'spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
                 'spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
+                'tau_home:orbital_station','tau_red:orbital_platform',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
                 'int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
@@ -275,6 +276,12 @@ export function powerGrid(type,reset){
             break;
         case 'eris':
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
+            break;
+        case 'tau_home':
+            power_structs = [];
+            break;
+        case 'tau_red':
+            power_structs = [];
             break;
     }
 
@@ -1147,7 +1154,7 @@ export const calc_mastery = (function(){
         if (mastery && !recalc){
             return mastery;
         }
-        else if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        else if (global.genes['challenge'] && global.genes.challenge >= 2){
             mastery = masteryType(global.race.universe);
             return mastery;
         }
@@ -1156,12 +1163,12 @@ export const calc_mastery = (function(){
 })();
 
 export function masteryType(universe,detailed){
-    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+    if (global.genes['challenge'] && global.genes.challenge >= 2){
         universe = universe || global.race.universe;
         let ua_level = universeLevel(universe);
         let m_rate = universe === 'standard' ? 0.25 : 0.15;
-        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
-        if (global.genes['challenge'] >= 4 && universe !== 'standard'){
+        let u_rate = global.genes.challenge >= 3 ? 0.15 : 0.1;
+        if (global.genes.challenge >= 4 && universe !== 'standard'){
             m_rate += 0.05;
             u_rate -= 0.05;
         }
@@ -1182,7 +1189,7 @@ export function masteryType(universe,detailed){
         if (universe !== 'standard'){
             u_mastery = ua_level.uLvl * u_rate;
         }
-        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+        if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
             m_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
             u_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
         }

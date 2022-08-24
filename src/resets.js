@@ -299,9 +299,6 @@ export function cataclysm_end(){
 
         unlockAchieve(`squished`,true);
         unlockAchieve(`extinct_${global.race.species}`);
-        if (global.civic.govern.type === 'anarchy'){
-            unlockAchieve(`anarchist`);
-        }
         if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
             unlockFeat('take_no_advice');
         }
