@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
             `You can no longer unlock Anarchist by Cataclysm.`,
+            `Ships in Truepath can now only be scrapped at the Shipyard.`,
         ]
     },
     {

@@ -248,5 +248,9 @@ export function production(id,val){
             }
             return 0;
         }
+        case 'mining_pit':
+        {
+            return 0;
+        }
     }
 }

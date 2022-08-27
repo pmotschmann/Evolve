@@ -1809,8 +1809,9 @@ function fastLoop(){
                 let area_structs = global.support[sup.g].map(x => x.split(':')[1]);
                 for (var i = 0; i < area_structs.length; i++){
                     if (global[sup.a][area_structs[i]]){
-                        let operating = global[sup.a][area_structs[i]].on;
                         let id = actions[sup.a][sup.r2][area_structs[i]].id;
+                        let supportSize = actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support') ? actions[sup.a][sup.r2][area_structs[i]].support() * -1 : 1;
+                        let operating = global[sup.a][area_structs[i]].on;
 
                         if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
                             let s_fuels = actions[sup.a][sup.r2][area_structs[i]].support_fuel();
@@ -1832,14 +1833,14 @@ function fastLoop(){
                             }
                         }
 
-                        if (used_support + operating > global[sup.a][sup.s].s_max){
+                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max){
                             operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
                             $(`#${id} .on`).addClass('warn');
                         }
                         else {
                             $(`#${id} .on`).removeClass('warn');
                         }
-                        used_support += operating;
+                        used_support += operating * supportSize;
                         support_on[area_structs[i]] = operating;
                     }
                     else {
@@ -8198,7 +8199,7 @@ function midLoop(){
         let idx = -1;
         let c_action = false;
         let stop = false;
-        let deepScan = ['space','interstellar','galaxy','portal'];
+        let deepScan = ['space','interstellar','galaxy','portal','tauceti'];
         let time = 0;
         let spent = { t: 0, r: {}, id: {}};
         let arpa = false;

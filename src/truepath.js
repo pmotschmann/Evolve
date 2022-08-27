@@ -491,6 +491,7 @@ export const outerTruth = {
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
             },
+            support(){ return -1; },
             powered(){ return powerCostMod(1); },
             support_fuel(){ return { r: 'Cipher', a: 0.06 }; },
             action(){
@@ -1364,14 +1365,53 @@ const tauCetiModules = {
                 return false;
             }
         },
+        dismantle: {
+            id: 'tauceti-dismantle',
+            title(){ return loc('tau_home_dismantle'); },
+            desc(){ return loc('tau_home_dismantle'); },
+            reqs: { tau_home: 1 },
+            grant: ['tau_home',2],
+            path: ['truepath'],
+            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            cost: {
+                Money(){ return 100000000; }
+            },
+            effect(){
+                let explorer = 'Explorer';
+                if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                    let shipId = global.space.shipyard.ships.findIndex(x => x.location === 'tauceti' && x.class === 'explorer');
+                    explorer = global.space.shipyard.ships[shipId].name;
+                }
+                return loc('tau_home_dismantle_effect',[explorer]);
+            },
+            action(){
+                let shipId = -1;
+                if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                    shipId = global.space.shipyard.ships.findIndex(x => x.location === 'tauceti' && x.class === 'explorer');
+                }
+                if (shipId >= 0 && payCosts($(this)[0])){
+                    global.space.shipyard.ships.splice(shipId,1);
+                    global.tauceti.orbital_station.count++;
+                    global.tauceti.colony.count++;
+                    global.tauceti.mining_pit.count++;
+                    if (global.city.powered && global.city.power >= tauCetiModules.tau_home.orbital_station.powered()){
+                        global.tauceti.orbital_station.on++;
+                        global.tauceti.colony.on++;
+                        global.tauceti.mining_pit.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         orbital_station: {
             id: 'tauceti-orbital_station',
             title: loc('tau_home_orbital_station'),
             desc: `<div>${loc('tau_home_orbital_station')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
-            reqs: { tau_home: 1 },
+            reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_station', offset, 1000000, 1.3, 'tauceti'); },
+                Money(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1000000, 1.3, 'tauceti') : 0; },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -1384,13 +1424,10 @@ const tauCetiModules = {
             powered(){ return powerCostMod(30); },
             refresh: true,
             action(){
-                if (payCosts($(this)[0])){
+                if (tauEnabled() && payCosts($(this)[0])){
                     global.tauceti.orbital_station.count++;
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.tauceti.orbital_station.on++;
-                    }
-                    if (global.tech['tau_home'] === 1){
-                        global.tech['tau_home'] = 2;
                     }
                     return true;
                 }
@@ -1406,7 +1443,7 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('colony', offset, 4250000, 1.225); },
+                Money(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 4250000, 1.225) : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -1415,10 +1452,38 @@ const tauCetiModules = {
             support(){ return -2; },
             powered(){ return powerCostMod(1); },
             action(){
-                if (payCosts($(this)[0])){
-                    global.space.colony.count++;
-                    if (global.space.orbital_station.support - $(this)[0].support() < global.space.orbital_station.s_max){
-                        global.space.colony.on++;
+                if (tauEnabled() && payCosts($(this)[0])){
+                    global.tauceti.colony.count++;
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
+                        global.tauceti.colony.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        mining_pit: {
+            id: 'tauceti-mining_pit',
+            title: loc('tau_home_mining_pit'),
+            desc(){
+                return `<div>${loc('tau_home_mining_pit')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].home])}</div>`;
+            },
+            reqs: { tau_home: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 4250000, 1.225) : 0; },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (tauEnabled() && payCosts($(this)[0])){
+                    global.tauceti.mining_pit.count++;
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
+                        global.tauceti.mining_pit.on++;
                     }
                     return true;
                 }
@@ -1464,7 +1529,7 @@ const tauCetiModules = {
             reqs: { tau_red: 1 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 1000000, 1.3, 'tauceti'); },
+                Money(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, 1000000, 1.3, 'tauceti') : 0; },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -1477,7 +1542,7 @@ const tauCetiModules = {
             powered(){ return powerCostMod(18); },
             refresh: true,
             action(){
-                if (payCosts($(this)[0])){
+                if (tauEnabled() && payCosts($(this)[0])){
                     global.tauceti.orbital_platform.count++;
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.tauceti.orbital_platform.on++;
@@ -1497,6 +1562,13 @@ const tauCetiModules = {
 
 export function tauCetiTech(){
     return tauCetiModules;
+}
+
+function tauEnabled(){
+    if (global.tech['tau_home'] && global.tech.tau_home >= 3){
+        return true;
+    }
+    return false;
 }
 
 export function renderTauCeti(){
@@ -2327,7 +2399,7 @@ function drawShips(){
         if (global.space.shipyard.expand){
             let ship_class = `${loc(`outer_shipyard_engine_${ship.engine}`)} ${loc(`outer_shipyard_class_${ship.class}`)}`;
             let desc = $(`<div id="shipReg${i}" class="shipRow ship${i}"></div>`);
-            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> | <a class="scrap${i}" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
+            let row1 = $(`<div class="row1"><span class="name has-text-caution">${ship.name}</span> <span v-show="scrapAllowed(${i})">| </span><a class="scrap${i}" v-show="scrapAllowed(${i})" @click="scrap(${i})">${loc(`outer_shipyard_scrap`)}</a> | <span class="has-text-warning">${ship_class}</span> | <span class="has-text-danger">${loc(`outer_shipyard_weapon_${ship.weapon}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_power_${ship.power}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_armor_${ship.armor}`)}</span> | <span class="has-text-warning">${loc(`outer_shipyard_sensor_${ship.sensor}`)}</span></div>`);
             let row2 = $(`<div class="row2"></div>`);
             let row3 = $(`<div class="row3"></div>`);
             let row4 = $(`<div class="location">${dispatch}</div>`);
@@ -2373,11 +2445,17 @@ function drawShips(){
             data: global.space.shipyard.ships[i],
             methods: {
                 scrap(id){
-                    if (global.space.shipyard.ships[id]){
+                    if (global.space.shipyard.ships[id] && global.space.shipyard.ships[id].location === 'spc_dwarf'){
                         global.space.shipyard.ships.splice(id,1);
                         drawShips();
                         updateCosts();
                     }
+                },
+                scrapAllowed(id){
+                    if (global.space.shipyard.ships[id] && global.space.shipyard.ships[id].location === 'spc_dwarf'){
+                        return true;
+                    }
+                    return false;
                 },
                 setLoc(l,id){
                     let ship = global.space.shipyard.ships[id];
