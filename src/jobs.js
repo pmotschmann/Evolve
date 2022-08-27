@@ -258,6 +258,9 @@ export const job_desc = {
         let know = Math.round(value * supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
+    pit_miner(){
+        return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
+    },
     crew(){
         return loc('job_crew_desc');
     }
@@ -290,6 +293,7 @@ export function defineJobs(define){
     loadJob('space_miner',define,1,5,'advanced');
     loadJob('hell_surveyor',define,1,1,'advanced');
     loadJob('archaeologist',define,1,1,'advanced');
+    loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define){
         loadFoundry();

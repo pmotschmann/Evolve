@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -5491,6 +5491,26 @@ function fastLoop(){
             modRes('Bolognium', delta * time_multiplier);
         }
 
+        //Pit Miner
+        if (global.civic.pit_miner.display){
+            if (!tauEnabled()){
+                let materials_bd = {};
+                let miner_base = global.civic.pit_miner.workers;
+                miner_base *= racialTrait(global.civic.pit_miner.workers,'miner');
+                miner_base *= production('mining_pit','materials');
+
+                let delta = miner_base * global_multiplier * zigVal;
+
+                materials_bd[loc('job_pit_miner')] = miner_base + 'v';
+                if (miner_base > 0){
+                    materials_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                }
+
+                breakdown.p['Materials'] = materials_bd;
+                modRes('Materials', delta * time_multiplier);
+            }
+        }
+
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.032;
             let foothold = 1 + (gal_on['ore_processor'] * 0.1);
@@ -6039,6 +6059,7 @@ function midLoop(){
             Orichalcum: 0,
             Cipher: 0,
             Nanite: 0,
+            Materials: 0,
         };
         // labor caps
         var lCaps = {
@@ -6065,6 +6086,7 @@ function midLoop(){
             space_miner: 0,
             hell_surveyor: 0,
             archaeologist: 0,
+            pit_miner: 0,
             crew: 0
         };
 
@@ -6134,6 +6156,7 @@ function midLoop(){
         var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
         var bd_Cipher = { [loc('base')]: caps['Cipher']+'v' };
         var bd_Nanite = { [loc('base')]: caps['Nanite']+'v' };
+        var bd_Materials = { [loc('base')]: caps['Materials']+'v' };
 
         caps[global.race.species] = 0;
 
@@ -7445,6 +7468,12 @@ function midLoop(){
             caps['Water'] += water;
             bd_Water[loc('space_red_spaceport_title')] = water+'v';
         }
+
+        if (global.tauceti['mining_pit']){
+            lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * 4);
+            caps['Materials'] += support_on['mining_pit'] * 1000000;
+        }
+
         breakdown['gt_route'] = {};
         if (global.galaxy['freighter']){
             breakdown.gt_route[loc('galaxy_freighter')] = gal_on['freighter'] * 2;
@@ -7559,7 +7588,8 @@ function midLoop(){
             Vitreloy: bd_Vitreloy,
             Orichalcum: bd_Orichalcum,
             Nanite: bd_Nanite,
-            Cipher: bd_Cipher
+            Cipher: bd_Cipher,
+            Materials: bd_Materials
         };
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];

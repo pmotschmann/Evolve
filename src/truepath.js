@@ -1342,6 +1342,25 @@ const tauCetiModules = {
                 return loc('tau_home',[races[global.race.species].home]);
             },
             support: 'orbital_station',
+            extra(region){
+                if (global.tech['tau_home'] && global.tech.tau_home >= 2 && !tauEnabled()){
+                    $(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
+                    vBind({
+                        el: `#${region}Mats`,
+                        data: global.resource.Materials,
+                        methods: {
+                            tauShow(){
+                                return !tauEnabled();
+                            }
+                        },
+                        filters: {
+                            round(v){
+                                return +v.toFixed(0);
+                            }
+                        }
+                    });
+                }
+            }
         },
         home_mission: {
             id: 'tauceti-home_mission',
@@ -1394,10 +1413,18 @@ const tauCetiModules = {
                     global.tauceti.orbital_station.count++;
                     global.tauceti.colony.count++;
                     global.tauceti.mining_pit.count++;
+                    global.civic.pit_miner.display = true;
+                    global.resource.Materials.display = true;
                     if (global.city.powered && global.city.power >= tauCetiModules.tau_home.orbital_station.powered()){
                         global.tauceti.orbital_station.on++;
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
+                        let jRequest = jobScale(4);
+                        if (global.civic[global.civic.d_job].workers < jRequest){
+                            jRequest = global.civic[global.civic.d_job].workers;
+                        }
+                        global.civic.pit_miner.workers += jRequest;
+                        global.civic[global.civic.d_job].workers -= jRequest;
                     }
                     return true;
                 }
@@ -1411,7 +1438,8 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1000000, 1.3, 'tauceti') : 0; },
+                Money(offset){ return spaceCostMultiplier('orbital_station', offset, 80000000, 1.3, 'tauceti'); },
+                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', offset, 500000, 1.3, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -1424,7 +1452,7 @@ const tauCetiModules = {
             powered(){ return powerCostMod(30); },
             refresh: true,
             action(){
-                if (tauEnabled() && payCosts($(this)[0])){
+                if (payCosts($(this)[0])){
                     global.tauceti.orbital_station.count++;
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.tauceti.orbital_station.on++;
@@ -1443,7 +1471,8 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 4250000, 1.225) : 0; },
+                Money(offset){ return spaceCostMultiplier('colony', offset, 15750000, 1.225, 'tauceti'); },
+                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -1452,7 +1481,7 @@ const tauCetiModules = {
             support(){ return -2; },
             powered(){ return powerCostMod(1); },
             action(){
-                if (tauEnabled() && payCosts($(this)[0])){
+                if (tpayCosts($(this)[0])){
                     global.tauceti.colony.count++;
                     if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
                         global.tauceti.colony.on++;
@@ -1471,16 +1500,21 @@ const tauCetiModules = {
             reqs: { tau_home: 2 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 4250000, 1.225) : 0; },
+                Money(offset){ return spaceCostMultiplier('mining_pit', offset, 4250000, 1.225, 'tauceti'); },
+                Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', offset, 350000, 1.225, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                if (!tauEnabled()){
+                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(4),loc('job_pit_miner')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[1000000,loc('resource_Materials_name')])}</div>`;
+                }
                 return desc;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
             action(){
-                if (tauEnabled() && payCosts($(this)[0])){
+                if (payCosts($(this)[0])){
                     global.tauceti.mining_pit.count++;
                     if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
                         global.tauceti.mining_pit.on++;
@@ -1564,7 +1598,7 @@ export function tauCetiTech(){
     return tauCetiModules;
 }
 
-function tauEnabled(){
+export function tauEnabled(){
     if (global.tech['tau_home'] && global.tech.tau_home >= 3){
         return true;
     }
@@ -1629,6 +1663,10 @@ export function renderTauCeti(){
                     setAction(c_action,'tauceti',tech);
                 }
             });
+
+            if (tauCetiModules[region].info.hasOwnProperty('extra')){
+                tauCetiModules[region].info.extra(region);
+            }
         }
     });
 }

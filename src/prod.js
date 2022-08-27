@@ -250,7 +250,12 @@ export function production(id,val){
         }
         case 'mining_pit':
         {
-            return 0;
+            switch (val){
+                case 'materials':
+                {
+                    return highPopAdjust(0.03);
+                }
+            }
         }
     }
 }

@@ -572,6 +572,7 @@ export function defineResources(wiki){
     loadResource('Bolognium',wiki,0,1,false,true,'advanced');
     loadResource('Vitreloy',wiki,0,1,false,true,'advanced');
     loadResource('Orichalcum',wiki,0,1,false,true,'advanced');
+    loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');
     loadResource('Nanite',wiki,0,1,false,false,'advanced');
     loadResource('Genes',wiki,-2,0,false,false,'advanced');
