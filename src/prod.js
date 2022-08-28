@@ -257,15 +257,15 @@ export function production(id,val){
                 }
                 case 'bolognium':
                 {
-                    return highPopAdjust(0.0018);
+                    return highPopAdjust(0.0035);
                 }
                 case 'stone':
                 {
-                    return highPopAdjust(0.003);
+                    return highPopAdjust(0.01);
                 }
                 case 'adamantite':
                 {
-                    return highPopAdjust(0.001);
+                    return highPopAdjust(0.006);
                 }
             }
         }

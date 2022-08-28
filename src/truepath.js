@@ -1440,6 +1440,9 @@ const tauCetiModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('orbital_station', offset, 80000000, 1.3, 'tauceti'); },
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', offset, 500000, 1.3, 'tauceti'); },
+                Helium_3(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 250000, 1.3, 'tauceti') : 0; },
+                Copper(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1250000, 1.3, 'tauceti') : 0; },
+                Adamantite(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 900000, 1.3, 'tauceti') : 0; },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -1473,10 +1476,15 @@ const tauCetiModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('colony', offset, 15750000, 1.225, 'tauceti'); },
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
+                Furs(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 720000, 1.225, 'tauceti') : 0; },
+                Graphene(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 485000, 1.225, 'tauceti') : 0; },
+                Plywood(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 880000, 1.225, 'tauceti') : 0; },
             },
             effect(){
+                let containers = 250;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
                 return desc;
             },
             support(){ return -2; },
@@ -1484,7 +1492,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
                         global.tauceti.colony.on++;
                     }
                     return true;
@@ -1503,6 +1511,8 @@ const tauCetiModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('mining_pit', offset, 4250000, 1.225, 'tauceti'); },
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('mining_pit', offset, 350000, 1.225, 'tauceti'); },
+                Lumber(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 2350000, 1.225, 'tauceti') : 0; },
+                Iron(offset){ return tauEnabled() ? spaceCostMultiplier('mining_pit', offset, 835000, 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -1517,7 +1527,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_pit.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
                         global.tauceti.mining_pit.on++;
                     }
                     return true;
@@ -1578,13 +1588,10 @@ const tauCetiModules = {
                     return `<div>${loc('tau_jump_gate')}</div>`;
                 }
             },
-            reqs: { tau_home: 4 },
+            reqs: { tauceti: 3 },
             path: ['truepath'],
             queue_size: 10,
             queue_complete(){ return 100 - global.tauceti.jump_gate.count; },
-            condition(){
-                return global.tauceti.jump_gate.count >= 100 ? false : true;
-            },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
                 Materials(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
@@ -1645,10 +1652,13 @@ const tauCetiModules = {
             id: 'tauceti-orbital_platform',
             title: loc('tau_red_orbital_platform'),
             desc: `<div>${loc('tau_red_orbital_platform')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
-            reqs: { tau_red: 1 },
+            reqs: { tau_red: 1, tauceti: 4 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, 1000000, 1.3, 'tauceti') : 0; },
+                Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 50000000, 1.3, 'tauceti'); },
+                Oil(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, 275000, 1.3, 'tauceti') : 0; },
+                Aluminium(offset){ return spaceCostMultiplier('orbital_platform', offset, 1780000, 1.3, 'tauceti'); },
+                Bolognium(offset){ return spaceCostMultiplier('orbital_platform', offset, 450000, 1.3, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
@@ -1684,7 +1694,7 @@ export function tauCetiTech(){
 }
 
 export function tauEnabled(){
-    if (global.tech['tauceti'] && global.tech.tauceti >= 3){
+    if (global.tech['tauceti'] && global.tech.tauceti >= 4){
         return true;
     }
     return false;

@@ -6476,6 +6476,12 @@ function midLoop(){
             caps['Money'] += money;
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
+        if (support_on['colony']){
+            caps['Containers'] += (support_on['colony'] * 250);
+            bd_Containers[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
+            caps['Crates'] += (support_on['colony'] * 250);
+            bd_Crates[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
+        }
         if (p_on['operating_base']){
             lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * jobScale(4);
         }
@@ -9319,6 +9325,15 @@ function longLoop(){
                     drawTech();
                 }
             }
+        }
+        
+        if (global.race['truepath'] && global.tech['tauceti'] && global.tech.tauceti === 3 && global.space.hasOwnProperty('jump_gate') && global.tauceti.hasOwnProperty('jump_gate') && global.space.jump_gate.count >= 100 && global.tauceti.jump_gate.count >= 100){
+            global.tech.tauceti = 4;
+            global.resource.Materials.display = false;
+            global.resource.Bolognium.display = true;
+            renderSpace();
+            renderTauCeti();
+            drawTech();
         }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){

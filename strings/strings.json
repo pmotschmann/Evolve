@@ -2429,6 +2429,8 @@
   "tech_alien_outpost": "Alien Outpost",
   "tech_alien_outpost_effect": "Research the Alien Outpost to unlock its secrets.",
   "tech_alien_outpost_msg": "The Alien Outpost appears to be some kind of research lab. You find plans for a \"Jump Gate\" which if constructed could connect your colony with your home system.",
+  "tech_jumpgates": "Jump Gates",
+  "tech_jumpgates_effect": "Study the Jump Gate plans to learn how to construct them.",
   "tech_long_range_probes": "Long Range Probes",
   "tech_long_range_probes_effect": "Design new space probes for long term operations in the outer solar system.",
   "tech_strange_signal": "Strange Signal",

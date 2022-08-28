@@ -1516,13 +1516,10 @@ const spaceProjects = {
                     return `<div>${loc('tau_jump_gate')}</div>`;
                 }
             },
-            reqs: { tau_home: 4 },
+            reqs: { tauceti: 3 },
             path: ['truepath'],
             queue_size: 10,
             queue_complete(){ return 100 - global.space.jump_gate.count; },
-            condition(){
-                return global.space.jump_gate.count >= 100 ? false : true;
-            },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
                 Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 50000 : 0; },

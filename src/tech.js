@@ -11761,7 +11761,7 @@ const techs = {
         id: 'tech-alien_outpost',
         title: loc('tech_alien_outpost'),
         desc: loc('tech_alien_outpost'),
-        category: 'progress',
+        category: 'science',
         era: 'tauceti',
         path: ['truepath'],
         reqs: { tauceti: 2, tau_home: 3 },
@@ -11777,6 +11777,26 @@ const techs = {
                 global.tauceti['jump_gate'] = { count: 0 };
                 global.space['jump_gate'] = { count: 0 };
                 messageQueue(loc('tech_alien_outpost_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    jumpgates: {
+        id: 'tech-jumpgates',
+        title: loc('tech_jumpgates'),
+        desc: loc('tech_jumpgates'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tauceti: 2, tau_home: 4 },
+        grant: ['tauceti',3],
+        cost: {
+            Knowledge(){ return 6000000; }
+        },
+        effect: loc('tech_jumpgates_effect'),
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
