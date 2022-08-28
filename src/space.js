@@ -1505,6 +1505,52 @@ const spaceProjects = {
                 return false;
             }
         },
+        jump_gate: {
+            id: 'space-jump_gate',
+            title: loc('tau_jump_gate'),
+            desc(wiki){
+                if (!global.space.hasOwnProperty('jump_gate') || global.space.jump_gate.count < 100 || wiki){
+                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('tau_jump_gate')}</div>`;
+                }
+            },
+            reqs: { tau_home: 4 },
+            path: ['truepath'],
+            queue_size: 10,
+            queue_complete(){ return 100 - global.space.jump_gate.count; },
+            condition(){
+                return global.space.jump_gate.count >= 100 ? false : true;
+            },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 50000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 12500 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 42000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 35000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0)) < 100 ? 25000 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.space.hasOwnProperty('jump_gate') ? global.space.jump_gate.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('tau_jump_gate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('tau_jump_gate_effect');
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.space.jump_gate.count < 100){
+                        global.space.jump_gate.count++;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
     },
     spc_gas: {
         info: {

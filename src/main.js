@@ -4439,10 +4439,9 @@ function fastLoop(){
         let refinery = global.city['metal_refinery'] ? global.city['metal_refinery'].count * 6 : 0;
 
         // Stone / Amber
+        let stone_bd = {};
         if (global.race['sappy']){
             if (global.tech['mining'] && global.resource[global.race.species].amount > 0){
-                let stone_bd = {};
-
                 let stone_base = global.resource[global.race.species].amount * traits.sappy.vars()[0];
                 if (global.race['high_pop']){
                     stone_base = highPopAdjust(stone_base);
@@ -4466,7 +4465,6 @@ function fastLoop(){
                 let delta = (stone_base + soldiers) * hunger * global_multiplier;
                 stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
-                breakdown.p['Stone'] = stone_bd;
                 modRes('Stone', delta * time_multiplier);
             }
         }
@@ -4501,7 +4499,6 @@ function fastLoop(){
                 rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
 
-            let stone_bd = {};
             let chrysotile_bd = {};
             stone_bd[loc('workers')] = stone_base + 'v';
             if (stone_base > 0){
@@ -4556,7 +4553,6 @@ function fastLoop(){
             }
 
             stone_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-            breakdown.p['Stone'] = stone_bd;
             modRes('Stone', delta * time_multiplier);
 
             if (global.race['smoldering'] && global.resource.Chrysotile.display){
@@ -5431,11 +5427,6 @@ function fastLoop(){
             modRes('Adamantite', adam_delta * time_multiplier);
         }
 
-        if (shrineBonusActive()){
-            adamantite_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
-        }
-        breakdown.p['Adamantite'] = adamantite_bd;
-
         // Infernite
         let infernite_bd = {};
         if (global.resource.Infernite.display){
@@ -5493,23 +5484,78 @@ function fastLoop(){
 
         //Pit Miner
         if (global.civic.pit_miner.display){
-            if (!tauEnabled()){
+            if (tauEnabled()){
+                let miner_base = global.civic.pit_miner.workers;
+                miner_base *= racialTrait(global.civic.pit_miner.workers,'miner');
+                let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
+
+                { // Bolognium
+                    let bol_base = miner_base;
+                    bol_base *= production('mining_pit','bolognium');
+                    let delta = bol_base * global_multiplier * zigVal * colony_val;
+
+                    bolognium_bd[loc('job_pit_miner')] = bol_base + 'v';
+                    if (bol_base > 0){
+                        bolognium_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                        bolognium_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                    }
+
+                    modRes('Bolognium', delta * time_multiplier);
+                }
+
+                { // Stone
+                    let stone_base = miner_base;
+                    stone_base *= production('mining_pit','stone');
+                    let delta = stone_base * global_multiplier * zigVal * colony_val;
+
+                    stone_bd[loc('job_pit_miner')] = stone_base + 'v';
+                    if (stone_base > 0){
+                        stone_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                        stone_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                    }
+
+                    modRes('Stone', delta * time_multiplier);
+                }
+
+                { // Adamantite
+                    let adam_base = miner_base;
+                    adam_base *= production('mining_pit','stone');
+                    let delta = adam_base * shrineMetal.mult * global_multiplier * zigVal * colony_val;
+
+                    adamantite_bd[loc('job_pit_miner')] = adam_base + 'v';
+                    if (adam_base > 0){
+                        adamantite_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                        adamantite_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                    }
+
+                    modRes('Adamantite', delta * time_multiplier);
+                }
+            }
+            else {
                 let materials_bd = {};
                 let miner_base = global.civic.pit_miner.workers;
                 miner_base *= racialTrait(global.civic.pit_miner.workers,'miner');
                 miner_base *= production('mining_pit','materials');
 
-                let delta = miner_base * global_multiplier * zigVal;
+                let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
+                let delta = miner_base * global_multiplier * zigVal * colony_val;
 
                 materials_bd[loc('job_pit_miner')] = miner_base + 'v';
                 if (miner_base > 0){
                     materials_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                    materials_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
                 }
 
                 breakdown.p['Materials'] = materials_bd;
                 modRes('Materials', delta * time_multiplier);
             }
         }
+        
+        if (shrineBonusActive()){
+            adamantite_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+        }
+        breakdown.p['Adamantite'] = adamantite_bd;
+        breakdown.p['Stone'] = stone_bd;
 
         if (p_on['s_gate'] && global.resource.Bolognium.display && global.galaxy['armed_miner'] && gal_on['armed_miner'] > 0){
             let base = gal_on['armed_miner'] * 0.032;
@@ -7545,6 +7591,13 @@ function midLoop(){
             let gain = Math.round(caps['Knowledge'] * boost);
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('space_dwarf_collider_title')] = gain+'v';
+        }
+
+        if (p_on['alien_outpost']){
+            let boost = 0.2;
+            let gain = Math.round(caps['Knowledge'] * boost);
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('tech_alien_outpost')] = gain+'v';
         }
 
         breakdown.c = {

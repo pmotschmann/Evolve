@@ -1476,12 +1476,13 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
                 return desc;
             },
             support(){ return -2; },
             powered(){ return powerCostMod(1); },
             action(){
-                if (tpayCosts($(this)[0])){
+                if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
                     if (global.tauceti.orbital_station.support - $(this)[0].support() < global.tauceti.orbital_station.s_max){
                         global.tauceti.colony.on++;
@@ -1520,6 +1521,90 @@ const tauCetiModules = {
                         global.tauceti.mining_pit.on++;
                     }
                     return true;
+                }
+                return false;
+            }
+        },
+        excavate: {
+            id: 'tauceti-excavate',
+            title: loc('tau_home_excavate'),
+            desc(){
+                return `<div>${loc('tau_home_excavate')}</div>`;
+            },
+            reqs: { tau_home: 2 },
+            grant: ['tau_home',3],
+            path: ['truepath'],
+            cost: {
+                Money(o){ return 650000000; },
+                Materials(o){ return 750000; },
+            },
+            effect(){
+                return loc('tau_home_excavate_effect');
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('tau_home_excavate_msg'),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        alien_outpost: {
+            id: 'tauceti-alien_outpost',
+            title: loc('tech_alien_outpost'),
+            desc(){
+                return `<div>${loc('tech_alien_outpost')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { tau_home: 4 },
+            path: ['truepath'],
+            cost: {},
+            queue_complete(){ return 0; },
+            effect(){
+                return `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            powered(){ return powerCostMod(100); },
+            action(){
+                return false;
+            }
+        },
+        jump_gate: {
+            id: 'tauceti-jump_gate',
+            title: loc('tau_jump_gate'),
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('jump_gate') || global.tauceti.jump_gate.count < 100 || wiki){
+                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('tau_jump_gate')}</div>`;
+                }
+            },
+            reqs: { tau_home: 4 },
+            path: ['truepath'],
+            queue_size: 10,
+            queue_complete(){ return 100 - global.tauceti.jump_gate.count; },
+            condition(){
+                return global.tauceti.jump_gate.count >= 100 ? false : true;
+            },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 1000000 : 0; },
+                Materials(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0)) < 100 ? 12500 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('jump_gate') ? global.tauceti.jump_gate.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('tau_jump_gate_effect')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    return loc('tau_jump_gate_effect');
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.tauceti.jump_gate.count < 100){
+                        global.tauceti.jump_gate.count++;
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -1599,7 +1684,7 @@ export function tauCetiTech(){
 }
 
 export function tauEnabled(){
-    if (global.tech['tau_home'] && global.tech.tau_home >= 3){
+    if (global.tech['tauceti'] && global.tech.tauceti >= 3){
         return true;
     }
     return false;

@@ -11757,6 +11757,31 @@ const techs = {
             return false;
         }
     },
+    alien_outpost: {
+        id: 'tech-alien_outpost',
+        title: loc('tech_alien_outpost'),
+        desc: loc('tech_alien_outpost'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tauceti: 2, tau_home: 3 },
+        grant: ['tau_home',4],
+        cost: {
+            Knowledge(){ return 5000000; },
+            Cipher(){ return 100000; }
+        },
+        effect: loc('tech_alien_outpost_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['alien_outpost'] = { count: 1, on: 0 };
+                global.tauceti['jump_gate'] = { count: 0 };
+                global.space['jump_gate'] = { count: 0 };
+                messageQueue(loc('tech_alien_outpost_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){
