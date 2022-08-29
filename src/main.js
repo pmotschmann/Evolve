@@ -1754,6 +1754,7 @@ function fastLoop(){
             { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
             { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
+            { a: 'tauceti', r: 'tau_home', s: 'fusion_generator', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
@@ -1850,6 +1851,15 @@ function fastLoop(){
                 global[sup.a][sup.s].support = used_support;
             }
         });
+
+        if (global.race['truepath']){
+            if (support_on['fusion_generator']){
+                let power = support_on['fusion_generator'] * actions.tauceti.tau_home.fusion_generator.powered();
+                max_power += power;
+                power_grid -= power;
+                power_generated[loc('tech_fusion_generator')] = -(power);
+            }
+        }
 
         // Space Marines
         if (global.space['space_barracks']){
@@ -6481,6 +6491,10 @@ function midLoop(){
             bd_Containers[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
             caps['Crates'] += (support_on['colony'] * 250);
             bd_Crates[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
+
+            let pop = support_on['colony'] * actions.tauceti.tau_home.colony.citizens();
+            caps[global.race.species] += pop;
+            bd_Citizen[loc('tau_home_colony')] = pop + 'v';
         }
         if (p_on['operating_base']){
             lCaps['garrison'] += Math.min(support_on['operating_base'],p_on['operating_base']) * jobScale(4);
@@ -6995,6 +7009,16 @@ function midLoop(){
                 caps['Helium_3'] += gain;
                 bd_Helium[loc('space_home_propellant_depot_title')] = gain+'v';
             }
+        }
+        if (p_on['orbital_station']){
+            let gain = (p_on['orbital_station'] * spatialReasoning(15000));
+            caps['Helium_3'] += gain;
+            bd_Helium[loc('tau_home_orbital_station')] = gain+'v';
+        }
+        if (p_on['orbital_platform']){
+            let gain = (p_on['orbital_platform'] * spatialReasoning(17500));
+            caps['Oil'] += gain;
+            bd_Oil[loc('tau_red_orbital_platform')] = gain+'v';
         }
         if (global.space['gas_storage']){
             let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
@@ -7522,7 +7546,7 @@ function midLoop(){
         }
 
         if (global.tauceti['mining_pit']){
-            lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * 4);
+            lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * 8);
             caps['Materials'] += support_on['mining_pit'] * 1000000;
         }
 

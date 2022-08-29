@@ -11802,6 +11802,27 @@ const techs = {
             return false;
         }
     },
+    fusion_generator: {
+        id: 'tech-fusion_generator',
+        title: loc('tech_fusion_power'),
+        desc: loc('tech_fusion_power'),
+        category: 'power_generation',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tauceti: 3, tau_home: 4 },
+        grant: ['tau_home',5],
+        cost: {
+            Knowledge(){ return 6500000; }
+        },
+        effect: loc('tech_tau_fusion_power_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['fusion_generator'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

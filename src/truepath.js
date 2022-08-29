@@ -1445,8 +1445,10 @@ const tauCetiModules = {
                 Adamantite(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 900000, 1.3, 'tauceti') : 0; },
             },
             effect(){
+                let helium = spatialReasoning(15000);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1481,8 +1483,10 @@ const tauCetiModules = {
                 Plywood(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 880000, 1.225, 'tauceti') : 0; },
             },
             effect(){
+                let pop = $(this)[0].citizens();
                 let containers = 250;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('plus_max_citizens',[pop])}</div>`;
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
                 return desc;
@@ -1498,6 +1502,13 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            citizens(){
+                let pop = 5;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
             }
         },
         mining_pit: {
@@ -1516,9 +1527,13 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[jobScale(8),loc('job_pit_miner')])}</div>`;
                 if (!tauEnabled()){
-                    desc = desc + `<div>${loc('plus_max_resource',[jobScale(4),loc('job_pit_miner')])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[1000000,loc('resource_Materials_name')])}</div>`;
+                    desc = desc + `<div>${loc('tau_home_mining_pit_effect',[global.resource.Materials.name])}</div>`;
+                }
+                else {
+                    desc = desc + `<div>${loc('tau_home_mining_pit_effect2',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name])}</div>`;
                 }
                 return desc;
             },
@@ -1616,6 +1631,41 @@ const tauCetiModules = {
                 return false;
             }
         },
+        fusion_generator: {
+            id: 'tauceti-fusion_generator',
+            title: loc('tech_fusion_generator'),
+            desc(){
+                return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Helium_3.name])}</div>`;
+            },
+            reqs: { tau_home: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('fusion_generator', offset, 188000000, 1.25, 'tauceti'); },
+                Iridium(offset){ return  spaceCostMultiplier('fusion_generator', offset, 5550000, 1.25, 'tauceti'); },
+                Stanene(offset){ return spaceCostMultiplier('fusion_generator', offset, 7003500, 1.25, 'tauceti'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, 95000, 1.25, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('space_belt_station_effect3',[fuel])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            support_fuel(){ return { r: 'Helium_3', a: 500 }; },
+            powered(){ return powerModifier(-32); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.fusion_generator.count++;
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
+                        global.tauceti.fusion_generator.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     tau_red: {
         info: {
@@ -1661,8 +1711,10 @@ const tauCetiModules = {
                 Bolognium(offset){ return spaceCostMultiplier('orbital_platform', offset, 450000, 1.3, 'tauceti'); },
             },
             effect(){
+                let oil = spatialReasoning(17500);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].solar.red]),$(this)[0].support()])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },

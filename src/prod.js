@@ -253,11 +253,11 @@ export function production(id,val){
             switch (val){
                 case 'materials':
                 {
-                    return highPopAdjust(0.015);
+                    return highPopAdjust(0.0075);
                 }
                 case 'bolognium':
                 {
-                    return highPopAdjust(0.0035);
+                    return highPopAdjust(0.0018);
                 }
                 case 'stone':
                 {

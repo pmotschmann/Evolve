@@ -278,7 +278,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
         case 'tau_home':
-            power_structs = ['tau_home:colony','tau_home:mining_pit'];
+            power_structs = ['tau_home:colony','tau_home:fusion_generator','tau_home:mining_pit'];
             break;
         case 'tau_red':
             power_structs = [];
