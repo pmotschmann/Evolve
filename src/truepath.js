@@ -1738,6 +1738,7 @@ const tauCetiModules = {
                     }
                     if (global.tech['tau_red'] === 1){
                         global.tech['tau_red'] = 2;
+                        messageQueue(loc('tau_red_orbital_platform_msg',[loc('tau_planet',[races[global.race.species].solar.red]),loc('tau_planet',[races[global.race.species].home])]),'info',false,['progress']);
                     }
                     return true;
                 }

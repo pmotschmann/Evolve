@@ -11823,6 +11823,48 @@ const techs = {
             return false;
         }
     },
+    weasels: {
+        id: 'tech-weasels',
+        title: loc('tech_weasels'),
+        desc: loc('tech_weasels'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_red: 2 },
+        grant: ['tau_red',3],
+        cost: {
+            Knowledge(){ return 6250000; }
+        },
+        effect(){ return loc('tech_weasels_effect',[loc('tau_planet',[races[global.race.species].solar.red])]); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_weasels_msg',[loc('tau_planet',[races[global.race.species].solar.red])]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    jeff: {
+        id: 'tech-jeff',
+        title: loc('tech_jeff'),
+        desc: loc('tech_jeff'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_red: 3 },
+        grant: ['tau_red',4],
+        cost: {
+            Knowledge(){ return 6380000; }
+        },
+        effect(){ return loc('tech_jeff_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_jeff_effect_msg',[]),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){
