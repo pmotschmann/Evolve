@@ -1754,6 +1754,7 @@ function fastLoop(){
             { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
             { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
+            { a: 'tauceti', r: 'tau_home', s: 'colony', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_home', s: 'fusion_generator', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
         ].forEach(function(sup){

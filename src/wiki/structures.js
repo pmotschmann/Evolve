@@ -28,6 +28,9 @@ export function renderStructurePage(zone,path){
         case 'hell':
             hellPage(content);
             break;
+        case 'tauceti':
+            taucetiPage(content);
+            break;
     }
 }
 
@@ -48,6 +51,7 @@ const extraInformation = {
     interstellar: {},
     intergalactic: {},
     hell: {},
+    tauceti: {},
 };
 
 function addInfomration(parent,section,key){
@@ -70,7 +74,8 @@ const calcInfo = {
         starDock: ['prep_ship','launch_ship'],
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
-        hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire']
+        hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire'],
+        tauceti: ['home_mission','dismantle','excavate','alien_outpost','red_mission'],
     },
     excludeCreep: {
         planetary: ['horseshoe'],
@@ -89,7 +94,8 @@ const calcInfo = {
             shipyard: 1,
             mass_relay: 100,
             fob: 1,
-            ai_core: 100
+            ai_core: 100,
+            jump_gate: 100
         },
         starDock: {
             seeder: 100
@@ -117,6 +123,10 @@ const calcInfo = {
             bridge: 10,
             sphinx: 2,
             waygate: 10
+        },
+        tauceti: {
+            alien_outpost: 1,
+            jump_gate: 100
         }
     },
     count: {
@@ -134,7 +144,8 @@ const calcInfo = {
             ancient_pillars: Object.keys(global.pillars).length,
             sphinx: !global.tech['hell_spire'] || global.tech.hell_spire < 7 ? 0 : global.tech.hell_spire === 7 ? 1 : 2,
             waygate: global.tech['waygate'] && global.tech.waygate >= 2 ? 10 : global.portal['waygate'] ? global.portal.waygate.count : 0
-        }
+        },
+        tauceti: {}
     },
     creepCalc: {
         planetary: {
@@ -209,6 +220,10 @@ function addCalcInputs(parent,key,section,region,path){
         case 'hell':
             action = actions.portal[region][key];
             inputs.real_owned = global.portal[key] ? global.portal[key].count : 0;
+            break;
+        case 'tauceti':
+            action = actions.tauceti[region][key];
+            inputs.real_owned = global.tauceti[key] ? global.tauceti[key].count : 0;
             break;
     }
     if (calcInfo.count[section] && calcInfo.count[section][key]){
@@ -489,6 +504,26 @@ function hellPage(content){
                 addCalcInputs(info,struct,'hell',region);
                 sideMenu('add',`hell-structures`,id[1],typeof actions.portal[region][struct].title === 'function' ? actions.portal[region][struct].title() : actions.portal[region][struct].title);
                 popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
+            }
+        });
+    });
+}
+
+function taucetiPage(content){
+    Object.keys(actions.tauceti).forEach(function (region){        
+        let name = typeof actions.tauceti[region].info.name === 'string' ? actions.tauceti[region].info.name : actions.tauceti[region].info.name();
+        let desc = typeof actions.tauceti[region].info.desc === 'string' ? actions.tauceti[region].info.desc : actions.tauceti[region].info.desc();
+
+        Object.keys(actions.tauceti[region]).forEach(function (struct){
+            if (struct !== 'info' && (!actions.tauceti[region][struct].hasOwnProperty('wiki') || actions.tauceti[region][struct].wiki)){
+                let id = actions.tauceti[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.tauceti[region][struct],`<span id="pop${actions.tauceti[region][struct].id}">${name}</span>`, true);
+                addInfomration(info,'tauceti',struct);
+                addCalcInputs(info,struct,'tauceti',region);
+                sideMenu('add',`tauceti-structures`,id[1],typeof actions.tauceti[region][struct].title === 'function' ? actions.tauceti[region][struct].title() : actions.tauceti[region][struct].title);
+                popover(`pop${actions.tauceti[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });

@@ -1369,7 +1369,8 @@ const tauCetiModules = {
             reqs: { tauceti: 2 },
             grant: ['tau_home',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.tau_home >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; }
             },
@@ -1391,7 +1392,8 @@ const tauCetiModules = {
             reqs: { tau_home: 1 },
             grant: ['tau_home',2],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.tau_home >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 100000000; }
             },
@@ -1399,7 +1401,9 @@ const tauCetiModules = {
                 let explorer = 'Explorer';
                 if (global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
                     let shipId = global.space.shipyard.ships.findIndex(x => x.location === 'tauceti' && x.class === 'explorer');
-                    explorer = global.space.shipyard.ships[shipId].name;
+                    if (shipId !== -1){
+                        explorer = global.space.shipyard.ships[shipId].name;
+                    }
                 }
                 return loc('tau_home_dismantle_effect',[explorer]);
             },
@@ -1471,7 +1475,7 @@ const tauCetiModules = {
             id: 'tauceti-colony',
             title: loc('tau_home_colony'),
             desc(){
-                return `<div>${loc('tau_home_colony_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].home])}</div>`;
+                return `<div>${loc('tau_home_colony_desc',[races[global.race.species].home])}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Food.name])}</div>`;
             },
             reqs: { tau_home: 2 },
             path: ['truepath'],
@@ -1485,13 +1489,16 @@ const tauCetiModules = {
             effect(){
                 let pop = $(this)[0].citizens();
                 let containers = 250;
+                let fuel = +($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('plus_max_citizens',[pop])}</div>`;
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
             support(){ return -2; },
+            support_fuel(){ return { r: 'Food', a: 1000 }; },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -1649,7 +1656,7 @@ const tauCetiModules = {
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
-                desc = desc + `<div class="has-text-caution">${loc('space_belt_station_effect3',[fuel])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
             support(){ return -1; },
@@ -1684,7 +1691,8 @@ const tauCetiModules = {
             reqs: { tauceti: 2 },
             grant: ['tau_red',1],
             path: ['truepath'],
-            no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
+            queue_complete(){ return global.tech.tau_red >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; }
             },
