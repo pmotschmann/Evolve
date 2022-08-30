@@ -1761,6 +1761,13 @@ export function tauEnabled(){
     return false;
 }
 
+export function checkPathRequirements(era,region,action){
+    switch (era){
+        case 'tauceti':
+            return checkRequirements(tauCetiModules,region,action);
+    }
+}
+
 export function renderTauCeti(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 6)){
         return;

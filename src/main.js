@@ -8,7 +8,7 @@ import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
-import { renderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
+import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -8596,23 +8596,6 @@ let sythMap = {
     2: 1.25,
     3: 1.5,
 };
-
-function convertSpaceSector(part){
-    let space = 'space';
-    if (part.substr(0,4) === 'int_'){
-        space = 'interstellar';
-    }
-    else if (part.substr(0,5) === 'prtl_'){
-        space = 'portal';
-    }
-    else if (part.substr(0,4) === 'gxy_'){
-        space = 'galaxy';
-    }
-    else if (part.substr(0,4) === 'tau_'){
-        space = 'tauceti';
-    }
-    return space;
-}
 
 var kplv = 60;
 function longLoop(){

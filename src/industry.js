@@ -4,8 +4,9 @@ import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, genusVars } from './races.js';
 import { atomic_mass } from './resources.js';
-import { checkRequirements, checkSpaceRequirements } from './space.js';
+import { checkRequirements, checkSpaceRequirements, convertSpaceSector } from './space.js';
 import { fortressTech } from './portal.js';
+import { checkPathRequirements } from './truepath.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -1256,6 +1257,9 @@ export function gridEnabled(c_action,region,p0,p1){
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
             break;
+        case 'tauceti':
+            isOk = checkPathRequirements(region,p0,p1);
+            break;
         default:
             isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
@@ -1302,7 +1306,7 @@ export function setPowerGrid(){
             let struct = grids[grid_type].l[i];
 
             let parts = struct.split(":");
-            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+            let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
 
@@ -1437,7 +1441,7 @@ export function gridDefs(){
         enceladus: { l: global.support.enceladus, n: genusVars[type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
         eris: { l: global.support.eris, n: genusVars[type].solar.eris, s: global.settings.space.eris, r: 'space', rs: 'drone_control'  },
         tau_home: { l: global.support.tau_home, n: loc(`tau_planet`,[races[global.race.species].home]), s: global.settings.tau.home, r: 'tauceti', rs: 'orbital_station'  },
-        tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[races[global.race.species].red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
+        tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[races[global.race.species].solar.red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
     };
 }
 

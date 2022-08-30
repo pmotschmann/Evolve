@@ -5373,6 +5373,23 @@ const galaxyProjects = {
     },
 };
 
+export function convertSpaceSector(part){
+    let space = 'space';
+    if (part.substr(0,4) === 'int_'){
+        space = 'interstellar';
+    }
+    else if (part.substr(0,5) === 'prtl_'){
+        space = 'portal';
+    }
+    else if (part.substr(0,4) === 'gxy_'){
+        space = 'galaxy';
+    }
+    else if (part.substr(0,4) === 'tau_'){
+        space = 'tauceti';
+    }
+    return space;
+}
+
 export function piracy(region,rating,raw){
     if (global.tech['piracy'] && !global.race['truepath']){
         let armada = 0;
