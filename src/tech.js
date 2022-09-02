@@ -11865,6 +11865,26 @@ const techs = {
             return false;
         }
     },
+    womling_fun: {
+        id: 'tech-womling_fun',
+        title: loc('tech_womling_fun'),
+        desc: loc('tech_womling_fun'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_red: 5 },
+        grant: ['tau_red',6],
+        cost: {
+            Knowledge(){ return 6650000; }
+        },
+        effect(){ return loc('tech_womling_fun_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

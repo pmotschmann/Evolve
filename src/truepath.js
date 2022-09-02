@@ -1745,10 +1745,262 @@ const tauCetiModules = {
                 return false;
             }
         },
+        contact: {
+            id: 'tauceti-contact',
+            title(){ return loc('tau_red_contact'); },
+            desc(){ return loc('tau_red_contact'); },
+            reqs: { tau_red: 4 },
+            grant: ['tau_red',5],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
+            cost: {
+                Money(){ return 400000000; },
+                Food(){ return 2500000; }
+            },
+            effect(){ return loc('tau_red_contact_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.race['womling_friend'] = 1;
+                    defineWomlings();
+                    return true;
+                }
+                return false;
+            }
+        },
+        introduce: {
+            id: 'tauceti-introduce',
+            title(){ return loc('tau_red_introduce'); },
+            desc(){ return loc('tau_red_introduce'); },
+            reqs: { tau_red: 4 },
+            grant: ['tau_red',5],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
+            cost: {
+                Knowledge(){ return 7000000; }
+            },
+            effect(){ return loc('tau_red_introduce_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.race['womling_god'] = 1;
+                    defineWomlings();
+                    return true;
+                }
+                return false;
+            }
+        },
+        subjugate: {
+            id: 'tauceti-subjugate',
+            title(){ return loc('tau_red_subjugate'); },
+            desc(){ return loc('tau_red_subjugate'); },
+            reqs: { tau_red: 4 },
+            grant: ['tau_red',5],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
+            cost: {
+                Money(){ return 1000000000; }
+            },
+            effect(){ return loc('tau_red_subjugate_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.race['womling_lord'] = 1;
+                    defineWomlings();
+                    return true;
+                }
+                return false;
+            }
+        },
+        jeff: {
+            id: 'tauceti-jeff',
+            title(){ return loc('tau_red_jeff'); },
+            desc(){ return loc('tau_red_jeff'); },
+            reqs: { tau_red: 5 },
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
+            cost: {},
+            effect(){
+                let desc = `<div>${loc('tau_red_jeff_effect1',[global.tauceti['overseer'] ? global.tauceti.overseer.pop : 0])}</div>`;
+                desc = desc + `<div>${loc('tau_red_jeff_effect2',[global.tauceti['overseer'] ? global.tauceti.overseer.working : 0])}</div>`;
+                desc = desc + `<div>${loc('tau_red_jeff_effect3',[global.tauceti['overseer'] ? global.tauceti.overseer.injured : 0])}</div>`;
+                desc = desc + `<div>${loc('tau_red_jeff_effect4',[global.tauceti['overseer'] ? global.tauceti.overseer.loyal : 0])}</div>`;
+                desc = desc + `<div>${loc('tau_red_jeff_effect5',[global.tauceti['overseer'] ? global.tauceti.overseer.morale : 0])}</div>`;
+                return desc;
+            },
+            action(){
+                return false;
+            }
+        },
+        overseer: {
+            id: 'tauceti-overseer',
+            title(){ return $(this)[0].name(); },
+            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            name(){
+                if (global.race['womling_lord']){
+                    return loc('tau_red_overseer');
+                }
+                else if (global.race['womling_god']){
+                    return loc('tau_red_womgod');
+                }
+                else {
+                    return loc('tau_red_womally');
+                }
+            },
+            reqs: { tau_red: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('overseer', offset, 50000000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_overseer_effect')}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.overseer.count++;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.overseer.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        womling_village: {
+            id: 'tauceti-womling_village',
+            title: loc('tau_red_womling_village'),
+            desc(){ return `<div>${loc('tau_red_womling_village')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            reqs: { tau_red: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_village', offset, 50000000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_village_effect',[5])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.womling_village.count++;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.womling_village.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        womling_farm: {
+            id: 'tauceti-womling_farm',
+            title: loc('tau_red_womling_farm'),
+            desc(){ return `<div>${loc('tau_red_womling_farm')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            reqs: { tau_red: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_farm', offset, 50000000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[12])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.womling_farm.count++;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.womling_farm.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        womling_mine: {
+            id: 'tauceti-womling_mine',
+            title: loc('tau_red_womling_mine'),
+            desc(){ return `<div>${loc('tau_red_womling_mine')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            reqs: { tau_red: 5 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_mine', offset, 50000000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_mine_effect')}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.womling_mine.count++;
+                    global.resource.Unobtainium.display = true;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.womling_mine.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        womling_fun: {
+            id: 'tauceti-womling_fun',
+            title(){ return $(this)[0].name(); },
+            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            name(){
+                if (global.race['womling_lord']){
+                    return loc('tau_red_womling_fun1');
+                }
+                else if (global.race['womling_god']){
+                    return loc('tau_red_womling_fun2');
+                }
+                else {
+                    return loc('tau_red_womling_fun3');
+                }
+            },
+            reqs: { tau_red: 6 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_fun', offset, 50000000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_fun_effect')}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.womling_fun.count++;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.womling_fun.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     //tau_three: {},
     //tau_four: {},
 };
+
+function defineWomlings(){
+    global.tauceti['overseer'] = { count : 0, on: 0, morale: 0, pop: 0, injured: 0, loyal: 0, working: 0 };
+    global.tauceti['womling_village'] = { count : 1, on: 1 };
+    global.tauceti['womling_mine'] = { count : 0, on: 0 };
+    global.tauceti['womling_farm'] = { count : 1, on: 1 };
+    global.tauceti['womling_fun'] = { count : 0, on: 0 };
+}
 
 export function tauCetiTech(){
     return tauCetiModules;
