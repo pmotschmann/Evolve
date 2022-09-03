@@ -269,5 +269,9 @@ export function production(id,val){
                 }
             }
         }
+        case 'womling_mine':
+        {
+            return 0.122;
+        }
     }
 }

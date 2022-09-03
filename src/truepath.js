@@ -1369,7 +1369,6 @@ const tauCetiModules = {
             reqs: { tauceti: 2 },
             grant: ['tau_home',1],
             path: ['truepath'],
-            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             queue_complete(){ return global.tech.tau_home >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; }
@@ -1392,7 +1391,6 @@ const tauCetiModules = {
             reqs: { tau_home: 1 },
             grant: ['tau_home',2],
             path: ['truepath'],
-            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             queue_complete(){ return global.tech.tau_home >= 2 ? 0 : 1; },
             cost: {
                 Money(){ return 100000000; }
@@ -1683,6 +1681,15 @@ const tauCetiModules = {
                 return loc('tau_red',[races[global.race.species].solar.red]);
             },
             support: 'orbital_platform',
+            extra(region){
+                if (global.tech['tau_red'] && global.tech.tau_home >= 5){
+                    $(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
+                    vBind({
+                        el: `#${region}Womlings`,
+                        data: global.tauceti.overseer,
+                    });
+                }
+            }
         },
         red_mission: {
             id: 'tauceti-red_mission',
@@ -1691,7 +1698,6 @@ const tauCetiModules = {
             reqs: { tauceti: 2 },
             grant: ['tau_red',1],
             path: ['truepath'],
-            //no_queue(){ return global.queue.queue.some(item => item.id === $(this)[0].id) ? true : false; },
             queue_complete(){ return global.tech.tau_red >= 1 ? 0 : 1; },
             cost: {
                 Money(){ return 500000000; }
@@ -1818,9 +1824,11 @@ const tauCetiModules = {
             queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
             cost: {},
             effect(){
+                let injured = global.tauceti['overseer'] ? global.tauceti.overseer.injured : 0;
+                if (global.tauceti['overseer'] && global.tauceti.overseer.pop < injured){ injured = global.tauceti.overseer.pop; }
                 let desc = `<div>${loc('tau_red_jeff_effect1',[global.tauceti['overseer'] ? global.tauceti.overseer.pop : 0])}</div>`;
                 desc = desc + `<div>${loc('tau_red_jeff_effect2',[global.tauceti['overseer'] ? global.tauceti.overseer.working : 0])}</div>`;
-                desc = desc + `<div>${loc('tau_red_jeff_effect3',[global.tauceti['overseer'] ? global.tauceti.overseer.injured : 0])}</div>`;
+                desc = desc + `<div>${loc('tau_red_jeff_effect3',[injured])}</div>`;
                 desc = desc + `<div>${loc('tau_red_jeff_effect4',[global.tauceti['overseer'] ? global.tauceti.overseer.loyal : 0])}</div>`;
                 desc = desc + `<div>${loc('tau_red_jeff_effect5',[global.tauceti['overseer'] ? global.tauceti.overseer.morale : 0])}</div>`;
                 return desc;
@@ -1847,7 +1855,11 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('overseer', offset, 50000000, 1.28, 'tauceti'); },
+                Money(offset){ return spaceCostMultiplier('overseer', offset, 6000000, 1.28, 'tauceti'); },
+                Cement(offset){ return spaceCostMultiplier('overseer', offset, 2450000, 1.28, 'tauceti'); },
+                Alloy(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('overseer', offset, 1850000, 1.28, 'tauceti') : 0; },
+                Neutronium(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('overseer', offset, 165000, 1.28, 'tauceti') : 0; },
+                Titanium(offset){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', offset, 2250000, 1.28, 'tauceti') : 0; },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
@@ -1874,7 +1886,10 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_village', offset, 50000000, 1.28, 'tauceti'); },
+                Money(offset){ return spaceCostMultiplier('womling_village', offset, 10000000, 1.28, 'tauceti'); },
+                Stone(offset){ return spaceCostMultiplier('womling_village', offset, 2250000, 1.28, 'tauceti'); },
+                Plywood(offset){ return spaceCostMultiplier('womling_village', offset, 1250000, 1.28, 'tauceti'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, 400000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
@@ -1901,7 +1916,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_farm', offset, 50000000, 1.28, 'tauceti'); },
+                Money(offset){ return spaceCostMultiplier('womling_farm', offset, 24000000, 1.28, 'tauceti'); },
+                Iron(offset){ return spaceCostMultiplier('womling_farm', offset, 9500000, 1.28, 'tauceti'); },
+                Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
@@ -1929,7 +1946,9 @@ const tauCetiModules = {
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_mine', offset, 50000000, 1.28, 'tauceti'); },
+                Money(offset){ return spaceCostMultiplier('womling_mine', offset, 12500000, 1.28, 'tauceti'); },
+                Lumber(offset){ return spaceCostMultiplier('womling_mine', offset, 12800000, 1.28, 'tauceti'); },
+                Steel(offset){ return spaceCostMultiplier('womling_mine', offset, 4500000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
@@ -1969,7 +1988,13 @@ const tauCetiModules = {
             reqs: { tau_red: 6 },
             path: ['truepath'],
             cost: {
-                Money(offset){ return spaceCostMultiplier('womling_fun', offset, 50000000, 1.28, 'tauceti'); },
+                Money(offset){ return spaceCostMultiplier('womling_fun', offset, 3800000, 1.28, 'tauceti'); },
+                Food(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 175000, 1.28, 'tauceti') : 0; },
+                Furs(offset){ return global.race['womling_lord'] || global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 835000, 1.28, 'tauceti') : 0; },
+                Copper(offset){ return global.race['womling_lord'] ? spaceCostMultiplier('womling_fun', offset, 1125000, 1.28, 'tauceti') : 0; },
+                Alloy(offset){ return global.race['womling_god'] ? spaceCostMultiplier('womling_fun', offset, 656000, 1.28, 'tauceti') : 0; },
+                Water(offset){ return global.race['womling_friend'] ? spaceCostMultiplier('womling_fun', offset, 3500, 1.28, 'tauceti') : 0; },
+                Brick(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
@@ -1995,10 +2020,10 @@ const tauCetiModules = {
 };
 
 function defineWomlings(){
-    global.tauceti['overseer'] = { count : 0, on: 0, morale: 0, pop: 0, injured: 0, loyal: 0, working: 0 };
+    global.tauceti['overseer'] = { count : 0, on: 0, pop: 0, working: 0, injured: 0, morale: 0, loyal: 0, prod: 0 };
     global.tauceti['womling_village'] = { count : 1, on: 1 };
-    global.tauceti['womling_mine'] = { count : 0, on: 0 };
-    global.tauceti['womling_farm'] = { count : 1, on: 1 };
+    global.tauceti['womling_mine'] = { count : 0, on: 0, miners: 0 };
+    global.tauceti['womling_farm'] = { count : 1, on: 1, farmers: 0 };
     global.tauceti['womling_fun'] = { count : 0, on: 0 };
 }
 

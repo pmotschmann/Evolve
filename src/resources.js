@@ -1903,7 +1903,10 @@ function breakdownPopover(id,name,type){
         if (breakdown[type][name]){
             let col1 = $(`<div></div>`);
             table.append(col1);
-            let types = [name,'Global'];
+            let types = [name];
+            if (name !== 'Unobtainium'){
+                types.push('Global');
+            }
             for (var i = 0; i < types.length; i++){
                 let t = types[i];
                 if (breakdown[type][t]){

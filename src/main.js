@@ -933,6 +933,7 @@ function fastLoop(){
         Bolognium: {},
         Vitreloy: {},
         Orichalcum: {},
+        Unobtainium: {},
         Plywood: {},
         Brick: {},
         Wrought_Iron: {},
@@ -5625,6 +5626,23 @@ function fastLoop(){
 
         breakdown.p['Orichalcum'] = orichalcum_bd;
 
+        // Womling Production
+        if (global.race['truepath'] && global.tech['tau_red'] && global.tech.tau_red >= 5){
+            let unobtainium_bd = {};
+            if (global.tauceti['womling_mine'] && global.tauceti['overseer']){
+                let miner_base = global.tauceti.womling_mine.miners * production('womling_mine');
+                let prod = global.tauceti.overseer.prod / 100;
+                let miner_delta = miner_base * prod;
+
+                unobtainium_bd[loc('tau_red_womlings')] = miner_base + 'v';
+                if (miner_base > 0){
+                    unobtainium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                }
+                modRes('Unobtainium', miner_delta * time_multiplier);
+            }
+            breakdown.p['Unobtainium'] = unobtainium_bd;
+        }
+
         // Income
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
         if (global.tech['currency'] >= 1){
@@ -6114,6 +6132,7 @@ function midLoop(){
             Bolognium: 0,
             Vitreloy: 0,
             Orichalcum: 0,
+            Unobtainium: 0,
             Cipher: 0,
             Nanite: 0,
             Materials: 0,
@@ -6211,6 +6230,7 @@ function midLoop(){
         var bd_Bolognium = { [loc('base')]: caps['Bolognium']+'v' };
         var bd_Vitreloy = { [loc('base')]: caps['Vitreloy']+'v' };
         var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
+        var bd_Unobtainium = { [loc('base')]: caps['Unobtainium']+'v' };
         var bd_Cipher = { [loc('base')]: caps['Cipher']+'v' };
         var bd_Nanite = { [loc('base')]: caps['Nanite']+'v' };
         var bd_Materials = { [loc('base')]: caps['Materials']+'v' };
@@ -7592,6 +7612,66 @@ function midLoop(){
             lCaps['crew'] += global.portal.transport.on * actions.portal.prtl_lake.transport.ship.civ();
         }
 
+        // Womlings
+        if (global.race['truepath'] && global.tauceti['overseer'] && global.tech['tau_red'] && global.tech.tau_red >= 5){
+            let pop = 0; let injured = global.tauceti.overseer.injured; let morale = 0; let loyal = 0; let prod = 0;
+
+            if (global.race['womling_friend']){
+                loyal += 25 + (support_on['overseer'] * 8);
+                morale += 75 + (support_on['womling_fun'] * 15);
+            }
+            else if (global.race['womling_god']){
+                loyal += 75 + (support_on['overseer'] * 5);
+                morale += 40 + (support_on['womling_fun'] * 10);
+            }
+            else if (global.race['womling_lord']){
+                loyal += support_on['overseer'] * 10;
+                morale += 30 + (support_on['womling_fun'] * 20);
+            }
+
+            pop = support_on['womling_village'] * 5;
+            let farmers = support_on['womling_farm'] * 2;
+            if (farmers > pop){ farmers = pop; }
+            if (pop > farmers * 6){
+                pop = farmers * 6;
+            }
+            let unemployed = pop - farmers - injured;
+
+            let miners = support_on['womling_mine'] * 6;
+            if (miners > unemployed){ miners = unemployed; }
+            unemployed -= miners;
+
+            if (Math.rand(0,10) === 0){
+                let raw = Math.rand(0,miners);
+                if (raw > injured){
+                    injured = raw;
+                }
+            }
+            else if (injured > 0 && Math.rand(0,4) === 0){
+                injured--;
+            }
+
+            global.tauceti.womling_farm.farmers = farmers;
+            global.tauceti.womling_mine.miners = miners;
+
+            loyal -= miners;
+            morale -= miners;
+            morale -= farmers;
+            morale -= injured;
+            if (loyal > 100){ loyal = 100; }
+            else if (loyal < 0){ loyal = 0; }
+            if (morale > 100){ morale = 100; }
+            else if (morale < 0){ morale = 0; }
+
+            prod = Math.round((loyal + morale) / 2);
+            global.tauceti.overseer.loyal = loyal;
+            global.tauceti.overseer.morale = morale;
+            global.tauceti.overseer.pop = pop;
+            global.tauceti.overseer.working = farmers + miners;
+            global.tauceti.overseer.injured = injured;
+            global.tauceti.overseer.prod = prod;
+        }
+
         ['inspired','distracted','stimulated'].forEach(function(t){
             if (global.race[t]){
                 global.race[t]--;
@@ -7671,6 +7751,7 @@ function midLoop(){
             Bolognium: bd_Bolognium,
             Vitreloy: bd_Vitreloy,
             Orichalcum: bd_Orichalcum,
+            Unobtainium: bd_Unobtainium,
             Nanite: bd_Nanite,
             Cipher: bd_Cipher,
             Materials: bd_Materials
