@@ -2864,6 +2864,7 @@ function fastLoop(){
             }
 
             let biodome = 0;
+            let red_synd = syndicate('spc_red');
             if (global.tech['mars']){
                 biodome = support_on['biodome'] * global.civic.colonist.workers * production('biodome','food');
                 if (global.race['cataclysm'] || global.race['orbit_decayed']){
@@ -2871,7 +2872,13 @@ function fastLoop(){
                 }
             }
 
-            let generated = food_base + hunting + biodome * zigVal;
+            food_bd[actions.space.spc_red.biodome.title()] = biodome + 'v';
+            if (biodome > 0){
+                food_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - red_synd) * 100) + '%';
+                food_bd[`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
+            }
+
+            let generated = food_base + hunting + (biodome * red_synd) * zigVal;
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
@@ -2968,10 +2975,6 @@ function fastLoop(){
 
             let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
 
-            food_bd[actions.space.spc_red.biodome.title()] = biodome + 'v';
-            if (biodome > 0){
-                food_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
-            }
             food_bd[loc('soldiers')] = hunting + 'v';
             breakdown.p['Food'] = food_bd;
 
@@ -7650,6 +7653,15 @@ function midLoop(){
                 let gain = scientist * Math.round(25000 * global.tauceti.overseer.prod / 100);
                 caps['Knowledge'] += gain;
                 bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
+
+                if (Math.rand(0,10) < global.tauceti.womling_lab.scientist){
+                    global.tauceti.womling_lab.tech += Math.rand(0,global.tauceti.womling_lab.scientist + 1);
+                    if (global.tauceti.womling_lab.tech >= (global.tech.womling_tech + 2) ** 5){
+                        global.tech.womling_tech++;
+                        global.tauceti.womling_lab.tech = 0;
+                        drawTech();
+                    }
+                }
             }
 
             if (Math.rand(0,10) === 0){
@@ -7664,7 +7676,7 @@ function midLoop(){
 
             global.tauceti.womling_farm.farmers = farmers;
             global.tauceti.womling_mine.miners = miners;
-            global.tauceti.womling_farm.farmers = scientist;
+            global.tauceti.womling_lab.scientist = scientist;
 
             loyal -= miners;
             morale -= miners;

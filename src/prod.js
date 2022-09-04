@@ -271,7 +271,12 @@ export function production(id,val){
         }
         case 'womling_mine':
         {
-            return 0.122;
+            let mining = 0.122;
+            let boost = 1;
+            if (global.tech['womling_mining']){
+                boost += global.tech.womling_mining * 0.15;
+            }
+            return mining * boost;
         }
     }
 }

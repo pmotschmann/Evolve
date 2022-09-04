@@ -11942,7 +11942,28 @@ const techs = {
         effect(){ return loc('tech_womling_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['womling_lab'] = { count : 0, on: 0, scientist: 0 };
+                global.tauceti['womling_lab'] = { count : 0, on: 0, scientist: 0, tech: 0 };
+                global.tech['womling_tech'] = 0;
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_mining: {
+        id: 'tech-womling_mining',
+        title: loc('tech_womling_mining'),
+        desc: loc('tech_womling_mining'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 1 },
+        grant: ['womling_mining',1],
+        cost: {
+            Knowledge(){ return 7100000; }
+        },
+        effect(){ return loc('tech_womling_mining_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
