@@ -7641,8 +7641,19 @@ function midLoop(){
             if (miners > unemployed){ miners = unemployed; }
             unemployed -= miners;
 
+            let scientist = 0;
+            if (support_on['womling_lab']){
+                scientist = support_on['womling_lab'];
+                if (scientist > unemployed){ scientist = unemployed; }
+                unemployed -= scientist;
+
+                let gain = scientist * Math.round(25000 * global.tauceti.overseer.prod / 100);
+                caps['Knowledge'] += gain;
+                bd_Knowledge[loc('interstellar_laboratory_title')] = gain+'v';
+            }
+
             if (Math.rand(0,10) === 0){
-                let raw = Math.rand(0,miners);
+                let raw = Math.rand(0,miners + scientist);
                 if (raw > injured){
                     injured = raw;
                 }
@@ -7653,6 +7664,7 @@ function midLoop(){
 
             global.tauceti.womling_farm.farmers = farmers;
             global.tauceti.womling_mine.miners = miners;
+            global.tauceti.womling_farm.farmers = scientist;
 
             loyal -= miners;
             morale -= miners;
@@ -7667,7 +7679,7 @@ function midLoop(){
             global.tauceti.overseer.loyal = loyal;
             global.tauceti.overseer.morale = morale;
             global.tauceti.overseer.pop = pop;
-            global.tauceti.overseer.working = farmers + miners;
+            global.tauceti.overseer.working = farmers + miners + scientist;
             global.tauceti.overseer.injured = injured;
             global.tauceti.overseer.prod = prod;
         }

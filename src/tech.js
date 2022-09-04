@@ -2050,8 +2050,8 @@ const techs = {
     },
     titanium_crates: {
         id: 'tech-titanium_crates',
-        title: loc('tech_titanium_crates'),
-        desc: loc('tech_titanium_crates'),
+        title(){ return loc('tech_titanium_crates',[global.resource.Titanium.name]); },
+        desc(){ return loc('tech_titanium_crates',[global.resource.Titanium.name]); },
         category: 'storage',
         era: 'globalized',
         reqs: { container: 3, titanium: 1 },
@@ -2060,7 +2060,7 @@ const techs = {
             Knowledge(){ return 67500; },
             Titanium(){ return 1000; }
         },
-        effect: loc('tech_titanium_crates_effect'),
+        effect(){ return loc('tech_titanium_crates_effect',[global.resource.Titanium.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2071,8 +2071,8 @@ const techs = {
     },
     mythril_crates: {
         id: 'tech-mythril_crates',
-        title: loc('tech_mythril_crates'),
-        desc: loc('tech_mythril_crates'),
+        title(){ return loc('tech_mythril_crates',[global.resource.Mythril.name]); },
+        desc(){ return loc('tech_mythril_crates',[global.resource.Mythril.name]); },
         category: 'storage',
         era: 'early_space',
         reqs: { container: 4, space: 3 },
@@ -2081,7 +2081,7 @@ const techs = {
             Knowledge(){ return 145000; },
             Mythril(){ return 350; }
         },
-        effect: loc('tech_mythril_crates_effect'),
+        effect(){ return loc('tech_mythril_crates_effect',[global.resource.Mythril.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2092,8 +2092,8 @@ const techs = {
     },
     infernite_crates: {
         id: 'tech-infernite_crates',
-        title: loc('tech_infernite_crates'),
-        desc: loc('tech_infernite_crates_desc'),
+        title(){ return loc('tech_crates',[global.resource.Infernite.name]); },
+        desc(){ return loc('tech_infernite_crates_desc',[global.resource.Infernite.name]); },
         category: 'storage',
         era: 'interstellar',
         reqs: { container: 5, infernite: 1 },
@@ -2102,7 +2102,7 @@ const techs = {
             Knowledge(){ return 575000; },
             Infernite(){ return 1000; }
         },
-        effect: loc('tech_infernite_crates_effect'),
+        effect(){ return loc('tech_infernite_crates_effect',[global.resource.Infernite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2113,8 +2113,8 @@ const techs = {
     },
     graphene_crates: {
         id: 'tech-graphene_crates',
-        title: loc('tech_graphene_crates'),
-        desc: loc('tech_graphene_crates'),
+        title(){ return loc('tech_crates',[global.resource.Graphene.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Graphene.name]); },
         category: 'storage',
         era: 'interstellar',
         path: ['standard','truepath'],
@@ -2124,7 +2124,7 @@ const techs = {
             Knowledge(){ return 725000; },
             Graphene(){ return 75000; }
         },
-        effect: loc('tech_graphene_crates_effect'),
+        effect(){ return loc('tech_graphene_crates_effect',[global.resource.Graphene.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2135,8 +2135,8 @@ const techs = {
     },
     bolognium_crates: {
         id: 'tech-bolognium_crates',
-        title: loc('tech_bolognium_crates'),
-        desc: loc('tech_bolognium_crates'),
+        title(){ return loc('tech_crates',[global.resource.Bolognium.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Bolognium.name]); },
         category: 'storage',
         era: 'intergalactic',
         reqs: { container: 7, gateway: 3 },
@@ -2145,7 +2145,7 @@ const techs = {
             Knowledge(){ return 3420000; },
             Bolognium(){ return 90000; }
         },
-        effect: loc('tech_bolognium_crates_effect'),
+        effect(){ return loc('tech_bolognium_crates_effect',[global.resource.Bolognium.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -2155,8 +2155,8 @@ const techs = {
     },
     steel_containers: {
         id: 'tech-steel_containers',
-        title: loc('tech_steel_containers'),
-        desc: loc('tech_steel_containers_desc'),
+        title(){ return loc('tech_containers',[global.resource.Steel.name]); },
+        desc(){ return loc('tech_steel_containers_desc',[global.resource.Steel.name]); },
         category: 'storage',
         era: 'discovery',
         reqs: { smelting: 2, container: 1 },
@@ -2168,10 +2168,10 @@ const techs = {
         effect() {
             if (global.race['smoldering'] || global.race['kindling_kindred'] || global.race['evil']){
                 let res = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
-                return loc('tech_steel_containers_alt_effect',[global.resource[res].name]);
+                return loc('tech_steel_containers_alt_effect',[global.resource[res].name,global.resource.Steel.name]);
             }
             else {
-                return loc('tech_steel_containers_effect');
+                return loc('tech_steel_containers_effect',[global.resource.Steel.name]);
             }
         },
         action(){
@@ -2204,8 +2204,8 @@ const techs = {
     },
     alloy_containers: {
         id: 'tech-alloy_containers',
-        title: loc('tech_alloy_containers'),
-        desc: loc('tech_alloy_containers_desc'),
+        title(){ return loc('tech_containers',[global.resource.Alloy.name]); },
+        desc(){ return loc('tech_alloy_containers_desc',[global.resource.Alloy.name]); },
         category: 'storage',
         era: 'industrialized',
         reqs: { steel_container: 2, storage: 4 },
@@ -2214,7 +2214,7 @@ const techs = {
             Knowledge(){ return 49500; },
             Alloy(){ return 2500; }
         },
-        effect: loc('tech_alloy_containers_effect'),
+        effect(){ return loc('tech_alloy_containers_effect',[global.resource.Alloy.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2225,8 +2225,8 @@ const techs = {
     },
     mythril_containers: {
         id: 'tech-mythril_containers',
-        title: loc('tech_mythril_containers'),
-        desc: loc('tech_mythril_containers_desc'),
+        title(){ return loc('tech_containers',[global.resource.Mythril.name]); },
+        desc(){ return loc('tech_mythril_containers_desc',[global.resource.Mythril.name]); },
         category: 'storage',
         era: 'early_space',
         reqs: { steel_container: 3, space: 3 },
@@ -2235,7 +2235,7 @@ const techs = {
             Knowledge(){ return 165000; },
             Mythril(){ return 500; }
         },
-        effect: loc('tech_mythril_containers_effect'),
+        effect(){ return loc('tech_mythril_containers_effect',[global.resource.Mythril.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2246,8 +2246,8 @@ const techs = {
     },
     adamantite_containers: {
         id: 'tech-adamantite_containers',
-        title: loc('tech_adamantite_containers'),
-        desc: loc('tech_adamantite_containers_desc'),
+        title(){ return loc('tech_containers',[global.resource.Adamantite.name]); },
+        desc(){ return loc('tech_adamantite_containers_desc',[global.resource.Adamantite.name]); },
         category: 'storage',
         era: 'interstellar',
         reqs: { steel_container: 4, alpha: 2 },
@@ -2256,7 +2256,7 @@ const techs = {
             Knowledge(){ return 525000; },
             Adamantite(){ return 17500; }
         },
-        effect: loc('tech_adamantite_containers_effect'),
+        effect(){ return loc('tech_adamantite_containers_effect',[global.resource.Adamantite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2267,8 +2267,8 @@ const techs = {
     },
     aerogel_containers: {
         id: 'tech-aerogel_containers',
-        title: loc('tech_aerogel_containers'),
-        desc: loc('tech_aerogel_containers'),
+        title(){ return loc('tech_containers',[global.resource.Aerogel.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Aerogel.name]); },
         category: 'storage',
         era: 'interstellar',
         reqs: { steel_container: 5, aerogel: 1 },
@@ -2277,7 +2277,7 @@ const techs = {
             Knowledge(){ return 775000; },
             Aerogel(){ return 500; }
         },
-        effect: loc('tech_aerogel_containers_effect'),
+        effect(){ return loc('tech_aerogel_containers_effect',[global.resource.Aerogel.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -2288,8 +2288,8 @@ const techs = {
     },
     bolognium_containers: {
         id: 'tech-bolognium_containers',
-        title: loc('tech_bolognium_containers'),
-        desc: loc('tech_bolognium_containers'),
+        title(){ return loc('tech_containers',[global.resource.Bolognium.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Bolognium.name]); },
         category: 'storage',
         era: 'intergalactic',
         reqs: { steel_container: 6, gateway: 3 },
@@ -2298,7 +2298,7 @@ const techs = {
             Knowledge(){ return 3500000; },
             Bolognium(){ return 125000; }
         },
-        effect: loc('tech_bolognium_containers_effect'),
+        effect(){ return loc('tech_bolognium_containers_effect',[global.resource.Bolognium.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -2308,8 +2308,8 @@ const techs = {
     },
     nanoweave_containers: {
         id: 'tech-nanoweave_containers',
-        title: loc('tech_nanoweave_containers'),
-        desc: loc('tech_nanoweave_containers'),
+        title(){ return loc('tech_nanoweave_containers',[global.resource.Nanoweave.name]); },
+        desc(){ return loc('tech_nanoweave_containers',[global.resource.Nanoweave.name]); },
         category: 'storage',
         era: 'intergalactic',
         reqs: { steel_container: 7, nanoweave: 1 },
@@ -2318,7 +2318,7 @@ const techs = {
             Knowledge(){ return 9000000; },
             Nanoweave(){ return 50000; }
         },
-        effect: loc('tech_nanoweave_containers_effect'),
+        effect(){ return loc('tech_nanoweave_containers_effect',[global.resource.Nanoweave.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;
@@ -11247,10 +11247,31 @@ const techs = {
             return false;
         }
     },
+    bolognium_crates_tp: {
+        id: 'tech-bolognium_crates_tp',
+        title(){ return loc('tech_crates',[global.resource.Bolognium.name]); },
+        desc(){ return loc('tech_crates',[global.resource.Bolognium.name]); },
+        category: 'storage',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { container: 7, tau_home: 4 },
+        grant: ['container',8],
+        cost: {
+            Knowledge(){ return 6160000; },
+            Bolognium(){ return 750000; }
+        },
+        effect(){ return loc('tech_bolognium_crates_effect',[global.resource.Bolognium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     adamantite_containers_tp: {
         id: 'tech-adamantite_containers_tp',
-        title: loc('tech_adamantite_containers'),
-        desc: loc('tech_adamantite_containers_desc'),
+        title(){ return loc('tech_containers',[global.resource.Adamantite.name]); },
+        desc(){ return loc('tech_adamantite_containers_desc',[global.resource.Adamantite.name]); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -11260,7 +11281,7 @@ const techs = {
             Knowledge(){ return 575000; },
             Adamantite(){ return 17500; }
         },
-        effect: loc('tech_adamantite_containers_effect'),
+        effect(){ return loc('tech_adamantite_containers_effect',[global.resource.Adamantite.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
@@ -11271,8 +11292,8 @@ const techs = {
     },
     quantium_containers: {
         id: 'tech-quantium_containers',
-        title: loc('tech_quantium_containers'),
-        desc: loc('tech_quantium_containers'),
+        title(){ return loc('tech_containers',[global.resource.Quantium.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Quantium.name]); },
         category: 'storage',
         era: 'solar',
         path: ['truepath'],
@@ -11282,10 +11303,31 @@ const techs = {
             Knowledge(){ return 1150000; },
             Quantium(){ return 100000; }
         },
-        effect: loc('tech_quantium_containers_effect'),
+        effect(){ return loc('tech_quantium_containers_effect',[global.resource.Quantium.name]); },
         action(){
             if (payCosts($(this)[0])){
                 vBind({el: `#createHead`},'update');
+                return true;
+            }
+            return false;
+        }
+    },
+    unobtainium_containers: {
+        id: 'tech-unobtainium_containers',
+        title(){ return loc('tech_containers',[global.resource.Unobtainium.name]); },
+        desc(){ return loc('tech_containers',[global.resource.Unobtainium.name]); },
+        category: 'storage',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { steel_container: 6, tau_red: 7 },
+        grant: ['steel_container',7],
+        cost: {
+            Knowledge(){ return 7250000; },
+            Unobtainium(){ return 7500; }
+        },
+        effect(){ return loc('tech_bolognium_containers_effect',[global.resource.Unobtainium.name]); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -11880,6 +11922,27 @@ const techs = {
         effect(){ return loc('tech_womling_fun_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_lab: {
+        id: 'tech-womling_lab',
+        title: loc('tech_womling_lab'),
+        desc: loc('tech_womling_lab'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_red: 6 },
+        grant: ['tau_red',7],
+        cost: {
+            Knowledge(){ return 6900000; }
+        },
+        effect(){ return loc('tech_womling_lab_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['womling_lab'] = { count : 0, on: 0, scientist: 0 };
                 return true;
             }
             return false;

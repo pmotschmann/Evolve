@@ -2014,6 +2014,39 @@ const tauCetiModules = {
                 return false;
             }
         },
+        womling_lab: {
+            id: 'tauceti-womling_lab',
+            title: loc('interstellar_laboratory_title'),
+            desc(){ return `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            reqs: { tau_red: 7 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('womling_lab', offset, 65000000, 1.28, 'tauceti'); },
+                Elerium(offset){ return spaceCostMultiplier('womling_lab', offset, 1200, 1.28, 'tauceti'); },
+                Orichalcum(offset){ return spaceCostMultiplier('womling_lab', offset, 2500000, 1.28, 'tauceti'); },
+                Unobtainium(offset){ return spaceCostMultiplier('womling_lab', offset, 10000, 1.28, 'tauceti'); },
+                Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, 95000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let know = Math.round(25000 * global.tauceti.overseer.prod / 100);
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.womling_lab.count++;
+                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
+                        global.tauceti.womling_lab.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     //tau_three: {},
     //tau_four: {},

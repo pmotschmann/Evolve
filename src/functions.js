@@ -281,7 +281,7 @@ export function powerGrid(type,reset){
             power_structs = ['tau_home:colony','tau_home:fusion_generator','tau_home:mining_pit'];
             break;
         case 'tau_red':
-            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun'];
+            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab'];
             break;
     }
 
