@@ -11969,6 +11969,66 @@ const techs = {
             return false;
         }
     },
+    womling_firstaid: {
+        id: 'tech-womling_firstaid',
+        title: loc('tech_womling_firstaid'),
+        desc: loc('tech_womling_firstaid'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 2 },
+        grant: ['womling_firstaid',1],
+        cost: {
+            Knowledge(){ return 7350000; }
+        },
+        effect(){ return loc('tech_womling_firstaid_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_logistics: {
+        id: 'tech-womling_logistics',
+        title: loc('tech_womling_logistics'),
+        desc: loc('tech_womling_logistics'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 3 },
+        grant: ['womling_logistics',1],
+        cost: {
+            Knowledge(){ return 7650000; }
+        },
+        effect(){ return loc('tech_womling_logistics_effect',[loc('tau_red_orbital_platform')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_repulser: {
+        id: 'tech-womling_repulser',
+        title: loc('tech_womling_repulser'),
+        desc: loc('tech_womling_repulser'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 4, womling_logistics: 1 },
+        grant: ['womling_logistics',2],
+        cost: {
+            Knowledge(){ return 7900000; }
+        },
+        effect(){ return loc('tech_womling_repulser_effect',[global.resource.Oil.name,loc('tau_red_orbital_platform')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

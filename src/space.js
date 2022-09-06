@@ -4835,7 +4835,7 @@ const galaxyProjects = {
                 Money(offset){ return spaceCostMultiplier('resort', offset, 33000000, 1.25, 'galaxy'); },
                 Stone(offset){ return spaceCostMultiplier('resort', offset, 25000000, 1.25, 'galaxy'); },
                 Furs(offset){ return spaceCostMultiplier('resort', offset, 10000000, 1.25, 'galaxy'); },
-                Oil(offset){ return spaceCostMultiplier('resort', offset, 125000, 1.25, 'galaxy'); },
+                Oil(offset){ return spaceCostMultiplier('resort', offset, int_fuel_adjust(125000), 1.25, 'galaxy'); },
             },
             effect(){
                 return `<div>${loc('plus_max_citizens',[3])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;

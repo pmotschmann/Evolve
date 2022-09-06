@@ -7620,16 +7620,16 @@ function midLoop(){
             let pop = 0; let injured = global.tauceti.overseer.injured; let morale = 0; let loyal = 0; let prod = 0;
 
             if (global.race['womling_friend']){
-                loyal += 25 + (support_on['overseer'] * 8);
-                morale += 75 + (support_on['womling_fun'] * 15);
+                loyal += 25 + (support_on['overseer'] * actions.tauceti.tau_red.overseer.val());
+                morale += 75 + (support_on['womling_fun'] * actions.tauceti.tau_red.womling_fun.val());
             }
             else if (global.race['womling_god']){
-                loyal += 75 + (support_on['overseer'] * 5);
-                morale += 40 + (support_on['womling_fun'] * 10);
+                loyal += 75 + (support_on['overseer'] * actions.tauceti.tau_red.overseer.val());
+                morale += 40 + (support_on['womling_fun'] * actions.tauceti.tau_red.womling_fun.val());
             }
             else if (global.race['womling_lord']){
-                loyal += support_on['overseer'] * 10;
-                morale += 30 + (support_on['womling_fun'] * 20);
+                loyal += support_on['overseer'] * actions.tauceti.tau_red.overseer.val();
+                morale += 30 + (support_on['womling_fun'] * actions.tauceti.tau_red.womling_fun.val());
             }
 
             pop = support_on['womling_village'] * 5;
@@ -7664,13 +7664,14 @@ function midLoop(){
                 }
             }
 
+            let heal_chance = global.tech['tech_womling_firstaid'] ? 3 : 4;
             if (Math.rand(0,10) === 0){
                 let raw = Math.rand(0,miners + scientist);
                 if (raw > injured){
                     injured = raw;
                 }
             }
-            else if (injured > 0 && Math.rand(0,4) === 0){
+            else if (injured > 0 && Math.rand(0,heal_chance) === 0){
                 injured--;
             }
 

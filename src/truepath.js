@@ -1442,7 +1442,7 @@ const tauCetiModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('orbital_station', offset, 80000000, 1.3, 'tauceti'); },
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('orbital_station', offset, 500000, 1.3, 'tauceti'); },
-                Helium_3(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 250000, 1.3, 'tauceti') : 0; },
+                Helium_3(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, int_fuel_adjust(250000), 1.3, 'tauceti') : 0; },
                 Copper(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 1250000, 1.3, 'tauceti') : 0; },
                 Adamantite(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_station', offset, 900000, 1.3, 'tauceti') : 0; },
             },
@@ -1720,7 +1720,7 @@ const tauCetiModules = {
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('orbital_platform', offset, 50000000, 1.3, 'tauceti'); },
-                Oil(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, 275000, 1.3, 'tauceti') : 0; },
+                Oil(offset){ return tauEnabled() ? spaceCostMultiplier('orbital_platform', offset, int_fuel_adjust(global.tech['womling_logistics'] && global.tech.womling_logistics >= 2 ? 220000 : 275000), 1.3, 'tauceti') : 0; },
                 Aluminium(offset){ return spaceCostMultiplier('orbital_platform', offset, 1780000, 1.3, 'tauceti'); },
                 Bolognium(offset){ return spaceCostMultiplier('orbital_platform', offset, 450000, 1.3, 'tauceti'); },
             },
@@ -1733,7 +1733,7 @@ const tauCetiModules = {
                 return desc;
             },
             support_fuel(){ return { r: 'Oil', a: 125 }; },
-            support(){ return 2; },
+            support(){ return global.tech['womling_logistics'] ? 2.5 : 2; },
             powered(){ return powerCostMod(18); },
             refresh: true,
             action(){
@@ -1871,8 +1871,20 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_overseer_effect')}</div>`;
+                desc = desc + `<div>${loc('tau_red_overseer_effect',[$(this)[0].val()])}</div>`;
                 return desc;
+            },
+            val(){
+                if (global.race['womling_lord']){
+                    return 10;
+                }
+                else if (global.race['womling_god']){
+                    return 5;
+                }
+                else if (global.race['womling_friend']){
+                    return 8;
+                }
+                return 0;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -2006,8 +2018,20 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_fun_effect')}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_fun_effect',[$(this)[0].val()])}</div>`;
                 return desc;
+            },
+            val(){
+                if (global.race['womling_lord']){
+                    return 20;
+                }
+                else if (global.race['womling_god']){
+                    return 10;
+                }
+                else if (global.race['womling_friend']){
+                    return 15;
+                }
+                return 0;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
