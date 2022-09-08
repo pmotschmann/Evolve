@@ -1835,6 +1835,9 @@ if (!global.city.morale['tax']){
 if (!global.city.morale['shrine']){
     global.city.morale['shrine'] = 0;
 }
+if (!global.city.morale['blood_thirst']){
+    global.city.morale['blood_thirst'] = 0;
+}
 if (!global.city.morale['broadcast']){
     global.city.morale['broadcast'] = 0;
 }
