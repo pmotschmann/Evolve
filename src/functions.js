@@ -1184,6 +1184,11 @@ export function masteryType(universe,detailed){
             m_rate *= 1 - (traits.ooze.vars()[2] / 100);
             u_rate *= 1 - (traits.ooze.vars()[2] / 100);
         }
+        let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
+        if (perk_rank > 0){
+            m_rate *= 1 + (perk_rank / 100);
+            u_rate *= 1 + (perk_rank / 100);
+        }
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){

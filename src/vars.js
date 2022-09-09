@@ -2300,6 +2300,7 @@ export function clearStates(){
     global.galaxy = {};
     global.portal = {};
     global.starDock = {};
+    global.tauceti = {};
     global.civic = { new: 0 };
     global.civic['foreign'] = {
         gov0: {

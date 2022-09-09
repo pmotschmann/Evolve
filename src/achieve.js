@@ -2417,6 +2417,21 @@ export const perkList = {
             loc(`wiki_perks_progress_note2`)
         ]
     },
+    grandmaster: {
+        name: loc(`perk_grandmaster`),
+        desc(wiki){
+            let rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 1;
+            let boost = wiki ? "1/2/3/4/5" : rank;
+            return loc("achieve_perks_grandmaster",[boost]);
+        },
+        active(){
+            return global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[100,loc(`wiki_resets_infusion`)]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
 };
 
 export function drawPerks(){

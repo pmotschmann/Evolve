@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
-import { actions, updateDesc, setChallengeScreen, addAction, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, evoProgress, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, raceList, orbitDecayed, postBuild } from './actions.js';
+import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
@@ -550,6 +550,29 @@ if (global.race['orbit_decay'] && !global.race['orbit_decayed']){
 challengeIcon();
 
 if (global.race.species === 'protoplasm'){
+    const custom_map = {
+        humanoid: 'humanoid',
+        animal: 'animalism',
+        carnivore: 'carnivore',
+        herbivore: 'herbivore',
+        omnivore: 'omnivore',
+        small: 'dwarfism',
+        giant : 'gigantism',
+        reptilian: 'ectothermic',
+        avian: 'endothermic',
+        insectoid: 'athropods',
+        plant: 'chloroplasts',
+        fungi: 'chitin',
+        aquatic: 'aquatic',
+        fey: 'fey',
+        heat: 'heat',
+        polar: 'polar',
+        sand: 'sand',
+        demonic: 'demonic',
+        angelic: 'celestial',
+        synthetic: 'exterminate'
+    };
+
     global.resource.RNA.display = true;
     if (global.race.universe === 'bigbang'){
         Math.seed = global.race.seed;
@@ -560,81 +583,25 @@ if (global.race.species === 'protoplasm'){
         genPlanets();
     }
     else {
-        addAction('evolution','rna');
-    }
-    var evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
-    for (var i = 0; i < evolve_actions.length; i++) {
-        if (global.evolution[evolve_actions[i]]){
-            addAction('evolution',evolve_actions[i]);
-        }
-    }
-    if (global.evolution['sexual_reproduction'] && !global.evolution['phagocytosis'] && !global.evolution['chloroplasts'] && !global.evolution['chitin'] && !global.evolution['exterminate']){
-        addAction('evolution','sexual_reproduction');
-    }
-    else if ((global.evolution['phagocytosis'] || global.evolution['chloroplasts'] || global.evolution['chitin'] || global.race['exterminate']) && !global.evolution['multicellular']){
-        addAction('evolution','phagocytosis');
-        addAction('evolution','chloroplasts');
-        addAction('evolution','chitin');
-        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5){
-            addAction('evolution','exterminate');
-        }
-    }
-    else {
-        let late_actions = ['multicellular','spores','poikilohydric','bilateral_symmetry','bryophyte','athropods','mammals','eggshell','endothermic','ectothermic','humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','aquatic','fey','sand','heat','polar','demonic','celestial','synthetic','sentience','bunker'];
-        for (var i = 0; i < late_actions.length; i++){
-            if (global.evolution[late_actions[i]] && global.evolution[late_actions[i]].count == 0){
-                addAction('evolution',late_actions[i]);
-            }
-        }
-
-        let race_options = raceList;
-
-        const custom_map = {
-            humanoid: 'humanoid',
-            animal: 'animalism',
-            carnivore: 'carnivore',
-            herbivore: 'herbivore',
-            omnivore: 'omnivore',
-            small: 'dwarfism',
-            giant : 'gigantism',
-            reptilian: 'ectothermic',
-            avian: 'endothermic',
-            insectoid: 'athropods',
-            plant: 'chloroplasts',
-            fungi: 'chitin',
-            aquatic: 'aquatic',
-            fey: 'fey',
-            heat: 'heat',
-            polar: 'polar',
-            sand: 'sand',
-            demonic: 'demonic',
-            angelic: 'celestial',
-            synthetic: 'exterminate'
-        };
-
-        if (races.custom.hasOwnProperty('type') && global.evolution[custom_map[races.custom.type]] && global.evolution[custom_map[races.custom.type]].count > 0){
-            race_options.push('custom');
-        }
-
-        for (var i = 0; i < race_options.length; i++){
-            if (global.evolution[race_options[i]] && global.evolution[race_options[i]].count == 0){
-                addAction('evolution',race_options[i]);
-            }
-        }
-        if (global.race['junker'] || global.race['sludge']){
-            Object.keys(races).forEach(function(r){
-                if (r !== 'junker' && r !== 'sludge'){
-                    $(`#evolution-${r}`).addClass('is-hidden');
+        let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
+        if (perk_rank > 0 && !global.race['gmloaded']){
+            let evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
+            for (let i = 0; i < evolve_actions.length; i++) {
+                if (!global.evolution[evolve_actions[i]]){
+                    global.evolution[evolve_actions[i]] = { count: 0 };
                 }
-            });
+            }
+            global.evolution['dna'] = 1;
+            global.resource.DNA.display = true;
+            global.evolution.membrane.count = 10;
+            global.evolution.eukaryotic_cell.count = 5;
+            global.evolution.mitochondria.count = 5;
+            global.evolution.organelles.count = 10;
+            global.evolution.nucleus.count = 10;
+            global.tech['evo'] = 2;
+            global.race['gmloaded'] = 1;
         }
-    }
-    if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
-        evoProgress();
-    }
-
-    if (global.evolution['bunker'] && global.evolution['bunker'].count >= 1){
-        setChallengeScreen();
+        drawEvolution();
     }
 }
 else {
@@ -968,7 +935,7 @@ function fastLoop(){
         }
         if (global.evolution['organelles']){
             let rna_multiplier = global.race['rapid_mutation'] ? 2 : 1;
-            if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+            if (global.tech['evo'] && global.tech.evo >= 2){
                 rna_multiplier++;
             }
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
@@ -984,44 +951,43 @@ function fastLoop(){
         // Detect new unlocks
         if (global['resource']['RNA'].amount >= 2 && !global.evolution['dna']){
             global.evolution['dna'] = 1;
-            addAction('evolution','dna');
             global.resource.DNA.display = true;
             if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
                 modRes('RNA', global.resource.RNA.max);
                 modRes('DNA', global.resource.RNA.max);
             }
+            drawEvolution();
         }
         else if (global['resource']['RNA'].amount >= 10 && !global.evolution['membrane']){
             global.evolution['membrane'] = { count: 0 };
-            addAction('evolution','membrane');
+            drawEvolution();
         }
         else if (global['resource']['DNA'].amount >= 4 && !global.evolution['organelles']){
             global.evolution['organelles'] = { count: 0 };
-            addAction('evolution','organelles');
+            drawEvolution();
         }
-        else if (global.evolution['organelles'] && global.evolution['organelles'].count >= 2 && !global.evolution['nucleus']){
+        else if (global.evolution['organelles'] && global.evolution.organelles.count >= 2 && !global.evolution['nucleus']){
             global.evolution['nucleus'] = { count: 0 };
-            addAction('evolution','nucleus');
+            drawEvolution();
         }
-        else if (global.evolution['nucleus'] && global.evolution['nucleus'].count >= 1 && !global.evolution['eukaryotic_cell']){
+        else if (global.evolution['nucleus'] && global.evolution.nucleus.count >= 1 && !global.evolution['eukaryotic_cell']){
             global.evolution['eukaryotic_cell'] = { count: 0 };
-            addAction('evolution','eukaryotic_cell');
+            drawEvolution();
         }
-        else if (global.evolution['eukaryotic_cell'] && global.evolution['eukaryotic_cell'].count >= 1 && !global.evolution['mitochondria']){
+        else if (global.evolution['eukaryotic_cell'] && global.evolution.eukaryotic_cell.count >= 1 && !global.evolution['mitochondria']){
             global.evolution['mitochondria'] = { count: 0 };
-            addAction('evolution','mitochondria');
+            drawEvolution();
         }
-        else if (global.evolution['mitochondria'] && global.evolution['mitochondria'].count >= 1 && !global.evolution['sexual_reproduction']){
-            global.evolution['sexual_reproduction'] = { count: 0 };
-            addAction('evolution','sexual_reproduction');
+        else if (global.evolution['mitochondria'] && !global.tech['evo']){
+            global.tech['evo'] = 1;
+            drawEvolution();
         }
     }
     else {
         // Rest of game
-
         let zigVal = zigguratBonus();
-
         let morale = 100;
+
         if (global.city.calendar.season === 0 && global.city.calendar.year > 0){ // Spring
             let spring = global.race['chilled'] || global.race['smoldering'] ? 0 : 5;
             morale += spring;
