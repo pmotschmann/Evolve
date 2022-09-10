@@ -1083,22 +1083,22 @@ if (convertVersion(global['version']) < 103000){
             ['phagocytosis', {evo: 3, evo_animal: 1}],
             ['chloroplasts', {evo: 3, evo_plant: 1}],
             ['chitin', {evo: 3, evo_fungi: 1}],
-            ['exterminate', {evo: 7, evo_exterminate: 1}],
+            ['exterminate', {evo: 7, evo_synthetic: 2}],
             ['multicellular', {evo: 4}],
             ['spores', {evo: 5}],
             ['poikilohydric', {evo: 5}],
-            ['bilateral_symmetry', {evo: 5, evo_athropods: 1, evo_mammals: 1, evo_eggshell: 1, evo_aquatic: 1, evo_fey: 1, evo_sand: 1, evo_heat: 1, evo_polar: 1}],
+            ['bilateral_symmetry', {evo: 5, evo_insectoid: 1, evo_mammals: 1, evo_eggshell: 1, evo_aquatic: 1, evo_fey: 1, evo_sand: 1, evo_heat: 1, evo_polar: 1}],
             ['bryophyte', {evo: 7}],
-            ['athropods', {evo: 7, evo_athropods: 2}],
-            ['mammals', {evo: 6, evo_mammals: 2, evo_humanoid: 1, evo_gigantism: 1, evo_dwarfism: 1, evo_animalism: 1, evo_demonic: 1, evo_celestial: 1}],
+            ['athropods', {evo: 7, evo_insectoid: 2}],
+            ['mammals', {evo: 6, evo_humanoid: 1, evo_giant: 1, evo_small: 1, evo_animalism: 1, evo_demonic: 1, evo_angelic: 1}],
             ['humanoid', {evo: 7, evo_humanoid: 2}],
-            ['gigantism', {evo: 7, evo_gigantism: 2}],
-            ['dwarfism', {evo: 7, evo_dwarfism: 2}],
+            ['gigantism', {evo: 7, evo_giant: 2}],
+            ['dwarfism', {evo: 7, evo_small: 2}],
             ['animalism', {evo: 7, evo_animalism: 2}],
-            ['carnivore', {evo_animalism: 3, evo_carnivore: 1}],
-            ['herbivore', {evo_animalism: 3, evo_herbivore: 1}],
-            ['omnivore', {evo_animalism: 3, evo_omnivore: 1}],
-            ['celestial', {evo: 7, evo_celestial: 2}],
+            ['carnivore', {evo_animalism: 3, evo_carnivore: 2}],
+            ['herbivore', {evo_animalism: 3, evo_herbivore: 2}],
+            ['omnivore', {evo_animalism: 3, evo_omnivore: 2}],
+            ['celestial', {evo: 7, evo_angelic: 2}],
             ['demonic', {evo: 7, evo_demonic: 2}],
             ['aquatic', {evo: 7, evo_aquatic: 2}],
             ['fey', {evo: 7, evo_fey: 2}],
@@ -1106,16 +1106,16 @@ if (convertVersion(global['version']) < 103000){
             ['polar', {evo: 7, evo_polar: 2}],
             ['sand', {evo: 7, evo_sand: 2}],
             ['eggshell', {evo: 6, evo_eggshell: 2}],
-            ['endothermic', {evo: 7, evo_endothermic: 1}],
-            ['ectothermic', {evo: 7, evo_ectothermic: 1}],
+            ['endothermic', {evo: 7, evo_avian: 2}],
+            ['ectothermic', {evo: 7, evo_reptilian: 2}],
             ['bunker', {evo_challenge: 1}]
         ].forEach(function(step){
             if (global.evolution.hasOwnProperty(step[0]) && global.evolution[step[0]].count > 0){
                 for (let [key, value] of Object.entries(step[1])){
                     global.tech[key] = value;
                 }
-                delete global.evolution[step[0]];
             }
+            delete global.evolution[step[0]];
         });
         global.race['gmloaded'] = 1;
     }
