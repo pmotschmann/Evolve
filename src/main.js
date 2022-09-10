@@ -5167,6 +5167,17 @@ function fastLoop(){
             modRes('Helium_3', delta * time_multiplier);
         }
 
+        if (p_on['refueling_station']){
+            let gas_mining = (p_on['refueling_station'] * production('refueling_station'));
+            let delta = gas_mining * hunger * global_multiplier * zigVal;
+
+            helium_bd[loc('tau_gas_refueling_station_title')] = gas_mining + 'v';
+            if (gas_mining > 0){
+                helium_bd[`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
+            }
+            modRes('Helium_3', delta * time_multiplier);
+        }
+
         let deuterium_bd = {};
         if (global.interstellar['harvester'] && int_on['harvester']){
             let gas_mining = int_on['harvester'] * production('harvester','helium');
@@ -6981,6 +6992,11 @@ function midLoop(){
             let gain = (p_on['orbital_station'] * spatialReasoning(15000));
             caps['Helium_3'] += gain;
             bd_Helium[loc('tau_home_orbital_station')] = gain+'v';
+        }
+        if (p_on['refueling_station']){
+            let gain = (p_on['refueling_station'] * spatialReasoning(10000));
+            caps['Helium_3'] += gain;
+            bd_Helium[loc('tau_gas_refueling_station_title')] = gain+'v';
         }
         if (p_on['orbital_platform']){
             let gain = (p_on['orbital_platform'] * spatialReasoning(17500));

@@ -1325,10 +1325,9 @@ if (!global.settings['tau']){
         home: false,
         red: false,
         roid: false,
+        gas: false,
     };
 }
-
-global.settings.tau.roid = false;
 
 if (!global.settings.hasOwnProperty('touch')){
     global.settings['touch'] = false;

@@ -278,5 +278,9 @@ export function production(id,val){
             }
             return mining * boost;
         }
+        case 'refueling_station':
+        {
+            return 0.85;
+        }
     }
 }

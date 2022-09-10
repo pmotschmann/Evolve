@@ -11844,6 +11844,28 @@ const techs = {
             return false;
         }
     },
+    system_survey: {
+        id: 'tech-system_survey',
+        title: loc('tech_system_survey'),
+        desc: loc('tech_system_survey'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tauceti: 4, womling_tech: 1 },
+        grant: ['tauceti',5],
+        cost: {
+            Knowledge(){ return 7000000; }
+        },
+        effect: loc('tech_system_survey_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.tau.roid = true;
+                global.settings.tau.gas = true;
+                return true;
+            }
+            return false;
+        }
+    },
     fusion_generator: {
         id: 'tech-fusion_generator',
         title: loc('tech_fusion_power'),
