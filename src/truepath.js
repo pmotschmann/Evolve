@@ -1942,7 +1942,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[12])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[glboal.tech['womling_farming'] ? 16 : 12])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
                 return desc;
             },
@@ -2080,7 +2080,16 @@ const tauCetiModules = {
             }
         },
     },
-    //tau_three: {},
+    tau_roid: {
+        info: {
+            name(){
+                return loc('tau_roid_title');
+            },
+            desc(){
+                return loc('tau_roid');
+            }
+        },
+    },
     //tau_four: {},
 };
 

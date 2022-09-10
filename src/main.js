@@ -7578,8 +7578,9 @@ function midLoop(){
             pop = support_on['womling_village'] * 5;
             let farmers = support_on['womling_farm'] * 2;
             if (farmers > pop){ farmers = pop; }
-            if (pop > farmers * 6){
-                pop = farmers * 6;
+            let crop_per_farmer = global.tech['womling_farming'] ? 8 : 6;
+            if (pop > farmers * crop_per_farmer){
+                pop = farmers * crop_per_farmer;
             }
             let unemployed = pop - farmers - injured;
 

@@ -12029,6 +12029,26 @@ const techs = {
             return false;
         }
     },
+    womling_farming: {
+        id: 'tech-womling_farming',
+        title: loc('tech_womling_farming'),
+        desc: loc('tech_womling_farming'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 5 },
+        grant: ['womling_farming',1],
+        cost: {
+            Knowledge(){ return 8200000; }
+        },
+        effect(){ return loc('tech_womling_farming_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){
