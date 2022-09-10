@@ -194,7 +194,7 @@ export const actions = {
                 }
                 return false;
             },
-            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2;; }
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2 ? 1 : 0; }
         },
         chloroplasts: {
             id: 'evolution-chloroplasts',
@@ -215,7 +215,8 @@ export const actions = {
                 }
                 return false;
             },
-            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2 ? 1 : 0; }
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2 ? 1 : 0; },
+            emblem(){ return format_emblem('genus_plant'); }
         },
         chitin: {
             id: 'evolution-chitin',
@@ -236,7 +237,8 @@ export const actions = {
                 }
                 return false;
             },
-            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2 ? 1 : 0; }
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 2 ? 1 : 0; },
+            emblem(){ return format_emblem('genus_fungi'); }
         },
         exterminate: {
             id: 'evolution-exterminate',
@@ -1250,26 +1252,6 @@ export const actions = {
                 }
             },
             queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
-        },
-        bunker: {
-            id: 'evolution-bunker',
-            title: loc('evo_bunker'),
-            desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
-            reqs: { evo: 6 },
-            grant: ['evo_challenge',1],
-            condition(){ return global.genes['challenge'] && global.evolution['final'] === 100; },
-            cost: {
-                DNA(){ return 10; }
-            },
-            effect: loc('evo_bunker_effect'),
-            action(){
-                if (payCosts($(this)[0])){
-                    return true;
-                }
-                return false;
-            },
-            queue_complete(){ return global.tech['evo_challenge'] ? 0 : 1; },
-            flair: loc('evo_bunker_flair')
         },
     },
     city: {
@@ -4664,13 +4646,37 @@ Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challe
     queue_complete(){ return 0; }
 });
 
+actions.evolution['bunker'] = {
+    id: 'evolution-bunker',
+    title: loc('evo_bunker'),
+    desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
+    reqs: { evo: 6 },
+    grant: ['evo_challenge',1],
+    condition(){ return global.genes['challenge'] && global.evolution['final'] === 100; },
+    cost: {
+        DNA(){ return 10; }
+    },
+    effect: loc('evo_bunker_effect'),
+    action(){
+        if (payCosts($(this)[0])){
+            return true;
+        }
+        return false;
+    },
+    queue_complete(){ return global.tech['evo_challenge'] ? 0 : 1; },
+    flair: loc('evo_bunker_flair')
+};
+
 export function drawEvolution(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 0){
         return;
     }
+    if (global.race.universe === 'bigbang' || (global.race.seeded && !global.race['chose'])){
+        return;
+    }
     Object.keys(actions.evolution).forEach(function (evo) {
         if (!actions.evolution[evo]['challenge']){
-        removeAction(actions.evolution[evo].id);
+            removeAction(actions.evolution[evo].id);
 
             var isMet = true;
             if (actions.evolution[evo].hasOwnProperty('reqs')){
@@ -4727,15 +4733,6 @@ function challengeEffect(c){
         default:
             return loc(`evo_challenge_${c}_effect`);
     }
-}
-
-function cleanEvolution(id){
-    ['humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore','athropods','mammals','eggshell','fey','aquatic','heat','polar','sand','celestial','demonic'].forEach(function(path){
-        removeAction(actions.evolution[path].id);
-        if (global.evolution.hasOwnProperty(path) && `evolution-${path}` !== id){
-            delete global.evolution[path];
-        }
-    });
 }
 
 export function templeEffect(){
@@ -5936,7 +5933,7 @@ export function setPlanet(opt){
             }
             clearElement($('#evolution'));
             clearPopper();
-            addAction('evolution','rna');
+            drawEvolution();
         }
     });
 
@@ -7087,6 +7084,14 @@ function sentience(){
     if (global.race['imitation'] && global.race['srace']){
         setImitation(false);
     }
+
+    Object.keys(global.tech).forEach(function (tech){
+        if (tech.substring(0,4) === 'evo_'){
+            delete global.tech[tech];
+        }
+    });
+    delete global.tech['evo'];
+    global.evolution = {};
 
     const date = new Date();
     if (!global.settings.boring && date.getMonth() === 11 && date.getDate() >= 17){

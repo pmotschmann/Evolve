@@ -2417,6 +2417,22 @@ export const perkList = {
             loc(`wiki_perks_progress_note2`)
         ]
     },
+    master: {
+        name: loc(`perk_master`),
+        desc(wiki){
+            let rank = global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? Math.min(global.stats.achieve.ascended.l,global.stats.feat['master']) : 1;
+            let boost1 = wiki ? "1/2/3/4/5" : rank;
+            let boost2 = wiki ? "2/4/6/8/10" : rank * 2;
+            return loc("achieve_perks_master",[boost1,boost2,loc('evo_mitochondria_title'),loc('evo_eukaryotic_title'),loc('evo_membrane_title'),loc('evo_organelles_title'),loc('evo_nucleus_title')]);
+        },
+        active(){
+            return global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[75,loc(`wiki_resets_ascension`)]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
     grandmaster: {
         name: loc(`perk_grandmaster`),
         desc(wiki){

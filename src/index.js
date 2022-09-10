@@ -8,7 +8,7 @@ import { clearSpyopDrag } from './governor.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { races, shapeShift } from './races.js';
-import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
+import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
@@ -309,6 +309,7 @@ export function loadTab(tab){
         case 0:
             if (!global.settings.tabLoad){
                 tagEvent('page_view',{ page_title: `Evolve - Evolution` });
+                drawEvolution();
             }
             break;
         case 1:

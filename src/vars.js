@@ -746,7 +746,6 @@ if (convertVersion(global['version']) < 100035){
 if (convertVersion(global['version']) < 100040){
     const dt = new Date();
     if (dt.getFullYear() === 2021 && dt.getMonth() === 3 && dt.getDate() <= 14 && global.race.hasOwnProperty('species') && global.race.species === 'wolven'){
-        console.log('true');
         global.race['hrt'] = 'wolven';
     }
 }
@@ -1073,6 +1072,20 @@ if (convertVersion(global['version']) < 102017){
 if (convertVersion(global['version']) < 103000){
     if (!global.hasOwnProperty('tauceti')){
         global['tauceti'] = {};
+    }
+
+    if (global.race.species === 'protoplasm'){
+        if (global.evolution.hasOwnProperty('sexual_reproduction')){
+            global.tech['evo'] = global.evolution.sexual_reproduction.count > 0 ? 2 : 1;
+            delete global.evolution['sexual_reproduction'];
+        }
+        [
+            'phagocytosis','chloroplasts','chitin','exterminate','multicellular','spores','poikilohydric','bilateral_symmetry',
+            'bryophyte','athropods','mammals','humanoid','gigantism','dwarfism','animalism','carnivore','herbivore','omnivore',
+            'celestial','demonic','aquatic','fey','heat','polar','sand','eggshell','endothermic','ectothermic','sentience','bunker'
+        ].forEach(function(phase){
+            delete global.evolution[phase];
+        });
     }
 }
 

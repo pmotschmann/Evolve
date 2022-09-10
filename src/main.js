@@ -550,30 +550,25 @@ if (global.race['orbit_decay'] && !global.race['orbit_decayed']){
 challengeIcon();
 
 if (global.race.species === 'protoplasm'){
-    const custom_map = {
-        humanoid: 'humanoid',
-        animal: 'animalism',
-        carnivore: 'carnivore',
-        herbivore: 'herbivore',
-        omnivore: 'omnivore',
-        small: 'dwarfism',
-        giant : 'gigantism',
-        reptilian: 'ectothermic',
-        avian: 'endothermic',
-        insectoid: 'athropods',
-        plant: 'chloroplasts',
-        fungi: 'chitin',
-        aquatic: 'aquatic',
-        fey: 'fey',
-        heat: 'heat',
-        polar: 'polar',
-        sand: 'sand',
-        demonic: 'demonic',
-        angelic: 'celestial',
-        synthetic: 'exterminate'
-    };
-
     global.resource.RNA.display = true;
+    let perk_rank = global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? Math.min(global.stats.achieve.ascended.l,global.stats.feat['master']) : 0;
+    if (perk_rank > 0 && !global.race['gmloaded']){
+        let evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
+        for (let i = 0; i < evolve_actions.length; i++) {
+            if (!global.evolution[evolve_actions[i]]){
+                global.evolution[evolve_actions[i]] = { count: 0 };
+            }
+        }
+        global.evolution['dna'] = 1;
+        global.resource.DNA.display = true;
+        global.evolution.membrane.count = perk_rank * 2;
+        global.evolution.eukaryotic_cell.count = perk_rank;
+        global.evolution.mitochondria.count = perk_rank;
+        global.evolution.organelles.count = perk_rank * 2;
+        global.evolution.nucleus.count = perk_rank * 2;
+        global.tech['evo'] = 2;
+        global.race['gmloaded'] = 1;
+    }
     if (global.race.universe === 'bigbang'){
         Math.seed = global.race.seed;
         setUniverse();
@@ -583,24 +578,6 @@ if (global.race.species === 'protoplasm'){
         genPlanets();
     }
     else {
-        let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
-        if (perk_rank > 0 && !global.race['gmloaded']){
-            let evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
-            for (let i = 0; i < evolve_actions.length; i++) {
-                if (!global.evolution[evolve_actions[i]]){
-                    global.evolution[evolve_actions[i]] = { count: 0 };
-                }
-            }
-            global.evolution['dna'] = 1;
-            global.resource.DNA.display = true;
-            global.evolution.membrane.count = 10;
-            global.evolution.eukaryotic_cell.count = 5;
-            global.evolution.mitochondria.count = 5;
-            global.evolution.organelles.count = 10;
-            global.evolution.nucleus.count = 10;
-            global.tech['evo'] = 2;
-            global.race['gmloaded'] = 1;
-        }
         drawEvolution();
     }
 }

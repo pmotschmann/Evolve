@@ -10,6 +10,8 @@ const changeList = [
             `You can no longer unlock Anarchist by Cataclysm.`,
             `Ships in Truepath can now only be scrapped at the Shipyard.`,
             `Syndicate will now also steal food from Biodomes.`,
+            `Added Perks: Evolve Master and Evolve Grandmaster.`,
+            `Due to significant restructuring of Evolution stage code, some progress may be reset if currently evolving.`
         ]
     },
     {
