@@ -255,12 +255,8 @@ export const actions = {
             effect(){ return loc('evo_exterminate_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_exterminate'] = 1;
+                    global.tech['evo_synthetic'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['synth','nano']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'synthetic'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -342,7 +338,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.evolution['final'] = 80;
-                    global.tech['evo_athropods'] = 1;
+                    global.tech['evo_insectoid'] = 1;
                     global.tech['evo_mammals'] = 1;
                     global.tech['evo_eggshell'] = 1;
                     global.tech['evo_aquatic'] = 1;
@@ -374,16 +370,10 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.evolution['final'] = 100;
                     if (global.tech['evo_fungi']){
-                        addRaces(['sporgar','shroomi','moldling']);
-                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'fungi'){
-                            addRaces(['custom']);
-                        }
+                        global.tech['evo_fungi'] = 2;
                     }
-                    else if (global.tech['evo_plant']) {
-                        addRaces(['entish','cacti','pinguicula']);
-                        if (races.custom.hasOwnProperty('type') && races.custom.type === 'plant'){
-                            addRaces(['custom']);
-                        }
+                    if (global.tech['evo_plant']){
+                        global.tech['evo_plant'] = 2;
                     }
                     return true;
                 }
@@ -395,7 +385,7 @@ export const actions = {
             id: 'evolution-athropods',
             title: loc('evo_athropods_title'),
             desc: loc('evo_athropods_desc'),
-            reqs: { evo: 5, evo_athropods: 1 },
+            reqs: { evo: 5, evo_insectoid: 1 },
             grant: ['evo',7],
             condition(){ return global.tech['evo'] && global.tech.evo === 5; },
             cost: {
@@ -404,12 +394,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_athropods_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_athropods_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech.evo_athropods = 2;
+                    global.tech.evo_insectoid = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['mantis','scorpid','antid']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'insectoid'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -429,13 +415,12 @@ export const actions = {
             effect: loc('evo_mammals_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech.evo_mammals = 2;
                     global.tech['evo_humanoid'] = 1;
-                    global.tech['evo_gigantism'] = 1;
-                    global.tech['evo_dwarfism'] = 1;
+                    global.tech['evo_giant'] = 1;
+                    global.tech['evo_small'] = 1;
                     global.tech['evo_animalism'] = 1;
                     global.tech['evo_demonic'] = 1;
-                    global.tech['evo_celestial'] = 1;
+                    global.tech['evo_angelic'] = 1;
                     global.evolution['final'] = 90;
                     return true;
                 }
@@ -458,10 +443,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_humanoid = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['human','orc','elven']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'humanoid'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -473,7 +454,7 @@ export const actions = {
             id: 'evolution-gigantism',
             title: loc('evo_gigantism_title'),
             desc: loc('evo_gigantism_desc'),
-            reqs: { evo: 6, evo_gigantism: 1 },
+            reqs: { evo: 6, evo_giant: 1 },
             grant: ['evo',7],
             condition(){ return global.tech['evo'] && global.tech.evo === 6; },
             cost: {
@@ -482,12 +463,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_gigantism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_gigantism_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech.evo_gigantism = 2;
+                    global.tech.evo_giant = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['troll','ogre','cyclops']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'giant'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -499,7 +476,7 @@ export const actions = {
             id: 'evolution-dwarfism',
             title: loc('evo_dwarfism_title'),
             desc: loc('evo_dwarfism_desc'),
-            reqs: { evo: 6, evo_dwarfism: 1 },
+            reqs: { evo: 6, evo_small: 1 },
             grant: ['evo',7],
             condition(){ return global.tech['evo'] && global.tech.evo === 6; },
             cost: {
@@ -508,12 +485,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_dwarfism_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_dwarfism_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech.evo_dwarfism = 2;
+                    global.tech.evo_small = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['kobold','goblin','gnome']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'small'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -555,12 +528,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_carnivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_carnivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_carnivore'] = 1;
+                    global.tech['evo_carnivore'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['cath','wolven','vulpine']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'carnivore'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -581,12 +550,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_herbivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_herbivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_herbivore'] = 1;
+                    global.tech['evo_herbivore'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['centaur','rhinotaur','capybara']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'herbivore'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -607,12 +572,8 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_omnivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_omnivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_omnivore'] = 1;
+                    global.tech['evo_omnivore'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['bearkin','porkenari','hedgeoken']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'omnivore'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -624,7 +585,7 @@ export const actions = {
             id: 'evolution-celestial',
             title: loc('evo_celestial_title'),
             desc: loc('evo_celestial_desc'),
-            reqs: { evo: 6, evo_celestial: 1 },
+            reqs: { evo: 6, evo_angelic: 1 },
             grant: ['evo',7],
             condition(){
                 let allowed = global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3 ? true : false;
@@ -636,12 +597,8 @@ export const actions = {
             effect(){ return loc('evo_celestial_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech.evo_celestial = 2;
+                    global.tech.evo_angelic = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['seraph','unicorn']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'angelic'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -667,10 +624,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_demonic = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['balorg','imp']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'demonic'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -696,10 +649,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_aquatic = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['sharkin','octigoran']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'aquatic'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -725,10 +674,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_fey = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['dryad','satyr']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'fey'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -754,10 +699,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_heat = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['phoenix','salamander']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'heat'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -783,10 +724,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_polar = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['yeti','wendigo']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'polar'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -812,10 +749,6 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.tech.evo_sand = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['tuskin','kamel']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'sand'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -857,12 +790,8 @@ export const actions = {
             effect: loc('evo_endothermic_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_endothermic'] = 1;
+                    global.tech['evo_avian'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['arraak','pterodacti','dracnid']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'avian'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -883,12 +812,8 @@ export const actions = {
             effect: loc('evo_ectothermic_effect'),
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_ectothermic'] = 1;
+                    global.tech['evo_reptilian'] = 2;
                     global.evolution['final'] = 100;
-                    addRaces(['tortoisan','gecko','slitheryn']);
-                    if (races.custom.hasOwnProperty('type') && races.custom.type === 'reptilian'){
-                        addRaces(['custom']);
-                    }
                     return true;
                 }
                 return false;
@@ -911,278 +836,23 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     // Trigger Next Phase of game
-                    let races = [];
-                    if (global.tech['evo_exterminate']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'synthetic';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('synth');
-                            races.push('nano');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'synthetic'){
-                                races.push('custom');
+                    let allowed = [];
+                    for (let id in races) {
+                        if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2) {
+                            if (global.race['junker'] || global.race['sludge']){
+                                global.race['jtype'] = races[id].type;
+                                allowed.push(global.race['sludge'] ? 'sludge' : 'junker');
+                                break;
                             }
-                        }
-                    }
-                    else if (global.tech['evo_humanoid'] && global.tech.evo_humanoid === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'humanoid';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('elven');
-                            races.push('orc');
-                            races.push('human');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'humanoid'){
-                                races.push('custom');
+                            else {
+                                allowed.push(id);
                             }
-                        }
-                    }
-                    else if (global.tech['evo_gigantism'] && global.tech.evo_gigantism === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'giant';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('troll');
-                            races.push('ogre');
-                            races.push('cyclops');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'giant'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_dwarfism'] && global.tech.evo_dwarfism === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'small';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('kobold');
-                            races.push('goblin');
-                            races.push('gnome');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'small'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_carnivore']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'carnivore';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('cath');
-                            races.push('wolven');
-                            races.push('vulpine');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'carnivore'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_herbivore']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'herbivore';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('centaur');
-                            races.push('rhinotaur');
-                            races.push('capybara');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'herbivore'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_omnivore']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'omnivore';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('bearkin');
-                            races.push('porkenari');
-                            races.push('hedgeoken');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'omnivore'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_ectothermic']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'reptilian';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('tortoisan');
-                            races.push('gecko');
-                            races.push('slitheryn');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'reptilian'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_endothermic']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'avian';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('arraak');
-                            races.push('pterodacti');
-                            races.push('dracnid');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'avian'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_fungi']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'fungi';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('sporgar');
-                            races.push('shroomi');
-                            races.push('moldling');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'fungi'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_athropods'] && global.tech.evo_athropods === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'insectoid';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('mantis');
-                            races.push('scorpid');
-                            races.push('antid');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'insectoid'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_plant']){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'plant';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('entish');
-                            races.push('cacti');
-                            races.push('pinguicula');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'plant'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_aquatic'] && global.tech.evo_aquatic === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'aquatic';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('sharkin');
-                            races.push('octigoran');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'aquatic'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_fey'] && global.tech.evo_fey === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'fey';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('dryad');
-                            races.push('satyr');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'fey'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_heat'] && global.tech.evo_heat === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'heat';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('phoenix');
-                            races.push('salamander');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'heat'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_polar'] && global.tech.evo_polar === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'polar';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('yeti');
-                            races.push('wendigo');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'polar'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_sand'] && global.tech.evo_sand === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'sand';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('tuskin');
-                            races.push('kamel');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'sand'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_demonic'] && global.tech.evo_demonic === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'demonic';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('balorg');
-                            races.push('imp');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'demonic'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else if (global.tech['evo_celestial'] && global.tech.evo_celestial === 2){
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'angelic';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('seraph');
-                            races.push('unicorn');
-                            if (global.custom.hasOwnProperty('race0') && global.custom.race0.genus === 'angelic'){
-                                races.push('custom');
-                            }
-                        }
-                    }
-                    else {
-                        if (global.race['junker'] || global.race['sludge']){
-                            global.race['jtype'] = 'humanoid';
-                            races.push(global.race['sludge'] ? 'sludge' : 'junker');
-                        }
-                        else {
-                            races.push('human');
                         }
                     }
 
-                    global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
+                    global.race.species = allowed[Math.floor(Math.seededRandom(0,allowed.length))];
                     if (global.stats.achieve[`extinct_${global.race.species}`] && global.stats.achieve[`extinct_${global.race.species}`].l >= 1){
-                        global.race.species = races[Math.floor(Math.seededRandom(0,races.length))];
+                        global.race.species = allowed[Math.floor(Math.seededRandom(0,allowed.length))];
                     }
 
                     sentience();
@@ -1190,66 +860,12 @@ export const actions = {
                 return false;
             },
             emblem(){
-                if (global.tech['evo_humanoid'] && global.tech.evo_humanoid === 2){
-                    return format_emblem('genus_humanoid');
+                for (let id in races) {
+                    if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2) {
+                        return format_emblem(`genus_${races[id].type}`);
+                    }
                 }
-                else if (global.tech['evo_gigantism'] && global.tech.evo_gigantism === 2){
-                    return format_emblem('genus_giant');
-                }
-                else if (global.tech['evo_dwarfism'] && global.tech.evo_dwarfism === 2){
-                    return format_emblem('genus_small');
-                }
-                else if (global.tech['evo_carnivore']){
-                    return format_emblem('genus_carnivore');
-                }
-                else if (global.tech['evo_herbivore']){
-                    return format_emblem('genus_herbivore');
-                }
-                else if (global.tech['evo_omnivore']){
-                    return format_emblem('genus_omnivore');
-                }
-                else if (global.tech['evo_ectothermic']){
-                    return format_emblem('genus_reptilian');
-                }
-                else if (global.tech['evo_endothermic']){
-                    return format_emblem('genus_avian');
-                }
-                else if (global.tech['evo_fungi']){
-                    return format_emblem('genus_fungi');
-                }
-                else if (global.tech['evo_athropods'] && global.tech.evo_athropods === 2){
-                    return format_emblem('genus_insectoid');
-                }
-                else if (global.tech['evo_plant']){
-                    return format_emblem('genus_plant');
-                }
-                else if (global.tech['evo_aquatic'] && global.tech.evo_aquatic === 2){
-                    return format_emblem('genus_aquatic');
-                }
-                else if (global.tech['evo_fey'] && global.tech.evo_fey === 2){
-                    return format_emblem('genus_fey');
-                }
-                else if (global.tech['evo_heat'] && global.tech.evo_heat === 2){
-                    return format_emblem('genus_heat');
-                }
-                else if (global.tech['evo_polar'] && global.tech.evo_polar === 2){
-                    return format_emblem('genus_polar');
-                }
-                else if (global.tech['evo_sand'] && global.tech.evo_sand === 2){
-                    return format_emblem('genus_sand');
-                }
-                else if (global.tech['evo_demonic'] && global.tech.evo_demonic === 2){
-                    return format_emblem('genus_demonic');
-                }
-                else if (global.tech['evo_celestial'] && global.tech.evo_celestial === 2){
-                    return format_emblem('genus_angelic');
-                }
-                else if (global.tech['evo_exterminate']){
-                    return format_emblem('genus_synthetic');
-                }
-                else {
-                    return '';
-                }
+                return '';
             },
             queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
         },
@@ -4533,7 +4149,8 @@ raceList.forEach(race => actions.evolution[race] = {
     desc(){ return `${loc("evo_evolve")} ${races[race].name}`; },
     reqs: { evo: 7 },
     grant: ['evo',8],
-    condition(){ return global.evolution.hasOwnProperty(race) && global.evolution[race] === 1 && global.tech['evo'] && global.tech.evo === 7 && global.evolution.final === 100; },
+    condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
+      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100; },
     cost: {
         RNA(){ return 320; },
         DNA(){ return 320; }
@@ -4868,18 +4485,6 @@ export function casinoEffect(){
 function evolveCosts(molecule,base,mult,offset){
     let count = (global.evolution.hasOwnProperty(molecule) ? global.evolution[molecule].count : 0) + (offset || 0);
     return count * mult + base;
-}
-
-function addRaces(races){
-    let add_all = false;
-    if (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1)){
-        add_all = true;
-    }
-    for (let i=0; i<races.length; i++){
-        if (add_all || (global.stats.achieve[`extinct_${races[i]}`] && global.stats.achieve[`extinct_${races[i]}`].l >= 1)){
-            global.evolution[races[i]] = 1;
-        }
-    }
 }
 
 function setChallenge(challenge){
