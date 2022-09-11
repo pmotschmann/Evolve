@@ -1324,8 +1324,8 @@ if (!global.settings['tau']){
     global.settings['tau'] = {
         home: false,
         red: false,
-        roid: false,
         gas: false,
+        roid: false,
     };
 }
 

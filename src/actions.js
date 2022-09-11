@@ -400,7 +400,8 @@ export const actions = {
                 }
                 return false;
             },
-            queue_complete(){ return global.tech['evo'] && global.tech.evo === 5 ? 1 : 0; }
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 5 ? 1 : 0; },
+            emblem(){ return format_emblem('genus_insectoid'); }
         },
         mammals: {
             id: 'evolution-mammals',
@@ -837,14 +838,15 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     // Trigger Next Phase of game
                     let allowed = [];
-                    for (let id in races) {
-                        if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2) {
-                            if (global.race['junker'] || global.race['sludge']){
-                                global.race['jtype'] = races[id].type;
-                                allowed.push(global.race['sludge'] ? 'sludge' : 'junker');
-                                break;
-                            }
-                            else {
+                    if (global.race['junker'] || global.race['sludge']){
+                        let race = global.race['sludge'] ? 'sludge' : 'junker';
+                        global.race['jtype'] = races[race].type;
+                        allowed.push(race);
+                    }
+                    else {
+                        for (let idx in raceList){
+                            let id = raceList[idx];
+                            if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2){
                                 allowed.push(id);
                             }
                         }
@@ -860,8 +862,9 @@ export const actions = {
                 return false;
             },
             emblem(){
-                for (let id in races) {
-                    if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2) {
+                for (let idx in raceList){
+                    let id = raceList[idx];
+                    if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2){
                         return format_emblem(`genus_${races[id].type}`);
                     }
                 }
