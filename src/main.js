@@ -552,7 +552,7 @@ challengeIcon();
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;
     let perk_rank = global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? Math.min(global.stats.achieve.ascended.l,global.stats.feat['master']) : 0;
-    if (perk_rank > 0 && !global.race['gmloaded']){
+    if (perk_rank > 0 && !global.evolution['mloaded']){
         let evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
         for (let i = 0; i < evolve_actions.length; i++) {
             if (!global.evolution[evolve_actions[i]]){
@@ -567,7 +567,27 @@ if (global.race.species === 'protoplasm'){
         global.evolution.organelles.count = perk_rank * 2;
         global.evolution.nucleus.count = perk_rank * 2;
         global.tech['evo'] = 2;
-        global.race['gmloaded'] = 1;
+        global.evolution['mloaded'] = 1;
+    }
+    let grand_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
+    if (grand_rank >= 5 && !global.evolution['gmloaded']){
+        global.tech['evo'] = 6;
+        global.evolution['gselect'] = true;
+        global.evolution['gmloaded'] = 1;
+        global.evolution['final'] = 80;
+        global.tech['evo_humanoid'] = 1;
+        global.tech['evo_giant'] = 1;
+        global.tech['evo_small'] = 1;
+        global.tech['evo_animalism'] = 2;
+        global.tech['evo_demonic'] = 1;
+        global.tech['evo_angelic'] = 1;
+        global.tech['evo_insectoid'] = 1;
+        global.tech['evo_eggshell'] = 2;
+        global.tech['evo_sand'] = 1;
+        global.tech['evo_polar'] = 1;
+        global.tech['evo_heat'] = 1;
+        global.tech['evo_fey'] = 1;
+        global.tech['evo_aquatic'] = 1;
     }
     if (global.race.universe === 'bigbang'){
         Math.seed = global.race.seed;

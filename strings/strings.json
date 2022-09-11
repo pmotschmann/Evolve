@@ -2656,7 +2656,7 @@
   "achieve_perks_journeyman3": "Extra main trait info revealed in Genetics Lab.",
   "achieve_perks_adept": "Start with +%0 Lumber, Stone, and Food. Base Lumber and Stone cap increased by +%1.",
   "achieve_perks_master": "Fast Track Evolution. Start with %0 %2 & %3, and %1 %4, %5, & %6.",
-  "achieve_perks_grandmaster": "Boost all Mastery by +%0%.",
+  "achieve_perks_grandmaster": "Boost all Mastery by +%0%. Instantly pick genus at gold star rank.",
   "achieve_perks_ascended1": "Start with %0 extra Genes to create custom species with",
   "achieve_perks_ascended2": "Harmony Crystals are reducing non-homeworld cost creep by %0 in the current universe",
   "achieve_perks_technophobe1": "Start with %0 Steel.",

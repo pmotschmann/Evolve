@@ -198,19 +198,26 @@ export const actions = {
         },
         chloroplasts: {
             id: 'evolution-chloroplasts',
-            title: loc('evo_chloroplasts_title'),
+            title(){ return global.evolution['gselect'] ? loc('genelab_genus_plant') : loc('evo_chloroplasts_title'); },
             desc: loc('evo_chloroplasts_desc'),
             reqs: { evo: 2 },
             grant: ['evo',3],
-            condition(){ return global.tech['evo'] && global.tech.evo === 2; },
+            condition(){ return genus_condition(2); },
             cost: {
                 DNA(){ return 175; }
             },
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_chloroplasts_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chloroplasts_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_plant'] = 1;
-                    global.evolution['final'] = 40;
+                    if (global.evolution['gselect']){
+                        global.tech['evo'] = 7;
+                        global.tech['evo_plant'] = 2;
+                        global.evolution['final'] = 100;
+                    }
+                    else {
+                        global.tech['evo_plant'] = 1;
+                        global.evolution['final'] = 40;
+                    }
                     return true;
                 }
                 return false;
@@ -220,19 +227,26 @@ export const actions = {
         },
         chitin: {
             id: 'evolution-chitin',
-            title: loc('evo_chitin_title'),
+            title(){ return global.evolution['gselect'] ? loc('genelab_genus_fungi') : loc('evo_chitin_title'); },
             desc: loc('evo_chitin_desc'),
             reqs: { evo: 2 },
             grant: ['evo',3],
-            condition(){ return global.tech['evo'] && global.tech.evo === 2; },
+            condition(){ return genus_condition(2); },
             cost: {
                 DNA(){ return 175; }
             },
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_chitin_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_chitin_effect'); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tech['evo_fungi'] = 1;
-                    global.evolution['final'] = 40;
+                    if (global.evolution['gselect']){
+                        global.tech['evo'] = 7;
+                        global.tech['evo_fungi'] = 2;
+                        global.evolution['final'] = 100;
+                    }
+                    else {
+                        global.tech['evo_fungi'] = 1;
+                        global.evolution['final'] = 40;
+                    }
                     return true;
                 }
                 return false;
@@ -242,12 +256,12 @@ export const actions = {
         },
         exterminate: {
             id: 'evolution-exterminate',
-            title: loc('evo_exterminate_title'),
+            title(){ return global.evolution['gselect'] ? loc('genelab_genus_synthetic') : loc('evo_exterminate_title'); },
             desc: loc('evo_exterminate_desc'),
             reqs: { evo: 2 },
             grant: ['evo',7],
             condition(){
-                return global.tech['evo'] && global.tech.evo === 2 && global.stats.achieve['obsolete'] && global.stats.achieve.obsolete.l >= 5;
+                return genus_condition(2) && global.stats.achieve['obsolete'] && global.stats.achieve.obsolete.l >= 5;
             },
             cost: {
                 DNA(){ return 200; }
@@ -360,7 +374,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = global.tech['evo_plant'] || global.tech['evo_fungi'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -387,7 +401,7 @@ export const actions = {
             desc: loc('evo_athropods_desc'),
             reqs: { evo: 5, evo_insectoid: 1 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 5; },
+            condition(){ return genus_condition(5); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -435,7 +449,7 @@ export const actions = {
             desc: loc('evo_humanoid_desc'),
             reqs: { evo: 6, evo_humanoid: 1 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -457,7 +471,7 @@ export const actions = {
             desc: loc('evo_gigantism_desc'),
             reqs: { evo: 6, evo_giant: 1 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -479,7 +493,7 @@ export const actions = {
             desc: loc('evo_dwarfism_desc'),
             reqs: { evo: 6, evo_small: 1 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -501,7 +515,7 @@ export const actions = {
             desc: loc('evo_animalism_desc'),
             reqs: { evo: 6, evo_animalism: 1 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6) && global.tech['evo_animalism'] && global.tech.evo_animalism === 1; },
             cost: {
                 DNA(){ return 250; }
             },
@@ -520,9 +534,9 @@ export const actions = {
             id: 'evolution-carnivore',
             title: loc('evo_carnivore_title'),
             desc: loc('evo_carnivore_desc'),
-            reqs: { evo: 7, evo_animalism: 2 },
+            reqs: { evo_animalism: 2 },
             grant: ['evo_animalism',3],
-            condition(){ return global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
+            condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
             cost: {
                 DNA(){ return 255; }
             },
@@ -542,9 +556,9 @@ export const actions = {
             id: 'evolution-herbivore',
             title: loc('evo_herbivore_title'),
             desc: loc('evo_herbivore_desc'),
-            reqs: { evo: 7, evo_animalism: 2 },
+            reqs: { evo_animalism: 2 },
             grant: ['evo_animalism',3],
-            condition(){ return global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
+            condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
             cost: {
                 DNA(){ return 255; }
             },
@@ -564,9 +578,9 @@ export const actions = {
             id: 'evolution-omnivore',
             title: loc('evo_omnivore_title'),
             desc: loc('evo_omnivore_desc'),
-            reqs: { evo: 7, evo_animalism: 2, locked: 1 },
+            reqs: { evo_animalism: 2, locked: 1 },
             grant: ['evo_animalism',3],
-            condition(){ return global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
+            condition(){ return genus_condition(7) && global.tech['evo_animalism'] && global.tech.evo_animalism === 2; },
             cost: {
                 DNA(){ return 255; }
             },
@@ -590,7 +604,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = global.city.biome === 'eden' || global.blood['unbound'] && global.blood.unbound >= 3 ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 6;
+                return allowed && genus_condition(6);
             },
             cost: {
                 DNA(){ return 260; }
@@ -615,7 +629,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = global.city.biome === 'hellscape' || global.blood['unbound'] && global.blood.unbound >= 3 ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 6;
+                return allowed && genus_condition(6);
             },
             cost: {
                 DNA(){ return 260; }
@@ -640,7 +654,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = ['oceanic','swamp'].includes(global.city.biome) || global.blood['unbound'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -665,7 +679,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = ['forest','swamp','taiga'].includes(global.city.biome) || global.blood['unbound'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -690,7 +704,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = ['volcanic','ashland'].includes(global.city.biome) || global.blood['unbound'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -715,7 +729,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = ['tundra','taiga'].includes(global.city.biome) || global.blood['unbound'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -740,7 +754,7 @@ export const actions = {
             grant: ['evo',7],
             condition(){
                 let allowed = ['desert','ashland'].includes(global.city.biome) || global.blood['unbound'] ? true : false;
-                return allowed && global.tech['evo'] && global.tech.evo === 5;
+                return allowed && genus_condition(5);
             },
             cost: {
                 DNA(){ return 260; }
@@ -763,7 +777,7 @@ export const actions = {
             desc: loc('evo_eggshell_desc'),
             reqs: { evo: 5, evo_eggshell: 1 },
             grant: ['evo',6],
-            condition(){ return global.tech['evo'] && global.tech.evo === 5; },
+            condition(){ return global.tech['evo'] && global.tech.evo === 5 && !global.evolution['gselect']; },
             cost: {
                 DNA(){ return 245; }
             },
@@ -780,11 +794,11 @@ export const actions = {
         },
         endothermic: {
             id: 'evolution-endothermic',
-            title: loc('evo_endothermic_title'),
+            title(){ return global.evolution['gselect'] ? loc('genelab_genus_avian') : loc('evo_endothermic_title'); },
             desc: loc('evo_endothermic_desc'),
             reqs: { evo: 6, evo_eggshell: 2 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -802,11 +816,11 @@ export const actions = {
         },
         ectothermic: {
             id: 'evolution-ectothermic',
-            title: loc('evo_ectothermic_title'),
+            title(){ return global.evolution['gselect'] ? loc('genelab_genus_reptilian') : loc('evo_ectothermic_title'); },
             desc: loc('evo_ectothermic_desc'),
             reqs: { evo: 6, evo_eggshell: 2 },
             grant: ['evo',7],
-            condition(){ return global.tech['evo'] && global.tech.evo === 6; },
+            condition(){ return genus_condition(6); },
             cost: {
                 DNA(){ return 260; }
             },
@@ -838,15 +852,24 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     // Trigger Next Phase of game
                     let allowed = [];
+
+                    let type = 'humanoid';
+                    for (let genus in genus_traits){
+                        if (global.tech[`evo_${genus}`] && global.tech[`evo_${genus}`] >= 2){
+                            type = genus;
+                            break;
+                        }
+                    }
+
                     if (global.race['junker'] || global.race['sludge']){
                         let race = global.race['sludge'] ? 'sludge' : 'junker';
-                        global.race['jtype'] = races[race].type;
+                        global.race['jtype'] = type;
                         allowed.push(race);
                     }
                     else {
                         for (let idx in raceList){
                             let id = raceList[idx];
-                            if (global.tech[`evo_${races[id].type}`] && global.tech[`evo_${races[id].type}`] >= 2){
+                            if (races[id].type === type){
                                 allowed.push(id);
                             }
                         }
@@ -4144,6 +4167,12 @@ export function buildTemplate(key, region){
     }
 }
 
+function genus_condition(r,t){
+    t = t || 'evo';
+    let f = global.evolution['final'] || 0;
+    return ((global.tech[t] && global.tech[t] === r) || (global.evolution['gselect'])) && f < 100;
+}
+
 export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano','custom'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano'];
 raceList.forEach(race => actions.evolution[race] = {
@@ -4294,6 +4323,14 @@ export function drawEvolution(){
     if (global.race.universe === 'bigbang' || (global.race.seeded && !global.race['chose'])){
         return;
     }
+    if (global.tech['evo_challenge']){
+        let list = $(`#evolution .evolving`).nextAll();
+        Object.values(list).forEach(function(elm){
+            clearElement($(elm),true);
+        });
+        clearElement($(`#evolution .evolving`),true);
+    }
+
     Object.keys(actions.evolution).forEach(function (evo) {
         if (!actions.evolution[evo]['challenge']){
             removeAction(actions.evolution[evo].id);
@@ -5350,7 +5387,9 @@ export function postBuild(c_action,action,type){
     }
     if (c_action['grant']){
         let tech = c_action.grant[0];
-        global.tech[tech] = c_action.grant[1];
+        if (!global.tech[tech] || global.tech[tech] < c_action.grant[1]){
+            global.tech[tech] = c_action.grant[1];
+        }
     }
     if (c_action['grant'] || c_action['refresh']){
         removeAction(c_action.id);

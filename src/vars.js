@@ -1117,7 +1117,8 @@ if (convertVersion(global['version']) < 103000){
             }
             delete global.evolution[step[0]];
         });
-        global.race['gmloaded'] = 1;
+        global.evolution['mloaded'] = 1;
+        global.evolution['gmloaded'] = 1;
     }
 }
 
