@@ -1721,6 +1721,7 @@ function fastLoop(){
             { a: 'tauceti', r: 'tau_home', s: 'colony', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_home', s: 'fusion_generator', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
+            { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
             if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
@@ -1799,7 +1800,7 @@ function fastLoop(){
                             }
                         }
 
-                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max){
+                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
                             operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
                             $(`#${id} .on`).addClass('warn');
                         }
@@ -5193,7 +5194,7 @@ function fastLoop(){
 
             helium_bd[loc('tau_gas_refueling_station_title')] = gas_mining + 'v';
             if (gas_mining > 0){
-                helium_bd[`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
+                helium_bd[`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
             }
             modRes('Helium_3', delta * time_multiplier);
         }
@@ -7611,10 +7612,11 @@ function midLoop(){
                 morale += 30 + (support_on['womling_fun'] * actions.tauceti.tau_red.womling_fun.val());
             }
 
-            pop = support_on['womling_village'] * 5;
+            let vil_pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
+            pop = support_on['womling_village'] * vil_pop;
             let farmers = support_on['womling_farm'] * 2;
             if (farmers > pop){ farmers = pop; }
-            let crop_per_farmer = global.tech['womling_farming'] ? 8 : 6;
+            let crop_per_farmer = global.tech['womling_pop'] ? 8 : 6;
             if (pop > farmers * crop_per_farmer){
                 pop = farmers * crop_per_farmer;
             }
@@ -9428,6 +9430,11 @@ function longLoop(){
             renderSpace();
             renderTauCeti();
             drawTech();
+        }
+
+        if (global.race['truepath'] && global.tech['tauceti'] && global.tech.tauceti === 5 && !global.tech['plague'] && Math.rand(0,50) === 0){
+            global.tech['plague'] = 1;
+            messageQueue(loc('tau_plague',[govTitle(3)]),'info',false,['events']);
         }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){

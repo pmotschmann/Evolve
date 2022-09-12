@@ -11861,6 +11861,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.settings.tau.roid = true;
                 global.settings.tau.gas = true;
+                global.tauceti['patrol_ship'] = { count: 0, on: 0, support: 0, s_max: 0 };
                 return true;
             }
             return false;
@@ -12059,11 +12060,93 @@ const techs = {
         era: 'tauceti',
         path: ['truepath'],
         reqs: { womling_tech: 5 },
-        grant: ['womling_farming',1],
+        grant: ['womling_pop',1],
         cost: {
             Knowledge(){ return 8200000; }
         },
         effect(){ return loc('tech_womling_farming_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_housing: {
+        id: 'tech-womling_housing',
+        title: loc('tech_womling_housing'),
+        desc: loc('tech_womling_housing'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 6, womling_pop: 1 },
+        grant: ['womling_pop',2],
+        cost: {
+            Knowledge(){ return 8500000; }
+        },
+        effect(){ return loc('tech_womling_housing_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    asteroid_analysis: {
+        id: 'tech-asteroid_analysis',
+        title: loc('tech_asteroid_analysis'),
+        desc: loc('tech_asteroid_analysis'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_roid: 1 },
+        grant: ['tau_roid',2],
+        cost: {
+            Knowledge(){ return 7350000; }
+        },
+        effect(){ return loc('tech_asteroid_analysis_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_asteroid_analysis_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    shark_repellent: {
+        id: 'tech-shark_repellent',
+        title: loc('tech_shark_repellent'),
+        desc: loc('tech_shark_repellent'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_roid: 2 },
+        grant: ['tau_roid',3],
+        cost: {
+            Knowledge(){ return 7400000; }
+        },
+        effect(){ return loc('tech_shark_repellent_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_shark_repellent_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    space_whaling: {
+        id: 'tech-space_whaling',
+        title: loc('tech_space_whaling'),
+        desc: loc('tech_space_whaling'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_gas: 3, tau_roid: 3 },
+        grant: ['tau_gas',4],
+        cost: {
+            Knowledge(){ return 7450000; }
+        },
+        effect(){ return loc('tech_space_whaling_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

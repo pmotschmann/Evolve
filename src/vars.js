@@ -1155,6 +1155,9 @@ if (!global.support.hasOwnProperty('tau_home')){
     global.support['tau_home'] = [];
     global.support['tau_red'] = [];
 }
+if (!global.support.hasOwnProperty('tau_roid')){
+    global.support['tau_roid'] = [];
+}
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;

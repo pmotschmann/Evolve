@@ -283,6 +283,9 @@ export function powerGrid(type,reset){
         case 'tau_red':
             power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab'];
             break;
+        case 'tau_roid':
+            power_structs = [];
+            break;
     }
 
     if (reset){

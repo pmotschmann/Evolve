@@ -1912,8 +1912,9 @@ const tauCetiModules = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, 400000, 1.28, 'tauceti'); },
             },
             effect(){
+                let pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_village_effect',[5])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_village_effect',[pop])}</div>`;
                 return desc;
             },
             support(){ return -1; },
@@ -1942,7 +1943,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[global.tech['womling_farming'] ? 16 : 12])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[global.tech['womling_pop'] ? 16 : 12])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
                 return desc;
             },
@@ -2176,6 +2177,69 @@ const tauCetiModules = {
             },
             desc(){
                 return loc('tau_roid_desc');
+            },
+            support: 'patrol_ship',
+        },
+        roid_mission: {
+            id: 'tauceti-roid_mission',
+            title(){
+                return loc('space_mission_title',[loc('tau_roid_title')]);
+            },
+            desc(){
+                return loc('space_mission_desc',[loc('tau_roid_title')]);
+            },
+            reqs: { tauceti: 5 },
+            grant: ['tau_roid',1],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_roid >= 1 ? 0 : 1; },
+            cost: {
+                Helium_3(offset,wiki){ return +int_fuel_adjust(1250000,false,wiki).toFixed(0); },
+            },
+            effect(){
+                return loc('tau_roid_mission_effect',[loc('tau_roid_title')]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('tau_roid_mission_result',[loc('tau_roid_title')]),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        patrol_ship: {
+            id: 'tauceti-patrol_ship',
+            title: loc('tau_roid_patrol_ship'),
+            desc(){ return `<div>${loc('tau_roid_patrol_ship')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`; },
+            reqs: { tau_roid: 3 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('patrol_ship', offset, 45000000, 1.25, 'tauceti'); },
+                Adamantite(offset){ return spaceCostMultiplier('patrol_ship', offset, 1800000, 1.25, 'tauceti'); },
+                Elerium(offset){ return spaceCostMultiplier('patrol_ship', offset, 520, 1.25, 'tauceti'); },
+                Stanene(offset){ return spaceCostMultiplier('patrol_ship', offset, 2675000, 1.25, 'tauceti'); },
+                Bolognium(offset){ return spaceCostMultiplier('patrol_ship', offset, 1150000, 1.25, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let desc = `<div>${loc('tau_roid_patrol_ship_security',[$(this)[0].support()])}</div>`;
+                desc = desc + `<div>${loc('tau_roid_patrol_ship_effect')}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                return desc;
+            },
+            support_fuel(){ return { r: 'Helium_3', a: 250 }; },
+            support(){ return 1; },
+            powered(){ return powerCostMod(1); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.patrol_ship.count++;
+                    global.tauceti.patrol_ship.on++;
+                    if (global.tech['tau_red'] === 2){
+                        global.tech['tau_red'] = 3;
+                    }
+                    return true;
+                }
+                return false;
             }
         },
     },
