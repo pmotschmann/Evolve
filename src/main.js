@@ -9429,32 +9429,33 @@ function diffCalc(res,period){
         global.resource[res].gen_d = 0;
     }
 
+    let el = $(`#res${res} .diff`);
     if (global.race['decay']){
         if (global.resource[res].diff < 0){
-            if (breakdown.p.consume[res][loc('evo_challenge_decay')] > global.resource[res].diff){
-                if (!$(`#res${res} .diff`).hasClass('has-text-danger')){
-                    $(`#res${res} .diff`).removeClass('has-text-warning');
-                    $(`#res${res} .diff`).addClass('has-text-danger');
+            if (global.resource[res].diff < breakdown.p.consume[res][loc('evo_challenge_decay')]){
+                if (!el.hasClass('has-text-warning')){
+                    el.removeClass('has-text-danger');
+                    el.addClass('has-text-warning');
                 }
             }
             else {
-                if (!$(`#res${res} .diff`).hasClass('has-text-warning')){
-                    $(`#res${res} .diff`).removeClass('has-text-danger');
-                    $(`#res${res} .diff`).addClass('has-text-warning');
+                if (!el.hasClass('has-text-danger')){
+                    el.removeClass('has-text-warning');
+                    el.addClass('has-text-danger');
                 }
             }
         }
-        else if (global.resource[res].diff >= 0 && ($(`#res${res} .diff`).hasClass('has-text-danger') || $(`#res${res} .diff`).hasClass('has-text-warning'))){
-            $(`#res${res} .diff`).removeClass('has-text-danger');
-            $(`#res${res} .diff`).removeClass('has-text-warning');
+        else if (global.resource[res].diff >= 0 && (el.hasClass('has-text-danger') || el.hasClass('has-text-warning'))){
+            el.removeClass('has-text-danger');
+            el.removeClass('has-text-warning');
         }
     }
     else {
-        if (global.resource[res].diff < 0 && !$(`#res${res} .diff`).hasClass('has-text-danger')){
-            $(`#res${res} .diff`).addClass('has-text-danger');
+        if (global.resource[res].diff < 0 && !el.hasClass('has-text-danger')){
+            el.addClass('has-text-danger');
         }
-        else if (global.resource[res].diff >= 0 && $(`#res${res} .diff`).hasClass('has-text-danger')){
-            $(`#res${res} .diff`).removeClass('has-text-danger');
+        else if (global.resource[res].diff >= 0 && el.hasClass('has-text-danger')){
+            el.removeClass('has-text-danger');
         }
     }
 }
