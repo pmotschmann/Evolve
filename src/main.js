@@ -8160,11 +8160,6 @@ function midLoop(){
             buildGene();
         }
 
-        if (global['loadFoundry']){
-            loadFoundry();
-            delete global['loadFoundry'];
-        }
-
         if (p_on['soul_forge']){
             vBind({el: `#fort`},'update');
         }

@@ -28,7 +28,6 @@ export var global = {
     }
 };
 export var tmp_vars = {};
-export var vues = {};
 export var breakdown = {
     c: {},
     p: {}
@@ -662,7 +661,6 @@ if (convertVersion(global['version']) < 100023){
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
             global.resource.Plywood.display = false;
-            global.city['lumber'] = 0;
             if (global.city['sawmill']){ delete global.city['sawmill']; }
             if (global.city['graveyard']){ delete global.city['graveyard']; }
             if (global.city['lumber_yard']){ delete global.city['lumber_yard']; }
@@ -678,7 +676,6 @@ if (convertVersion(global['version']) < 100023){
                 global.civic.craftsman.workers -= global.city.foundry['Plywood'];
                 global.city.foundry.crafting -= global.city.foundry['Plywood'];
                 global.city.foundry['Plywood'] = 0;
-                global['loadFoundry'] = true;
             }
             if (global.city['s_alter']) { global.city.s_alter.harvest = 0; }
             if (global.interstellar['mass_ejector']){
