@@ -156,7 +156,7 @@ export function governPage(content){
                     3: [2,loc(`civics_spy_influence`)],
                     4: [3,loc(`civics_spy_incite`)],
                     6: [loc(`civics_spy_sabotage`),loc(`civics_spy_incite`),loc(`civics_spy_influence`)],
-                    7: [loc(`tech_spy`)],
+                    7: [loc(`tech_espionage`)],
                     8: [loc(`tech_unification`)],
                 },
                 data_link: {

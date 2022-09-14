@@ -5454,7 +5454,6 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Nano_Tube.display = true;
-                global.city.factory['Nano'] = 0;
                 messageQueue(loc('tech_nano_tubes_msg'),'info',false,['progress']);
                 return true;
             }

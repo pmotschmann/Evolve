@@ -7209,7 +7209,9 @@ export function orbitDecayed(){
             });
         }
         Object.keys(global.resource).forEach(function (res){
-            global.resource[res].trade = 0;
+            if (global.resource[res].hasOwnProperty('trade')){
+                global.resource[res].trade = 0;
+            }
         });
 
         global.space['red_university'] = { count: 0 };
