@@ -3004,7 +3004,12 @@ function fastLoop(){
 
         // Citizen Growth
         if (fed && global['resource']['Food'].amount > 0 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
-            if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
+            if (global.civic.homeless > 0){
+                let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
+                global.civic.homeless -= missing;
+                global.resource[global.race.species].amount += missing;
+            }
+            else if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
@@ -7474,11 +7479,12 @@ function midLoop(){
 
         let pop_loss = global.resource[global.race.species].amount - caps[global.race.species];
         if (pop_loss > 0){
-            if (pop_loss === 1){
-                messageQueue(loc('abandon1',[pop_loss]),'danger');
+            if (global.race['orbit_decayed'] && global.stats.days === global.race['orbit_decay']){
+                messageQueue(loc('tragic_death',[pop_loss]),'danger');
             }
             else {
-                messageQueue(loc(global.race['orbit_decayed'] ? 'tragic_death' : 'abandon2',[pop_loss]),'danger');
+                messageQueue(loc(pop_loss === 1 ? 'abandon1' : 'abandon2',[pop_loss]),'danger');
+                global.civic.homeless += pop_loss;
             }
         }
 

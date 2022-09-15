@@ -1690,6 +1690,10 @@ if (global.city.hasOwnProperty('smelter') && !global.city.smelter.hasOwnProperty
     global.city.smelter['cap'] = 0;
 }
 
+if (!global.civic['homeless']){
+    global.civic.homeless = 0;
+}
+
 if (!global.civic['foreign']){
     global.civic['foreign'] = {
         gov0: {
