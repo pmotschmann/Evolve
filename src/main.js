@@ -293,6 +293,12 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +${cheese}%</span></p>`);
         }
 
+        if (global.civic['homeless']){
+            let homeless = global.civic.homeless / 2;
+            total -= homeless;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`homeless`)}</span> <span class="has-text-danger"> -${homeless}%</span></p>`);
+        }
+
         total = +(total).toFixed(1);
 
         let container = $(`<div></div>`);
@@ -1048,6 +1054,10 @@ function fastLoop(){
             let raw_cheese = global.stats.hasOwnProperty('reset') ? global.stats.reset + 1 : 1;
             let cheese = +(raw_cheese / (raw_cheese + 10) * 11).toFixed(2);
             morale += cheese;
+        }
+
+        if (global.civic['homeless']){
+            morale -= global.civic.homeless / 2;
         }
 
         if (global.tech['m_boost']){
@@ -3003,13 +3013,13 @@ function fastLoop(){
         }
 
         // Citizen Growth
-        if (fed && global['resource']['Food'].amount > 0 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
-            if (global.civic.homeless > 0){
-                let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
-                global.civic.homeless -= missing;
-                global.resource[global.race.species].amount += missing;
-            }
-            else if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
+        if (global.civic.homeless > 0){
+            let missing = Math.min(global.civic.homeless, global.resource[global.race.species].max - global.resource[global.race.species].amount);
+            global.civic.homeless -= missing;
+            global.resource[global.race.species].amount += missing;
+        }
+        else if (fed && global['resource']['Food'].amount > 0 && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
+            if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
@@ -8524,6 +8534,15 @@ function longLoop(){
         else {
             global.civic.scavenger.display = false;
             global.civic.scavenger.workers = 0;
+        }
+
+        // Homeless
+        if (global.civic.homeless > 0){
+            let railway = global.arpa['railway'] ? global.arpa.railway.rank : 0;
+            let abandon_odds = Math.floor(railway / (railway + 25) * 10);
+            if (Math.rand(0,10) <= abandon_odds){
+                global.civic.homeless--;
+            }
         }
 
         // Market price fluctuation

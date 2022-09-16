@@ -3,6 +3,20 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.2.20`,
+        date: `9/15/2022`,
+        changes: [
+            `New homelessness system.`,
+            `Factory, Mining Droids, and Graphene Plants will remember resource assignment after a shutdown.`,
+            `Terraforming and Ascension can no longer be queued or multi-clicked.`,
+            `AI Cores show correct bonus in tooltip.`,
+            `Stealing Rocketry will now unlock rival in Truepath.`,
+            `Playful will no longer remove unemployed stress with no hunters.`,
+            `Andromeda Citizens will no longer stick around if abandoned by a stargate shutdown.`,
+            `Fixed various bugs with mutating in or out some traits.`
+        ]
+    },
+    {
         version: `1.2.19`,
         revision: `a`,
         date: `8/21/2022`,
