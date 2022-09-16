@@ -4988,10 +4988,12 @@ export function setImitation(mod){
         for (let trait of i_traits) {
             if (!['evil','imitation'].includes(trait)){
                 let set = global.race[trait] ? false : true;
-                let added = global.race.iTraits[trait] ? false : true;
+                if (!global.race.iTraits.hasOwnProperty(trait)) {
+                    global.race.iTraits[trait] = global.race[trait] || 0;
+                }
+                let forced = global.race.iTraits[trait] ? false : true;
                 let rank = traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0];
-                global.race.iTraits[trait] = global.race.iTraits[trait] || global.race[trait] || 0;
-                setTraitRank(trait,{ set: rank, force: added });
+                setTraitRank(trait,{ set: rank, force: forced });
                 if (mod && set){ cleanAddTrait(trait); }
             }
         }
