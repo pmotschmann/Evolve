@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.2.20`,
-        date: `9/15/2022`,
+        date: `9/16/2022`,
         changes: [
             `New homelessness system.`,
             `Factory, Mining Droids, and Graphene Plants will remember resource assignment after a shutdown.`,
