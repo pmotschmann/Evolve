@@ -146,6 +146,18 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
     }
 
+    { // Homeless
+        infoBoxBuilder(mainContent,{ name: 'homeless', template: 'mechanics', label: loc('wiki_mechanics_homeless'), paragraphs: 4, break: [3], h_level: 2,
+            para_data: {
+                3: [loc('arpa_projects_railway_title')]
+            },
+            data_link: {
+                3: ['wiki.html#projects-arpa-railway']
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`homeless`,loc('wiki_mechanics_homeless'));
+    }
+
     { // Warmonger
         let warmonger = infoBoxBuilder(mainContent,{ name: 'warmonger', template: 'mechanics', label: loc('wiki_mechanics_warmonger'), paragraphs: 8, break: [4], h_level: 2,
             para_data: {
