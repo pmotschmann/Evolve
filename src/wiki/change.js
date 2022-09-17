@@ -13,7 +13,8 @@ const changeList = [
             `Stealing Rocketry will now unlock rival in Truepath.`,
             `Playful will no longer remove unemployed stress with no hunters.`,
             `Andromeda Citizens will no longer stick around if abandoned by a stargate shutdown.`,
-            `Fixed various bugs with mutating in or out some traits.`
+            `Fixed various bugs with mutating in or out some traits.`,
+            `Made some improvements for screen readers to determine active state of challenges.`
         ]
     },
     {

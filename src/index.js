@@ -850,7 +850,6 @@ export function loadTab(tab){
     }
 }
 
-
 export function index(){
     clearElement($('body'));
 
