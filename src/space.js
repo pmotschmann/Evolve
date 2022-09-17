@@ -601,6 +601,8 @@ const spaceProjects = {
             title: loc('space_terraform'),
             desc: loc('space_terraform'),
             reqs: { terraforming: 3 },
+            queue_complete(){ return 0; },
+            no_multi: true,
             cost: {},
             effect(){
                 let reward = terraformProjection();
@@ -3948,6 +3950,8 @@ const interstellarProjects = {
             title: loc('interstellar_ascend'),
             desc: loc('interstellar_ascend'),
             reqs: { ascension: 8 },
+            queue_complete(){ return 0; },
+            no_multi: true,
             cost: {},
             effect(){
                 let reward = astrialProjection();
@@ -4678,7 +4682,7 @@ const galaxyProjects = {
                 Horseshoe(){ return global.race['hooved'] ? 3 : 0; }
             },
             effect(){
-                return `<div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div class="has-text-caution">${loc(`requires_res`,[loc('galaxy_embassy')])}</div><div>${loc('plus_max_citizens',[$(this)[0].citizens()])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
             action(){
@@ -6867,10 +6871,17 @@ export function terraformLab(wiki){
     if (global.custom.hasOwnProperty('planet')){
         let uni = universeAffix();
         if (global.custom.planet.hasOwnProperty(uni)){
-            let type = global.race['truepath'] ? 'tp' : 's';
+            let type = 's';
             if (global.custom.planet[uni][type]){
                 planet = deepClone(global.custom.planet[uni][type]);
-                planet['pts'] = 0;
+                geoList.forEach(function (res){
+                    if (planet.geology.hasOwnProperty(res)){
+                        planet.geology[res] *= 100;
+                    }
+                    else {
+                        planet.geology[res] = 0;
+                    }
+                });
             }
         }
     }

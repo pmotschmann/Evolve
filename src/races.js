@@ -1,7 +1,7 @@
 import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './civics.js';
-import { setJobName, jobScale } from './jobs.js'; 
+import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
@@ -4368,14 +4368,8 @@ function getPurgatory(s,t){
 }
 
 function purgeLumber(){
-    global.resource.Lumber.display = false;
-    global.resource.Crates.amount += global.resource.Lumber.crates;
-    global.resource.Lumber.crates = 0;
-    global.resource.Containers.amount += global.resource.Lumber.containers;
-    global.resource.Lumber.containers = 0;
-    global.resource.Lumber.trade = 0;
-    global.resource.Plywood.display = false;
-    global.city['lumber'] = 0;
+    releaseResource('Lumber');
+    releaseResource('Plywood');
     removeFromQueue(['city-graveyard', 'city-lumber_yard', 'city-sawmill']);
     removeFromRQueue(['reclaimer', 'axe', 'saw']);
     setPurgatory('city','sawmill');
@@ -4394,22 +4388,42 @@ function purgeLumber(){
         global.race.casting.lumberjack = 0;
         defineIndustry();
     }
-    if (global.tech['foundry']){
-        global.civic.craftsman.workers -= global.city.foundry['Plywood'];
-        global.city.foundry.crafting -= global.city.foundry['Plywood'];
-        global.city.foundry['Plywood'] = 0;
-        global['loadFoundry'] = true;
-    }
     if (global.city['s_alter']) {
         global.city.s_alter.harvest = 0;
     }
-    if (global.interstellar['mass_ejector']){
-        global.interstellar.mass_ejector.total -= global.interstellar.mass_ejector.Lumber;
-        global.interstellar.mass_ejector.Lumber = 0;
+}
+
+function releaseResource(res) {
+    global.resource[res].display = false;
+    if (global.race['alchemy'] && global.race.alchemy.hasOwnProperty(res)){
+        global.resource.Mana.diff += global.race.alchemy[res];
+        global.race.alchemy[res] = 0;
     }
-    if (global.city['nanite_factory']){
-        global.city.nanite_factory.Lumber = 0;
+    if (global.interstellar['mass_ejector'] && global.interstellar.mass_ejector.hasOwnProperty(res)){
+        global.interstellar.mass_ejector.total -= global.interstellar.mass_ejector[res];
+        global.interstellar.mass_ejector[res] = 0;
     }
+    if (global.city['nanite_factory'] && global.city.nanite_factory.hasOwnProperty(res)){
+        global.city.nanite_factory[res] = 0;
+    }
+    if (global.portal['transport'] && global.portal.transport.cargo.hasOwnProperty(res)){
+        global.portal.transport.cargo.used -= global.portal.transport.cargo[res];
+        global.portal.transport.cargo[res] = 0;
+    }
+    if (global.tech['foundry'] && global.city.foundry.hasOwnProperty(res)){
+        global.civic.craftsman.workers -= global.city.foundry[res];
+        global.city.foundry.crafting -= global.city.foundry[res];
+        global.city.foundry[res] = 0;
+        loadFoundry();
+    }
+    if (global.resource[res].hasOwnProperty('trade')) {
+        global.city.market.trade -= Math.abs(global.resource[res].trade);
+        global.resource[res].trade = 0;
+    }
+    global.resource.Crates.amount += global.resource[res].crates;
+    global.resource[res].crates = 0;
+    global.resource.Containers.amount += global.resource[res].containers;
+    global.resource[res].containers = 0;
 }
 
 function adjustFood() {
@@ -4621,7 +4635,9 @@ export function cleanAddTrait(trait){
             break;
         case 'terrifying':
             Object.keys(global.resource).forEach(function (res){
-                global.resource[res].trade = 0;
+                if (global.resource[res].hasOwnProperty('trade')){
+                    global.resource[res].trade = 0;
+                }
             });
             global.settings.showMarket = false;
             if (global.settings.marketTabs === 0) {
@@ -4797,7 +4813,7 @@ export function cleanRemoveTrait(trait,rank){
             }
             break;
         case 'smoldering':
-            global.resource.Chrysotile.display = false;
+            releaseResource('Chrysotile')
             if (global.race['kindling_kindred']){
                 break;
             }
@@ -4972,10 +4988,12 @@ export function setImitation(mod){
         for (let trait of i_traits) {
             if (!['evil','imitation'].includes(trait)){
                 let set = global.race[trait] ? false : true;
-                let added = global.race.iTraits[trait] ? false : true;
+                if (!global.race.iTraits.hasOwnProperty(trait)) {
+                    global.race.iTraits[trait] = global.race[trait] || 0;
+                }
+                let forced = global.race.iTraits[trait] ? false : true;
                 let rank = traits[trait].val < 0 ? traits.imitation.vars()[1] : traits.imitation.vars()[0];
-                global.race.iTraits[trait] = global.race.iTraits[trait] || global.race[trait] || 0;
-                setTraitRank(trait,{ set: rank, force: added });
+                setTraitRank(trait,{ set: rank, force: forced });
                 if (mod && set){ cleanAddTrait(trait); }
             }
         }

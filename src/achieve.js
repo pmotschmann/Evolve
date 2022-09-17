@@ -483,19 +483,24 @@ export function challengeIcon(){
             $('#topBar .planet').after(`<span class="flair"><svg class="star${a_level}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox(bIcon)}" xml:space="preserve">${svgIcons(bIcon)}</svg></span>`);
         }
 
+        let desc = '';
+        if (global.race['no_plasmid']){ desc += `<div>${loc('evo_challenge_plasmid')}</div>`; }
+        if (global.race['weak_mastery']){ desc += `<div>${loc('evo_challenge_mastery')}</div>`; }
+        if (global.race['no_trade']){ desc += `<div>${loc('evo_challenge_trade')}</div>`; }
+        if (global.race['no_craft']){ desc += `<div>${loc('evo_challenge_craft')}</div>`; }
+        if (global.race['no_crispr']){ desc += `<div>${loc('evo_challenge_crispr')}</div>`; }
+        if (global.race['nerfed']){ desc += `<div>${loc('evo_challenge_nerfed')}</div>`; }
+        if (global.race['badgenes']){ desc += `<div>${loc('evo_challenge_badgenes')}</div>`; }
+
+        if (desc.length > 0){
+            $('#topBar .planetWrap .flair').append($(`<div class="is-sr-only"><div>Active Challenge Genes</div>${desc}</div>`));
+        }
+
         popover('topbarPlanet',
             function(obj){
                 let popper = $(`<div id="topbarPlanet"></div>`);
                 obj.popper.append(popper);
-    
-                if (global.race['no_plasmid']){ popper.append($(`<div>${loc('evo_challenge_plasmid')}</div>`)); }
-                if (global.race['weak_mastery']){ popper.append($(`<div>${loc('evo_challenge_mastery')}</div>`)); }
-                if (global.race['no_trade']){ popper.append($(`<div>${loc('evo_challenge_trade')}</div>`)); }
-                if (global.race['no_craft']){ popper.append($(`<div>${loc('evo_challenge_craft')}</div>`)); }
-                if (global.race['no_crispr']){ popper.append($(`<div>${loc('evo_challenge_crispr')}</div>`)); }
-                if (global.race['nerfed']){ popper.append($(`<div>${loc('evo_challenge_nerfed')}</div>`)); }
-                if (global.race['badgenes']){ popper.append($(`<div>${loc('evo_challenge_badgenes')}</div>`)); }
-
+                popper.append($(desc));
                 return undefined;
             },
             {

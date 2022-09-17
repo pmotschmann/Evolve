@@ -7,6 +7,7 @@ import { sideMenu } from './functions.js';
 const extraInformation = {
     launch_facility: [loc('wiki_arpa_project_launch_facility')],
     monument: [monumentExtra(),loc('wiki_arpa_project_monument_random'),loc('wiki_arpa_project_monument_exceptions')],
+    railway: [loc('wiki_arpa_project_railway_homeless',[3,7,11,17,25,38,59,100,225])],
     roid_eject: [loc('wiki_arpa_project_roid_eject')],
     tp_depot: [loc('wiki_arpa_project_depot')],
     nexus: [loc('wiki_arpa_project_magic')],

@@ -1119,7 +1119,7 @@ function loadSpecialResource(name,color) {
                 break;
 
             case 'AICore':
-                let bonus = +(1 - (0.99 ** global.race.AICore.count)).toFixed(2) * 100;
+                let bonus = +((1 - (0.99 ** global.race.AICore.count)) * 100).toFixed(2);
                 desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
                 break;
         }
@@ -1763,8 +1763,8 @@ export function craftingPopover(id,res,type,extra){
                 let val = parseFloat(raw.slice(0,-1));
                 if (val != 0 && !isNaN(val)){
                     let type = val > 0 ? 'success' : 'danger';
-                    let label = mod.replace("_"," ");
-                    label = mod.replace(/\+.+$/,"");
+                    let label = mod.replace(/\+.+$/,"");
+                    mod = mod.replace(/'/g, "\\'");
                     col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ ${[res]}['${mod}'] | translate }}</span></div>`);
                 }
             });
@@ -1774,8 +1774,8 @@ export function craftingPopover(id,res,type,extra){
             let val = parseFloat(raw.slice(0,-1));
             if (val != 0 && !isNaN(val)){
                 let type = val > 0 ? 'success' : 'danger';
-                let label = mod.replace("_"," ");
-                label = mod.replace(/\+.+$/,"");
+                let label = mod.replace(/\+.+$/,"");
+                mod = mod.replace(/'/g, "\\'");
                 col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ craft.multi_bd['${mod}'] | translate }}</span></div>`);
             }
         });
@@ -1790,8 +1790,8 @@ export function craftingPopover(id,res,type,extra){
             if (val != 0 && !isNaN(val)){
                 count++;
                 let type = val > 0 ? 'success' : 'danger';
-                let label = mod.replace("_"," ");
-                label = mod.replace(/\+.+$/,"");
+                let label = mod.replace(/\+.+$/,"");
+                mod = mod.replace(/'/g, "\\'");
                 col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ craft.add_bd['${mod}'] | translate }}</span></div>`);
             }
         });
@@ -1807,8 +1807,8 @@ export function craftingPopover(id,res,type,extra){
                 if (val != 0 && !isNaN(val)){
                     count++;
                     let type = val > 0 ? 'success' : 'danger';
-                    let label = mod.replace("_"," ");
-                    label = mod.replace(/\+.+$/,"");
+                    let label = mod.replace(/\+.+$/,"");
+                    mod = mod.replace(/'/g, "\\'");
                     col3.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${res}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
@@ -1916,8 +1916,8 @@ function breakdownPopover(id,name,type){
                         if (val != 0 && !isNaN(val)){
                             prevCol = true;
                             let type = val > 0 ? 'success' : 'danger';
-                            let label = mod.replace("_"," ");
-                            label = mod.replace(/\+.+$/,"");
+                            let label = mod.replace(/\+.+$/,"");
+                            mod = mod.replace(/'/g, "\\'");
                             col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ ${t}['${mod}'] | translate }}</span></div>`);
                         }
                     });
@@ -1933,8 +1933,8 @@ function breakdownPopover(id,name,type){
                 if (val != 0 && !isNaN(val)){
                     count++;
                     let type = val > 0 ? 'success' : 'danger';
-                    let label = mod.replace("_"," ");
-                    label = mod.replace(/\+.+$/,"");
+                    let label = mod.replace(/\+.+$/,"");
+                    mod = mod.replace(/'/g, "\\'");
                     col2.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ consume.${name}['${mod}'] | fix | translate }}</span></div>`);
                 }
             });
