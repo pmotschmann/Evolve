@@ -7,7 +7,7 @@ const changeList = [
         date: `9/16/2022`,
         changes: [
             `New homelessness system.`,
-            `Factory, Mining Droids, and Graphene Plants will remember resource assignment after a shutdown.`,
+            `Factory, Mining Droids, and Graphene Plants will remember resource assignment after a low power shutdown.`,
             `Terraforming and Ascension can no longer be queued or multi-clicked.`,
             `AI Cores show correct bonus in tooltip.`,
             `Stealing Rocketry will now unlock rival in Truepath.`,
