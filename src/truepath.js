@@ -2169,6 +2169,95 @@ const tauCetiModules = {
                 }
             }
         },
+        ore_refinery: {
+            id: 'tauceti-ore_refinery',
+            title(){ return loc('tau_gas_ore_refinery_title'); },
+            desc(){
+                return `<div>${loc('tau_gas_ore_refinery_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { tau_gas: 4 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('ore_refinery', offset, 52000000, 1.28, 'tauceti'); },
+                Iridium(offset){ return spaceCostMultiplier('ore_refinery', offset, 1600000, 1.28, 'tauceti'); },
+                Unobtainium(offset){ return spaceCostMultiplier('ore_refinery', offset, 800, 1.28, 'tauceti'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, 118000, 1.28, 'tauceti'); },
+            },
+            powered(){ return powerCostMod(8); },
+            effect(){
+                let ore = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.fill : 0;
+                let max = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.max : 0;
+                let refine = +(production('ore_refinery')).toFixed(2);
+                let desc = `<div>${loc('tau_gas_ore_refinery_effect',[ore])}</div>`;
+                desc = desc + `<div>${loc('tau_gas_ore_refinery_effect2',[max])}</div>`;
+                desc = desc + `<div>${loc('tau_gas_ore_refinery_effect3',[refine])}</div>`;
+                desc = desc + `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            special: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.ore_refinery.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.ore_refinery.on++;
+                        global.city.smelter.cap += 2;
+                        global.city.smelter.Iron += 2;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                if (global.tech.tau_roid === 3){
+                    global.tech.tau_roid = 4;
+                    renderTauCeti();
+                    drawTech();
+                }
+            }
+        },
+        whaling_station: {
+            id: 'tauceti-whaling_station',
+            title(){ return loc('tau_gas_whaling_station_title'); },
+            desc(){
+                return `<div>${loc('tau_gas_whaling_station_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { tau_whale: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('whaling_station', offset, 72000000, 1.28, 'tauceti'); },
+                Steel(offset){ return spaceCostMultiplier('whaling_station', offset, 1800000, 1.28, 'tauceti'); },
+                Polymer(offset){ return spaceCostMultiplier('whaling_station', offset, 955000, 1.28, 'tauceti'); },
+                Orichalcum(offset){ return spaceCostMultiplier('whaling_station', offset, 268000, 1.28, 'tauceti'); },
+            },
+            powered(){ return powerCostMod(6); },
+            effect(){
+                let blubber = global.tauceti.hasOwnProperty('whaling_station') ? global.tauceti.whaling_station.fill : 0;
+                let max = global.tauceti.hasOwnProperty('whaling_station') ? global.tauceti.whaling_station.max : 0;
+                let refine = +(production('whaling_station')).toFixed(2);
+                let desc = `<div>${loc('tau_gas_whaling_station_effect',[blubber])}</div>`;
+                desc = desc + `<div>${loc('tau_gas_whaling_station_effect2',[max])}</div>`;
+                desc = desc + `<div>${loc('tau_gas_whaling_station_effect3',[refine])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.whaling_station.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.whaling_station.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            post(){
+                if (global.tech.tau_whale === 1){
+                    global.tech.tau_whale = 2;
+                    renderTauCeti();
+                }
+            }
+        },
     },
     tau_roid: {
         info: {
@@ -2234,9 +2323,70 @@ const tauCetiModules = {
                 if (payCosts($(this)[0])){
                     global.tauceti.patrol_ship.count++;
                     global.tauceti.patrol_ship.on++;
-                    if (global.tech['tau_red'] === 2){
-                        global.tech['tau_red'] = 3;
-                    }
+                    return true;
+                }
+                return false;
+            }
+        },
+        mining_ship: {
+            id: 'tauceti-mining_ship',
+            title: loc('tau_roid_mining_ship'),
+            desc(){ return `<div>${loc('tau_roid_mining_ship')}</div>`; },
+            reqs: { tau_roid: 4 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('mining_ship', offset, 28000000, 1.28, 'tauceti'); },
+                Uranium(offset){ return spaceCostMultiplier('mining_ship', offset, 12500, 1.28, 'tauceti'); },
+                Titanium(offset){ return spaceCostMultiplier('mining_ship', offset, 2200000, 1.28, 'tauceti'); },
+                Alloy(offset){ return spaceCostMultiplier('mining_ship', offset, 1750000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let mine = +(production('mining_ship')).toFixed(2);
+                let desc = `<div>${loc('tau_roid_mining_ship_effect',[mine])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                return desc;
+            },
+            support_fuel(){ return { r: 'Helium_3', a: 75 }; },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.mining_ship.count++;
+                    global.tauceti.mining_ship.on++;
+                    return true;
+                }
+                return false;
+            }
+        },
+        whaling_ship: {
+            id: 'tauceti-whaling_ship',
+            title: loc('tau_roid_whaling_ship'),
+            desc(){ return `<div>${loc('tau_roid_whaling_ship')}</div>`; },
+            reqs: { tau_whale: 2 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('whaling_ship', offset, 35000000, 1.28, 'tauceti'); },
+                Aluminium(offset){ return spaceCostMultiplier('whaling_ship', offset, 3400000, 1.28, 'tauceti'); },
+                Neutronium(offset){ return spaceCostMultiplier('whaling_ship', offset, 168000, 1.28, 'tauceti'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('whaling_ship', offset, 800000, 1.28, 'tauceti'); },
+            },
+            effect(){
+                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
+                let mine = +(production('whaling_ship')).toFixed(2);
+                let desc = `<div>${loc('tau_roid_whaling_ship_effect',[mine])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                return desc;
+            },
+            support_fuel(){ return { r: 'Helium_3', a: 90 }; },
+            support(){ return -1; },
+            powered(){ return powerCostMod(1); },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.whaling_ship.count++;
+                    global.tauceti.whaling_ship.on++;
                     return true;
                 }
                 return false;
@@ -3572,6 +3722,10 @@ export function storehouseMultiplier(heavy){
         multiplier *= 1.5;
     }
     return multiplier;
+}
+
+export function jumpGateShutdown(){
+    // to be implimented
 }
 
 export function calcAIDrift(){

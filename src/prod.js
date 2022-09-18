@@ -261,11 +261,11 @@ export function production(id,val){
                 }
                 case 'stone':
                 {
-                    return highPopAdjust(0.01);
+                    return highPopAdjust(0.05);
                 }
                 case 'adamantite':
                 {
-                    return highPopAdjust(0.006);
+                    return highPopAdjust(0.028);
                 }
             }
         }
@@ -281,6 +281,22 @@ export function production(id,val){
         case 'refueling_station':
         {
             return 0.85;
+        }
+        case 'ore_refinery':
+        {
+            return 25;
+        }
+        case 'whaling_station':
+        {
+            return 12;
+        }
+        case 'mining_ship':
+        {
+            return 10;
+        }
+        case 'whaling_ship':
+        {
+            return 8;
         }
     }
 }

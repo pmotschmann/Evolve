@@ -12133,26 +12133,92 @@ const techs = {
             return false;
         }
     },
-    space_whaling: {
-        id: 'tech-space_whaling',
-        title: loc('tech_space_whaling'),
-        desc: loc('tech_space_whaling'),
-        category: 'progress',
+    belt_mining: {
+        id: 'tech-belt_mining',
+        title: loc('tech_belt_mining'),
+        desc: loc('tech_belt_mining'),
+        category: 'space_mining',
         era: 'tauceti',
         path: ['truepath'],
         reqs: { tau_gas: 3, tau_roid: 3 },
         grant: ['tau_gas',4],
         cost: {
-            Knowledge(){ return 7450000; }
+            Knowledge(){ return 7650000; }
         },
-        effect(){ return loc('tech_space_whaling_effect'); },
+        effect(){ return loc('tech_belt_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
+                global.tauceti['ore_refinery'] = { count : 0, on: 0, max: 0, fill: 0 };
+                global.tauceti['mining_ship'] = { count : 0, on: 0 };
                 return true;
             }
             return false;
         }
     },
+    adv_belt_mining: {
+        id: 'tech-adv_belt_mining',
+        title: loc('tech_adv_belt_mining'),
+        desc: loc('tech_adv_belt_mining'),
+        category: 'space_mining',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_roid: 4 },
+        grant: ['tau_roid',5],
+        cost: {
+            Knowledge(){ return 7900000; }
+        },
+        effect(){ return loc('tech_adv_belt_mining_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['extractor_ship'] = { count : 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    space_whaling: {
+        id: 'tech-space_whaling',
+        title: loc('tech_space_whaling'),
+        desc: loc('tech_space_whaling'),
+        category: 'whaling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_gas: 3, tau_roid: 3 },
+        grant: ['tau_whale',1],
+        cost: {
+            Knowledge(){ return 7500000; }
+        },
+        effect(){ return loc('tech_space_whaling_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['whaling_station'] = { count : 0, on: 0, max: 0, fill: 0 };
+                global.tauceti['whaling_ship'] = { count : 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    infectious_disease_lab: {
+        id: 'tech-infectious_disease_lab',
+        title: loc('tech_infectious_disease_lab'),
+        desc: loc('tech_infectious_disease_lab'),
+        category: 'science',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { plague: 2 },
+        grant: ['disease',1],
+        cost: {
+            Knowledge(){ return 8250000; }
+        },
+        effect(){ return loc('tech_infectious_disease_lab_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
+                return true;
+            }
+            return false;
+        }
+    }
 };
 
 function uniteEffect(){
