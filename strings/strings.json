@@ -2535,6 +2535,8 @@
   "tech_photon_engine_effect": "An advanced engine design that uses a stream of charged particles to accelerate your ships.",
   "tech_fusion_generator": "Fusion Generator",
   "tech_fusion_generator_effect": "The new military grade fusion generator can provide more power to a space ship then ever before possible.",
+  "tech_repository": "Repository",
+  "tech_repository_effect": "A storage facility designed for the Tau Ceti environment.",
   "tech_elerium_generator": "Elerium Generator",
   "tech_elerium_generator_effect": "The Elerium Generator produces an unrivaled amount of energy for your ships.",
   "star_dock_probe": "Space Probe",

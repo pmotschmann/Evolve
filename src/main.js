@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, jumpGateShutdown } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, jumpGateShutdown } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -6272,6 +6272,52 @@ function midLoop(){
         var bd_Nanite = { [loc('base')]: caps['Nanite']+'v' };
         var bd_Materials = { [loc('base')]: caps['Materials']+'v' };
 
+        breakdown.c = {
+            Money: bd_Money,
+            [global.race.species]: bd_Citizen,
+            Slave: bd_Slave,
+            Mana: bd_Mana,
+            Knowledge: bd_Knowledge,
+            Zen: bd_Zen,
+            Crates: bd_Crates,
+            Containers: bd_Containers,
+            Food: bd_Food,
+            Lumber: bd_Lumber,
+            Stone: bd_Stone,
+            Chrysotile: bd_Chrysotile,
+            Crystal: bd_Crystal,
+            Furs: bd_Furs,
+            Copper: bd_Copper,
+            Iron: bd_Iron,
+            Cement: bd_Cement,
+            Coal: bd_Coal,
+            Oil: bd_Oil,
+            Uranium: bd_Uranium,
+            Steel: bd_Steel,
+            Aluminium: bd_Aluminium,
+            Titanium: bd_Titanium,
+            Alloy: bd_Alloy,
+            Polymer: bd_Polymer,
+            Iridium: bd_Iridium,
+            Helium_3: bd_Helium,
+            Water: bd_Water,
+            Deuterium: bd_Deuterium,
+            Neutronium: bd_Neutronium,
+            Adamantite: bd_Adamantite,
+            Infernite: bd_Infernite,
+            Elerium: bd_Elerium,
+            Nano_Tube: bd_Nano_Tube,
+            Graphene: bd_Graphene,
+            Stanene: bd_Stanene,
+            Bolognium: bd_Bolognium,
+            Vitreloy: bd_Vitreloy,
+            Orichalcum: bd_Orichalcum,
+            Unobtainium: bd_Unobtainium,
+            Nanite: bd_Nanite,
+            Cipher: bd_Cipher,
+            Materials: bd_Materials
+        };
+
         caps[global.race.species] = 0;
 
         if (global.city['nanite_factory']){
@@ -6609,228 +6655,52 @@ function midLoop(){
         }
         if (global.city['shed']){
             var multiplier = storageMultipler();
-            let gain = 0;
             let label = global.tech['storage'] <= 2 ? loc('city_shed_title1') : (global.tech['storage'] >= 4 ? loc('city_shed_title3') : loc('city_shed_title2'));
-            if (global.tech['storage'] >= 3){
-                gain = (global.city['shed'].count * (spatialReasoning(40 * multiplier)));
-                caps['Steel'] += gain;
-                bd_Steel[label] = gain+'v';
-            }
-            if (global.tech['storage'] >= 4){
-                gain = (global.city['shed'].count * (spatialReasoning(20 * multiplier)));
-                caps['Titanium'] += gain;
-                bd_Titanium[label] = gain+'v';
-            }
-            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
-            caps['Lumber'] += gain;
-            bd_Lumber[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
-            caps['Stone'] += gain;
-            bd_Stone[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(300 * multiplier)));
-            caps['Chrysotile'] += gain;
-            bd_Chrysotile[label] = gain+'v';
-
-            if (global.resource.Crystal.display){
-                gain = (global.city['shed'].count * (spatialReasoning(8 * multiplier)));
-                caps['Crystal'] += gain;
-                bd_Crystal[label] = gain+'v';
-            }
-
-            gain = (global.city['shed'].count * (spatialReasoning(125 * multiplier)));
-            caps['Furs'] += gain;
-            bd_Furs[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(90 * multiplier)));
-            caps['Copper'] += gain;
-            bd_Copper[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(125 * multiplier)));
-            caps['Iron'] += gain;
-            bd_Iron[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(90 * multiplier)));
-            caps['Aluminium'] += gain;
-            bd_Aluminium[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(100 * multiplier)));
-            caps['Cement'] += gain;
-            bd_Cement[label] = gain+'v';
-
-            gain = (global.city['shed'].count * (spatialReasoning(75 * multiplier)));
-            caps['Coal'] += gain;
-            bd_Coal[label] = gain+'v';
-
-            if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
-                gain = (global.city['shed'].count * (spatialReasoning(15 * multiplier)));
-                caps['Graphene'] += gain;
-                bd_Graphene[label] = gain+'v';
-            }
-
-            if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
-                gain = (global.city['shed'].count * (spatialReasoning(25 * multiplier)));
-                caps['Stanene'] += gain;
-                bd_Stanene[label] = gain+'v';
-            }
+            for (const res of actions.city.shed.res()){
+                if (global.resource[res].display){
+                    let gain = global.city.shed.count * spatialReasoning(actions.city.shed.val(res) * multiplier);
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
         }
 
         if (global.interstellar['warehouse']){
             var multiplier = storageMultipler();
-            let gain = 0;
             let label = loc('interstellar_alpha_name');
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
-            caps['Lumber'] += gain;
-            bd_Lumber[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
-            caps['Stone'] += gain;
-            bd_Stone[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(750 * multiplier)));
-            caps['Chrysotile'] += gain;
-            bd_Chrysotile[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(425 * multiplier)));
-            caps['Furs'] += gain;
-            bd_Furs[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(380 * multiplier)));
-            caps['Copper'] += gain;
-            bd_Copper[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(350 * multiplier)));
-            caps['Iron'] += gain;
-            bd_Iron[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(320 * multiplier)));
-            caps['Aluminium'] += gain;
-            bd_Aluminium[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(280 * multiplier)));
-            caps['Cement'] += gain;
-            bd_Cement[label] = gain+'v';
-
-            gain = (global.interstellar['warehouse'].count * (spatialReasoning(120 * multiplier)));
-            caps['Coal'] += gain;
-            bd_Coal[label] = gain+'v';
-
-            if (global.tech['storage'] >= 3){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(60 * multiplier)));
-                caps['Steel'] += gain;
-                bd_Steel[label] = gain+'v';
-            }
-
-            if (global.tech['storage'] >= 4){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(40 * multiplier)));
-                caps['Titanium'] += gain;
-                bd_Titanium[label] = gain+'v';
-            }
-
-            if (global.resource.Nano_Tube.display){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(30 * multiplier)));
-                caps['Nano_Tube'] += gain;
-                bd_Nano_Tube[label] = gain+'v';
-            }
-
-            if (global.resource.Neutronium.display){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(8 * multiplier)));
-                caps['Neutronium'] += gain;
-                bd_Neutronium[label] = gain+'v';
-            }
-
-            if (global.resource.Adamantite.display){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(18 * multiplier)));
-                caps['Adamantite'] += gain;
-                bd_Adamantite[label] = gain+'v';
-            }
-
-            if (global.resource.Infernite.display){
-                gain = (global.interstellar['warehouse'].count * (spatialReasoning(5 * multiplier)));
-                caps['Infernite'] += gain;
-                bd_Infernite[label] = gain+'v';
-            }
+            for (const res of actions.interstellar.int_alpha.warehouse.res()){
+                if (global.resource[res].display){
+                    let gain = global.interstellar.warehouse.count * spatialReasoning(actions.interstellar.int_alpha.warehouse.val(res) * multiplier);
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
         }
 
         if (global.space['storehouse']){
-            var multiplier = storehouseMultiplier(false);
-            var h_multiplier = storehouseMultiplier(true);
-            let gain = 0;
+            var multiplier = tpStorageMultiplier('storehouse',false);
+            var h_multiplier = tpStorageMultiplier('storehouse',true);
             let label = loc('space_storehouse_title');
-            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
-            caps['Lumber'] += gain;
-            bd_Lumber[label] = gain+'v';
+            for (const res of actions.space.spc_titan.storehouse.res()){
+                if (global.resource[res].display){
+                    let heavy = actions.space.spc_titan.storehouse.heavy(res);
+                    let gain = global.space.storehouse.count * spatialReasoning(actions.space.spc_titan.storehouse.val(res) * (heavy ? h_multiplier : multiplier));
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
+        }
 
-            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
-            caps['Stone'] += gain;
-            bd_Stone[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(3000 * multiplier)));
-            caps['Chrysotile'] += gain;
-            bd_Chrysotile[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(1700 * multiplier)));
-            caps['Furs'] += gain;
-            bd_Furs[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(1520 * h_multiplier)));
-            caps['Copper'] += gain;
-            bd_Copper[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(1400 * h_multiplier)));
-            caps['Iron'] += gain;
-            bd_Iron[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(1280 * multiplier)));
-            caps['Aluminium'] += gain;
-            bd_Aluminium[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(1120 * multiplier)));
-            caps['Cement'] += gain;
-            bd_Cement[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(480 * multiplier)));
-            caps['Coal'] += gain;
-            bd_Coal[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(240 * h_multiplier)));
-            caps['Steel'] += gain;
-            bd_Steel[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(160 * h_multiplier)));
-            caps['Titanium'] += gain;
-            bd_Titanium[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(180 * multiplier)));
-            caps['Alloy'] += gain;
-            bd_Alloy[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(150 * multiplier)));
-            caps['Polymer'] += gain;
-            bd_Polymer[label] = gain+'v';
-
-            gain = (global.space.storehouse.count * (spatialReasoning(175 * h_multiplier)));
-            caps['Iridium'] += gain;
-            bd_Iridium[label] = gain+'v';
-
-            if (global.resource.Nano_Tube.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(120 * multiplier)));
-                caps['Nano_Tube'] += gain;
-                bd_Nano_Tube[label] = gain+'v';
-            }
-
-            if (global.resource.Neutronium.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(64 * h_multiplier)));
-                caps['Neutronium'] += gain;
-                bd_Neutronium[label] = gain+'v';
-            }
-
-            if (global.resource.Adamantite.display){
-                gain = (global.space.storehouse.count * (spatialReasoning(72 * h_multiplier)));
-                caps['Adamantite'] += gain;
-                bd_Adamantite[label] = gain+'v';
-            }
+        if (global.tauceti['repository']){
+            var multiplier = tpStorageMultiplier('repository');
+            let label = loc('tech_repository');
+            for (const res of actions.tauceti.tau_home.repository.res()){
+                if (global.resource[res].display){
+                    let gain = global.tauceti.repository.count * spatialReasoning(actions.tauceti.tau_home.repository.val(res) * multiplier);
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
         }
 
         if (global.galaxy['gateway_depot']){
@@ -6956,61 +6826,14 @@ function midLoop(){
         }
 
         if (global.portal['harbour'] && p_on['harbour']){
-            let gain = (p_on['harbour'] * (spatialReasoning(30000)));
-            caps['Oil'] += gain;
-            bd_Oil[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(250000)));
-            caps['Alloy'] += gain;
-            bd_Alloy[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(250000)));
-            caps['Polymer'] += gain;
-            bd_Polymer[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(200000)));
-            caps['Iridium'] += gain;
-            bd_Iridium[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(18000)));
-            caps['Helium_3'] += gain;
-            bd_Helium[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(12000)));
-            caps['Deuterium'] += gain;
-            bd_Deuterium[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(180000)));
-            caps['Neutronium'] += gain;
-            bd_Neutronium[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(150000)));
-            caps['Adamantite'] += gain;
-            bd_Adamantite[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(75000)));
-            caps['Infernite'] += gain;
-            bd_Infernite[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(750000)));
-            caps['Nano_Tube'] += gain;
-            bd_Nano_Tube[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(1200000)));
-            caps['Graphene'] += gain;
-            bd_Graphene[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(1200000)));
-            caps['Stanene'] += gain;
-            bd_Stanene[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(130000)));
-            caps['Bolognium'] += gain;
-            bd_Bolognium[loc('portal_harbour_title')] = gain+'v';
-
-            gain = (p_on['harbour'] * (spatialReasoning(130000)));
-            caps['Orichalcum'] += gain;
-            bd_Orichalcum[loc('portal_harbour_title')] = gain+'v';
+            let label = loc('portal_harbour_title');
+            for (const res of actions.portal.prtl_lake.harbour.res()){
+                if (global.resource[res].display){
+                    let gain = p_on['harbour'] * spatialReasoning(actions.portal.prtl_lake.harbour.val(res));
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
         }
 
         if (global.city['silo']){
@@ -7777,52 +7600,6 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('tech_alien_outpost')] = gain+'v';
         }
-
-        breakdown.c = {
-            Money: bd_Money,
-            [global.race.species]: bd_Citizen,
-            Slave: bd_Slave,
-            Mana: bd_Mana,
-            Knowledge: bd_Knowledge,
-            Zen: bd_Zen,
-            Crates: bd_Crates,
-            Containers: bd_Containers,
-            Food: bd_Food,
-            Lumber: bd_Lumber,
-            Stone: bd_Stone,
-            Chrysotile: bd_Chrysotile,
-            Crystal: bd_Crystal,
-            Furs: bd_Furs,
-            Copper: bd_Copper,
-            Iron: bd_Iron,
-            Cement: bd_Cement,
-            Coal: bd_Coal,
-            Oil: bd_Oil,
-            Uranium: bd_Uranium,
-            Steel: bd_Steel,
-            Aluminium: bd_Aluminium,
-            Titanium: bd_Titanium,
-            Alloy: bd_Alloy,
-            Polymer: bd_Polymer,
-            Iridium: bd_Iridium,
-            Helium_3: bd_Helium,
-            Water: bd_Water,
-            Deuterium: bd_Deuterium,
-            Neutronium: bd_Neutronium,
-            Adamantite: bd_Adamantite,
-            Infernite: bd_Infernite,
-            Elerium: bd_Elerium,
-            Nano_Tube: bd_Nano_Tube,
-            Graphene: bd_Graphene,
-            Stanene: bd_Stanene,
-            Bolognium: bd_Bolognium,
-            Vitreloy: bd_Vitreloy,
-            Orichalcum: bd_Orichalcum,
-            Unobtainium: bd_Unobtainium,
-            Nanite: bd_Nanite,
-            Cipher: bd_Cipher,
-            Materials: bd_Materials
-        };
 
         let tempCrates = caps['Crates'], tempContainers = caps['Containers'];
         Object.keys(caps).forEach(function (res){
@@ -9500,20 +9277,21 @@ function longLoop(){
         if (global.race['truepath'] && global.tech['tauceti']){
             if (global.tech.tauceti === 5 && !global.tech['plague'] && Math.rand(0,50) === 0){
                 global.tech['plague'] = 1;
-                messageQueue(loc('tau_plague',[govTitle(3)]),'info',false,['events']);
+                messageQueue(loc('tau_plague',[govTitle(3)]),'info',false,['progress']);
             }
             else if (global.tech['plague'] && global.tech['tau_roid'] && global.tech['tau_whale']){
                 if (global.tech.plague === 1 && (global.tech.tau_roid >= 4 || global.tech.tau_whale >= 2) && Math.rand(0,50) === 0){
                     global.tech.plague = 2;
                     global.race['quarantine'] = 1;
-                    messageQueue(loc('tau_plague2',[govTitle(3)]),'info',false,['events']);
+                    messageQueue(loc('tau_plague2',[govTitle(3)]),'info',false,['progress']);
                 }
                 else if (global.tech.plague === 2 && global.tech.tau_roid >= 5 && global.tech.tau_whale >= 2 && Math.rand(0,50) === 0){
                     global.tech.plague = 3;
-                    messageQueue(loc('tau_plague3',[govTitle(3),races[global.race.species].home]),'info',false,['events']);
+                    global.race['quarantine'] = 2;
+                    messageQueue(loc('tau_plague3',[govTitle(3),races[global.race.species].home]),'info',false,['progress']);
                 }
                 else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){
-                    // messageQueue(loc('tau_plague4',[races[global.race.species].home]),'info',false,['events']);
+                    // messageQueue(loc('tau_plague4',[races[global.race.species].home]),'info',false,['progress']);
                     jumpGateShutdown();
                 }
             }

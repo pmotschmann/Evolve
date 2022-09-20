@@ -409,6 +409,9 @@ export function drawnGovernOffice(){
                 </b-field>
                 </div>`));
             }
+            else if (global.race.governor.config.bal_storage.hasOwnProperty(res)){
+                delete global.race.governor.config.bal_storage[res];
+            }
         });
     }
 

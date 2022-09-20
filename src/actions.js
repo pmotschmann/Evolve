@@ -2078,93 +2078,78 @@ export const actions = {
                     }
                 }
             },
+            res(){
+                let r_list = ['Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron','Aluminium','Cement','Coal'];
+                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
+                    r_list.push('Steel');
+                }
+                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
+                    r_list.push('Titanium');
+                }
+                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
+                    r_list.push('Graphene');
+                }
+                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
+                    r_list.push('Stanene');
+                }
+                return r_list;
+            },
+            val(res){
+                switch (res){
+                    case 'Lumber':
+                        return 300;
+                    case 'Stone':
+                        return 300;
+                    case 'Chrysotile':
+                        return 300;
+                    case 'Crystal':
+                        return 8;
+                    case 'Furs':
+                        return 125;
+                    case 'Copper':
+                        return 90;
+                    case 'Iron':
+                        return 125;
+                    case 'Aluminium':
+                        return 90;
+                    case 'Cement':
+                        return 100;
+                    case 'Coal':
+                        return 75;
+                    case 'Steel':
+                        return 40;
+                    case 'Titanium':
+                        return 20;
+                    case 'Graphene':
+                        return 15;
+                    case 'Stanene':
+                        return 25;
+                    default:
+                        return 0;
+                }
+            },
             effect(){
                 let storage = '<div class="aTable">';
                 let multiplier = storageMultipler();
-                if (global.resource.Lumber.display){
-                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Lumber.name])}</span>`;
-                }
-                if (global.resource.Stone.display){
-                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stone.name])}</span>`;
-                }
-                if (global.resource.Chrysotile.display){
-                    let val = sizeApproximation(+(spatialReasoning(300) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Chrysotile.name])}</span>`;
-                }
-                if (global.resource.Crystal.display){
-                    let val = sizeApproximation(+(spatialReasoning(8) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Crystal.name])}</span>`;
-                }
-                if (global.resource.Furs.display){
-                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Furs.name])}</span>`;
-                }
-                if (global.resource.Copper.display){
-                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Copper.name])}</span>`;
-                }
-                if (global.resource.Iron.display){
-                    let val = sizeApproximation(+(spatialReasoning(125) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Iron.name])}</span>`;
-                }
-                if (global.resource.Aluminium.display){
-                    let val = sizeApproximation(+(spatialReasoning(90) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Aluminium.name])}</span>`;
-                }
-                if (global.resource.Cement.display){
-                    let val = sizeApproximation(+(spatialReasoning(100) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Cement.name])}</span>`;
-                }
-                if (global.resource.Coal.display){
-                    let val = sizeApproximation(+(spatialReasoning(75) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Coal.name])}</span>`;
-                }
-                if (global.tech['storage'] >= 3 && global.resource.Steel.display){
-                    let val = sizeApproximation(+(spatialReasoning(40) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Steel.name])}</span>`;
-                }
-                if (global.tech['storage'] >= 4 && global.resource.Titanium.display){
-                    let val = sizeApproximation(+(spatialReasoning(20) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Titanium.name])}</span>`;
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Graphene.display){
-                    let val = sizeApproximation(+(spatialReasoning(15) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Graphene.name])}</span>`;
-                }
-                if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
-                    let val = sizeApproximation(+(spatialReasoning(25) * multiplier).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stanene.name])}</span>`;
-                }
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * multiplier).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
                 storage = storage + '</div>';
                 return storage;
             },
             wide: true,
             action(){
                 if (payCosts($(this)[0])){
+                    global.city.shed.count++;
                     let multiplier = storageMultipler();
-                    global['resource']['Lumber'].max += (spatialReasoning(300) * multiplier);
-                    global['resource']['Stone'].max += (spatialReasoning(300) * multiplier);
-                    global['resource']['Copper'].max += (spatialReasoning(90) * multiplier);
-                    global['resource']['Iron'].max += (spatialReasoning(125) * multiplier);
-                    global['resource']['Aluminium'].max += (spatialReasoning(90) * multiplier);
-                    global['resource']['Furs'].max += (spatialReasoning(125) * multiplier);
-                    global['resource']['Cement'].max += (spatialReasoning(100) * multiplier);
-                    global['resource']['Coal'].max += (spatialReasoning(75) * multiplier);
-                    if (global.tech['storage'] >= 3){
-                        global['resource']['Steel'].max += (global.city['shed'].count * (spatialReasoning(40) * multiplier));
-                    }
-                    if (global.tech['storage'] >= 4){
-                        global['resource']['Titanium'].max += (global.city['shed'].count * (spatialReasoning(20) * multiplier));
-                    }
-                    if (global.resource.Chrysotile.display){
-                        global['resource']['Chrysotile'].max += (spatialReasoning(300) * multiplier);
-                    }
-                    if (global.resource.Crystal.display){
-                        global['resource']['Crystal'].max += (spatialReasoning(8) * multiplier);
-                    }
-                    global.city['shed'].count++;
+                    for (const res of $(this)[0].res()){
+                        if (global.resource[res].display){
+                            global.resource[res].max += (spatialReasoning($(this)[0].val(res) * multiplier));
+                        }
+                    };
                     return true;
                 }
                 return false;

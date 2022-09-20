@@ -11866,6 +11866,27 @@ const techs = {
             return false;
         }
     },
+    repository: {
+        id: 'tech-repository',
+        title: loc('tech_repository'),
+        desc: loc('tech_repository'),
+        category: 'storage',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tauceti: 3, tau_home: 4 },
+        grant: ['tau_home',5],
+        cost: {
+            Knowledge(){ return 6500000; }
+        },
+        effect: loc('tech_repository_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['repository'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     fusion_generator: {
         id: 'tech-fusion_generator',
         title: loc('tech_fusion_power'),
@@ -11873,10 +11894,10 @@ const techs = {
         category: 'power_generation',
         era: 'tauceti',
         path: ['truepath'],
-        reqs: { tauceti: 3, tau_home: 4 },
-        grant: ['tau_home',5],
+        reqs: { tau_home: 5 },
+        grant: ['tau_home',6],
         cost: {
-            Knowledge(){ return 6500000; }
+            Knowledge(){ return 6750000; }
         },
         effect: loc('tech_tau_fusion_power_effect'),
         action(){

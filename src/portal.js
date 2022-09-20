@@ -1032,64 +1032,54 @@ const fortressModules = {
                 Stanene(offset){ return spaceCostMultiplier('harbour', offset, 17500000, spireCreep(1.18), 'portal'); },
             },
             wide: true,
+            res(){
+                return [
+                    'Oil','Alloy','Polymer','Iridium','Helium_3','Deuterium','Neutronium','Adamantite',
+                    'Infernite','Nano_Tube','Graphene','Stanene','Bolognium','Orichalcum'
+                ];
+            },
+            val(res){
+                switch (res){
+                    case 'Oil':
+                        return 30000;
+                    case 'Alloy':
+                        return 250000;
+                    case 'Polymer':
+                        return 250000;
+                    case 'Iridium':
+                        return 200000;
+                    case 'Helium_3':
+                        return 18000;
+                    case 'Deuterium':
+                        return 12000;
+                    case 'Neutronium':
+                        return 180000;
+                    case 'Adamantite':
+                        return 150000;
+                    case 'Infernite':
+                        return 75000;
+                    case 'Nano_Tube':
+                        return 750000;
+                    case 'Graphene':
+                        return 1200000;
+                    case 'Stanene':
+                        return 1200000;
+                    case 'Bolognium':
+                        return 130000;
+                    case 'Orichalcum':
+                        return 130000;
+                    default:
+                        return 0;
+                }
+            },
             effect(){
                 let storage = '<div class="aTable">';
-                if (global.resource.Oil.display){
-                    let val = sizeApproximation(+(spatialReasoning(30000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Oil.name])}</span>`
-                }
-                if (global.resource.Alloy.display){
-                    let val = sizeApproximation(+(spatialReasoning(250000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Alloy.name])}</span>`
-                }
-                if (global.resource.Polymer.display){
-                    let val = sizeApproximation(+(spatialReasoning(250000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Polymer.name])}</span>`
-                }
-                if (global.resource.Iridium.display){
-                    let val = sizeApproximation(+(spatialReasoning(200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Iridium.name])}</span>`
-                }
-                if (global.resource.Helium_3.display){
-                    let val = sizeApproximation(+(spatialReasoning(18000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Helium_3.name])}</span>`
-                }
-                if (global.resource.Deuterium.display){
-                    let val = sizeApproximation(+(spatialReasoning(12000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Deuterium.name])}</span>`
-                }
-                if (global.resource.Neutronium.display){
-                    let val = sizeApproximation(+(spatialReasoning(180000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Neutronium.name])}</span>`
-                }
-                if (global.resource.Adamantite.display){
-                    let val = sizeApproximation(+(spatialReasoning(150000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Adamantite.name])}</span>`
-                }
-                if (global.resource.Infernite.display){
-                    let val = sizeApproximation(+(spatialReasoning(75000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Infernite.name])}</span>`
-                }
-                if (global.resource.Nano_Tube.display){
-                    let val = sizeApproximation(+(spatialReasoning(750000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Nano_Tube.name])}</span>`
-                }
-                if (global.resource.Graphene.display){
-                    let val = sizeApproximation(+(spatialReasoning(1200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Graphene.name])}</span>`
-                }
-                if (global.resource.Stanene.display){
-                    let val = sizeApproximation(+(spatialReasoning(1200000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Stanene.name])}</span>`
-                }
-                if (global.resource.Bolognium.display){
-                    let val = sizeApproximation(+(spatialReasoning(130000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Bolognium.name])}</span>`
-                }
-                if (global.resource.Orichalcum.display){
-                    let val = sizeApproximation(+(spatialReasoning(130000)).toFixed(0),1);
-                    storage = storage + `<span>${loc('plus_max_resource',[val,global.resource.Orichalcum.name])}</span>`
-                }
+                for (const res of $(this)[0].res()){
+                    if (global.resource[res].display){
+                        let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res))).toFixed(0),1);
+                        storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
+                    }
+                };
                 storage = storage + '</div>';
                 return `<div>${loc('portal_harbour_effect',[1])}</div>${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -1098,6 +1088,11 @@ const fortressModules = {
                     incrementStruct('harbour','portal');
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.portal.harbour.on++;
+                        for (const res of $(this)[0].res()){
+                            if (global.resource[res].display){
+                                global.resource[res].max += (spatialReasoning($(this)[0].val(res)));
+                            }
+                        };
                     }
                     return true;
                 }
