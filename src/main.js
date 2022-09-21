@@ -180,6 +180,10 @@ if (global.space['operating_base']){
 if (global.space['fob']){
     p_on['fob'] = global.space.fob.on;
 }
+if (global.tauceti['fusion_generator']){
+    p_on['fusion_generator'] = global.tauceti.fusion_generator.on;
+    support_on['fusion_generator'] = global.tauceti.fusion_generator.on;
+}
 
 defineJobs(true);
 defineResources();
@@ -1482,8 +1486,8 @@ function fastLoop(){
 
         if (global.interstellar['fusion']){
             let output = actions.interstellar.int_alpha.fusion.powered();
-            let power = global.interstellar.fusion.on * output;
-            let consume = global.interstellar.fusion.on * 1.25;
+            let power = int_on['fusion'] * output;
+            let consume = int_on['fusion'] * 1.25;
             while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
                 power -= output;
                 consume -= 1.25;
@@ -1596,6 +1600,13 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
+        }
+
+        if (global.tauceti['fusion_generator'] && global.tauceti['orbital_station']){
+            let power = support_on['fusion_generator'] * actions.tauceti.tau_home.fusion_generator.powered();
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('tech_fusion_generator')] = -(power);
         }
 
         if (global.race['powered']){
@@ -1730,8 +1741,8 @@ function fastLoop(){
             { a: 'space', r: 'spc_titan', r2: 'spc_enceladus', s: 'titan_spaceport', g: 'enceladus' },
             { a: 'space', r: 'spc_eris', s: 'drone_control', g: 'eris' },
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
-            { a: 'tauceti', r: 'tau_home', s: 'colony', g: 'tau_home' },
-            { a: 'tauceti', r: 'tau_home', s: 'fusion_generator', g: 'tau_home' },
+            //{ a: 'tauceti', r: 'tau_home', s: 'colony', g: 'tau_home' },
+            //{ a: 'tauceti', r: 'tau_home', s: 'fusion_generator', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
         ].forEach(function(sup){
@@ -1792,6 +1803,14 @@ function fastLoop(){
                         let supportSize = actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support') ? actions[sup.a][sup.r2][area_structs[i]].support() * -1 : 1;
                         let operating = global[sup.a][area_structs[i]].on;
 
+                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
+                            operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
+                            $(`#${id} .on`).addClass('warn');
+                        }
+                        else {
+                            $(`#${id} .on`).removeClass('warn');
+                        }
+
                         if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
                             let s_fuels = actions[sup.a][sup.r2][area_structs[i]].support_fuel();
                             if (!Array.isArray(s_fuels)){
@@ -1812,13 +1831,6 @@ function fastLoop(){
                             }
                         }
 
-                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
-                            operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
-                            $(`#${id} .on`).addClass('warn');
-                        }
-                        else {
-                            $(`#${id} .on`).removeClass('warn');
-                        }
                         used_support += operating * supportSize;
                         support_on[area_structs[i]] = operating;
                     }
@@ -1829,15 +1841,6 @@ function fastLoop(){
                 global[sup.a][sup.s].support = used_support;
             }
         });
-
-        if (global.race['truepath']){
-            if (support_on['fusion_generator']){
-                let power = support_on['fusion_generator'] * actions.tauceti.tau_home.fusion_generator.powered();
-                max_power += power;
-                power_grid -= power;
-                power_generated[loc('tech_fusion_generator')] = -(power);
-            }
-        }
 
         // Space Marines
         if (global.space['space_barracks']){
@@ -5680,6 +5683,26 @@ function fastLoop(){
             breakdown.p['Unobtainium'] = unobtainium_bd;
         }
 
+        // Extractor Ship & Ore Refinery
+        if (global.tauceti['ore_refinery'] && global.tauceti['mining_ship']){
+            global.tauceti.ore_refinery.max = global.tauceti.ore_refinery.on * 1000;
+            let ore = support_on['mining_ship'] * production('mining_ship');
+            global.tauceti.ore_refinery.fill += ore * time_multiplier;
+            if (global.tauceti.ore_refinery.fill > global.tauceti.ore_refinery.max){
+                global.tauceti.ore_refinery.fill = global.tauceti.ore_refinery.max;
+            }
+        }
+
+        // Whaling Ship & Whale Processor
+        if (global.tauceti['whaling_station'] && global.tauceti['whaling_ship']){
+            global.tauceti.whaling_station.max = global.tauceti.whaling_station.on * 750;
+            let ore = support_on['whaling_ship'] * production('whaling_ship');
+            global.tauceti.whaling_station.fill += ore * time_multiplier;
+            if (global.tauceti.whaling_station.fill > global.tauceti.whaling_station.max){
+                global.tauceti.whaling_station.fill = global.tauceti.whaling_station.max;
+            }
+        }
+
         // Income
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
         if (global.tech['currency'] >= 1){
@@ -6749,7 +6772,7 @@ function midLoop(){
             caps['Infernite'] += gain;
             bd_Infernite[loc('portal_fortress_name')] = gain+'v';
         }
-        
+
         if (global.space['garage']){
             var multiplier = actions.space.spc_red.garage.multiplier(false);
             var h_multiplier = actions.space.spc_red.garage.multiplier(true);

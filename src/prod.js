@@ -292,11 +292,25 @@ export function production(id,val){
         }
         case 'mining_ship':
         {
-            return 10;
+            if (global.tauceti['patrol_ship']){
+                let patrol = 1;
+                if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
+                    patrol = global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support;
+                }
+                return 10 * patrol;
+            }
+            return 0;
         }
         case 'whaling_ship':
         {
-            return 8;
+            if (global.tauceti['patrol_ship']){
+                let patrol = 1;
+                if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
+                    patrol = global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support;
+                }
+                return 8 * patrol;
+            }
+            return 0;
         }
     }
 }
