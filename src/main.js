@@ -6749,80 +6749,19 @@ function midLoop(){
             caps['Infernite'] += gain;
             bd_Infernite[loc('portal_fortress_name')] = gain+'v';
         }
+        
         if (global.space['garage']){
-            let multiplier = global.tech['particles'] >= 4 ? 1 + (global.tech['supercollider'] / 20) : 1;
-            multiplier *= global.tech['world_control'] || global.race['cataclysm'] ? 2 : 1;
-            if (global.tech['shelving'] && global.tech.shelving >= 3){ multiplier *= 1.5; }
-            multiplier *= global.stats.achieve['blackhole'] ? 1 + (global.stats.achieve.blackhole.l * 0.05) : 1;
-            let h_multiplier = global.tech['shelving'] && global.tech.shelving >= 2 ? multiplier * 3 : multiplier;
-
-            let gain = (global.space.garage.count * (spatialReasoning(6500 * h_multiplier)));
-            caps['Copper'] += gain;
-            bd_Copper[loc('space_red_garage_title')] = gain+'v';
-
-            gain = (global.space.garage.count * (spatialReasoning(5500 * h_multiplier)));
-            caps['Iron'] += gain;
-            bd_Iron[loc('space_red_garage_title')] = gain+'v';
-
-            gain = (global.space.garage.count * (spatialReasoning((global.race.cataclysm ? 10500 : 6000) * multiplier)));
-            caps['Cement'] += gain;
-            bd_Cement[loc('space_red_garage_title')] = gain+'v';
-
-            gain = (global.space.garage.count * (spatialReasoning(4500 * h_multiplier)));
-            caps['Steel'] += gain;
-            bd_Steel[loc('space_red_garage_title')] = gain+'v';
-
-            gain = (global.space.garage.count * (spatialReasoning(3500 * h_multiplier)));
-            caps['Titanium'] += gain;
-            bd_Titanium[loc('space_red_garage_title')] = gain+'v';
-
-            gain = (global.space.garage.count * (spatialReasoning(2500 * multiplier)));
-            caps['Alloy'] += gain;
-            bd_Alloy[loc('space_red_garage_title')] = gain+'v';
-
-            if (global.resource.Nano_Tube.display){
-                gain = (global.space.garage.count * (spatialReasoning(25000 * multiplier)));
-                caps['Nano_Tube'] += gain;
-                bd_Nano_Tube[loc('space_red_garage_title')] = gain+'v';
-            }
-
-            if (global.resource.Neutronium.display){
-                gain = (global.space.garage.count * (spatialReasoning(125 * h_multiplier)));
-                caps['Neutronium'] += gain;
-                bd_Neutronium[loc('space_red_garage_title')] = gain+'v';
-            }
-
-            if (global.resource.Infernite.display){
-                gain = (global.space.garage.count * (spatialReasoning(75 * h_multiplier)));
-                caps['Infernite'] += gain;
-                bd_Infernite[loc('space_red_garage_title')] = gain+'v';
-            }
-
-            if (global.race['cataclysm'] || global.race['orbit_decayed']){
-                gain = (global.space.garage.count * (spatialReasoning(2500 * multiplier)));
-                caps['Polymer'] += gain;
-                bd_Polymer[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(1500 * multiplier)));
-                caps['Coal'] += gain;
-                bd_Coal[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
-                caps['Lumber'] += gain;
-                bd_Lumber[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
-                caps['Chrysotile'] += gain;
-                bd_Chrysotile[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(7500 * multiplier)));
-                caps['Stone'] += gain;
-                bd_Stone[loc('space_red_garage_title')] = gain+'v';
-
-                gain = (global.space.garage.count * (spatialReasoning(2200 * multiplier)));
-                caps['Furs'] += gain;
-                bd_Furs[loc('space_red_garage_title')] = gain+'v';
-            }
+            var multiplier = actions.space.spc_red.garage.multiplier(false);
+            var h_multiplier = actions.space.spc_red.garage.multiplier(true);
+            let label = loc('space_red_garage_title');
+            for (const res of actions.space.spc_red.garage.res()){
+                if (global.resource[res].display){
+                    let heavy = actions.space.spc_red.garage.heavy(res);
+                    let gain = global.space.garage.count * spatialReasoning(actions.space.spc_red.garage.val(res) * (heavy ? h_multiplier : multiplier));
+                    caps[res] += gain;
+                    breakdown.c[res][label] = gain+'v';
+                }
+            };
         }
 
         if (global.portal['harbour'] && p_on['harbour']){
