@@ -7,10 +7,11 @@ const changeList = [
         date: `?/??/2022`,
         changes: [
             `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
+            `Added Perks: Evolve Master and Evolve Grandmaster.`,
             `You can no longer unlock Anarchist by Cataclysm.`,
             `Ships in Truepath can now only be scrapped at the Shipyard.`,
             `Syndicate will now also steal food from Biodomes.`,
-            `Added Perks: Evolve Master and Evolve Grandmaster.`,
+            `Reinforced Shed upgrade now requires unlocking Iron Mining.`,
         ]
     },
     {

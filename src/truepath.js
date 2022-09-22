@@ -1,22 +1,22 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
-import { races, genusVars, traits } from './races.js';
+import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault } from './actions.js';
-import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements } from './space.js';
+import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
     spc_titan: {
         info: {
             name(){
-                return genusVars[races[global.race.species].type].solar.titan;
+                return planetName().titan;
             },
             desc(){
-                return loc('space_titan_info_desc',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]);
+                return loc('space_titan_info_desc',[planetName().titan, races[global.race.species].home]);
             },
             support: 'electrolysis',
             zone: 'outer',
@@ -31,10 +31,10 @@ export const outerTruth = {
         titan_mission: {
             id: 'space-titan_mission',
             title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.titan]);
+                return loc('space_mission_title',[planetName().titan]);
             },
             desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.titan]);
+                return loc('space_mission_desc',[planetName().titan]);
             },
             reqs: { outer: 1 },
             grant: ['titan',1],
@@ -45,11 +45,11 @@ export const outerTruth = {
                 Elerium(){ return 100; }
             },
             effect(){
-                return loc('space_titan_mission_effect',[genusVars[races[global.race.species].type].solar.titan]);
+                return loc('space_titan_mission_effect',[planetName().titan]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_titan_mission_action',[genusVars[races[global.race.species].type].solar.titan, races[global.race.species].home]),'info',false,['progress']);
+                    messageQueue(loc('space_titan_mission_action',[planetName().titan, races[global.race.species].home]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -69,7 +69,7 @@ export const outerTruth = {
             },
             effect(){
                 let water = global.resource.Water.display ? `<div>${loc('plus_max_resource',[sizeApproximation(spatialReasoning(250)),global.resource.Water.name])}</div>` : ``;
-                let support = global.tech['enceladus'] && global.tech.enceladus >= 2 ? `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.enceladus])}</div>` : ``;
+                let support = global.tech['enceladus'] && global.tech.enceladus >= 2 ? `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().enceladus])}</div>` : ``;
                 let storage = global.tech['titan'] && global.tech.titan >= 5 ? `<div>${loc(`space_titan_spaceport_storage`,[25])}</div>` : ``;
                 return `${support}${water}${storage}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
@@ -105,7 +105,7 @@ export const outerTruth = {
                 Polymer(offset){ return spaceCostMultiplier('electrolysis', offset, 380000, 1.25); }
             },
             effect(){
-                let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.titan])}</div>`;
+                let support = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().titan])}</div>`;
                 return `${support}<div class="has-text-caution">${loc('space_electrolysis_use',[$(this)[0].support_fuel().a,global.resource.Water.name,$(this)[0].powered()])}</div>`;
             },
             support(){
@@ -164,7 +164,7 @@ export const outerTruth = {
             id: 'space-titan_quarters',
             title: loc('interstellar_habitat_title'),
             desc(){
-                return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_habitat_req',[genusVars[races[global.race.species].type].solar.titan, global.resource.Food.name, global.resource.Water.name])}</div>`;
+                return `<div>${loc('interstellar_habitat_title')}</div><div class="has-text-special">${loc('space_habitat_req',[planetName().titan, global.resource.Food.name, global.resource.Water.name])}</div>`;
             },
             reqs: { titan: 4 },
             path: ['truepath'],
@@ -176,7 +176,7 @@ export const outerTruth = {
             },
             effect(){
                 let gain = jobScale(1);
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
             },
             support(){ return -1; },
             support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: 500 }]; },
@@ -210,7 +210,7 @@ export const outerTruth = {
             id: 'space-titan_mine',
             title: loc('space_red_mine_title'),
             desc(){
-                return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+                return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },
             reqs: { titan: 4 },
             path: ['truepath'],
@@ -224,7 +224,7 @@ export const outerTruth = {
                 let alum_val = production('titan_mine','aluminium');
                 let adamantite = +(adam_val).toFixed(3);
                 let aluminium = +(alum_val).toFixed(3);
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -337,7 +337,7 @@ export const outerTruth = {
             id: 'space-titan_bank',
             title: loc('city_bank'),
             desc(){
-                return loc('city_bank_desc',[genusVars[races[global.race.species].type].solar.titan]);
+                return loc('city_bank_desc',[planetName().titan]);
             },
             reqs: { titan: 6 },
             path: ['truepath'],
@@ -364,7 +364,7 @@ export const outerTruth = {
         g_factory: {
             id: 'space-g_factory',
             title: loc('interstellar_g_factory_title'),
-            desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`; },
+            desc(){ return `<div>${loc('interstellar_g_factory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`; },
             reqs: { graphene: 1 },
             path: ['truepath'],
             cost: {
@@ -378,7 +378,7 @@ export const outerTruth = {
                 if (global.race['high_pop']){
                     graphene = +(highPopAdjust(graphene)).toFixed(3);
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -440,7 +440,7 @@ export const outerTruth = {
             id: 'space-decoder',
             title: loc('space_decoder_title'),
             desc(){
-                return `<div>${loc('space_decoder_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[genusVars[races[global.race.species].type].solar.titan, global.resource.Cipher.name])}</div>`;
+                return `<div>${loc('space_decoder_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[planetName().titan, global.resource.Cipher.name])}</div>`;
             },
             reqs: { titan: 8 },
             path: ['truepath'],
@@ -459,7 +459,7 @@ export const outerTruth = {
                 if (p_on['ai_core2']){
                     know *= 1.25;
                 }
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.titan])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div>`;
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
             },
@@ -592,7 +592,7 @@ export const outerTruth = {
                 Cipher(offset){ return spaceCostMultiplier('ai_colonist', offset, 10000, 1.35); },
             },
             effect(){
-                return `<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[jobScale(1),genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('space_ai_colonist_effect',[jobScale(1),planetName().titan])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(10); },
             action(){
@@ -611,10 +611,10 @@ export const outerTruth = {
     spc_enceladus: {
         info: {
             name(){
-                return genusVars[races[global.race.species].type].solar.enceladus;
+                return planetName().enceladus;
             },
             desc(){
-                return loc('space_enceladus_info_desc',[genusVars[races[global.race.species].type].solar.enceladus, races[global.race.species].home]);
+                return loc('space_enceladus_info_desc',[planetName().enceladus, races[global.race.species].home]);
             },
             support: 'titan_spaceport',
             zone: 'outer',
@@ -629,10 +629,10 @@ export const outerTruth = {
         enceladus_mission: {
             id: 'space-enceladus_mission',
             title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.enceladus]);
+                return loc('space_mission_title',[planetName().enceladus]);
             },
             desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.enceladus]);
+                return loc('space_mission_desc',[planetName().enceladus]);
             },
             reqs: { outer: 1 },
             grant: ['enceladus',1],
@@ -643,11 +643,11 @@ export const outerTruth = {
                 Elerium(){ return 100; }
             },
             effect(){
-                return loc('space_titan_mission_effect',[genusVars[races[global.race.species].type].solar.enceladus]);
+                return loc('space_titan_mission_effect',[planetName().enceladus]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_enceladus_mission_action',[genusVars[races[global.race.species].type].solar.enceladus]),'info',false,['progress']);
+                    messageQueue(loc('space_enceladus_mission_action',[planetName().enceladus]),'info',false,['progress']);
                     global.resource.Water.display = true;
                     return true;
                 }
@@ -658,7 +658,7 @@ export const outerTruth = {
             id: 'space-water_freighter',
             title: loc('space_water_freighter_title'),
             desc(){
-                return `<div>${loc('space_water_freighter_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                return `<div>${loc('space_water_freighter_title')}</div><div class="has-text-special">${loc('space_support',[planetName().enceladus])}</div>`;
             },
             reqs: { enceladus: 2 },
             path: ['truepath'],
@@ -671,7 +671,7 @@ export const outerTruth = {
             effect(wiki){
                 let helium = +fuel_adjust(5,true,wiki).toFixed(2);
                 let water = +(production('water_freighter')).toFixed(2);
-                return `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -690,7 +690,7 @@ export const outerTruth = {
             id: 'space-zero_g_lab',
             title: loc('tech_zero_g_lab'),
             desc(){
-                return `<div>${loc('tech_zero_g_lab')}</div><div class="has-text-special">${loc('requires_power_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                return `<div>${loc('tech_zero_g_lab')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
             reqs: { enceladus: 3 },
             path: ['truepath'],
@@ -704,7 +704,7 @@ export const outerTruth = {
                 let synd = syndicate('spc_enceladus');
                 let know = Math.round(10000 * synd);
 
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('city_max_knowledge',[know])}</div>`;
                 if (global.resource.Quantium.display){
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
                 }
@@ -730,7 +730,7 @@ export const outerTruth = {
             id: 'space-operating_base',
             title: loc('tech_operating_base'),
             desc(){
-                return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                return `<div>${loc('tech_operating_base')}</div><div class="has-text-special">${loc('requires_power_support',[planetName().enceladus])}</div>`;
             },
             reqs: { enceladus: 4 },
             path: ['truepath'],
@@ -743,7 +743,7 @@ export const outerTruth = {
                 Horseshoe(){ return global.race['hooved'] ? 4 : 0; }
             },
             effect(){
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.enceladus])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div>`;
                 desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
                 desc += loc('plus_max_resource',[jobScale(4),loc('civics_garrison_soldiers')]);
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -795,10 +795,10 @@ export const outerTruth = {
     spc_triton: {
         info: {
             name(){
-                return genusVars[races[global.race.species].type].solar.triton;
+                return planetName().triton;
             },
             desc(){
-                return loc('space_triton_info_desc',[genusVars[races[global.race.species].type].solar.triton, races[global.race.species].home]);
+                return loc('space_triton_info_desc',[planetName().triton, races[global.race.species].home]);
             },
             zone: 'outer',
             syndicate(){ return global.tech['triton'] && global.tech.triton >= 2 ? true : false; },
@@ -824,10 +824,10 @@ export const outerTruth = {
         triton_mission: {
             id: 'space-triton_mission',
             title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.triton]);
+                return loc('space_mission_title',[planetName().triton]);
             },
             desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.triton]);
+                return loc('space_mission_desc',[planetName().triton]);
             },
             reqs: { outer: 2 },
             grant: ['triton',1],
@@ -838,11 +838,11 @@ export const outerTruth = {
                 Elerium(){ return 2500; }
             },
             effect(){
-                return loc('space_triton_mission_effect',[genusVars[races[global.race.species].type].solar.triton]);
+                return loc('space_triton_mission_effect',[planetName().triton]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_triton_mission_action',[genusVars[races[global.race.species].type].solar.triton]),'info',false,['progress']);
+                    messageQueue(loc('space_triton_mission_action',[planetName().triton]),'info',false,['progress']);
                     global.space.syndicate['spc_triton'] = 1250;
                     global.space.syndicate['spc_titan'] += 250;
                     global.space.syndicate['spc_enceladus'] += 250;
@@ -922,7 +922,7 @@ export const outerTruth = {
                 if (global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
                     data = `<div>${loc(`space_lander_effect3`,[production('lander'),global.resource.Cipher.name])}</div>`;
                 }
-                return `<div>${loc('space_lander_effect',[genusVars[races[global.race.species].type].solar.triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[jobScale(3)])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
+                return `<div>${loc('space_lander_effect',[planetName().triton])}</div>${data}<div class="has-text-warning">${loc(`space_lander_effect2`,[jobScale(3)])}</div><div class="has-text-caution">${loc('space_red_space_barracks_effect2',[oil])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1131,10 +1131,10 @@ export const outerTruth = {
     spc_eris: {
         info: {
             name(){
-                return genusVars[races[global.race.species].type].solar.eris;
+                return planetName().eris;
             },
             desc(){
-                return loc('space_eris_info_desc',[genusVars[races[global.race.species].type].solar.eris]);
+                return loc('space_eris_info_desc',[planetName().eris]);
             },
             support: 'drone_control',
             zone: 'outer',
@@ -1153,10 +1153,10 @@ export const outerTruth = {
         eris_mission: {
             id: 'space-eris_mission',
             title(){
-                return loc('space_mission_title',[genusVars[races[global.race.species].type].solar.eris]);
+                return loc('space_mission_title',[planetName().eris]);
             },
             desc(){
-                return loc('space_mission_desc',[genusVars[races[global.race.species].type].solar.eris]);
+                return loc('space_mission_desc',[planetName().eris]);
             },
             reqs: { outer: 7 },
             grant: ['eris',1],
@@ -1167,12 +1167,12 @@ export const outerTruth = {
                 Elerium(){ return 1250; }
             },
             effect(){
-                return loc('space_eris_mission_effect',[genusVars[races[global.race.species].type].solar.eris]);
+                return loc('space_eris_mission_effect',[planetName().eris]);
             },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.syndicate['spc_eris'] = 4000;
-                    messageQueue(loc('space_eris_mission_action',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
+                    messageQueue(loc('space_eris_mission_action',[planetName().eris]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -1180,9 +1180,9 @@ export const outerTruth = {
         },
         drone_control: {
             id: 'space-drone_control',
-            title(){ return loc('space_drone_control',[genusVars[races[global.race.species].type].solar.titan]); },
+            title(){ return loc('space_drone_control',[planetName().titan]); },
             desc(){
-                return `<div>${loc('space_drone_control',[genusVars[races[global.race.species].type].solar.titan])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                return `<div>${loc('space_drone_control',[planetName().titan])}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             reqs: { eris: 3 },
             path: ['truepath'],
@@ -1194,7 +1194,7 @@ export const outerTruth = {
             },
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
-                let desc = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                let desc = `<div>+${loc(`galaxy_alien2_support`,[$(this)[0].support(),planetName().eris])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('requires_power_combo_effect',[$(this)[0].powered(),fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
             },
             support(){ return 5; },
@@ -1215,7 +1215,7 @@ export const outerTruth = {
             id: 'space-shock_trooper',
             title: loc('space_shock_trooper_title'),
             desc(){
-                return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                return `<div>${loc('space_shock_trooper_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
             reqs: { eris: 3 },
             path: ['truepath'],
@@ -1228,7 +1228,7 @@ export const outerTruth = {
             },
             effect(){
                 let rating = Math.round(armyRating(1,'army',0) * syndicate('spc_eris'));
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().eris])}</div>`;
                 if (global.space['digsite'] && global.space.digsite.count === 100){
                     desc = `<div>${loc(`space_lander_effect3`,[production('shock_trooper'),global.resource.Cipher.name])}</div>`;
                 }
@@ -1251,7 +1251,7 @@ export const outerTruth = {
             id: 'space-tank',
             title: loc('space_tank_title'),
             desc(){
-                return `<div>${loc('space_tank_title')}</div><div class="has-text-special">${loc('space_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                return `<div>${loc('space_tank_title')}</div><div class="has-text-special">${loc('space_support',[planetName().eris])}</div>`;
             },
             reqs: { eris: 4 },
             path: ['truepath'],
@@ -1264,7 +1264,7 @@ export const outerTruth = {
             },
             effect(){
                 let rating = Math.round(100 * syndicate('spc_eris'));
-                let desc = `<div class="has-text-caution">${loc('space_used_support',[genusVars[races[global.race.species].type].solar.eris])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().eris])}</div>`;
                 if (global.space['digsite'] && global.space.digsite.count === 100){
                     desc = `<div>${loc(`space_lander_effect3`,[production('tank'),global.resource.Cipher.name])}</div>`;
                 }
@@ -1808,10 +1808,10 @@ const tauCetiModules = {
     tau_red: {
         info: {
             name(){
-                return loc('tau_planet',[races[global.race.species].solar.red]);
+                return loc('tau_planet',[planetName().red]);
             },
             desc(){
-                return loc('tau_red',[races[global.race.species].solar.red]);
+                return loc('tau_red',[planetName().red]);
             },
             support: 'orbital_platform',
             extra(region){
@@ -1826,8 +1826,8 @@ const tauCetiModules = {
         },
         red_mission: {
             id: 'tauceti-red_mission',
-            title(){ return loc('tau_new_mission_title',[races[global.race.species].solar.red]); },
-            desc(){ return loc('tau_new_mission_title',[races[global.race.species].solar.red]); },
+            title(){ return loc('tau_new_mission_title',[planetName().red]); },
+            desc(){ return loc('tau_new_mission_title',[planetName().red]); },
             reqs: { tauceti: 2 },
             grant: ['tau_red',1],
             path: ['truepath'],
@@ -1835,11 +1835,11 @@ const tauCetiModules = {
             cost: {
                 Money(){ return 500000000; }
             },
-            effect(){ return loc('tau_new_mission_effect',[races[global.race.species].solar.red]); },
+            effect(){ return loc('tau_new_mission_effect',[planetName().red]); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti['settlement'] = { count: 0, on: 0 };
-                    messageQueue(loc('tau_red_mission_result',[races[global.race.species].solar.red]),'info',false,['progress']);
+                    messageQueue(loc('tau_red_mission_result',[planetName().red]),'info',false,['progress']);
                     return true;
                 }
                 return false;
@@ -1860,7 +1860,7 @@ const tauCetiModules = {
             effect(){
                 let oil = spatialReasoning(17500);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
-                let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].solar.red]),$(this)[0].support()])}</div>`;
+                let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[planetName().red]),$(this)[0].support()])}</div>`;
                 desc = desc + `<div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1877,7 +1877,7 @@ const tauCetiModules = {
                     }
                     if (global.tech['tau_red'] === 1){
                         global.tech['tau_red'] = 2;
-                        messageQueue(loc('tau_red_orbital_platform_msg',[loc('tau_planet',[races[global.race.species].solar.red]),loc('tau_planet',[races[global.race.species].home])]),'info',false,['progress']);
+                        messageQueue(loc('tau_red_orbital_platform_msg',[loc('tau_planet',[planetName().red]),loc('tau_planet',[races[global.race.species].home])]),'info',false,['progress']);
                     }
                     return true;
                 }
@@ -1981,7 +1981,7 @@ const tauCetiModules = {
         overseer: {
             id: 'tauceti-overseer',
             title(){ return $(this)[0].name(); },
-            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             name(){
                 if (global.race['womling_lord']){
                     return loc('tau_red_overseer');
@@ -2003,7 +2003,7 @@ const tauCetiModules = {
                 Titanium(offset){ return global.race['womling_god'] ? spaceCostMultiplier('overseer', offset, 2250000, 1.28, 'tauceti') : 0; },
             },
             effect(){
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_overseer_effect',[$(this)[0].val()])}</div>`;
                 return desc;
             },
@@ -2035,7 +2035,7 @@ const tauCetiModules = {
         womling_village: {
             id: 'tauceti-womling_village',
             title: loc('tau_red_womling_village'),
-            desc(){ return `<div>${loc('tau_red_womling_village')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${loc('tau_red_womling_village')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -2046,7 +2046,7 @@ const tauCetiModules = {
             },
             effect(){
                 let pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_village_effect',[pop])}</div>`;
                 return desc;
             },
@@ -2066,7 +2066,7 @@ const tauCetiModules = {
         womling_farm: {
             id: 'tauceti-womling_farm',
             title: loc('tau_red_womling_farm'),
-            desc(){ return `<div>${loc('tau_red_womling_farm')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${loc('tau_red_womling_farm')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -2075,7 +2075,7 @@ const tauCetiModules = {
                 Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect',[global.tech['womling_pop'] ? 16 : 12])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
                 return desc;
@@ -2096,7 +2096,7 @@ const tauCetiModules = {
         womling_mine: {
             id: 'tauceti-womling_mine',
             title: loc('tau_red_womling_mine'),
-            desc(){ return `<div>${loc('tau_red_womling_mine')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${loc('tau_red_womling_mine')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             reqs: { tau_red: 5 },
             path: ['truepath'],
             cost: {
@@ -2105,7 +2105,7 @@ const tauCetiModules = {
                 Steel(offset){ return spaceCostMultiplier('womling_mine', offset, 4500000, 1.28, 'tauceti'); },
             },
             effect(){
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_mine_effect')}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
                 return desc;
@@ -2127,7 +2127,7 @@ const tauCetiModules = {
         womling_fun: {
             id: 'tauceti-womling_fun',
             title(){ return $(this)[0].name(); },
-            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${$(this)[0].name()}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             name(){
                 if (global.race['womling_lord']){
                     return loc('tau_red_womling_fun1');
@@ -2151,7 +2151,7 @@ const tauCetiModules = {
                 Brick(offset){ return spaceCostMultiplier('womling_fun', offset, 500000, 1.28, 'tauceti'); },
             },
             effect(){
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_fun_effect',[$(this)[0].val()])}</div>`;
                 return desc;
             },
@@ -2183,7 +2183,7 @@ const tauCetiModules = {
         womling_lab: {
             id: 'tauceti-womling_lab',
             title: loc('interstellar_laboratory_title'),
-            desc(){ return `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`; },
+            desc(){ return `<div>${loc('interstellar_laboratory_title')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`; },
             reqs: { tau_red: 7 },
             path: ['truepath'],
             cost: {
@@ -2195,7 +2195,7 @@ const tauCetiModules = {
             },
             effect(){
                 let know = Math.round(25000 * global.tauceti.overseer.prod / 100);
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].solar.red])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
                 return desc;
@@ -2220,7 +2220,7 @@ const tauCetiModules = {
                 if (n || global.race['gas_name']){
                     switch (n || global.race.gas_name){
                         case 1:
-                            return loc('tau_planet',[races[global.race.species].solar.gas]);
+                            return loc('tau_planet',[planetName().gas]);
                         case 2:
                             return loc('tau_gas_title1');
                         case 3:
@@ -2724,7 +2724,7 @@ export function drawShipYard(){
         assemble.append(`<span><b-checkbox class="patrol" v-model="s.sort" v-on:input="redraw()">${loc('outer_shipyard_fleet_sort')}</b-checkbox></span>`);
 
         plans.append(assemble);
-        assemble.append(`<div><span>${loc(`outer_shipyard_park`,[races[global.race.species].solar.dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
+        assemble.append(`<div><span>${loc(`outer_shipyard_park`,[planetName().dwarf])}</span><a href="#" class="solarMap" @click="trigModal">${loc(`outer_shipyard_map`)}</span></a>`);
 
         updateCosts();
 

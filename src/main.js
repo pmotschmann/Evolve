@@ -2,13 +2,13 @@ import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, size
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, genusVars, shapeShift } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
-import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
+import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, jumpGateShutdown } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -5016,7 +5016,7 @@ function fastLoop(){
             let synd = syndicate('spc_red');
 
             let copper_base = support_on['red_mine'] * global.civic.colonist.workers * production('red_mine','copper').f;
-            copper_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (copper_base) + 'v';
+            copper_bd[loc('space_red_mine_desc_bd', [planetName().red])] = (copper_base) + 'v';
             if (copper_base > 0){
                 copper_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 copper_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -5025,7 +5025,7 @@ function fastLoop(){
             modRes('Copper', copper_base * shrineMetal.mult * time_multiplier * global_multiplier * qs_multiplier * hunger * synd * zigVal);
 
             let titanium_base = support_on['red_mine'] * global.civic.colonist.workers * hunger * production('red_mine','titanium').f;
-            titanium_bd[loc('space_red_mine_desc_bd', [races[global.race.species].solar.red])] = (titanium_base) + 'v';
+            titanium_bd[loc('space_red_mine_desc_bd', [planetName().red])] = (titanium_base) + 'v';
             if (titanium_base > 0){
                 titanium_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                 titanium_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
@@ -6660,7 +6660,7 @@ function midLoop(){
             let gain = Math.round(support_on['living_quarters'] * actions.space.spc_red.living_quarters.citizens());
             caps[global.race.species] += gain;
             lCaps['colonist'] += jobScale(support_on['living_quarters']);
-            bd_Citizen[`${races[global.race.species].solar.red}`] = gain + 'v';
+            bd_Citizen[`${planetName().red}`] = gain + 'v';
 
             if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.tech['home_safe']){
                 let gain = (support_on['living_quarters'] * spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? 100000 : 50000) : 25000));
@@ -6677,7 +6677,7 @@ function midLoop(){
             let gain = Math.round(support_on['titan_quarters'] * actions.space.spc_titan.titan_quarters.citizens());
             caps[global.race.species] += gain;
             lCaps['titan_colonist'] += jobScale(support_on['titan_quarters']);
-            bd_Citizen[`${genusVars[races[global.race.species].type].solar.titan}`] = gain + 'v';
+            bd_Citizen[`${planetName().titan}`] = gain + 'v';
         }
 
         if (global.interstellar['habitat'] && p_on['habitat']){
@@ -6899,17 +6899,17 @@ function midLoop(){
             let gain = (global.space['gas_storage'].count * spatialReasoning(3500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Oil'] += gain;
-            bd_Oil[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
+            bd_Oil[`${planetName().gas} ${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(2500));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Helium_3'] += gain;
-            bd_Helium[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
+            bd_Helium[`${planetName().gas} ${loc('depot')}`] = gain+'v';
 
             gain = (global.space['gas_storage'].count * spatialReasoning(1000));
             gain *= global.tech['world_control'] ? 1.5 : 1;
             caps['Uranium'] += gain;
-            bd_Uranium[`${races[global.race.species].solar.gas} ${loc('depot')}`] = gain+'v';
+            bd_Uranium[`${planetName().gas} ${loc('depot')}`] = gain+'v';
         }
         if (p_on['xfer_station']){
             let gain = (p_on['xfer_station'] * spatialReasoning(5000));
@@ -7185,7 +7185,7 @@ function midLoop(){
             let banks = global.space.titan_bank.count;
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
-            bd_Money[`${genusVars[races[global.race.species].type].solar.titan} ${loc('city_bank')}`] = gain+'v';
+            bd_Money[`${planetName().titan} ${loc('city_bank')}`] = gain+'v';
         }
 
         if (global.city['casino'] || global.space['spc_casino']){
@@ -8027,7 +8027,7 @@ function midLoop(){
             if (Math.rand(0,100) <= p_on['outpost']){
                 global.space['oil_extractor'] = { count: 0, on: 0 };
                 global.tech['gas_moon'] = 2;
-                messageQueue(loc('discover_oil',[races[global.race.species].solar.gas_moon]),'info',false,['progress']);
+                messageQueue(loc('discover_oil',[planetName().gas_moon]),'info',false,['progress']);
                 renderSpace();
             }
         }
@@ -9078,7 +9078,7 @@ function longLoop(){
                     if (global.tech.eris_scan >= 100){
                         global.tech.eris_scan = 100;
                         global.tech.eris = 2;
-                        messageQueue(loc('space_eris_scan',[genusVars[races[global.race.species].type].solar.eris]),'info',false,['progress']);
+                        messageQueue(loc('space_eris_scan',[planetName().eris]),'info',false,['progress']);
                         renderSpace();
                     }
                 }

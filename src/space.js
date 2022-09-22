@@ -1,7 +1,7 @@
 import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, planetTraits, biomes } from './races.js';
+import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
@@ -171,7 +171,7 @@ const spaceProjects = {
                     orbitEffect = `<div class="has-text-caution">${loc('space_red_vr_center_effect1',[global.tech['broadcast'] / 2])}</div>`;
                 }
                 let effect1 = global.race['orbit_decayed'] ? '' : `<div>${loc('space_home_nav_beacon_effect1')}</div>`;
-                let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,1])}</div>` : '';
+                let effect3 = global.tech['luna'] >=3 ? `<div>${loc('space_red_spaceport_effect1',[planetName().red,1])}</div>` : '';
                 return `${effect1}${effect3}${orbitEffect}<div class="has-text-caution">${loc('space_home_nav_beacon_effect2',[$(this)[0].powered()])}</div>`;
             },
             action(){
@@ -393,10 +393,10 @@ const spaceProjects = {
     spc_red: {
         info: {
             name(){
-                return races[global.race.species].solar.red;
+                return planetName().red;
             },
             desc(){
-                return loc('space_red_info_desc',[races[global.race.species].solar.red]);
+                return loc('space_red_info_desc',[planetName().red]);
             },
             support: 'spaceport',
             zone: 'inner',
@@ -405,10 +405,10 @@ const spaceProjects = {
         red_mission: {
             id: 'space-red_mission',
             title(){
-                return loc('space_mission_title',[races[global.race.species].solar.red]);
+                return loc('space_mission_title',[planetName().red]);
             },
             desc(){
-                return loc('space_mission_desc',[races[global.race.species].solar.red]);
+                return loc('space_mission_desc',[planetName().red]);
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['space',4],
@@ -417,11 +417,11 @@ const spaceProjects = {
                 Helium_3(offset,wiki){ return +fuel_adjust(4500,false,wiki).toFixed(0); }
             },
             effect(){
-                return loc('space_red_mission_effect',[races[global.race.species].solar.red]);
+                return loc('space_red_mission_effect',[planetName().red]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_red_mission_action',[races[global.race.species].solar.red]),'info',false,['progress']);
+                    messageQueue(loc('space_red_mission_action',[planetName().red]),'info',false,['progress']);
                     global.space['living_quarters'] = { count: 0, on: 0 };
                     global.space['garage'] = { count: 0 };
                     global.space['red_mine'] = { count: 0, on: 0 };
@@ -449,7 +449,7 @@ const spaceProjects = {
                     let vault = spatialReasoning(bank_vault() * 4);
                     bank = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
                 }
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[planetName().red,$(this)[0].support()])}</div>${bank}<div class="has-text-caution">${loc('space_red_spaceport_effect2',[helium,$(this)[0].powered()])}</div><div class="has-text-caution">${loc('spend',[global.race['cataclysm'] ? 2 : 25,global.resource.Food.name])}</div>`;
             },
             support(){
                 let support = global.race['cataclysm'] || global.race['orbit_decayed'] ? 4 : 3;
@@ -491,7 +491,7 @@ const spaceProjects = {
                 Alloy(offset){ return spaceCostMultiplier('red_tower', offset, 8000, 1.28); },
             },
             effect(){
-                return `<div>${loc('space_red_spaceport_effect1',[races[global.race.species].solar.red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(2); },
             action(){
@@ -621,7 +621,7 @@ const spaceProjects = {
             id: 'space-living_quarters',
             title: loc('space_red_living_quarters_title'),
             desc(){
-                return `<div>${loc('space_red_living_quarters_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${loc('space_red_living_quarters_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 1 },
             cost: {
@@ -637,7 +637,7 @@ const spaceProjects = {
                     let vault = spatialReasoning(global.tech.home_safe >= 2 ? (global.tech.home_safe >= 3 ? '100000' : '50000') : '25000');
                     safe = `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${safe}<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[races[global.race.species].solar.red]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${safe}<div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().red]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -697,7 +697,7 @@ const spaceProjects = {
             id: 'space-vr_center',
             title: loc('space_red_vr_center_title'),
             desc(){
-                return `<div>${loc('space_red_vr_center_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${loc('space_red_vr_center_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 1, broadcast: 3 },
             cost: {
@@ -712,7 +712,7 @@ const spaceProjects = {
                 if (global.race['orbit_decayed']){
                     morale += 2;
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_vr_center_effect1',[morale])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div><div>${loc('space_red_vr_center_effect1',[morale])}</div><div>${loc('space_red_vr_center_effect2',[2])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -847,7 +847,7 @@ const spaceProjects = {
             id: 'space-red_mine',
             title: loc('space_red_mine_title'),
             desc(){
-                return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 1 },
             cost: {
@@ -874,7 +874,7 @@ const spaceProjects = {
                 let cat_stone = global.race['cataclysm'] || global.race['orbit_decayed'] && !global.race['sappy'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','stone')).toFixed(2),global.resource.Stone.name])}</div>` : ``;
                 let cat_asbestos = global.race['cataclysm'] || global.race['orbit_decayed'] && global.race['smoldering'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','asbestos')).toFixed(2),global.resource.Chrysotile.name])}</div>` : ``;
                 let cat_alum = global.race['cataclysm'] || global.race['orbit_decayed'] ? `<div>${loc('space_red_mine_effect',[+(production('red_mine','aluminium')).toFixed(2),global.resource.Aluminium.name])}</div>` : ``;
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${decayed}<div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${rival}${cat_asbestos}${cat_stone}${cat_alum}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${decayed}<div>${loc('space_red_mine_effect',[copper,global.resource.Copper.name])}</div><div>${loc('space_red_mine_effect',[titanium,global.resource.Titanium.name])}</div>${rival}${cat_asbestos}${cat_stone}${cat_alum}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -893,7 +893,7 @@ const spaceProjects = {
             id: 'space-fabrication',
             title: loc('space_red_fabrication_title'),
             desc(){
-                return `<div>${loc('space_red_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${loc('space_red_fabrication_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 1 },
             cost: {
@@ -908,7 +908,7 @@ const spaceProjects = {
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div><div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>${c_worker}<div>${loc('space_red_fabrication_effect2',[fab])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -987,10 +987,10 @@ const spaceProjects = {
                         desc = `<div>${loc('space_red_biodome_desc_carn')}</div>`;
                     }
                     else {
-                        desc = `<div>${loc('space_red_biodome_desc',[races[global.race.species].solar.red])}</div>`;
+                        desc = `<div>${loc('space_red_biodome_desc',[planetName().red])}</div>`;
                     }
                 }
-                return `<div>${desc}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${desc}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 2 },
             cost: {
@@ -1006,7 +1006,7 @@ const spaceProjects = {
                 let pop = global.tech.mars >= 6 ? 0.1 : 0.05;
                 let fLabel = global.race['artifical'] ? loc('city_transmitter_effect',[spatialReasoning(500)]) : loc('plus_max_resource',[spatialReasoning(100), loc('resource_Food_name')]);
                 let sig_cap = global.race['artifical'] || global.race['orbit_decayed'] ? `<div>${fLabel}</div` : '';
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[+(jobScale(pop)).toFixed(2)])}</div>${cat_wd}${sig_cap}`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${cat_fd}<div>${loc('space_red_biodome_effect',[food,global.resource.Food.name])}</div><div>${loc('space_red_biodome_effect2',[+(jobScale(pop)).toFixed(2)])}</div>${cat_wd}${sig_cap}`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -1041,7 +1041,7 @@ const spaceProjects = {
             id: 'space-red_university',
             title: loc('city_university'),
             desc(){
-                return loc('city_university_desc',[races[global.race.species].solar.red]);
+                return loc('city_university_desc',[planetName().red]);
             },
             reqs: { mars: 1 },
             trait: ['orbit_decayed'],
@@ -1076,7 +1076,7 @@ const spaceProjects = {
             id: 'space-exotic_lab',
             title: loc('space_red_exotic_lab_title'),
             desc(){
-                return `<div>${loc('space_red_exotic_lab_desc')}</div><div class="has-text-special">${loc('space_support',[races[global.race.species].solar.red])}</div>`;
+                return `<div>${loc('space_red_exotic_lab_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().red])}</div>`;
             },
             reqs: { mars: 5 },
             cost: {
@@ -1113,7 +1113,7 @@ const spaceProjects = {
                         lab = `<div>${loc('city_wardenclyffe_effect4',[2])}</div>`;
                     }
                 }
-                return `<div class="has-text-caution">${loc('space_used_support',[races[global.race.species].solar.red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
+                return `<div class="has-text-caution">${loc('space_used_support',[planetName().red])}</div>${scientist}${lab}<div>${loc('space_red_exotic_lab_effect1',[+(sci).toFixed(0)])}</div><div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -1231,10 +1231,10 @@ const spaceProjects = {
     spc_hell: {
         info: {
             name(){
-                return races[global.race.species].solar.hell;
+                return planetName().hell;
             },
             desc(){
-                return loc('space_hell_info_desc',[races[global.race.species].solar.hell]);
+                return loc('space_hell_info_desc',[planetName().hell]);
             },
             zone: 'inner',
             syndicate(){ return false; }
@@ -1242,10 +1242,10 @@ const spaceProjects = {
         hell_mission: {
             id: 'space-hell_mission',
             title(){
-                return loc('space_mission_title',[races[global.race.species].solar.hell]);
+                return loc('space_mission_title',[planetName().hell]);
             },
             desc(){
-                return loc('space_mission_desc',[races[global.race.species].solar.hell]);
+                return loc('space_mission_desc',[planetName().hell]);
             },
             reqs: { space: 3, space_explore: 3 },
             grant: ['hell',1],
@@ -1254,11 +1254,11 @@ const spaceProjects = {
                 Helium_3(offset,wiki){ return +fuel_adjust(6500,false,wiki).toFixed(0); }
             },
             effect(){
-                return loc('space_hell_mission_effect1',[races[global.race.species].solar.hell]);
+                return loc('space_hell_mission_effect1',[planetName().hell]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_hell_mission_action',[races[global.race.species].solar.hell]),'info',false,['progress']);
+                    messageQueue(loc('space_hell_mission_action',[planetName().hell]),'info',false,['progress']);
                     global.space['geothermal'] = { count: 0, on: 0 };
                     return true;
                 }
@@ -1303,10 +1303,10 @@ const spaceProjects = {
         hell_smelter: {
             id: 'space-hell_smelter',
             title(){
-                return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
+                return loc('space_hell_smelter_title',[planetName().hell]);
             },
             desc(){
-                return loc('space_hell_smelter_title',[races[global.race.species].solar.hell]);
+                return loc('space_hell_smelter_title',[planetName().hell]);
             },
             reqs: { hell: 1, m_smelting: 1 },
             path: ['truepath'],
@@ -1546,10 +1546,10 @@ const spaceProjects = {
     spc_gas: {
         info: {
             name(){
-                return races[global.race.species].solar.gas;
+                return planetName().gas;
             },
             desc(){
-                return loc('space_gas_info_desc',[races[global.race.species].solar.gas, races[global.race.species].home]);
+                return loc('space_gas_info_desc',[planetName().gas, races[global.race.species].home]);
             },
             zone: 'outer',
             syndicate(){ return true; }
@@ -1557,10 +1557,10 @@ const spaceProjects = {
         gas_mission: {
             id: 'space-gas_mission',
             title(){
-                return loc('space_mission_title',[races[global.race.species].solar.gas]);
+                return loc('space_mission_title',[planetName().gas]);
             },
             desc(){
-                return loc('space_mission_desc',[races[global.race.species].solar.gas]);
+                return loc('space_mission_desc',[planetName().gas]);
             },
             reqs: { space: 4, space_explore: 4 },
             grant: ['space',5],
@@ -1569,11 +1569,11 @@ const spaceProjects = {
                 Helium_3(offset,wiki){ return +fuel_adjust(12500,false,wiki).toFixed(0); }
             },
             effect(){
-                return loc('space_gas_mission_effect',[races[global.race.species].solar.gas]);
+                return loc('space_gas_mission_effect',[planetName().gas]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_gas_mission_action',[races[global.race.species].solar.gas]),'info',false,['progress']);
+                    messageQueue(loc('space_gas_mission_action',[planetName().gas]),'info',false,['progress']);
                     global.settings.space.gas_moon = true;
                     global.settings.space.belt = true;
                     global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
@@ -1614,7 +1614,7 @@ const spaceProjects = {
         },
         gas_storage: {
             id: 'space-gas_storage',
-            title(){ return loc('space_gas_storage_title',[races[global.race.species].solar.gas]); },
+            title(){ return loc('space_gas_storage_title',[planetName().gas]); },
             desc(){
                 return `<div>${loc('space_gas_storage_desc')}</div>`;
             },
@@ -1670,10 +1670,10 @@ const spaceProjects = {
     spc_gas_moon: {
         info: {
             name(){
-                return races[global.race.species].solar.gas_moon;
+                return planetName().gas_moon;
             },
             desc(){
-                return loc('space_gas_moon_info_desc',[races[global.race.species].solar.gas_moon,races[global.race.species].solar.gas]);
+                return loc('space_gas_moon_info_desc',[planetName().gas_moon,planetName().gas]);
             },
             zone: 'outer',
             syndicate(){ return true; }
@@ -1681,10 +1681,10 @@ const spaceProjects = {
         gas_moon_mission: {
             id: 'space-gas_moon_mission',
             title(){
-                return loc('space_mission_title',[races[global.race.species].solar.gas_moon]);
+                return loc('space_mission_title',[planetName().gas_moon]);
             },
             desc(){
-                return loc('space_mission_desc',[races[global.race.species].solar.gas_moon]);
+                return loc('space_mission_desc',[planetName().gas_moon]);
             },
             reqs: { space: 5 },
             grant: ['space',6],
@@ -1693,11 +1693,11 @@ const spaceProjects = {
                 Helium_3(offset,wiki){ return +fuel_adjust(30000,false,wiki).toFixed(0); }
             },
             effect(){
-                return loc('space_gas_moon_mission_effect',[races[global.race.species].solar.gas_moon]);
+                return loc('space_gas_moon_mission_effect',[planetName().gas_moon]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_gas_moon_mission_action',[races[global.race.species].solar.gas_moon]),'info',false,['progress']);
+                    messageQueue(loc('space_gas_moon_mission_action',[planetName().gas_moon]),'info',false,['progress']);
                     global.space['outpost'] = { count: 0, on: 0 };
                     global.tech['gas_moon'] = 1;
                     return true;
@@ -1801,8 +1801,8 @@ const spaceProjects = {
             },
             desc(){
                 return global.space['space_station'] && global.space.space_station.count > 0
-                    ? `<div>${loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas])}</div><div class="has-text-special">${loc('space_belt_info_desc2')}</div>`
-                    : loc('space_belt_info_desc',[races[global.race.species].solar.red,races[global.race.species].solar.gas]);
+                    ? `<div>${loc('space_belt_info_desc',[planetName().red,planetName().gas])}</div><div class="has-text-special">${loc('space_belt_info_desc2')}</div>`
+                    : loc('space_belt_info_desc',[planetName().red,planetName().gas]);
             },
             support: 'space_station',
             zone: 'inner',
@@ -1988,10 +1988,10 @@ const spaceProjects = {
     spc_dwarf: {
         info: {
             name(){
-                return races[global.race.species].solar.dwarf;
+                return planetName().dwarf;
             },
             desc(){
-                return loc('space_dwarf_info_desc',[races[global.race.species].solar.dwarf]);
+                return loc('space_dwarf_info_desc',[planetName().dwarf]);
             },
             zone: 'inner',
             syndicate(){ return false; }
@@ -1999,10 +1999,10 @@ const spaceProjects = {
         dwarf_mission: {
             id: 'space-dwarf_mission',
             title(){
-                return loc('space_mission_title',[races[global.race.species].solar.dwarf]);
+                return loc('space_mission_title',[planetName().dwarf]);
             },
             desc(){
-                return loc('space_mission_desc',[races[global.race.species].solar.dwarf]);
+                return loc('space_mission_desc',[planetName().dwarf]);
             },
             reqs: { asteroid: 1, elerium: 1 },
             grant: ['dwarf',1],
@@ -2011,11 +2011,11 @@ const spaceProjects = {
                 Helium_3(offset,wiki){ return +fuel_adjust(45000,false,wiki).toFixed(0); }
             },
             effect(){
-                return loc('space_dwarf_mission_effect1',[races[global.race.species].solar.dwarf]);
+                return loc('space_dwarf_mission_effect1',[planetName().dwarf]);
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('space_dwarf_mission_action',[races[global.race.species].solar.dwarf]),'info',false,['progress']);
+                    messageQueue(loc('space_dwarf_mission_action',[planetName().dwarf]),'info',false,['progress']);
                     global.space['elerium_contain'] = { count: 0, on: 0 };
                     return true;
                 }
@@ -2282,7 +2282,7 @@ const spaceProjects = {
             },
             effect(){
                 let charge = Math.floor(global.space.m_relay.charged / 10) / 10;
-                return `<div>${loc('space_dwarf_mass_relay_effect2',[races[global.race.species].solar.dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div><div>${loc('space_dwarf_mass_relay_charged',[charge])}</div>`;
+                return `<div>${loc('space_dwarf_mass_relay_effect2',[planetName().dwarf])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div><div>${loc('space_dwarf_mass_relay_charged',[charge])}</div>`;
             },
             action(){
                 return false;
@@ -6210,6 +6210,28 @@ export function zigguratBonus(){
     return bonus;
 }
 
+export function planetName(){
+    let names = {
+        red: races[global.race.species].solar.red,
+        hell: races[global.race.species].solar.hell,
+        gas: races[global.race.species].solar.gas,
+        gas_moon: races[global.race.species].solar.gas_moon,
+        dwarf: races[global.race.species].solar.dwarf,
+        titan: genusVars[races[global.race.species].type].solar.titan,
+        enceladus: genusVars[races[global.race.species].type].solar.enceladus,
+        triton: genusVars[races[global.race.species].type].solar.triton,
+        eris: genusVars[races[global.race.species].type].solar.eris,
+    };
+    if (global.race.species === 'custom'){
+        for (let p of ['titan','enceladus','triton','eris']){
+            if (global.custom.race0.hasOwnProperty(p)){
+                names[p] = global.custom.race0[p];
+            }
+        }
+    }
+    return names;
+}
+
 export const universe_affixes = ['l', 'h', 'a', 'e', 'm', 'mg'];
 
 export const universe_types = {
@@ -6403,6 +6425,13 @@ export function ascendLab(wiki){
         <div class="name">${loc('genelab_dwarf')} <b-input v-model="g.dwarf" maxlength="20"></b-input></div></div>`);
     lab.append(planets);
 
+    let tpPlanets = $(`<div class="fields">
+        <div class="name">${loc('genelab_titan')} <b-input v-model="g.titan" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_enceladus')} <b-input v-model="g.enceladus" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_triton')} <b-input v-model="g.triton" maxlength="20"></b-input></div>
+        <div class="name">${loc('genelab_eris')} <b-input v-model="g.eris" maxlength="20"></b-input></div></div>`);
+    lab.append(tpPlanets);
+
     let genes = $(`<div class="sequence"></div>`);
     lab.append(genes);
 
@@ -6485,6 +6514,10 @@ export function ascendLab(wiki){
         gas: global.custom.race0.gas,
         gas_moon: global.custom.race0.gas_moon,
         dwarf: global.custom.race0.dwarf,
+        titan: global.custom.race0.titan || planetName().titan,
+        enceladus: global.custom.race0.enceladus || planetName().enceladus,
+        triton: global.custom.race0.triton || planetName().triton,
+        eris: global.custom.race0.eris || planetName().eris,
         genes: 0,
         genus: global.custom.race0.genus,
         traitlist: global.custom.race0.traits
@@ -6498,6 +6531,10 @@ export function ascendLab(wiki){
         gas: 'Decompose',
         gas_moon: 'Bones',
         dwarf: 'Double Tap',
+        titan: 'Necromancer',
+        enceladus: 'Skeleton',
+        triton: 'Rot',
+        eris: 'Zombieland',
         genes: 10,
         genus: dGenus,
         traitlist: []
@@ -6554,6 +6591,10 @@ export function ascendLab(wiki){
                         gas: genome.gas,
                         gas_moon: genome.gas_moon,
                         dwarf: genome.dwarf,
+                        titan: genome.titan,
+                        enceladus: genome.enceladus,
+                        triton: genome.triton,
+                        eris: genome.eris,
                         genus: genome.genus,
                         traits: genome.traitlist
                     };
