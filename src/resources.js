@@ -337,6 +337,15 @@ export const craftingRatio = (function(){
                     auto: sup.supress
                 });
             }
+
+            if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                crafting.general.add.push({
+                    name: loc(`tau_home_tau_factory`),
+                    manual: support_on['tau_factory'] * 0.25,
+                    auto: support_on['tau_factory'] * 0.25
+                });
+            }
+
             if (support_on['zero_g_lab'] && p_on['zero_g_lab']){
                 let synd = syndicate('spc_enceladus');
                 crafting.Quantium.multi.push({

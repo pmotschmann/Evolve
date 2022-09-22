@@ -1488,6 +1488,42 @@ const tauCetiModules = {
                 return pop;
             }
         },
+        tau_farm: {
+            id: 'tauceti-tau_farm',
+            title: loc('tau_home_tau_farm'),
+            desc(){
+                return `<div>${loc('tau_home_tau_farm')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { tau_home: 7 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tau_farm', offset, 135000000, 1.25, 'tauceti'); },
+                Stone(offset){ return  spaceCostMultiplier('tau_farm', offset, 9210000, 1.25, 'tauceti'); },
+                Steel(offset){ return spaceCostMultiplier('tau_farm', offset, 6295000, 1.25, 'tauceti'); },
+                Water(offset){ return spaceCostMultiplier('tau_farm', offset, 10000, 1.25, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
+                desc = desc + `<div>${loc('produce',[+(production('tau_farm','food')).toFixed(2),global.resource.Food.name])}</div>`;
+                if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+                    desc = desc + `<div>${loc('produce',[+(production('tau_farm','lumber')).toFixed(2),global.resource.Lumber.name])}</div>`;
+                }
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            support(){ return 1; },
+            powered(){ return powerModifier(4); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.tau_farm.count++;
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.tau_farm.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
         mining_pit: {
             id: 'tauceti-mining_pit',
             title: loc('tau_home_mining_pit'),
@@ -1731,7 +1767,43 @@ const tauCetiModules = {
                 }
                 return false;
             }
-        }
+        },
+        tau_factory: {
+            id: 'tauceti-tau_factory',
+            title: loc('tau_home_tau_factory'),
+            desc(){
+                return `<div>${loc('tau_home_tau_factory')}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
+            },
+            reqs: { tau_home: 8 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tau_factory', offset, 269000000, 1.25, 'tauceti'); },
+                Titanium(offset){ return spaceCostMultiplier('tau_factory', offset, 3000000, 1.25, 'tauceti'); },
+                Elerium(offset){ return spaceCostMultiplier('tau_factory', offset, 850, 1.25, 'tauceti'); },
+                Bolognium(offset){ return spaceCostMultiplier('tau_factory', offset, 250000, 1.25, 'tauceti'); },
+                Quantium(offset){ return spaceCostMultiplier('tau_factory', offset, 425000, 1.25, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('tau_home_tau_factory_effect',[3])}</div>`;
+                desc = desc + `<div>${loc('city_crafted_mats',[25])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            special: true,
+            support(){ return -1; },
+            powered(){ return powerModifier(5); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.tau_factory.count++;
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
+                        global.tauceti.tau_factory.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     tau_red: {
         info: {
@@ -2264,6 +2336,12 @@ const tauCetiModules = {
                         global.tauceti.ore_refinery.on++;
                         global.city.smelter.cap += 2;
                         global.city.smelter.Iron += 2;
+                        if (global.race['evil']) {
+                            global.city['smelter'].Wood += 2;
+                        }
+                        else {
+                            global.city.smelter.Oil += 2;
+                        }
                     }
                     return true;
                 }

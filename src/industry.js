@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
@@ -542,6 +542,9 @@ function loadFactory(parent,bind){
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * 3;
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -569,6 +572,9 @@ function loadFactory(parent,bind){
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * 3;
+                }
                 return colorRange(on,max);
             }
         },
@@ -580,6 +586,9 @@ function loadFactory(parent,bind){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
+                }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * 3;
                 }
                 return max;
             },

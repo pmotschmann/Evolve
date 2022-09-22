@@ -6300,10 +6300,6 @@ function scenarioActionHeader(){
 }
 
 function drawModal(c_action,type){
-    if (type === 'red_factory' || type === 'int_factory'){
-        type = 'factory';
-    }
-
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
 
@@ -6320,6 +6316,9 @@ function drawModal(c_action,type){
             smelterModal(body);
             break;
         case 'factory':
+        case 'red_factory':
+        case 'int_factory':
+        case 'tau_factory':
             factoryModal(body);
             break;
         case 'star_dock':

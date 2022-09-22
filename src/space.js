@@ -1164,7 +1164,8 @@ const spaceProjects = {
                     bonus = highPopAdjust(bonus);
                 }
                 bonus = +(bonus).toFixed(2);
-                let desc = `<div>${loc('space_red_ziggurat_effect',[bonus])}</div>`;
+                let zvar = global.race['truepath'] ? [bonus,races[global.race.species].home] : [bonus];
+                let desc = `<div>${loc(global.race['truepath'] ? 'space_red_ziggurat_effect_tp' : 'space_red_ziggurat_effect',zvar)}</div>`;
                 if (global.tech['ancient_study'] && global.tech['ancient_study'] >= 2){
                     desc = desc + `<div>${loc('interstellar_laboratory_effect',[3])}</div>`;
                 }

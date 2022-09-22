@@ -1850,11 +1850,11 @@ const techs = {
         desc: loc('tech_reinforced_shed_desc'),
         category: 'storage',
         era: 'civilized',
-        reqs: { storage: 1, cement: 1 },
+        reqs: { storage: 1, cement: 1, mining: 3 },
         grant: ['storage',2],
         cost: {
             Money(){ return 3750; },
-            Knowledge(){ return 2250; },
+            Knowledge(){ return 2550; },
             Iron(){ return 750; },
             Cement(){ return 500; }
         },
@@ -11903,6 +11903,48 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['fusion_generator'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    tau_cultivation: {
+        id: 'tech-tau_cultivation',
+        title: loc('tech_tau_cultivation'),
+        desc: loc('tech_tau_cultivation'),
+        category: 'agriculture',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_home: 6 },
+        grant: ['tau_home',7],
+        cost: {
+            Knowledge(){ return 6900000; }
+        },
+        effect(){ return loc('tech_tau_cultivation_effect',[races[global.race.species].home]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['tau_farm'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    tau_manufacturing: {
+        id: 'tech-tau_manufacturing',
+        title: loc('tech_tau_manufacturing'),
+        desc: loc('tech_tau_manufacturing'),
+        category: 'crafting',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_home: 7 },
+        grant: ['tau_home',8],
+        cost: {
+            Knowledge(){ return 7250000; }
+        },
+        effect(){ return loc('tech_tau_manufacturing_effect',[races[global.race.species].home]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['tau_factory'] = { count: 0, on: 0 };
                 return true;
             }
             return false;
