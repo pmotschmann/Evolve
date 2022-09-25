@@ -5419,7 +5419,7 @@ function xeno_race(){
     while (typeof global.galaxy['alien1'] === 'undefined'){
         let key = randomKey(races);
         if (key !== 'protoplasm' && key !== global.race.species && races[key].type !== 'demonic'){
-            if (key !== 'custom' || (key === 'custom' && global.hasOwnProperty('custom'))){
+            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
                 global.galaxy['alien1'] = {
                     id: key
                 };
@@ -5429,7 +5429,7 @@ function xeno_race(){
     while (typeof global.galaxy['alien2'] === 'undefined'){
         let key = randomKey(races);
         if (key !== 'protoplasm' && key !== global.race.species && key !== global.galaxy.alien1.id && races[key].type !== 'angelic'){
-            if (key !== 'custom' || (key === 'custom' && global.hasOwnProperty('custom'))){
+            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
                 global.galaxy['alien2'] = {
                     id: key
                 };

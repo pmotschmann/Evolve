@@ -1066,6 +1066,18 @@ if (convertVersion(global['version']) < 102017){
     }
 }
 
+if (convertVersion(global['version']) < 102021){
+    if (global.hasOwnProperty('custom') && !global.custom.hasOwnProperty('race0')){
+        let race = global.race.hasOwnProperty('species') ? global.race.species : 'protoplasm';
+        if (global.galaxy.hasOwnProperty('alien1') && global.galaxy.alien1.id === 'custom'){
+            global.galaxy.alien1.id = race === 'human' ? 'elven' : 'human';
+        }
+        if (global.galaxy.hasOwnProperty('alien2') && global.galaxy.alien2.id === 'custom'){
+            global.galaxy.alien2.id = race === 'orc' || global.galaxy.alien1.id === 'orc' ? 'cath' : 'orc';
+        }
+    }
+}
+
 global['version'] = '1.2.20';
 delete global['revision'];
 delete global['beta'];
