@@ -4511,6 +4511,7 @@
   "planet_unstable_desc": "这颗行星的地质结构不稳定，地震频发，部分地面建筑需要额外的铁加固以抵御地震。部分地面建筑成本增加铁。部分与铁相关的研究知识消耗减少。",
   "planet_permafrost": "永冻",
   "planet_permafrost_desc": "这颗行星的地面上覆盖着厚厚的永冻层，难以进行挖掘。但冻土的瑰丽美景可以促使人民追求知识。",
+  "planet_retrograde": "退化",
   "civics_jobs": "工作",
   "civics_government": "政府",
   "civics_government_type": "政府体制",
