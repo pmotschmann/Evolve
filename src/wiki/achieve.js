@@ -42,12 +42,19 @@ const achieveDescData = {
     trade: [750,50]
 };
 
-function achievePage(universe){
+function achievePage(universe, filter){
     let content = $(`#content`);
     clearElement(content);
     
     let filtering = `
     <div id="filtering" class="b-tabs">
+        <nav class="tabs">
+            <ul>
+                <li class="${filter ? '' : 'is-active'}"><a @click="filterSwap()">All</a></li>
+                <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">Obtained</a></li>
+                <li class="${filter && filter === 'missing' ? 'is-active' : ''}"><a @click="filterSwap('missing')">Missing</a></li>
+            </ul>
+        </nav>
         <nav class="tabs">
             <ul>
                 <li class="${universe ? '' : 'is-active'}"><a @click="universeSwap()">${loc('universe_all')}</a></li>
@@ -67,8 +74,11 @@ function achievePage(universe){
     vBind({
         el: `#filtering`,
         methods: {
-            universeSwap(universe){
-                achievePage(universe);
+            universeSwap(universe) {
+                achievePage(universe, filter);
+            },
+            filterSwap(filter) {
+                achievePage(universe, filter);
             }
         }
     });
@@ -78,6 +88,8 @@ function achievePage(universe){
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
         if (!universe || !universeExclusives[achievement] || universeExclusives[achievement].indexOf(universe) > -1){
+            if (filter === 'obtained' && !(global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0)) return;
+            if (filter === 'missing' && global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0) return;
             if (types.hasOwnProperty(achievements[achievement].type)){
                 types[achievements[achievement].type].push(achievement);
             }
