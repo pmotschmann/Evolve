@@ -51,8 +51,10 @@ function achievePage(universe, filter){
         <nav class="tabs">
             <ul>
                 <li class="${filter ? '' : 'is-active'}"><a @click="filterSwap()">All</a></li>
-                <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">Obtained</a></li>
                 <li class="${filter && filter === 'missing' ? 'is-active' : ''}"><a @click="filterSwap('missing')">Missing</a></li>
+                <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">Obtained</a></li>
+                <li class="${filter && filter === 'incomplete' ? 'is-active' : ''}"><a @click="filterSwap('incomplete')">Incomplete</a></li>
+                <li class="${filter && filter === 'completed' ? 'is-active' : ''}"><a @click="filterSwap('completed')">Completed</a></li>
             </ul>
         </nav>
         <nav class="tabs">
@@ -88,9 +90,19 @@ function achievePage(universe, filter){
     let types = {};
     Object.keys(achievements).forEach(function (achievement){
         if (!universe || !universeExclusives[achievement] || universeExclusives[achievement].indexOf(universe) > -1){
-            if (filter === 'obtained' && !(global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0)) return;
             if (filter === 'missing' && global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0) return;
-            if (types.hasOwnProperty(achievements[achievement].type)){
+            if (filter === 'obtained' && !(global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 0)) return;
+            if (filter === 'incomplete' && universe && global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 4) return;
+            if (filter === 'completed' && universe && !(global.stats.achieve[achievement] && global.stats.achieve[achievement][uAffix] && global.stats.achieve[achievement][uAffix] > 4)) return;
+            if ((filter === 'incomplete' || filter === 'completed') && !universe) {
+                let max = achievements[achievement].type === 'universe' ? 10 : 30;
+                if (achievement === 'whitehole') max = 5;
+                Object.keys(global.stats.achieve[achievement]).forEach(uni => max -= global.stats.achieve[achievement][uni]);
+                if (filter === 'incomplete' && max <= 0) return;
+                if (filter === 'completed' && max > 0) return;
+            }
+
+            if (types.hasOwnProperty(achievements[achievement].type)) {
                 types[achievements[achievement].type].push(achievement);
             }
             else {
