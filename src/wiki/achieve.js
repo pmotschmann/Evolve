@@ -97,7 +97,8 @@ function achievePage(universe, filter){
             if ((filter === 'incomplete' || filter === 'completed') && !universe) {
                 let max = achievements[achievement].type === 'universe' ? 10 : 30;
                 if (achievement === 'whitehole') max = 5;
-                Object.keys(global.stats.achieve[achievement]).forEach(uni => max -= global.stats.achieve[achievement][uni]);
+                if (global.stats.achieve[achievement])
+                    Object.keys(global.stats.achieve[achievement]).forEach(uni => max -= global.stats.achieve[achievement][uni]);
                 if (filter === 'incomplete' && max <= 0) return;
                 if (filter === 'completed' && max > 0) return;
             }
