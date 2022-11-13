@@ -8987,5 +8987,9 @@
   "wiki_events_xmas_para4": "The 2019 gift contained 100 Plasmids.",
   "wiki_events_xmas_para5": "The 2020 gift contained: 100 + Resets + Mad Resets Plasmids, Bioseeds + Cataclysms Phage, Lifetime soldier deaths Coal, 0-4 Dark Energy, 0-5 Harmony Crystals, 0-25 Blood Stones, and 0-5 Artifacts.",
   "wiki_events_xmas_para6": "The 2021 gift contained: 100 + Resets + Mad Resets Plasmids, Bioseeds + Cataclysms Phage, Lifetime soldier deaths Coal, 0-4 Dark Energy, 0-5 Harmony Crystals, 0-25 Blood Stones, 0-5 Artifacts, and 0-5 AI Cores.",
-  "wiki_events_xmas_condition_para1": "Occurs on December 25th."
+  "wiki_events_xmas_condition_para1": "Occurs on December 25th.",
+  "wiki_achievements_missing": "Missing",
+  "wiki_achievements_obtained": "Obtained",
+  "wiki_achievements_incomplete": "Incomplete",
+  "wiki_achievements_completed": "Completed"
 }

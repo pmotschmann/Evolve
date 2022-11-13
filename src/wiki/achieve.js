@@ -51,10 +51,10 @@ function achievePage(universe, filter){
         <nav class="tabs">
             <ul>
                 <li class="${filter ? '' : 'is-active'}"><a @click="filterSwap()">All</a></li>
-                <li class="${filter && filter === 'missing' ? 'is-active' : ''}"><a @click="filterSwap('missing')">Missing</a></li>
-                <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">Obtained</a></li>
-                <li class="${filter && filter === 'incomplete' ? 'is-active' : ''}"><a @click="filterSwap('incomplete')">Incomplete</a></li>
-                <li class="${filter && filter === 'completed' ? 'is-active' : ''}"><a @click="filterSwap('completed')">Completed</a></li>
+                <li class="${filter && filter === 'missing' ? 'is-active' : ''}"><a @click="filterSwap('missing')">${loc('wiki_achievements_missing')}</a></li>
+                <li class="${filter && filter === 'obtained' ? 'is-active' : ''}"><a @click="filterSwap('obtained')">${loc('wiki_achievements_obtained')}</a></li>
+                <li class="${filter && filter === 'incomplete' ? 'is-active' : ''}"><a @click="filterSwap('incomplete')">${loc('wiki_achievements_incomplete')}</a></li>
+                <li class="${filter && filter === 'completed' ? 'is-active' : ''}"><a @click="filterSwap('completed')">${loc('wiki_achievements_completed')}</a></li>
             </ul>
         </nav>
         <nav class="tabs">
