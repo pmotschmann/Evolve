@@ -6058,6 +6058,7 @@
   "fortress_eviscerated": "%0 名勘探者被恶魔生物残忍肢解。",
   "hell_observation_button": "地狱观测",
   "hell_observation_tooltip": "跳转到地狱观测面板，所有每天在地狱发生的活动都在此记录。",
+  "hell_report_log_tooltip": "每个游戏日都会按照时间顺序记录地狱活动日志。由于保存/读取的原因，不会在刷新之后保存，最多可以保留%0条日志。",
   "hell_tabs_reports": "报告",
   "hell_tabs_analysis": "分析",
   "hell_report_log": "日志报告",
