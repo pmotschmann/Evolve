@@ -8633,7 +8633,7 @@
   "wiki_perks_achievement_note_task_num": "Task %0: %1",
   "wiki_perks_achievement_note_pathfinder": "The rank of this perk upgrades as you complete additional reset types in %0 mode.",
   "wiki_perks_achievement_note_pathfinder_reset": "Complete a Truepath %0 reset.",
-  "wiki_perks_progress_note1": "%0개의 업적을 획득하세요.",
+  "wiki_perks_progress_note1": "%0개의 업적을 획득하세요. %1 재설정 완료.",
   "wiki_perks_progress_note2": "보너스의 레벨은 해당 업적의 챌린지 레벨을 따릅니다.",
   "wiki_perks_crispr_note": "CRISPR 구매: %0.",
   "wiki_perks_crispr_note_upgrade": "업그레이드하려면 CRISPR 구매: %0.",
