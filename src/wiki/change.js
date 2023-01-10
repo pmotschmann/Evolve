@@ -15,6 +15,15 @@ const changeList = [
         ]
     },
     {
+        version: `1.2.21`,
+        date: `1/10/2023`,
+        changes: [
+            `New Achievement filtering options in Wiki.`,
+            `Updated Chinese lang file.`,
+            `Updated Korean lang file.`
+        ]
+    },
+    {
         version: `1.2.20`,
         date: `9/16/2022`,
         changes: [
