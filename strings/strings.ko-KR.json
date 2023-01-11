@@ -5638,7 +5638,7 @@
   "galaxy_telemetry_beacon": "원격 측정 비콘",
   "galaxy_telemetry_beacon_effect1": "+%0 활성화된 비콘당 지식 최대.",
   "galaxy_telemetry_beacon_effect2": "(+%0 현재 수준).",
-  "galaxy_telemetry_beacon_bd": "Telemetry",
+  "galaxy_telemetry_beacon_bd": "원격 측정",
   "galaxy_defense_platform": "방어 플랫폼",
   "galaxy_defense_platform_effect": "방어 등급 %0",
   "galaxy_gateway": "게이트웨이 항성계",
