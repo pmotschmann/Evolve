@@ -6077,8 +6077,8 @@
   "hell_report_log_stats_died": "死亡人数：%0",
   "hell_report_log_report": "日志报告 - %0 年, %1 日",
   "hell_report_log_start": "预计堡垒周围有%0只恶魔。",
-  "hell_report_log_encounter": "在堡垒周围发现%0只并击败%1只恶魔。",
-  "hell_report_log_encounter_fail": "%0当天未找到恶魔。",
+  "hell_report_log_encounter": "%0在堡垒周围发现并击败%1只恶魔。",
+  "hell_report_log_encounter_fail": "%0未在当天发现恶魔。",
   "hell_report_log_obj_counter": "%0 #%1",
   "hell_report_log_patrol": "巡逻队",
   "hell_report_log_patrol_droid": "%0和战斗机器人",
@@ -6697,7 +6697,7 @@
   "wiki_trait_effect_pathetic": "战斗评级 -%0%。",
   "wiki_trait_effect_spiritual": "寺庙的全局产量加成效果 +%0%。",
   "wiki_trait_effect_truthful": "银行家效果 -%0%。",
-  "wiki_trait_effect_unified": "开局直接达成统一，统一加成为 +%0%。",
+  "wiki_trait_effect_unified": "开局直接达成统一，统一额外加成为 +%0%。",
   "wiki_trait_effect_rainbow": "雨后的晴天全局产量 +%0%。",
   "wiki_trait_effect_magnificent": "您可以建造圣地，圣地的加成与建造时的月相有关。峨眉月提升士气，盈凸月提升金属产量，张弦月提升知识上限，残月提升税收收入，剩余的新月、上弦月、满月、下弦月时提升随机一项。盈凸月提升的金属产量包括铜、铁、铝、钢、钛、铱和精金的产量。（特质级别无影响。）",
   "wiki_trait_effect_noble": "税率被限制在 %0% 至 %1% 之间。",
@@ -8874,5 +8874,9 @@
   "wiki_events_xmas_para4": "2019年的圣诞大礼是 100 质粒。",
   "wiki_events_xmas_para5": "2020年的圣诞大礼是：100 + 总重置次数 + 核爆重置次数 的质粒，播种重置次数 + 大灾变重置次数 的噬菌体，士兵战死总数 的煤，0-4 暗能量，0-5 和谐水晶，0-25 鲜血之石，和 0-5 上古遗物。",
   "wiki_events_xmas_para6": "2021年的圣诞大礼是：100 + 总重置次数 + 核爆重置次数 的质粒，播种重置次数 + 大灾变重置次数 的噬菌体，士兵战死总数 的煤，0-4 暗能量，0-5 和谐水晶，0-25 鲜血之石，0-5 上古遗物，和 0-5 AI核心。",
-  "wiki_events_xmas_condition_para1": "在12月25日发生。"
+  "wiki_events_xmas_condition_para1": "在12月25日发生。",
+  "wiki_achievements_missing": "未获得",
+  "wiki_achievements_obtained": "已获得",
+  "wiki_achievements_incomplete": "未完成",
+  "wiki_achievements_completed": "已完成"
 }
