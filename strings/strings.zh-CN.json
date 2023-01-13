@@ -2087,7 +2087,7 @@
   "tech_deify_warning": "与研究先祖互斥，请谨慎选择。",
   "tech_infusion": "基因注入",
   "tech_infusion_desc": "注入上古神灵的基因",
-  "tech_infusion_effect": "将上古神灵的基因注入自己的 DNA 以提升通灵塔效果，通灵塔的产量加成 +( 0.01 % × 外星材料实验室数量 )",
+  "tech_infusion_effect": "将上古神灵的基因注入自己的 DNA 以提升通灵塔效果，通灵塔的产量加成 +(0.01% × 外星材料实验室数量)",
   "tech_fanaticism": "狂热信仰",
   "tech_fanaticism_effect": "将造物主奉为神明，并尝试模仿他们，获得上周目游戏使用种族的主要特质。",
   "tech_fanaticism_warning": "与人类学互斥，请谨慎选择。",
