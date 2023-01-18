@@ -6360,6 +6360,7 @@
   "tau_home_tau_farm": "High-Tech Farm",
   "tau_home_tau_factory": "High-Tech Factory",
   "tau_home_tau_factory_effect": "Manufacture new materials from old materials. Each Factory has %0 production lines.",
+  "tau_home_disease_lab": "Disease Lab",
   "tau_jump_gate": "Jump Gate",
   "tau_jump_gate_effect": "Jump Gates allow travel at 100 times the speed of light between two connected gates. For nearby star systems this effectively connects them allowing them to share resources. Requires two paired gates to be of any use.",
   "tau_red": "New %0 is the 4th closest planet to the star Tau Ceti, it is on the outer edge of the habitable zone at 1.24 AU.",

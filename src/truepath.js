@@ -1804,6 +1804,40 @@ const tauCetiModules = {
                 return false;
             }
         },
+        infectious_disease_lab: {
+            id: 'tauceti-infectious_disease_lab',
+            title: loc('tech_infectious_disease_lab'),
+            desc(){
+                return `<div>${loc('tech_infectious_disease_lab')}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
+            },
+            reqs: { disease: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 1000000000, 1.25, 'tauceti'); },
+                Alloy(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 32500000, 1.25, 'tauceti'); },
+                Polymer(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 50000000, 1.25, 'tauceti'); },
+                Bolognium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 2500000, 1.25, 'tauceti'); },
+                Unobtainium(offset){ return spaceCostMultiplier('infectious_disease_lab', offset, 64000, 1.25, 'tauceti'); },
+            },
+            effect(){
+                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
+                desc = desc + `<div>${loc('city_max_knowledge',[39616])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            support(){ return -1; },
+            powered(){ return powerModifier(35); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.infectious_disease_lab.count++;
+                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
+                        global.tauceti.infectious_disease_lab.on++;
+                    }
+                    return true;
+                }
+                return false;
+            }
+        },
     },
     tau_red: {
         info: {
@@ -1815,7 +1849,7 @@ const tauCetiModules = {
             },
             support: 'orbital_platform',
             extra(region){
-                if (global.tech['tau_red'] && global.tech.tau_home >= 5){
+                if (global.tech['tau_red'] && global.tech.tau_red >= 5){
                     $(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
                     vBind({
                         el: `#${region}Womlings`,

@@ -238,7 +238,7 @@ export function powerGrid(type,reset){
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
-                'tau_home:tau_factory','tau_home:alien_outpost','spc_red:atmo_terraformer'
+                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','spc_red:atmo_terraformer'
             ];
             break;
         case 'moon':
@@ -278,7 +278,7 @@ export function powerGrid(type,reset){
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
         case 'tau_home':
-            power_structs = ['tau_home:fusion_generator','tau_home:colony','tau_home:tau_factory','tau_home:mining_pit'];
+            power_structs = ['tau_home:fusion_generator','tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab'];
             break;
         case 'tau_red':
             power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab'];

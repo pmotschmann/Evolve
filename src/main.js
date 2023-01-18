@@ -3366,11 +3366,14 @@ function fastLoop(){
         // Factory
         let FactoryMoney = 0;
         if (global.city['factory']){
-            let on_factories = p_on['factory'] + p_on['red_factory'] + (p_on['int_factory'] * 2) + (support_on['tau_factory'] * 3);
+            let on_factories = (p_on['factory'] || 0)
+                + (p_on['red_factory'] || 0)
+                + ((p_on['int_factory'] || 0) * 2)
+                + ((support_on['tau_factory'] || 0) * 3);
             let max_factories = global.city['factory'].on
-              + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
-              + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
-              + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * 3 : 0);
+                + (global.space['red_factory'] ? global.space['red_factory'].on : 0)
+                + (global.interstellar['int_factory'] ? global.interstellar['int_factory'].on * 2 : 0)
+                + (global.tauceti['tau_factory'] ? global.tauceti['tau_factory'].on * 3 : 0);
             let eff = max_factories > 0 ? on_factories / max_factories : 0;
             let remaining = max_factories;
 
@@ -3503,6 +3506,7 @@ function fastLoop(){
                 modRes('Aluminium', -(aluminium_cost * time_multiplier));
 
                 let factory_output = workDone * f_rate.Alloy.output[assembly] * eff;
+                
                 if (global.race['toxic']){
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
                 }
@@ -3524,6 +3528,8 @@ function fastLoop(){
 
                 let delta = factory_output;
                 delta *= hunger * global_multiplier;
+
+                
 
                 let alloy_bd = {};
                 alloy_bd[loc('city_factory')] = factory_output + 'v';
@@ -7466,6 +7472,12 @@ function midLoop(){
             lCaps['crew'] += global.portal.transport.on * actions.portal.prtl_lake.transport.ship.civ();
         }
 
+        if (global.tauceti['infectious_disease_lab']){
+            let gain = 39616;
+            caps['Knowledge'] += (p_on['infectious_disease_lab'] * gain);
+            bd_Knowledge[loc('tau_home_disease_lab')] = (p_on['infectious_disease_lab'] * gain)+'v';
+        }
+
         // Womlings
         if (global.race['truepath'] && global.tauceti['overseer'] && global.tech['tau_red'] && global.tech.tau_red >= 5){
             let pop = 0; let injured = global.tauceti.overseer.injured; let morale = 0; let loyal = 0; let prod = 0;
@@ -9280,7 +9292,7 @@ function longLoop(){
                     messageQueue(loc('tau_plague3',[govTitle(3),races[global.race.species].home]),'info',false,['progress']);
                 }
                 else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){
-                    // messageQueue(loc('tau_plague4',[races[global.race.species].home]),'info',false,['progress']);
+                    messageQueue(loc('tau_plague4',[races[global.race.species].home]),'info',false,['progress']);
                     jumpGateShutdown();
                 }
             }
