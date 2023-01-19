@@ -4345,6 +4345,41 @@ function fastLoop(){
         }
         breakdown.p['Cipher'] = cipher_bd;
 
+        // Extractor Ship & Ore Refinery
+        let e_ship = {};
+        if (global.tauceti['ore_refinery'] && global.tauceti['mining_ship'] && global.tech['tau_roid'] && global.tech.tau_roid >= 4){
+            global.tauceti.ore_refinery.max = global.tauceti.ore_refinery.on * 1000;
+            
+            // Refine Ore
+            if (global.tauceti.ore_refinery.fill > 0){
+                let raw = p_on['ore_refinery'] * production('ore_refinery');
+                if (raw > global.tauceti.ore_refinery.fill){
+                    raw = global.tauceti.ore_refinery.fill;
+                }
+                global.tauceti.ore_refinery.fill -= raw * time_multiplier;
+
+                let c_ratio = global.tech.tau_roid >= 5 ? 0.6 : 0.64;
+                let u_ratio = global.tech.tau_roid >= 5 ? 0.35 : 0.36;
+
+                e_ship['iron'] = raw * c_ratio * (100 - global.tauceti.mining_ship.common) / 100 * production('mining_ship_ore','iron');
+                e_ship['aluminium'] = raw * c_ratio * global.tauceti.mining_ship.common / 100 * production('mining_ship_ore','aluminium');
+                e_ship['iridium'] = raw * u_ratio * (100 - global.tauceti.mining_ship.uncommon) / 100 * production('mining_ship_ore','iridium');
+                e_ship['neutronium'] = raw * u_ratio * global.tauceti.mining_ship.uncommon / 100 * production('mining_ship_ore','neutronium');
+
+                if (global.tech.tau_roid >= 5){
+                    e_ship['orichalcum'] = raw * 0.05 * (100 - global.tauceti.mining_ship.rare) / 10 * production('mining_ship_ore','orichalcum');
+                    e_ship['elerium'] = raw * 0.05 * global.tauceti.mining_ship.rare / 10 * production('mining_ship_ore','elerium');
+                }
+            }
+            
+            // Get new Ore
+            let ore = support_on['mining_ship'] * production('mining_ship');
+            global.tauceti.ore_refinery.fill += ore * time_multiplier;
+            if (global.tauceti.ore_refinery.fill > global.tauceti.ore_refinery.max){
+                global.tauceti.ore_refinery.fill = global.tauceti.ore_refinery.max;
+            }
+        }
+
         // Lumber
         let lumber_bd = {};
         { //block scope
@@ -4867,7 +4902,8 @@ function fastLoop(){
                     iron_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
 
-                let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal)) * smelter_mult * shrineMetal.mult;
+                let eship_iron = e_ship['iron'] ? e_ship.iron : 0;
+                let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron)) * smelter_mult * shrineMetal.mult;
                 delta *= hunger * global_multiplier;
 
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
@@ -4876,6 +4912,11 @@ function fastLoop(){
                     iron_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                     iron_bd[`ᄂ${loc('quarantine')}+1`] = ((qs_multiplier - 1) * 100) + '%';
                 }
+
+                if (e_ship['iron'] && e_ship.iron > 0){
+                    iron_bd[loc('tau_roid_mining_ship')] = e_ship.iron + 'v';
+                }
+
                 iron_bd[loc('city_smelter')] = ((smelter_mult - 1) * 100) + '%';
                 iron_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
 
@@ -5007,6 +5048,14 @@ function fastLoop(){
                     alumina_bd[`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
                     alumina_bd[`ᄂ${loc('quarantine')}+2`] = ((qs_multiplier - 1) * 100) + '%';
                 }
+                modRes('Aluminium', alum_delta * time_multiplier);
+            }
+
+            // Aluminium Extractor Ship
+            if (global.resource.Aluminium.display && e_ship['aluminium'] && e_ship.aluminium > 0){
+                let alum_delta = e_ship.aluminium * shrineMetal.mult * global_multiplier;
+                alum_delta *= 1 + (refinery / 100);
+                alumina_bd[loc('tau_roid_mining_ship')] = e_ship.aluminium + 'v';
                 modRes('Aluminium', alum_delta * time_multiplier);
             }
 
@@ -5156,16 +5205,40 @@ function fastLoop(){
         breakdown.p['Uranium'] = uranium_bd;
 
         // Oil
-        if (global.city['oil_well']){
-            let oil_extractor = p_on['oil_extractor'] * production('oil_extractor');
-            let oil_well = production('oil_well') * global.city.oil_well.count;
+        if (global.resource.Oil.display){
+            let oil_bd = {};
+
+            // Whaling Ship & Whale Processor
+            let whale_oil = 0;
+            if (global.tauceti['whaling_station'] && global.tauceti['whaling_ship']){
+                global.tauceti.whaling_station.max = global.tauceti.whaling_station.on * 750;
+
+                // Refine Oil
+                if (global.tauceti.whaling_station.fill > 0){
+                    let raw = p_on['whaling_station'] * production('whaling_station');
+                    if (raw > global.tauceti.whaling_station.fill){
+                        raw = global.tauceti.whaling_station.fill;
+                    }
+                    global.tauceti.whaling_station.fill -= raw * time_multiplier;
+
+                    whale_oil = raw * production('whaling_ship_oil');
+                }
+
+                let blubber = support_on['whaling_ship'] * production('whaling_ship');
+                global.tauceti.whaling_station.fill += blubber * time_multiplier;
+                if (global.tauceti.whaling_station.fill > global.tauceti.whaling_station.max){
+                    global.tauceti.whaling_station.fill = global.tauceti.whaling_station.max;
+                }
+            }
+
+            let oil_extractor = global.space['oil_extractor'] ? p_on['oil_extractor'] * production('oil_extractor') : 0;
+            let oil_well = global.city['oil_well'] ? production('oil_well') * global.city.oil_well.count : 0;
 
             let synd = syndicate('spc_gas_moon');
 
-            let delta = (oil_well * q_multiplier) + (oil_extractor * qs_multiplier * synd * zigVal);
+            let delta = (oil_well * q_multiplier) + (oil_extractor * qs_multiplier * synd * zigVal) + (whale_oil);
             delta *= hunger * global_multiplier;
-
-            let oil_bd = {};
+            
             oil_bd[loc('city_oil_well')] = oil_well + 'v';
             if (oil_well > 0){
                 oil_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
@@ -5176,6 +5249,8 @@ function fastLoop(){
                 oil_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 oil_bd[`ᄂ${loc('quarantine')}+1`] = ((qs_multiplier - 1) * 100) + '%';
             }
+            oil_bd[loc('tau_roid_whaling_ship')] = whale_oil + 'v';
+
             oil_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Oil'] = oil_bd;
             modRes('Oil', delta * time_multiplier);
@@ -5217,15 +5292,24 @@ function fastLoop(){
             let base = gal_on['armed_miner'] * 0.65;
             let foothold = 1 + (gal_on['ore_processor'] * 0.1);
             let pirate = piracy('gxy_alien2');
-            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * zigVal;
+            let delta = base * global_multiplier * pirate * foothold * hunger * shrineMetal.mult * iridium_smelter * zigVal;
 
             iridium_bd[loc('galaxy_armed_miner_bd')] = base + 'v';
             if (base > 0){
                 iridium_bd[`ᄂ${loc('galaxy_ore_processor')}`] = -((1 - foothold) * 100) + '%';
+                iridium_bd[`ᄂ${loc('city_smelter')}+2`] = ((iridium_smelter - 1) * 100) + '%';
                 iridium_bd[`ᄂ${loc('galaxy_piracy')}`] = -((1 - pirate) * 100) + '%';
                 iridium_bd[`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
             }
             modRes('Iridium', delta * time_multiplier);
+        }
+
+        // Iridium Extractor Ship
+        if (global.resource.Iridium.display && e_ship['iridium'] && e_ship.iridium > 0){
+            let iridium_delta = e_ship.iridium * shrineMetal.mult * global_multiplier * iridium_smelter * hunger;
+            iridium_bd[loc('tau_roid_mining_ship')] = e_ship.iridium + 'v';
+            iridium_bd[`ᄂ${loc('city_smelter')}+3`] = ((iridium_smelter - 1) * 100) + '%';
+            modRes('Iridium', iridium_delta * time_multiplier);
         }
 
         if (shrineBonusActive()){
@@ -5266,12 +5350,9 @@ function fastLoop(){
 
         if (p_on['refueling_station']){
             let gas_mining = (p_on['refueling_station'] * production('refueling_station'));
-            let delta = gas_mining * hunger * global_multiplier * zigVal;
+            let delta = gas_mining * hunger * global_multiplier;
 
             helium_bd[loc('tau_gas_refueling_station_title')] = gas_mining + 'v';
-            if (gas_mining > 0){
-                helium_bd[`ᄂ${loc('space_red_ziggurat_title')}+2`] = ((zigVal - 1) * 100) + '%';
-            }
             modRes('Helium_3', delta * time_multiplier);
         }
 
@@ -5391,6 +5472,13 @@ function fastLoop(){
             modRes('Neutronium', mine_delta * time_multiplier);
         }
 
+        // Neutronium Extractor Ship
+        if (global.resource.Neutronium.display && e_ship['neutronium'] && e_ship.neutronium > 0){
+            let neutronium_delta = e_ship.neutronium * global_multiplier;
+            neutronium_bd[loc('tau_roid_mining_ship')] = e_ship.neutronium + 'v';
+            modRes('Neutronium', neutronium_delta * time_multiplier);
+        }
+
         neutronium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
         breakdown.p['Neutronium'] = neutronium_bd;
 
@@ -5425,15 +5513,13 @@ function fastLoop(){
             }
             modRes('Elerium', delta * time_multiplier);
         }
-        elerium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-        breakdown.p['Elerium'] = elerium_bd;
 
         // Kuiper Elerium
         if (global.space['elerium_mine'] && p_on['elerium_mine']){
             let synd = syndicate('spc_kuiper');
 
             let mine_base = p_on['elerium_mine'] * production('elerium_mine');
-            let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * zigVal;
+            let mine_delta = mine_base * global_multiplier * qs_multiplier * synd * hunger * zigVal;
             elerium_bd[loc('space_kuiper_mine',[global.resource.Elerium.name])] = mine_base + 'v';
             if (mine_base > 0){
                 elerium_bd[`ᄂ${loc('space_syndicate')}+1`] = -((1 - synd) * 100) + '%';
@@ -5442,6 +5528,16 @@ function fastLoop(){
             }
             modRes('Elerium', mine_delta * time_multiplier);
         }
+
+        // Elerium Extractor Ship
+        if (global.resource.Elerium.display && e_ship['elerium'] && e_ship.elerium > 0){
+            let elerium_delta = e_ship.elerium * global_multiplier;
+            elerium_bd[loc('tau_roid_mining_ship')] = e_ship.elerium + 'v';
+            modRes('Elerium', elerium_delta * time_multiplier);
+        }
+
+        elerium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Elerium'] = elerium_bd;
 
         // Adamantite
         let adamantite_bd = {};
@@ -5697,6 +5793,13 @@ function fastLoop(){
             modRes('Orichalcum', mine_delta * time_multiplier);
         }
 
+        // Orichalcum Extractor Ship
+        if (global.resource.Orichalcum.display && e_ship['orichalcum'] && e_ship.orichalcum > 0){
+            let orichalcum_delta = e_ship.orichalcum * global_multiplier;
+            orichalcum_bd[loc('tau_roid_mining_ship')] = e_ship.orichalcum + 'v';
+            modRes('Orichalcum', orichalcum_delta * time_multiplier);
+        }
+
         breakdown.p['Orichalcum'] = orichalcum_bd;
 
         // Womling Production
@@ -5714,26 +5817,6 @@ function fastLoop(){
                 modRes('Unobtainium', miner_delta * time_multiplier);
             }
             breakdown.p['Unobtainium'] = unobtainium_bd;
-        }
-
-        // Extractor Ship & Ore Refinery
-        if (global.tauceti['ore_refinery'] && global.tauceti['mining_ship']){
-            global.tauceti.ore_refinery.max = global.tauceti.ore_refinery.on * 1000;
-            let ore = support_on['mining_ship'] * production('mining_ship');
-            global.tauceti.ore_refinery.fill += ore * time_multiplier;
-            if (global.tauceti.ore_refinery.fill > global.tauceti.ore_refinery.max){
-                global.tauceti.ore_refinery.fill = global.tauceti.ore_refinery.max;
-            }
-        }
-
-        // Whaling Ship & Whale Processor
-        if (global.tauceti['whaling_station'] && global.tauceti['whaling_ship']){
-            global.tauceti.whaling_station.max = global.tauceti.whaling_station.on * 750;
-            let ore = support_on['whaling_ship'] * production('whaling_ship');
-            global.tauceti.whaling_station.fill += ore * time_multiplier;
-            if (global.tauceti.whaling_station.fill > global.tauceti.whaling_station.max){
-                global.tauceti.whaling_station.fill = global.tauceti.whaling_station.max;
-            }
         }
 
         // Income

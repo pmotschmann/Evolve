@@ -6343,6 +6343,9 @@ function drawModal(c_action,type){
         case 'titan_mine':
             titanModal(body);
             break;
+        case 'mining_ship':
+            miningShipModal(body);
+            break;
         case 'nanite_factory':
             naniteModal(body);
             break;
@@ -6413,6 +6416,10 @@ function quarryModal(modal){
 
 function titanModal(modal){
     loadIndustry('titan_mine',modal);
+}
+
+function miningShipModal(modal){
+    loadIndustry('mining_ship',modal);
 }
 
 function naniteModal(modal){

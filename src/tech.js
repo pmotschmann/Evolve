@@ -12212,7 +12212,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['ore_refinery'] = { count : 0, on: 0, max: 0, fill: 0 };
-                global.tauceti['mining_ship'] = { count : 0, on: 0 };
+                global.tauceti['mining_ship'] = { count : 0, on: 0, common: 50, uncommon: 50, rare: 50 };
                 return true;
             }
             return false;
@@ -12233,7 +12233,6 @@ const techs = {
         effect(){ return loc('tech_adv_belt_mining_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.tauceti['extractor_ship'] = { count : 0, on: 0 };
                 return true;
             }
             return false;

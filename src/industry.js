@@ -34,6 +34,9 @@ export function loadIndustry(industry,parent,bind){
         case 'nanite_factory':
             loadNFactory(parent,bind);
             break;
+        case 'mining_ship':
+            loadMiningShip(parent,bind);
+            break;
     }
 }
 
@@ -1224,6 +1227,47 @@ function loadTMine(parent,bind){
                     global.space.titan_mine.ratio += keyMult;
                     if (global.space.titan_mine.ratio > 100){
                         global.space.titan_mine.ratio = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadMiningShip(parent,bind){
+    parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iron.name,global.resource.Aluminium.name])}</div>`));
+    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('common')" aria-label="Increase Iron Production">&laquo;</span><b-slider v-model="common" format="percent"></b-slider><span class="add" role="button" @click="add('common')" aria-label="Increase Aluminium Production">&raquo;</span></div>`);
+    parent.append(common);
+
+    parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iridium.name,global.resource.Neutronium.name])}</div>`));
+    let uncommon = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('uncommon')" aria-label="Increase Iridium Production">&laquo;</span><b-slider v-model="uncommon" format="percent"></b-slider><span class="add" role="button" @click="add('uncommon')" aria-label="Increase Neutronium Production">&raquo;</span></div>`);
+    parent.append(uncommon);
+
+    if (global.tech.tau_roid >= 5){
+        parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Orichalcum.name,global.resource.Elerium.name])}</div>`));
+        let rare = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('rare')" aria-label="Increase Orichalcum Production">&laquo;</span><b-slider v-model="rare" format="percent"></b-slider><span class="add" role="button" @click="add('rare')" aria-label="Increase Elerium Production">&raquo;</span></div>`);
+        parent.append(rare);
+    }
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.tauceti.mining_ship,
+        methods: {
+            sub(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.mining_ship[r] > 0){
+                    global.tauceti.mining_ship[r] -= keyMult;
+                    if (global.tauceti.mining_ship[r] < 0){
+                        global.tauceti.mining_ship[r] = 0;
+                    }
+                }
+            },
+            add(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.mining_ship[r] < 100){
+                    global.tauceti.mining_ship[r] += keyMult;
+                    if (global.tauceti.mining_ship[r] > 100){
+                        global.tauceti.mining_ship[r] = 100;
                     }
                 }
             }

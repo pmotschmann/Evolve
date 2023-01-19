@@ -293,7 +293,7 @@ export function production(id,val){
         }
         case 'refueling_station':
         {
-            return 0.85;
+            return 9.35;
         }
         case 'ore_refinery':
         {
@@ -314,6 +314,35 @@ export function production(id,val){
             }
             return 0;
         }
+        case 'mining_ship_ore':
+        {
+            switch (val){
+                case 'iron':
+                {
+                    return 1.85;
+                }
+                case 'aluminium':
+                {
+                    return 1.85;
+                }
+                case 'iridium':
+                {
+                    return 0.35;
+                }
+                case 'neutronium':
+                {
+                    return 0.35;
+                }
+                case 'orichalcum':
+                {
+                    return 0.25;
+                }
+                case 'elerium':
+                {
+                    return 0.02;
+                }
+            }
+        }
         case 'whaling_ship':
         {
             if (global.tauceti['patrol_ship']){
@@ -324,6 +353,10 @@ export function production(id,val){
                 return 8 * patrol;
             }
             return 0;
+        }
+        case 'whaling_ship_oil':
+        {
+            return 0.3;
         }
     }
 }

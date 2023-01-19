@@ -2140,7 +2140,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_mine_effect')}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_mine_effect',[global.resource.Unobtainium.name])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
                 return desc;
             },
@@ -2156,7 +2156,8 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair(){ return loc('tau_red_womling_mine_flair'); }
         },
         womling_fun: {
             id: 'tauceti-womling_fun',
@@ -2355,7 +2356,7 @@ const tauCetiModules = {
                 let ore = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.fill : 0;
                 let max = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.max : 0;
                 let refine = +(production('ore_refinery')).toFixed(2);
-                let desc = `<div>${loc('tau_gas_ore_refinery_effect',[ore])}</div>`;
+                let desc = `<div>${loc('tau_gas_ore_refinery_effect',[+ore.toFixed(2)])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_ore_refinery_effect2',[max])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_ore_refinery_effect3',[refine])}</div>`;
                 desc = desc + `<div>${loc('interstellar_stellar_forge_effect3',[2])}</div>`;
@@ -2523,7 +2524,8 @@ const tauCetiModules = {
             support_fuel(){ return { r: 'Helium_3', a: 75 }; },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
-            refresh: true,
+            //refresh: true,
+            special: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_ship.count++;
@@ -2555,7 +2557,7 @@ const tauCetiModules = {
             support_fuel(){ return { r: 'Helium_3', a: 90 }; },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
-            refresh: true,
+            //refresh: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.whaling_ship.count++;
