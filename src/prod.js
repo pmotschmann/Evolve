@@ -274,11 +274,11 @@ export function production(id,val){
             switch (val){
                 case 'food':
                 {
-                    return 9;
+                    return global.tech['isolation'] ? 15 : 9;
                 }
                 case 'lumber':
                 {
-                    return 5.5;
+                    return global.tech['isolation'] ? 12 : 5.5;
                 }
             }
         }
@@ -293,7 +293,7 @@ export function production(id,val){
         }
         case 'refueling_station':
         {
-            return 9.35;
+            return global.tech['isolation'] ? 18.5 : 9.35;
         }
         case 'ore_refinery':
         {

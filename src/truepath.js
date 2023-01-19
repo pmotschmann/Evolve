@@ -3,10 +3,11 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
-import { jobScale } from './jobs.js';
+import { jobScale, job_desc } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
+import { removeTask, govActive } from './governor.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -1426,9 +1427,9 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: 400 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 25 : 400 }; },
             support(){ return 3; },
-            powered(){ return powerCostMod(30); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 6 : 30); },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -1458,17 +1459,32 @@ const tauCetiModules = {
             },
             effect(){
                 let pop = $(this)[0].citizens();
-                let containers = 250;
+                let containers = global.tech['isolation'] ? 1000 : 250;
                 let fuel = +($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('plus_max_citizens',[pop])}</div>`;
+
+                if (global.tech['isolation']){
+                    let vault = bank_vault() * 18;
+                    vault = spatialReasoning(vault);
+                    vault = (+(vault).toFixed(0)).toLocaleString();
+                    desc = desc + `<div>${loc('plus_max_resource',[`\$${vault}`,loc('resource_Money_name')])}</div>`;
+                }
+
                 desc = desc + `<div>${loc('tau_home_colony_effect',[50,races[global.race.species].home])}</div>`;
+                
+                if (global.tech['isolation']){
+                    let gasVal = govActive('gaslighter',0);
+                    let mVal = (gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast) * 2;
+                    desc = desc + `<div>${loc('space_red_vr_center_effect1',[mVal])}</div>`;
+                }
+                
                 desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
             support(){ return -2; },
-            support_fuel(){ return { r: 'Food', a: 1000 }; },
+            support_fuel(){ return { r: 'Food', a: global.tech['isolation'] ? 75 : 1000 }; },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -1481,7 +1497,7 @@ const tauCetiModules = {
                 return false;
             },
             citizens(){
-                let pop = 5;
+                let pop = global.tech['isolation'] ? 6 : 5;
                 if (global.race['high_pop']){
                     pop *= traits.high_pop.vars()[0];
                 }
@@ -1512,7 +1528,7 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return 1; },
-            powered(){ return powerModifier(4); },
+            powered(){ return powerModifier(global.tech['isolation'] ? 1 : 4); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_farm.count++;
@@ -1600,7 +1616,7 @@ const tauCetiModules = {
             effect(){
                 return `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
-            powered(){ return powerCostMod(100); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 25 : 100); },
             action(){
                 return false;
             }
@@ -1666,8 +1682,8 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return -1; },
-            support_fuel(){ return { r: 'Helium_3', a: 500 }; },
-            powered(){ return powerModifier(-32); },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 65 : 500 }; },
+            powered(){ return powerModifier(global.tech['isolation'] ? -48 : -32); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.fusion_generator.count++;
@@ -1693,10 +1709,18 @@ const tauCetiModules = {
             },
             wide: true,
             res(){
-                return [
+                let res = [
                     'Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Crystal',
                     'Alloy','Polymer','Iridium','Chrysotile','Nano_Tube','Neutronium','Adamantite','Unobtainium'
                 ];
+                if (global.tech['isolation']){
+                    res.push('Oil');
+                    res.push('Helium_3');
+                    res.push('Uranium');
+                    res.push('Water');
+                    res.push('Elerium');
+                }
+                return res;
             },
             val(res){
                 switch (res){
@@ -1738,6 +1762,16 @@ const tauCetiModules = {
                         return 720;
                     case 'Unobtainium':
                         return 1000;
+                    case 'Oil':
+                        return 680;
+                    case 'Helium_3':
+                        return 575;
+                    case 'Uranium':
+                        return 125;
+                    case 'Water':
+                        return 15;
+                    case 'Elerium':
+                        return 3;
                     default:
                         return 0;
                 }
@@ -1792,7 +1826,7 @@ const tauCetiModules = {
             },
             special: true,
             support(){ return -1; },
-            powered(){ return powerModifier(5); },
+            powered(){ return powerModifier(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_factory.count++;
@@ -1826,7 +1860,7 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return -1; },
-            powered(){ return powerModifier(35); },
+            powered(){ return powerModifier(global.tech['isolation'] ? 8 : 35); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.infectious_disease_lab.count++;
@@ -1836,6 +1870,13 @@ const tauCetiModules = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                if (global.tech.disease === 1){
+                    global.tech.disease = 2;
+                    messageQueue(loc('tau_plague4',[loc('tab_tauceti')]),'info',false,['progress']);
+                    drawTech();
+                }
             }
         },
     },
@@ -1901,7 +1942,7 @@ const tauCetiModules = {
             },
             support_fuel(){ return { r: 'Oil', a: 125 }; },
             support(){ return global.tech['womling_logistics'] ? 2.5 : 2; },
-            powered(){ return powerCostMod(18); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 18); },
             refresh: true,
             action(){
                 if (tauEnabled() && payCosts($(this)[0])){
@@ -2311,7 +2352,7 @@ const tauCetiModules = {
                 Unobtainium(offset){ return spaceCostMultiplier('refueling_station', offset, 5500, 1.28, 'tauceti'); },
                 Mythril(offset){ return spaceCostMultiplier('refueling_station', offset, 60000, 1.28, 'tauceti'); },
             },
-            powered(){ return powerCostMod(5); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             effect(){
                 let helium_prod = +(production('refueling_station')).toFixed(2);
                 let helium_tank = spatialReasoning(10000);
@@ -2351,7 +2392,7 @@ const tauCetiModules = {
                 Unobtainium(offset){ return spaceCostMultiplier('ore_refinery', offset, 800, 1.28, 'tauceti'); },
                 Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, 118000, 1.28, 'tauceti'); },
             },
-            powered(){ return powerCostMod(8); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 8); },
             effect(){
                 let ore = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.fill : 0;
                 let max = global.tauceti.hasOwnProperty('ore_refinery') ? global.tauceti.ore_refinery.max : 0;
@@ -2404,12 +2445,12 @@ const tauCetiModules = {
                 Polymer(offset){ return spaceCostMultiplier('whaling_station', offset, 955000, 1.28, 'tauceti'); },
                 Orichalcum(offset){ return spaceCostMultiplier('whaling_station', offset, 268000, 1.28, 'tauceti'); },
             },
-            powered(){ return powerCostMod(6); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 6); },
             effect(){
                 let blubber = global.tauceti.hasOwnProperty('whaling_station') ? global.tauceti.whaling_station.fill : 0;
                 let max = global.tauceti.hasOwnProperty('whaling_station') ? global.tauceti.whaling_station.max : 0;
                 let refine = +(production('whaling_station')).toFixed(2);
-                let desc = `<div>${loc('tau_gas_whaling_station_effect',[blubber])}</div>`;
+                let desc = `<div>${loc('tau_gas_whaling_station_effect',[+blubber.toFixed(2)])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_whaling_station_effect2',[max])}</div>`;
                 desc = desc + `<div>${loc('tau_gas_whaling_station_effect3',[refine])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -2489,7 +2530,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: 250 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 15 : 250 }; },
             support(){ return 1; },
             powered(){ return powerCostMod(1); },
             refresh: true,
@@ -2521,7 +2562,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: 75 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 12 : 75 }; },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
             //refresh: true,
@@ -2554,7 +2595,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: 90 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 14 : 90 }; },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
             //refresh: true,
@@ -3902,7 +3943,9 @@ export function tpStorageMultiplier(type,heavy){
         }
         case 'repository':
         {
-            // Do Nothing
+            if (global.tech['isolation']){
+                multiplier *= 7.5;
+            }
         }
         break;
     }
@@ -3910,7 +3953,104 @@ export function tpStorageMultiplier(type,heavy){
 }
 
 export function jumpGateShutdown(){
-    // to be implimented
+    Object.keys(actions.city).forEach(function (k){
+        if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
+            if (global.race['hooved']){
+                if (actions.city[k].cost.hasOwnProperty('Horseshoe')){
+                    global.race['shoecnt'] -= actions.city[k].cost.Horseshoe() * global.city[k].count;
+                }
+            }
+            global.city[k].count = 0;
+            if (global.city[k].hasOwnProperty('on')){
+                global.city[k].on = 0;
+            }
+        }
+    });
+
+    if (global.race['hooved'] && global.race['shoecnt'] < 5){
+        global.race.shoecnt = 5;
+    }
+    if (global.resource.Zen.display){
+        global.resource.Zen.display = false;
+    }
+    if (global.resource.Slave.display){
+        global.resource.Slave.display = false;
+        global.resource.Slave.amount = 0;
+        removeTask('slave');
+    }
+    if (global.race['deconstructor']){
+        nf_resources.forEach(function (res){
+            global.city.nanite_factory[res] = 0;
+        });
+    }
+    Object.keys(global.resource).forEach(function (res){
+        if (global.resource[res].hasOwnProperty('trade')){
+            global.resource[res].trade = 0;
+        }
+    });
+
+    global.space.shipyard.ships = [];
+
+    [
+        'spc_home','spc_moon','spc_red','spc_hell','spc_sun','spc_gas','spc_gas_moon','spc_belt','spc_dwarf',
+        'spc_titan','spc_enceladus','spc_triton','spc_kuiper','spc_eris'
+    ].forEach(function(sector){
+        Object.keys(actions.space[sector]).forEach(function (k){
+            if (global.space.hasOwnProperty(k) && global.space[k].hasOwnProperty('count')){
+                global.space[k].count = 0;
+                if (global.space[k].hasOwnProperty('on')){
+                    global.space[k].on = 0;
+                }
+            }
+        });
+    });
+
+    Object.keys(job_desc).forEach(function (job){
+        if (job !== 'pit_miner'){
+            global.civic[job].workers = 0;
+            global.civic[job].assigned = 0;
+        }
+    });
+
+    ['forager','farmer','lumberjack','quarry_worker','miner','coal_miner','priest','colonist','titan_colonist','space_miner'].forEach(function (job){
+        global.civic[job].display = false;
+    });
+
+    if (global.civic.hunter.display){
+        global.civic.d_job = 'hunter';
+    }
+    else {
+        global.civic.d_job = 'unemployed';
+    }
+
+    for (let building of Object.values(global.race.purgatory.city)){
+        if (building.hasOwnProperty('count')){
+            building.count = 0;
+        }
+        if (building.hasOwnProperty('on')){
+            building.on = 0;
+        }
+    }
+    if (global.queue.hasOwnProperty('queue')){
+        for (let i = global.queue.queue.length-1; i >= 0; i--){
+            let item = global.queue.queue[i];
+            if (item.action === 'city' || (item.action === 'space' && actions.space.spc_moon[item.type])){
+                global.queue.queue.splice(i,1);
+            }
+        }
+    }
+    
+    let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
+    if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }
+
+    global.settings.spaceTabs = 6;
+    global.settings.showSpace = false;
+    global.settings.showDeep = false
+    global.settings.showCity = false;
+
+    clearElement($(`#infoTimer`));
+
+    //renderSpace();
 }
 
 export function calcAIDrift(){

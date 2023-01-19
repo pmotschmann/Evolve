@@ -9,7 +9,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits } from './truepath.js';
+import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -12276,6 +12276,49 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    isolation_protocol: {
+        id: 'tech-isolation_protocol',
+        title: loc('tech_isolation_protocol'),
+        desc: loc('tech_isolation_protocol'),
+        category: 'science',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { disease: 2 },
+        grant: ['disease',3],
+        cost: {
+            Knowledge(){ return 8500000; }
+        },
+        effect(){ return `<div>${loc('tech_isolation_protocol_effect',[loc('tab_tauceti')])}</div><div class="has-text-special">${loc('tech_isolation_protocol_warning')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['isolation'] = 1;
+                jumpGateShutdown();
+                return true;
+            }
+            return false;
+        }
+    },
+    focus_cure: {
+        id: 'tech-focus_cure',
+        title: loc('tech_focus_cure'),
+        desc: loc('tech_focus_cure'),
+        category: 'science',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { disease: 2 },
+        grant: ['disease',3],
+        cost: {
+            Knowledge(){ return 8500000; }
+        },
+        effect(){ return `<div>${loc('tech_focus_cure_effect',[loc('tab_tauceti')])}</div><div class="has-text-special">${loc('tech_focus_cure_warning')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['focus_cure'] = 1;
                 return true;
             }
             return false;

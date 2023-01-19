@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.0`,
-        date: `?/??/2022`,
+        date: `?/??/2023`,
         changes: [
             `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
             `Added Perks: Evolve Master and Evolve Grandmaster.`,

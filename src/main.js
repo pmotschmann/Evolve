@@ -10,7 +10,7 @@ import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, g
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, jumpGateShutdown } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive } from './governor.js';
@@ -994,8 +994,23 @@ function fastLoop(){
         // Rest of game
         let zigVal = zigguratBonus();
         let morale = 100;
-        let q_multiplier = global.race['quarantine'] ? (global.race.quarantine >= 2 ? 0.25 : 0.5) : 1;
-        let qs_multiplier = global.race['quarantine'] && global.race.quarantine >= 2 ? (global.race.quarantine >= 3 ? 0.25 : 0.5) : 1;
+        let q_multiplier = 1;
+        let qs_multiplier = 1;
+        if (global.race['quarantine']){
+            switch (global.race.quarantine){
+                case 1:
+                    q_multiplier = 0.5;
+                    break;
+                case 2:
+                    q_multiplier = 0.25;
+                    qs_multiplier = 0.5;
+                    break;
+                case 3:
+                    q_multiplier = 0.1;
+                    qs_multiplier = 0.25;
+                    break;
+            }
+        }
 
         if (global.city.calendar.season === 0 && global.city.calendar.year > 0){ // Spring
             let spring = global.race['chilled'] || global.race['smoldering'] ? 0 : 5;
@@ -2456,9 +2471,10 @@ function fastLoop(){
 
         if (global.tech['broadcast']){
             let gasVal = govActive('gaslighter',0);
-            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : global.city.wardenclyffe.on;
+            let signalVal = global.race['orbit_decayed'] ? (p_on['nav_beacon'] || 0) : (global.tech['isolation'] && global.race['truepath'] ? support_on['colony'] : global.city.wardenclyffe.on);
             if (global.race['orbit_decayed']){ signalVal /= 2; }
             let mVal = gasVal ? gasVal + global.tech.broadcast : global.tech.broadcast;
+            if (global.tech['isolation']){ mVal *= 2; }
             global.city.morale.broadcast = signalVal * mVal;
             morale += signalVal * mVal;
         }
@@ -3331,7 +3347,9 @@ function fastLoop(){
                 gene_sequence = false;
             }
 
-            let delta = professors_base + scientist_base;
+            let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * 8 : 0;
+
+            let delta = professors_base + scientist_base + womling;
             delta *= hunger * global_multiplier;
             delta += sundial_base * global_multiplier;
             delta *= library_mult;
@@ -3339,6 +3357,7 @@ function fastLoop(){
             let know_bd = {};
             know_bd[loc('job_professor')] = professors_base + 'v';
             know_bd[loc('job_scientist')] = scientist_base + 'v';
+            know_bd[loc('tau_red_womlings')] = womling + 'v';
             know_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
             know_bd[loc('tech_sundial')] = sundial_base + 'v';
             if (global.race['inspired']){
@@ -6730,10 +6749,11 @@ function midLoop(){
             bd_Money[loc('portal_arcology_title')] = money+'v';
         }
         if (support_on['colony']){
-            caps['Containers'] += (support_on['colony'] * 250);
-            bd_Containers[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
-            caps['Crates'] += (support_on['colony'] * 250);
-            bd_Crates[loc('tau_home_colony')] = (support_on['colony'] * 250) + 'v';
+            let containers = global.tech['isolation'] ? 1000 : 250;
+            caps['Containers'] += (support_on['colony'] * containers);
+            bd_Containers[loc('tau_home_colony')] = (support_on['colony'] * containers) + 'v';
+            caps['Crates'] += (support_on['colony'] * containers);
+            bd_Crates[loc('tau_home_colony')] = (support_on['colony'] * containers) + 'v';
 
             let pop = support_on['colony'] * actions.tauceti.tau_home.colony.citizens();
             caps[global.race.species] += pop;
@@ -7275,6 +7295,13 @@ function midLoop(){
             let gain = (banks * spatialReasoning(vault));
             caps['Money'] += gain;
             bd_Money[`${planetName().titan} ${loc('city_bank')}`] = gain+'v';
+        }
+
+        if (global.tauceti['colony'] && global.tech['isolation']){
+            let vault = bank_vault() * 18;
+            let gain = (global.tauceti.colony.count * spatialReasoning(vault));
+            caps['Money'] += gain;
+            bd_Money[loc('tau_home_colony')] = gain+'v';
         }
 
         if (global.city['casino'] || global.space['spc_casino']){
@@ -9374,9 +9401,10 @@ function longLoop(){
                     global.race['quarantine'] = 2;
                     messageQueue(loc('tau_plague3',[govTitle(3),races[global.race.species].home]),'info',false,['progress']);
                 }
-                else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){
-                    messageQueue(loc('tau_plague4',[races[global.race.species].home]),'info',false,['progress']);
-                    jumpGateShutdown();
+                else if (!global.tech['isolation'] && global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 3 && Math.rand(0,50) === 0){
+                    global.tech.plague = 4;
+                    global.race['quarantine'] = 3;
+                    messageQueue(loc('tau_plague5',[races[global.race.species].home]),'info',false,['progress']);
                 }
             }
         }
