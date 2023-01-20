@@ -3931,9 +3931,8 @@ export function buildTemplate(key, region){
     switch (key){
         case 'bonfire':
         {
-            let id = region === 'space' ? 'space-bonfire' : 'city-bonfire';
             return {
-                id: id,
+                id: `${region}-bonfire`,
                 title: loc('city_bonfire'),
                 desc: loc('city_bonfire_desc'),
                 category: 'outskirts',
@@ -3961,9 +3960,8 @@ export function buildTemplate(key, region){
         }
         case 'firework':
         {
-            let id = region === 'space' ? 'space-firework' : 'city-firework';
             return {
-                id: id,
+                id: `${region}-firework`,
                 title: loc('city_firework'),
                 desc: loc('city_firework'),
                 category: 'outskirts',
@@ -3994,7 +3992,6 @@ export function buildTemplate(key, region){
         }
         case 'assembly':
         {
-            let id = region === 'space' ? 'space-assembly' : 'city-assembly';
             let assemblyCostAdjust = function(v){
                 let cost = highPopAdjust(v);
                 if (global.race['promiscuous']){
@@ -4003,7 +4000,7 @@ export function buildTemplate(key, region){
                 return Math.round(cost);
             }
             let action = {
-                id: id,
+                id: `${region}-assembly`,
                 title: loc('city_assembly'),
                 desc(){ return loc('city_assembly_desc',[races[global.race.species].name]); },
                 category: 'military',
@@ -4042,9 +4039,8 @@ export function buildTemplate(key, region){
         }
         case 'nanite_factory':
         {
-            let id = region === 'space' ? 'space-nanite_factory' : 'city-nanite_factory';
             let action = {
-                id: id,
+                id: `${region}-nanite_factory`,
                 title: loc('city_nanite_factory'),
                 desc: loc('city_nanite_factory'),
                 category: 'industrial',
@@ -4083,9 +4079,8 @@ export function buildTemplate(key, region){
         }
         case 'horseshoe':
         {
-            let id = region === 'space' ? 'space-horseshoe' : 'city-horseshoe';
             let action = {
-                id: id,
+                id: `${region}-horseshoe`,
                 title(){ return loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]); },
                 desc(){ return loc(`city_${hoovedRename(true)}_desc`,[hoovedRename(false)]); },
                 category: 'outskirts',
@@ -4143,6 +4138,9 @@ export function buildTemplate(key, region){
 
             if (region === 'space'){
                 action.trait.push(tName);
+            }
+            else if (region === 'tauceti'){
+                action.reqs['isolation'] = 1;
             }
             else {
                 action['not_trait'] = [tName];

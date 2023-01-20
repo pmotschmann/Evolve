@@ -74,12 +74,12 @@ export function defineIndustry(){
     }
     clearElement($('#industry'));
 
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
         var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
         $(`#industry`).append(smelter);
         loadIndustry('smelter',smelter,'#iSmelter');
     }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0)){
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
         var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
         $(`#industry`).append(factory);
         loadIndustry('factory',factory,'#iFactory');

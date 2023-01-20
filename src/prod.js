@@ -267,6 +267,14 @@ export function production(id,val){
                 {
                     return highPopAdjust(0.336);
                 }
+                case 'copper':
+                {
+                    return highPopAdjust(0.58);
+                }
+                case 'coal':
+                {
+                    return highPopAdjust(0.13);
+                }
             }
         }
         case 'tau_farm':
@@ -356,7 +364,7 @@ export function production(id,val){
         }
         case 'whaling_ship_oil':
         {
-            return 0.3;
+            return global.tech['isolation'] ? 0.78 : 0.42;
         }
     }
 }

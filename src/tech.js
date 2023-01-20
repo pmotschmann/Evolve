@@ -12154,6 +12154,27 @@ const techs = {
             return false;
         }
     },
+    womling_support: {
+        id: 'tech-womling_support',
+        title: loc('tech_womling_support'),
+        desc: loc('tech_womling_support'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 7, tau_gas: 4 },
+        grant: ['womling_technicians',1],
+        cost: {
+            Knowledge(){ return 8850000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_support_effect',[loc('tab_tauceti')])}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['womling_station'] = { count : 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
         title: loc('tech_asteroid_analysis'),

@@ -546,7 +546,7 @@ function loadFactory(parent,bind){
                     max += p_on['int_factory'] * 2;
                 }
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                    max += support_on['tau_factory'] * 3;
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
@@ -576,7 +576,7 @@ function loadFactory(parent,bind){
                     max += p_on['int_factory'] * 2;
                 }
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                    max += support_on['tau_factory'] * 3;
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 return colorRange(on,max);
             }
@@ -591,7 +591,7 @@ function loadFactory(parent,bind){
                     max += p_on['int_factory'] * 2;
                 }
                 if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                    max += support_on['tau_factory'] * 3;
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 return max;
             },
