@@ -2558,6 +2558,7 @@ function fastLoop(){
         let mBaseCap = 100;
         mBaseCap += global.city['casino'] ? p_on['casino'] : 0;
         mBaseCap += global.space['spc_casino'] ? p_on['spc_casino'] : 0;
+        mBaseCap += global.tauceti['tauceti_casino'] ? p_on['tauceti_casino'] : 0;
 
         if (global.city['amphitheatre']){
             let athVal = govActive('athleticism',0);
@@ -3274,6 +3275,13 @@ function fastLoop(){
             }
         }
 
+        if (global.resource.Furs.display && global.tech['isolation'] && global.tauceti['womling_farm']){
+            let base = global.tauceti.womling_farm.farmers;
+            let delta = base * global_multiplier;
+            fur_bd[loc('tau_red_womlings')] = base + 'v';
+            modRes('Furs', delta);
+        }
+
         // Knowledge
         { //block scope
             let sundial_base = global.tech['primitive'] && global.tech['primitive'] >= 3 ? 1 : 0;
@@ -3443,6 +3451,9 @@ function fastLoop(){
                 }
                 if (global.race['inflation']){
                     delta *= 1 + (global.race.inflation / 1250);
+                }
+                if (global.tech['isolation']){
+                    delta *= 3;
                 }
 
                 FactoryMoney = delta * hunger;
@@ -4698,8 +4709,22 @@ function fastLoop(){
                 if (base > 0){
                     water_bd[`ᄂ${loc('space_syndicate')}`] = -((1 - synd) * 100) + '%';
                     water_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
+                    water_bd[`ᄂ${loc('hunger')}`] = ((hunger - 1) * 100) + '%';
                 }
-                water_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+
+                modRes('Water', delta * time_multiplier);
+            }
+
+            if (global.tech['isolation'] && global.tauceti['tau_farm'] && p_on['tau_farm']){
+                let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
+
+                let base = production('tau_farm','water') * p_on['tau_farm'];
+                let delta = base * global_multiplier * colony_val;
+
+                water_bd[loc('tau_home_tau_farm')] = base + 'v';
+                if (base > 0){
+                    water_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                }
 
                 modRes('Water', delta * time_multiplier);
             }
@@ -5912,6 +5937,9 @@ function fastLoop(){
             if (global.race['greedy']){
                 income_base *= 1 - (traits.greedy.vars()[0] / 100);
             }
+            if (global.tech['isolation']){
+                income_base *= 15;
+            }
 
             if (fed){
                 if (global.tech['banking'] && global.tech['banking'] >= 2){
@@ -5989,10 +6017,21 @@ function fastLoop(){
             rawCash += delta;
         }
 
-        if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'])){
+        // Tribute
+        if (global.race['truepath'] && global.tauceti['overseer']){
+            let rate = (global.tauceti.overseer.loyal + global.tauceti.overseer.morale) / 200;
+            let base = global.tauceti.overseer.pop * rate * (global.tech['isolation'] ? 25 : 12);
+            let delta = base * global_multiplier;
+
+            money_bd[loc('tau_red_womlings')] = base + 'v';
+            modRes('Money', +(delta * time_multiplier).toFixed(2));
+        }
+
+        if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'] || p_on['tauceti_casino'])){
             let casinos = 0;
             if (p_on['casino']){ casinos += p_on['casino']; }
             if (p_on['spc_casino']){ casinos += p_on['spc_casino']; }
+            if (p_on['tauceti_casino']){ casinos += p_on['tauceti_casino']; }
 
             let cash = Math.log2(1 + global.resource[global.race.species].amount);
             let revenue = 2.5;
@@ -6014,6 +6053,9 @@ function fastLoop(){
             }
             if (global.race['inflation']){
                 cash *= 1 + (global.race.inflation / 1250);
+            }
+            if (global.tech['isolation']){
+                cash *= 1.5;
             }
             let racVal = govActive('racketeer',1);
             if (racVal){
@@ -6690,6 +6732,16 @@ function midLoop(){
                 lCaps['banker'] += jobScale(global.space.spc_casino.count);
             }
         }
+        if (global.tauceti['tauceti_casino']){
+            lCaps['entertainer'] += jobScale(global.tauceti.tauceti_casino.count);
+            if (global.tech['isolation']){
+                lCaps['banker'] += jobScale(global.tauceti.tauceti_casino.count);
+                
+                let pop = p_on['tauceti_casino'] * actions.tauceti.tau_home.tauceti_casino.citizens();
+                caps[global.race.species] += pop;
+                bd_Citizen[loc('city_casino')] = pop + 'v';
+            }
+        }
         if (global.galaxy['resort']){
             lCaps['entertainer'] += jobScale(p_on['resort'] * 2);
         }
@@ -7065,9 +7117,15 @@ function midLoop(){
             bd_Helium[loc('tau_home_orbital_station')] = gain+'v';
         }
         if (p_on['refueling_station']){
-            let gain = (p_on['refueling_station'] * spatialReasoning(10000));
-            caps['Helium_3'] += gain;
-            bd_Helium[loc('tau_gas_refueling_station_title')] = gain+'v';
+            let h_gain = (p_on['refueling_station'] * spatialReasoning(10000));
+            caps['Helium_3'] += h_gain;
+            bd_Helium[loc('tau_gas_refueling_station_title')] = h_gain+'v';
+
+            if (global.tech['tau_whale'] >= 2){
+                let o_gain = (p_on['refueling_station'] * spatialReasoning(6500));
+                caps['Oil'] += o_gain;
+                bd_Oil[loc('tau_gas_refueling_station_title')] = o_gain+'v';
+            }
         }
         if (p_on['orbital_platform']){
             let gain = (p_on['orbital_platform'] * spatialReasoning(17500));
@@ -7374,13 +7432,16 @@ function midLoop(){
             bd_Money[loc('tau_home_colony')] = gain+'v';
         }
 
-        if (global.city['casino'] || global.space['spc_casino']){
+        if (global.city['casino'] || global.space['spc_casino'] || global.tauceti['tauceti_casino']){
             let casinos = 0;
             if (global.city['casino'] && global.city.casino.count > 0){
                 casinos += global.city.casino.count;
             }
             if (global.space['spc_casino'] && global.space.spc_casino.count > 0){
                 casinos += global.space.spc_casino.count;
+            }
+            if (global.tauceti['tauceti_casino'] && global.tauceti.tauceti_casino.count > 0){
+                casinos += global.tauceti.tauceti_casino.count;
             }
             let casino_capacity = global.tech['gambling'] >= 3 ? 60000 : 40000;
             if (global.tech['gambling'] >= 5){
@@ -7398,6 +7459,9 @@ function midLoop(){
             }
             if (global.race['inflation']){
                 vault *= 1 + (global.race.inflation / 100);
+            }
+            if (global.tech['isolation']){
+                vault *= 5.5;
             }
             caps['Money'] += vault;
             bd_Money[loc('city_casino')] = vault+'v';

@@ -288,6 +288,10 @@ export function production(id,val){
                 {
                     return global.tech['isolation'] ? 12 : 5.5;
                 }
+                case 'water':
+                {
+                    return 0.35;
+                }
             }
         }
         case 'womling_mine':

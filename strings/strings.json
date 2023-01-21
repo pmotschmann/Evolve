@@ -6400,6 +6400,7 @@
   "tau_red_womling_prod_label": "Productivity",
   "tau_red_womling_employ_single": "Employs %0 Womling.",
   "tau_red_womling_employ": "Employs %0 Womlings.",
+  "tau_red_womling_generate": "Generates %0.",
   "tau_red_womling_village": "Womling Village",
   "tau_red_womling_village_effect": "Increase Womling population by %0.",
   "tau_red_womling_farm": "Womling Farm",

@@ -627,6 +627,9 @@ function loadFactory(parent,bind){
                 if (global.race['inflation']){
                     demand *= 1 + (global.race.inflation / 1250);
                 }
+                if (global.tech['isolation']){
+                    demand *= 3;
+                }
                 demand = demand.toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                 return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);

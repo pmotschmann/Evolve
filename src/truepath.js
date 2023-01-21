@@ -5,7 +5,7 @@ import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate } from './actions.js';
+import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { loc } from './locale.js';
@@ -1423,7 +1423,7 @@ const tauCetiModules = {
                 let helium = spatialReasoning(15000);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[races[global.race.species].home]),$(this)[0].support()])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[helium,global.resource.Helium_3.name])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[helium.toLocaleString(),global.resource.Helium_3.name])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1528,6 +1528,10 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('produce',[+(production('tau_farm','food')).toFixed(2),global.resource.Food.name])}</div>`;
                 if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                     desc = desc + `<div>${loc('produce',[+(production('tau_farm','lumber')).toFixed(2),global.resource.Lumber.name])}</div>`;
+                }
+                if (global.tech['isolation']){
+                    let water = +(production('tau_farm','water')).toFixed(2);
+                    desc = desc + `<div>${loc('produce',[water,global.resource.Water.name])}</div>`;
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -1912,6 +1916,49 @@ const tauCetiModules = {
                 }
             }
         },
+        tauceti_casino: {
+            id: 'tauceti-spc_casino',
+            title: loc('city_casino'),
+            desc: loc('city_casino'),
+            category: 'commercial',
+            reqs: { gambling: 1, isolation: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tauceti_casino', offset, 1450000, 1.35, 'tauceti'); },
+                Furs(offset){ return spaceCostMultiplier('tauceti_casino', offset, 95000, 1.35, 'tauceti'); },
+                Cement(offset){ return spaceCostMultiplier('tauceti_casino', offset, 120000, 1.35, 'tauceti'); },
+                Plywood(offset){ return spaceCostMultiplier('tauceti_casino', offset, 55000, 1.35, 'tauceti'); }
+            },
+            effect(){
+                let pop = $(this)[0].citizens();
+                let desc = `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div>`;
+                desc = desc + casinoEffect();
+                desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.tauceti_casino.count++;
+                    if (!global.race['joyless']){
+                        global.civic.entertainer.max += jobScale(1);
+                        global.civic.entertainer.display = true;
+                    }
+                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                        global.tauceti.tauceti_casino.on++;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            citizens(){
+                let gain = 1;
+                if (global.race['high_pop']){
+                    gain *= traits.high_pop.vars()[0];
+                }
+                return gain;
+            },
+            flair: loc('city_casino_flair')
+        },
     },
     tau_red: {
         info: {
@@ -1969,7 +2016,7 @@ const tauCetiModules = {
                 let oil = spatialReasoning(17500);
                 let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_red_spaceport_effect1',[loc('tau_planet',[planetName().red]),$(this)[0].support()])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[oil,global.resource.Oil.name])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[oil.toLocaleString(),global.resource.Oil.name])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -2186,6 +2233,9 @@ const tauCetiModules = {
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect',[global.tech['womling_pop'] ? 16 : 12])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
+                if (global.tech['isolation']){
+                    desc = desc + `<div>${loc('tau_red_womling_generate',[global.resource.Furs.name])}</div>`;
+                }
                 return desc;
             },
             support(){ return -1; },
@@ -2390,7 +2440,11 @@ const tauCetiModules = {
                 let helium_prod = +(production('refueling_station')).toFixed(2);
                 let helium_tank = spatialReasoning(10000);
                 let desc = `<div>${loc('space_gas_mining_effect1',[helium_prod])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[helium_tank,global.resource.Helium_3.name])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[helium_tank.toLocaleString(),global.resource.Helium_3.name])}</div>`;
+                if (global.tech['tau_whale'] >= 2){
+                    let oil_tank = spatialReasoning(6500);
+                    desc = desc + `<div>${loc('plus_max_resource',[oil_tank.toLocaleString(),global.resource.Oil.name])}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -4126,6 +4180,8 @@ export function jumpGateShutdown(){
             }
         }
     }
+
+    global.tauceti['tauceti_casino'] = { count: 0, on: 0 };
     
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }
