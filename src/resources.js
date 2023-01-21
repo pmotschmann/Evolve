@@ -346,7 +346,7 @@ export const craftingRatio = (function(){
                 });
             }
 
-            if (support_on['zero_g_lab'] && p_on['zero_g_lab']){
+            if ((support_on['zero_g_lab'] && p_on['zero_g_lab']) || (support_on['infectious_disease_lab'] && p_on['infectious_disease_lab'])){
                 let synd = syndicate('spc_enceladus');
                 crafting.Quantium.multi.push({
                     name: loc(`space_syndicate`),
@@ -1916,9 +1916,7 @@ function breakdownPopover(id,name,type){
             let col1 = $(`<div></div>`);
             table.append(col1);
             let types = [name];
-            if (name !== 'Unobtainium'){
-                types.push('Global');
-            }
+            types.push('Global');
             for (var i = 0; i < types.length; i++){
                 let t = types[i];
                 if (breakdown[type][t]){

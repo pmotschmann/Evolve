@@ -1,6 +1,7 @@
 import { global } from './vars.js';
 import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
+import { flib } from './functions.js';
 
 export function highPopAdjust(v){
     if (global.race['high_pop']){
@@ -253,19 +254,19 @@ export function production(id,val){
             switch (val){
                 case 'materials':
                 {
-                    return highPopAdjust(0.09);
+                    return highPopAdjust(global.tech['isolation'] ? 0.12 : 0.09);
                 }
                 case 'bolognium':
                 {
-                    return highPopAdjust(0.0216);
+                    return highPopAdjust(global.tech['isolation'] ? 0.0288 : 0.0216);
                 }
                 case 'stone':
                 {
-                    return highPopAdjust(0.6);
+                    return highPopAdjust(global.tech['isolation'] ? 0.8 : 0.6);
                 }
                 case 'adamantite':
                 {
-                    return highPopAdjust(0.336);
+                    return highPopAdjust(global.tech['isolation'] ? 0.448 : 0.336);
                 }
                 case 'copper':
                 {
@@ -296,12 +297,21 @@ export function production(id,val){
         }
         case 'womling_mine':
         {
-            let mining = 0.122;
             let boost = 1;
             if (global.tech['womling_mining']){
                 boost += global.tech.womling_mining * 0.15;
             }
-            return mining * boost;
+
+            switch (val){
+                case 'unobtainium':
+                {
+                    return 0.0305 * boost;
+                }
+                case 'uranium':
+                {
+                    return 0.047 * boost;
+                }
+            }
         }
         case 'refueling_station':
         {
@@ -320,7 +330,7 @@ export function production(id,val){
             if (global.tauceti['patrol_ship']){
                 let patrol = 1;
                 if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
-                    patrol = global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support;
+                    patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
                 }
                 return 10 * patrol;
             }
@@ -360,7 +370,7 @@ export function production(id,val){
             if (global.tauceti['patrol_ship']){
                 let patrol = 1;
                 if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
-                    patrol = global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support;
+                    patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
                 }
                 return 8 * patrol;
             }

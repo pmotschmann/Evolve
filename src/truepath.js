@@ -5,7 +5,7 @@ import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect } from './actions.js';
+import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { loc } from './locale.js';
@@ -1504,6 +1504,43 @@ const tauCetiModules = {
                 return pop;
             }
         },
+        tau_housing: {
+            id: 'tauceti-tau_housing',
+            title(){
+                return housingLabel('small');
+            },
+            desc: loc('city_basic_housing_desc'),
+            desc(){
+                return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
+            },
+            category: 'residential',
+            reqs: { housing: 1, isolation: 1 },
+            cost: {
+                Money(offset){return spaceCostMultiplier('tau_housing', offset, 150000, 1.15, 'tauceti'); },
+                Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti'); },
+                Stone(offset){ return global.race['kindling_kindred'] ? spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti') : 0; },
+                Chrysotile(offset){ return global.race['smoldering'] ? spaceCostMultiplier('tau_housing', offset, 50000, 1.25, 'tauceti') : 0; },
+                Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
+            },
+            effect(){
+                let pop = $(this)[0].citizens();
+                return global.race['sappy'] ? `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div><div>${loc('city_grove_effect',[2.5])}</div>` : loc('plus_max_resource',[pop,loc('citizen')]);
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.tau_housing.count++;
+                    return true;
+                }
+                return false;
+            },
+            citizens(){
+                let pop = 1;
+                if (global.race['high_pop']){
+                    pop *= traits.high_pop.vars()[0];
+                }
+                return pop;
+            }
+        },
         horseshoe: buildTemplate(`horseshoe`,'tauceti'),
         bonfire: buildTemplate(`bonfire`,'tauceti'),
         firework: buildTemplate(`firework`,'tauceti'),
@@ -1565,7 +1602,7 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
-                desc = desc + `<div>${loc('plus_max_resource',[jobScale(8),loc('job_pit_miner')])}</div>`;
+                desc = desc + `<div>${loc('plus_max_resource',[jobScale(global.tech['isolation'] ? 6 : 8),loc('job_pit_miner')])}</div>`;
                 if (!tauEnabled()){
                     desc = desc + `<div>${loc('plus_max_resource',[1000000,loc('resource_Materials_name')])}</div>`;
                     desc = desc + `<div>${loc('tau_home_mining_pit_effect',[global.resource.Materials.name])}</div>`;
@@ -1652,6 +1689,7 @@ const tauCetiModules = {
                 }
             },
             reqs: { tauceti: 3 },
+            condition(){ return global.tech['isolation'] ? 0 : 1; },
             path: ['truepath'],
             queue_size: 10,
             queue_complete(){ return 100 - global.tauceti.jump_gate.count; },
@@ -1891,7 +1929,8 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), global.civic.professor.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
-                    desc = desc + `<div>${loc('city_library_effect',[50])}</div>`;
+                    desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -2264,7 +2303,12 @@ const tauCetiModules = {
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_mine_effect',[global.resource.Unobtainium.name])}</div>`;
+                if (global.tech['isolation']){
+                    desc = desc + `<div>${loc('tau_red_womling_mine_effect_b',[global.resource.Unobtainium.name,global.resource.Uranium.name])}</div>`;
+                }
+                else {
+                    desc = desc + `<div>${loc('tau_red_womling_mine_effect_a',[global.resource.Unobtainium.name])}</div>`;
+                }
                 desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
                 return desc;
             },
@@ -2445,9 +2489,13 @@ const tauCetiModules = {
                     let oil_tank = spatialReasoning(6500);
                     desc = desc + `<div>${loc('plus_max_resource',[oil_tank.toLocaleString(),global.resource.Oil.name])}</div>`;
                 }
+                if (global.tech['isolation']){
+                    desc = desc +  `<div>${loc('interstellar_g_factory_effect')}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
+            special(){ return global.tech['isolation'] ? true : false; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.refueling_station.count++;
@@ -2578,6 +2626,8 @@ const tauCetiModules = {
             effect(){
                 let prod = global.tech['isolation'] ? 22 : 8;
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
+                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(global.tech['isolation'] ? 2 : 1)])}</div>`;
+                desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(global.tech['isolation'] ? 2 : 1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -3809,7 +3859,7 @@ function calcLandingPoint(ship, planet) {
 }
 
 export function syndicate(region,extra){
-    if (global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
+    if (!global.tech['isolation'] && global.tech['syndicate'] && global.race['truepath'] && global.space['syndicate'] && global.space.syndicate.hasOwnProperty(region)){
         let divisor = 1000;
 
         let rival = 0;
@@ -4182,6 +4232,7 @@ export function jumpGateShutdown(){
     }
 
     global.tauceti['tauceti_casino'] = { count: 0, on: 0 };
+    global.tauceti['tau_housing'] = { count: 0 };
     
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }

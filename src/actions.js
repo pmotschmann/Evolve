@@ -6332,6 +6332,7 @@ function drawModal(c_action,type){
             droidModal(body);
             break;
         case 'g_factory':
+        case 'refueling_station':
             grapheneModal(body);
             break;
         case 'freighter':

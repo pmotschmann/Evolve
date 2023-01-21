@@ -503,7 +503,7 @@ export function loadFoundry(){
                 if (res === 'Scarletite' && global.portal.hasOwnProperty('hell_forge')){
                     job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ p.on | maxScar }}</span></div>`);
                 }
-                else if (res === 'Quantium' && global.space.hasOwnProperty('zero_g_lab')){
+                else if (res === 'Quantium' && (global.space.hasOwnProperty('zero_g_lab') || global.tauceti.hasOwnProperty('infectious_disease_lab'))){
                     job_label = $(`<div id="craft${res}" class="job_label"><h3 class="has-text-danger">${name}</h3><span class="count">{{ f.${res} }} / {{ e.on | maxQuantium }}</span></div>`);
                 }
                 else {
@@ -530,7 +530,7 @@ export function loadFoundry(){
             } : {
                 f: global.city.foundry,
                 c: global.civic.craftsman,
-                e: global.space.hasOwnProperty('zero_g_lab') ? global.space.zero_g_lab : { count: 0, on: 0 },
+                e: global.space.hasOwnProperty('zero_g_lab') || global.tauceti.hasOwnProperty('infectious_disease_lab') ? (global.tech['isolation'] ? global.tauceti.infectious_disease_lab : global.space.zero_g_lab) : { count: 0, on: 0 },
             },
             methods: {
                 add(res){
@@ -543,7 +543,7 @@ export function loadFoundry(){
                         }
                     }
                     else if (res === 'Quantium'){
-                        tMax = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
+                        tMax = (global.tech['isolation'] ? Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']) || 0 : Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
                         if (global.race['high_pop']){
                             tMax *= traits.high_pop.vars()[0];
                         }
@@ -607,7 +607,7 @@ export function loadFoundry(){
                     return cap;
                 },
                 maxQuantium(v){
-                    let cap = (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
+                    let cap = global.tech['isolation'] ? (Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']) || 0) : (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
                     if (global.race['high_pop']){
                         cap *= traits.high_pop.vars()[0];
                     }

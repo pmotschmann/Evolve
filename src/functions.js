@@ -2163,20 +2163,25 @@ export function deepClone(obj){
 }
 
 // function library
-export function flib(func,val){
+export function flib(func,val,val2){
     switch (func){
         case 'reverse':
-            {
-                let str = val.toLowerCase().split('').reverse().join('');
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
+        {
+            let str = val.toLowerCase().split('').reverse().join('');
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
         case 'name':
-            {
-                if (eventActive('fool',2021)){
-                    return flib('reverse',races[global.race.species].name);
-                }
-                return races[global.race.species].name;
+        {
+            if (eventActive('fool',2021)){
+                return flib('reverse',races[global.race.species].name);
             }
+            return races[global.race.species].name;
+        }
+        case 'curve':
+        {   
+            let exp = val2 || 1.5;
+            return 1-((1-(val))**exp);
+        }
     }
     return false;
 }
