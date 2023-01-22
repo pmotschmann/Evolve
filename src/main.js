@@ -1866,7 +1866,7 @@ function fastLoop(){
 
         let womling_technician = 1;
         if (global.tech['womling_technicians']){
-            womling_technician = 1 + (p_on['womling_station'] * (global.tech['isolation'] ? 0.22 : 0.08));
+            womling_technician = 1 + (p_on['womling_station'] * (global.tech['isolation'] ? 0.30 : 0.08));
         }
 
         // Space Marines
@@ -3874,10 +3874,16 @@ function fastLoop(){
                 ai_core += (p_on['citadel'] * ai);
             }
 
+            let mining_pit = global.tech['isolation'] ? 1 + (support_on['mining_pit'] * 0.08) : 1;
+
             let cement_bd = {};
             let cq_multiplier = global.tech['isolation'] ? 1 : q_multiplier;
             cement_bd[loc(global.tech['isolation'] ? 'job_cement_worker_bd' : 'city_cement_plant_bd')] = factory_output + 'v';
             if (factory_output > 0){
+                if (global.tech['isolation']){
+                    cement_bd[`ᄂ${loc('tau_home_colony')}+0`] = ((tauBonus - 1) * 100) + '%';
+                    cement_bd[`ᄂ${loc('tau_home_mining_pit')}+0`] = ((mining_pit - 1) * 100) + '%';
+                }
                 cement_bd[`ᄂ${loc('power')}+0`] = ((powered_mult - 1) * 100) + '%';
                 cement_bd[`ᄂ${loc('quarantine')}+0`] = ((cq_multiplier - 1) * 100) + '%';
             }
@@ -3887,7 +3893,7 @@ function fastLoop(){
                 cement_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
-            let delta = factory_output * powered_mult * ai_core * tauBonus;
+            let delta = factory_output * powered_mult * ai_core * tauBonus * mining_pit;
             delta *= hunger * cq_multiplier * global_multiplier;
 
             if (global.tech['ai_core'] && p_on['citadel'] > 0){
@@ -4242,22 +4248,7 @@ function fastLoop(){
                     graphene_production--;
                 }
 
-                if (global.race['truepath']){
-                    if (global.tech['isolation']){
-                        graphene_production *= 1.2;
-                    }
-                    else {
-                        let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
-                        let gain = 0.05 * titan_colonists;
-                        if (global.race['high_pop']){
-                            gain = highPopAdjust(gain);
-                        }
-                        graphene_production *= gain;
-                    }
-                }
-                else {
-                    graphene_production *= 0.6;
-                }
+                graphene_production *= production('g_factory');
 
                 breakdown.p.consume.Lumber[loc('interstellar_g_factory_bd')] = -(consume_wood);
                 breakdown.p.consume.Coal[loc('interstellar_g_factory_bd')] = -(consume_coal);
@@ -5189,7 +5180,6 @@ function fastLoop(){
             titanium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
         }
         copper_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-        breakdown.p['Titanium'] = titanium_bd;
 
         if (uranium_bd.hasOwnProperty(loc('city_coal_ash'))){
             uranium_bd[loc('city_coal_ash')] = uranium_bd[loc('city_coal_ash')] + 'v';
@@ -5966,12 +5956,22 @@ function fastLoop(){
                         uranium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
                     }
                     modRes('Uranium', uranium_delta * time_multiplier);
+
+                    let titanium_base = global.tauceti.womling_mine.miners * production('womling_mine','titanium');
+                    titanium_bd[loc('tau_red_womlings')] = titanium_base + 'v';
+                    let titanium_delta = titanium_base * prod * global_multiplier;
+
+                    if (titanium_base > 0){
+                        titanium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                    }
+                    modRes('Titanium', titanium_delta * time_multiplier);
                 }
             }
             breakdown.p['Unobtainium'] = unobtainium_bd;
         }
 
         breakdown.p['Uranium'] = uranium_bd;
+        breakdown.p['Titanium'] = titanium_bd;
 
         // Income
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
@@ -7628,8 +7628,8 @@ function midLoop(){
             lCaps['cement_worker'] += jobScale(support_on['tau_factory'] * 2);
         }
         if (p_on['womling_station']){
-            lCaps['craftsman'] += jobScale(p_on['womling_station'] * (global.tech['isolation'] ? 2 : 1));
-            lCaps['cement_worker'] += jobScale(p_on['womling_station'] * (global.tech['isolation'] ? 2 : 1));
+            lCaps['craftsman'] += jobScale(p_on['womling_station'] * 1);
+            lCaps['cement_worker'] += jobScale(p_on['womling_station'] * 1);
         }
         if (p_on['stellar_forge']){
             lCaps['craftsman'] += jobScale(p_on['stellar_forge'] * 2);
@@ -7792,6 +7792,12 @@ function midLoop(){
             }
             caps['Knowledge'] += (p_on['infectious_disease_lab'] * Math.round(gain));
             bd_Knowledge[loc(global.tech['isolation'] ? 'tech_infectious_disease_lab_alt' : 'tau_home_disease_lab')] = (p_on['infectious_disease_lab'] * gain)+'v';
+
+            if (global.tech['isolation']){
+                let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375);
+                caps['Elerium'] += el_gain;
+                bd_Elerium[loc(global.tech['isolation'] ? 'tech_infectious_disease_lab_alt' : 'tau_home_disease_lab')] = el_gain+'v';
+            }
         }
 
         // Womlings

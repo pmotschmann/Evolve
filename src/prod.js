@@ -157,6 +157,25 @@ export function production(id,val){
         {
             return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2);
         }
+        case 'g_factory':
+        {
+            if (global.race['truepath']){
+                if (global.tech['isolation']){
+                    return 1.8;
+                }
+                else {
+                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+                    let gain = 0.05 * titan_colonists;
+                    if (global.race['high_pop']){
+                        gain = highPopAdjust(gain);
+                    }
+                    return gain;
+                }
+            }
+            else {
+                return 0.6;
+            }
+        }
         case 'harvester':
         {
             switch (val){
@@ -310,6 +329,10 @@ export function production(id,val){
                 case 'uranium':
                 {
                     return 0.047 * boost;
+                }
+                case 'titanium':
+                {
+                    return 0.616 * boost;
                 }
             }
         }

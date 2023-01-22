@@ -341,8 +341,16 @@ export const craftingRatio = (function(){
             if (global.tauceti['tau_factory'] && support_on['tau_factory']){
                 crafting.general.add.push({
                     name: loc(`tau_home_tau_factory`),
-                    manual: support_on['tau_factory'] * (global.tech['isolation'] ? 1.5 : 0.25),
-                    auto: support_on['tau_factory'] * (global.tech['isolation'] ? 1.5 : 0.25)
+                    manual: support_on['tau_factory'] * (global.tech['isolation'] ? 0.75 : 0.25),
+                    auto: support_on['tau_factory'] * (global.tech['isolation'] ? 0.75 : 0.25)
+                });
+            }
+
+            if (global.tech['isolation'] && global.tauceti['colony'] && support_on['colony']){
+                crafting.general.add.push({
+                    name: loc(`tau_home_colony`),
+                    manual: support_on['colony'] * 0.5,
+                    auto: support_on['colony'] * 0.5
                 });
             }
 

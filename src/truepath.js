@@ -1610,6 +1610,7 @@ const tauCetiModules = {
                 else {
                     if (global.tech['isolation']){
                         desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Coal.name])}</div>`;
+                        desc = desc + `<div>${loc('tau_gas_womling_station_effect',[8,global.resource.Cement.name])}</div>`;
                     }
                     else {
                         desc = desc + `<div>${loc('tau_home_mining_pit_effect2',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name])}</div>`;
@@ -1775,7 +1776,7 @@ const tauCetiModules = {
                     res.push('Helium_3');
                     res.push('Uranium');
                     res.push('Water');
-                    res.push('Elerium');
+                    //res.push('Elerium');
                 }
                 return res;
             },
@@ -1885,7 +1886,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
-                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 150 : 25])}</div>`;
+                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 75 : 25])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1927,6 +1928,8 @@ const tauCetiModules = {
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('city_max_knowledge',[Math.round(sci).toLocaleString()])}</div>`;
                 if (global.tech['isolation']){
+                    let elerium = spatialReasoning(375);
+                    desc = desc + `<div>${loc('plus_max_resource',[elerium,loc('resource_Elerium_name')])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(2), global.civic.professor.name])}</div>`;
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
@@ -2304,7 +2307,7 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('tau_red_womling_mine_effect_b',[global.resource.Unobtainium.name,global.resource.Uranium.name])}</div>`;
+                    desc = desc + `<div>${loc('tau_red_womling_mine_effect_b',[global.resource.Unobtainium.name,global.resource.Uranium.name,global.resource.Titanium.name])}</div>`;
                 }
                 else {
                     desc = desc + `<div>${loc('tau_red_womling_mine_effect_a',[global.resource.Unobtainium.name])}</div>`;
@@ -2624,10 +2627,10 @@ const tauCetiModules = {
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 6); },
             effect(){
-                let prod = global.tech['isolation'] ? 22 : 8;
+                let prod = global.tech['isolation'] ? 30 : 8;
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
-                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(global.tech['isolation'] ? 2 : 1)])}</div>`;
-                desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(global.tech['isolation'] ? 2 : 1)])}</div>`;
+                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -4111,7 +4114,10 @@ export function tpStorageMultiplier(type,heavy){
         case 'repository':
         {
             if (global.tech['isolation']){
-                multiplier *= 7.5;
+                multiplier *= 3;
+                if (global.tech['tp_depot']){
+                    multiplier *= 1 + (global.tech['tp_depot'] / 20);
+                }
             }
         }
         break;

@@ -53,7 +53,7 @@ export const arpaProjects = {
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
+                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
             }
         },
         cost: {
@@ -98,7 +98,7 @@ export const arpaProjects = {
         grant: 'tp_depot',
         path: ['truepath'],
         effect(){
-            return loc('arpa_projects_depot_effect',[5,50]);
+            return loc(global.tech['isolation'] ? 'arpa_projects_depot_effect_iso' : 'arpa_projects_depot_effect',[5,50]);
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('tp_depot', offset, 1800000, 1.08, wiki); },
