@@ -214,6 +214,7 @@ export const outerTruth = {
                 return `<div>${loc('space_red_mine_desc')}</div><div class="has-text-special">${loc('space_support',[planetName().titan])}</div>`;
             },
             reqs: { titan: 4 },
+            condition(){ return global.space['titan_quarters'] && global.space.titan_quarters.count > 0 ? true : false; },
             path: ['truepath'],
             cost: {
                 Money(offset){ return spaceCostMultiplier('titan_mine', offset, 475000, 1.28); },

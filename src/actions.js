@@ -4504,7 +4504,10 @@ export function casinoEffect(){
         cash *= 1 + (global.race.inflation / 1250);
     }
     if (global.tech['isolation']){
-        cash *= 1.5;
+        cash *= 1.25;
+        if (global.tech['iso_gambling']){
+            cash *= 1 + (global.civic.banker.workers * 0.05)
+        }
     }
     cash = +(cash).toFixed(2);
     desc = desc + `<div>${loc('tech_casino_effect2',[cash])}</div>`;

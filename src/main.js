@@ -6106,7 +6106,10 @@ function fastLoop(){
                 cash *= 1 + (global.race.inflation / 1250);
             }
             if (global.tech['isolation']){
-                cash *= 1.5;
+                cash *= 1.25;
+                if (global.tech['iso_gambling']){
+                    cash *= 1 + (global.civic.banker.workers * 0.05)
+                }
             }
             let racVal = govActive('racketeer',1);
             if (racVal){

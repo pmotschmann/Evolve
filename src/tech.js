@@ -12344,7 +12344,26 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    iso_gambling: {
+        id: 'tech-iso_gambling',
+        title: loc('tech_iso_gambling'),
+        desc: loc('tech_iso_gambling'),
+        category: 'banking',
+        era: 'early_space',
+        reqs: { gambling: 4, isolation: 1 },
+        grant: ['iso_gambling',1],
+        cost: {
+            Knowledge(){ return 8650000; }
+        },
+        effect: loc('tech_iso_gambling_effect',[5]),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

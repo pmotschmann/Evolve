@@ -2553,6 +2553,8 @@
   "tech_tau_manufacturing_effect": "Design eco friendly manufacturing facilities for New %0.",
   "tech_elerium_generator": "Elerium Generator",
   "tech_elerium_generator_effect": "The Elerium Generator produces an unrivaled amount of energy for your ships.",
+  "tech_iso_gambling": "Pit Bosses",
+  "tech_iso_gambling_effect": "Bankers boost casino revenue by %0%.",
   "star_dock_probe": "Space Probe",
   "star_dock_probe_desc": "Interstellar Probe",
   "star_dock_probe_effect": "Each interstellar probe increases the number of target worlds your bioseeder ship can scout by 1.",

@@ -1,6 +1,7 @@
 import { global, p_on } from './vars.js';
 import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
+import { jobScale } from './jobs.js';
 import { flib } from './functions.js';
 
 export function highPopAdjust(v){
