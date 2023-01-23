@@ -3834,6 +3834,7 @@ function drawShips(){
 }
 
 function calcLandingPoint(ship, planet) {
+    if (spacePlanetStats[planet].orbit === -2 ) { return genXYcoord(planet); }
     let ship_dist = Math.sqrt(((ship.xy.x - xShift(planet)) ** 2) + (ship.xy.y ** 2));
     let ship_speed = shipSpeed(ship) / 225;
     let width = xPosition(1, planet);

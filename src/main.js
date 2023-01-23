@@ -8260,6 +8260,7 @@ function midLoop(){
 
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
             let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
+            if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
             if (labs > 0 && global.city.ptrait.includes('toxic')){
                 labs += planetTraits.toxic.vars()[0];
             }
@@ -9440,7 +9441,10 @@ function longLoop(){
                     Object.keys(spacePlanetStats).forEach(function(planet){
                         if (global.space.position.hasOwnProperty(planet)){
                             let orbit = spacePlanetStats[planet].orbit === -1 ? global.city.calendar.orbit : spacePlanetStats[planet].orbit;
-                            if (orbit === 0){
+                            if (orbit === -2){
+                                return;
+                            }
+                            else if (orbit === 0){
                                 global.space.position[planet] = 0;
                             }
                             else {
