@@ -1,4 +1,4 @@
-import { global } from './vars.js';
+import { global, p_on } from './vars.js';
 import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
 import { flib } from './functions.js';
