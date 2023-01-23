@@ -2826,7 +2826,9 @@ export const plasmidBonus = (function (){
             global.space['ziggurat'] ? global.space.ziggurat.count : '0',
             global.civic['priest'] ? global.civic.priest.workers : '0',
             global.race['orbit_decayed'] ? global.race.orbit_decayed : '0',
-            global.race['spiritual'] || '0'
+            global.race['spiritual'] || '0',
+            global.tech['outpost_boost'] || '0',
+            p_on['alien_outpost'] || '0',
         ].join('-');
 
         if (!plasma[key]){
@@ -2852,6 +2854,9 @@ export const plasmidBonus = (function (){
                 }
                 else {
                     standard = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+                }
+                if (global.tech['outpost_boost'] && global.race['truepath'] && p_on['alien_outpost']){
+                    standard *= 2;
                 }
 
                 let shrines = 0;
@@ -2914,6 +2919,9 @@ export const plasmidBonus = (function (){
                 }
                 else {
                     anti = +((Math.log(plasmids + 50) - 3.91202)).toFixed(5) / 2.888;
+                }
+                if (global.tech['outpost_boost'] && global.race['truepath'] && p_on['alien_outpost']){
+                    anti *= 2;
                 }
                 anti /= 3;
             }

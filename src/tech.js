@@ -12350,7 +12350,7 @@ const techs = {
         title: loc('tech_iso_gambling'),
         desc: loc('tech_iso_gambling'),
         category: 'banking',
-        era: 'early_space',
+        era: 'tauceti',
         reqs: { gambling: 4, isolation: 1 },
         grant: ['iso_gambling',1],
         cost: {
@@ -12363,6 +12363,26 @@ const techs = {
             }
             return false;
         }
+    },
+    outpost_boost: {
+        id: 'tech-outpost_boost',
+        title(){ return loc('tech_outpost_boost'); },
+        desc(){ return loc('tech_outpost_boost'); },
+        category: 'special',
+        era: 'tauceti',
+        reqs: { tau_home: 4, isolation: 1 },
+        grant: ['outpost_boost',1],
+        cost: {
+            Knowledge(){ return 8900000; },
+        },
+        effect(){ return loc('tech_outpost_boost_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_outpost_boost_flair'); }
     },
 };
 

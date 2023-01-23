@@ -1671,6 +1671,9 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('plus_max_resource',[(6800000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
                 }
+                if (global.tech['outpost_boost']){
+                    desc = desc + `<div>${loc('tech_alien_outpost_effect2')}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -1960,7 +1963,7 @@ const tauCetiModules = {
             }
         },
         tauceti_casino: {
-            id: 'tauceti-spc_casino',
+            id: 'tauceti-tauceti_casino',
             title: loc('city_casino'),
             desc: loc('city_casino'),
             category: 'commercial',
