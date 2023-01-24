@@ -831,7 +831,7 @@ function slaveLoss(type,string){
             tech: 'slaves'
         },
         condition(){
-            return global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true;
+            return global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : true;
         },
         type: type,
         effect(){

@@ -182,7 +182,6 @@ if (global.space['fob']){
 }
 if (global.tauceti['fusion_generator']){
     p_on['fusion_generator'] = global.tauceti.fusion_generator.on;
-    support_on['fusion_generator'] = global.tauceti.fusion_generator.on;
 }
 
 defineJobs(true);
@@ -1468,52 +1467,64 @@ function fastLoop(){
             }
         }
 
-        if (global.city['oil_power']){
-            let power = global.city.oil_power.on * actions.city.oil_power.powered();
-            let consume = global.city.oil_power.on * (global.race['environmentalist'] ? 0 : 0.65);
-            while ((consume * time_multiplier) > global.resource.Oil.amount && consume > 0){
-                power -= actions.city.oil_power.powered();
-                consume -= 0.65;
+        [{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'}].forEach(function(generator){
+            let space = convertSpaceSector(generator.r);
+            let region = generator.r === 'city' ? generator.r : space;
+            let c_action = generator.r === 'city' ? actions.city : actions[space][generator.r];
+            let title = typeof c_action[generator.s].title === 'string' ? c_action[generator.s].title : c_action[generator.s].title();
+
+            if (global[region][generator.s] && global[region][generator.s]['on']){
+                let watts = c_action[generator.s].powered();
+                let power = global[region][generator.s].on * watts;
+
+                p_on[generator.s] = global[region][generator.s].on;
+                while (power > power_grid && power > 0){
+                    power -= c_action[generator.s].powered();
+                    p_on[generator.s]--;
+                }
+                
+                if (c_action[generator.s].hasOwnProperty('p_fuel')){
+                    let s_fuels = c_action[generator.s].p_fuel();
+                    if (!Array.isArray(s_fuels)){
+                        s_fuels = [s_fuels];
+                    }
+                    for (let j=0; j<s_fuels.length; j++){
+                        let fuel = s_fuels[j];
+                        let fuel_cost = fuel.a;
+                        if (['Oil','Helium_3'].includes(fuel.r) && region !== 'city'){
+                            fuel_cost = region === 'space' ? +fuel_adjust(fuel_cost,true) : +int_fuel_adjust(fuel_cost);
+                        }
+
+                        let mb_consume = p_on[generator.s] * fuel_cost;
+                        breakdown.p.consume[fuel.r][title] = -(mb_consume);
+                        for (let k=0; k<p_on[generator.s]; k++){
+                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                mb_consume -= (p_on[generator.s] * fuel_cost) - (k * fuel_cost);
+                                p_on[generator.s] -= k;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                power = p_on[generator.s] * watts;
+                max_power += power;
+                power_grid -= power;
+                power_generated[title] = -(power);
+
+                if (p_on[generator.s] !== global[region][generator.s].on){
+                    $(`#${region}-${generator.s} .on`).addClass('warn');
+                }
+                else {
+                    $(`#${region}-${generator.s} .on`).removeClass('warn');
+                }
             }
-            breakdown.p.consume.Oil[loc('powerplant')] = -(consume);
-            modRes('Oil', -(consume * time_multiplier));
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[global.race['environmentalist'] ? loc('city_wind_power') : loc('city_oil_power')] = -(power);
-        }
-
-        if (global.city['fission_power']){
-            let output = actions.city.fission_power.powered();
-            let power = global.city.fission_power.on * output;
-            let consume = global.city.fission_power.on * 0.1;
-            while (consume * time_multiplier > global.resource.Uranium.amount && consume > 0){
-                power -= output;
-                consume -= 0.1;
+            else {
+                power_generated[title] = 0;
+                p_on[generator.s] = 0;
+                $(`#${region}-${generator.s} .on`).removeClass('warn');
             }
-            breakdown.p.consume.Uranium[loc('reactor')] = -(consume);
-            modRes('Uranium', -(consume * time_multiplier));
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('city_fission_power')] = -(power);
-        }
-
-        if (global.interstellar['fusion']){
-            let output = actions.interstellar.int_alpha.fusion.powered();
-            let power = int_on['fusion'] * output;
-            let consume = int_on['fusion'] * 1.25;
-            while (consume * time_multiplier > global.resource.Deuterium.amount + (global.resource.Deuterium.diff > 0 ? global.resource.Deuterium.diff * time_multiplier : 0) && consume > 0){
-                power -= output;
-                consume -= 1.25;
-            }
-            breakdown.p.consume.Deuterium[loc('reactor')] = -(consume);
-            modRes('Deuterium', -(consume * time_multiplier));
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('interstellar_fusion_title')] = -(power);
-        }
+        });
 
         if (global.space['geothermal'] && global.space.geothermal.on > 0){
             let output = actions.space.spc_hell.geothermal.powered();
@@ -1615,13 +1626,6 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('city_mill_title2')] = -(power);
-        }
-
-        if (global.tauceti['fusion_generator'] && global.tauceti['orbital_station']){
-            let power = support_on['fusion_generator'] * actions.tauceti.tau_home.fusion_generator.powered();
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('tech_fusion_generator')] = -(power);
         }
 
         if (global.race['powered']){
@@ -7864,10 +7868,16 @@ function midLoop(){
             else if (injured > 0 && Math.rand(0,heal_chance) === 0){
                 injured--;
             }
-
-            global.tauceti.womling_farm.farmers = farmers;
-            global.tauceti.womling_mine.miners = miners;
-            global.tauceti.womling_lab.scientist = scientist;
+            
+            if (global.tauceti.hasOwnProperty('womling_farm')){
+                global.tauceti.womling_farm.farmers = farmers;
+            }
+            if (global.tauceti.hasOwnProperty('womling_mine')){
+                global.tauceti.womling_mine.miners = miners;
+            }
+            if (global.tauceti.hasOwnProperty('womling_lab')){
+                global.tauceti.womling_lab.scientist = scientist;
+            }
 
             loyal -= miners;
             morale -= miners;

@@ -1737,14 +1737,12 @@ const tauCetiModules = {
                 Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, 95000, 1.25, 'tauceti'); },
             },
             effect(){
-                let fuel = +int_fuel_adjust($(this)[0].support_fuel().a).toFixed(1);
-                let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
-                desc = desc + `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
-                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(1);
+                let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
                 return desc;
             },
-            support(){ return -1; },
-            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 65 : 500 }; },
+            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 75 : 500 }; },
             powered(){ return powerModifier(global.tech['isolation'] ? -48 : -32); },
             action(){
                 if (payCosts($(this)[0])){

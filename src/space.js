@@ -2486,6 +2486,7 @@ const interstellarProjects = {
             },
             support(){ return -1; },
             powered(){ return powerModifier(-22); },
+            p_fuel(){ return { r: 'Deuterium', a: 1.25 }; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('fusion','interstellar');

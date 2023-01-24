@@ -3599,6 +3599,7 @@ export const actions = {
                     }
                 }
             },
+            p_fuel(){ return { r: 'Oil', a: global.race['environmentalist'] ? 0 : 0.65 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city.oil_power.count++;
@@ -3628,6 +3629,7 @@ export const actions = {
                 return `<span>+${-($(this)[0].powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
             },
             powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
+            p_fuel(){ return { r: 'Uranium', a: 0.1 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city.fission_power.count++;
