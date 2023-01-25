@@ -1456,7 +1456,7 @@ const tauCetiModules = {
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
                 Furs(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 720000, 1.225, 'tauceti') : 0; },
                 Graphene(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 485000, 1.225, 'tauceti') : 0; },
-                Plywood(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 880000, 1.225, 'tauceti') : 0; },
+                Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 880000, 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -1743,13 +1743,11 @@ const tauCetiModules = {
                 return desc;
             },
             p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 75 : 500 }; },
-            powered(){ return powerModifier(global.tech['isolation'] ? -48 : -32); },
+            powered(){ return powerModifier(-32); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.fusion_generator.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.fusion_generator.on++;
-                    }
+                    global.tauceti.fusion_generator.on++;
                     return true;
                 }
                 return false;
@@ -2550,13 +2548,13 @@ const tauCetiModules = {
                     global.tauceti.ore_refinery.count++;
                     if (global.city.powered && global.city.power >= $(this)[0].powered()){
                         global.tauceti.ore_refinery.on++;
-                        global.city.smelter.cap += 2;
-                        global.city.smelter.Iron += 2;
+                        global.city.smelter.cap += global.tech['isolation'] ? 12 : 2;
+                        global.city.smelter.Steel += global.tech['isolation'] ? 12 : 2;
                         if (global.race['evil']) {
-                            global.city['smelter'].Wood += 2;
+                            global.city['smelter'].Wood += global.tech['isolation'] ? 12 : 2;
                         }
                         else {
-                            global.city.smelter.Oil += 2;
+                            global.city.smelter.Oil += global.tech['isolation'] ? 12 : 2;
                         }
                     }
                     return true;

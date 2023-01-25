@@ -7834,10 +7834,6 @@ function midLoop(){
             }
             let unemployed = pop - farmers - injured;
 
-            let miners = support_on['womling_mine'] * 6;
-            if (miners > unemployed){ miners = unemployed; }
-            unemployed -= miners;
-
             let scientist = 0;
             if (support_on['womling_lab']){
                 scientist = support_on['womling_lab'];
@@ -7857,6 +7853,10 @@ function midLoop(){
                     }
                 }
             }
+
+            let miners = support_on['womling_mine'] * 6;
+            if (miners > unemployed){ miners = unemployed; }
+            unemployed -= miners;
 
             let heal_chance = global.tech['tech_womling_firstaid'] ? 3 : 4;
             if (Math.rand(0,10) === 0){

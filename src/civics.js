@@ -401,7 +401,7 @@ function drawGovModal(){
 }
 
 export function foreignGov(){
-    if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath'])){
+    if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath']) && !global.tech['isolation']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
         $('#r_govern0').append(foreign);
@@ -1049,12 +1049,13 @@ export function buildGarrison(garrison,full){
     var bunks = $('<div class="bunks"></div>');
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
-    
-    bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
-    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
-    bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
+    if (!global.tech['isolation']){
+        bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
+        bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
+        bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
-    barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
+        barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
+    }
     
     if (full){
         garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
@@ -1066,7 +1067,7 @@ export function buildGarrison(garrison,full){
     var wrap = $('<div class="war"></div>');
     campaign.append(wrap);
 
-    if ((!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm']){
+    if ((!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] && !global.tech['isolation']){
         var tactics = $(`<div id="${full ? 'tactics' : 'c_tactics'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
@@ -1278,7 +1279,7 @@ export function buildGarrison(garrison,full){
                 }
             );
         }
-        if (global.race['truepath']){
+        if (global.race['truepath'] && !global.tech['isolation']){
             popover(`garRivaldesc2`,
                 function(){ return loc(`civics_gov_tp_rival`,[govTitle(3),races[global.race.species].home]); },
                 {
