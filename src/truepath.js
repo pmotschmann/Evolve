@@ -3582,7 +3582,7 @@ function shipCosts(bp){
     let creep = 1 + (typeCount - 2) / 25 * creep_factor;
     Object.keys(costs).forEach(function(res){
         if (bp.class === 'explorer'){
-            costs[res] = Math.ceil(costs[res] * (typeCount * 10));
+            costs[res] = Math.ceil(costs[res] * ((typeCount + 1) * 10));
         }
         else {
             if (typeCount < 2){

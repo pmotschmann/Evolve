@@ -4,6 +4,7 @@ import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits, genusVars } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
+import { planetName } from './space.js';
 
 export const job_desc = {
     unemployed: function(){
@@ -236,10 +237,10 @@ export const job_desc = {
         return global.race.universe === 'magic' ? loc('job_wizard_desc',[impact,+(0.025 * darkEffect('magic')).toFixed(4)]) : loc('job_scientist_desc',[impact]);
     },
     colonist(){
-        return loc(global.race['truepath'] ? 'job_colonist_desc_tp' : 'job_colonist_desc',[races[global.race.species].solar.red]);
+        return loc(global.race['truepath'] ? 'job_colonist_desc_tp' : 'job_colonist_desc',[planetName().red]);
     },
     titan_colonist(){
-        return loc('job_colonist_desc_tp',[genusVars[races[global.race.species].type].solar.titan]);
+        return loc('job_colonist_desc_tp',[planetName().titan]);
     },
     space_miner(){
         return loc('job_space_miner_desc');
@@ -313,10 +314,10 @@ export function setJobName(job){
         job_name = loc('job_wizard');
     }
     else if (global.race['truepath'] && job === 'colonist'){
-        job_name = loc('job_colonist_tp',[races[global.race.species].solar.red]);
+        job_name = loc('job_colonist_tp',[planetName().red]);
     }
     else if (job === 'titan_colonist'){
-        job_name = loc('job_colonist_tp',[genusVars[races[global.race.species].type].solar.titan]);
+        job_name = loc('job_colonist_tp',[planetName().titan]);
     }
     else {
         job_name = job === 'lumberjack' && global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo') ? loc('job_reclaimer') : loc('job_' + job);

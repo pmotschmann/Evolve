@@ -1467,7 +1467,10 @@ function fastLoop(){
             }
         }
 
-        [{r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'}].forEach(function(generator){
+        [
+            {r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
+            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'}
+        ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
             let c_action = generator.r === 'city' ? actions.city : actions[space][generator.r];
@@ -1526,25 +1529,7 @@ function fastLoop(){
             }
         });
 
-        if (global.space['geothermal'] && global.space.geothermal.on > 0){
-            let output = actions.space.spc_hell.geothermal.powered();
-            let increment = fuel_adjust(0.5,true);
-            let power = global.space.geothermal.on * output;
-            let consume = (global.space.geothermal.on * increment);
-            while (consume * time_multiplier > global.resource['Helium_3'].amount && consume > 0){
-                power -= output;
-                consume -= increment;
-            }
-            breakdown.p.consume.Helium_3[loc('space_hell_geothermal_bd')] = -(consume);
-            let number = consume * time_multiplier;
-            modRes('Helium_3', -(number));
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('space_hell_geothermal_title')] = -(power);
-        }
-
-        if (global.space['hydrogen_plant'] && global.space.hydrogen_plant.on > 0){
+        if (global.space['hydrogen_plant']){
             let output = actions.space.spc_titan.hydrogen_plant.powered();
             if (global.space.hydrogen_plant.on > global.space.electrolysis.on){
                 global.space.hydrogen_plant.on = global.space.electrolysis.on;
@@ -1553,24 +1538,6 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('space_hydrogen_plant_title')] = -(power);
-        }
-
-        if (global.space['e_reactor'] && global.space.e_reactor.on > 0){
-            let output = actions.space.spc_dwarf.e_reactor.powered();
-            let increment = 0.05;
-            let power = global.space.e_reactor.on * output;
-            let consume = (global.space.e_reactor.on * increment);
-            while (consume * time_multiplier > global.resource['Elerium'].amount && consume > 0){
-                power -= output;
-                consume -= increment;
-            }
-            breakdown.p.consume.Elerium[loc('reactor')] = -(consume);
-            let number = consume * time_multiplier;
-            modRes('Elerium', -(number));
-
-            max_power += power;
-            power_grid -= power;
-            power_generated[loc('space_dwarf_reactor_title')] = -(power);
         }
 
         if (global.portal['inferno_power']){

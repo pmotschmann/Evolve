@@ -1278,7 +1278,7 @@ const spaceProjects = {
                 Polymer(offset){ return spaceCostMultiplier('geothermal', offset, 9500, 1.35); }
             },
             effect(wiki){
-                let helium = +(fuel_adjust(0.5,true,wiki)).toFixed(2);
+                let helium = +(fuel_adjust($(this)[0].p_fuel().a,true,wiki)).toFixed(2);
                 let smelter = global.race['cataclysm'] || global.race['orbit_decayed'] ? `<div>${loc('interstellar_stellar_forge_effect3',[1])}</div>` : ``;
                 return `${smelter}<span>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</span>, <span class="has-text-caution">${loc('space_belt_station_effect3',[helium])}</span>`;
             },
@@ -1291,6 +1291,7 @@ const spaceProjects = {
                 if (global.stats.achieve['failed_history'] && global.stats.achieve.failed_history.l >= 5){ power -= 2; }
                 return powerModifier(power);
             },
+            p_fuel(){ return { r: 'Helium_3', a: 0.5 }; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('geothermal');
@@ -2065,11 +2066,12 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('e_reactor', offset, 2500, 1.28); }
             },
             effect(){
-                let elerium = 0.05;
+                let elerium = $(this)[0].p_fuel.a();
                 let power = $(this)[0].powered() * -1;
                 return `<div>${loc('space_dwarf_reactor_effect1',[power])}</div><div  class="has-text-caution">${loc('space_dwarf_reactor_effect2',[elerium])}</div>`;
             },
             powered(){ return powerModifier(-25); },
+            p_fuel(){ return { r: 'Elerium', a: 0.05 }; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('e_reactor');

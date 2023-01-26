@@ -577,9 +577,10 @@ export function foreignGov(){
                     return espDesc();
                 },
                 vis(){
-                    return global.civic.garrison.display && (!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] ? true : false;
+                    return global.civic.garrison.display && (!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] && !global.tech['isolation'] ? true : false;
                 },
                 gvis(g){
+                    if (global.tech['isolation']){ return false; }
                     if (g <= 2){
                         return global.tech['world_control'] ? false : true;
                     }
@@ -1153,7 +1154,7 @@ export function buildGarrison(garrison,full){
                 return global.civic.garrison.display;
             },
             rvis(){
-                return global.tech['rival'] ? true : false;
+                return global.tech['rival'] && !global.tech['isolation'] ? true : false;
             }
         },
         filters: {
