@@ -2066,7 +2066,7 @@ const spaceProjects = {
                 Mythril(offset){ return spaceCostMultiplier('e_reactor', offset, 2500, 1.28); }
             },
             effect(){
-                let elerium = $(this)[0].p_fuel.a();
+                let elerium = $(this)[0].p_fuel().a;
                 let power = $(this)[0].powered() * -1;
                 return `<div>${loc('space_dwarf_reactor_effect1',[power])}</div><div  class="has-text-caution">${loc('space_dwarf_reactor_effect2',[elerium])}</div>`;
             },
