@@ -2959,7 +2959,7 @@ export function drawShipYard(){
         Object.keys(shipConfig).forEach(function(k){
             let values = ``;
             shipConfig[k].forEach(function(v,idx){
-                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
             options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
@@ -2994,8 +2994,8 @@ export function drawShipYard(){
                     global.space.shipyard.blueprint[b] = v;
                     updateCosts();
                 },
-                avail(k,i){
-                    if ((k === 'class' || k === 'engine') && global.tech['tauceti']){
+                avail(k,i,v){
+                    if ((k === 'class' || k === 'engine') && global.tech['tauceti'] && (v === 'emdrive' || v === 'explorer')){
                         return true;
                     }
                     return global.tech[`syard_${k}`] > i ? true : false;
