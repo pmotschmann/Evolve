@@ -9,6 +9,7 @@ import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casi
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { nf_resources } from './industry.js';
+import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -3626,6 +3627,11 @@ function dragShipList(){
 function drawShips(){
     clearShipDrag();
     clearElement($('#shipList'));
+
+    if (global.tech['isolation']){
+        return;
+    }
+
     let list = $('#shipList');
 
     if (global.space.shipyard.sort){
@@ -4132,6 +4138,21 @@ export function tpStorageMultiplier(type,heavy){
 
 export function jumpGateShutdown(){
     let inactive = { city: {}, space: {}, ships: []};
+    inactive.ships = [...global.space.shipyard.ships];
+    global.space.shipyard.ships = [];
+
+    global.settings.spaceTabs = 6;
+    global.settings.showSpace = false;
+    global.settings.showOuter = false
+    global.settings.showCity = false;
+    global.settings.showShipYard = false;
+    if (global.settings.govTabs === 5){
+        global.settings.govTabs = 0;
+    }
+
+    clearShipDrag();
+    clearElement($('#shipList'));
+    
     Object.keys(actions.city).forEach(function (k){
         if (global.city.hasOwnProperty(k) && global.city[k].hasOwnProperty('count')){
             if (global.race['hooved']){
@@ -4191,9 +4212,6 @@ export function jumpGateShutdown(){
         }
     });
 
-    inactive.ships = [...global.space.shipyard.ships];
-    global.space.shipyard.ships = [];
-
     Object.keys(job_desc).forEach(function (job){
         if (!['professor','scientist','pit_miner','cement_worker','craftsman'].includes(job)){
             global.civic[job].workers = 0;
@@ -4247,11 +4265,6 @@ export function jumpGateShutdown(){
     
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }
-
-    global.settings.spaceTabs = 6;
-    global.settings.showSpace = false;
-    global.settings.showOuter = false
-    global.settings.showCity = false;
 
     clearElement($(`#infoTimer`));
     global.race['inactive'] = inactive;

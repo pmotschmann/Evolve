@@ -2888,7 +2888,7 @@ function fastLoop(){
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
-            if (global.race['parasite']){
+            if (global.race['parasite'] && !global.tech['isolation']){
                 soldiers -= 2;
                 if (soldiers < 0){
                     soldiers = 0;
@@ -6789,7 +6789,7 @@ function midLoop(){
         if (global.race['orbit_decayed'] && p_on['red_factory']){
             lCaps['cement_worker'] += jobScale(p_on['red_factory']);
         }
-        if (global.race['parasite']){
+        if (global.race['parasite'] && !global.tech['isolation']){
             lCaps['garrison'] += jobScale(2);
         }
         if (global.city['garrison']){
