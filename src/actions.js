@@ -3929,11 +3929,35 @@ export function setChallengeScreen(){
 
 export function buildTemplate(key, region){
     let tName = global.race['orbit_decay'] ? 'orbit_decayed' : 'cataclysm';
-    let tKey = region === 'space' ? 'trait' : 'not_trait';
+
+    let tKey = function(a,k,r){
+        if (r === 'space'){
+            if (a.hasOwnProperty('trait')){
+                a.trait.push(k);
+            }
+            else {
+                a['trait'] = [k];
+            }
+            
+        }
+        else if (r === 'tauceti'){
+            a.reqs['isolation'] = 1;
+        }
+        else {
+            if (a.hasOwnProperty('not_trait')){
+                a.not_trait.push(k);
+            }
+            else {
+                a['not_trait'] = [k];
+            }
+        }
+        return a;
+    };
+
     switch (key){
         case 'bonfire':
         {
-            return {
+            let action = {
                 id: `${region}-bonfire`,
                 title: loc('city_bonfire'),
                 desc: loc('city_bonfire_desc'),
@@ -3943,7 +3967,6 @@ export function buildTemplate(key, region){
                 condition(){
                     return eventActive(`summer`);
                 },
-                [tKey]: [tName],
                 queue_complete(){ return 0; },
                 effect(){
                     let morale = (global.resource.Thermite.diff * 2.5) / (global.resource.Thermite.diff * 2.5 + 500) * 500;
@@ -3959,10 +3982,11 @@ export function buildTemplate(key, region){
                     return loc(`city_bonfire_flair`);
                 }
             };
+            return tKey(action,tName,region);
         }
         case 'firework':
         {
-            return {
+            let action = {
                 id: `${region}-firework`,
                 title: loc('city_firework'),
                 desc: loc('city_firework'),
@@ -3972,7 +3996,6 @@ export function buildTemplate(key, region){
                 condition(){
                     return eventActive(`firework`);
                 },
-                [tKey]: [tName],
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
                     Iron(){ return global[region].firework.count === 0 ? 7500 : 0; },
@@ -3991,6 +4014,7 @@ export function buildTemplate(key, region){
                     return false;
                 }
             };
+            return tKey(action,tName,region);
         }
         case 'assembly':
         {
@@ -4030,14 +4054,7 @@ export function buildTemplate(key, region){
                     return false;
                 }
             };
-
-            if (region === 'space'){
-                action.trait.push(tName);
-            }
-            else {
-                action['not_trait'] = [tName];
-            }
-            return action;
+            return tKey(action,tName,region);
         }
         case 'nanite_factory':
         {
@@ -4070,14 +4087,7 @@ export function buildTemplate(key, region){
                 },
                 flair: loc(`city_nanite_factory_flair`)
             };
-
-            if (region === 'space'){
-                action.trait.push(tName);
-            }
-            else {
-                action['not_trait'] = [tName];
-            }
-            return action;
+            return tKey(action,tName,region);
         }
         case 'horseshoe':
         {
@@ -4137,17 +4147,7 @@ export function buildTemplate(key, region){
                     return false;
                 }
             };
-
-            if (region === 'space'){
-                action.trait.push(tName);
-            }
-            else if (region === 'tauceti'){
-                action.reqs['isolation'] = 1;
-            }
-            else {
-                action['not_trait'] = [tName];
-            }
-            return action;
+            return tKey(action,tName,region);
         }
     }
 }
