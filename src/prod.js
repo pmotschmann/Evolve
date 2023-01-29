@@ -404,5 +404,9 @@ export function production(id,val){
         {
             return global.tech['isolation'] ? 0.78 : 0.42;
         }
+        case 'alien_outpost':
+        {
+            return 0.01;
+        }
     }
 }

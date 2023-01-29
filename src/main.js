@@ -4342,7 +4342,7 @@ function fastLoop(){
         breakdown.p['Vitreloy'] = vitreloy_bd;
 
         let cipher_bd = {};
-        if (global.space['lander'] && global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
+        if (!global.tech['isolation'] && global.space['lander'] && global.space['crashed_ship'] && global.space.crashed_ship.count === 100){
             let synd = syndicate('spc_triton');
             let base = support_on['lander'] * production('lander');
             let delta = base * global_multiplier * synd * hunger;
@@ -4359,7 +4359,7 @@ function fastLoop(){
             }
         }
 
-        if (global.space['digsite'] && global.space.digsite.count === 100){
+        if (!global.tech['isolation'] && global.space['digsite'] && global.space.digsite.count === 100){
             if (!global.tech['dig_control']){
                 global.tech['dig_control'] = 1;
                 drawTech();
@@ -4379,6 +4379,19 @@ function fastLoop(){
             }
 
             let delta = (shock_base + tank_base) * global_multiplier * synd;
+            modRes('Cipher', delta * time_multiplier);
+        }
+
+        if (global.tech['isolation'] && global.tauceti['alien_outpost'] && p_on['alien_outpost']){
+            let base = production('alien_outpost');
+            let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
+
+            cipher_bd[loc('tech_alien_outpost')] = base + 'v';
+            if (base > 0){
+                cipher_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+            }
+
+            let delta = base * global_multiplier * colony_val;
             modRes('Cipher', delta * time_multiplier);
         }
         breakdown.p['Cipher'] = cipher_bd;
@@ -7381,6 +7394,12 @@ function midLoop(){
                 caps['Cipher'] += cipher;
                 bd_Cipher[loc('tech_zero_g_lab')] = cipher+'v';
             }
+        }
+
+        if (global.tech['isolation'] && global.tauceti['alien_outpost'] && global.resource.Cipher.display){
+            let cipher = 200000;
+            caps['Cipher'] += cipher;
+            bd_Cipher[loc('tech_alien_outpost')] = cipher+'v';
         }
 
         if (global.portal['archaeology']){

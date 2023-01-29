@@ -8,6 +8,7 @@ import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
+import { nf_resources } from './industry.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -1670,6 +1671,9 @@ const tauCetiModules = {
                 let desc = `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div>`;
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('plus_max_resource',[(6800000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
+                    desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
+
                 }
                 if (global.tech['outpost_boost']){
                     desc = desc + `<div>${loc('tech_alien_outpost_effect2')}</div>`;
