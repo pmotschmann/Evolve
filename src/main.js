@@ -9429,6 +9429,8 @@ function longLoop(){
                         global.settings.showTau = true;
                         global.settings.tau.home = true;
                         global.settings.tau.red = true;
+                        global.settings.tau.gas = false;
+                        global.settings.tau.roid = false;
                         messageQueue(loc('tau_scan',[tShip]),'info',false,['progress']);
                         renderTauCeti();
                     }

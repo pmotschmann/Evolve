@@ -1133,7 +1133,7 @@ if (convertVersion(global['version']) < 103000){
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 6;
+global['beta'] = 7;
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1336,10 +1336,17 @@ if (!global.settings.portal.hasOwnProperty('ruins')){
 if (!global.settings['tau']){
     global.settings['tau'] = {
         home: false,
-        red: false,
-        gas: false,
-        roid: false,
+        red: false
     };
+}
+
+if (global.settings.hasOwnProperty('tau') && !global.settings.tau.hasOwnProperty('gas')){
+    global.settings.tau['gas'] = false;
+    global.settings.tau['roid'] = false;
+}
+
+if (global.settings.hasOwnProperty('tau') && !global.settings.tau.hasOwnProperty('star')){
+    global.settings.tau['star'] = false;
 }
 
 if (!global.settings.hasOwnProperty('touch')){
@@ -2500,6 +2507,9 @@ export function clearStates(){
     global.settings.portal.spire = false;
     global.settings.tau.home = false;
     global.settings.tau.red = false;
+    global.settings.tau.roid = false;
+    global.settings.tau.gas = false;
+    global.settings.tau.star = false;
     global.settings.arpa = false;
     global.settings.civTabs = 0;
     global.settings.govTabs = 0;

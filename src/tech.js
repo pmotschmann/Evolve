@@ -12306,7 +12306,7 @@ const techs = {
         id: 'tech-isolation_protocol',
         title: loc('tech_isolation_protocol'),
         desc: loc('tech_isolation_protocol'),
-        category: 'science',
+        category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
         reqs: { disease: 2 },
@@ -12328,7 +12328,7 @@ const techs = {
         id: 'tech-focus_cure',
         title: loc('tech_focus_cure'),
         desc: loc('tech_focus_cure'),
-        category: 'science',
+        category: 'plague',
         era: 'tauceti',
         path: ['truepath'],
         reqs: { disease: 2 },
@@ -12340,6 +12340,27 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.tech['focus_cure'] = 1;
+                return true;
+            }
+            return false;
+        }
+    },
+    decode_virus: {
+        id: 'tech-decode_virus',
+        title: loc('tech_decode_virus'),
+        desc: loc('tech_decode_virus'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 1 },
+        grant: ['focus_cure',2],
+        cost: {
+            Knowledge(){ return 9000000; }
+        },
+        effect(){ return `<div>${loc('tech_decode_virus_effect')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
                 return true;
             }
             return false;

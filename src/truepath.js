@@ -1940,6 +1940,9 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
                     desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
                 }
+                if (global.tech['focus_cure']){
+                    desc = desc + `<div>${loc('tau_home_disease_lab_cure',[+global.tauceti.infectious_disease_lab.cure.toFixed(1)])}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -2681,7 +2684,7 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    messageQueue(loc('tau_roid_mission_result',[loc('tau_roid_title')]),'info',false,['progress']);
+                    messageQueue(loc('tau_roid_mission_result'),'info',false,['progress']);
                     return true;
                 }
                 return false;
