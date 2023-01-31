@@ -12283,8 +12283,8 @@ const techs = {
     },
     infectious_disease_lab: {
         id: 'tech-infectious_disease_lab',
-        title: loc('tech_infectious_disease_lab'),
-        desc: loc('tech_infectious_disease_lab'),
+        title(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+        desc(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
         category: 'science',
         era: 'tauceti',
         path: ['truepath'],
@@ -12293,7 +12293,7 @@ const techs = {
         cost: {
             Knowledge(){ return 8250000; }
         },
-        effect(){ return loc('tech_infectious_disease_lab_effect'); },
+        effect(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_effect_s' : 'tech_infectious_disease_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
@@ -12357,10 +12357,15 @@ const techs = {
         cost: {
             Knowledge(){ return 9000000; }
         },
-        effect(){ return `<div>${loc('tech_decode_virus_effect')}</div>`; },
+        effect(){ return `<div>${loc(races[global.race.species].type === 'synthetic' ? 'tech_decode_virus_effect_s' : 'tech_decode_virus_effect')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
-                messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                if (races[global.race.species].type === 'synthetic'){
+                    messageQueue(loc('tech_decode_virus_msg1s',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                }
+                else {
+                    messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                }
                 return true;
             }
             return false;

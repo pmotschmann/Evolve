@@ -1347,7 +1347,7 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.tech.tau_home >= 1 ? 0 : 1; },
             cost: {
-                Money(){ return 500000000; }
+                Money(){ return 1000000000; }
             },
             effect(){ return loc('tau_new_mission_effect',[races[global.race.species].home]); },
             action(){
@@ -1911,9 +1911,9 @@ const tauCetiModules = {
         },
         infectious_disease_lab: {
             id: 'tauceti-infectious_disease_lab',
-            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc('tech_infectious_disease_lab'); },
+            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
             desc(){
-                return `<div>${loc(global.tech['isolation'] ? 'tech_infectious_disease_lab_alt' : 'tech_infectious_disease_lab')}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
+                return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
             reqs: { disease: 1 },
             path: ['truepath'],

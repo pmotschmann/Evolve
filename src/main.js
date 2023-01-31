@@ -9468,6 +9468,25 @@ function longLoop(){
             }
         }
 
+        if (global.race['truepath'] && global.tech['focus_cure'] && global.tech.focus_cure >= 2 && global.tauceti['infectious_disease_lab']){
+            if (global.tauceti.infectious_disease_lab.cure < 100){
+                let labs = (support_on['infectious_disease_lab'] || 0) / 100;
+                if (labs > 1){ labs = 1; }
+                let gain = +flib('curve',labs).toFixed(5) / 5;
+                global.tauceti.infectious_disease_lab.cure += gain;
+                if (global.tauceti.infectious_disease_lab.cure > 100){ global.tauceti.infectious_disease_lab.cure = 100; }
+            }
+            else if (global.tauceti.infectious_disease_lab.cure >= 100 && global.tech.focus_cure === 2){
+                global.tech.focus_cure = 3;
+                if (races[global.race.species].type === 'synthetic'){
+                    messageQueue(loc('tech_decode_virus_msg2s'),'info',false,['progress']);
+                }
+                else {
+                    messageQueue(loc('tech_decode_virus_msg2'),'info',false,['progress']);
+                }
+            }
+        }
+
         if (global.race['infiltrator']){
             let tech_source = global.tech['world_control'] ? `trait_infiltrator_steal_alt` : `trait_infiltrator_steal`;
             let know_adjust = traits.infiltrator.vars()[0] / 100;
