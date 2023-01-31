@@ -995,18 +995,23 @@ function fastLoop(){
         let morale = 100;
         let q_multiplier = 1;
         let qs_multiplier = 1;
-        if (global.race['quarantine']){
+        if (global.race['quarantine'] && global.race['qDays']){
+            let qDays = 1 - ((global.race.qDays <= 1000 ? global.race.qDays : 1000) / 1000);
             switch (global.race.quarantine){
                 case 1:
-                    q_multiplier = 0.5;
+                    q_multiplier = 0.5 + (0.5 * qDays);
                     break;
                 case 2:
-                    q_multiplier = 0.25;
-                    qs_multiplier = 0.5;
+                    q_multiplier = 0.25 + (0.25 * qDays);
+                    qs_multiplier = 0.5 + (0.5 * qDays);
                     break;
                 case 3:
-                    q_multiplier = 0.1;
-                    qs_multiplier = 0.25;
+                    q_multiplier = 0.1 + (0.15 * qDays);
+                    qs_multiplier = 0.25 + (0.25 * qDays);
+                    break;
+                case 4:
+                    q_multiplier = 0.08 + (0.02 * qDays);;
+                    qs_multiplier = 0.12 + (0.13 * qDays);;
                     break;
             }
         }
@@ -9635,22 +9640,39 @@ function longLoop(){
                 if (global.tech.plague === 1 && (global.tech.tau_roid >= 4 || global.tech.tau_whale >= 2) && Math.rand(0,50) === 0){
                     global.tech.plague = 2;
                     global.race['quarantine'] = 1;
+                    global.race['qDays'] = 0;
                     messageQueue(loc('tau_plague2',[govTitle(3)]),'info',false,['progress']);
                 }
                 else if (global.tech.plague === 2 && global.tech.tau_roid >= 5 && global.tech.tau_whale >= 2 && Math.rand(0,50) === 0){
                     global.tech.plague = 3;
                     global.race['quarantine'] = 2;
+                    global.race['qDays'] = 0;
                     messageQueue(loc('tau_plague3',[govTitle(3),races[global.race.species].home]),'info',false,['progress']);
                 }
-                else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 3 && Math.rand(0,50) === 0){
-                    global.tech.plague = 4;
-                    if (global.tech['isolation']){
+                else if (global.tech['isolation']){
+                    if (global.tech.plague < 5 && Math.rand(0,50) === 0){
+                        global.tech.plague = 5;
                         messageQueue(loc('tau_plague5b',[races[global.race.species].home]),'info',false,['progress']);
                     }
-                    else {
-                        global.race['quarantine'] = 3;
-                        messageQueue(loc('tau_plague5a',[races[global.race.species].home]),'info',false,['progress']);
+                }
+                else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){
+                    global.tech.plague = 4;
+                    global.race['quarantine'] = 3;
+                    global.race['qDays'] = 0;
+                    messageQueue(loc('tau_plague5a',[races[global.race.species].home]),'info',false,['progress']);
+                }
+                else if (global.tech.plague === 4 && global.tech['disease'] && global.tech.disease >= 3 && Math.rand(0,50) === 0){
+                    global.tech.plague = 5;
+                    global.race['quarantine'] = 4;
+                    global.race['qDays'] = 0;
+                    messageQueue(loc('tau_plague5a',[races[global.race.species].home]),'info',false,['progress']);
+                }
+
+                if (global.race['quarantine']){
+                    if (!global.race.hasOwnProperty('qDays')){
+                        global.race['qDays'] = 0;
                     }
+                    global.race.qDays++;
                 }
             }
         }

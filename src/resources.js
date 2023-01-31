@@ -1761,7 +1761,7 @@ export function tradeBuyPrice(res){
         price *= 1 + (global.race.inflation / 300);
     }
     if (global.race['quarantine']){
-        price *= 1 + (global.race.quarantine ** 4);
+        price *= 1 + Math.round(global.race.quarantine ** 3.5);
     }
     price = +(price).toFixed(1);
     return price;
