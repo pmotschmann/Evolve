@@ -12514,6 +12514,77 @@ const techs = {
             return false;
         }
     },
+    clone_degradation: {
+        id: 'tech-clone_degradation',
+        title: loc('tech_clone_degradation'),
+        desc: loc('tech_clone_degradation'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { cloning: 1 },
+        grant: ['cloning',2],
+        cost: {
+            Knowledge(){ return 10000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_clone_degradation_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_clone_degradation_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    digital_paradise: {
+        id: 'tech-digital_paradise',
+        title: loc('tech_digital_paradise'),
+        desc: loc('tech_digital_paradise'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { cloning: 2 },
+        grant: ['matrix',1],
+        cost: {
+            Knowledge(){ return 10500000; },
+            Cipher(){ return 200000; }
+        },
+        effect(){
+            return `<div>${loc('tech_digital_paradise_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    ringworld: {
+        id: 'tech-ringworld',
+        title: loc('tech_ringworld'),
+        desc: loc('tech_ringworld'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { matrix: 1 },
+        grant: ['matrix',2],
+        cost: {
+            Money(){ return 2500000000; },
+            Knowledge(){ return 11000000; }
+        },
+        effect(){
+            return `<div>${loc('tech_ringworld_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.tau.star = true;
+                global.tauceti['ringworld'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     iso_gambling: {
         id: 'tech-iso_gambling',
         title: loc('tech_iso_gambling'),

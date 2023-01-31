@@ -13,7 +13,7 @@ import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFl
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
-import { govern, govActive } from './governor.js';
+import { govern, govActive, removeTask } from './governor.js';
 import { production, highPopAdjust } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
@@ -9546,6 +9546,7 @@ function longLoop(){
                     global.race.vax = 100;
                     global.tech.focus_cure = 7;
                     messageQueue(loc('tech_vaccine_campaign_msg2'),'info',false,['progress']);
+                    removeTask('assemble');
                 }
             }
         }
