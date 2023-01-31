@@ -12491,6 +12491,29 @@ const techs = {
             return false;
         }
     },
+    cloning: {
+        id: 'tech-cloning',
+        title: loc('tech_cloning'),
+        desc: loc('tech_cloning'),
+        category: 'housing',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 7 },
+        grant: ['cloning',1],
+        cost: {
+            Knowledge(){ return 9750000; }
+        },
+        effect(){
+            return `<div>${loc(global.race['artifical'] ? 'tech_cloning_effect_s' : 'tech_cloning_effect')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['cloning_facility'] = { count : 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     iso_gambling: {
         id: 'tech-iso_gambling',
         title: loc('tech_iso_gambling'),

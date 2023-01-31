@@ -1544,6 +1544,35 @@ const tauCetiModules = {
                 return pop;
             }
         },
+        cloning_facility: {
+            id: `tauceti-cloning_facility`,
+            title: loc('tau_home_cloning'),
+            desc(){ return loc('tau_home_cloning_desc',[races[global.race.species].name]); },
+            category: 'military',
+            reqs: { cloning: 1 },
+            path: ['truepath'],
+            queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
+            cost: {
+                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, highPopAdjust(125000), 1.02) : 0; },
+                Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
+                Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
+                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, highPopAdjust(500), 1.01) : 0) : 0; },
+            },
+            effect(){
+                let warn = '';
+                if (global['resource'][global.race.species].max === global['resource'][global.race.species].amount){
+                    warn = `<div class="has-text-caution">${loc('city_assembly_effect_warn')}</div>`;
+                }
+                return `<div>${loc('tau_home_cloning_effect',[races[global.race.species].name])}</div>${warn}`;
+            },
+            action(){
+                if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
+                    global['resource'][global.race.species].amount++;
+                    return true;
+                }
+                return false;
+            }
+        },
         horseshoe: buildTemplate(`horseshoe`,'tauceti'),
         bonfire: buildTemplate(`bonfire`,'tauceti'),
         firework: buildTemplate(`firework`,'tauceti'),

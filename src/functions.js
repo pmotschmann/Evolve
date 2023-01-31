@@ -758,7 +758,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     if (mutiplier < 1.005){
         mutiplier = 1.005;
     }
-    var count = global[sector][action] ? global[sector][action].count : 0;
+    var count = action === 'citizen' ? global['resource'][global.race.species].amount : (global[sector][action] ? global[sector][action].count : 0);
     if (offset && typeof offset === 'number'){
         count += offset;
     }

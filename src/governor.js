@@ -884,12 +884,25 @@ export const gov_tasks = {
     assemble: { // Assemble Citizens
         name: loc(`gov_task_assemble`),
         req(){
-            return global.race['artifical'] ? true : false;
+            return global.race['artifical'] && !global.tech['cloning'] ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){
                 if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
                     actions.city.assembly.action();
+                }
+            }
+        }
+    },
+    clone: { // Clone Citizens
+        name: loc(`gov_task_clone`),
+        req(){
+            return global.tech['cloning'] ? true : false;
+        },
+        task(){
+            if ( $(this)[0].req() ){
+                if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
+                    actions.tauceti.tau_home.cloning_facility.action();
                 }
             }
         }

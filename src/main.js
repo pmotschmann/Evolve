@@ -3066,6 +3066,9 @@ function fastLoop(){
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
                 // Do Nothing
             }
+            if (global.race['vax'] && global.race.vax >= 100){
+                // Do Nothing
+            }
             else {
                 var lowerBound = global.tech['reproduction'] ? global.tech['reproduction'] : 0;
                 if (global.tech['reproduction'] && date.getMonth() === 1 && date.getDate() === 14){
@@ -9538,7 +9541,11 @@ function longLoop(){
                     else if (global.tech['vax_f']){ div = 50; }
                     else if (global.tech['vax_c']){ div = 150; }
                     global.race.vax += Math.rand(0, med * 2) / div;
-                    if (global.race.vax > 100){ global.race.vax = 100; }
+                }
+                else if (global.race.vax >= 100 && global.tech.focus_cure <= 6){
+                    global.race.vax = 100;
+                    global.tech.focus_cure = 7;
+                    messageQueue(loc('tech_vaccine_campaign_msg2'),'info',false,['progress']);
                 }
             }
         }

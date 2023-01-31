@@ -4053,7 +4053,10 @@ export function buildTemplate(key, region){
                     return `<div>${loc('city_assembly_effect',[races[global.race.species].name])}</div>${warn}`;
                 },
                 action(){
-                    if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
+                    if (global.race['vax'] && global.race.vax >= 100){
+                        return true;
+                    }
+                    else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
                         global['resource'][global.race.species].amount++;
                         return true;
                     }
