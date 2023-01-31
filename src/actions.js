@@ -1982,8 +1982,11 @@ export const actions = {
             effect(){
                 let clinic = global.tech['reproduction'] && global.tech.reproduction >= 2 ? `<div>${loc('city_hospital_effect2')}</div>` : ``;
                 let healing = global.tech['medic'] * 5;
-
-                return `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
+                let desc = `<div>${loc('city_hospital_effect',[healing])}</div>${clinic}`;
+                if (!global.race['artifical'] && global.race.hasOwnProperty('vax')){
+                    desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
+                }
+                return desc;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2020,6 +2023,9 @@ export const actions = {
                 if (global.race['artifical'] && !global.race['orbit_decayed']){
                     let repair = global.tech['medic'] || 1;
                     effect += `<div>${loc('city_boot_camp_art_effect',[repair * 5])}</div>`;
+                }
+                if (global.race['artifical'] && global.race.hasOwnProperty('vax')){
+                    desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
                 }
                 return effect;
             },

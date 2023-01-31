@@ -302,6 +302,17 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${loc(`homeless`)}</span> <span class="has-text-danger"> -${homeless}%</span></p>`);
         }
 
+        if (global.tech['vax_c'] || global.tech['vax_f']){
+            let drop = global.tech['vax_c'] ? 5 : 25;
+            total -= drop;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(global.tech['vax_c'] ? `tech_vax_strat4_bd` : `tech_vax_strat2_bd`)}</span> <span class="has-text-danger"> -${drop}%</span></p>`);
+        }
+        else if (global.tech['vax_s']){
+            let gain = 10;
+            total += gain;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`tech_vax_strat3_bd`)}</span> <span class="has-text-success"> +${gain}%</span></p>`);
+        }
+
         total = +(total).toFixed(1);
 
         let container = $(`<div></div>`);
@@ -1014,6 +1025,13 @@ function fastLoop(){
                     qs_multiplier = 0.12 + (0.13 * qDays);;
                     break;
             }
+
+            if (global.race['vax'] && global.tech['focus_cure'] && global.tech.focus_cure >= 4){
+                let vax = +global.race.vax.toFixed(2) / 100;
+                if (vax > 1){ vax = 1; }
+                q_multiplier = q_multiplier + ((1 - q_multiplier) * vax);
+                qs_multiplier = qs_multiplier + ((1 - qs_multiplier) * vax);
+            }
         }
 
         if (global.city.calendar.season === 0 && global.city.calendar.year > 0){ // Spring
@@ -1047,6 +1065,13 @@ function fastLoop(){
 
         if (global.civic['homeless']){
             morale -= global.civic.homeless / 2;
+        }
+
+        if (global.tech['vax_c'] || global.tech['vax_f']){
+            morale -= global.tech['vax_c'] ? 5 : 25;
+        }
+        else if (global.tech['vax_s']){
+            morale += 10;
         }
 
         if (global.tech['m_boost']){
@@ -9488,6 +9513,32 @@ function longLoop(){
                 }
                 else {
                     messageQueue(loc('tech_decode_virus_msg2'),'info',false,['progress']);
+                }
+            }
+            else if (global.tech.focus_cure >= 4 && global.race.hasOwnProperty('vax')){
+                let med = global.race['artifical'] ? global.city.boot_camp.count : global.city.hospital.count;
+
+                if (global.tech.focus_cure === 4 && global.race.vax < 25){
+                    global.race.vax += Math.rand(0, med * 2) / 150;
+                }
+                else if (global.tech.focus_cure === 4 && global.race.vax >= 25){
+                    global.tech.focus_cure = 5;
+                    messageQueue(loc('tech_vaccine_campaign_msg1'),'info',false,['progress']);
+                }
+                else if (global.tech.focus_cure === 5 && global.race.vax < 50){
+                    global.race.vax += Math.rand(0, med * 2) / 450;
+                }
+                else if (global.tech.focus_cure === 5 && global.race.vax < 75){
+                    global.race.vax += Math.rand(0, med * 2) / 1200;
+                }
+                else if (global.tech.focus_cure === 6 && global.race.vax < 100){
+                    let div = 1000;
+                    if (global.tech['vax_p']){ div = 250; }
+                    else if (global.tech['vax_s']){ div = 375; }
+                    else if (global.tech['vax_f']){ div = 50; }
+                    else if (global.tech['vax_c']){ div = 150; }
+                    global.race.vax += Math.rand(0, med * 2) / div;
+                    if (global.race.vax > 100){ global.race.vax = 100; }
                 }
             }
         }

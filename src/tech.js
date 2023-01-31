@@ -2,7 +2,7 @@ import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
+import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
@@ -12283,8 +12283,8 @@ const techs = {
     },
     infectious_disease_lab: {
         id: 'tech-infectious_disease_lab',
-        title(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
-        desc(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+        title(){ return loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+        desc(){ return loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
         category: 'science',
         era: 'tauceti',
         path: ['truepath'],
@@ -12293,7 +12293,7 @@ const techs = {
         cost: {
             Knowledge(){ return 8250000; }
         },
-        effect(){ return loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_effect_s' : 'tech_infectious_disease_lab_effect'); },
+        effect(){ return loc(global.race['artifical'] ? 'tech_infectious_disease_lab_effect_s' : 'tech_infectious_disease_lab_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
@@ -12357,15 +12357,135 @@ const techs = {
         cost: {
             Knowledge(){ return 9000000; }
         },
-        effect(){ return `<div>${loc(races[global.race.species].type === 'synthetic' ? 'tech_decode_virus_effect_s' : 'tech_decode_virus_effect')}</div>`; },
+        effect(){ return `<div>${loc(global.race['artifical'] ? 'tech_decode_virus_effect_s' : 'tech_decode_virus_effect')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
-                if (races[global.race.species].type === 'synthetic'){
+                if (global.race['artifical']){
                     messageQueue(loc('tech_decode_virus_msg1s',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
                 }
                 else {
                     messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
                 }
+                return true;
+            }
+            return false;
+        }
+    },
+    vaccine_campaign: {
+        id: 'tech-vaccine_campaign',
+        title: loc('tech_vaccine_campaign'),
+        desc: loc('tech_vaccine_campaign'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 3 },
+        grant: ['focus_cure',4],
+        cost: {
+            Knowledge(){ return 9250000; }
+        },
+        effect(){
+            let struct = global.race['artifical'] ? actions.city.boot_camp.title() : actions.city.hospital.title;
+            return `<div>${loc('tech_vaccine_campaign_effect',[struct])}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.race['vax'] = 0;
+                return true;
+            }
+            return false;
+        }
+    },
+    tech_vax_strat1: {
+        id: 'tech-tech_vax_strat1',
+        title: loc('tech_vax_strat1'),
+        desc: loc('tech_vax_strat1'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 5 },
+        grant: ['focus_cure',6],
+        cost: {
+            Knowledge(){ return 9500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_vax_strat1_effect')}</div><div class="has-text-special">${loc('tech_vax_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['vax_p'] = 1;
+                messageQueue(loc('tech_vax_strat1_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    tech_vax_strat2: {
+        id: 'tech-tech_vax_strat2',
+        title: loc('tech_vax_strat2'),
+        desc: loc('tech_vax_strat2'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 5 },
+        grant: ['focus_cure',6],
+        cost: {
+            Knowledge(){ return 9500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_vax_strat2_effect')}</div><div class="has-text-special">${loc('tech_vax_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['vax_f'] = 1;
+                messageQueue(loc('tech_vax_strat2_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    tech_vax_strat3: {
+        id: 'tech-tech_vax_strat3',
+        title: loc('tech_vax_strat3'),
+        desc: loc('tech_vax_strat3'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 5 },
+        grant: ['focus_cure',6],
+        cost: {
+            Knowledge(){ return 9500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_vax_strat3_effect')}</div><div class="has-text-special">${loc('tech_vax_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['vax_s'] = 1;
+                messageQueue(loc('tech_vax_strat3_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    tech_vax_strat4: {
+        id: 'tech-tech_vax_strat4',
+        title: loc('tech_vax_strat4'),
+        desc: loc('tech_vax_strat4'),
+        category: 'plague',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { focus_cure: 5 },
+        grant: ['focus_cure',6],
+        cost: {
+            Knowledge(){ return 9500000; }
+        },
+        effect(){
+            return `<div>${loc('tech_vax_strat4_effect')}</div><div class="has-text-special">${loc('tech_vax_warning')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tech['vax_c'] = 1;
+                messageQueue(loc('tech_vax_strat4_msg'),'info',false,['progress']);
                 return true;
             }
             return false;

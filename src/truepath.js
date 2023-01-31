@@ -1911,7 +1911,7 @@ const tauCetiModules = {
         },
         infectious_disease_lab: {
             id: 'tauceti-infectious_disease_lab',
-            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(races[global.race.species].type === 'synthetic' ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
@@ -1942,6 +1942,9 @@ const tauCetiModules = {
                 }
                 if (global.tech['focus_cure']){
                     desc = desc + `<div>${loc('tau_home_disease_lab_cure',[+global.tauceti.infectious_disease_lab.cure.toFixed(1)])}</div>`;
+                    if (global.race.hasOwnProperty('vax')){
+                        desc = desc + `<div>${loc('tau_home_disease_lab_vax',[+global.race.vax.toFixed(2)])}</div>`;
+                    }
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
