@@ -884,7 +884,7 @@ export const gov_tasks = {
     assemble: { // Assemble Citizens
         name: loc(`gov_task_assemble`),
         req(){
-            return global.race['artifical'] && !global.tech['cloning'] ? true : false;
+            return global.race['artifical'] && (!global.tech['focus_cure'] || global.tech.focus_cure < 7) ? true : false;
         },
         task(){
             if ( $(this)[0].req() ){

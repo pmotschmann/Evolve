@@ -303,12 +303,12 @@ popover('morale',
         }
 
         if (global.tech['vax_c'] || global.tech['vax_f']){
-            let drop = global.tech['vax_c'] ? 5 : 25;
+            let drop = global.tech['vax_c'] ? 10 : 50;
             total -= drop;
             obj.popper.append(`<p class="modal_bd"><span>${loc(global.tech['vax_c'] ? `tech_vax_strat4_bd` : `tech_vax_strat2_bd`)}</span> <span class="has-text-danger"> -${drop}%</span></p>`);
         }
         else if (global.tech['vax_s']){
-            let gain = 10;
+            let gain = 20;
             total += gain;
             obj.popper.append(`<p class="modal_bd"><span>${loc(`tech_vax_strat3_bd`)}</span> <span class="has-text-success"> +${gain}%</span></p>`);
         }
@@ -1068,10 +1068,10 @@ function fastLoop(){
         }
 
         if (global.tech['vax_c'] || global.tech['vax_f']){
-            morale -= global.tech['vax_c'] ? 5 : 25;
+            morale -= global.tech['vax_c'] ? 10 : 50;
         }
         else if (global.tech['vax_s']){
-            morale += 10;
+            morale += 20;
         }
 
         if (global.tech['m_boost']){
@@ -9537,9 +9537,9 @@ function longLoop(){
                 else if (global.tech.focus_cure === 6 && global.race.vax < 100){
                     let div = 1000;
                     if (global.tech['vax_p']){ div = 250; }
-                    else if (global.tech['vax_s']){ div = 375; }
-                    else if (global.tech['vax_f']){ div = 50; }
-                    else if (global.tech['vax_c']){ div = 150; }
+                    else if (global.tech['vax_s']){ div = 390; }
+                    else if (global.tech['vax_f']){ div = 25; }
+                    else if (global.tech['vax_c']){ div = 125; }
                     global.race.vax += Math.rand(0, med * 2) / div;
                 }
                 else if (global.race.vax >= 100 && global.tech.focus_cure <= 6){
