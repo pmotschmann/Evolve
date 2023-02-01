@@ -12570,7 +12570,7 @@ const techs = {
         reqs: { matrix: 1 },
         grant: ['matrix',2],
         cost: {
-            Money(){ return 2500000000; },
+            Money(){ return 3000000000; },
             Knowledge(){ return 11000000; }
         },
         effect(){

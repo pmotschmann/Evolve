@@ -3151,6 +3151,16 @@ export function drawShipYard(){
             },
             methods: {
                 setVal(b,v){
+                    if (b === 'class' && v === 'explorer'){
+                        global.space.shipyard.blueprint.engine = 'emdrive';
+                        global.space.shipyard.blueprint.weapon = 'railgun';
+                        if (global.tech.syard_armor >= 3){ global.space.shipyard.blueprint.armor = 'neutronium'; }
+                        if (global.tech.syard_sensor >= 4){ global.space.shipyard.blueprint.sensor = 'quantum'; }
+                        if (global.tech.syard_power >= 4){ global.space.shipyard.blueprint.power = 'elerium'; }
+                    }
+                    else if (b === 'class' && v !== 'explorer' && global.space.shipyard.blueprint.class === 'explorer'){
+                        global.space.shipyard.blueprint.engine = 'ion';
+                    }
                     global.space.shipyard.blueprint[b] = v;
                     updateCosts();
                 },
@@ -3733,7 +3743,9 @@ function shipCosts(bp){
     }
 
     if (bp.class === 'explorer'){
-        costs['Iridium'] *= 10;
+        costs['Iron'] *= 10;
+        costs['Titanium'] *= 5;
+        costs['Iridium'] *= 50;
     }
 
     let typeCount = 0;
@@ -3746,7 +3758,7 @@ function shipCosts(bp){
     let creep = 1 + (typeCount - 2) / 25 * creep_factor;
     Object.keys(costs).forEach(function(res){
         if (bp.class === 'explorer'){
-            costs[res] = Math.ceil(costs[res] * ((typeCount + 1) * 10));
+            costs[res] = Math.ceil(costs[res] * ((typeCount + 1) * 3));
         }
         else {
             if (typeCount < 2){
