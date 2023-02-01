@@ -209,4 +209,25 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'ai');
     prestigeCalc(section,'cores',false,'ai');
     sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
+
+    section = infoBoxBuilder(mainContent,{ name: 'matrix', template: 'resets', paragraphs: 8, break: [3,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            3: [loc('tau_star_ringworld')],
+            5: [loc('wiki_resets_matrix'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_ai_core')],
+            6: [loc('wiki_resets_matrix')],
+        },
+        data_color: {
+            5: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#tauceti-structures-ringworld'],
+        }
+    });
+    section = createCalcSection(section,'matrix','gain');
+    prestigeCalc(section,'plasmid',false,'matrix');
+    prestigeCalc(section,'phage',false,'matrix');
+    prestigeCalc(section,'cores',false,'matrix');
+    sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'));
 }

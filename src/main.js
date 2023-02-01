@@ -1412,6 +1412,13 @@ function fastLoop(){
         let power_grid = 0;
         let max_power = 0;
 
+        if (global.tauceti['ringworld'] && global.tauceti.ringworld.count >= 1000){
+            let output = 10000;
+            max_power -= output;
+            power_grid += output;
+            power_generated[loc('tau_star_ringworld')] = output;
+        }
+
         if (global.interstellar['orichalcum_sphere'] && global.interstellar.orichalcum_sphere.count > 0){
             let output = 0;
             if (global.interstellar.orichalcum_sphere.count >= 100){

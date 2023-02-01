@@ -1075,3 +1075,106 @@ export function aiApocalypse(){
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
+
+// Matrix
+export function matrix(){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'matrix'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+    let plasmid = global.race.Plasmid.count;
+    let antiplasmid = global.race.Plasmid.anti;
+    let phage = global.race.Phage.count;
+    let dark = global.race.Dark.count;
+    let cores = global.race.AICore.count;
+
+    let gains = calcPrestige('matrix');
+    let new_plasmid = gains.plasmid;
+    let new_phage = gains.phage;
+    let new_cores = gains.cores;
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`bluepill`);
+
+    checkAchievements();
+
+    phage += new_phage;
+    global.stats.matrix++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        antiplasmid += new_plasmid;
+        global.stats.antiplasmid += new_plasmid;
+    }
+    else {
+        plasmid += new_plasmid;
+        global.stats.plasmid += new_plasmid;
+    }
+    global.stats.phage += new_phage;
+
+    cores += new_cores;
+    global.stats.cores += new_cores;
+
+    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        srace: srace,
+        Plasmid: { count: plasmid, anti: antiplasmid },
+        Phage: { count: phage },
+        Dark: { count: dark },
+        Harmony: { count: global.race.Harmony.count },
+        AICore: { count: cores },
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
+    };
+
+    global.tech = { theology: 1 };
+    clearStates();
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}

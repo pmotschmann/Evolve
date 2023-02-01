@@ -238,7 +238,7 @@ export function powerGrid(type,reset){
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
-                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer'
+                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix'
             ];
             break;
         case 'moon':
@@ -1375,6 +1375,13 @@ export function calcPrestige(type,inputs){
             phage_mult = 4;
             plasmid_cap = 2000;
             break;
+        case 'matrix':
+            pop_divisor = 1.5;
+            k_inc = 32000;
+            k_mult = 1.01;
+            phage_mult = 3.2;
+            plasmid_cap = 1800;
+            break;
     }
 
     if (challenge !== undefined){
@@ -1480,6 +1487,9 @@ export function calcPrestige(type,inputs){
 
     if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
+    }
+    else if (type === 'matrix'){
+        gains.cores = universe === 'micro' ? 3 : 10;
     }
 
     return gains;

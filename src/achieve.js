@@ -48,7 +48,10 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross','lamentis'],
+    challenge: [
+        'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
+        'ashanddust','exodus','obsolete','bluepill','gross','lamentis'
+    ],
 };
 
 const flairData = {
@@ -691,7 +694,7 @@ export function checkAchievements(){
         let uAffix = universeAffix();
         ['l',uAffix].forEach(function (affix){
             let rank = 0;
-            ['ashanddust','exodus','obsolete'].forEach(function (achieve){
+            ['ashanddust','exodus','obsolete','bluepill'].forEach(function (achieve){
                 if (global.stats.achieve[achieve] && global.stats.achieve[achieve][affix] && global.stats.achieve[achieve][affix] >= 5){
                     rank++;
                 }
@@ -2540,6 +2543,9 @@ export function drawStats(){
     }
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
+    }
+    if (global.stats.matrix > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_matrix_resets")}</span> {{ s.matrix | format }}</div>`);
     }
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ s.terraform | format }}</div>`);

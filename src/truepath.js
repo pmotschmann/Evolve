@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
@@ -9,6 +9,7 @@ import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casi
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { nf_resources } from './industry.js';
+import { matrix } from './resets.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -1330,9 +1331,6 @@ const tauCetiModules = {
             },
             reqs: { matrix: 2 },
             path: ['truepath'],
-            condition(){
-                return global.tauceti.ringworld.count >= 1000 ? false : true;
-            },
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.ringworld.count; },
             cost: {
@@ -1340,17 +1338,21 @@ const tauCetiModules = {
                 Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 100000 : 0; },
                 Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 350000 : 0; },
                 Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1000000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 48000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 60000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 88000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 125000 : 0; },
                 Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1800 : 0; },
                 Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 135000 : 0; },
             },
             effect(wiki){
-                let effectText = `<div>${loc('tau_star_ringworld_effect')}</div>`;
+                let effectText = '';
                 let count = (wiki || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0);
                 if (count < 1000){
                     let remain = 1000 - count;
+                    effectText += `<div>${loc('tau_star_ringworld_effect')}</div>`;
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_reactor_effect1',[10000])}</div>`;
                 }
                 return effectText;
             },
@@ -1359,10 +1361,67 @@ const tauCetiModules = {
                     if (global.tauceti.ringworld.count < 1000){
                         global.tauceti.ringworld.count++;
                         if (global.tauceti.ringworld.count >= 1000){
+                            global.tech.matrix = 3;
+                            global.tauceti['matrix'] = { count: 1, on: 0 };
+                            renderTauCeti();
                             clearPopper();
                         }
                         return true;
                     }
+                }
+                return false;
+            }
+        },
+        matrix: {
+            id: 'tauceti-matrix',
+            title: loc('tau_star_matrix'),
+            desc(){ return `<div>${loc('tau_star_matrix')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { matrix: 3 },
+            condition(){
+                return global.tauceti.ringworld.count >= 1000 ? true : false;
+            },
+            queue_complete(){ return 0; },
+            cost: {},
+            powered(){ return 10000; },
+            postPower(o){
+                if (o){
+                    setTimeout(function(){
+                        global.tech.matrix = p_on['matrix'] ? 4 : 3;
+                        renderTauCeti();
+                    }, 250);
+                }
+                else {
+                    global.tech.matrix = 3;
+                    renderTauCeti();
+                }
+            },
+            effect(){
+                let reward = matrixProjection();
+                let power = $(this)[0].powered();
+                let power_label = power > 0 ? `<div class="has-text-caution">${loc('minus_power',[power])}</div>` : '';
+                return `<div>${loc('tau_star_matrix_effect')}</div>${reward}${power_label}`;
+            },
+            action(){
+                return false;
+            }
+        },
+        blue_pill: {
+            id: 'tauceti-blue_pill',
+            title: loc('tau_star_blue_pill'),
+            desc: loc('tau_star_blue_pill'),
+            wiki: false,
+            reqs: { matrix: 4 },
+            queue_complete(){ return 0; },
+            no_multi: true,
+            cost: {},
+            effect(){
+                let reward = matrixProjection();
+                return `<div>${loc('tau_star_blue_pill_effect')}</div>${reward}`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    matrix();
+                    return true;
                 }
                 return false;
             }
@@ -2900,6 +2959,12 @@ for (let i=1; i<9; i++){
             return false;
         }
     };    
+}
+
+function matrixProjection(){
+    let gains = calcPrestige('matrix');
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.cores,loc('resource_AICore_name')])}</div>`;
 }
 
 function defineWomlings(){

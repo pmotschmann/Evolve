@@ -75,12 +75,13 @@ const calcInfo = {
         interstellar: ['alpha_mission','proxima_mission','nebula_mission','neutron_mission','blackhole_mission','jump_ship','wormhole_mission','sirius_mission','sirius_b','ascend'],
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
         hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire'],
-        tauceti: ['home_mission','dismantle','excavate','alien_outpost','red_mission'],
+        tauceti: ['home_mission','dismantle','excavate','alien_outpost','red_mission','matrix'],
     },
     excludeCreep: {
         planetary: ['horseshoe'],
         space: ['horseshoe'],
-        hell: ['ancient_pillars','sphinx','waygate']
+        hell: ['ancient_pillars','sphinx','waygate'],
+        tauceti: ['horseshoe','ringworld']
     },
     max: {
         prehistoric: {},
@@ -126,7 +127,8 @@ const calcInfo = {
         },
         tauceti: {
             alien_outpost: 1,
-            jump_gate: 100
+            jump_gate: 100,
+            ringworld: 1000
         }
     },
     count: {
