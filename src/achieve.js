@@ -50,7 +50,7 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','gross','lamentis'
+        'ashanddust','exodus','obsolete','bluepill','gross','lamentis','overlord'
     ],
 };
 

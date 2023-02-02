@@ -997,6 +997,20 @@ export function matrix(){
     }
     unlockAchieve(`bluepill`);
 
+    if (global.race['womling_friend']){
+        global.stats.wom_friend++;
+    }
+    else if (global.race['womling_lord']){
+        global.stats.wom_lord++;
+    }
+    else if (global.race['womling_god']){
+        global.stats.wom_god++;
+    }
+
+    if (global.stats.wom_friend > 0 && global.stats.wom_lord > 0 && global.stats.wom_god > 0){
+        unlockAchieve('overlord');
+    }
+
     checkAchievements();
 
     global.stats.matrix++;

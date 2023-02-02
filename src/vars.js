@@ -1148,7 +1148,7 @@ if (convertVersion(global['version']) < 103001){
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 11;
+global['beta'] = 12;
 
 
 if (!global.hasOwnProperty('prestige')){
@@ -1407,7 +1407,8 @@ if (!global.settings.hasOwnProperty('mtorder')){
     'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
     'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
     'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
-    'aiappoc','matrix','geck','dark','harmony','blood','cores','artifact'
+    'aiappoc','matrix','geck','dark','harmony','blood','cores','artifact',
+    'wom_god','wom_lord','wom_friend'
 ].forEach(function(k){
     if (!global.stats.hasOwnProperty(k)){
         global.stats[k] = 0;
