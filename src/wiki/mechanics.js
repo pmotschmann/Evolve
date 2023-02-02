@@ -1619,7 +1619,7 @@ function quantumLevelCalc(info){
             importInputs(){
                 inputs.knowledge.val = global.resource.Knowledge.max;
                 inputs.citadels.val = global.interstellar['citadel'] ? global.interstellar.citadel.on : 0;
-                inputs.cores.val = global.race.AICore.count;
+                inputs.cores.val = global.prestige.AICore.count;
                 inputs.supercore.val = global.space['ai_core2'] && global.space.ai_core2.on ? true : false;
                 inputs.linked.val = global.race['linked'] ? global.race['linked'] : 0;
                 inputs.citizens.val = global.resource[global.race.species].amount;

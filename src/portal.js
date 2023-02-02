@@ -2267,10 +2267,10 @@ export function bloodwar(){
 
     let game_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 9000 : 10000;
     let gem_chance = game_base - global.portal.fortress.pity;
-    if (global.race.universe === 'evil' && global.race.Dark.count > 1){
-        let de = global.race.Dark.count;
-        if (global.race.Harmony.count > 0){
-            de *= 1 + (global.race.Harmony.count * 0.01);
+    if (global.race.universe === 'evil' && global.prestige.Dark.count > 1){
+        let de = global.prestige.Dark.count;
+        if (global.prestige.Harmony.count > 0){
+            de *= 1 + (global.prestige.Harmony.count * 0.01);
         }
         gem_chance -= Math.round(Math.log2(de) * 2);
     }

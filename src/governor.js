@@ -562,9 +562,9 @@ export function drawnGovernOffice(){
             fire(){
                 let inc = global.race.governor.hasOwnProperty('f') ? global.race.governor.f : 0;
                 let cost = ((10 + inc) ** 2) - 50;
-                let affix = global.race.universe === 'antimatter' ? 'anti' : 'count';
-                if (global.race.Plasmid[affix] >= cost){
-                    global.race.Plasmid[affix] -= cost;
+                let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+                if (global.prestige[res].count >= cost){
+                    global.prestige[res].count -= cost;
                     global.race.governor['candidates'] = genGovernor(10);
                     if (global.race.governor.hasOwnProperty('f')){
                         global.race.governor.f++;

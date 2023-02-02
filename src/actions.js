@@ -952,12 +952,12 @@ export const actions = {
                             if (global['special'] && global.special['gift']){
                                 delete global.special.gift[active_gift];
                                 if (global.race.universe === 'antimatter'){
-                                    global.race.Plasmid.anti += 100;
+                                    global.prestige.AntiPlasmid.count += 100;
                                     global.stats.antiplasmid += 100;
                                     messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_antiplasmid')]),'info',false,['events']);
                                 }
                                 else {
-                                    global.race.Plasmid.count += 100;
+                                    global.prestige.Plasmid.count += 100;
                                     global.stats.plasmid += 100;
                                     messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
                                 }
@@ -984,17 +984,17 @@ export const actions = {
                                 }
 
                                 if (global.race.universe === 'antimatter'){
-                                    global.race.Plasmid.anti += plasmid;
+                                    global.prestige.AntiPlasmid.count += plasmid;
                                     global.stats.antiplasmid += plasmid;
                                     gift.push(`${plasmid.toLocaleString()} ${loc(`resource_AntiPlasmid_plural_name`)}`);
                                 }
                                 else {
-                                    global.race.Plasmid.count += plasmid;
+                                    global.prestige.Plasmid.count += plasmid;
                                     global.stats.plasmid += plasmid;
                                     gift.push(`${plasmid.toLocaleString()} ${loc(`resource_Plasmid_plural_name`)}`);
                                 }
                                 if (phage > 0){
-                                    global.race.Phage.count += phage;
+                                    global.prestige.Phage.count += phage;
                                     global.stats.phage += phage;
                                     gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
                                 }
@@ -1017,12 +1017,12 @@ export const actions = {
                                     
                                     if (universe > 0){
                                         let dark = +(universe / 7.5).toFixed(2);
-                                        global.race.Dark.count += dark;
+                                        global.prestige.Dark.count += dark;
                                         global.stats.dark += dark;
                                         gift.push(`${dark} ${loc(`resource_Dark_name`)}`);
                                     }
                                     if (ascended > 0){
-                                        global.race.Harmony.count += ascended;
+                                        global.prestige.Harmony.count += ascended;
                                         global.stats.harmony += ascended;
                                         gift.push(`${ascended} ${loc(`resource_Harmony_name`)}`);
                                     }
@@ -1037,7 +1037,7 @@ export const actions = {
                                         gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
                                     }
                                     if (active_gift !== `g2020` && ai > 0){
-                                        global.race.AICore.count += ai;
+                                        global.prestige.AICore.count += ai;
                                         global.stats.cores += ai;
                                         gift.push(`${ai} ${loc(`resource_AICore_name`)}`);
                                     }
@@ -5834,7 +5834,7 @@ function srDesc(c_action,old){
                     }
                     let label = loc(`resource_${res}_name`);
                     desc = desc + `${label}: ${res_cost}. `;
-                    if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
+                    if (global.prestige[res].count < res_cost){
                         desc = desc + `${loc('insufficient')} ${label}. `;
                     }
                 }
@@ -5952,7 +5952,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                     }
                     let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
-                    if ((res === 'AntiPlasmid' ? global.race['Plasmid'].anti : global.race[res].count) < res_cost){
+                    if (global.prestige[res].count < res_cost){
                         color = 'has-text-danger';
                     }
                     empty = false;
@@ -6079,11 +6079,9 @@ export function payCosts(c_action, costs){
             if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
                 let cost = costs[res]();
                 if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti -= cost;
+                    res = 'AntiPlasmid';
                 }
-                else {
-                    global.race[res].count -= cost;
-                }
+                global.prestige[res].count -= cost;
             }
             else if (res === 'Supply'){
                 let cost = costs[res]();
@@ -6130,12 +6128,9 @@ function checkMaxCosts(costs){
         }
         else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                if (global.race.Plasmid.anti < Number(costs[res]())){
-                    test = false;
-                    return;
-                }
+                res = 'AntiPlasmid';
             }
-            else if (global.race[res].count < Number(costs[res]())){
+            if (global.prestige[res].count < Number(costs[res]())){
                 test = false;
                 return;
             }
@@ -6200,12 +6195,9 @@ export function checkCosts(costs){
         }
         else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                if (global.race.Plasmid.anti < Number(costs[res]())){
-                    test = false;
-                    return;
-                }
+                res = 'AntiPlasmid';
             }
-            else if (global.race[res].count < Number(costs[res]())){
+            if (global.prestige[res].count < Number(costs[res]())){
                 test = false;
                 return;
             }

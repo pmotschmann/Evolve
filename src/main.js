@@ -669,11 +669,11 @@ function fastLoop(){
     var global_multiplier = 1;
     let applyPlasmid = false;
     let pBonus = plasmidBonus('raw');
-    if (global.race.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
+    if (global.prestige.Plasmid.count > 0 && ((global.race.universe !== 'antimatter') || (global.genes['bleed'] && global.race.universe === 'antimatter'))){
         breakdown.p['Global'][loc('resource_Plasmid_name')] = (pBonus[1] * 100) + '%';
         applyPlasmid = true;
     }
-    if (global.race.Plasmid.anti > 0 && ((global.race.universe === 'antimatter') || (global.genes['bleed'] && global.genes['bleed'] >= 2 && global.race.universe !== 'antimatter'))){
+    if (global.prestige.AntiPlasmid.count > 0 && ((global.race.universe === 'antimatter') || (global.genes['bleed'] && global.genes['bleed'] >= 2 && global.race.universe !== 'antimatter'))){
         breakdown.p['Global'][loc('resource_AntiPlasmid_name')] = (pBonus[2] * 100) + '%';
         applyPlasmid = true;
     }
@@ -8338,13 +8338,13 @@ function midLoop(){
                     if (global.race['universe'] === 'antimatter'){
                         plasmid_type = loc('resource_AntiPlasmid' + plasmid_type + '_name');
                         global.stats.antiplasmid += plasma;
-                        global.race.Plasmid.anti += plasma;
+                        global.prestige.AntiPlasmid.count += plasma;
                         unlockAchieve('cross');
                     }
                     else {
                         plasmid_type = loc('resource_Plasmid' + plasmid_type + '_name');
                         global.stats.plasmid += plasma;
-                        global.race.Plasmid.count += plasma;
+                        global.prestige.Plasmid.count += plasma;
                     }
                     arpa('Crispr');
                     messageQueue(loc('gene_therapy',[loc('trait_' + trait + '_name'),gene,plasma,plasmid_type]),'success',false,['progress']);
@@ -9956,8 +9956,8 @@ function q_check(load){
                 qbits *= 1.25;
             }
         }
-        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.race.AICore.count > 0){
-            qbits *= 2 - (0.99 ** global.race.AICore.count);
+        if (global.stats.achieve['obsolete'] && global.stats.achieve[`obsolete`].l >= 5 && global.prestige.AICore.count > 0){
+            qbits *= 2 - (0.99 ** global.prestige.AICore.count);
         }
         if (global.race['linked']){
             let factor = traits.linked.vars()[0] / 100 * global.resource[global.race.species].amount;

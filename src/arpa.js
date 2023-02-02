@@ -1412,8 +1412,10 @@ function payCrispr(gene){
             }
         }
         else {
-            let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-            if (!global.race.hasOwnProperty(res) || global.race[res][affix] < costs[res]()){
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                res = 'AntiPlasmid';
+            }
+            if (global.prestige[res].count < costs[res]()){
                 afford = false;
             }
         }
@@ -1425,8 +1427,10 @@ function payCrispr(gene){
                 global.resource.Artifact.amount -= costs[res]();
             }
             else {
-                let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-                global.race[res][affix] -= costs[res]();
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    res = 'AntiPlasmid';
+                }
+                global.prestige[res].count -= costs[res]();
             }
         });
         return true;
@@ -1991,8 +1995,8 @@ function genetics(){
                     while (curr_iteration < iterations && can_purchase){
                         let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
                         if (t === 'mastery'){ cost *= 2; }
-                        if (global.race.Phage.count >= cost){
-                            global.race.Phage.count -= cost;
+                        if (global.prestige.Phage.count >= cost){
+                            global.prestige.Phage.count -= cost;
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
                             redraw = true;
@@ -2023,13 +2027,9 @@ function genetics(){
                     if (cost < 0){
                         cost *= -1;
                     }
-                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe === 'antimatter'){
-                            global.race.Plasmid.anti -= cost;
-                        }
-                        else {
-                            global.race.Plasmid.count -= cost;
-                        }
+                    let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+                    if (global.prestige[res].count >= cost){
+                        global.prestige[res].count -= cost;
                         let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
@@ -2068,13 +2068,9 @@ function genetics(){
                     if (cost < 0){
                         cost *= -1;
                     }
-                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe === 'antimatter'){
-                            global.race.Plasmid.anti -= cost;
-                        }
-                        else {
-                            global.race.Plasmid.count -= cost;
-                        }
+                    let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+                    if (global.prestige[res].count >= cost){
+                        global.prestige[res].count -= cost;
                         global.race[t] = 1;
                         if (!global.race['modified']){
                             global.race['modified'] = 1;
@@ -2111,7 +2107,7 @@ function genetics(){
                 phagePurchasable(t){
                     let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
                     if (t === 'mastery'){ cost *= 2; }
-                    return global.race.Phage.count >= cost;
+                    return global.prestige.Phage.count >= cost;
                 }
             }
         });
@@ -2125,7 +2121,7 @@ function genetics(){
                 classes: `has-background-light has-text-dark`
             });
 
-            if (global.race.Phage.count > 0){
+            if (global.prestige.Phage.count > 0){
                 popover(`popGenetrait${t}`, function(){
                     return mPhageCost(t);
                 },
@@ -2194,7 +2190,7 @@ function bindTrait(breakdown,trait){
     let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
     let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span>`);
     m_trait.append(gene);
-    if (global.race.Phage.count > 0){
+    if (global.prestige.Phage.count > 0){
         let phage = $(`<span v-bind:class="['basic-button', 'gene', 'pbuy', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span>`);
         m_trait.append(phage);
     }

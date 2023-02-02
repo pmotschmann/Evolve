@@ -748,7 +748,7 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     }
     if (global.race['small']){ mutiplier -= traits.small.vars()[1]; }
     if (global.race['compact']){ mutiplier -= traits.compact.vars()[1]; }
-    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+    if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         mutiplier -= harmonyEffect();
     }
     let nqVal = govActive('noquestions',0);
@@ -766,37 +766,37 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
 }
 
 export function harmonyEffect(){
-    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+    if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         let boost = 0;
         switch (global.race.universe){
             case 'heavy':
                 if (global.stats.achieve.ascended.hasOwnProperty('h')){
-                    boost = global.stats.achieve.ascended.h * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.h * global.prestige.Harmony.count;
                 }
                 break;
             case 'antimatter':
                 if (global.stats.achieve.ascended.hasOwnProperty('a')){
-                    boost = global.stats.achieve.ascended.a * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.a * global.prestige.Harmony.count;
                 }
                 break;
             case 'evil':
                 if (global.stats.achieve.ascended.hasOwnProperty('e')){
-                    boost = global.stats.achieve.ascended.e * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.e * global.prestige.Harmony.count;
                 }
                 break;
             case 'micro':
                 if (global.stats.achieve.ascended.hasOwnProperty('m')){
-                    boost = global.stats.achieve.ascended.m * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.m * global.prestige.Harmony.count;
                 }
                 break;
             case 'magic':
                 if (global.stats.achieve.ascended.hasOwnProperty('mg')){
-                    boost = global.stats.achieve.ascended.mg * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.mg * global.prestige.Harmony.count;
                 }
                 break;
             default:
                 if (global.stats.achieve.ascended.hasOwnProperty('l')){
-                    boost = global.stats.achieve.ascended.l * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.l * global.prestige.Harmony.count;
                 }
                 break;
         }
@@ -1059,8 +1059,8 @@ export function powerCostMod(energy){
 
 export function darkEffect(universe, flag, info, inputs){
     if (!inputs) { inputs = {}; }
-    let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
-    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
+    let dark = inputs.dark !== undefined ? inputs.dark : global.prestige.Dark.count;
+    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.prestige.Harmony.count;
     let sludge = inputs.sludge !== undefined ? inputs.sludge : (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge[universeAffix(universe)]) ? global.stats.achieve.extinct_sludge[universeAffix(universe)] : 0;
 
     switch (universe){
@@ -1951,18 +1951,18 @@ export function easterEggBind(id){
             global.special.egg[year][`egg${id}`] = true;
             if (id <= 10){
                 if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 10;
+                    global.prestige.AntiPlasmid.count += 10;
                     global.stats.antiplasmid += 10;
                     messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.race.Plasmid.count += 10;
+                    global.prestige.Plasmid.count += 10;
                     global.stats.plasmid += 10;
                     messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             else {
-                global.race.Phage.count += 4;
+                global.prestige.Phage.count += 4;
                 global.stats.phage += 4;
                 messageQueue(loc('city_egg_msg',[4,loc('resource_Phage_name')]),'success',false,['events']);
             }
@@ -1992,18 +1992,18 @@ export function trickOrTreatBind(id,trick){
         if (!global.special.trick[year][`${tot}${id}`]){
             global.special.trick[year][`${tot}${id}`] = true;
             if (trick){
-                global.race.Phage.count += 2;
+                global.prestige.Phage.count += 2;
                 global.stats.phage += 2;
                 messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
             }
             else {
                 if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 13;
+                    global.prestige.AntiPlasmid.count += 13;
                     global.stats.antiplasmid += 13;
                     messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.race.Plasmid.count += 13;
+                    global.prestige.Plasmid.count += 13;
                     global.stats.plasmid += 13;
                     messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }

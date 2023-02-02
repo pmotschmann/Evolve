@@ -449,7 +449,7 @@ export const craftingRatio = (function(){
                     auto: 1 + (faith / (global.race.universe === 'antimatter' ? 1.5 : 3))
                 });
             }
-            if (global.race.Plasmid.count > 0){
+            if (global.prestige.Plasmid.count > 0){
                 crafting.general.multi.push({
                     name: loc(`resource_Plasmid_plural_name`),
                     manual: plasmidBonus() / 8 + 1,
@@ -1041,26 +1041,18 @@ export function setResourceName(name){
 function loadSpecialResource(name,color) {
     if ($(`#res${name}`).length){
         let bind = $(`#res${name}`);
-        bind.detach;
+        bind.detach();
         $('#resources').append(bind);
         return;
     }
     color = color || 'special';
-    let bind = name;
-    
-    if (name === 'AntiPlasmid'){
-        var res_container = $(`<div id="res${name}" class="resource" v-show="anti"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ anti }}</span></div>`);
-        $('#resources').append(res_container);
-        bind = 'Plasmid';
-    }
-    else {
-        var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div>`);
-        $('#resources').append(res_container);
-    }
+
+    var res_container = $(`<div id="res${name}" class="resource" v-show="count"><span class="res has-text-${color}">${loc(`resource_${name}_name`)}</span><span class="count">{{ count | round }}</span></div>`);
+    $('#resources').append(res_container);
     
     vBind({
         el: `#res${name}`,
-        data: global.race[bind],
+        data: global.prestige[name],
         filters: {
             round(n){ return +(n).toFixed(3); }
         }
@@ -1070,7 +1062,7 @@ function loadSpecialResource(name,color) {
         let desc = $(`<div></div>`);
         switch (name){
             case 'Plasmid':
-                let active = global.race['no_plasmid'] ? (global.race.p_mutation > global.race[bind].count ? global.race[bind].count : global.race.p_mutation) : global.race[bind].count;
+                let active = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
                 desc.append($(`<span>${loc(`resource_${name}_desc`,[active, +(plasmidBonus('plasmid') * 100).toFixed(2)])}</span>`));
                 if (global.genes['store'] && (global.race.universe !== 'antimatter' || global.genes['bleed'] >= 3)){
                     let plasmidSpatial = spatialReasoning(1,'plasmid');
@@ -1081,7 +1073,7 @@ function loadSpecialResource(name,color) {
                 break;
     
             case 'AntiPlasmid':
-                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.race[bind].anti, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
+                desc.append($(`<span>${loc(`resource_${name}_desc`,[global.prestige.AntiPlasmid.count, +(plasmidBonus('antiplasmid') * 100).toFixed(2)])}</span>`));
                 let antiSpatial = spatialReasoning(1,'anti');
                 if (global.genes['store'] && (global.race.universe === 'antimatter' || global.genes['bleed'] >= 3)){
                     if (antiSpatial > 1){
@@ -1091,7 +1083,7 @@ function loadSpecialResource(name,color) {
                 break;
     
             case 'Phage':
-                desc.append($(`<span>${loc(global.race.Plasmid.anti > 0 ? `resource_${name}_desc2` : `resource_${name}_desc`,[250 + global.race[bind].count])}</span>`));
+                desc.append($(`<span>${loc(global.prestige.AntiPlasmid.count > 0 ? `resource_Phage_desc2` : `resource_Phage_desc`,[250 + global.prestige.Phage.count])}</span>`));
                 let phageSpatial = spatialReasoning(1,'phage');
                 if (global.genes['store'] && global.genes['store'] >= 4){
                     if (phageSpatial > 1){
@@ -1136,7 +1128,7 @@ function loadSpecialResource(name,color) {
                 break;
 
             case 'AICore':
-                let bonus = +((1 - (0.99 ** global.race.AICore.count)) * 100).toFixed(2);
+                let bonus = +((1 - (0.99 ** global.prestige.AICore.count)) * 100).toFixed(2);
                 desc.append($(`<span>${loc(`resource_${name}_desc`,[bonus])}</span>`));
                 break;
         }
@@ -2685,9 +2677,9 @@ export const spatialReasoning = (function(){
         let tkey = type ? type : 'a';
         let key = [
             global.race.universe,
-            global.race.Plasmid.count,
-            global.race.Plasmid.anti,
-            global.race.Phage.count,
+            global.prestige.Plasmid.count,
+            global.prestige.AntiPlasmid.count,
+            global.prestige.Phage.count,
             global.race['no_plasmid'] || '0',
             global.race['p_mutation'] || '0',
             global.race['nerfed'] || '0',
@@ -2710,10 +2702,10 @@ export const spatialReasoning = (function(){
             if (global.genes['store']){
                 let plasmids = 0;
                 if (!type || (type && ((type === 'plasmid' && global.race.universe !== 'antimatter') || (type === 'anti' && global.race.universe === 'antimatter')))){
-                    plasmids = global.race.universe === 'antimatter' ? global.race.Plasmid.anti : global.race.Plasmid.count;
+                    plasmids = global.race.universe === 'antimatter' ? global.prestige.AntiPlasmid.count : global.prestige.Plasmid.count;
                     let raw = plasmids;
                     if (global.race['no_plasmid']){
-                        raw = global.race.p_mutation > plasmids ? plasmids : global.race.p_mutation;
+                        raw = Math.min(global.race.p_mutation, plasmids);
                     }
                     else if (global.race['nerfed']){
                         raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
@@ -2722,7 +2714,7 @@ export const spatialReasoning = (function(){
                 }
                 if (!type || (type && type === 'phage')){
                     if (global.genes['store'] >= 4){
-                        plasmids += Math.round(global.race.Phage.count * (global.race['nerfed'] ? (1/3) : 1));
+                        plasmids += Math.round(global.prestige.Phage.count * (global.race['nerfed'] ? (1/3) : 1));
                     }
                 }
                 let divisor = global.genes.store >= 2 ? (global.genes.store >= 3 ? 1250 : 1666) : 2500;
@@ -2731,7 +2723,7 @@ export const spatialReasoning = (function(){
                 }
                 if (global.genes['bleed'] && global.genes['bleed'] >= 3){
                     if (!type || (type && ((type === 'plasmid' && global.race.universe === 'antimatter') || (type === 'anti' && global.race.universe !== 'antimatter')))){
-                        let raw = global.race.universe === 'antimatter' ? global.race.Plasmid.count / 5 : global.race.Plasmid.anti / 10;
+                        let raw = global.race.universe === 'antimatter' ? global.prestige.Plasmid.count / 5 : global.prestige.AntiPlasmid.count / 10;
                         plasmids += Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
                     }
                 }
@@ -2809,9 +2801,9 @@ export const plasmidBonus = (function (){
     return function(type){
         let key = [
             global.race.universe,
-            global.race.Plasmid.count,
-            global.race.Plasmid.anti,
-            global.race.Phage.count,
+            global.prestige.Plasmid.count,
+            global.prestige.AntiPlasmid.count,
+            global.prestige.Phage.count,
             global.civic.govern.type,
             global.civic.professor.assigned,
             global.genes['bleed'] || '0',
@@ -2835,17 +2827,14 @@ export const plasmidBonus = (function (){
             let standard = 0;
             let anti = 0; 
             if (global.race.universe !== 'antimatter' || global.genes['bleed']){
-                let plasmids = global.race['no_plasmid'] ? global.race.p_mutation : global.race.Plasmid.count;
-                if (plasmids > global.race.Plasmid.count){
-                    plasmids = global.race.Plasmid.count;
-                }
+                let plasmids = global.race['no_plasmid'] ? Math.min(global.race.p_mutation, global.prestige.Plasmid.count) : global.prestige.Plasmid.count;
                 if (global.race.universe === 'antimatter' && global.genes['bleed']){
                     plasmids *= 0.025
                 }
                 if (global.race['decayed']){
                     plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
                 }
-                let p_cap = 250 + global.race.Phage.count;
+                let p_cap = 250 + global.prestige.Phage.count;
                 if (plasmids > p_cap){
                     standard = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
                 }
@@ -2900,17 +2889,14 @@ export const plasmidBonus = (function (){
             }
 
             if (global.race.universe === 'antimatter' || (global.genes['bleed'] && global.genes['bleed'] >= 2)){
-                let plasmids = global.race.Plasmid.anti;
-                if (plasmids > global.race.Plasmid.anti){
-                    plasmids = global.race.Plasmid.anti;
-                }
+                let plasmids = global.prestige.AntiPlasmid.count;
                 if (global.race.universe !== 'antimatter' && global.genes['bleed'] && global.genes['bleed'] >= 2){
                     plasmids *= 0.25
                 }
                 if (global.race['decayed']){
                     plasmids -= Math.round((global.stats.days - global.race.decayed) / (300 + global.race.gene_fortify * 6));
                 }
-                let p_cap = 250 + global.race.Phage.count;
+                let p_cap = 250 + global.prestige.Phage.count;
                 if (plasmids > p_cap){
                     anti = (+((Math.log(p_cap + 50) - 3.91202)).toFixed(5) / 2.888) + ((Math.log(plasmids + 1 - p_cap) / Math.LN2 / 250));
                 }

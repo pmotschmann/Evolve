@@ -1131,9 +1131,36 @@ if (convertVersion(global['version']) < 103000){
     }
 }
 
+if (convertVersion(global['version']) < 103001){
+    if (!global.hasOwnProperty('prestige')){
+        global.prestige = {};
+    }
+    if (global.race.Plasmid && global.race.Plasmid.hasOwnProperty('anti')){
+        global.prestige['AntiPlasmid'] = { count: global.race.Plasmid.anti };
+    }
+    ['Plasmid','Phage','AICore','Dark','Harmony'].forEach(function (res){
+        if (global.race.hasOwnProperty(res)) {
+            global.prestige[res] = { count: global.race[res].count };
+            delete global.race[res];
+        }
+    });
+}
+
 global['version'] = '1.3.0';
 delete global['revision'];
 global['beta'] = 11;
+
+
+if (!global.hasOwnProperty('prestige')){
+    global['prestige'] = {
+        Plasmid: { count: 0 },
+        AntiPlasmid: { count: 0 },
+        Phage: { count: 0 },
+        Dark: { count: 0 },
+        Harmony: { count: 0 },
+        AICore: { count: 0 }
+    };
+}
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1402,24 +1429,6 @@ if (!global.stats.hasOwnProperty('banana')){
 
 if (!global.race['seeded']){
     global.race['seeded'] = false;
-}
-if (!global.race['Plasmid']){
-    global.race['Plasmid'] = { count: 0, anti: 0 };
-}
-if (!global.race.Plasmid['anti']){
-    global.race.Plasmid['anti'] = 0;
-}
-if (!global.race['Phage']){
-    global.race['Phage'] = { count: 0 };
-}
-if (!global.race['Dark']){
-    global.race['Dark'] = { count: 0 };
-}
-if (!global.race['Harmony']){
-    global.race['Harmony'] = { count: 0 };
-}
-if (!global.race['AICore']){
-    global.race['AICore'] = { count: 0 };
 }
 if (!global.race['deterioration']){
     global.race['deterioration'] = 0;
@@ -2001,12 +2010,6 @@ window.soft_reset = function reset(){
     }
     let replace = {
         species : 'protoplasm',
-        Plasmid: { count: global.race.Plasmid.count },
-        Plasmid: { count: global.race.Plasmid.count, anti: global.race.Plasmid.anti },
-        Phage: { count: global.race.Phage.count },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: global.race.Harmony.count },
-        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: global.race.seeded,
         probes: global.race.probes,

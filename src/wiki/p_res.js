@@ -898,8 +898,8 @@ function plasProdCalc(info,type){
                 inputs.antimatter.val = false;
             },
             importInputs(){
-                inputs.plas.val = type === 'plasmid' ? global.race.Plasmid.count : global.race.Plasmid.anti;
-                inputs.phage.val = global.race.Phage.count;
+                inputs.plas.val = type === 'plasmid' ? global.prestige.Plasmid.count : global.prestige.AntiPlasmid.count;
+                inputs.phage.val = global.prestige.Phage.count;
                 inputs.antimatter.val = global.race.universe === 'antimatter';
             }
         },
@@ -1075,7 +1075,7 @@ function storeBonusCalc(info,type){
                 inputs.antimatter.val = false;
             },
             importInputs(){
-                inputs.res.val = type === 'phage' ? global.race.Phage.count : type === 'plasmid' ? global.race.Plasmid.count : global.race.Plasmid.anti;
+                inputs.res.val = type === 'phage' ? global.prestige.Phage.count : type === 'plasmid' ? global.prestige.Plasmid.count : global.prestige.AntiPlasmid.count;
                 inputs.store.val = global.genes.store || 0;
                 inputs.antimatter.val = global.race.universe === 'antimatter';
             }
@@ -1311,8 +1311,8 @@ function darkBonusCalc(info){
                 show.standard.vis = true;
             },
             importInputs(){
-                inputs.dark.val = global.race.Dark.count;
-                inputs.harmony.val = global.race.Harmony.count;
+                inputs.dark.val = global.prestige.Dark.count;
+                inputs.harmony.val = global.prestige.Harmony.count;
                 if (global.race.universe !== 'bigbang'){
                     show[inputs.uni.val].vis = false;
                     inputs.uni.val = global.race.universe;
@@ -1432,7 +1432,7 @@ function harmonyCreepCalc(info){
                 inputs.ascended.val = undefined;
             },
             importInputs(){
-                inputs.harmony.val = global.race.Harmony.count;
+                inputs.harmony.val = global.prestige.Harmony.count;
                 inputs.ascended.val = global.stats.achieve['ascended'] && global.stats.achieve['ascended'][universeAffix(global.race.universe || 'standard')] ? global.stats.achieve['ascended'][universeAffix(global.race.universe || 'standard')] : 0;
             }
         },
@@ -1508,7 +1508,7 @@ function coresQuantumCalc(info){
                 inputs.cores.val = undefined;
             },
             importInputs(){
-                inputs.cores.val = global.race.AICore.count;
+                inputs.cores.val = global.prestige.AICore.count;
             }
         },
         filters: {
