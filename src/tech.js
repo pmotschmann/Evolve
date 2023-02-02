@@ -12395,8 +12395,8 @@ const techs = {
             return false;
         }
     },
-    tech_vax_strat1: {
-        id: 'tech-tech_vax_strat1',
+    vax_strat1: {
+        id: 'tech-vax_strat1',
         title: loc('tech_vax_strat1'),
         desc: loc('tech_vax_strat1'),
         category: 'plague',
@@ -12419,8 +12419,8 @@ const techs = {
             return false;
         }
     },
-    tech_vax_strat2: {
-        id: 'tech-tech_vax_strat2',
+    vax_strat2: {
+        id: 'tech-vax_strat2',
         title: loc('tech_vax_strat2'),
         desc: loc('tech_vax_strat2'),
         category: 'plague',
@@ -12443,8 +12443,8 @@ const techs = {
             return false;
         }
     },
-    tech_vax_strat3: {
-        id: 'tech-tech_vax_strat3',
+    vax_strat3: {
+        id: 'tech-vax_strat3',
         title: loc('tech_vax_strat3'),
         desc: loc('tech_vax_strat3'),
         category: 'plague',
@@ -12467,8 +12467,8 @@ const techs = {
             return false;
         }
     },
-    tech_vax_strat4: {
-        id: 'tech-tech_vax_strat4',
+    vax_strat4: {
+        id: 'tech-vax_strat4',
         title: loc('tech_vax_strat4'),
         desc: loc('tech_vax_strat4'),
         category: 'plague',
