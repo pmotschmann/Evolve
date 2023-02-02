@@ -1671,7 +1671,7 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
             cost: {
-                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, highPopAdjust(125000), 1.02) : 0; },
+                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, highPopAdjust(125000), global.race['high_pop'] ? 1.01 : 1.02) : 0; },
                 Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
                 Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
                 Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, highPopAdjust(500), 1.01) : 0) : 0; },
@@ -1791,7 +1791,7 @@ const tauCetiModules = {
             grant: ['tau_home',3],
             path: ['truepath'],
             cost: {
-                Money(o){ return 650000000; },
+                Money(o){ return 1650000000; },
                 Materials(o){ return 750000; },
             },
             effect(){
@@ -2188,7 +2188,7 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.tech.tau_red >= 1 ? 0 : 1; },
             cost: {
-                Money(){ return 500000000; }
+                Money(){ return 1000000000; }
             },
             effect(){ return loc('tau_new_mission_effect',[planetName().red]); },
             action(){
@@ -3184,7 +3184,7 @@ export function drawShipYard(){
                     return shipAttackPower(global.space.shipyard.blueprint);
                 },
                 sensorText(){
-                    return sensorRange(global.space.shipyard.blueprint.sensor) + 'km';
+                    return sensorRange(global.space.shipyard.blueprint) + 'km';
                 },
                 speedText(){
                     let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.blueprint);
@@ -3390,7 +3390,7 @@ function shipPower(ship){
             watts = Math.round(150 * out_inflate);
             break;
         case 'fusion':
-            watts = Math.round(175 * out_inflate);
+            watts = Math.round((ship.class === 'explorer' ? 174 : 175) * out_inflate);
             break;
         case 'elerium':
             watts = Math.round(200 * out_inflate);
@@ -3588,7 +3588,7 @@ export function shipFuelUse(ship){
     };
 }
 
-function shipCosts(bp){
+export function shipCosts(bp){
     let costs = {};
 
     let h_inflate = 1;
@@ -3705,13 +3705,13 @@ function shipCosts(bp){
     if (bp.class !== 'explorer'){
         switch (bp.sensor){
             case 'radar':
-                costs['Money'] = Math.round(costs['Money'] ** 1.05);
+                costs['Money'] = Math.round(costs['Money'] ** 1.04);
                 break;
             case 'lidar':
-                costs['Money'] = Math.round(costs['Money'] ** 1.12);
+                costs['Money'] = Math.round(costs['Money'] ** 1.08);
                 break;
             case 'quantum':
-                costs['Money'] = Math.round(costs['Money'] ** 1.25);
+                costs['Money'] = Math.round(costs['Money'] ** 1.12);
                 break;
         }
     }
@@ -3936,7 +3936,7 @@ function drawShips(){
                     return shipAttackPower(global.space.shipyard.ships[id]);
                 },
                 sensorText(id){
-                    return sensorRange(global.space.shipyard.ships[id].sensor) + 'km';
+                    return sensorRange(global.space.shipyard.ships[id]) + 'km';
                 },
                 speedText(id){
                     let speed = (149597870.7/225/24/3600) * shipSpeed(global.space.shipyard.ships[id]);
@@ -4087,7 +4087,7 @@ export function syndicate(region,extra){
                 if (ship.location === region && ship.transit === 0 && ship.fueled){
                     let rating = shipAttackPower(ship);
                     patrol += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
-                    sensor += sensorRange(ship.sensor);
+                    sensor += sensorRange(ship);
                 }
             });
 
@@ -4132,15 +4132,32 @@ export function syndicate(region,extra){
 }
 
 export function sensorRange(s){
-    switch (s){
+    let hf = 1;
+    switch (s.class){
+        case 'corvette':
+        case 'frigate':
+            hf = 2;
+            break;
+        case 'destroyer':
+        case 'cruiser':
+            hf = 1.5;
+            break;
+        case 'explorer':
+            hf = 5;
+            break;
+        default:
+            hf = 1;
+            break;
+    }
+    switch (s.sensor){
         case 'visual':
             return 1;
         case 'radar':
-            return 20;
+            return 10 * hf;
         case 'lidar':
-            return 35;
+            return 18 * hf;
         case 'quantum':
-            return 60;
+            return 32 * hf;
     }
 }
 

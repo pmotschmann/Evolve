@@ -9445,10 +9445,10 @@ function longLoop(){
                         if (ship.damage > 90){ ship.damage = 90; }
                     }
                     if (global.tech.hasOwnProperty('eris_scan') && ship.location === 'spc_eris' && ship.transit === 0){
-                        eScan += sensorRange(ship.sensor);
+                        eScan += sensorRange(ship);
                     }
                     if (global.tech.hasOwnProperty('tauceti') && ship.location === 'tauceti' && ship.transit === 0){
-                        tScan += sensorRange(ship.sensor);
+                        tScan += sensorRange(ship);
                         tShip = ship.name;
                     }
                 });
