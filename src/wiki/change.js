@@ -10,6 +10,8 @@ const changeList = [
             `Added Perks: Evolve Master and Evolve Grandmaster.`,
             `Ships in Truepath can now only be scrapped at the Shipyard.`,
             `Truepath Sensor Range and Costs adjusted. Range now depends partly on base ship class.`,
+            `Queue stacks now indicate first block vs last blocking resource with a gradient indicator.`,
+            `Added screen reader improvements for blocking resources.`,
             `You can no longer unlock Anarchist by Cataclysm.`,
             `Syndicate will now also steal food from Biodomes.`,
             `Reinforced Shed upgrade now requires unlocking Iron Mining.`,

@@ -1651,6 +1651,15 @@ html.dark {
             color: #a30500 !important;
         }
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
 }
 
 // Light theme
@@ -1739,6 +1748,15 @@ html.light {
     .progress::-moz-progress-bar {
         background-color: #898989;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
 }
 
 // Night theme
@@ -1750,6 +1768,15 @@ html.night {
     // Theme specific
     .modal .action {
         #lib.mainTemplate.main.content.action();
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
     }
 }
 
@@ -1817,6 +1844,15 @@ html.redgreen {
                 #000000 10px,
                 #000000 20px);
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
 }
 
 // Dark Night theme
@@ -1836,6 +1872,15 @@ html.darkNight {
     textarea {
         background: @primary-color;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
 }
 
 // GruvBox Light theme
@@ -1849,6 +1894,15 @@ html.gruvboxLight {
     textarea,
     .notification {
         background: @secondary-color;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
     }
 }
 
@@ -1873,6 +1927,15 @@ html.gruvboxDark {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
     }
 }
 
@@ -1902,6 +1965,15 @@ html.orangeSoda {
     .notification {
         background: @primary-color;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
 }
 
 // Dracula theme
@@ -1925,6 +1997,15 @@ html.dracula {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
     }
 }
 
@@ -3519,6 +3600,23 @@ a {
 
     .craft-elm {
         white-space: nowrap;
+    }
+
+    .grad-from-left {
+        background-clip: text;
+        background-size: 100%;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        -moz-text-fill-color: transparent;
+    }
+    .grad-from-right {
+        background-clip: text;
+        background-size: 100%;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        -moz-text-fill-color: transparent;
     }
 }
 

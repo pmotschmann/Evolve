@@ -559,11 +559,12 @@ function attachQueuePopovers(){
         let isWide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? true : false;
         popover(id,
             function(obj){
+                let b_res = global.queue.queue[i].hasOwnProperty('bres') ? global.queue.queue[i].bres : false;
                 if (segments[0].substring(0,4) === 'arpa'){
                     obj.popper.append(arpaProjectCosts(100,c_action));
                 }
                 else {
-                    actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
+                    actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false,false,false,b_res);
                 }
             },
             {

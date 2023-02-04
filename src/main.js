@@ -8656,6 +8656,7 @@ function midLoop(){
                 if (checkAffordable(t_action,true)){
                     struct.cna = false;
                     let t_time = timeCheck(t_action, spent);
+                    struct['bres'] = false;
                     if (t_time >= 0){
                         if (!stop && checkAffordable(t_action)){
                             c_action = t_action;
@@ -8672,10 +8673,14 @@ function midLoop(){
                             stop = true;
                         }
                         struct['time'] = time;
+                        let br = false;
                         for (let j=1; j<struct.q; j++){
-                            time += timeCheck(t_action, spent);
+                            let tc = timeCheck(t_action, spent, true);
+                            time += tc.t;
+                            br = tc.r;
                         }
                         struct['t_max'] = time;
+                        struct['bres'] = br;
                     }
                     else {
                         struct['time'] = t_time;

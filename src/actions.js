@@ -5271,7 +5271,7 @@ function runAction(c_action,action,type){
                                 }
                             }
                             if (!queued){
-                                global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
+                                global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, bres: false });
                                 resQueue();
                             }
                         }
@@ -5329,12 +5329,12 @@ function runAction(c_action,action,type){
                                             global.queue.queue[global.queue.queue.length-1].q += Math.min(buid_max, q_size * repeat);
                                         }
                                         else {
-                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size * repeat), qs: q_size, t_max: 0 });
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size * repeat), qs: q_size, t_max: 0, bres: false });
                                         }
                                     }
                                     else {
                                         for (let k=0; k<repeat && buid_max > 0; k++){
-                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size), qs: q_size, t_max: 0 });
+                                            global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size), qs: q_size, t_max: 0, bres: false });
                                             buid_max -= q_size;
                                         }
                                     }
@@ -5882,10 +5882,11 @@ function srDesc(c_action,old){
     return desc.replace("..",".");
 }
 
-export function actionDesc(parent,c_action,obj,old,action,a_type){
+export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
-
+    bres = bres || false;
+    
     let touch = false;
     if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
         touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
@@ -5921,11 +5922,14 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                     Object.keys(structs[region]).forEach(function (struct){
                         let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
                         let color = 'has-text-dark';
+                        let aria = '';
                         if (!global[region][struct]){
                             color = 'has-text-danger';
+                            aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
                         else if (structs[region][struct].count > global[region][struct].count){
                             color = 'has-text-danger';
+                            aria = ' <span class="is-sr-only">(blocking resource)</span>';
                         }
                         else if (structs[region][struct].hasOwnProperty('on') && structs[region][struct].on > global[region][struct].on){
                             color = 'has-text-alert';
@@ -5940,7 +5944,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                             label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
                         }
                         empty = false;
-                        cost.append($(`<div class="${color}">${label}: ${res_cost}</div>`));
+                        cost.append($(`<div class="${color}">${label}: ${res_cost}${aria}</div>`));
                     });
                 });
             }
@@ -5952,11 +5956,13 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                     }
                     let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
+                    let aria = '';
                     if (global.prestige[res].count < res_cost){
                         color = 'has-text-danger';
+                        aria = ' <span class="is-sr-only">(blocking resource)</span>';
                     }
                     empty = false;
-                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                 }
             }
             else if (res === 'Supply'){
@@ -5964,36 +5970,60 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                 if (res_cost > 0){
                     let label = loc(`resource_${res}_name`);
                     let color = 'has-text-dark';
+                    let aria = '';
                     if (global.portal.purifier.supply < res_cost){
                         color = 'has-text-danger';
+                        aria = ' <span class="is-sr-only">(blocking resource)</span>';
                     }
                     empty = false;
-                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                 }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
+                    let aria = '';
                     if (res === 'HellArmy'){
                         let label = loc('fortress_troops');
                         let color = 'has-text-dark';
                         if (global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size) < res_cost){
-                            color = tc.r === res ? 'has-text-danger' : 'has-text-alert';
+                            if (tc.r === f_res){
+                                color = 'has-text-danger';
+                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                            }
+                            else {
+                                color = 'has-text-alert';
+                            }
                         }
                         empty = false;
-                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                        cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                     }
                     else {
                         let f_res = res === 'Species' ? global.race.species : res;
                         let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
                         let color = 'has-text-dark';
+                        let aria = '';
                         if (global.resource[f_res].amount < res_cost){
-                            color = tc.r === f_res ? 'has-text-danger' : 'has-text-alert';
+                            if (tc.r === f_res){
+                                color = 'has-text-danger';
+                                aria = ' <span class="is-sr-only">(blocking resource)</span>';
+                            }
+                            else {
+                                color = 'has-text-alert';
+                            }
+                            if (bres && bres !== res && tc.r === f_res){
+                                color += ' grad-from-left';
+                                aria = ' <span class="is-sr-only">(first blocking resource)</span>';
+                            }
+                        }
+                        else if (bres && bres === res){
+                            color += ' grad-from-right';
+                            aria = ' <span class="is-sr-only">(last blocking resource)</span>';
                         }
                         let display_cost = sizeApproximation(res_cost,1);
                         empty = false;
-                        cost.append($(`<div class="${color} res-${res}" data-${f_res}="${res_cost}">${label}${display_cost}</div>`));
+                        cost.append($(`<div class="${color} res-${res}" data-${f_res}="${res_cost}">${label}${display_cost}${aria}</div>`));
                     }
                 }
             }
