@@ -1,7 +1,7 @@
 import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races, planetTraits } from './races.js';
-import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
 
 // Mutual Assured Destruction
 export function warhead(){
@@ -997,19 +997,7 @@ export function matrix(){
     }
     unlockAchieve(`bluepill`);
 
-    if (global.race['womling_friend']){
-        global.stats.wom_friend++;
-    }
-    else if (global.race['womling_lord']){
-        global.stats.wom_lord++;
-    }
-    else if (global.race['womling_god']){
-        global.stats.wom_god++;
-    }
-
-    if (global.stats.wom_friend > 0 && global.stats.wom_lord > 0 && global.stats.wom_god > 0){
-        unlockAchieve('overlord');
-    }
+    trackWomling();
 
     checkAchievements();
 
@@ -1069,3 +1057,42 @@ export function matrix(){
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
 }
+
+function trackWomling(){
+    let uni = universeAffix();
+    if (global.race['womling_friend']){
+        global.stats.womling.friend.l++;
+        if (uni !== 'l'){
+            if (!global.stats.womling.friend.hasOwnProperty(uni)){
+                global.stats.womling.friend[uni] = 0;
+            }
+            global.stats.womling.friend[uni]++;
+        }
+    }
+    else if (global.race['womling_lord']){
+        global.stats.womling.lord.l++;
+        if (uni !== 'l'){
+            if (!global.stats.womling.lord.hasOwnProperty(uni)){
+                global.stats.womling.lord[uni] = 0;
+            }
+            global.stats.womling.lord[uni]++;
+        }
+    }
+    else if (global.race['womling_god']){
+        global.stats.womling.god.l++;
+        if (uni !== 'l'){
+            if (!global.stats.womling.god.hasOwnProperty(uni)){
+                global.stats.womling.god[uni] = 0;
+            }
+            global.stats.womling.god[uni]++;
+        }
+    }
+
+    if (global.stats.womling.friend.l > 0 && global.stats.womling.lord.l > 0 && global.stats.womling.god.l > 0){
+        unlockAchieve('overlord',uni === 'm' ? true : false,alevel(),'l');
+    }
+    if (global.stats.womling.friend[uni] > 0 && global.stats.womling.lord[uni] > 0 && global.stats.womling.god[uni] > 0){
+        unlockAchieve('overlord',uni === 'm' ? true : false,alevel(),uni);
+    }
+}
+

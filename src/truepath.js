@@ -1434,7 +1434,7 @@ const tauCetiModules = {
                         ctx.fillStyle = '#0f0';
                         ctx.font = '15pt monospace';
                         ypos.forEach((y, ind) => {
-                            const text = String.fromCharCode(Math.random() * 128);
+                            const text = String.fromCharCode(Math.rand(0xFF66, 0xFF9E));//String.fromCharCode(Math.random() * 128);
                             const x = ind * 20;
                             ctx.fillText(text, x, y);
                             if (y > 100 + Math.random() * 10000) ypos[ind] = 0;

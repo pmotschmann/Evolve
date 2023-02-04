@@ -1408,12 +1408,19 @@ if (!global.settings.hasOwnProperty('mtorder')){
     'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
     'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
     'aiappoc','matrix','geck','dark','harmony','blood','cores','artifact',
-    'wom_god','wom_lord','wom_friend'
 ].forEach(function(k){
     if (!global.stats.hasOwnProperty(k)){
         global.stats[k] = 0;
     }
 });
+
+if (!global.stats.hasOwnProperty('womling')){
+    global.stats['womling'] = {
+        god: {l:0},
+        lord: {l:0},
+        friend: {l:0}
+    };
+}
 
 if (!global.stats['spire']){
     global.stats['spire'] = {};
