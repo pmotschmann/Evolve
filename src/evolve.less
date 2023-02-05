@@ -1656,6 +1656,9 @@ html.dark {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
         }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
         }
@@ -1753,6 +1756,9 @@ html.light {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
         }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
         }
@@ -1773,6 +1779,9 @@ html.night {
     .popper {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
         }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
@@ -1849,6 +1858,9 @@ html.redgreen {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
         }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
         }
@@ -1877,6 +1889,9 @@ html.darkNight {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
         }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
         }
@@ -1899,6 +1914,9 @@ html.gruvboxLight {
     .popper {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
         }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
@@ -1932,6 +1950,9 @@ html.gruvboxDark {
     .popper {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
         }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
@@ -1970,6 +1991,9 @@ html.orangeSoda {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
         }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
         }
@@ -2002,6 +2026,9 @@ html.dracula {
     .popper {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
         }
         .grad-from-right {
             background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
@@ -3602,14 +3629,8 @@ a {
         white-space: nowrap;
     }
 
-    .grad-from-left {
-        background-clip: text;
-        background-size: 100%;
-        -webkit-background-clip: text;
-        -moz-background-clip: text;
-        -webkit-text-fill-color: transparent; 
-        -moz-text-fill-color: transparent;
-    }
+    .grad-from-left,
+    .grad-from-left-warn,
     .grad-from-right {
         background-clip: text;
         background-size: 100%;

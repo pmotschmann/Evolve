@@ -6016,6 +6016,9 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                                 color += ' grad-from-left';
                                 aria = ' <span class="is-sr-only">(first blocking resource)</span>';
                             }
+                            else if (bres && bres === res && tc.r !== f_res){
+                                color += ' grad-from-left-warn';
+                            }
                         }
                         else if (bres && bres === res){
                             color += ' grad-from-right';
