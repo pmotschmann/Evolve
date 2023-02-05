@@ -2457,12 +2457,15 @@ const tauCetiModules = {
                 Water(offset){ return spaceCostMultiplier('womling_farm', offset, 5000, 1.28, 'tauceti'); },
             },
             effect(){
+                let food = global.tech['womling_pop'] ? 16 : 12;
+                let farmers = global.tauceti.hasOwnProperty('womling_farm') ? global.tauceti.womling_farm.farmers : 0;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
-                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[global.tech['womling_pop'] ? 16 : 12])}</div>`;
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect',[food])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ',[2])}</div>`;
                 if (global.tech['isolation']){
                     desc = desc + `<div>${loc('tau_red_womling_generate',[global.resource.Furs.name])}</div>`;
                 }
+                desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers])}</div>`;
                 return desc;
             },
             support(){ return -1; },

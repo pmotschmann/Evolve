@@ -6474,6 +6474,7 @@
   "tau_red_womling_village_effect": "Increase Womling population by %0.",
   "tau_red_womling_farm": "Womling Farm",
   "tau_red_womling_farm_effect": "Feeds upto %0 Womlings.",
+  "tau_red_womling_farm_effect2": "Total Food Produced: %0.",
   "tau_red_womling_mine": "Womling Mine",
   "tau_red_womling_mine_effect_a": "Employs Womlings to mine precious %0 for you.",
   "tau_red_womling_mine_effect_b": "Employs Womlings to mine %0, %1, & %2 for you.",
