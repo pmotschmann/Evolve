@@ -1341,7 +1341,7 @@ const tauCetiModules = {
                 Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 88000 : 0; },
                 Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 125000 : 0; },
                 Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1800 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 135000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 101000 : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -1548,6 +1548,7 @@ const tauCetiModules = {
                         global.civic.pit_miner.workers += jRequest;
                         global.civic[global.civic.d_job].workers -= jRequest;
                     }
+                    drawShips();
                     return true;
                 }
                 return false;
