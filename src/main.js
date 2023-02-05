@@ -6096,9 +6096,11 @@ function fastLoop(){
                 pop += p_on['womling_station'] * 2;
             }
             let base = pop * rate * (global.tech['isolation'] ? 25 : 12);
-            let delta = base * global_multiplier;
+            let culture = p_on['tau_cultural_center'] ? 1 + (p_on['tau_cultural_center'] * 0.08) : 1;
+            let delta = base * global_multiplier * culture;
 
             money_bd[loc('tau_red_womlings')] = base + 'v';
+            money_bd[`ᄂ${loc('tech_cultural_center')}`] = ((culture - 1) * 100) + '%';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
         }
 
@@ -6176,6 +6178,25 @@ function fastLoop(){
             money_bd[loc('tech_tourism')] = Math.round(tourism) + 'v';
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += tourism* global_multiplier * hunger;
+        }
+
+        if (global.tauceti['tau_cultural_center']){
+            let revenue = 0;
+            if (global.tauceti['tauceti_casino']){
+                revenue += p_on['tau_cultural_center'] * p_on['tauceti_casino'] * 20;
+            }
+            if (global.tech['monuments']){
+                revenue += p_on['tau_cultural_center'] * global.tech['monuments'] * 5;
+            }
+            if (global.civic.govern.type === 'corpocracy'){
+                revenue *= 2;
+            }
+            if (global.civic.govern.type === 'socialist'){
+                revenue *= 0.8;
+            }
+            money_bd[loc('tech_cultural_center')] = Math.round(revenue) + 'v';
+            modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += revenue * global_multiplier * hunger;
         }
 
         {

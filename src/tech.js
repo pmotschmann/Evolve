@@ -12175,6 +12175,26 @@ const techs = {
             return false;
         }
     },
+    womling_recycling: {
+        id: 'tech-womling_recycling',
+        title: loc('tech_womling_recycling'),
+        desc: loc('tech_womling_recycling'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { womling_tech: 8 },
+        grant: ['womling_recycling',1],
+        cost: {
+            Knowledge(){ return 9550000; }
+        },
+        effect(){ return `<div>${loc('tech_womling_recycling_effect')}</div>`; },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     asteroid_analysis: {
         id: 'tech-asteroid_analysis',
         title: loc('tech_asteroid_analysis'),
@@ -12623,6 +12643,27 @@ const techs = {
             return false;
         },
         flair(){ return loc('tech_outpost_boost_flair'); }
+    },
+    cultural_center: {
+        id: 'tech-cultural_center',
+        title: loc('tech_cultural_center'),
+        desc: loc('tech_cultural_center'),
+        category: 'banking',
+        era: 'tauceti',
+        reqs: { iso_gambling: 1, isolation: 1 },
+        grant: ['tau_culture',1],
+        cost: {
+            Knowledge(){ return 8850000; }
+        },
+        effect: loc('tech_cultural_center_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['tau_cultural_center'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_cultural_center_flair'); }
     },
 };
 

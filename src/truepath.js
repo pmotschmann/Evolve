@@ -1341,7 +1341,7 @@ const tauCetiModules = {
                 Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 88000 : 0; },
                 Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 125000 : 0; },
                 Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1800 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 101000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(101000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -1603,7 +1603,7 @@ const tauCetiModules = {
                 Materials(offset){ return tauEnabled() ? 0 : spaceCostMultiplier('colony', offset, 650000, 1.225, 'tauceti'); },
                 Furs(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 720000, 1.225, 'tauceti') : 0; },
                 Graphene(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 485000, 1.225, 'tauceti') : 0; },
-                Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, 880000, 1.225, 'tauceti') : 0; },
+                Brick(offset){ return tauEnabled() ? spaceCostMultiplier('colony', offset, wom_recycle(880000), 1.225, 'tauceti') : 0; },
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -1913,7 +1913,7 @@ const tauCetiModules = {
                 Money(offset){ return spaceCostMultiplier('fusion_generator', offset, 188000000, 1.25, 'tauceti'); },
                 Iridium(offset){ return  spaceCostMultiplier('fusion_generator', offset, 5550000, 1.25, 'tauceti'); },
                 Stanene(offset){ return spaceCostMultiplier('fusion_generator', offset, 7003500, 1.25, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, 95000, 1.25, 'tauceti'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('fusion_generator', offset, wom_recycle(95000), 1.25, 'tauceti'); },
             },
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(1);
@@ -2056,7 +2056,7 @@ const tauCetiModules = {
                 Titanium(offset){ return spaceCostMultiplier('tau_factory', offset, 3000000, 1.25, 'tauceti'); },
                 Elerium(offset){ return spaceCostMultiplier('tau_factory', offset, 850, 1.25, 'tauceti'); },
                 Bolognium(offset){ return spaceCostMultiplier('tau_factory', offset, 250000, 1.25, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('tau_factory', offset, 425000, 1.25, 'tauceti'); },
+                Quantium(offset){ return spaceCostMultiplier('tau_factory', offset, wom_recycle(425000), 1.25, 'tauceti'); },
             },
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
@@ -2153,7 +2153,7 @@ const tauCetiModules = {
                 Money(offset){ return spaceCostMultiplier('tauceti_casino', offset, 1450000, 1.35, 'tauceti'); },
                 Furs(offset){ return spaceCostMultiplier('tauceti_casino', offset, 95000, 1.35, 'tauceti'); },
                 Cement(offset){ return spaceCostMultiplier('tauceti_casino', offset, 120000, 1.35, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('tauceti_casino', offset, 55000, 1.35, 'tauceti'); }
+                Plywood(offset){ return spaceCostMultiplier('tauceti_casino', offset, wom_recycle(55000), 1.35, 'tauceti'); }
             },
             effect(){
                 let pop = $(this)[0].citizens();
@@ -2185,6 +2185,44 @@ const tauCetiModules = {
                 return gain;
             },
             flair: loc('city_casino_flair')
+        },
+        tau_cultural_center: {
+            id: 'tauceti-tau_cultural_center',
+            title: loc('tech_cultural_center'),
+            desc(){
+                return `<div>${loc('tech_cultural_center')}</div><div class="has-text-special">${loc('space_electrolysis_req',[global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+            },
+            category: 'commercial',
+            reqs: { tau_culture: 1 },
+            path: ['truepath'],
+            cost: {
+                Money(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 91450000, 1.35, 'tauceti'); },
+                Copper(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 5850000, 1.35, 'tauceti'); },
+                Coal(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 465000, 1.35, 'tauceti'); },
+                Polymer(offset){ return spaceCostMultiplier('tau_cultural_center', offset, 3792000, 1.35, 'tauceti'); },
+            },
+            effect(){
+                let womling = 8;
+                let cas = (global.civic.govern.type === 'corpocracy' ? 40 : 20);
+                let mon = (global.civic.govern.type === 'corpocracy' ? 10 : 5);
+
+                let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[500,global.resource.Food.name,$(this)[0].title])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect3',[cas])}</div>`;
+                desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
+                desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
+            },
+            powered(){ return powerCostMod(1); },
+            p_fuel(){ return { r: 'Food', a: 500 }; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.tau_cultural_center.count++;
+                    global.tauceti.tau_cultural_center.on++;
+                    return true;
+                }
+                return false;
+            }
         },
     },
     tau_red: {
@@ -2423,8 +2461,8 @@ const tauCetiModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('womling_village', offset, 10000000, 1.28, 'tauceti'); },
                 Stone(offset){ return spaceCostMultiplier('womling_village', offset, 2250000, 1.28, 'tauceti'); },
-                Plywood(offset){ return spaceCostMultiplier('womling_village', offset, 1250000, 1.28, 'tauceti'); },
-                Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, 400000, 1.28, 'tauceti'); },
+                Plywood(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(1250000), 1.28, 'tauceti'); },
+                Wrought_Iron(offset){ return spaceCostMultiplier('womling_village', offset, wom_recycle(400000), 1.28, 'tauceti'); },
             },
             effect(){
                 let pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
@@ -2586,7 +2624,7 @@ const tauCetiModules = {
                 Elerium(offset){ return spaceCostMultiplier('womling_lab', offset, 1200, 1.28, 'tauceti'); },
                 Orichalcum(offset){ return spaceCostMultiplier('womling_lab', offset, 2500000, 1.28, 'tauceti'); },
                 Unobtainium(offset){ return spaceCostMultiplier('womling_lab', offset, 10000, 1.28, 'tauceti'); },
-                Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, 95000, 1.28, 'tauceti'); },
+                Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
                 let know = Math.round(25000 * global.tauceti.overseer.prod / 100);
@@ -2724,7 +2762,7 @@ const tauCetiModules = {
                 Money(offset){ return spaceCostMultiplier('refueling_station', offset, 68000000, 1.28, 'tauceti'); },
                 Graphene(offset){ return spaceCostMultiplier('refueling_station', offset, 2500000, 1.28, 'tauceti'); },
                 Unobtainium(offset){ return spaceCostMultiplier('refueling_station', offset, 5500, 1.28, 'tauceti'); },
-                Mythril(offset){ return spaceCostMultiplier('refueling_station', offset, 60000, 1.28, 'tauceti'); },
+                Mythril(offset){ return spaceCostMultiplier('refueling_station', offset, wom_recycle(60000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             effect(){
@@ -2772,7 +2810,7 @@ const tauCetiModules = {
                 Money(offset){ return spaceCostMultiplier('ore_refinery', offset, 52000000, 1.28, 'tauceti'); },
                 Iridium(offset){ return spaceCostMultiplier('ore_refinery', offset, 1600000, 1.28, 'tauceti'); },
                 Unobtainium(offset){ return spaceCostMultiplier('ore_refinery', offset, 800, 1.28, 'tauceti'); },
-                Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, 118000, 1.28, 'tauceti'); },
+                Sheet_Metal(offset){ return spaceCostMultiplier('ore_refinery', offset, wom_recycle(118000), 1.28, 'tauceti'); },
             },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 8); },
             effect(){
@@ -3064,6 +3102,13 @@ function defineWomlings(){
 function wom_repulse(v){
     if (global.tech['womling_tech'] && global.tech['womling_logistics'] && global.tech.womling_logistics >= 2){
         v *= 0.94 ** global.tech.womling_tech;
+    }
+    return v;
+}
+
+function wom_recycle(v){
+    if (global.tech['womling_tech'] && global.tech['womling_recycling'] && global.tech.womling_recycling >= 1){
+        v *= 0.98 ** global.tech.womling_tech;
     }
     return v;
 }
