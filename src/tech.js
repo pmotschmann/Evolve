@@ -12166,7 +12166,7 @@ const techs = {
         cost: {
             Knowledge(){ return 8850000; }
         },
-        effect(){ return `<div>${loc('tech_womling_support_effect',[loc('tab_tauceti')])}</div>`; },
+        effect(){ return `<div>${loc('tech_womling_support_effect')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['womling_station'] = { count : 0, on: 0 };

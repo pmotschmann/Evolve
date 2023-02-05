@@ -2614,17 +2614,72 @@ const tauCetiModules = {
                         case 1:
                             return loc('tau_planet',[planetName().gas]);
                         case 2:
-                            return loc('tau_gas_title1');
+                        {
+                            switch (Math.round(global.stats.reset % 3)){
+                                case 1:
+                                    return loc('tau_gas_title1a');
+                                case 2:
+                                    return loc('tau_gas_title1b');
+                                default:
+                                    return loc('tau_gas_title1c');
+                            }
+                        }
                         case 3:
-                            return loc('tau_gas_title2');
+                        {
+                            switch (Math.round(global.stats.mad) % 3){
+                                case 1:
+                                    return loc('tau_gas_title2a');
+                                case 2:
+                                    return loc('tau_gas_title2b');
+                                default:
+                                    return loc('tau_gas_title2c');
+                            }
+                        }
                         case 4:
-                            return loc('tau_gas_title3',[races[global.race.gods].solar.gas]);
+                        {
+                            switch (Math.round(global.stats.bioseed) % 3){
+                                case 1:
+                                    return loc('tau_gas_title3a',[races[global.race.gods].solar.gas]);
+                                case 2:
+                                    return loc('tau_gas_title3b',[races[global.race.old_gods].name]);
+                                default:
+                                    return loc('tau_gas_title3c',[races[global.race.species].name]);
+                            }
+                        }
                         case 5:
-                            return loc('tau_gas_title4',[races[global.race.old_gods].name]);
+                        {
+                            switch (Math.round(global.stats.portals) % 3){
+                                case 1:
+                                    return loc('tau_gas_title4a',[planetName().gas]);
+                                case 2:
+                                    return loc('tau_gas_title4b',[flib('reverse',planetName().gas)]);
+                                default:
+                                    return loc('tau_gas_title4c');
+                            }
+                        }
                         case 6:
-                            return loc('tau_gas_title5',[races[global.race.species].name]);
+                        {
+
+                            switch (Math.round(global.stats.womling.friend.l + global.stats.womling.lord.l + global.stats.womling.god.l) % 3){
+                                case 1:
+                                    return loc('tau_gas_title5a');
+                                case 2:
+                                    return loc('tau_gas_title5b');
+                                default:
+                                    return loc('tau_gas_title5c');
+                            }
+                        }
                         case 7:
-                            return loc('tau_gas_title6');
+                        {
+                            switch (Math.round(global.stats.tdays) % 3){
+                                case 1:
+                                    return loc('tau_gas_title6a');
+                                case 2:
+                                    return loc('tau_gas_title6b');
+                                default:
+                                    return loc('tau_gas_title6c');
+                            }
+                        }
                         default:
                             return loc('tau_gas_title');
                     }
