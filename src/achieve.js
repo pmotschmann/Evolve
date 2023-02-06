@@ -1606,10 +1606,10 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("unavailable_content");
+                    return loc("achieve_perks_pathfinder4");
                 },
                 active(){
-                    return false;
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4 ? true : false;
                 }
             },
             {
@@ -1627,6 +1627,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['ashanddust'] ? 'success' : 'danger'}">${loc(`wiki_resets_mad`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['exodus'] ? 'success' : 'danger'}">${loc(`wiki_resets_bioseed`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['obsolete'] ? 'success' : 'danger'}">${loc(`wiki_resets_ai`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['bluepill'] ? 'success' : 'danger'}">${loc(`wiki_resets_matrix`)}</span>`]),
         ]
     },
     creep: {

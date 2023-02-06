@@ -6762,6 +6762,9 @@ function sentience(){
 
     Object.keys(genus_traits[races[global.race.species].type]).forEach(function (trait) {
         setTraitRank(trait,{ set: genus_traits[races[global.race.species].type][trait] });
+        if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4){
+            setTraitRank(trait);
+        }
     });
     Object.keys(races[global.race.species].traits).forEach(function (trait) {
         setTraitRank(trait,{ set: races[global.race.species].traits[trait] });

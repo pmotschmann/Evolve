@@ -3108,7 +3108,7 @@ function wom_repulse(v){
 
 function wom_recycle(v){
     if (global.tech['womling_tech'] && global.tech['womling_recycling'] && global.tech.womling_recycling >= 1){
-        v *= 0.98 ** global.tech.womling_tech;
+        v *= (global.tech['isolation'] ? 0.97 : 0.98) ** global.tech.womling_tech;
     }
     return v;
 }
