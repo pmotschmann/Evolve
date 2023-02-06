@@ -2116,7 +2116,7 @@ function setRegionStates(reset){
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire'],
-        tau: ['home','red','roid','gas','star','gas2']
+        tau: ['home','red','roid','gas','gas2','star']
     };
     
     Object.keys(regions).forEach(function(r){

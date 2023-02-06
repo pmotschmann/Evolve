@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
@@ -2649,14 +2649,26 @@ const tauCetiModules = {
     },
     tau_gas: {
         info: {
-            name(n){
-                if (n || global.race['gas_name']){
-                    switch (n || global.race.gas_name){
+            name(n,k){
+                let key = k || 'gas_name';
+                let ns = key === 'gas_name' ? 0 : 1;
+                if (n || global.race[key]){
+                    switch (n || global.race[key]){
                         case 1:
-                            return loc('tau_planet',[planetName().gas]);
+                        {
+                            let tracked = global.race.universe === 'antimatter' ? 'plasmid' : 'antiplasmid';
+                            switch (Math.round(global.stats[tracked] + ns) % 3){
+                                case 1:
+                                    return loc('tau_planet',[planetName().gas]);
+                                case 2:
+                                    return loc('tau_gas_title0a',[planetName().gas]);
+                                default:
+                                    return loc('tau_gas_title0b',[planetName().gas]);
+                            }
+                        }
                         case 2:
                         {
-                            switch (Math.round(global.stats.reset % 3)){
+                            switch (Math.round(global.stats.reset + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title1a');
                                 case 2:
@@ -2667,7 +2679,7 @@ const tauCetiModules = {
                         }
                         case 3:
                         {
-                            switch (Math.round(global.stats.mad) % 3){
+                            switch (Math.round(global.stats.mad + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title2a');
                                 case 2:
@@ -2678,7 +2690,7 @@ const tauCetiModules = {
                         }
                         case 4:
                         {
-                            switch (Math.round(global.stats.bioseed) % 3){
+                            switch (Math.round(global.stats.bioseed + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title3a',[races[global.race.gods].solar.gas]);
                                 case 2:
@@ -2689,7 +2701,7 @@ const tauCetiModules = {
                         }
                         case 5:
                         {
-                            switch (Math.round(global.stats.portals) % 3){
+                            switch (Math.round(global.stats.portals + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title4a',[planetName().gas]);
                                 case 2:
@@ -2701,7 +2713,7 @@ const tauCetiModules = {
                         case 6:
                         {
 
-                            switch (Math.round(global.stats.womling.friend.l + global.stats.womling.lord.l + global.stats.womling.god.l) % 3){
+                            switch (Math.round(global.stats.womling.friend.l + global.stats.womling.lord.l + global.stats.womling.god.l + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title5a');
                                 case 2:
@@ -2712,7 +2724,7 @@ const tauCetiModules = {
                         }
                         case 7:
                         {
-                            switch (Math.round(global.stats.tdays) % 3){
+                            switch (Math.round(global.stats.tdays + ns) % 3){
                                 case 1:
                                     return loc('tau_gas_title6a');
                                 case 2:
@@ -2722,10 +2734,10 @@ const tauCetiModules = {
                             }
                         }
                         default:
-                            return loc('tau_gas_title');
+                            return key === 'gas_name' ? loc('tau_gas_title') : loc('tau_gas2_title');
                     }
                 }
-                return loc('tau_gas_title');
+                return key === 'gas_name' ? loc('tau_gas_title') : loc('tau_gas2_title');
             },
             desc(){
                 return loc('tau_gas_desc');
@@ -2928,6 +2940,36 @@ const tauCetiModules = {
             }
         },
     },
+    tau_gas2: {
+        info: {
+            name(n){
+                return tauCetiModules.tau_gas.info.name(n || global.race['gas_name2'] || false, 'gas_name2');
+            },
+            desc(){
+                return loc('tau_gas2_desc',[tauCetiModules.tau_gas.info.name()]);
+            }
+        },
+        gas_contest2: {
+            id: 'tauceti-gas_contest2',
+            title(){ return loc('tau_gas2_contest_title'); },
+            desc(){ return loc('tau_gas2_contest_title'); },
+            reqs: { tau_gas2: 1 },
+            grant: ['tau_gas2',2],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_gas2 >= 1 ? 0 : 1; },
+            cost: {
+                Money(){ return 25000000; }
+            },
+            effect(){ return loc('tau_gas2_contest_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc('tau_gas2_contest_flair'); }
+        },
+    },
     tau_roid: {
         info: {
             name(){
@@ -3082,7 +3124,25 @@ for (let i=1; i<9; i++){
             }
             return false;
         }
-    };    
+    };
+    tauCetiModules.tau_gas2[`gas_contest2${i}`] = {
+        id: `tauceti-gas_contest2${i}`,
+        title(){ return tauCetiModules.tau_gas2.info.name(i); },
+        desc(){ return tauCetiModules.tau_gas2.info.name(i); },
+        reqs: { tau_gas2: 2 },
+        grant: ['tau_gas2',3],
+        path: ['truepath'],
+        queue_complete(){ return global.tech.tau_gas2 >= 3 ? 0 : 1; },
+        cost: {},
+        effect(){ return loc(i === 8 ? 'tau_gas2_contest_reject' : 'tau_gas_contest_pick',[tauCetiModules.tau_gas2.info.name(i)]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.race['gas_name2'] = i;
+                return true;
+            }
+            return false;
+        }
+    }; 
 }
 
 function matrixProjection(){

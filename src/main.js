@@ -9746,6 +9746,7 @@ function longLoop(){
                     if (global.tech.plague < 5 && Math.rand(0,50) === 0){
                         global.tech.plague = 5;
                         messageQueue(loc('tau_plague5b',[races[global.race.species].home]),'info',false,['progress']);
+                        drawTech();
                     }
                 }
                 else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){

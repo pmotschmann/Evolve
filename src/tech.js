@@ -7,7 +7,7 @@ import { races, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
-import { renderSpace, planetName } from './space.js';
+import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
@@ -12630,6 +12630,7 @@ const techs = {
         desc(){ return loc('tech_outpost_boost'); },
         category: 'special',
         era: 'tauceti',
+        path: ['truepath'],
         reqs: { tau_home: 4, isolation: 1 },
         grant: ['outpost_boost',1],
         cost: {
@@ -12650,6 +12651,7 @@ const techs = {
         desc: loc('tech_cultural_center'),
         category: 'banking',
         era: 'tauceti',
+        path: ['truepath'],
         reqs: { iso_gambling: 1, isolation: 1 },
         grant: ['tau_culture',1],
         cost: {
@@ -12665,6 +12667,29 @@ const techs = {
         },
         flair(){ return loc('tech_cultural_center_flair'); }
     },
+    outer_tau_survey: {
+        id: 'tech-outer_tau_survey',
+        title: loc('tech_outer_tau_survey'),
+        desc: loc('tech_outer_tau_survey'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { outpost_boost: 1, plague: 5 },
+        grant: ['tau_gas2',1],
+        cost: {
+            Knowledge(){ return 9100000; },
+            Helium_3(){ return +int_fuel_adjust(5000000).toFixed(0); },
+        },
+        effect: loc('tech_outer_tau_survey_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.tau.gas2 = true;
+                return true;
+            }
+            return false;
+        },
+        flair(){ return loc('tech_cultural_center_flair'); }
+    }
 };
 
 function uniteEffect(){
