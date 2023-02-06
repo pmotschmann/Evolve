@@ -1630,6 +1630,21 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['bluepill'] ? 'success' : 'danger'}">${loc(`wiki_resets_matrix`)}</span>`]),
         ]
     },
+    overlord: {
+        name: loc(`achieve_overlord_name`),
+        desc(){
+            let desc = `<div>${loc("achieve_perks_overlord1",[10])}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord2")}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord3")}</div>`;
+            return desc;
+        },
+        active(){
+            return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_overlord_name`)}</span>`]),
+        ]
+    },
     creep: {
         name: loc(`wiki_arpa_crispr_creep`),
         desc(wiki){

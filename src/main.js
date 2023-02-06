@@ -7893,7 +7893,8 @@ function midLoop(){
 
                 if (Math.rand(0,10) < global.tauceti.womling_lab.scientist){
                     global.tauceti.womling_lab.tech += Math.rand(0,global.tauceti.womling_lab.scientist + 1);
-                    if (global.tauceti.womling_lab.tech >= (global.tech.womling_tech + 2) ** 5){
+                    let expo = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 4.9 : 5;
+                    if (global.tauceti.womling_lab.tech >= Math.round((global.tech.womling_tech + 2) ** expo)){
                         global.tech.womling_tech++;
                         global.tauceti.womling_lab.tech = 0;
                         drawTech();

@@ -2429,13 +2429,13 @@ const tauCetiModules = {
             },
             val(){
                 if (global.race['womling_lord']){
-                    return 10;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
                 }
                 else if (global.race['womling_god']){
-                    return 5;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 6 : 5;
                 }
                 else if (global.race['womling_friend']){
-                    return 8;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 10 : 8;
                 }
                 return 0;
             },
@@ -2590,13 +2590,13 @@ const tauCetiModules = {
             },
             val(){
                 if (global.race['womling_lord']){
-                    return 20;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 24 : 20;
                 }
                 else if (global.race['womling_god']){
-                    return 10;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
                 }
                 else if (global.race['womling_friend']){
-                    return 15;
+                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 18 : 15;
                 }
                 return 0;
             },
