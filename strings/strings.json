@@ -4851,6 +4851,7 @@
   "civics_mad_missiles_desc": "Enable or Disable the launch button. Launching a nuclear strike will trigger a retaliatory strike which will result in the end of all life as we know it.",
   "civics_mad_missiles_warning": "This will result in the destruction of all life on your planet. You will have to re-evolve from the beginning. You will gain %0 %1.",
   "civics_servants": "Servants",
+  "civics_servants_desc": "Completely devoted to you, these servants can work any basic job and do not require any upkeep.",
   "civics_servants_msg1": "A ferret like creature has joined you ready to serve your empire.",
   "civics_servants_msg2": "%0 ferret like creatures have joined you and are ready to serve your empire.",
   "governor_appoint": "Appoint",

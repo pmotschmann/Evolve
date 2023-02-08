@@ -362,11 +362,11 @@ function loadJob(job, define, impact, stress, color){
     var id = servant ? 'servant-' + job : 'civ-' + job;
 
     var civ_container = $(`<div id="${id}" v-show="civic.${job}.display" class="job"></div>`);
-    var controls = $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
+    var controls = servant ? $(`<div class="controls"></div>`) : $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
     if (!color || job === 'unemployed'){
         color = color || 'info';
         let job_label = servant
-         ? $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ servant.${job} }}</span></div>`)
+         ? $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span class="count">{{ servant.${job} }}</span></div>`)
          : $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
         civ_container.append(job_label);
     }
@@ -415,24 +415,6 @@ function loadJob(job, define, impact, stress, color){
                             break;
                         }
                     }
-                },
-                level(j){
-                    return 'count';
-                },
-                setDefault(j){},
-                isDefault(j){
-                    return false;
-                }
-            },
-            filters: {
-                d_state(j){
-                    return '';
-                },
-                event(c){
-                    return c;
-                },
-                adjust(v,j){
-                    return v;
                 }
             }
         });
@@ -533,7 +515,7 @@ function loadJob(job, define, impact, stress, color){
 export function loadServants(){
     clearElement($('#servants'));
     if (global.race['servants']){
-        var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('civics_servants')}</h3><span>{{ s.used }} / {{ s.max }}</span></div></div>`);
+        var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="serveHeader has-text-warning">${loc('civics_servants')}</h3><span :class="level()">{{ s.used }} / {{ s.max }}</span></div></div>`);
         $('#servants').append(servants);
 
         loadJob('hunter','servant');
@@ -548,8 +530,38 @@ export function loadServants(){
             el: `#servantList`,
             data: {
                 s: global.race.servants
+            },
+            methods: {
+                level(){
+                    if (global.race.servants.used === 0){
+                        return 'count has-text-danger';
+                    }
+                    else if (global.race.servants.used === global.race.servants.max){
+                        return 'count has-text-success';
+                    }
+                    else if (global.race.servants.used <= global.race.servants.max / 3){
+                        return 'count has-text-caution';
+                    }
+                    else if (global.race.servants.used <= global.race.servants.max * 0.66){
+                        return 'count has-text-warning';
+                    }
+                    else if (global.race.servants.used < global.race.servants.max){
+                        return 'count has-text-info';
+                    }
+                    else {
+                        return 'count';
+                    }
+                }
             }
         });
+
+        popover('servants', function(){
+            return loc('civics_servants_desc');
+        },
+        {
+            elm: `#servants .serveHeader`
+        }
+    );
     }
 }
 
