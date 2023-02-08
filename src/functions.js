@@ -895,11 +895,12 @@ export function timeCheck(c_action,track,detailed){
 // This function returns the time to complete all remaining Arpa segments.
 // Note: remain is a fraction between 0 and 1 representing the fraction of
 // remaining arpa segments to be completed
-export function arpaTimeCheck(project, remain, track){
+export function arpaTimeCheck(project, remain, track, detailed){
     let offset = track && track.id[project.id] ? track.id[project.id] : false;
     let costs = arpaAdjustCosts(project.cost,offset);
     let allRemainingSegmentsTime = 0;
     let og_track_r = track ? {} : false;
+    let bottleneck = false;
     if (track){
         Object.keys(track.r).forEach(function (res){
             og_track_r[res] = track.r[res];
@@ -913,13 +914,14 @@ export function arpaTimeCheck(project, remain, track){
             }
         });
     }
+
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
             let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
-
                 let res_diff = global.resource[res].diff;
+
                 if (track){
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
@@ -946,6 +948,7 @@ export function arpaTimeCheck(project, remain, track){
                         let r_time = (allRemainingSegmentsCost - res_have) / res_diff;
                         if (r_time > allRemainingSegmentsTime){
                             allRemainingSegmentsTime = r_time;
+                            bottleneck = res;
                         }
                     }
                     else {
@@ -967,7 +970,7 @@ export function arpaTimeCheck(project, remain, track){
         }
         track.t += allRemainingSegmentsTime;
     }
-    return allRemainingSegmentsTime;
+    return detailed ? { t: allRemainingSegmentsTime, r: bottleneck } : allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){
@@ -1490,7 +1493,7 @@ export function calcPrestige(type,inputs){
         gains.cores = universe === 'micro' ? 2 : 5;
     }
     else if (type === 'matrix'){
-        gains.cores = universe === 'micro' ? 3 : 10;
+        gains.cores = universe === 'micro' ? 2 : 5;
     }
 
     return gains;

@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -2416,11 +2416,13 @@ export function arpaProjectCosts(id,project){
     let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
     var costs = arpaAdjustCosts(arpaProjects[project].cost);
+    let tc = arpaTimeCheck(arpaProjects[project], inc / 100, false, true);
+
     Object.keys(costs).forEach(function (res){
         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
         if (res_cost > 0){
             var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
-            var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+            var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-caution');
             cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,2)}</div>`));
         }
     });

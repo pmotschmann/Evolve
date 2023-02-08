@@ -4,7 +4,7 @@ import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, c
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale } from './jobs.js';
+import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, loadServants} from './jobs.js';
 import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
 import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
@@ -763,19 +763,23 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if ((global.city.ptrait.includes('trashed') || global.race['scavenger']) && global.civic['scavenger'] && global.civic.scavenger.workers > 0){
-        let bonus = (global.civic.scavenger.workers * traits.scavenger.vars()[0]);
-        if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
-            bonus *= 1 + (traits.scavenger.vars()[1] / 100);
+    if ((global.city.ptrait.includes('trashed') || global.race['scavenger']) && global.civic['scavenger']){
+        let scavenger = global.civic.scavenger.workers;
+        if (global.race['servants']){ scavenger += global.race.servants.jobs.scavenger; }
+        if (scavenger > 0){
+            let bonus = (global.civic.scavenger.workers * traits.scavenger.vars()[0]);
+            if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
+                bonus *= 1 + (traits.scavenger.vars()[1] / 100);
+            }
+            if (global.city.ptrait.includes('trashed')){
+                bonus *= 1 + (planetTraits.trashed.vars()[1] / 100);
+            }
+            if (global.race['high_pop']){
+                bonus = highPopAdjust(bonus);
+            }
+            breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
+            global_multiplier *= 1 + (bonus / 100);
         }
-        if (global.city.ptrait.includes('trashed')){
-            bonus *= 1 + (planetTraits.trashed.vars()[1] / 100);
-        }
-        if (global.race['high_pop']){
-            bonus = highPopAdjust(bonus);
-        }
-        breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
-        global_multiplier *= 1 + (bonus / 100);
     }
     if (global.city.ptrait.includes('mellow')){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
@@ -2815,7 +2819,9 @@ function fastLoop(){
                 }
                 if (global.race['carnivore'] || global.race['soul_eater']){
                     let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                    let food_hunt = global.civic.hunter.workers * strength * (global.race['carnivore'] ? 2 : 0.5);
+                    let food_hunt = global.civic.hunter.workers;
+                    if (global.race['servants']){ food_hunt += global.race.servants.jobs.hunter; }
+                    food_hunt *= strength * (global.race['carnivore'] ? 2 : 0.5);
                     if (global.race['ghostly']){
                         food_hunt *= 1 + (traits.ghostly.vars()[0] / 100);
                     }
@@ -2854,13 +2860,16 @@ function fastLoop(){
 
                     if (global.race['forager']){
                         let forage = 1 + (global.tech['foraging'] ? 0.75 * global.tech['foraging'] : 0);
-                        let food_forage = global.civic.forager.workers * forage * 0.35;
+                        let foragers = global.civic.forager.workers;
+                        if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                        let food_forage = foragers * forage * 0.35;
                         food_bd[loc('job_forager')] = food_forage + 'v';
                         food_base += food_forage;
                     }
 
                     if (global.city['farm']){
                         let farmers = global.civic.farmer.workers;
+                        if (global.race['servants']){ farmers += global.race.servants.jobs.farmer; }
                         let farmhands = 0;
                         if (farmers > jobScale(global.city.farm.count)){
                             farmhands = farmers - jobScale(global.city.farm.count);
@@ -3247,7 +3256,9 @@ function fastLoop(){
         if (global.resource.Furs.display){
             if (global.race['evil'] || global.race['artifical']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                let hunters = global.civic.hunter.workers * weapons / 20;
+                let hunters = global.civic.hunter.workers;
+                if (global.race['servants']){ hunters += global.race.servants.jobs.hunter; }
+                hunters *= weapons / 20;
                 if (global.city.biome === 'savanna'){
                     hunters *= biomes.savanna.vars()[1];
                 }
@@ -3259,6 +3270,7 @@ function fastLoop(){
 
                 if (!global.race['soul_eater'] && global.race['evil']){
                     let reclaimers = global.civic.lumberjack.workers;
+                    if (global.race['servants']){ reclaimers += global.race.servants.jobs.lumberjack; }
                     reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack') / 4;
                     fur_bd[loc('job_reclaimer')] = reclaimers  + 'v';
                     if (reclaimers > 0){
@@ -3284,7 +3296,9 @@ function fastLoop(){
 
             if (global.race['forager']){
                 let forage = 1 + (global.tech['foraging'] ? 0.5 * global.tech['foraging'] : 0);
-                let forage_base = global.civic.forager.workers * forage * 0.05;
+                let foragers = global.civic.forager.workers;
+                if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                let forage_base = foragers * forage * 0.05;
                 fur_bd[loc('job_forager')] = forage_base + 'v';
                 if (forage_base > 0){
                     fur_bd[`ᄂ${loc('quarantine')}+3`] = ((q_multiplier - 1) * 100) + '%';
@@ -4489,7 +4503,9 @@ function fastLoop(){
             }
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-                let hunters = global.civic.hunter.workers * weapons / 2;
+                let hunters = global.civic.hunter.workers;
+                if (global.race['servants']){ hunters += global.race.servants.jobs.hunter; }
+                hunters *= weapons / 2;
                 if (global.city.biome === 'savanna'){
                     hunters *= biomes.savanna.vars()[1];
                 }
@@ -4504,6 +4520,7 @@ function fastLoop(){
             }
             else if (global.race['evil']){
                 let reclaimers = global.civic.lumberjack.workers;
+                if (global.race['servants']){ reclaimers += global.race.servants.jobs.lumberjack; }
                 reclaimers *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
 
                 let graveyard = 1;
@@ -4524,7 +4541,9 @@ function fastLoop(){
                 }
                 if (global.race['forager']){
                     let forage = 1;
-                    let forage_base = global.civic.forager.workers * forage * 0.25;
+                    let foragers = global.civic.forager.workers;
+                    if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                    let forage_base = foragers * forage * 0.25;
                     lumber_bd[loc('job_forager')] = forage_base  + 'v';
                     if (forage_base > 0){
                         lumber_bd[`ᄂ${loc('quarantine')}+2`] = ((q_multiplier - 1) * 100) + '%';
@@ -4537,6 +4556,7 @@ function fastLoop(){
             }
             else {
                 let lumber_base = global.civic.lumberjack.workers;
+                if (global.race['servants']){ lumber_base += global.race.servants.jobs.lumberjack; }
                 lumber_base *= global.city.biome === 'forest' ? biomes.forest.vars()[0] : 1;
                 lumber_base *= global.city.biome === 'savanna' ? biomes.savanna.vars()[2] : 1;
                 lumber_base *= global.city.biome === 'desert' ? biomes.desert.vars()[2] : 1;
@@ -4577,7 +4597,9 @@ function fastLoop(){
 
                 if (global.race['forager']){
                     let forage = 1;
-                    let forage_base = global.civic.forager.workers * forage * 0.25;
+                    let foragers = global.civic.forager.workers;
+                    if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                    let forage_base = foragers * forage * 0.25;
                     lumber_bd[loc('job_forager')] = forage_base  + 'v';
                     modRes('Lumber', forage_base * hunger * global_multiplier * time_multiplier);
                 }
@@ -4623,6 +4645,7 @@ function fastLoop(){
         }
         else {
             let stone_base = global.civic.quarry_worker.workers;
+            if (global.race['servants']){ stone_base += global.race.servants.jobs.quarry_worker; }
             stone_base *= global.civic.quarry_worker.impact;
             stone_base *= racialTrait(global.civic.quarry_worker.workers,'miner');
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -4701,7 +4724,9 @@ function fastLoop(){
 
             if (global.race['forager'] && global.resource.Stone.display){
                 let forage = 1;
-                let forage_base = global.civic.forager.workers * forage * 0.22;
+                let foragers = global.civic.forager.workers;
+                if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                let forage_base = foragers * forage * 0.22;
                 stone_bd[loc('job_forager')] = forage_base  + 'v';
                 if (forage_base > 0){
                     stone_bd[`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
@@ -4865,6 +4890,7 @@ function fastLoop(){
         // Crystal
         if (global.resource.Crystal.display){
             let crystal_base = global.civic.crystal_miner.workers;
+            if (global.race['servants']){ crystal_base += global.race.servants.jobs.crystal_miner; }
             crystal_base *= global.civic.crystal_miner.impact;
             crystal_base *= racialTrait(global.civic.crystal_miner.workers,'miner');
 
@@ -4949,7 +4975,9 @@ function fastLoop(){
 
                 if (global.race['forager'] && global.tech['dowsing']){
                     let forage = global.tech.dowsing >= 2 ? 5 : 1;
-                    let forage_base = global.civic.forager.workers * forage * 0.025;
+                    let foragers = global.civic.forager.workers;
+                    if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                    let forage_base = foragers * forage * 0.025;
                     if (global.city.geology['Copper']){
                         forage_base *= global.city.geology['Copper'] + 1;
                     }
@@ -5030,7 +5058,9 @@ function fastLoop(){
 
                 if (global.race['forager'] && global.tech['dowsing']){
                     let forage = global.tech.dowsing >= 2 ? 5 : 1;
-                    let forage_base = global.civic.forager.workers * forage * 0.035;
+                    let foragers = global.civic.forager.workers;
+                    if (global.race['servants']){ foragers += global.race.servants.jobs.forager; }
+                    let forage_base = foragers * forage * 0.035;
                     if (global.city.geology['Iron']){
                         forage_base *= global.city.geology['Iron'] + 1;
                     }
@@ -8057,6 +8087,8 @@ function midLoop(){
             }
         });
 
+        let unlock_servants = false;
+        let total_servants = 0;
         Object.keys(lCaps).forEach(function (job){
             global.civic[job].max = lCaps[job];
             if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
@@ -8065,7 +8097,31 @@ function midLoop(){
             else if (global.civic[job].workers < 0){
                 global.civic[job].workers = 0;
             }
+            if (global.race['servants']){
+                if (global.civic[job].max === -1 && !global.race.servants.jobs.hasOwnProperty(job)){
+                    global.race.servants.jobs[job] = 0;
+                    unlock_servants = true;
+                }
+                if (global.race.servants.jobs.hasOwnProperty(job)){
+                    if (!global.civic[job].display){
+                        global.race.servants.jobs[job] = 0;
+                    }
+                    else {
+                        total_servants += global.race.servants.jobs[job];
+                    }
+                    if (total_servants > global.race.servants.max && global.race.servants.jobs[job] > 0){
+                        global.race.servants.jobs[job]--;
+                        total_servants--;
+                    }
+                }
+            }
         });
+        if (unlock_servants){
+            loadServants();
+        }
+        else if (total_servants > 0 && global.race['servants']){
+            global.race.servants.used = total_servants;
+        }
 
         if (global.civic.space_miner.display && global.space['space_station']){
             global.space.space_station.s_max = global.civic.space_miner.workers;
@@ -8650,11 +8706,14 @@ function midLoop(){
             if (struct.action === 'arpa'){
                 let remain = (100 - global.arpa[struct.type].complete) / 100;
                 let t_time = arpaTimeCheck(t_action, remain, spent);
+                struct['bres'] = false;
                 if (t_time >= 0){
                     time += t_time;
                     struct['time'] = time;
                     for (let j=1; j<struct.q; j++){
-                        time += arpaTimeCheck(t_action, 1, spent);
+                        let tc = arpaTimeCheck(t_action, 1, spent, true);
+                        time += tc.t;
+                        struct['bres'] = tc.r;
                     }
                     struct['t_max'] = time;
                 }
@@ -9533,6 +9592,16 @@ function longLoop(){
             if (global.tech['eris'] && global.tech.eris >= 3){
                 erisWar();
             }
+        }
+
+        if (!global.race['cataclysm'] && global.stats.matrix > 0 && !global.race['servants'] && Math.rand(0,25) === 0){
+            let womlings = global.stats.matrix;
+            global.race['servants'] = {
+                max: womlings,
+                used: 0,
+                jobs: {},
+            };
+            messageQueue(womlings === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings]),'caution',false,['events','major_events']);
         }
 
         if (global.race['truepath'] && global.tech['focus_cure'] && global.tech.focus_cure >= 2 && global.tauceti['infectious_disease_lab']){

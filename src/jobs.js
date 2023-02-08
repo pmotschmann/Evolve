@@ -1,7 +1,7 @@
 import { global, keyMultiplier, p_on, support_on } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races, traits, biomes, planetTraits, genusVars } from './races.js';
+import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
@@ -270,7 +270,7 @@ export const job_desc = {
 // Sets up jobs in civics tab
 export function defineJobs(define){
     if (!define){
-        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div></div>`));
+        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div></div>`));
     }
     loadJob('unemployed',define,0,0,'warning');
     loadJob('hunter',define,0,0);
@@ -298,6 +298,9 @@ export function defineJobs(define){
     loadJob('crew',define,1,4,'alert');
     if (!define){
         loadFoundry();
+        if (global.race['servants']){
+            loadServants();
+        }
     }
 }
 
@@ -326,6 +329,11 @@ export function setJobName(job){
 }
 
 function loadJob(job, define, impact, stress, color){
+    let servant = false;
+    if (define === 'servant'){
+        servant = true;
+        define = false;
+    }
     if (!global['civic'][job]){
         global['civic'][job] = {
             job: job,
@@ -342,20 +350,24 @@ function loadJob(job, define, impact, stress, color){
         global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;
     }
 
-    global.civic[job]['stress'] = stress;
-    global.civic[job].impact = impact;
+    if (!servant){
+        global.civic[job]['stress'] = stress;
+        global.civic[job].impact = impact;
+    }
 
     if (job === 'craftsman' || define){
         return;
     }
 
-    var id = 'civ-' + job;
+    var id = servant ? 'servant-' + job : 'civ-' + job;
 
     var civ_container = $(`<div id="${id}" v-show="civic.${job}.display" class="job"></div>`);
     var controls = $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
     if (!color || job === 'unemployed'){
         color = color || 'info';
-        let job_label = $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
+        let job_label = servant
+         ? $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count">{{ servant.${job} }}</span></div>`)
+         : $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
         civ_container.append(job_label);
     }
     else {
@@ -363,7 +375,7 @@ function loadJob(job, define, impact, stress, color){
         civ_container.append(job_label);
     }
     civ_container.append(controls);
-    $('#jobs').append(civ_container);
+    $(servant ? '#servants' : '#jobs').append(civ_container);
 
     if (job !== 'crew'){
         var sub = $(`<span role="button" aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
@@ -372,86 +384,141 @@ function loadJob(job, define, impact, stress, color){
         controls.append(add);
     }
 
-    vBind({
-        el: `#${id}`,
-        data: {
-            civic: global.civic
-        },
-        methods: {
-            add(){
-                let keyMult = keyMultiplier();
-                for (let i=0; i<keyMult; i++){
-                    if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)){
-                        global.civic[job].workers++;
-                        global.civic[global.civic.d_job].workers--;
-                        global.civic[job].assigned = global.civic[job].workers;
-                    }
-                    else {
-                        break;
-                    }
-                }
+    if (servant){
+        vBind({
+            el: `#${id}`,
+            data: {
+                civic: global.civic,
+                servant: global.race.servants.jobs
             },
-            sub(){
-                let keyMult = keyMultiplier();
-                for (let i=0; i<keyMult; i++){
-                    if (global.civic[job].workers > 0){
-                        global.civic[job].workers--;
-                        global.civic[global.civic.d_job].workers++;
-                        global.civic[job].assigned = global.civic[job].workers;
+            methods: {
+                add(){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.race.servants.max > global.race.servants.used){
+                            global.race.servants.jobs[job]++;
+                            global.race.servants.used++;
+                        }
+                        else {
+                            break;
+                        }
                     }
-                    else {
-                        break;
+                },
+                sub(){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.race.servants.jobs[job] > 0){
+                            global.race.servants.jobs[job]--;
+                            global.race.servants.used--;
+                        }
+                        else {
+                            break;
+                        }
                     }
-                }
-            },
-            level(job){
-                if (global.civic[job].workers === 0){
-                    return 'count has-text-danger';
-                }
-                else if (global.civic[job].workers === global.civic[job].max){
-                    return 'count has-text-success';
-                }
-                else if (global.civic[job].workers <= global.civic[job].max / 3){
-                    return 'count has-text-caution';
-                }
-                else if (global.civic[job].workers <= global.civic[job].max * 0.66){
-                    return 'count has-text-warning';
-                }
-                else if (global.civic[job].workers < global.civic[job].max){
-                    return 'count has-text-info';
-                }
-                else {
+                },
+                level(j){
                     return 'count';
+                },
+                setDefault(j){},
+                isDefault(j){
+                    return false;
                 }
             },
-            setDefault(j){
-                global.civic.d_job = j;
-            },
-            isDefault(j){
-                return global.civic.d_job === j;
+            filters: {
+                d_state(j){
+                    return '';
+                },
+                event(c){
+                    return c;
+                },
+                adjust(v,j){
+                    return v;
+                }
             }
-        },
-        filters: {
-            d_state(j){
-                return global.civic.d_job === j ? '*' : '';
+        });
+    }
+    else {
+        vBind({
+            el: `#${id}`,
+            data: {
+                civic: global.civic
             },
-            event(c){
-                if ((job === 'unemployed' && global.civic.unemployed.display) || (job === 'hunter' && !global.civic.unemployed.display)){
-                    let egg = easterEgg(3,14);
-                    if (c === 0 && egg.length > 0){
-                        return egg;
+            methods: {
+                add(){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)){
+                            global.civic[job].workers++;
+                            global.civic[global.civic.d_job].workers--;
+                            global.civic[job].assigned = global.civic[job].workers;
+                        }
+                        else {
+                            break;
+                        }
                     }
+                },
+                sub(){
+                    let keyMult = keyMultiplier();
+                    for (let i=0; i<keyMult; i++){
+                        if (global.civic[job].workers > 0){
+                            global.civic[job].workers--;
+                            global.civic[global.civic.d_job].workers++;
+                            global.civic[job].assigned = global.civic[job].workers;
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                },
+                level(job){
+                    if (global.civic[job].workers === 0){
+                        return 'count has-text-danger';
+                    }
+                    else if (global.civic[job].workers === global.civic[job].max){
+                        return 'count has-text-success';
+                    }
+                    else if (global.civic[job].workers <= global.civic[job].max / 3){
+                        return 'count has-text-caution';
+                    }
+                    else if (global.civic[job].workers <= global.civic[job].max * 0.66){
+                        return 'count has-text-warning';
+                    }
+                    else if (global.civic[job].workers < global.civic[job].max){
+                        return 'count has-text-info';
+                    }
+                    else {
+                        return 'count';
+                    }
+                },
+                setDefault(j){
+                    global.civic.d_job = j;
+                },
+                isDefault(j){
+                    return global.civic.d_job === j;
                 }
-                return c;
             },
-            adjust(v,j){
-                if (j === 'titan_colonist' && p_on['ai_colonist']){
-                    return v + jobScale(p_on['ai_colonist']);
+            filters: {
+                d_state(j){
+                    return global.civic.d_job === j ? '*' : '';
+                },
+                event(c){
+                    if ((job === 'unemployed' && global.civic.unemployed.display) || (job === 'hunter' && !global.civic.unemployed.display)){
+                        let egg = easterEgg(3,14);
+                        if (c === 0 && egg.length > 0){
+                            return egg;
+                        }
+                    }
+                    return c;
+                },
+                adjust(v,j){
+                    if (j === 'titan_colonist' && p_on['ai_colonist']){
+                        return v + jobScale(p_on['ai_colonist']);
+                    }
+                    return v;
                 }
-                return v;
             }
-        }
-    });
+        });
+    }
 
     popover(id, function(){
             return job_desc[job]();
@@ -461,6 +528,29 @@ function loadJob(job, define, impact, stress, color){
             classes: `has-background-light has-text-dark`
         }
     );
+}
+
+export function loadServants(){
+    clearElement($('#servants'));
+    if (global.race['servants']){
+        var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="has-text-warning">${loc('civics_servants')}</h3><span>{{ s.used }} / {{ s.max }}</span></div></div>`);
+        $('#servants').append(servants);
+
+        loadJob('hunter','servant');
+        loadJob('forager','servant');
+        loadJob('farmer','servant');
+        loadJob('lumberjack','servant');
+        loadJob('quarry_worker','servant');
+        loadJob('crystal_miner','servant');
+        loadJob('scavenger','servant');
+
+        vBind({
+            el: `#servantList`,
+            data: {
+                s: global.race.servants
+            }
+        });
+    }
 }
 
 export function farmerValue(farm){

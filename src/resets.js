@@ -1061,7 +1061,9 @@ export function matrix(){
 function trackWomling(){
     let uni = universeAffix();
     if (global.race['womling_friend']){
-        global.stats.womling.friend.l++;
+        if (uni !== 'm'){
+            global.stats.womling.friend.l++;
+        }
         if (uni !== 'l'){
             if (!global.stats.womling.friend.hasOwnProperty(uni)){
                 global.stats.womling.friend[uni] = 0;
@@ -1070,7 +1072,9 @@ function trackWomling(){
         }
     }
     else if (global.race['womling_lord']){
-        global.stats.womling.lord.l++;
+        if (uni !== 'm'){
+            global.stats.womling.lord.l++;
+        }
         if (uni !== 'l'){
             if (!global.stats.womling.lord.hasOwnProperty(uni)){
                 global.stats.womling.lord[uni] = 0;
@@ -1079,7 +1083,9 @@ function trackWomling(){
         }
     }
     else if (global.race['womling_god']){
-        global.stats.womling.god.l++;
+        if (uni !== 'm'){
+            global.stats.womling.god.l++;
+        }
         if (uni !== 'l'){
             if (!global.stats.womling.god.hasOwnProperty(uni)){
                 global.stats.womling.god[uni] = 0;
