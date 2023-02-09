@@ -4728,7 +4728,7 @@ export function jumpGateShutdown(){
     if (global.queue.hasOwnProperty('queue')){
         for (let i = global.queue.queue.length-1; i >= 0; i--){
             let item = global.queue.queue[i];
-            if (item.action === 'city' || (item.action === 'space' && actions.space.spc_moon[item.type])){
+            if (item.action === 'city' || item.action === 'space'){
                 global.queue.queue.splice(i,1);
             }
         }
