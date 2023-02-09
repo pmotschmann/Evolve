@@ -1845,7 +1845,7 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(6800000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(6500000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
 
@@ -2940,36 +2940,6 @@ const tauCetiModules = {
             }
         },
     },
-    tau_gas2: {
-        info: {
-            name(n){
-                return tauCetiModules.tau_gas.info.name(n || global.race['gas_name2'] || false, 'gas_name2');
-            },
-            desc(){
-                return loc('tau_gas2_desc',[tauCetiModules.tau_gas.info.name()]);
-            }
-        },
-        gas_contest2: {
-            id: 'tauceti-gas_contest2',
-            title(){ return loc('tau_gas2_contest_title'); },
-            desc(){ return loc('tau_gas2_contest_title'); },
-            reqs: { tau_gas2: 1 },
-            grant: ['tau_gas2',2],
-            path: ['truepath'],
-            queue_complete(){ return global.tech.tau_gas2 >= 1 ? 0 : 1; },
-            cost: {
-                Money(){ return 25000000; }
-            },
-            effect(){ return loc('tau_gas2_contest_effect'); },
-            action(){
-                if (payCosts($(this)[0])){
-                    return true;
-                }
-                return false;
-            },
-            flair(){ return loc('tau_gas2_contest_flair'); }
-        },
-    },
     tau_roid: {
         info: {
             name(){
@@ -3099,6 +3069,131 @@ const tauCetiModules = {
                     global.tauceti.whaling_ship.on++;
                     return true;
                 }
+                return false;
+            }
+        },
+    },
+    tau_gas2: {
+        info: {
+            name(n){
+                return tauCetiModules.tau_gas.info.name(n || global.race['gas_name2'] || false, 'gas_name2');
+            },
+            desc(){
+                return loc('tau_gas2_desc',[tauCetiModules.tau_gas.info.name()]);
+            }
+        },
+        gas_contest2: {
+            id: 'tauceti-gas_contest2',
+            title(){ return loc('tau_gas2_contest_title'); },
+            desc(){ return loc('tau_gas2_contest_title'); },
+            reqs: { tau_gas2: 1 },
+            grant: ['tau_gas2',2],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_gas2 >= 1 ? 0 : 1; },
+            cost: {
+                Money(){ return 25000000; }
+            },
+            effect(){ return loc('tau_gas2_contest_effect'); },
+            action(){
+                if (payCosts($(this)[0])){
+                    return true;
+                }
+                return false;
+            },
+            flair(){ return loc('tau_gas2_contest_flair'); }
+        },
+        alien_station_survey: {
+            id: 'tauceti-alien_station_survey',
+            title: loc('tau_gas2_alien_station'),
+            desc: loc('tau_gas2_alien_station'),
+            reqs: { tau_gas2: 3 },
+            grant: ['tau_gas2',4],
+            path: ['truepath'],
+            queue_complete(){ return global.tech.tau_gas3 >= 4 ? 0 : 1; },
+            cost: {
+                Money(){ return 3000000000; },
+                Helium_3(){ return 5000000; }
+            },
+            effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti['alien_station'] = { count: 99 };
+                    messageQueue(loc('tau_gas2_alien_station_msg',[tauCetiModules.tau_gas2.info.name()]),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        alien_station: {
+            id: 'tauceti-alien_station',
+            title: loc('tau_gas2_alien_station'),
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('alien_station') || global.tauceti.alien_station.count < 100 || wiki){
+                    return `<div>${loc('tau_gas2_alien_station')}</div><div class="has-text-special">${loc('tau_gas2_alien_station_repair')}</div>`;
+                }
+                else {
+                    return `<div>${loc('tau_gas2_alien_station')}</div>`;
+                }
+            },
+            reqs: { tau_gas2: 4 },
+            condition(){ return global.tauceti.alien_station.count < 100 ? true : false; },
+            path: ['truepath'],
+            queue_size: 5,
+            queue_complete(){ return 100 - global.tauceti.alien_station.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 50000000 : 0; },
+                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 2560000 : 0; },
+                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 989000 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
+                Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 2001 : 0; },
+            },
+            effect(wiki){
+                let effectText = '';
+                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0);
+                if (count < 100){
+                    effectText += `<div class="has-text-special">${loc('tau_gas2_alien_station_repaired',[count])}</div>`;
+                }
+                return effectText;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.tauceti.alien_station.count < 100){
+                        global.tauceti.alien_station.count++;
+                        if (global.tauceti.alien_station.count >= 100){
+                            global.tech.tau_gas2 = 5;
+                            global.tauceti['alien_space_station'] = { count: 1, on: 0 };
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            },
+            post(){
+                if (global.resource.Elerium.diff >= 10){
+                    global.tauceti.alien_space_station.on = 1; 
+                }
+                renderTauCeti();
+            }
+        },
+        alien_space_station: {
+            id: 'tauceti-alien_space_station',
+            title: loc('tau_gas2_alien_station'),
+            desc(){
+                return `<div>${loc('tau_gas2_alien_station')}</div><div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>`;
+            },
+            reqs: { tau_gas2: 5 },
+            path: ['truepath'],
+            cost: {},
+            queue_complete(){ return 0; },
+            effect(){
+                let fuel = $(this)[0].p_fuel().a;
+                let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
+                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                return desc;
+            },
+            p_fuel(){ return { r: 'Elerium', a: 10 }; },
+            powered(){ return powerModifier(-75); },
+            action(){
                 return false;
             }
         },

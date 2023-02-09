@@ -1510,7 +1510,7 @@ function fastLoop(){
 
         [
             {r:'city',s:'oil_power'},{r:'city',s:'fission_power'},{r:'spc_hell',s:'geothermal'},{r:'spc_dwarf',s:'e_reactor'},
-            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'}
+            {r:'int_alpha',s:'fusion'},{r:'tau_home',s:'fusion_generator'},{r:'tau_gas2',s:'alien_space_station'}
         ].forEach(function(generator){
             let space = convertSpaceSector(generator.r);
             let region = generator.r === 'city' ? generator.r : space;
@@ -8011,7 +8011,7 @@ function midLoop(){
         if (p_on['alien_outpost']){
             let iso = 0;
             if (global.tech['isolation']){
-                iso = 6800000;
+                iso = 6500000;
                 caps['Knowledge'] += iso;
             }
             let boost = 0.2;
@@ -9594,7 +9594,7 @@ function longLoop(){
             }
         }
 
-        if (!global.race['cataclysm'] && global.stats.matrix > 0 && !global.race['servants'] && Math.rand(0,25) === 0){
+        if (global.stats.matrix > 0 && !global.race['servants'] && Math.rand(0,25) === 0){
             let womlings = global.stats.matrix;
             global.race['servants'] = {
                 max: womlings,
