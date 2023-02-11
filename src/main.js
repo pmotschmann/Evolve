@@ -1519,13 +1519,7 @@ function fastLoop(){
 
             if (global[region][generator.s] && global[region][generator.s]['on']){
                 let watts = c_action[generator.s].powered();
-                let power = global[region][generator.s].on * watts;
-
                 p_on[generator.s] = global[region][generator.s].on;
-                while (power > power_grid && power > 0){
-                    power -= c_action[generator.s].powered();
-                    p_on[generator.s]--;
-                }
                 
                 if (c_action[generator.s].hasOwnProperty('p_fuel')){
                     let s_fuels = c_action[generator.s].p_fuel();
@@ -1551,7 +1545,7 @@ function fastLoop(){
                     }
                 }
 
-                power = p_on[generator.s] * watts;
+                let power = p_on[generator.s] * watts;
                 max_power += power;
                 power_grid -= power;
                 power_generated[title] = -(power);
@@ -1646,53 +1640,167 @@ function fastLoop(){
 
         // Power usage
         let p_structs = global.power;
-        for (var i = 0; i < p_structs.length; i++){
-            let parts = p_structs[i].split(":");
-            let space = convertSpaceSector(parts[0]);
-            let region = parts[0] === 'city' ? parts[0] : space;
-            let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
-            if (global[region][parts[1]] && global[region][parts[1]]['on']){
-                let watts = c_action[parts[1]].powered();
-                let power = global[region][parts[1]].on * watts;
-
-                p_on[parts[1]] = global[region][parts[1]].on;
-                while (power > power_grid && power > 0){
-                    power -= c_action[parts[1]].powered();
-                    p_on[parts[1]]--;
+        if (global.settings.lowPowerBalance){
+            let totalPowerDemand = 0;
+            for (let i=0; i<p_structs.length; i++){
+                let parts = p_structs[i].split(":");
+                let space = convertSpaceSector(parts[0]);
+                let region = parts[0] === 'city' ? parts[0] : space;
+                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+                if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                    let watts = c_action[parts[1]].powered();
+                    totalPowerDemand += global[region][parts[1]].on * watts;
                 }
-                power_grid -= global[region][parts[1]].on * watts;
+            }
+            let totalPowerUsage = totalPowerDemand;
+            let pb_list = [];
+            for (var i = p_structs.length-1; i >= 0; i--){
+                let parts = p_structs[i].split(":");
+                let space = convertSpaceSector(parts[0]);
+                let region = parts[0] === 'city' ? parts[0] : space;
+                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
 
-                if (c_action[parts[1]].hasOwnProperty('p_fuel')){
-                    let s_fuels = c_action[parts[1]].p_fuel();
-                    if (!Array.isArray(s_fuels)){
-                        s_fuels = [s_fuels];
-                    }
-                    for (let j=0; j<s_fuels.length; j++){
-                        let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
-                        let fuel = s_fuels[j];
-                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
-                        let mb_consume = p_on[parts[1]] * fuel_cost;
-                        breakdown.p.consume[fuel.r][title] = -(mb_consume);
-                        for (let k=0; k<p_on[parts[1]]; k++){
-                            if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
-                                mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
-                                p_on[parts[1]] -= k;
-                                break;
+                if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                    p_on[parts[1]] = global[region][parts[1]].on;
+
+                    if (c_action[parts[1]].hasOwnProperty('p_fuel')){
+                        let s_fuels = c_action[parts[1]].p_fuel();
+                        if (!Array.isArray(s_fuels)){
+                            s_fuels = [s_fuels];
+                        }
+                        for (let j=0; j<s_fuels.length; j++){
+                            let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
+                            let fuel = s_fuels[j];
+                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                            let mb_consume = p_on[parts[1]] * fuel_cost;
+                            breakdown.p.consume[fuel.r][title] = -(mb_consume);
+                            for (let k=0; k<p_on[parts[1]]; k++){
+                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                    mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
+                                    p_on[parts[1]] -= k;
+                                    totalPowerUsage -= c_action[parts[1]].powered() * k;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
+                if (c_action[parts[1]].hasOwnProperty('powerBalancer')){
+                    pb_list.push(p_structs[i]);
+                }
+            }
 
-                if (p_on[parts[1]] !== global[region][parts[1]].on){
-                    $(`#${region}-${parts[1]} .on`).addClass('warn');
+            for (let i=0; i<pb_list.length; i++){
+                let parts = pb_list[i].split(":");
+
+                if (totalPowerUsage > power_grid && p_on[parts[1]] > 0){
+                    let space = convertSpaceSector(parts[0]);
+                    let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+
+                    let balValues = c_action[parts[1]].powerBalancer();
+                    let on = p_on[parts[1]];
+                    balValues.forEach(function(v){
+                        let off = 0;
+                        if (v.hasOwnProperty('r') && v.hasOwnProperty('p')){
+                            let val = global_multiplier * v.p;
+                            if (global.resource[v.r]['odif'] && global.resource[v.r]['odif'] < 0) { global.resource[v.r]['odif'] = 0; }
+                            let diff = global.resource[v.r].diff + (global.resource[v.r]['odif'] ? global.resource[v.r]['odif'] : 0);
+                            while (diff - (off * val) > val && on > 0 && totalPowerUsage > power_grid){
+                                on--;
+                                off++;
+                                totalPowerUsage -= c_action[parts[1]].powered();
+                            }
+                            global.resource[v.r]['odif'] = val * off;
+                        }
+                        else if (v.hasOwnProperty('s')){
+                            let sup = c_action[parts[1]].support();
+                            while (v.s - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
+                                on--;
+                                off++;
+                                totalPowerUsage -= c_action[parts[1]].powered();
+                            }
+                        }
+                    });
+                    p_on[parts[1]] = on;
+                }
+            }
+
+            for (var i = p_structs.length-1; i >= 0; i--){
+                let parts = p_structs[i].split(":");
+                let space = convertSpaceSector(parts[0]);
+                let region = parts[0] === 'city' ? parts[0] : space;
+                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+                if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                    let watts = c_action[parts[1]].powered();
+    
+                    while (totalPowerUsage > power_grid && p_on[parts[1]] > 0){
+                        totalPowerUsage -= watts;
+                        p_on[parts[1]]--;
+                    }
+    
+                    if (p_on[parts[1]] !== global[region][parts[1]].on){
+                        $(`#${region}-${parts[1]} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                    }
                 }
                 else {
+                    p_on[parts[1]] = 0;
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
                 }
             }
-            else {
-                p_on[parts[1]] = 0;
-                $(`#${region}-${parts[1]} .on`).removeClass('warn');
+            power_grid -= totalPowerDemand;
+        }
+        else {
+            for (var i=0; i<p_structs.length; i++){
+                let parts = p_structs[i].split(":");
+                let space = convertSpaceSector(parts[0]);
+                let region = parts[0] === 'city' ? parts[0] : space;
+                let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+                if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                    let watts = c_action[parts[1]].powered();
+                    let power = global[region][parts[1]].on * watts;
+    
+                    p_on[parts[1]] = global[region][parts[1]].on;
+                    while (power > power_grid && power > 0){
+                        power -= c_action[parts[1]].powered();
+                        p_on[parts[1]]--;
+                    }
+                    power_grid -= global[region][parts[1]].on * watts;
+    
+                    if (c_action[parts[1]].hasOwnProperty('p_fuel')){
+                        let s_fuels = c_action[parts[1]].p_fuel();
+                        if (!Array.isArray(s_fuels)){
+                            s_fuels = [s_fuels];
+                        }
+                        for (let j=0; j<s_fuels.length; j++){
+                            let title = typeof c_action[parts[1]].title === 'string' ? c_action[parts[1]].title : c_action[parts[1]].title();
+                            let fuel = s_fuels[j];
+                            let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) && region === 'space' ? fuel_adjust(fuel.a,true) : fuel.a;
+                            let mb_consume = p_on[parts[1]] * fuel_cost;
+                            breakdown.p.consume[fuel.r][title] = -(mb_consume);
+                            for (let k=0; k<p_on[parts[1]]; k++){
+                                if (!modRes(fuel.r, -(time_multiplier * fuel_cost))){
+                                    mb_consume -= (p_on[parts[1]] * fuel_cost) - (k * fuel_cost);
+                                    p_on[parts[1]] -= k;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+    
+                    if (p_on[parts[1]] !== global[region][parts[1]].on){
+                        $(`#${region}-${parts[1]} .on`).addClass('warn');
+                    }
+                    else {
+                        $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                    }
+                }
+                else {
+                    p_on[parts[1]] = 0;
+                    $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                }
             }
         }
 
@@ -1807,13 +1915,13 @@ function fastLoop(){
                 switch (sup.g){
                     case 'moon':
                         {
-                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] : 0;
+                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 2 ? p_on['nav_beacon'] * actions.space.spc_home.nav_beacon.support() : 0;
                         }
                         break;
                     case 'red':
                         {
-                            global[sup.a][sup.s].s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? (global.race['cataclysm'] ? p_on['red_tower'] * 2 : p_on['red_tower']) : 0;
-                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] : 0;
+                            global[sup.a][sup.s].s_max += global.tech['mars'] && global.tech['mars'] >= 3 ? p_on['red_tower'] * actions.space.spc_red.red_tower.support() : 0;
+                            global[sup.a][sup.s].s_max += global.tech['luna'] && global.tech['luna'] >= 3 ? p_on['nav_beacon'] * actions.space.spc_home.nav_beacon.support() : 0;
                         }
                         break;
                     case 'tau_home':
@@ -3888,9 +3996,11 @@ function fastLoop(){
             }
 
             let powered_mult = 1;
+            let power_single = 1;
             if (global.city.powered && p_on['cement_plant']){
                 let rate = global.tech['cement'] >= 6 ? 0.08 : 0.05;
                 powered_mult += (p_on['cement_plant'] * rate);
+                power_single += rate;
             }
 
             let ai_core = 1;
@@ -3915,11 +4025,15 @@ function fastLoop(){
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['cement_plant'] > 0){
                 powered_mult = (powered_mult - 1) * 0.5 + 1;
+                power_single = (power_single - 1) * 0.5 + 1;
                 cement_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
-            let delta = factory_output * powered_mult * ai_core * tauBonus * mining_pit;
-            delta *= hunger * cq_multiplier * global_multiplier;
+            let delta = factory_output * ai_core * tauBonus * mining_pit;
+            if (global.city['cement_plant']){
+                global.city.cement_plant['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+            }
+            delta *= powered_mult * hunger * cq_multiplier * global_multiplier;
 
             if (global.tech['ai_core'] && p_on['citadel'] > 0){
                 cement_bd[loc('interstellar_citadel_effect_bd')] = ((ai_core - 1) * 100) + '%';
@@ -4572,8 +4686,10 @@ function fastLoop(){
                     sawmills *= (global.city.sawmill.count * saw) + 1;
                 }
                 let power_mult = 1;
+                let power_single = 1;
                 if (global.city.powered && global.city.sawmill && p_on['sawmill']){
                     power_mult += (p_on['sawmill'] * 0.04);
+                    power_single += 0.04;
                 }
                 let lumber_yard = 1;
                 if (global.city['lumber_yard']){
@@ -4589,11 +4705,15 @@ function fastLoop(){
                 }
                 if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['sawmill'] > 0){
                     power_mult = (power_mult - 1) * 0.5 + 1;
+                    power_single = (power_single - 1) * 0.5 + 1;
                     lumber_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
 
-                let delta = lumber_base * sawmills * power_mult * lumber_yard;
-                delta *= hunger * q_multiplier * global_multiplier;
+                let delta = lumber_base * sawmills * lumber_yard;
+                if (global.city['sawmill']){
+                    global.city.sawmill['psaw'] = +(delta * (power_single - 1)).toFixed(5);
+                }
+                delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
                 if (global.race['forager']){
                     let forage = 1;
@@ -4667,10 +4787,12 @@ function fastLoop(){
             }
 
             let power_mult = 1;
+            let power_single = 1;
             let rock_quarry = 1;
             if (global.city['rock_quarry']){
                 if (global.city.rock_quarry['on']){
                     power_mult += (p_on['rock_quarry'] * 0.04);
+                    power_single += 0.04;
                 }
                 rock_quarry += global.city['rock_quarry'].count * 0.02;
             }
@@ -4692,6 +4814,7 @@ function fastLoop(){
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['rock_quarry'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
+                power_single = (power_single - 1) * 0.5 + 1;
                 stone_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 if (global.race['smoldering'] && global.resource.Chrysotile.display){
                     chrysotile_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
@@ -4716,11 +4839,15 @@ function fastLoop(){
                     stone_base *= zigVal;
                 }
                 power_mult = 1;
+                power_single = 1;
                 rock_quarry = 1;
             }
 
-            let delta = stone_base * power_mult * rock_quarry;
-            delta *= hunger * q_multiplier * global_multiplier;
+            let delta = stone_base * rock_quarry;
+            if (global.city['rock_quarry']){
+                global.city.rock_quarry['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+            }
+            delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
             if (global.race['forager'] && global.resource.Stone.display){
                 let forage = 1;
@@ -4748,15 +4875,19 @@ function fastLoop(){
 
             // Aluminium
             if ((global.city['metal_refinery'] && global.city['metal_refinery'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed']){
-                let base = stone_base * rock_quarry * power_mult * (global.race['cataclysm'] ? 0.16 : 0.08);
+                let base = stone_base * rock_quarry * (global.race['cataclysm'] ? 0.16 : 0.08);
                 if (global.city.geology['Aluminium']){
                     base *= global.city.geology['Aluminium'] + 1;
                 }
 
                 let delta = base * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
+                global.city.metal_refinery['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+                delta *= power_mult;
 
                 if (global.tech['alumina'] >= 2){
                     refinery += p_on['metal_refinery'] * 6 * q_multiplier;
+                    let ref_single = 6 * q_multiplier / 100;
+                    global.city.metal_refinery['pwr'] = +(delta * ref_single).toFixed(5);
                 }
 
                 delta *= 1 + (refinery / 100);
@@ -4935,8 +5066,10 @@ function fastLoop(){
             }
 
             let power_mult = 1;
+            let pow_single = 1;
             if (global.city['mine']['on']){
                 power_mult += (p_on['mine'] * 0.05);
+                pow_single += 1.05;
             }
 
             // Copper
@@ -4959,17 +5092,20 @@ function fastLoop(){
                 }
 
                 let copper_power = power_mult;
+                let cop_single = pow_single;
                 copper_bd[loc('job_miner')] = (copper_base) + 'v';
                 if (copper_base > 0){
                     copper_bd[`ᄂ${loc('power')}`] = ((copper_power - 1) * 100) + '%';
                     copper_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                     if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                         copper_power = (copper_power - 1) * 0.5 + 1;
+                        cop_single = (cop_single - 1) * 0.5 + 1;
                         copper_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                 }
-                let delta = copper_base * shrineMetal.mult * copper_power;
-                delta *= hunger * q_multiplier * global_multiplier;
+                let delta = copper_base * shrineMetal.mult;
+                global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
+                delta *= copper_power * hunger * q_multiplier * global_multiplier;
 
                 modRes('Copper', delta * time_multiplier);
 
@@ -5025,11 +5161,13 @@ function fastLoop(){
                 }
 
                 let iron_power = power_mult;
+                let iron_single = power_mult;
                 iron_bd[loc('job_miner')] = (iron_base) + 'v';
                 if (iron_base > 0){
                     iron_bd[`ᄂ${loc('power')}`] = ((iron_power - 1) * 100) + '%';
                     if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['mine'] > 0){
                         iron_power = (iron_power - 1) * 0.5 + 1;
+                        iron_single = (iron_single - 1) * 0.5 + 1;
                         iron_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                     }
                     iron_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
@@ -5037,6 +5175,7 @@ function fastLoop(){
 
                 let eship_iron = e_ship['iron'] ? e_ship.iron * womling_technician : 0;
                 let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron)) * smelter_mult * shrineMetal.mult;
+                global.city.mine['ipow'] = +(iron_base * q_multiplier * (iron_single - 1)).toFixed(5);
                 delta *= hunger * global_multiplier;
 
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
@@ -5261,8 +5400,10 @@ function fastLoop(){
             }
 
             let power_mult = 1;
+            let coal_single = 1;
             if (global.city['coal_mine']['on']){
                 power_mult += (p_on['coal_mine'] * 0.05);
+                coal_single += 0.05;
             }
 
             coal_bd[loc('job_coal_miner')] = coal_base + 'v';
@@ -5273,6 +5414,7 @@ function fastLoop(){
 
             if (global.race['discharge'] && global.race['discharge'] > 0 && p_on['coal_mine'] > 0){
                 power_mult = (power_mult - 1) * 0.5 + 1;
+                coal_single = (coal_single - 1) * 0.5 + 1;
                 coal_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
             }
 
@@ -5286,8 +5428,9 @@ function fastLoop(){
                 power_mult = 1 * zigVal;
             }
 
-            let delta = coal_base * power_mult;
-            delta *= hunger * q_multiplier * global_multiplier;
+            let delta = coal_base;
+            global.city.coal_mine['cpow'] = +(delta * (coal_single - 1)).toFixed(5);
+            delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
             coal_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
 
@@ -5306,6 +5449,7 @@ function fastLoop(){
             // Uranium
             if (global.resource.Uranium.display){
                 let uranium = delta / (global.race['cataclysm'] ? 48 : 115);
+                global.city.coal_mine['upow'] = +(global.city.coal_mine['cpow'] / (global.race['cataclysm'] ? 48 : 115)).toFixed(5);
                 if (global.city.geology['Uranium']){
                     uranium *= global.city.geology['Uranium'] + 1;
                 }
@@ -5767,8 +5911,7 @@ function fastLoop(){
             }
 
             if (p_on['infernite_mine']){
-                let sup = hellSupression('gate');
-                let rate = 0.5 * sup.supress;
+                let rate = production('infernite_mine');
                 let mine_base = p_on['infernite_mine'] * rate;
 
                 let mine_delta = mine_base * global_multiplier;

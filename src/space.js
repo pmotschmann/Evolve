@@ -165,6 +165,12 @@ const spaceProjects = {
                 Iridium(offset){ return spaceCostMultiplier('nav_beacon', offset, 1200, 1.32); }
             },
             powered(){ return powerCostMod(2); },
+            powerBalancer(){
+                return global.tech['luna'] && global.tech['luna'] >= 3
+                    ? [{ s: global.space.moon_base.s_max - global.space.moon_base.support },{ s: global.space.spaceport.s_max - global.space.spaceport.support }]
+                    : [{ s: global.space.moon_base.s_max - global.space.moon_base.support }];
+            },
+            support(){ return 1; },
             effect(){
                 let orbitEffect = '';
                 if (global.race['orbit_decayed'] && global.tech['broadcast']){
@@ -237,6 +243,9 @@ const spaceProjects = {
             support(){ return 2; },
             support_fuel(){ return { r: 'Oil', a: 2 }; },
             powered(){ return powerCostMod(4); },
+            powerBalancer(){
+                return [{ s: global.space.moon_base.s_max - global.space.moon_base.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -458,6 +467,9 @@ const spaceProjects = {
             },
             support_fuel(){ return { r: 'Helium_3', a: 1.25 }; },
             powered(){ return powerCostMod(5); },
+            powerBalancer(){
+                return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -494,6 +506,10 @@ const spaceProjects = {
                 return `<div>${loc('space_red_spaceport_effect1',[planetName().red, global.race['cataclysm'] ? 2 : 1])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(2); },
+            powerBalancer(){
+                return [{ s: global.space.spaceport.s_max - global.space.spaceport.support }];
+            },
+            support(){ return global.race['cataclysm'] ? 2 : 1; },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('red_tower');
@@ -1727,6 +1743,9 @@ const spaceProjects = {
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('space_gas_moon_outpost_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(3); },
+            powerBalancer(){
+                return [{ r: 'Neutronium', p: production('outpost') }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('outpost');
@@ -1783,6 +1802,9 @@ const spaceProjects = {
                 return `<span>${loc('space_gas_moon_oil_extractor_effect1',[oil])}</span>, <span class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</span>`;
             },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                return [{ r: 'Oil', p: production('oil_extractor') }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('oil_extractor');
@@ -2344,6 +2366,9 @@ const interstellarProjects = {
             },
             support(){ return 5; },
             powered(){ return powerCostMod(10); },
+            powerBalancer(){
+                return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -2384,6 +2409,9 @@ const interstellarProjects = {
             },
             support(){ return 1; },
             powered(){ return powerCostMod(2); },
+            powerBalancer(){
+                return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('habitat','interstellar');
@@ -2869,6 +2897,9 @@ const interstellarProjects = {
             },
             support(){ return 1; },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                return [{ s: global.interstellar.starport.s_max - global.interstellar.starport.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -3133,6 +3164,9 @@ const interstellarProjects = {
             },
             support(){ return 2; },
             powered(){ return powerCostMod(8); },
+            powerBalancer(){
+                return [{ s: global.interstellar.nexus.s_max - global.interstellar.nexus.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -3259,6 +3293,9 @@ const interstellarProjects = {
                 return `<div>${loc('space_gas_moon_outpost_effect1',[neutronium])}</div><div>${loc('plus_max_resource',[max_neutronium,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('interstellar_alpha_starport_effect2',[helium,$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(6); },
+            powerBalancer(){
+                return [{ r: 'Neutronium', p: production('neutron_miner') }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('neutron_miner','interstellar');
@@ -4071,6 +4108,9 @@ const galaxyProjects = {
             },
             support(){ return 2; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 12 : 0); },
+            powerBalancer(){
+                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -4103,6 +4143,9 @@ const galaxyProjects = {
             },
             support(){ return p_on['starbase'] ? 0.25 * p_on['starbase'] : 0; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
+            powerBalancer(){
+                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('ship_dock','galaxy');
@@ -4381,6 +4424,9 @@ const galaxyProjects = {
             },
             support(){ return 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
+            powerBalancer(){
+                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+            },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -4424,6 +4470,9 @@ const galaxyProjects = {
             },
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
+            powerBalancer(){
+                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+            },
             postPower(o){
                 let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
                 if (powered > global.galaxy.telemetry_beacon.count){
@@ -5006,6 +5055,9 @@ const galaxyProjects = {
             },
             support(){ return 4; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 20 : 0); },
+            powerBalancer(){
+                return [{ s: global.galaxy.foothold.s_max - global.galaxy.foothold.support }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('foothold','galaxy');
@@ -5281,6 +5333,9 @@ const galaxyProjects = {
                 return `<div>${loc('gain',[orichalcum,loc('resource_Orichalcum_name')])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(8); },
+            powerBalancer(){
+                return [{ r: 'Orichalcum', p: production('excavator') }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('excavator','galaxy');

@@ -1148,7 +1148,7 @@ if (convertVersion(global['version']) < 103001){
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 17;
+global['beta'] = 18;
 
 
 if (!global.hasOwnProperty('prestige')){
@@ -1227,6 +1227,10 @@ if (!global.settings['space']){
 
 if (!global.settings.hasOwnProperty('touch')){
     global.settings['touch'] = false;
+}
+
+if (!global.settings.hasOwnProperty('lowPowerBalance')){
+    global.settings['lowPowerBalance'] = false;
 }
 
 if (!global['queue']){

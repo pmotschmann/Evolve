@@ -7,6 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
 import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
+import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
@@ -962,15 +963,17 @@ const fortressModules = {
             },
             reqs: { hell_gate: 4 },
             powered(){ return powerCostMod(5); },
+            powerBalancer(){
+                return [{ r: 'Infernite', p: production('infernite_mine') }];
+            },
             cost: {
                 Money(offset){ return spaceCostMultiplier('infernite_mine', offset, 75000000, 1.26, 'portal'); },
                 Alloy(offset){ return spaceCostMultiplier('infernite_mine', offset, 2450000, 1.26, 'portal'); },
                 Orichalcum(offset){ return spaceCostMultiplier('infernite_mine', offset, 1650000, 1.26, 'portal'); },
                 Wrought_Iron(offset){ return spaceCostMultiplier('infernite_mine', offset, 680000, 1.26, 'portal'); },
             },
-            effect(){                
-                let sup = hellSupression('gate');
-                let mining = 0.5 * sup.supress;
+            effect(){
+                let mining = production('infernite_mine');
                 return `<div>${loc('portal_infernite_mine_effect',[+(mining).toFixed(3)])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){

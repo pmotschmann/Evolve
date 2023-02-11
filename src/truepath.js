@@ -3201,8 +3201,8 @@ const tauCetiModules = {
 };
 
 for (let i=1; i<9; i++){
-    tauCetiModules.tau_gas[`gas_contest${i}`] = {
-        id: `tauceti-gas_contest${i}`,
+    tauCetiModules.tau_gas[`gas_contest-a${i}`] = {
+        id: `tauceti-gas_contest-a${i}`,
         title(){ return tauCetiModules.tau_gas.info.name(i); },
         desc(){ return tauCetiModules.tau_gas.info.name(i); },
         reqs: { tau_gas: 1 },
@@ -3220,8 +3220,8 @@ for (let i=1; i<9; i++){
             return false;
         }
     };
-    tauCetiModules.tau_gas2[`gas_contest2${i}`] = {
-        id: `tauceti-gas_contest2${i}`,
+    tauCetiModules.tau_gas2[`gas_contest-b${i}`] = {
+        id: `tauceti-gas_contest-b${i}`,
         title(){ return tauCetiModules.tau_gas2.info.name(i); },
         desc(){ return tauCetiModules.tau_gas2.info.name(i); },
         reqs: { tau_gas2: 2 },
@@ -4728,7 +4728,7 @@ export function jumpGateShutdown(){
     if (global.queue.hasOwnProperty('queue')){
         for (let i = global.queue.queue.length-1; i >= 0; i--){
             let item = global.queue.queue[i];
-            if (item.action === 'city' || item.action === 'space'){
+            if (item.action === 'city' || item.action === 'space' || item.action === 'starDock'){
                 global.queue.queue.splice(i,1);
             }
         }

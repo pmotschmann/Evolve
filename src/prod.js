@@ -2,6 +2,7 @@ import { global, p_on } from './vars.js';
 import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
 import { jobScale } from './jobs.js';
+import { hellSupression } from './portal.js';
 import { flib } from './functions.js';
 
 export function highPopAdjust(v){
@@ -212,6 +213,11 @@ export function production(id,val){
                 vitreloy *= 1.1;
             }
             return vitreloy;
+        }
+        case 'infernite_mine':
+        {
+            let sup = hellSupression('gate');
+            return 0.5 * sup.supress;
         }
         case 'water_freighter':
         {

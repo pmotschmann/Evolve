@@ -1719,6 +1719,9 @@ export const actions = {
                 return `<div>${loc('gain',[signal, global.resource.Food.name])}</div><div>${loc('city_transmitter_effect',[sig_cap])}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             powered(){ return powerCostMod(0.5); },
+            powerBalancer(){
+                return [{ r: 'Food', p: production('transmitter') }];
+            },
             action(){
                 if (payCosts($(this)[0])){
                     global.city.transmitter.count++;
@@ -2442,6 +2445,11 @@ export const actions = {
                 return desc;
             },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                return global.city.sawmill.hasOwnProperty('psaw')
+                    ? [{ r: 'Lumber', p: global.city.sawmill.psaw }]
+                    : false;
+            },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['sawmill'].count++;
@@ -2486,6 +2494,18 @@ export const actions = {
             },
             special(){ return global.race['smoldering'] ? true : false; },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                if (global.city.rock_quarry.hasOwnProperty('cnvay')){
+                    if (global.city.hasOwnProperty('metal_refinery') && global.city.metal_refinery.hasOwnProperty('cnvay')){
+                        return [
+                            { r: 'Stone', p: global.city.rock_quarry.cnvay },
+                            { r: 'Aluminium', p: global.city.metal_refinery.cnvay },
+                        ];
+                    }
+                    return [{ r: 'Stone', p: global.city.rock_quarry.cnvay }];
+                }
+                return false;
+            },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0])){
@@ -2529,6 +2549,11 @@ export const actions = {
                 }
             },
             powered(){ return powerCostMod(2); },
+            powerBalancer(){
+                return global.city.cement_plant.hasOwnProperty('cnvay')
+                    ? [{ r: 'Cement', p: global.city.cement_plant.cnvay }]
+                    : false;
+            },
             power_reqs: { cement: 5 },
             action(){
                 if (payCosts($(this)[0])){
@@ -2701,6 +2726,11 @@ export const actions = {
                 Steel(offset){ return costMultiplier('metal_refinery', offset, 350, 1.35); }
             },
             powered(){ return powerCostMod(2); },
+            powerBalancer(){
+                return global.city.metal_refinery.hasOwnProperty('pwr')
+                    ? [{ r: 'Aluminium', p: global.city.metal_refinery.cnvay }]
+                    : false;
+            },
             power_reqs: { alumina: 2 },
             effect(){
                 let label = global.race['sappy'] ? 'city_metal_refinery_effect_alt' : 'city_metal_refinery_effect';
@@ -2713,13 +2743,13 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    global.city['metal_refinery'].count++;
+                    global.city.metal_refinery.count++;
                     global.resource.Aluminium.display = true;
                     if (global.city['foundry'] && global.city.foundry.count > 0){
                         global.resource.Sheet_Metal.display = true;
                     }
                     if (global.tech['alumina'] >= 2 && global.city.power >= $(this)[0].powered()){
-                        global.city['metal_refinery'].on++;
+                        global.city.metal_refinery.on++;
                     }
                     return true;
                 }
@@ -2746,15 +2776,20 @@ export const actions = {
                 }
             },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                return global.city.mine.hasOwnProperty('cpow') && global.city.mine.hasOwnProperty('ipow')
+                    ? [{ r: 'Copper', p: global.city.mine.cpow },{ r: 'Iron', p: global.city.mine.ipow }]
+                    : false;
+            },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0])){
-                    global.city['mine'].count++;
+                    global.city.mine.count++;
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = jobScale(global.city.mine.count);
                     if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
-                        global.city['mine'].on++;
+                        global.city.mine.on++;
                     }
                     return true;
                 }
@@ -2783,15 +2818,20 @@ export const actions = {
                 }
             },
             powered(){ return powerCostMod(1); },
+            powerBalancer(){
+                return global.city.coal_mine.hasOwnProperty('cpow') && global.city.coal_mine.hasOwnProperty('upow') && global.resource.Uranium.display
+                    ? [{ r: 'Coal', p: global.city.coal_mine.cpow },{ r: 'Uranium', p: global.city.coal_mine.upow }]
+                    : (global.city.coal_mine.hasOwnProperty('cpow') ? [{ r: 'Coal', p: global.city.coal_mine.cpow }] : false);
+            },
             power_reqs: { mine_conveyor: 1 },
             action(){
                 if (payCosts($(this)[0])){
-                    global.city['coal_mine'].count++;
+                    global.city.coal_mine.count++;
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = jobScale(global.city.coal_mine.count);
                     if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
-                        global.city['coal_mine'].on++;
+                        global.city.coal_mine.on++;
                     }
                     return true;
                 }
@@ -2818,7 +2858,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    global.city['oil_well'].count++;
+                    global.city.oil_well.count++;
                     global['resource']['Oil'].max += spatialReasoning(500);
                     if (global.city['oil_well'].count === 1) {
                         global.resource.Oil.display = true;

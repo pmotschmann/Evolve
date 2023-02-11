@@ -1331,7 +1331,11 @@ export function setPowerGrid(){
     clearGrids(grids);
 
     clearElement($('#powerGrid'));
-    $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
+    $('#powerGrid').append(`<div class="powerGridHead"><div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div><div id="powerModeSwitch"><b-switch class="setting" v-model="lowPowerBalance">Distribute Low Power</b-switch></div></div>`);
+    vBind({
+        el: `#powerModeSwitch`,
+        data: global.settings
+    });
 
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
