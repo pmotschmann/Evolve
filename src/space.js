@@ -1744,7 +1744,7 @@ const spaceProjects = {
             },
             powered(){ return powerCostMod(3); },
             powerBalancer(){
-                return [{ r: 'Neutronium', p: production('outpost') }];
+                return [{ r: 'Neutronium', k: 'lpmod' }];
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -1803,7 +1803,7 @@ const spaceProjects = {
             },
             powered(){ return powerCostMod(1); },
             powerBalancer(){
-                return [{ r: 'Oil', p: production('oil_extractor') }];
+                return [{ r: 'Oil', k: 'lpmod' }];
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -3294,7 +3294,7 @@ const interstellarProjects = {
             },
             powered(){ return powerCostMod(6); },
             powerBalancer(){
-                return [{ r: 'Neutronium', p: production('neutron_miner') }];
+                return [{ r: 'Neutronium', k: 'lpmod' }];
             },
             action(){
                 if (payCosts($(this)[0])){

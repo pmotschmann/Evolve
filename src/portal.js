@@ -964,7 +964,7 @@ const fortressModules = {
             reqs: { hell_gate: 4 },
             powered(){ return powerCostMod(5); },
             powerBalancer(){
-                return [{ r: 'Infernite', p: production('infernite_mine') }];
+                return [{ r: 'Infernite', k: 'lpmod' }];
             },
             cost: {
                 Money(offset){ return spaceCostMultiplier('infernite_mine', offset, 75000000, 1.26, 'portal'); },

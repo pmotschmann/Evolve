@@ -1720,7 +1720,7 @@ export const actions = {
             },
             powered(){ return powerCostMod(0.5); },
             powerBalancer(){
-                return [{ r: 'Food', p: production('transmitter') }];
+                return [{ r: 'Food', k: 'lpmod' }];
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2447,7 +2447,7 @@ export const actions = {
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 return global.city.sawmill.hasOwnProperty('psaw')
-                    ? [{ r: 'Lumber', p: global.city.sawmill.psaw }]
+                    ? [{ r: 'Lumber', k: 'psaw' }]
                     : false;
             },
             action(){
@@ -2496,13 +2496,13 @@ export const actions = {
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 if (global.city.rock_quarry.hasOwnProperty('cnvay')){
-                    if (global.city.hasOwnProperty('metal_refinery') && global.city.metal_refinery.hasOwnProperty('cnvay')){
+                    if (global.city.hasOwnProperty('metal_refinery') && global.city.rock_quarry.hasOwnProperty('almcvy')){
                         return [
-                            { r: 'Stone', p: global.city.rock_quarry.cnvay },
-                            { r: 'Aluminium', p: global.city.metal_refinery.cnvay },
+                            { r: 'Stone', k: 'cnvay' },
+                            { r: 'Aluminium', k: 'almcvy' },
                         ];
                     }
-                    return [{ r: 'Stone', p: global.city.rock_quarry.cnvay }];
+                    return [{ r: 'Stone', k: 'cnvay' }];
                 }
                 return false;
             },
@@ -2551,7 +2551,7 @@ export const actions = {
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return global.city.cement_plant.hasOwnProperty('cnvay')
-                    ? [{ r: 'Cement', p: global.city.cement_plant.cnvay }]
+                    ? [{ r: 'Cement', k: 'cnvay' }]
                     : false;
             },
             power_reqs: { cement: 5 },
@@ -2728,7 +2728,7 @@ export const actions = {
             powered(){ return powerCostMod(2); },
             powerBalancer(){
                 return global.city.metal_refinery.hasOwnProperty('pwr')
-                    ? [{ r: 'Aluminium', p: global.city.metal_refinery.cnvay }]
+                    ? [{ r: 'Aluminium', k: 'cnvay' }]
                     : false;
             },
             power_reqs: { alumina: 2 },
@@ -2778,7 +2778,7 @@ export const actions = {
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 return global.city.mine.hasOwnProperty('cpow') && global.city.mine.hasOwnProperty('ipow')
-                    ? [{ r: 'Copper', p: global.city.mine.cpow },{ r: 'Iron', p: global.city.mine.ipow }]
+                    ? [{ r: 'Copper', k: 'cpow' },{ r: 'Iron', k: 'ipow' }]
                     : false;
             },
             power_reqs: { mine_conveyor: 1 },
@@ -2820,8 +2820,8 @@ export const actions = {
             powered(){ return powerCostMod(1); },
             powerBalancer(){
                 return global.city.coal_mine.hasOwnProperty('cpow') && global.city.coal_mine.hasOwnProperty('upow') && global.resource.Uranium.display
-                    ? [{ r: 'Coal', p: global.city.coal_mine.cpow },{ r: 'Uranium', p: global.city.coal_mine.upow }]
-                    : (global.city.coal_mine.hasOwnProperty('cpow') ? [{ r: 'Coal', p: global.city.coal_mine.cpow }] : false);
+                    ? [{ r: 'Coal', k: 'cpow' },{ r: 'Uranium', k: 'upow' }]
+                    : (global.city.coal_mine.hasOwnProperty('cpow') ? [{ r: 'Coal', k: 'cpow' }] : false);
             },
             power_reqs: { mine_conveyor: 1 },
             action(){

@@ -1694,15 +1694,15 @@ function fastLoop(){
                 let parts = pb_list[i].split(":");
 
                 if (totalPowerUsage > power_grid && p_on[parts[1]] > 0){
-                    let space = convertSpaceSector(parts[0]);
-                    let c_action = parts[0] === 'city' ? actions.city : actions[space][parts[0]];
+                    let sector = parts[0] === 'city' ? 'city' : convertSpaceSector(parts[0]);
+                    let c_action = parts[0] === 'city' ? actions.city : actions[sector][parts[0]];
 
                     let balValues = c_action[parts[1]].powerBalancer();
                     let on = p_on[parts[1]];
                     balValues.forEach(function(v){
                         let off = 0;
-                        if (v.hasOwnProperty('r') && v.hasOwnProperty('p')){
-                            let val = global_multiplier * v.p;
+                        if (v.hasOwnProperty('r') && v.hasOwnProperty('k')){
+                            let val = global[sector][parts[1]][v.k] ? global[sector][parts[1]][v.k] : 0;
                             if (global.resource[v.r]['odif'] && global.resource[v.r]['odif'] < 0) { global.resource[v.r]['odif'] = 0; }
                             let diff = global.resource[v.r].diff + (global.resource[v.r]['odif'] ? global.resource[v.r]['odif'] : 0);
                             while (diff - (off * val) > val && on > 0 && totalPowerUsage > power_grid){
@@ -1714,11 +1714,14 @@ function fastLoop(){
                         }
                         else if (v.hasOwnProperty('s')){
                             let sup = c_action[parts[1]].support();
-                            while (v.s - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
+                            if (global[sector][parts[1]]['soff'] && global[sector][parts[1]]['soff'] < 0) { global[sector][parts[1]]['soff'] = 0; }
+                            let support = v.s + (global[sector][parts[1]]['soff'] ? global[sector][parts[1]]['soff'] : 0);
+                            while (support - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
                                 on--;
                                 off++;
                                 totalPowerUsage -= c_action[parts[1]].powered();
                             }
+                            global[sector][parts[1]]['soff'] = sup * off;
                         }
                     });
                     p_on[parts[1]] = on;
@@ -2895,6 +2898,7 @@ function fastLoop(){
                 if (global.city['transmitter']){
                     food_base = p_on['transmitter'] * production('transmitter');
                     food_bd[loc('city_transmitter')] = food_base + 'v';
+                    global.city.transmitter['lpmod'] = production('transmitter') * global_multiplier;
                 }
             }
             else {
@@ -3038,7 +3042,7 @@ function fastLoop(){
                 food_bd[`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
             }
 
-            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd) * zigVal;
+            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal);
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
@@ -4031,7 +4035,7 @@ function fastLoop(){
 
             let delta = factory_output * ai_core * tauBonus * mining_pit;
             if (global.city['cement_plant']){
-                global.city.cement_plant['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+                global.city.cement_plant['cnvay'] = +(delta * hunger * cq_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
             }
             delta *= powered_mult * hunger * cq_multiplier * global_multiplier;
 
@@ -4711,7 +4715,7 @@ function fastLoop(){
 
                 let delta = lumber_base * sawmills * lumber_yard;
                 if (global.city['sawmill']){
-                    global.city.sawmill['psaw'] = +(delta * (power_single - 1)).toFixed(5);
+                    global.city.sawmill['psaw'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
                 }
                 delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
@@ -4845,7 +4849,7 @@ function fastLoop(){
 
             let delta = stone_base * rock_quarry;
             if (global.city['rock_quarry']){
-                global.city.rock_quarry['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+                global.city.rock_quarry['cnvay'] = +(delta * hunger * q_multiplier * global_multiplier * (power_single - 1)).toFixed(5);
             }
             delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
@@ -4882,6 +4886,7 @@ function fastLoop(){
 
                 let delta = base * shrineMetal.mult * hunger * q_multiplier * global_multiplier;
                 global.city.metal_refinery['cnvay'] = +(delta * (power_single - 1)).toFixed(5);
+                global.city.rock_quarry['almcvy'] = global.city.metal_refinery['cnvay'];
                 delta *= power_mult;
 
                 if (global.tech['alumina'] >= 2){
@@ -5104,7 +5109,7 @@ function fastLoop(){
                     }
                 }
                 let delta = copper_base * shrineMetal.mult;
-                global.city.mine['cpow'] = +(delta * (cop_single - 1)).toFixed(5);
+                global.city.mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (cop_single - 1)).toFixed(5);
                 delta *= copper_power * hunger * q_multiplier * global_multiplier;
 
                 modRes('Copper', delta * time_multiplier);
@@ -5175,7 +5180,7 @@ function fastLoop(){
 
                 let eship_iron = e_ship['iron'] ? e_ship.iron * womling_technician : 0;
                 let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron)) * smelter_mult * shrineMetal.mult;
-                global.city.mine['ipow'] = +(iron_base * q_multiplier * (iron_single - 1)).toFixed(5);
+                global.city.mine['ipow'] = +(iron_base * q_multiplier * hunger * global_multiplier * (iron_single - 1)).toFixed(5);
                 delta *= hunger * global_multiplier;
 
                 iron_bd[loc('job_space_miner')] = space_iron + 'v';
@@ -5429,7 +5434,7 @@ function fastLoop(){
             }
 
             let delta = coal_base;
-            global.city.coal_mine['cpow'] = +(delta * (coal_single - 1)).toFixed(5);
+            global.city.coal_mine['cpow'] = +(delta * hunger * q_multiplier * global_multiplier * (coal_single - 1)).toFixed(5);
             delta *= power_mult * hunger * q_multiplier * global_multiplier;
 
             coal_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
@@ -5518,6 +5523,10 @@ function fastLoop(){
 
             let delta = (oil_well * q_multiplier) + (oil_extractor * qs_multiplier * synd * zigVal) + (whale_oil * womling_technician);
             delta *= hunger * global_multiplier;
+
+            if (global.space['oil_extractor']){
+                global.space.oil_extractor['lpmod'] = production('oil_extractor') * qs_multiplier * synd * zigVal;
+            }
             
             oil_bd[loc('city_oil_well')] = oil_well + 'v';
             if (oil_well > 0){
@@ -5704,12 +5713,14 @@ function fastLoop(){
             let synd = syndicate('spc_gas_moon');
 
             let delta = p_on['outpost'] * p_values.n * hunger * global_multiplier * qs_multiplier * synd * zigVal;
+            global.space.outpost['lpmod'] = p_values.n * hunger * global_multiplier * qs_multiplier * synd * zigVal;
             if (p_values.b > 0){
                 neutronium_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - synd) * 100) + '%';
                 neutronium_bd[`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
                 neutronium_bd[`ᄂ${loc('quarantine')}+0`] = ((qs_multiplier - 1) * 100) + '%';
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
+                    global.space.outpost['lpmod'] *= 0.5;
                     neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}+0`] = '-50%';
                 }
             }
@@ -5721,11 +5732,13 @@ function fastLoop(){
             let n_base = p_on['neutron_miner'] * production('neutron_miner');
             let delta = n_base * hunger * global_multiplier * zigVal;
             neutronium_bd[loc('interstellar_neutron_miner_bd')] = n_base + 'v';
+            global.interstellar.neutron_miner['lpmod'] = production('neutron_miner') * hunger * global_multiplier * zigVal;
 
             if (n_base > 0){
                 neutronium_bd[`ᄂ${loc('space_red_ziggurat_title')}+1`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
+                    global.interstellar.neutron_miner['lpmod'] *= 0.5;
                     neutronium_bd[`ᄂ${loc('evo_challenge_discharge')}+1`] = '-50%';
                 }
             }
@@ -5915,6 +5928,7 @@ function fastLoop(){
                 let mine_base = p_on['infernite_mine'] * rate;
 
                 let mine_delta = mine_base * global_multiplier;
+                global.portal.infernite_mine['lpmod'] = rate * global_multiplier;
 
                 infernite_bd[loc('city_mine')] = mine_base + 'v';
                 modRes('Infernite', mine_delta * time_multiplier);
@@ -6089,6 +6103,7 @@ function fastLoop(){
             let base = p_on['excavator'] * production('excavator');
             let pirate = piracy('gxy_chthonian');
             let delta = base * global_multiplier * pirate * zigVal;
+            global.galaxy.excavator['lpmod'] = production('excavator') * global_multiplier * pirate * zigVal
 
             orichalcum_bd[loc('galaxy_excavator')] = base + 'v';
             if (base > 0){
@@ -6096,6 +6111,7 @@ function fastLoop(){
                 orichalcum_bd[`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
+                    global.galaxy.excavator['lpmod'] *= 0.5;
                     orichalcum_bd[`ᄂ${loc('evo_challenge_discharge')}`] = '-50%';
                 }
             }
