@@ -1552,15 +1552,18 @@ function fastLoop(){
 
                 if (p_on[generator.s] !== global[region][generator.s].on){
                     $(`#${region}-${generator.s} .on`).addClass('warn');
+                    $(`#${region}-${generator.s} .on`).prop('title',`ON ${p_on[generator.s]}/${global[region][generator.s].on}`);
                 }
                 else {
                     $(`#${region}-${generator.s} .on`).removeClass('warn');
+                    $(`#${region}-${generator.s} .on`).prop('title',`ON`);
                 }
             }
             else {
                 power_generated[title] = 0;
                 p_on[generator.s] = 0;
                 $(`#${region}-${generator.s} .on`).removeClass('warn');
+                $(`#${region}-${generator.s} .on`).prop('title',`ON`);
             }
         });
 
@@ -1743,14 +1746,17 @@ function fastLoop(){
     
                     if (p_on[parts[1]] !== global[region][parts[1]].on){
                         $(`#${region}-${parts[1]} .on`).addClass('warn');
+                        $(`#${region}-${parts[1]} .on`).prop('title',`ON ${p_on[parts[1]]}/${global[region][parts[1]].on}`);
                     }
                     else {
                         $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                        $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                     }
                 }
                 else {
                     p_on[parts[1]] = 0;
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                    $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                 }
             }
             power_grid -= totalPowerDemand;
@@ -1795,14 +1801,17 @@ function fastLoop(){
     
                     if (p_on[parts[1]] !== global[region][parts[1]].on){
                         $(`#${region}-${parts[1]} .on`).addClass('warn');
+                        $(`#${region}-${parts[1]} .on`).prop('title',`ON ${p_on[parts[1]]}/${global[region][parts[1]].on}`);
                     }
                     else {
                         $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                        $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                     }
                 }
                 else {
                     p_on[parts[1]] = 0;
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                    $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                 }
             }
         }
@@ -1848,14 +1857,17 @@ function fastLoop(){
 
                 if (support_on['lander'] !== global.space.lander.on){
                     $(`#space-lander .on`).addClass('warn');
+                    $(`#space-lander .on`).prop('title',`ON ${support_on['lander']}/${global.space.lander.on}`);
                 }
                 else {
                     $(`#space-lander .on`).removeClass('warn');
+                    $(`#space-lander .on`).prop('title',`ON`);
                 }
             }
             else {
                 global.space.fob.troops = 0;
                 $(`#space-lander .on`).addClass('warn');
+                $(`#space-lander .on`).prop('title',`ON 0/${global.space.lander.on}`);
             }
         }
 
@@ -1907,9 +1919,11 @@ function fastLoop(){
                         }
                         if (p_on[sup.s] < global[sup.a][sup.s].on){
                             $(`#space-${sup.s} .on`).addClass('warn');
+                            $(`#space-${sup.s} .on`).prop('title',`ON ${p_on[sup.s]}/${global[sup.a][sup.s].on}`);
                         }
                         else {
                             $(`#space-${sup.s} .on`).removeClass('warn');
+                            $(`#space-${sup.s} .on`).prop('title',`ON`);
                         }
                     }
                 }
@@ -1951,9 +1965,11 @@ function fastLoop(){
                         if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
                             operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
                             $(`#${id} .on`).addClass('warn');
+                            $(`#${id} .on`).prop('title',`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
                         }
                         else {
                             $(`#${id} .on`).removeClass('warn');
+                            $(`#${id} .on`).prop('title',`ON`);
                         }
 
                         if (actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support_fuel')){
@@ -2066,9 +2082,11 @@ function fastLoop(){
                     if (used_support + operating > global.interstellar.starport.s_max){
                         operating -=  (used_support + operating) - global.interstellar.starport.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.interstellar[structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -2130,9 +2148,11 @@ function fastLoop(){
                     if (used_support + operating > global.galaxy.starbase.s_max){
                         operating -= (used_support + operating) - global.galaxy.starbase.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.galaxy[gateway_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating * -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
                     gal_on[gateway_structs[i]] = operating;
@@ -2157,9 +2177,11 @@ function fastLoop(){
                     if (used_support + operating > global.galaxy.foothold.s_max){
                         operating -= (used_support + operating) - global.galaxy.foothold.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.galaxy[foothold_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating * -(actions.galaxy.gxy_alien2[foothold_structs[i]].support());
                     gal_on[foothold_structs[i]] = operating;
@@ -2204,9 +2226,11 @@ function fastLoop(){
                     if (used_support + operating > global.portal.harbour.s_max){
                         operating -= (used_support + operating) - global.portal.harbour.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[harbour_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating * -(actions.portal.prtl_lake[harbour_structs[i]].support());
                     gal_on[harbour_structs[i]] = operating;
@@ -2231,9 +2255,11 @@ function fastLoop(){
                     if (used_support + operating > global.portal.purifier.s_max){
                         operating -= (used_support + operating) - global.portal.purifier.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.portal[purifier_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating * -(actions.portal.prtl_spire[purifier_structs[i]].support());
                     spire_on[purifier_structs[i]] = operating;
@@ -2270,9 +2296,11 @@ function fastLoop(){
                         let excess = used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
                         operating -= Math.ceil(excess / -(actions.space.spc_belt[belt_structs[i]].support()));
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.space[belt_structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support()));
                     support_on[belt_structs[i]] = operating;
@@ -2308,9 +2336,11 @@ function fastLoop(){
                     if (used_support + operating > global.interstellar.nexus.s_max){
                         operating -=  (used_support + operating) - global.interstellar.nexus.s_max;
                         $(`#${id} .on`).addClass('warn');
+                        $(`#${id} .on`).prop('title',`ON ${operating}/${global.interstellar[structs[i]].on}`);
                     }
                     else {
                         $(`#${id} .on`).removeClass('warn');
+                        $(`#${id} .on`).prop('title',`ON`);
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -2515,9 +2545,11 @@ function fastLoop(){
 
                     if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil() || gal_on[ship] < global[area][ship].on){
                         $(`#galaxy-${ship} .on`).addClass('warn');
+                        $(`#galaxy-${ship} .on`).prop('title',`ON ${gal_on[ship]}/${global[area][ship].on}`);
                     }
                     else {
                         $(`#galaxy-${ship} .on`).removeClass('warn');
+                        $(`#galaxy-${ship} .on`).prop('title',`ON`);
                     }
                 }
             }
