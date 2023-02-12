@@ -278,6 +278,27 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
+    else if (achievement === 'overlord'){
+        let wom_list = `<div class="flexed">`;
+        let womling = {
+            'subjugate': 'lord',
+            'contact': 'friend',
+            'introduced': 'god',
+        };
+
+        let uAffix = universeAffix(universe || 'standard');
+
+        Object.keys(womling).forEach(function (key){
+            if (global.stats.womling[womling[key]] && global.stats.womling[womling[key]][uAffix] > 0){
+                wom_list = wom_list + `<span class="wide iclr5">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+            }
+            else {
+                wom_list = wom_list + `<span class="wide has-text-danger">${loc(`wiki_achieve_overlord_${key}`)}</span>`;
+            }
+        });
+        wom_list = wom_list + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${wom_list}${flair}`));
+    }
     else if (achievement.includes('extinct_') && achievement.substring(8) !== 'custom'){
         let race = achievement.substring(8);
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc('wiki_achieve_extinct_race',[loc(`race_${race}`)])}</div>${flair}`));
