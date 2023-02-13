@@ -2006,6 +2006,9 @@ function fastLoop(){
         let womling_technician = 1;
         if (global.tech['womling_technicians']){
             womling_technician = 1 + (p_on['womling_station'] * (global.tech['isolation'] ? 0.30 : 0.08));
+            if (global.tech['womling_gene']){
+                womling_technician *= 1.25;
+            }
         }
 
         // Space Marines
@@ -3536,7 +3539,7 @@ function fastLoop(){
                 gene_sequence = false;
             }
 
-            let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * 8 : 0;
+            let womling = global.tauceti.hasOwnProperty('womling_lab') ? global.tauceti.womling_lab.scientist * (global.tech['womling_gene'] ? 10 : 8) : 0;
             let lab_mult = global.tech['isolation'] ? 1 + (support_on['infectious_disease_lab'] || 0) * 0.75 : 1;
 
             let delta = professors_base + scientist_base + womling;
@@ -3573,6 +3576,41 @@ function fastLoop(){
             }
 
             modRes('Knowledge', delta * time_multiplier);
+
+            if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station'] && p_on['alien_space_station']) {
+                let focus = (global.tauceti.alien_space_station.focus / 100) * delta
+                breakdown.p.consume.Knowledge[loc('tau_gas2_alien_station')] = -(focus);
+                modRes('Knowledge', -(focus) * time_multiplier);
+                global.tauceti.alien_space_station.decrypted += +(focus).toFixed(3);
+                global.stats.know += +(focus).toFixed(0);
+                if (global.tauceti.alien_space_station.decrypted >= 250000000 && !global.tech['alien_data']){
+                    global.tech['alien_data'] = 1;
+                    messageQueue(loc('tau_gas2_alien_station_data1',[loc('tech_dist_womling')]),'success',false,['progress']);
+                    drawTech();
+                }
+                else if (global.tauceti.alien_space_station.decrypted >= 500000000 && global.tech['alien_data'] && global.tech.alien_data === 1){
+                    global.tech.alien_data = 2;
+                    messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data_r${Math.rand(0,10)}`)]),'success',false,['progress']);
+                    drawTech();
+                }
+                else if (global.tauceti.alien_space_station.decrypted >= 750000000 && global.tech['alien_data'] && global.tech.alien_data === 2){
+                    global.tech.alien_data = 3;
+                    messageQueue(loc('tau_gas2_alien_station_data3'),'success',false,['progress']);
+                    drawTech();
+                }
+                else if (global.tauceti.alien_space_station.decrypted >= 1500000000 && global.tech['alien_data'] && global.tech.alien_data === 3){
+                    global.tech.alien_data = 4;
+                    messageQueue(loc('tau_gas2_alien_station_data4'),'success',false,['progress']);
+                    drawTech();
+                }
+                else if (global.tauceti.alien_space_station.decrypted >= 2500000000 && global.tech['alien_data'] && global.tech.alien_data === 4){
+                    global.tech.alien_data = 5;
+                    global.tech.tau_gas2 = 7;
+                    global.tauceti.alien_space_station.decrypted = 2500000000;
+                    messageQueue(loc('tau_gas2_alien_station_data5'),'success',false,['progress']);
+                    drawTech();
+                }
+            }
         }
 
         // Factory
@@ -8097,6 +8135,7 @@ function midLoop(){
             let farmers = support_on['womling_farm'] * 2;
             if (farmers > pop){ farmers = pop; }
             let crop_per_farmer = global.tech['womling_pop'] ? 8 : 6;
+            if (global.tech['womling_gene']){ crop_per_farmer += 2; }
             if (pop > farmers * crop_per_farmer){
                 pop = farmers * crop_per_farmer;
             }

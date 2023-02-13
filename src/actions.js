@@ -6430,6 +6430,9 @@ function drawModal(c_action,type){
         case 'mining_ship':
             miningShipModal(body);
             break;
+        case 'alien_space_station':
+            alienSpaceStationModal(body);
+            break;
         case 'nanite_factory':
             naniteModal(body);
             break;
@@ -6504,6 +6507,10 @@ function titanModal(modal){
 
 function miningShipModal(modal){
     loadIndustry('mining_ship',modal);
+}
+
+function alienSpaceStationModal(modal){
+    loadIndustry('alien_space_station',modal);
 }
 
 function naniteModal(modal){

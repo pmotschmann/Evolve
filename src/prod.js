@@ -330,6 +330,9 @@ export function production(id,val){
             if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
                 boost *= 1.1;
             }
+            if (global.tech['womling_gene']){
+                boost *= 1.25;
+            }
 
             switch (val){
                 case 'unobtainium':

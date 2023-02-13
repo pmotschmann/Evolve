@@ -2496,6 +2496,7 @@ const tauCetiModules = {
             },
             effect(){
                 let food = global.tech['womling_pop'] ? 16 : 12;
+                if (global.tech['womling_gene']){ food += 4; }
                 let farmers = global.tauceti.hasOwnProperty('womling_farm') ? global.tauceti.womling_farm.farmers : 0;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect',[food])}</div>`;
@@ -2922,6 +2923,9 @@ const tauCetiModules = {
             powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 6); },
             effect(){
                 let prod = global.tech['isolation'] ? 30 : 8;
+                if (global.tech['womling_gene']){
+                    prod *= 1.25;
+                }
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
                 desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
@@ -3185,9 +3189,14 @@ const tauCetiModules = {
             path: ['truepath'],
             cost: {},
             queue_complete(){ return 0; },
+            special(){ return global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 ? true : false; },
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
                 let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
+                if (global.tech['tau_gas2'] && global.tech.tau_gas2 >= 6 && global.tauceti.alien_space_station.hasOwnProperty('decrypted')){
+                    let decrypted = +(global.tauceti.alien_space_station.decrypted / 25000000).toFixed(2);
+                    desc = desc + `<div>${loc('tau_gas2_alien_station_effect',[decrypted])}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
                 return desc;
             },

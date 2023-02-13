@@ -114,6 +114,11 @@ export function defineIndustry(){
         $(`#industry`).append(mining_ship);
         loadIndustry('mining_ship',mining_ship,'#iMiningShip');
     }
+    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station']){
+        var alien_space_station = $(`<div id="iAlienSpaceStation" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas2_alien_station')}</h2></div>`);
+        $(`#industry`).append(alien_space_station);
+        loadIndustry('alien_space_station',alien_space_station,'#iAlienSpaceStation');
+    }
     if (global.race['deconstructor'] && global.city['nanite_factory']){
         var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
         $(`#industry`).append(nanite);

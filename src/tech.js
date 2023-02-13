@@ -12689,6 +12689,49 @@ const techs = {
             return false;
         },
         flair(){ return loc('tech_cultural_center_flair'); }
+    },
+    alien_research: {
+        id: 'tech-alien_research',
+        title: loc('tech_alien_research'),
+        desc: loc('tech_alien_research'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_gas2: 5 },
+        grant: ['tau_gas2',6],
+        cost: {
+            Knowledge(){ return 9350000; }
+        },
+        effect: loc('tech_alien_research_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti.alien_space_station['decrypted'] = 0;
+                global.tauceti.alien_space_station['focus'] = 95;
+                messageQueue(loc('tech_alien_research_msg'),'info',false,['progress']);
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_gene_therapy: {
+        id: 'tech-womling_gene_therapy',
+        title: loc('tech_womling_gene_therapy'),
+        desc: loc('tech_womling_gene_therapy'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 1 },
+        grant: ['womling_gene',1],
+        cost: {
+            Knowledge(){ return 9520000; }
+        },
+        effect: loc('tech_womling_gene_therapy_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     }
 };
 

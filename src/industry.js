@@ -37,6 +37,9 @@ export function loadIndustry(industry,parent,bind){
         case 'mining_ship':
             loadMiningShip(parent,bind);
             break;
+        case 'alien_space_station':
+            loadAlienSpaceStation(parent,bind);
+            break;
     }
 }
 
@@ -1271,6 +1274,37 @@ function loadMiningShip(parent,bind){
                     global.tauceti.mining_ship[r] += keyMult;
                     if (global.tauceti.mining_ship[r] > 100){
                         global.tauceti.mining_ship[r] = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadAlienSpaceStation(parent,bind){
+    parent.append($(`<div>${loc('tau_gas2_alien_station_focus',[global.resource.Knowledge.name])}</div>`));
+    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('focus')" aria-label="Decrease Knowledge Focus">&laquo;</span><b-slider v-model="focus" format="percent"></b-slider><span class="add" role="button" @click="add('focus')" aria-label="Increase Knowledge Focus">&raquo;</span></div>`);
+    parent.append(common);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.tauceti.alien_space_station,
+        methods: {
+            sub(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.alien_space_station[r] > 0){
+                    global.tauceti.alien_space_station[r] -= keyMult;
+                    if (global.tauceti.alien_space_station[r] < 0){
+                        global.tauceti.alien_space_station[r] = 0;
+                    }
+                }
+            },
+            add(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.alien_space_station[r] < 100){
+                    global.tauceti.alien_space_station[r] += keyMult;
+                    if (global.tauceti.alien_space_station[r] > 100){
+                        global.tauceti.alien_space_station[r] = 100;
                     }
                 }
             }
