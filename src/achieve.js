@@ -50,7 +50,7 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','gross','lamentis','overlord'
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord'
     ],
 };
 
@@ -694,7 +694,7 @@ export function checkAchievements(){
         let uAffix = universeAffix();
         ['l',uAffix].forEach(function (affix){
             let rank = 0;
-            ['ashanddust','exodus','obsolete','bluepill'].forEach(function (achieve){
+            ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (achieve){
                 if (global.stats.achieve[achieve] && global.stats.achieve[achieve][affix] && global.stats.achieve[achieve][affix] >= 5){
                     rank++;
                 }
@@ -1614,10 +1614,10 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("unavailable_content");
+                    return loc("achieve_perks_pathfinder5");
                 },
                 active(){
-                    return false;
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? true : false;
                 }
             },
         ],
@@ -1628,6 +1628,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['exodus'] ? 'success' : 'danger'}">${loc(`wiki_resets_bioseed`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['obsolete'] ? 'success' : 'danger'}">${loc(`wiki_resets_ai`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['bluepill'] ? 'success' : 'danger'}">${loc(`wiki_resets_matrix`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['retired'] ? 'success' : 'danger'}">${loc(`wiki_resets_retired`)}</span>`]),
         ]
     },
     overlord: {

@@ -210,7 +210,7 @@ export function resetsPage(content){
     prestigeCalc(section,'cores',false,'ai');
     sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
 
-    section = infoBoxBuilder(mainContent,{ name: 'matrix', template: 'resets', paragraphs: 8, break: [3,5,6], h_level: 2,
+    section = infoBoxBuilder(mainContent,{ name: 'matrix', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
         para_data: {
             2: [loc('evo_challenge_truepath')],
             3: [loc('tau_star_ringworld')],
@@ -230,4 +230,25 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'matrix');
     prestigeCalc(section,'cores',false,'matrix');
     sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'));
+
+    section = infoBoxBuilder(mainContent,{ name: 'retired', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            3: [loc('tech_matrioshka_brain'),loc('tech_ignition_device')],
+            5: [loc('wiki_resets_retired'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_ai_core')],
+            6: [loc('wiki_resets_retired')],
+        },
+        data_color: {
+            5: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#tauceti-structures-matrioshka_brain','wiki.html#tauceti-structures-ignition_device'],
+        }
+    });
+    section = createCalcSection(section,'retired','gain');
+    prestigeCalc(section,'plasmid',false,'retired');
+    prestigeCalc(section,'phage',false,'retired');
+    prestigeCalc(section,'cores',false,'retired');
+    sideMenu('add',`resets-prestige`,'retired',loc('wiki_resets_retired'));
 }
