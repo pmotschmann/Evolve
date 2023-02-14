@@ -379,7 +379,7 @@ export function production(id,val){
                 if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
                     patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
                 }
-                return 10 * patrol;
+                return (global.tech['tau_ore_mining'] && global.tech.tau_ore_mining >= 2 ? 12 : 10) * patrol;
             }
             return 0;
         }

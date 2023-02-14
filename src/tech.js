@@ -12737,7 +12737,7 @@ const techs = {
         id: 'tech-food_culture',
         title(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
         desc(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
-        category: 'womling',
+        category: 'banking',
         era: 'tauceti',
         path: ['truepath'],
         reqs: { alien_data: 2, tau_culture: 1 },
@@ -12792,7 +12792,92 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    useless_junk: {
+        id: 'tech-useless_junk',
+        title: loc('tech_useless_junk'),
+        desc: loc('tech_useless_junk'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 4 },
+        grant: ['tau_junksale',1],
+        cost: {
+            Knowledge(){ return 9550000; }
+        },
+        effect(){ return loc('tech_useless_junk_effect',[loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item || 0}`),loc(`tau_red_womlings`)]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    advanced_asteroid_mining: {
+        id: 'tech-advanced_asteroid_mining',
+        title: loc('tech_advanced_asteroid_mining'),
+        desc: loc('tech_advanced_asteroid_mining'),
+        category: 'space_mining',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 5, tau_ore_mining: 1 },
+        grant: ['tau_ore_mining',2],
+        cost: {
+            Knowledge(){ return 9880000; }
+        },
+        effect(){ return loc('tech_advanced_asteroid_mining_effect',[loc(`tau_roid_mining_ship`)]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    matrioshka_brain: {
+        id: 'tech-matrioshka_brain',
+        title: loc('tech_matrioshka_brain'),
+        desc: loc('tech_matrioshka_brain'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 6, tau_gas2: 6 },
+        grant: ['tau_gas2',7],
+        cost: {
+            Knowledge(){ return 10000000; }
+        },
+        effect(){ return loc('matrioshka_brain_effect',[actions.tauceti.tau_gas2.info.name()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['matrioshka_brain'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    ignition_device: {
+        id: 'tech-ignition_device',
+        title: loc('tech_ignition_device'),
+        desc: loc('tech_ignition_device'),
+        category: 'progress',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 6, tau_gas2: 7 },
+        grant: ['tau_gas2',8],
+        cost: {
+            Knowledge(){ return 10500000; }
+        },
+        effect(){ return loc('tech_ignition_device_effect',[actions.tauceti.tau_gas2.info.name()]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['ignition_device'] = { count: 0 };
+                if (!global.tauceti.hasOwnProperty('matrioshka_brain')){
+                    global.tauceti['matrioshka_brain'] = { count: 0 };
+                }
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

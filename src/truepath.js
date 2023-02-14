@@ -2203,15 +2203,24 @@ const tauCetiModules = {
             },
             effect(){
                 let womling = 8;
-                let cas = (global.civic.govern.type === 'corpocracy' ? 40 : 20);
-                let mon = (global.civic.govern.type === 'corpocracy' ? 10 : 5);
+                let modifier = 1;
+                if (global.civic.govern.type === 'corpocracy'){
+                    modifier = 2;
+                }
+                else if (global.civic.govern.type === 'socialist'){
+                    modifier = 0.8;
+                }
+
+                let cas = 20 * modifier;
+                let mon = 5 * modifier;
+                let bake = 15 * modifier;
 
                 let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[500,global.resource.Food.name,$(this)[0].title])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect3',[cas])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
                 if (global.tech.tau_culture >= 2){
-                    desc += `<div>${loc('tau_home_cultureal_effect3',[15,loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)])}</div>`;
+                    desc += `<div>${loc('tau_home_cultureal_effect3',[bake,loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -2471,6 +2480,9 @@ const tauCetiModules = {
                 let pop = global.tech['womling_pop'] && global.tech.womling_pop >= 2 ? 6 : 5;
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_village_effect',[pop])}</div>`;
+                if (global.tech['tau_junksale']){
+                    desc = desc + `<div>${loc('tau_red_womling_village_effect2',[40,loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item || 0}`)])}</div>`;
+                }
                 return desc;
             },
             support(){ return -1; },
@@ -3198,6 +3210,7 @@ const tauCetiModules = {
                 let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
                 if (global.tech['tau_gas2'] && global.tech.tau_gas2 >= 6 && global.tauceti.alien_space_station.hasOwnProperty('decrypted')){
                     let decrypted = +(global.tauceti.alien_space_station.decrypted / 25000000).toFixed(2);
+                    if (decrypted > 100){ decrypted = 100; }
                     desc = desc + `<div>${loc('tau_gas2_alien_station_effect',[decrypted])}</div>`;
                 }
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
@@ -3206,6 +3219,122 @@ const tauCetiModules = {
             p_fuel(){ return { r: 'Elerium', a: 10 }; },
             powered(){ return powerModifier(-75); },
             action(){
+                return false;
+            }
+        },
+        matrioshka_brain: {
+            id: 'tauceti-matrioshka_brain',
+            title: loc('tech_matrioshka_brain'),
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('matrioshka_brain') || global.tauceti.matrioshka_brain.count < 1000 || wiki){
+                    return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segmemts',[1000])}</div>`;
+                }
+                else {
+                    return `<div>${loc('tech_matrioshka_brain')}</div>`;
+                }
+            },
+            reqs: { tau_gas2: 7 },
+            condition(){ return global.tauceti['matrioshka_brain'] ? true : false; },
+            path: ['truepath'],
+            queue_size: 50,
+            queue_complete(){ return 1000 - global.tauceti.matrioshka_brain.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 35000000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 100000 : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 350000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1000000 : 0; },
+                Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 125000 : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 88000 : 0; },
+                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1800 : 0; },
+                Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? wom_recycle(101000) : 0; },
+            },
+            effect(wiki){
+                let effectText = '';
+                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0);
+                if (count < 1000){
+                    effectText += `<div class="has-text-special">${loc('tau_gas2_matrioshka_brain_seg',[1000 - count])}</div>`;
+                }
+                return effectText;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.tauceti.matrioshka_brain.count < 1000){
+                        global.tauceti.matrioshka_brain.count++;
+                        if (global.tauceti.matrioshka_brain.count >= 1000){
+                            global.tech['m_brain'] = 1;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        ignition_device: {
+            id: 'tauceti-ignition_device',
+            title: loc('tech_ignition_device'),
+            desc(wiki){
+                if (!global.tauceti.hasOwnProperty('ignition_device') || global.tauceti.ignition_device.count < 10 || wiki){
+                    return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                }
+                else {
+                    return `<div>${loc('tech_ignition_device')}</div>`;
+                }
+            },
+            reqs: { tau_gas2: 8 },
+            condition(){ return global.tauceti['ignition_device'] && global.tauceti.ignition_device.count < 10 ? true : false; },
+            path: ['truepath'],
+            queue_size: 1,
+            queue_complete(){ return 10 - global.tauceti.ignition_device.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
+                Uranium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 38000000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000000 : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(10000000) : 0; },
+            },
+            effect(wiki){
+                let effectText = '';
+                let count = (wiki || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0);
+                if (count < 10){
+                    effectText += `<div class="has-text-special">${loc('tau_gas2_ignition_device_seg',[10 - count])}</div>`;
+                }
+                return effectText;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.tauceti.ignition_device.count < 10){
+                        global.tauceti.ignition_device.count++;
+                        if (global.tauceti.ignition_device.count >= 10){
+                            global.tech['m_ignite'] = 1;
+                        }
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        ignite_gas_giant: {
+            id: 'tauceti-ignite_gas_giant',
+            title: loc('tau_gas2_ignite_gas_giant'),
+            desc: loc('tau_gas2_ignite_gas_giant'),
+            reqs: { tau_gas2: 8, m_ignite: 1 },
+            grant: ['m_ignite',2],
+            path: ['truepath'],
+            cost: {
+                Helium_3(){ return 7500000; },
+            },
+            effect(){
+                let desc = `<div>${loc('tau_gas2_ignite_gas_giant_effect',[loc('tech_matrioshka_brain')])}</div>`;
+                if (!global.tech['m_brain']){
+                    desc = desc + `<div>${loc('tau_gas2_ignite_gas_giant_effect2',[loc('tech_matrioshka_brain')])}</div>`;
+                }
+                return desc;
+            },
+            action(){
+                if (global.tech['m_brain'] && true === false && payCosts($(this)[0])){
+                    return true;
+                }
                 return false;
             }
         },

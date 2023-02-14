@@ -5572,7 +5572,7 @@ function fastLoop(){
             // Whaling Ship & Whale Processor
             let whale_oil = 0;
             if (global.tauceti['whaling_station'] && global.tauceti['whaling_ship']){
-                global.tauceti.whaling_station.max = global.tauceti.whaling_station.on * 750;
+                global.tauceti.whaling_station.max = global.tauceti.whaling_station.count * 750;
 
                 // Refine Oil
                 if (global.tauceti.whaling_station.fill > 0){
@@ -6459,12 +6459,21 @@ function fastLoop(){
             if (global.civic.govern.type === 'corpocracy'){
                 revenue *= 2;
             }
-            if (global.civic.govern.type === 'socialist'){
+            else if (global.civic.govern.type === 'socialist'){
                 revenue *= 0.8;
             }
             money_bd[loc('tech_cultural_center')] = Math.round(revenue) + 'v';
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += revenue * global_multiplier * hunger;
+        }
+
+        if (global.tech['tau_junksale']){
+            let revenue = support_on['womling_village'] * 40;
+            let culture = p_on['tau_cultural_center'] ? 1 + (p_on['tau_cultural_center'] * 0.08) : 1;
+            money_bd[loc('tau_red_womling_village')] = Math.round(revenue) + 'v';
+            money_bd[`ᄂ${loc('tech_cultural_center')}+1`] = ((culture - 1) * 100) + '%';
+            modRes('Money', +(revenue * culture * time_multiplier * global_multiplier * hunger).toFixed(2));
+            rawCash += revenue * culture * global_multiplier * hunger;
         }
 
         {
