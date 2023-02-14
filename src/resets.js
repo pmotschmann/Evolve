@@ -1058,6 +1058,98 @@ export function matrix(){
     window.location.reload();
 }
 
+// Retirement
+export function retirement(){
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'retire'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('retire');
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`retired`);
+
+    trackWomling();
+
+    checkAchievements();
+
+    global.stats.retire++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
+
+    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        srace: srace,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+
+    global.city = {
+        calendar: {
+            day: 0,
+            year: 0,
+            weather: 2,
+            temp: 1,
+            moon: 0,
+            wind: 0,
+            orbit: orbit
+        },
+        biome: biome,
+        ptrait: atmo,
+        geology: geo
+    };
+
+    global.tech = { theology: 1 };
+    clearStates();
+    global.new = true;
+    Math.seed = Math.rand(0,10000);
+    global.seed = Math.seed;
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
 function trackWomling(){
     let uni = universeAffix();
     if (global.race['womling_friend']){

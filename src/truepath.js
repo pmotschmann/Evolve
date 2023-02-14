@@ -9,7 +9,7 @@ import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casi
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { nf_resources } from './industry.js';
-import { matrix } from './resets.js';
+import { matrix, retirement } from './resets.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -3240,9 +3240,9 @@ const tauCetiModules = {
             queue_complete(){ return 1000 - global.tauceti.matrioshka_brain.count; },
             cost: {
                 Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 35000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 100000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 90000 : 0; },
                 Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 350000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1000000 : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 999000 : 0; },
                 Stanene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 125000 : 0; },
                 Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 88000 : 0; },
                 Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('matrioshka_brain') ? global.tauceti.matrioshka_brain.count : 0)) < 1000 ? 1800 : 0; },
@@ -3316,10 +3316,12 @@ const tauCetiModules = {
         },
         ignite_gas_giant: {
             id: 'tauceti-ignite_gas_giant',
-            title: loc('tau_gas2_ignite_gas_giant'),
-            desc: loc('tau_gas2_ignite_gas_giant'),
+            title(){return loc('tau_gas2_ignite_gas_giant',[tauCetiModules.tau_gas2.info.name()]); },
+            desc(){return loc('tau_gas2_ignite_gas_giant',[tauCetiModules.tau_gas2.info.name()]); },
             reqs: { tau_gas2: 8, m_ignite: 1 },
             grant: ['m_ignite',2],
+            queue_size: 1,
+            queue_complete(){ return false; },
             path: ['truepath'],
             cost: {
                 Helium_3(){ return 7500000; },
@@ -3327,12 +3329,17 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('tau_gas2_ignite_gas_giant_effect',[loc('tech_matrioshka_brain')])}</div>`;
                 if (!global.tech['m_brain']){
-                    desc = desc + `<div>${loc('tau_gas2_ignite_gas_giant_effect2',[loc('tech_matrioshka_brain')])}</div>`;
+                    desc = desc + `<div class="has-text-warning">${loc('tau_gas2_ignite_gas_giant_effect2',[loc('tech_matrioshka_brain')])}</div>`;
+                }
+                else {
+                    desc = desc + `<div>${loc('tau_gas2_ignite_gas_giant_effect3')}</div>`;
+                    desc += retireProjection();
                 }
                 return desc;
             },
             action(){
-                if (global.tech['m_brain'] && true === false && payCosts($(this)[0])){
+                if (global.tech['m_brain'] && payCosts($(this)[0])){
+                    retirement();
                     return true;
                 }
                 return false;
@@ -3383,6 +3390,12 @@ for (let i=1; i<9; i++){
 
 function matrixProjection(){
     let gains = calcPrestige('matrix');
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.cores,loc('resource_AICore_name')])}</div><div class="has-text-advanced">${loc('tau_star_matrix_servants',[1])}</div>`;
+}
+
+function retireProjection(){
+    let gains = calcPrestige('retire');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.cores,loc('resource_AICore_name')])}</div><div class="has-text-advanced">${loc('tau_star_matrix_servants',[1])}</div>`;
 }

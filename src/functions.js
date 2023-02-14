@@ -1386,6 +1386,13 @@ export function calcPrestige(type,inputs){
             phage_mult = 3.2;
             plasmid_cap = 1800;
             break;
+        case 'retire':
+            pop_divisor = 1.15;
+            k_inc = 32000;
+            k_mult = 1.006;
+            phage_mult = 3.2;
+            plasmid_cap = 1800;
+            break;
     }
 
     if (challenge !== undefined){
@@ -1489,10 +1496,7 @@ export function calcPrestige(type,inputs){
         }
     }
 
-    if (type === 'ai'){
-        gains.cores = universe === 'micro' ? 2 : 5;
-    }
-    else if (type === 'matrix'){
+    if (type === 'ai' || type === 'matrix' || type === 'retire'){
         gains.cores = universe === 'micro' ? 2 : 5;
     }
 

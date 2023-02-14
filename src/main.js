@@ -9842,11 +9842,13 @@ function longLoop(){
             }
         }
 
-        if (global.stats.matrix > 0 && !global.race['servants'] && Math.rand(0,25) === 0){
-            let womlings = global.stats.matrix;
+        if ((global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
+            let womlings = global.stats.matrix + global.stats.retire;
             global.race['servants'] = {
                 max: womlings,
                 used: 0,
+                smax: 0,
+                sused: 0,
                 jobs: {},
             };
             messageQueue(womlings === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings]),'caution',false,['events','major_events']);
