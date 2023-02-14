@@ -2210,6 +2210,9 @@ const tauCetiModules = {
                 desc += `<div>${loc('city_tourist_center_effect3',[cas])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
+                if (global.tech.tau_culture >= 2){
+                    desc += `<div>${loc('tau_home_cultureal_effect3',[15,loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)])}</div>`;
+                }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -3932,7 +3935,7 @@ export function shipCosts(bp){
             creep_factor = 0.5;
             break;
         case 'explorer':
-            costs['Money'] = 900000000;
+            costs['Money'] = 800000000;
             costs['Adamantite'] = 9500000;
             h_inflate = 1.45;
             p_inflate = 1;

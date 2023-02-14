@@ -12732,6 +12732,66 @@ const techs = {
             }
             return false;
         }
+    },
+    food_culture: {
+        id: 'tech-food_culture',
+        title(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
+        desc(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 2, tau_culture: 1 },
+        grant: ['tau_culture',2],
+        cost: {
+            Knowledge(){ return 9410000; }
+        },
+        effect(){ return loc('tech_food_culture_effect',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`),loc('tech_cultural_center')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    advanced_refinery: {
+        id: 'tech-advanced_refinery',
+        title: loc('tech_advanced_refinery'),
+        desc: loc('tech_advanced_refinery'),
+        category: 'space_mining',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 3 },
+        grant: ['tau_ore_mining',1],
+        cost: {
+            Knowledge(){ return 9680000; }
+        },
+        effect(){ return loc('tech_advanced_refinery_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    advanced_pit_mining: {
+        id: 'tech-advanced_pit_mining',
+        title: loc('tech_advanced_pit_mining'),
+        desc: loc('tech_advanced_pit_mining'),
+        category: 'space_mining',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 3 },
+        grant: ['tau_pit_mining',1],
+        cost: {
+            Knowledge(){ return 9720000; }
+        },
+        effect(){ return loc('tech_advanced_pit_mining_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     }
 };
 

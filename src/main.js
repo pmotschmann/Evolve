@@ -3577,7 +3577,7 @@ function fastLoop(){
 
             modRes('Knowledge', delta * time_multiplier);
 
-            if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station'] && p_on['alien_space_station']) {
+            if (global.tech['tau_gas2'] && (!global.tech['alien_data'] || global.tech.alien_data < 6) && global.tauceti['alien_space_station'] && p_on['alien_space_station']) {
                 let focus = (global.tauceti.alien_space_station.focus / 100) * delta
                 breakdown.p.consume.Knowledge[loc('tau_gas2_alien_station')] = -(focus);
                 modRes('Knowledge', -(focus) * time_multiplier);
@@ -3590,7 +3590,8 @@ function fastLoop(){
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= 500000000 && global.tech['alien_data'] && global.tech.alien_data === 1){
                     global.tech.alien_data = 2;
-                    messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data_r${Math.rand(0,10)}`)]),'success',false,['progress']);
+                    global.race.tau_food_item = Math.rand(0,10);
+                    messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item}`)]),'success',false,['progress']);
                     drawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= 750000000 && global.tech['alien_data'] && global.tech.alien_data === 2){
@@ -3598,16 +3599,21 @@ function fastLoop(){
                     messageQueue(loc('tau_gas2_alien_station_data3'),'success',false,['progress']);
                     drawTech();
                 }
-                else if (global.tauceti.alien_space_station.decrypted >= 1500000000 && global.tech['alien_data'] && global.tech.alien_data === 3){
+                else if (global.tauceti.alien_space_station.decrypted >= 1200000000 && global.tech['alien_data'] && global.tech.alien_data === 3){
                     global.tech.alien_data = 4;
-                    messageQueue(loc('tau_gas2_alien_station_data4'),'success',false,['progress']);
+                    global.race.tau_junk_item = Math.rand(0,10);
+                    messageQueue(loc('tau_gas2_alien_station_data4',[loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item }`)]),'success',false,['progress']);
                     drawTech();
                 }
-                else if (global.tauceti.alien_space_station.decrypted >= 2500000000 && global.tech['alien_data'] && global.tech.alien_data === 4){
+                else if (global.tauceti.alien_space_station.decrypted >= 1500000000 && global.tech['alien_data'] && global.tech.alien_data === 4){
                     global.tech.alien_data = 5;
-                    global.tech.tau_gas2 = 7;
-                    global.tauceti.alien_space_station.decrypted = 2500000000;
                     messageQueue(loc('tau_gas2_alien_station_data5'),'success',false,['progress']);
+                    drawTech();
+                }
+                else if (global.tauceti.alien_space_station.decrypted >= 2500000000 && global.tech['alien_data'] && global.tech.alien_data === 5){
+                    global.tech.alien_data = 6;
+                    global.tauceti.alien_space_station.decrypted = 2500000000;
+                    messageQueue(loc('tau_gas2_alien_station_data6'),'success',false,['progress']);
                     drawTech();
                 }
             }
@@ -4641,7 +4647,7 @@ function fastLoop(){
         // Extractor Ship & Ore Refinery
         let e_ship = {};
         if (global.tauceti['ore_refinery'] && global.tauceti['mining_ship'] && global.tech['tau_roid'] && global.tech.tau_roid >= 4){
-            global.tauceti.ore_refinery.max = global.tauceti.ore_refinery.on * 1000;
+            global.tauceti.ore_refinery.max = global.tauceti.ore_refinery.count * 1000;
             
             // Refine Ore
             if (global.tauceti.ore_refinery.fill > 0){
@@ -6446,6 +6452,9 @@ function fastLoop(){
             }
             if (global.tech['monuments']){
                 revenue += p_on['tau_cultural_center'] * global.tech['monuments'] * 5;
+            }
+            if (global.tech['tau_culture'] && global.tech.tau_culture >= 2){
+                revenue += p_on['tau_cultural_center'] * support_on['colony'] * 15;
             }
             if (global.civic.govern.type === 'corpocracy'){
                 revenue *= 2;

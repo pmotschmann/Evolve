@@ -277,32 +277,43 @@ export function production(id,val){
         }
         case 'mining_pit':
         {
+            let mats = 0;
             switch (val){
                 case 'materials':
                 {
-                    return highPopAdjust(global.tech['isolation'] ? 0.12 : 0.09);
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.12 : 0.09);
+                    break;
                 }
                 case 'bolognium':
                 {
-                    return highPopAdjust(global.tech['isolation'] ? 0.0288 : 0.0216);
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.0288 : 0.0216);
+                    break;
                 }
                 case 'stone':
                 {
-                    return highPopAdjust(global.tech['isolation'] ? 0.8 : 0.6);
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.8 : 0.6);
+                    break;
                 }
                 case 'adamantite':
                 {
-                    return highPopAdjust(global.tech['isolation'] ? 0.448 : 0.336);
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.448 : 0.336);
+                    break;
                 }
                 case 'copper':
                 {
-                    return highPopAdjust(0.58);
+                    mats = highPopAdjust(0.58);
+                    break;
                 }
                 case 'coal':
                 {
-                    return highPopAdjust(0.13);
+                    mats = highPopAdjust(0.13);
+                    break;
                 }
             }
+            if (global.tech['tau_pit_mining']){
+                mats *= 1.18;
+            }
+            return mats;
         }
         case 'tau_farm':
         {
@@ -355,7 +366,7 @@ export function production(id,val){
         }
         case 'ore_refinery':
         {
-            return 25;
+            return global.tech['tau_ore_mining'] ? 40 : 25;
         }
         case 'whaling_station':
         {
