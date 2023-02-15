@@ -1548,7 +1548,9 @@ const tauCetiModules = {
                         global.civic.pit_miner.workers += jRequest;
                         global.civic[global.civic.d_job].workers -= jRequest;
                     }
-                    drawShips();
+                    if (global.settings.tabLoad){
+                        drawShips();
+                    }
                     return true;
                 }
                 return false;
