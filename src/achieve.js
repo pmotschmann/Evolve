@@ -1637,6 +1637,7 @@ export const perkList = {
             let desc = `<div>${loc("achieve_perks_overlord1",[10])}</div>`;
             desc += `<div>${loc("achieve_perks_overlord2")}</div>`;
             desc += `<div>${loc("achieve_perks_overlord3")}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord4")}</div>`;
             return desc;
         },
         active(){

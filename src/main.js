@@ -6509,6 +6509,9 @@ function fastLoop(){
                 }
                 breakdown.p[craft] = {};
                 let num = global.city.foundry[craft];
+                if (global.race['servants'] && global.race.servants.hasOwnProperty('sjobs') && global.race.servants.sjobs.hasOwnProperty(craft)){
+                    num += global.race.servants.sjobs[craft];
+                }
                 let craft_ratio = craftingRatio(craft,'auto').multiplier;
 
                 let speed = global.genes['crafty'] ? 2 : 1;
@@ -8371,6 +8374,20 @@ function midLoop(){
             global.race.servants.used = total_servants;
         }
 
+        if (global.race['servants'] && global.race.servants.hasOwnProperty('smax') && global.race.servants.smax > 0){
+            let used = 0;
+            Object.keys(global.race.servants.sjobs).forEach(function(res){
+                used += global.race.servants.sjobs[res];
+                if (used > global.race.servants.smax){
+                    global.race.servants.sjobs[res] -= used - global.race.servants.smax;
+                }
+                if (global.race.servants.sjobs[res] < 0){
+                    global.race.servants.sjobs[res] = 0;
+                }
+            });
+            global.race.servants.sused = used;
+        }
+
         if (global.civic.space_miner.display && global.space['space_station']){
             global.space.space_station.s_max = global.civic.space_miner.workers;
         }
@@ -9844,14 +9861,24 @@ function longLoop(){
 
         if ((global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
             let womlings = jobScale(global.stats.matrix + global.stats.retire);
+            let skilled = global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
+            if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
+                universe_affixes.forEach(function(uni){
+                    if (global.stats.achieve.overlord[uni] >= 5){
+                        skilled++;
+                        womlings += 2;
+                    }
+                });
+            }
             global.race['servants'] = {
                 max: womlings,
                 used: 0,
-                smax: 0,
+                smax: skilled,
                 sused: 0,
                 jobs: {},
+                sjobs: {},
             };
-            messageQueue(womlings === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings]),'caution',false,['events','major_events']);
+            messageQueue((womlings + skilled) === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings + skilled]),'caution',false,['events','major_events']);
         }
 
         if (global.race['truepath'] && global.tech['focus_cure'] && global.tech.focus_cure >= 2 && global.tauceti['infectious_disease_lab']){
