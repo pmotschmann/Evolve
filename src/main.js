@@ -767,7 +767,7 @@ function fastLoop(){
         let scavenger = global.civic.scavenger.workers;
         if (global.race['servants']){ scavenger += global.race.servants.jobs.scavenger; }
         if (scavenger > 0){
-            let bonus = (global.civic.scavenger.workers * traits.scavenger.vars()[0]);
+            let bonus = (scavenger * traits.scavenger.vars()[0]);
             if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
                 bonus *= 1 + (traits.scavenger.vars()[1] / 100);
             }
@@ -9843,7 +9843,7 @@ function longLoop(){
         }
 
         if ((global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
-            let womlings = global.stats.matrix + global.stats.retire;
+            let womlings = jobScale(global.stats.matrix + global.stats.retire);
             global.race['servants'] = {
                 max: womlings,
                 used: 0,
