@@ -7,14 +7,14 @@ import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 
 export const job_desc = {
-    unemployed: function(){
+    unemployed: function(servant){
         let desc = loc('job_unemployed_desc');
-        if (global.civic.d_job === 'unemployed'){
+        if (global.civic.d_job === 'unemployed' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_unemployed')]);
         }
         return desc;
     },
-    hunter: function(){
+    hunter: function(servant){
         let desc = loc('job_hunter_desc',[global.resource.Food.name]);
         if (global.race['artifical']){
             desc = global.race['soul_eater'] ? loc('job_art_demon_hunter_desc',[global.resource.Furs.name, global.resource.Lumber.name]) : loc('job_art_hunter_desc',[global.resource.Furs.name]);
@@ -22,46 +22,59 @@ export const job_desc = {
         else if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
             desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
         }
-        if (global.civic.d_job === 'hunter'){
+        if (global.civic.d_job === 'hunter' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_hunter')]);
         }
         return desc;
     },
-    forager: function(){
+    forager: function(servant){
         let desc = loc(`job_forager_desc`);
-        if (global.civic.d_job === 'forager'){
+        if (global.civic.d_job === 'forager' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_forager')]);
         }
         return desc;
     },
-    farmer: function(){
+    farmer: function(servant){
         let farmer = +farmerValue(true).toFixed(2);
         let farmhand = +farmerValue(false).toFixed(2);
-        let desc = global.race['high_pop'] 
+        if (servant){
+            farmer *= jobScale(1);
+            farmhand *= jobScale(1);
+        }
+        let impact = global.civic.lumberjack.impact;
+        if (servant){ impact *= jobScale(1); }
+        let desc = global.race['high_pop'] && !servant
             ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
             : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
-        if (global.civic.d_job === 'farmer'){
+        if (global.civic.d_job === 'farmer' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_farmer')]);
         }
         return desc;
     },
-    lumberjack: function(){
+    lumberjack: function(servant){
+        let workers = global.civic.lumberjack.workers;
+        if (global.race['servants'] && global.race.servants.jobs.lumberjack > 0){
+            workers += jobScale(global.race.servants.jobs.lumberjack);
+        }
+        let impact = global.civic.lumberjack.impact;
+        if (servant){ impact *= jobScale(1); }
         if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
             let multiplier = 1;
-            multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-            let impact = global.civic.lumberjack.impact;
+            multiplier *= racialTrait(workers,'lumberjack');
             let bone = +(impact * multiplier).toFixed(2);
             let flesh = +(impact / 4 * multiplier).toFixed(2);
             let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
-            if (global.civic.d_job === 'lumberjack'){
+            if (global.civic.d_job === 'lumberjack' && !servant){
                 desc = desc + ' ' + loc('job_default',[loc('job_reclaimer')]);
             }
             return desc;
         }
         else {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
-            multiplier *= racialTrait(global.civic.lumberjack.workers,'lumberjack');
-            let impact = global.city.biome === 'forest' ? (global.civic.lumberjack.impact * biomes.forest.vars()[0]) : global.civic.lumberjack.impact;
+            multiplier *= racialTrait(workers,'lumberjack');
+            if (global.city.biome === 'forest'){
+                impact *= biomes.forest.vars()[0];
+            }
             if (global.city.biome === 'savanna'){
                 impact *= biomes.savanna.vars()[2];
             }
@@ -76,15 +89,19 @@ export const job_desc = {
             }
             let gain = +(impact * multiplier).toFixed(1);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
-            if (global.civic.d_job === 'lumberjack'){
+            if (global.civic.d_job === 'lumberjack' && !servant){
                 desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
             }
             return desc;
         }
     },
-    quarry_worker: function(){
+    quarry_worker: function(servant){
+        let workers = global.civic.quarry_worker.workers;
+        if (global.race['servants'] && global.race.servants.jobs.quarry_worker > 0){
+            workers += jobScale(global.race.servants.jobs.quarry_worker);
+        }
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
-        multiplier *= racialTrait(global.civic.quarry_worker.workers,'miner');
+        multiplier *= racialTrait(workers,'miner');
         if (global.city.biome === 'desert'){
             multiplier *= biomes.desert.vars()[0];
         }
@@ -94,36 +111,44 @@ export const job_desc = {
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
-        let gain = +(global.civic.quarry_worker.impact * multiplier).toFixed(1);
+        let impact = global.civic.quarry_worker.impact;
+        if (servant){ impact *= jobScale(1); }
+        let gain = +(impact * multiplier).toFixed(1);
         let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
         if (global.race['smoldering']){
             desc = desc + ' ' + loc('job_quarry_worker_smoldering',[global.resource.Chrysotile.name]);
         }
-        if (global.civic.d_job === 'quarry_worker'){
+        if (global.civic.d_job === 'quarry_worker' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_quarry_worker')]);
         }
         return desc;
     },
-    crystal_miner: function(){
+    crystal_miner: function(servant){
+        let workers = global.civic.crystal_miner.workers;
+        if (global.race['servants'] && global.race.servants.jobs.crystal_miner > 0){
+            workers += jobScale(global.race.servants.jobs.crystal_miner);
+        }
         let multiplier = 1;
-        multiplier *= racialTrait(global.civic.crystal_miner.workers,'miner');
-        let gain = +(global.civic.crystal_miner.impact * multiplier).toFixed(2);
+        multiplier *= racialTrait(workers,'miner');
+        let impact = global.civic.crystal_miner.impact;
+        if (servant){ impact *= jobScale(1); }
+        let gain = +(impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
-        if (global.civic.d_job === 'crystal_miner'){
+        if (global.civic.d_job === 'crystal_miner' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_crystal_miner')]);
         }
         return desc;
     },
-    scavenger: function(){
+    scavenger: function(servant){
         let scavenger = traits.scavenger.vars()[0];
         if (global.city.ptrait.includes('trashed') && global.race['scavenger']){
             scavenger *= 1 + (traits.scavenger.vars()[1] / 100);
         }
-        if (global.race['high_pop']){
+        if (global.race['high_pop'] && !servant){
             scavenger *= traits.high_pop.vars()[1] / 100;
         }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
-        if (global.civic.d_job === 'scavenger'){
+        if (global.civic.d_job === 'scavenger' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
         }
         return desc;
@@ -503,7 +528,7 @@ function loadJob(job, define, impact, stress, color){
     }
 
     popover(id, function(){
-            return job_desc[job]();
+            return job_desc[job](servant);
         },
         {
             elm: `#${id} .job_label`,
