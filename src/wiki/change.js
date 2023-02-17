@@ -9,6 +9,7 @@ const changeList = [
             `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
             `Added Perks: Evolve Master and Evolve Grandmaster.`,
             `Added Distribuited Low Power mode setting.`,
+            `Strong trait now buffs basic jobs but has a weaker effect on manual resource collection.`,
             `Ships in Truepath can now only be scrapped at the Shipyard.`,
             `Truepath Sensor Range and Costs adjusted. Range now depends partly on base ship class.`,
             `Queue stacks now indicate first block vs last blocking resource with a gradient indicator.`,

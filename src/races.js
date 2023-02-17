@@ -362,19 +362,19 @@ export const traits = {
         name: loc('trait_strong_name'),
         desc: loc('trait_strong'),
         type: 'genus',
-        val: 1,
+        val: 5,
         vars(r){
             switch (r || global.race.strong || 1){
                 case 0.25:
-                    return [2];
+                    return [2,1.25];
                 case 0.5:
-                    return [3];
+                    return [3,1.5];
                 case 1:
-                    return [5];
+                    return [4,2];
                 case 2:
-                    return [8];
+                    return [5,2.25];
                 case 3:
-                    return [10];
+                    return [6,2.5];
             }
         },
     },

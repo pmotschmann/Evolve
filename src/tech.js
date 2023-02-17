@@ -229,7 +229,7 @@ const techs = {
         category: 'housing',
         era: 'discovery',
         reqs: { housing: 2, smelting: 2 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['housing_reduction',1],
         cost: {
             Knowledge(){ return 11250; },
@@ -472,7 +472,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
         trait: ['carnivore'],
-        not_trait: ['cataclysm','artifical','soul_eater','herbivore'],
+        not_trait: ['cataclysm','artifical','soul_eater','herbivore','lone_survivor'],
         grant: ['hunting',1],
         cost: {
             Knowledge(){ return 80; }
@@ -540,7 +540,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['soul_eater'],
-        not_trait: ['cataclysm','artifical'],
+        not_trait: ['cataclysm','artifical','lone_survivor'],
         grant: ['soul_eater',1],
         cost: {
             Knowledge(){ return 10; }
@@ -562,7 +562,7 @@ const techs = {
         era: 'civilized',
         reqs: { primitive: 3 },
         trait: ['detritivore'],
-        not_trait: ['cataclysm','artifical'],
+        not_trait: ['cataclysm','artifical','lone_survivor'],
         grant: ['compost',1],
         cost: {
             Knowledge(){ return 10; }
@@ -646,7 +646,7 @@ const techs = {
         condition(){
             return (global.race['herbivore'] || (!global.race['carnivore'] && !global.race['detritivore'] && !global.race['soul_eater'])) ? true : false;
         },
-        not_trait: ['cataclysm','artifical'],
+        not_trait: ['cataclysm','artifical','lone_survivor'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }
@@ -1490,7 +1490,7 @@ const techs = {
         era: 'interstellar',
         reqs: { alumina: 1, stanene: 1, graphene: 1 },
         path: ['standard','truepath'],
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['alumina',2],
         cost: {
             Knowledge(){ return 675000; },
@@ -3421,7 +3421,7 @@ const techs = {
         category: 'banking',
         era: 'early_space',
         reqs: { monuments: 2, monument: 1 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['monument',2],
         cost: {
             Knowledge(){ return 150000; }
@@ -5767,6 +5767,7 @@ const techs = {
         era: 'civilized',
         reqs: { axe: 1, mining: 3 },
         grant: ['saw',1],
+        not_trait: ['lone_survivor'],
         cost: {
             Knowledge(){ return 3375; },
             Iron(){ return 400; }
@@ -6219,7 +6220,7 @@ const techs = {
         category: 'slaves',
         era: 'civilized',
         reqs: { military: 1, mining: 1 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['slaves',1],
         trait: ['slaver'],
         cost: {
@@ -6263,7 +6264,7 @@ const techs = {
         reqs: { mining: 1 },
         grant: ['sacrifice',1],
         trait: ['cannibalize'],
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         cost: {
             Knowledge(){ return 60; }
         },
@@ -6343,6 +6344,7 @@ const techs = {
         era: 'civilized',
         reqs: { military: 1 },
         grant: ['mercs',1],
+        not_trait: ['lone_survivor'],
         cost: {
             Money(){ return 10000 },
             Knowledge(){ return 4500; }
@@ -6445,7 +6447,7 @@ const techs = {
         era: 'interstellar',
         path: ['standard','truepath'],
         reqs: { boot_camp: 1, high_tech: 12 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['boot_camp',2],
         cost: {
             Knowledge(){ return 625000; }
@@ -6965,7 +6967,7 @@ const techs = {
         category: 'special',
         era: 'globalized',
         reqs: { uranium: 1, explosives: 3, high_tech: 7 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','lone_survivor'],
         grant: ['mad',1],
         condition(){
             if (global.race['sludge']){ return false; }
@@ -8492,6 +8494,7 @@ const techs = {
         era: 'deep_space',
         reqs: { genesis: 2, space: 5, high_tech: 10 },
         grant: ['genesis',3],
+        not_trait: ['lone_survivor'],
         cost: {
             Knowledge(){ return 380000; },
         },

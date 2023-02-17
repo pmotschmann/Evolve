@@ -4,12 +4,12 @@ import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, cle
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
-import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
+import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
-import { tauCetiTech, renderTauCeti } from './truepath.js';
+import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -3365,7 +3365,7 @@ export const actions = {
                     gain *= 1 + (global.city.temple.count * 0.05);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 5){
-                    let sci_val = global.civic.scientist.workers;
+                    let sci_val = workerScale(global.civic.scientist.workers,'scientist');
                     if (global.race['high_pop']){
                         sci_val = highPopAdjust(sci_val);
                     }
@@ -3407,7 +3407,7 @@ export const actions = {
                         gain *= 1 + (global.city.temple.count * 0.05);
                     }
                     if (global.tech['science'] && global.tech['science'] >= 5){
-                        gain *= 1 + (global.civic.scientist.workers * 0.12);
+                        gain *= 1 + (workerScale(global.civic.scientist.workers,'scientist') * 0.12);
                     }
                     gain = +(gain).toFixed(1);
                     global['resource']['Knowledge'].max += gain;
@@ -3882,7 +3882,7 @@ export function setChallengeScreen(){
     global.evolution['bunker'] = { count: 1 };
     removeAction(actions.evolution.bunker.id);
     evoProgress();
-    if (global.race['truepath']){
+    if (global.race['truepath'] || global.race['lone_survivor']){
         global.evolution['nerfed'] = { count: 0 };
         global.evolution['badgenes'] = { count: 0 };
     }
@@ -3922,8 +3922,11 @@ export function setChallengeScreen(){
     if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker']){
         global.evolution['sludge'] = { count: 0 };
     }
+    if (global.stats.achieve['retired'] || global.stats.achieve['bluepill']){
+        global.evolution['lone_survivor'] = { count: 0 };
+    }
     challengeGeneHeader();
-    if (global.race['truepath']){
+    if (global.race['truepath'] || global.race['lone_survivor']){
         addAction('evolution','nerfed');
     }
     else {
@@ -3936,7 +3939,7 @@ export function setChallengeScreen(){
     }
     addAction('evolution','trade');
     addAction('evolution','craft');
-    if (global.race['truepath']){
+    if (global.race['truepath'] || global.race['lone_survivor']){
         addAction('evolution','badgenes');
     }
     else {
@@ -3970,6 +3973,9 @@ export function setChallengeScreen(){
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
         addAction('evolution','truepath');
+    }
+    if (global.stats.achieve['retired'] || global.stats.achieve['bluepill']){
+        addAction('evolution','lone_survivor');
     }
 }
 
@@ -4258,11 +4264,11 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
             if (global.race[challengeList[challenge]]){
                 delete global.race[challengeList[challenge]];
                 $(`#${$(this)[0].id}`).removeClass('hl');
-                if (global.race['truepath']){
+                if (global.race['truepath'] || global.race['lone_survivor']){
                     delete global.race['nerfed'];
                     delete global.race['badgenes'];
                 }
-                ['junker','cataclysm','banana','truepath'].forEach(function(s){
+                ['junker','cataclysm','banana','truepath','lone_survivor'].forEach(function(s){
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });
@@ -4292,6 +4298,7 @@ const advancedChallengeList = {
     'cataclysm': {t: 's', e: 'iron_will' },
     'banana': {t: 's', e: 'banana' },
     'truepath': {t: 's', e: 'pathfinder' },
+    'lone_survivor': {t: 's', e: 'notdecided' },
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,
@@ -4431,7 +4438,7 @@ export function templeEffect(){
     if (global.race.universe === 'antimatter' || global.race['no_plasmid']){
         let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            let indoc = global.civic.professor.workers * (global.race.universe === 'antimatter' ? 0.02 : 0.04);
+            let indoc = workerScale(global.civic.professor.workers,'professor') * (global.race.universe === 'antimatter' ? 0.02 : 0.04);
             if (global.race['high_pop']){
                 indoc = highPopAdjust(indoc);
             }
@@ -4442,7 +4449,7 @@ export function templeEffect(){
             if (global.race['high_pop']){
                 priest_bonus = highPopAdjust(priest_bonus);
             }
-            faith += priest_bonus * global.civic.priest.workers;
+            faith += priest_bonus * workerScale(global.civic.priest.workers,'priest');
         }
         if (global.race.universe === 'antimatter'){
             faith /= 2;
@@ -4465,7 +4472,7 @@ export function templeEffect(){
                 if (global.race['high_pop']){
                     priest = highPopAdjust(priest);
                 }
-                temple += priest * global.civic.priest.workers;
+                temple += priest * workerScale(global.civic.priest.workers,'priest');
             }
             desc += `<div>${loc('city_temple_effect5',[temple.toFixed(2)])}</div>`;
         }
@@ -4473,7 +4480,7 @@ export function templeEffect(){
     else {
         let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
         if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            let indoc = global.civic.professor.workers * 0.2;
+            let indoc = workerScale(global.civic.professor.workers,'professor') * 0.2;
             if (global.race['high_pop']){
                 indoc = highPopAdjust(indoc);
             }
@@ -4484,7 +4491,7 @@ export function templeEffect(){
             if (global.race['high_pop']){
                 priest_bonus = highPopAdjust(priest_bonus);
             }
-            plasmid += priest_bonus * global.civic.priest.workers;
+            plasmid += priest_bonus * workerScale(global.civic.priest.workers,'priest');
         }
         if (global.race['spiritual']){
             plasmid *= 1 + (traits.spiritual.vars()[0] / 100);
@@ -4557,7 +4564,7 @@ export function casinoEffect(){
     if (global.tech['isolation']){
         cash *= 1.25;
         if (global.tech['iso_gambling']){
-            cash *= 1 + (global.civic.banker.workers * 0.05)
+            cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
         }
     }
     cash = +(cash).toFixed(2);
@@ -4619,7 +4626,7 @@ function setScenario(scenario){
         });
     }
     else {
-        ['junker','cataclysm','banana','truepath'].forEach(function(s){
+        ['junker','cataclysm','banana','truepath','lone_survivor'].forEach(function(s){
             delete global.race[s];
             $(`#evolution-${s}`).removeClass('hl');
         });
@@ -4641,7 +4648,7 @@ function setScenario(scenario){
             delete global.race['orbit_decay'];
         }
 
-        if (scenario === 'truepath'){
+        if (scenario === 'truepath' || scenario === 'lone_survivor'){
             global.race['nerfed'] = 1;
             ['crispr','plasmid','mastery'].forEach(function(gene){
                 delete global.race[challengeList[gene]];
@@ -4666,7 +4673,7 @@ function setScenario(scenario){
             }
         }
 
-        let genes = scenario === 'truepath' ? ['badgenes','trade','craft'] : ['crispr','trade','craft'];
+        let genes = scenario === 'truepath' || scenario === 'lone_survivor' ? ['badgenes','trade','craft'] : ['crispr','trade','craft'];
         for (let i=0; i<genes.length; i++){
             global.race[challengeList[genes[i]]] = 1;
             if (!$(`#evolution-${genes[i]}`).hasClass('hl')){
@@ -7038,7 +7045,7 @@ function sentience(){
         s1: civ2name.s1
     };
 
-    if (global.race['truepath']){
+    if (global.race['truepath'] || global.race['lone_survivor']){
         global.civic.foreign.gov0.mil = Math.round(global.civic.foreign.gov0.mil * 1.5);
         global.civic.foreign.gov1.mil = Math.round(global.civic.foreign.gov1.mil * 1.4);
         global.civic.foreign.gov2.mil = Math.round(global.civic.foreign.gov2.mil * 1.25);
@@ -7212,7 +7219,7 @@ function sentience(){
         loadTab('mTabCivil');
     }
 
-    if (global.race['truepath']){
+    if (global.race['truepath'] || global.race['lone_survivor'] ){
         Object.keys(resource_values).forEach(function(res){
             if (global.resource.hasOwnProperty(res)){
                 global.resource[res].value = resource_values[res] * 2;
@@ -7244,6 +7251,9 @@ function sentience(){
 
     if (global.race['cataclysm']){
         cataclysm();
+    }
+    else if (global.race['lone_survivor']){
+        loneSurvivor();
     }
     else if (global.race['artifical']){
         aiStart();
@@ -7898,7 +7908,7 @@ export function bank_vault(){
         vault *= 1 + (traits.hoarder.vars()[0] / 100);
     }
     if (global.tech['banking'] >= 7){
-        vault *= 1 + highPopAdjust(global.civic.banker.workers * 0.05);
+        vault *= 1 + highPopAdjust(workerScale(global.civic.banker.workers,'banker') * 0.05);
     }
     if (global.tech['banking'] >= 8){
         vault += highPopAdjust(25 * global.resource[global.race.species].amount);

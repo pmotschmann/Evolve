@@ -3,12 +3,13 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
-import { jobScale, job_desc } from './jobs.js';
+import { jobScale, job_desc, loadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { nf_resources } from './industry.js';
+import { arpa } from './arpa.js';
 import { matrix, retirement } from './resets.js';
 import { loc } from './locale.js';
 
@@ -1612,7 +1613,10 @@ const tauCetiModules = {
                 let containers = global.tech['isolation'] ? 900 : 250;
                 let fuel = +($(this)[0].support_fuel().a).toFixed(1);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
-                desc = desc + `<div>${loc('plus_max_citizens',[pop])}</div>`;
+                
+                if (!global.race['lone_survivor']){
+                    desc = desc + `<div>${loc('plus_max_citizens',[pop])}</div>`;
+                }
 
                 if (global.tech['isolation']){
                     let vault = bank_vault() * 25;
@@ -1630,11 +1634,17 @@ const tauCetiModules = {
                 }
                 
                 desc = desc + `<div>${loc('plus_max_resource',[containers,loc('resource_Crates_name')])}</div><div>${loc('plus_max_resource',[containers,loc('resource_Containers_name')])}</div>`;
-                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+
+                if (global.race['lone_survivor']){
+                    desc = desc + `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                }
+                else {
+                    desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
+                }
                 return desc;
             },
             support(){ return -2; },
-            support_fuel(){ return { r: 'Food', a: global.tech['isolation'] ? 75 : 1000 }; },
+            support_fuel(){ return { r: 'Food', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -2 : 75) : 1000 }; },
             powered(){ return powerCostMod(1); },
             action(){
                 if (payCosts($(this)[0])){
@@ -1651,7 +1661,7 @@ const tauCetiModules = {
                 if (global.race['high_pop']){
                     pop *= traits.high_pop.vars()[0];
                 }
-                return pop;
+                return global.race['lone_survivor'] ? 0 : pop;
             }
         },
         tau_housing: {
@@ -1665,6 +1675,7 @@ const tauCetiModules = {
             },
             category: 'residential',
             reqs: { housing: 1, isolation: 1 },
+            condition(){ return global.race['lone_survivor'] ? false : true; },
             cost: {
                 Money(offset){return spaceCostMultiplier('tau_housing', offset, 150000, 1.15, 'tauceti'); },
                 Lumber(offset){ return global.race['kindling_kindred'] || global.race['smoldering'] ? 0 : spaceCostMultiplier('tau_housing', offset, 125000, 1.25, 'tauceti'); },
@@ -1920,10 +1931,15 @@ const tauCetiModules = {
             effect(){
                 let fuel = +int_fuel_adjust($(this)[0].p_fuel().a).toFixed(1);
                 let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
-                desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                if (global.race['lone_survivor']){
+                    desc = desc + `<div>${loc('gain',[-(fuel),global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                }
+                else {
+                    desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
+                }
                 return desc;
             },
-            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 75 : 500 }; },
+            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -100 : 75) : 500 }; },
             powered(){ return powerModifier(-32); },
             action(){
                 if (payCosts($(this)[0])){
@@ -2159,7 +2175,7 @@ const tauCetiModules = {
             },
             effect(){
                 let pop = $(this)[0].citizens();
-                let desc = `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div>`;
+                let desc = global.race['lone_survivor'] ? `` : `<div>${loc('plus_max_resource',[pop,loc('citizen')])}</div>`;
                 desc = desc + casinoEffect();
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -2184,7 +2200,7 @@ const tauCetiModules = {
                 if (global.race['high_pop']){
                     gain *= traits.high_pop.vars()[0];
                 }
-                return gain;
+                return global.race['lone_survivor'] ? 0 : gain;
             },
             flair: loc('city_casino_flair')
         },
@@ -4900,6 +4916,438 @@ export function jumpGateShutdown(){
 
     clearElement($(`#infoTimer`));
     global.race['inactive'] = inactive;
+}
+
+export function loneSurvivor(){
+    if (global.race['lone_survivor']){
+        global.tech['alloy'] = 1;
+        global.tech['alumina'] = 2;
+        global.tech['asteroid'] = 7;
+        global.tech['banking'] = 11;
+        global.tech['biotech'] = 1;
+        global.tech['boot_camp'] = 2;
+        global.tech['broadcast'] = 2;
+        global.tech['cement'] = 5;
+        global.tech['container'] = 7;
+        global.tech['copper'] = 1;
+        global.tech['currency'] = 6;
+        global.tech['drone'] = 1;
+        global.tech['elerium'] = 2;
+        global.tech['explosives'] = 3;
+        global.tech['factory'] = 3;
+        global.tech['foundry'] = 8;
+        global.tech['gambling'] = 4;
+        global.tech['gas_giant'] = 1;
+        global.tech['gas_moon'] = 2;
+        global.tech['genesis'] = 2;
+        global.tech['genetics'] = 8;
+        global.tech['gov_corp'] = 1;
+        global.tech['gov_fed'] = 1;
+        global.tech['gov_soc'] = 1;
+        global.tech['gov_theo'] = 1;
+        global.tech['govern'] = 3;
+        global.tech['graphene'] = 1;
+        global.tech['helium'] = 1;
+        global.tech['hell'] = 1;
+        global.tech['high_tech'] = 13;
+        global.tech['home_safe'] = 2;
+        global.tech['housing'] = 3;
+        global.tech['housing_reduction'] = 3;
+        global.tech['kuiper'] = 2;
+        global.tech['launch_facility'] = 1;
+        global.tech['luna'] = 2;
+        global.tech['m_smelting'] = 2;
+        global.tech['marines'] = 2;
+        global.tech['mars'] = 5;
+        global.tech['mass'] = 1;
+        global.tech['medic'] = 3;
+        global.tech['military'] = 8;
+        global.tech['mine_conveyor'] = 1;
+        global.tech['mining'] = 4;
+        global.tech['monument'] = 1;
+        global.tech['nano'] = 1;
+        global.tech['oil'] = 7;
+        global.tech['outer'] = 8;
+        global.tech['pickaxe'] = 5;
+        global.tech['polymer'] = 2;
+        global.tech['primitive'] = 3;
+        global.tech['q_factory'] = 1;
+        global.tech['quantium'] = 1;
+        global.tech['queue'] = 3;
+        global.tech['r_queue'] = 1;
+        global.tech['reproduction'] = 1;
+        global.tech['rival'] = 1;
+        global.tech['satellite'] = 1;
+        global.tech['science'] = 9;
+        global.tech['shelving'] = 3;
+        global.tech['shipyard'] = 1;
+        global.tech['smelting'] = 6;
+        global.tech['solar'] = 5;
+        global.tech['space'] = 6;
+        global.tech['space_explore'] = 4;
+        global.tech['space_housing'] = 1;
+        global.tech['spy'] = 5;
+        global.tech['stanene'] = 1;
+        global.tech['steel_container'] = 6;
+        global.tech['storage'] = 5;
+        global.tech['swarm'] = 6;
+        global.tech['syard_armor'] = 3;
+        global.tech['syard_class'] = 6;
+        global.tech['syard_engine'] = 5;
+        global.tech['syard_power'] = 5;
+        global.tech['syard_sensor'] = 4;
+        global.tech['syard_weapon'] = 6;
+        global.tech['syndicate'] = 0;
+        global.tech['synthetic_fur'] = 1;
+        global.tech['tau_home'] = 6;
+        global.tech['tauceti'] = 4;
+        global.tech['theatre'] = 3;
+        global.tech['theology'] = 2;
+        global.tech['titan'] = 9;
+        global.tech['titan_ai_core'] = 3;
+        global.tech['titan_power'] = 1;
+        global.tech['titanium'] = 3;
+        global.tech['trade'] = 3;
+        global.tech['unify'] = 2;
+        global.tech['uranium'] = 4;
+        global.tech['v_train'] = 1;
+        global.tech['vault'] = 4;
+        global.tech['wharf'] = 1;
+        global.tech['world_control'] = 1;
+        global.tech['wsc'] = 0;
+
+        global.settings.showSpace = false;
+        global.settings.showTau = true;
+        global.settings.tau.home = true;
+
+        global.settings.showCity = false;
+        global.settings.showIndustry = true;
+        global.settings.showPowerGrid = true;
+        global.settings.showResearch = true;
+        global.settings.showCivic = true;
+        global.settings.showMil = true;
+        global.settings.showResources = true;
+        global.settings.showMarket = true;
+        global.settings.showStorage = true;
+        global.settings.civTabs = 1;
+        global.settings.spaceTabs = 6;
+        global.settings.showGenetics = true;
+
+        //global.civic.garrison.display = true;
+        global.resource[global.race.species].display = true;
+        global.resource.Knowledge.display = true;
+        global.resource.Money.display = true;
+        global.resource.Crates.display = true;
+        global.resource.Containers.display = true;
+
+        global.resource.Food.display = true;
+        global.resource.Stone.display = true;
+        global.resource.Furs.display = true;
+        global.resource.Copper.display = true;
+        global.resource.Iron.display = true;
+        global.resource.Aluminium.display = true;
+        global.resource.Cement.display = true;
+        global.resource.Coal.display = true;
+        global.resource.Oil.display = true;
+        global.resource.Uranium.display = true;
+        global.resource.Steel.display = true;
+        global.resource.Titanium.display = true;
+        global.resource.Alloy.display = true;
+        global.resource.Polymer.display = true;
+        global.resource.Iridium.display = true;
+        global.resource.Helium_3.display = true;
+
+        global.resource.Water.display = true;
+        global.resource.Neutronium.display = true;
+        global.resource.Adamantite.display = true;
+        global.resource.Elerium.display = true;
+        global.resource.Nano_Tube.display = true;
+        global.resource.Graphene.display = true;
+        global.resource.Stanene.display = true;
+        global.resource.Orichalcum.display = true;
+        global.resource.Bolognium.display = true;
+
+        global.resource.Brick.display = true;
+        global.resource.Wrought_Iron.display = true;
+        global.resource.Sheet_Metal.display = true;
+        global.resource.Mythril.display = true;
+        global.resource.Quantium.display = true;
+        global.resource.Cipher.display = true;
+
+        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.resource.Lumber.display = true;
+            global.resource.Plywood.display = true;
+            global.resource.Lumber.max = 1000000;
+            global.resource.Lumber.amount = 1000000;
+            global.resource.Plywood.amount = 2500000;
+            global.resource.Lumber.crates = 25;
+            global.resource.Lumber.containers = 25;
+        }
+        if (global.race['smoldering']){
+            global.resource.Chrysotile.display = true;
+            global.resource.Chrysotile.max = 1000000;
+            global.resource.Chrysotile.amount = 1000000;
+        }
+
+        global.resource[global.race.species].max = 1;
+        global.resource[global.race.species].amount = 1;
+        global.resource.Crates.amount = 1000;
+        global.resource.Containers.amount = 1000;
+        global.resource.Money.max = 1000000000;
+        global.resource.Money.amount = 1000000000;
+        global.resource.Knowledge.max = 100000;
+        global.resource.Knowledge.amount = 100000;
+        global.resource.Food.max = 10000;
+        global.resource.Food.amount = 10000;
+        global.resource.Oil.max = 100000;
+        global.resource.Oil.amount = 100000;
+        global.resource.Helium_3.max = 100000;
+        global.resource.Helium_3.amount = 100000;
+        global.resource.Uranium.max = 100000;
+        global.resource.Uranium.amount = 100000;
+        global.resource.Stone.max = 1000000;
+        global.resource.Stone.amount = 1000000;
+        global.resource.Furs.max = 1000000;
+        global.resource.Furs.amount = 1000000;
+        global.resource.Copper.max = 1000000;
+        global.resource.Copper.amount = 1000000;
+        global.resource.Iron.max = 1000000;
+        global.resource.Iron.amount = 1000000;
+        global.resource.Steel.max = 1000000;
+        global.resource.Steel.amount = 1000000;
+        global.resource.Aluminium.max = 1000000;
+        global.resource.Aluminium.amount = 1000000;
+        global.resource.Cement.max = 1000000;
+        global.resource.Cement.amount = 1000000;
+        global.resource.Titanium.max = 1000000;
+        global.resource.Titanium.amount = 1000000;
+        global.resource.Coal.max = 1000000;
+        global.resource.Coal.amount = 1000000;
+        global.resource.Alloy.max = 1000000;
+        global.resource.Alloy.amount = 1000000;
+        global.resource.Polymer.max = 1000000;
+        global.resource.Polymer.amount = 1000000;
+        global.resource.Iridium.max = 1000000;
+        global.resource.Iridium.amount = 1000000;
+        global.resource.Neutronium.max = 100000;
+        global.resource.Neutronium.amount = 100000;
+        global.resource.Adamantite.max = 1000000;
+        global.resource.Adamantite.amount = 1000000;
+        global.resource.Nano_Tube.max = 1000000;
+        global.resource.Nano_Tube.amount = 1000000;
+        global.resource.Graphene.max = 1000000;
+        global.resource.Graphene.amount = 1000000;
+        global.resource.Stanene.max = 1000000;
+        global.resource.Stanene.amount = 1000000;
+        global.resource.Bolognium.max = 1000000;
+        global.resource.Bolognium.amount = 1000000;
+        global.resource.Orichalcum.max = 1000000;
+        global.resource.Orichalcum.amount = 1000000;
+        global.resource.Brick.amount = 2500000;
+        global.resource.Wrought_Iron.amount = 2500000;
+        global.resource.Sheet_Metal.amount = 2500000;
+        global.resource.Mythril.amount = 2500000;
+        global.resource.Quantium.amount = 2500000;
+
+
+        global.resource.Food.crates = 10;
+        global.resource.Food.containers = 10;
+        global.resource.Coal.crates = 10;
+        global.resource.Coal.containers = 10;
+        global.resource.Copper.crates = 25;
+        global.resource.Copper.containers = 25;
+        global.resource.Iron.crates = 25;
+        global.resource.Iron.containers = 25;
+        global.resource.Aluminium.crates = 25;
+        global.resource.Aluminium.containers = 25;
+        global.resource.Cement.crates = 25;
+        global.resource.Cement.containers = 25;
+        global.resource.Steel.crates = 25;
+        global.resource.Steel.containers = 25;
+        global.resource.Titanium.crates = 25;
+        global.resource.Titanium.containers = 25;
+        global.resource.Alloy.crates = 25;
+        global.resource.Alloy.containers = 25;
+        global.resource.Polymer.crates = 25;
+        global.resource.Polymer.containers = 25;
+        global.resource.Iridium.crates = 25;
+        global.resource.Iridium.containers = 25;
+        global.resource.Adamantite.crates = 25;
+        global.resource.Adamantite.containers = 25;
+        global.resource.Graphene.crates = 25;
+        global.resource.Graphene.containers = 25;
+        global.resource.Stanene.crates = 25;
+        global.resource.Stanene.containers = 25;
+        global.resource.Bolognium.crates = 25;
+        global.resource.Bolognium.containers = 25;
+        global.resource.Orichalcum.crates = 25;
+        global.resource.Orichalcum.containers = 25;
+
+        global.civic.taxes.display = true;
+
+        global.civic.lumberjack.display = true;
+        global.civic.quarry_worker.display = true
+        global.civic.professor.display = true;
+        global.civic.scientist.display = true;
+        global.civic.cement_worker.display = true;
+        global.civic.banker.display = true;
+        global.civic.pit_miner.display = true;
+
+        global.civic.professor.max = 1;
+        global.civic.professor.workers = 1;
+        global.civic.cement_worker.max = 1;
+        global.civic.cement_worker.workers = 1;
+
+        global.city.calendar.day++;
+        global.city.market.active = true;
+        global.city['power'] = 0;
+        global.city['powered'] = true;
+
+        if (global.race['artifical']){
+            global.city['transmitter'] = { count: 0, on: 0 };
+        }
+        global.city['factory'] = { count: 0, on: 0, Lux: 0, Furs: 0, Alloy: 0, Polymer: 1, Nano: 0, Stanene: 0 };
+        global.city['foundry'] = { count: 0, crafting: 0, Plywood: 0, Brick: 0, Bronze: 0, Wrought_Iron: 0, Sheet_Metal: 0, Mythril: 0, Aerogel: 0, Nanoweave: 0, Scarletite: 0, Quantium: 0 };
+        global.city['smelter'] = { count: 0, cap: 2, Wood: 0, Coal: 0, Oil: 2, Star: 0, StarCap: 0, Inferno: 0, Iron: 1, Steel: 1, Iridium: 0 };
+
+        global.city['amphitheatre'] = { count: 0 };
+        global.city['apartment'] = { count: 0, on: 0 };
+        global.city['bank'] = { count: 0 };
+        global.city['basic_housing'] = { count: 0 };
+        global.city['biolab'] = { count: 0, on: 0 };
+        global.city['boot_camp'] = { count: 0 };
+        global.city['casino'] = { count: 0, on: 0 };
+        global.city['cement_plant'] = { count: 0, on: 0 };
+        global.city['coal_mine'] = { count: 0, on: 0 };
+        global.city['coal_power'] = { count: 0, on: 0 };
+        global.city['cottage'] = { count: 0 };
+        global.city['fission_power'] = { count: 0, on: 0 };
+        global.city['garrison'] = { count: 0, on: 0 };
+        global.city['hospital'] = { count: 0 };
+        global.city['library'] = { count: 0 };
+        global.city['lumber_yard'] = { count: 0 };
+        global.city['mass_driver'] = { count: 0, on: 0 };
+        global.city['metal_refinery'] = { count: 0, on: 0 };
+        global.city['mine'] = { count: 0, on: 0 };
+        global.city['oil_depot'] = { count: 0 };
+        global.city['oil_power'] = { count: 0, on: 0 };
+        global.city['oil_well'] = { count: 0 };
+        global.city['rock_quarry'] = { count: 0, on: 0, asbestos: 50 };
+        global.city['sawmill'] = { count: 0, on: 0 };
+        global.city['shed'] = { count: 0, on: 0 };
+        global.city['storage_yard'] = { count: 0 };
+        global.city['temple'] = { count: 0 };
+        global.city['tourist_center'] = { count: 0, on: 0 };
+        global.city['trade'] = { count: 0 };
+        global.city['university'] = { count: 0 };
+        global.city['wardenclyffe'] = { count: 0, on: 0 };
+        global.city['warehouse'] = { count: 0 };
+        global.city['wharf'] = { count: 0 };
+
+        global.space['ai_colonist'] = { count: 0, on: 0 };
+        global.space['ai_core'] = { count: 100 };
+        global.space['ai_core2'] = { count: 0, on: 0 };
+        global.space['biodome'] = { count: 0, on: 0 };
+        global.space['crashed_ship'] = { count: 100 };
+        global.space['decoder'] = { count: 0, on: 0 };
+        global.space['digsite'] = { count: 0 };
+        global.space['drone'] = { count: 0 };
+        global.space['drone_control'] = { count: 0, on: 0 };
+        global.space['e_reactor'] = { count: 0, on: 0 };
+        global.space['electrolysis'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.space['elerium_contain'] = { count: 0, on: 0 };
+        global.space['elerium_mine'] = { count: 0, on: 0 };
+        global.space['elerium_ship'] = { count: 0, on: 0 };
+        global.space['exotic_lab'] = { count: 0, on: 0 };
+        global.space['fabrication'] = { count: 0, on: 0 };
+        global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
+        global.space['g_factory'] = { count: 0 };
+        global.space['garage'] = { count: 0 };
+        global.space['gas_mining'] = { count: 0, on: 0 };
+        global.space['gas_storage'] = { count: 0 };
+        global.space['geothermal'] = { count: 0, on: 0 };
+        global.space['gps'] = { count: 0 };
+        global.space['helium_mine'] = { count: 0, on: 0 };
+        global.space['hell_smelter'] = { count: 0, on: 0 };
+        global.space['hydrogen_plant'] = { count: 0, on: 0 };
+        global.space['iridium_mine'] = { count: 0, on: 0 };
+        global.space['iridium_ship'] = { count: 0, on: 0 };
+        global.space['iron_ship'] = { count: 0, on: 0 };
+        global.space['lander'] = { count: 0, on: 0 };
+        global.space['living_quarters'] = { count: 0, on: 0 };
+        global.space['m_relay'] = { count: 0, on: 0 };
+        global.space['mass_relay'] = { count: 100 };
+        global.space['moon_base'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.space['munitions_depot'] = { count: 0 };
+        global.space['nav_beacon'] = { count: 0, on: 0 };
+        global.space['neutronium_mine'] = { count: 0, on: 0 };
+        global.space['observatory'] = { count: 0, on: 0 };
+        global.space['oil_extractor'] = { count: 0, on: 0 };
+        global.space['operating_base'] = { count: 0, on: 0 };
+        global.space['orichalcum_mine'] = { count: 0, on: 0 };
+        global.space['outpost'] = { count: 0, on: 0 };
+        global.space['propellant_depot'] = { count: 0 };
+        global.space['red_factory'] = { count: 0, on: 0 };
+        global.space['red_mine'] = { count: 0, on: 0 };
+        global.space['red_tower'] = { count: 0, on: 0 };
+        global.space['satellite'] = { count: 0 };
+        global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: false, sort: true };
+        global.space['shock_trooper'] = { count: 0, on: 0 };
+        global.space['space_barracks'] = { count: 0, on: 0 };
+        global.space['space_station'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.space['spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.space['spc_casino'] = { count: 0, on: 0 };
+        global.space['storehouse'] = { count: 0 };
+        global.space['swarm_control'] = { count: 0, support: 0, s_max: 0 };
+        global.space['swarm_plant'] = { count: 0 };
+        global.space['swarm_satellite'] = { count: 0 };
+        global.space['tank'] = { count: 0, on: 0 };
+        global.space['titan_bank'] = { count: 0 };
+        global.space['titan_mine'] = { count: 0, on: 0 };
+        global.space['titan_quarters'] = { count: 0, on: 0 };
+        global.space['titan_spaceport'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.space['uranium_mine'] = { count: 0, on: 0 };
+        global.space['vr_center'] = { count: 0, on: 0 };
+        global.space['water_freighter'] = { count: 0, on: 0 };
+        global.space['zero_g_lab'] = { count: 0, on: 0 };
+        global.space['ziggurat'] = { count: 0 };
+
+        global.tauceti['alien_outpost'] = { count: 1, on: 0 };
+        global.tauceti['colony'] = { count: 1, on: 1 };
+        global.tauceti['fusion_generator'] = { count: 1, on: 1 };
+        global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };
+        global.tauceti['mining_pit'] = { count: 1, on: 1 };
+        global.tauceti['orbital_platform'] = { count: 0, on: 0, support: 0, s_max: 0 };
+        global.tauceti['orbital_station'] = { count: 1, on: 1, support: 0, s_max: 0 };
+        global.tauceti['refueling_station'] = { count: 0, on: 0 };
+        global.tauceti['repository'] = { count: 2 };
+        global.tauceti['tauceti_casino'] = { count: 0, on: 0 };
+
+        global.civic['garrison'] = {
+            display: true,
+            disabled: false,
+            progress: 0,
+            tactic: 0,
+            workers: 2,
+            wounded: 0,
+            raid: 0,
+            max: 2
+        };
+
+        global.tech['stock_exchange'] = 0;
+        global.tech['monuments'] = 0;
+        global.tech['supercollider'] = 0;
+        global.tech['tp_depot'] = 0;
+        global.tech['railway'] = 0;
+        global.tech['isolation'] = 1;
+        global.race['truepath'] = 1;
+        global.arpa['m_type'] = arpa('Monument');
+
+        drawTech();
+        renderTauCeti();
+        arpa('Physics');
+        loadFoundry();
+    }
 }
 
 export function calcAIDrift(){

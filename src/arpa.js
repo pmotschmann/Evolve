@@ -113,7 +113,7 @@ export const arpaProjects = {
         desc: loc('arpa_projects_launch_facility_desc'),
         reqs: { high_tech: 7 },
         condition(){
-            return global.race['cataclysm'] ? false : true;
+            return global.race['cataclysm'] || global.race['lone_survivor'] ? false : true;
         },
         grant: 'launch_facility',
         rank: 1,

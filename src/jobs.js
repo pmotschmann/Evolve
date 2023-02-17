@@ -35,14 +35,12 @@ export const job_desc = {
         return desc;
     },
     farmer: function(servant){
-        let farmer = +farmerValue(true).toFixed(2);
-        let farmhand = +farmerValue(false).toFixed(2);
-        if (servant){
-            farmer *= jobScale(1);
-            farmhand *= jobScale(1);
+        let farmer = +farmerValue(true,servant).toFixed(2);
+        let farmhand = +farmerValue(false,servant).toFixed(2);
+        if (!servant){
+            farmer = +workerScale(farmer,'farmer').toFixed(2);
+            farmhand = +workerScale(farmhand,'farmer').toFixed(2);
         }
-        let impact = global.civic.lumberjack.impact;
-        if (servant){ impact *= jobScale(1); }
         let desc = global.race['high_pop'] && !servant
             ? loc('job_farmer_desc_hp',[farmer,global.resource.Food.name,jobScale(1),farmhand,jobScale(1) * global.city.farm.count])
             : loc('job_farmer_desc',[farmer,global.resource.Food.name,global.city.farm.count,farmhand]);
@@ -57,6 +55,10 @@ export const job_desc = {
             workers += jobScale(global.race.servants.jobs.lumberjack);
         }
         let impact = global.civic.lumberjack.impact;
+        if (!servant){
+            workers = +workerScale(workers,'lumberjack').toFixed(2);
+            impact = +workerScale(impact,'lumberjack').toFixed(2);
+        }
         if (servant){ impact *= jobScale(1); }
         if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
             let multiplier = 1;
@@ -100,6 +102,11 @@ export const job_desc = {
         if (global.race['servants'] && global.race.servants.jobs.quarry_worker > 0){
             workers += jobScale(global.race.servants.jobs.quarry_worker);
         }
+        let impact = global.civic.quarry_worker.impact;
+        if (!servant){
+            workers = +workerScale(workers,'quarry_worker').toFixed(2);
+            impact = +workerScale(impact,'quarry_worker').toFixed(2);
+        }
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
         multiplier *= racialTrait(workers,'miner');
         if (global.city.biome === 'desert'){
@@ -111,7 +118,6 @@ export const job_desc = {
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
-        let impact = global.civic.quarry_worker.impact;
         if (servant){ impact *= jobScale(1); }
         let gain = +(impact * multiplier).toFixed(1);
         let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
@@ -128,9 +134,13 @@ export const job_desc = {
         if (global.race['servants'] && global.race.servants.jobs.crystal_miner > 0){
             workers += jobScale(global.race.servants.jobs.crystal_miner);
         }
+        let impact = global.civic.crystal_miner.impact;
+        if (!servant){
+            workers = +workerScale(workers,'crystal_miner').toFixed(2);
+            impact = +workerScale(impact,'crystal_miner').toFixed(2);
+        }
         let multiplier = 1;
         multiplier *= racialTrait(workers,'miner');
-        let impact = global.civic.crystal_miner.impact;
         if (servant){ impact *= jobScale(1); }
         let gain = +(impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
@@ -146,6 +156,9 @@ export const job_desc = {
         }
         if (global.race['high_pop'] && !servant){
             scavenger *= traits.high_pop.vars()[1] / 100;
+        }
+        if (!servant){
+            scavenger = +workerScale(scavenger,'scavenger').toFixed(2);
         }
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger' && !servant){
@@ -177,9 +190,11 @@ export const job_desc = {
         if (global.city.biome === 'ashland'){
             unit_price *= biomes.ashland.vars()[1];
         }
+        unit_price = +workerScale(unit_price,'cement_worker').toFixed(2);
+        let worker_impact = +workerScale(global.civic.cement_worker.impact,'cement_worker').toFixed(2);
         let impact = global.tech['cement'] >= 4 ? 1.2 : 1;
         let cement_multiplier = racialTrait(global.civic.cement_worker.workers,'factory');
-        let gain = global.civic.cement_worker.impact * impact * cement_multiplier;
+        let gain = worker_impact * impact * cement_multiplier;
         if (global.city.biome === 'ashland'){
             gain *= biomes.ashland.vars()[1];
         }
@@ -187,7 +202,7 @@ export const job_desc = {
         return global.race['sappy'] ? loc('job_cement_worker_amber_desc',[gain]) : loc('job_cement_worker_desc',[gain,unit_price]);
     },
     banker: function(){
-        let interest = global.civic.banker.impact * 100;
+        let interest = +workerScale(global.civic.banker.impact,'banker').toFixed(2) * 100;
         if (global.tech['banking'] >= 10){
             interest += 2 * global.tech['stock_exchange'];
         }
@@ -214,7 +229,9 @@ export const job_desc = {
         if (global.race['high_pop']){
             morale *= traits.high_pop.vars()[1] / 100;
         }
+        morale = +workerScale(morale,'entertainer').toFixed(2);
         let mcap = global.race['high_pop'] ? (traits.high_pop.vars()[1] / 100) : 1;
+        mcap = +workerScale(mcap,'entertainer').toFixed(2);
         return global.tech['superstar'] ? loc('job_entertainer_desc2',[morale,mcap]) : loc('job_entertainer_desc',[+(morale).toFixed(2)]);
     },
     priest: function(){
@@ -231,7 +248,8 @@ export const job_desc = {
         return desc;
     },
     professor: function(){
-        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact).toFixed(2);
+        let professor_impact = +workerScale(global.civic.professor.impact,'professor').toFixed(2);
+        let impact = +(global.race['studious'] ? professor_impact + traits.studious.vars()[0] : professor_impact).toFixed(2);
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
@@ -247,7 +265,7 @@ export const job_desc = {
         return loc('job_professor_desc',[impact]);
     },
     scientist: function(){
-        let impact = global.civic.scientist.impact;
+        let impact = +workerScale(global.civic.scientist.impact,'scientist').toFixed(2);
         impact *= racialTrait(global.civic.scientist.workers,'science');
         if (global.tech['science'] >= 6 && global.city['wardenclyffe']){
             impact *= 1 + (global.civic.professor.workers * global.city['wardenclyffe'].on * 0.01);
@@ -327,6 +345,21 @@ export function defineJobs(define){
             loadServants();
         }
     }
+}
+
+export function workerScale(num,job){
+    if (global.race['strong'] && ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
+        num *= traits.strong.vars()[1];
+    }
+    if (global.race['lone_survivor']){
+        if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
+            num *= 50;
+        }
+        else if (['miner','coal_miner','cement_worker','banker','entertainer','priest','professor','scientist','pit_miner'].includes(job)){
+            num *= 25;
+        }
+    }
+    return num;
 }
 
 export function jobScale(num){
@@ -590,10 +623,10 @@ export function loadServants(){
     }
 }
 
-export function farmerValue(farm){
+export function farmerValue(farm,servant){
     let farming = global.civic.farmer.impact;
     if (farm){
-        farming += global.tech['agriculture'] >= 2 ? 1.15 : 0.65;
+        farming += global.tech['agriculture'] && global.tech.agriculture >= 2 ? 1.15 : 0.65;
     }
     farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
@@ -605,6 +638,9 @@ export function farmerValue(farm){
     farming *= racialTrait(global.civic.farmer.workers,'farmer');
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
     farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
+    if (servant){
+        farming *= jobScale(1);
+    }
     return farming;
 }
 
