@@ -2,13 +2,13 @@ import { global, p_on, support_on, sizeApproximation, quantum_level } from './va
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
-import { defineIndustry, armyRating, garrisonSize } from './civics.js';
+import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
-import { nf_resources } from './industry.js';
+import { defineIndustry, nf_resources } from './industry.js';
 import { arpa } from './arpa.js';
 import { matrix, retirement } from './resets.js';
 import { loc } from './locale.js';
@@ -1858,18 +1858,23 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div>${loc('plus_max_resource',[20+'%',loc('resource_Knowledge_name')])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('plus_max_resource',[(6500000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
+                    desc = desc + `<div>${loc('plus_max_resource',[(global.race['lone_survivor'] ? 3500000 : 6500000).toLocaleString(),loc('resource_Knowledge_name')])}</div>`;
                     desc = desc + `<div>${loc('plus_max_resource',[(200000).toLocaleString(),global.resource.Cipher.name])}</div>`;
                     desc = desc + `<div>${loc(`space_lander_effect3`,[production('alien_outpost'),global.resource.Cipher.name])}</div>`;
-
                 }
                 if (global.tech['outpost_boost']){
                     desc = desc + `<div>${loc('tech_alien_outpost_effect2')}</div>`;
                 }
+                if (global.race['lone_survivor']){
+                    desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.professor.name])}</div>`;
+                }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(global.tech['isolation'] ? 25 : 100); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 12 : 25) : 100); },
+            special(){
+                return global.tech['replicator'] ? true : false;
+            },
             action(){
                 return false;
             }
@@ -4931,6 +4936,7 @@ export function loneSurvivor(){
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
+        global.tech['disease'] = 1;
         global.tech['drone'] = 1;
         global.tech['elerium'] = 2;
         global.tech['explosives'] = 3;
@@ -5066,6 +5072,7 @@ export function loneSurvivor(){
         global.resource.Stanene.display = true;
         global.resource.Orichalcum.display = true;
         global.resource.Bolognium.display = true;
+        global.resource.Unobtainium.display = true;
 
         global.resource.Brick.display = true;
         global.resource.Wrought_Iron.display = true;
@@ -5077,16 +5084,23 @@ export function loneSurvivor(){
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
-            global.resource.Lumber.max = 1000000;
-            global.resource.Lumber.amount = 1000000;
+            global.resource.Lumber.max = 10000000;
+            global.resource.Lumber.amount = 10000000;
             global.resource.Plywood.amount = 2500000;
             global.resource.Lumber.crates = 25;
             global.resource.Lumber.containers = 25;
+            global.tech['axe'] = 5;
         }
         if (global.race['smoldering']){
             global.resource.Chrysotile.display = true;
-            global.resource.Chrysotile.max = 1000000;
-            global.resource.Chrysotile.amount = 1000000;
+            global.resource.Chrysotile.max = 5000000;
+            global.resource.Chrysotile.amount = 5000000;
+        }
+        if (!global.race['sappy']){
+            global.tech['hammer'] = 4;
+        }
+        if (!global.race['apex_predator']){
+            global.tech['armor'] = 3;
         }
 
         global.resource[global.race.species].max = 1;
@@ -5095,63 +5109,70 @@ export function loneSurvivor(){
         global.resource.Containers.amount = 1000;
         global.resource.Money.max = 1000000000;
         global.resource.Money.amount = 1000000000;
-        global.resource.Knowledge.max = 100000;
-        global.resource.Knowledge.amount = 100000;
+        global.resource.Knowledge.max = 8000000;
+        global.resource.Knowledge.amount = 8000000;
         global.resource.Food.max = 10000;
         global.resource.Food.amount = 10000;
-        global.resource.Oil.max = 100000;
-        global.resource.Oil.amount = 100000;
-        global.resource.Helium_3.max = 100000;
-        global.resource.Helium_3.amount = 100000;
-        global.resource.Uranium.max = 100000;
-        global.resource.Uranium.amount = 100000;
-        global.resource.Stone.max = 1000000;
-        global.resource.Stone.amount = 1000000;
-        global.resource.Furs.max = 1000000;
-        global.resource.Furs.amount = 1000000;
-        global.resource.Copper.max = 1000000;
-        global.resource.Copper.amount = 1000000;
-        global.resource.Iron.max = 1000000;
-        global.resource.Iron.amount = 1000000;
-        global.resource.Steel.max = 1000000;
-        global.resource.Steel.amount = 1000000;
-        global.resource.Aluminium.max = 1000000;
-        global.resource.Aluminium.amount = 1000000;
-        global.resource.Cement.max = 1000000;
-        global.resource.Cement.amount = 1000000;
-        global.resource.Titanium.max = 1000000;
-        global.resource.Titanium.amount = 1000000;
-        global.resource.Coal.max = 1000000;
-        global.resource.Coal.amount = 1000000;
-        global.resource.Alloy.max = 1000000;
-        global.resource.Alloy.amount = 1000000;
-        global.resource.Polymer.max = 1000000;
-        global.resource.Polymer.amount = 1000000;
-        global.resource.Iridium.max = 1000000;
-        global.resource.Iridium.amount = 1000000;
-        global.resource.Neutronium.max = 100000;
-        global.resource.Neutronium.amount = 100000;
-        global.resource.Adamantite.max = 1000000;
-        global.resource.Adamantite.amount = 1000000;
-        global.resource.Nano_Tube.max = 1000000;
-        global.resource.Nano_Tube.amount = 1000000;
-        global.resource.Graphene.max = 1000000;
-        global.resource.Graphene.amount = 1000000;
-        global.resource.Stanene.max = 1000000;
-        global.resource.Stanene.amount = 1000000;
-        global.resource.Bolognium.max = 1000000;
-        global.resource.Bolognium.amount = 1000000;
-        global.resource.Orichalcum.max = 1000000;
-        global.resource.Orichalcum.amount = 1000000;
+        global.resource.Oil.max = 500000;
+        global.resource.Oil.amount = 500000;
+        global.resource.Helium_3.max = 500000;
+        global.resource.Helium_3.amount = 500000;
+        global.resource.Water.max = 25000;
+        global.resource.Water.amount = 25000;
+        global.resource.Uranium.max = 500000;
+        global.resource.Uranium.amount = 500000;
+        global.resource.Stone.max = 10000000;
+        global.resource.Stone.amount = 10000000;
+        global.resource.Furs.max = 5000000;
+        global.resource.Furs.amount = 5000000;
+        global.resource.Copper.max = 5000000;
+        global.resource.Copper.amount = 5000000;
+        global.resource.Iron.max = 5000000;
+        global.resource.Iron.amount = 5000000;
+        global.resource.Steel.max = 5000000;
+        global.resource.Steel.amount = 5000000;
+        global.resource.Aluminium.max = 5000000;
+        global.resource.Aluminium.amount = 5000000;
+        global.resource.Cement.max = 5000000;
+        global.resource.Cement.amount = 5000000;
+        global.resource.Titanium.max = 5000000;
+        global.resource.Titanium.amount = 5000000;
+        global.resource.Coal.max = 5000000;
+        global.resource.Coal.amount = 5000000;
+        global.resource.Alloy.max = 5000000;
+        global.resource.Alloy.amount = 5000000;
+        global.resource.Polymer.max = 5000000;
+        global.resource.Polymer.amount = 5000000;
+        global.resource.Iridium.max = 5000000;
+        global.resource.Iridium.amount = 5000000;
+        global.resource.Neutronium.max = 500000;
+        global.resource.Neutronium.amount = 500000;
+        global.resource.Adamantite.max = 5000000;
+        global.resource.Adamantite.amount = 5000000;
+        global.resource.Elerium.max = 1000;
+        global.resource.Elerium.amount = 1000;
+        global.resource.Nano_Tube.max = 5000000;
+        global.resource.Nano_Tube.amount = 5000000;
+        global.resource.Graphene.max = 5000000;
+        global.resource.Graphene.amount = 5000000;
+        global.resource.Stanene.max = 5000000;
+        global.resource.Stanene.amount = 5000000;
+        global.resource.Bolognium.max = 5000000;
+        global.resource.Bolognium.amount = 5000000;
+        global.resource.Orichalcum.max = 5000000;
+        global.resource.Orichalcum.amount = 5000000;
         global.resource.Brick.amount = 2500000;
         global.resource.Wrought_Iron.amount = 2500000;
         global.resource.Sheet_Metal.amount = 2500000;
         global.resource.Mythril.amount = 2500000;
         global.resource.Quantium.amount = 2500000;
 
-
         global.resource.Food.crates = 10;
         global.resource.Food.containers = 10;
+        global.resource.Stone.crates = 25;
+        global.resource.Stone.containers = 25;
+        global.resource.Furs.crates = 25;
+        global.resource.Furs.containers = 25;
         global.resource.Coal.crates = 10;
         global.resource.Coal.containers = 10;
         global.resource.Copper.crates = 25;
@@ -5312,7 +5333,7 @@ export function loneSurvivor(){
         global.space['zero_g_lab'] = { count: 0, on: 0 };
         global.space['ziggurat'] = { count: 0 };
 
-        global.tauceti['alien_outpost'] = { count: 1, on: 0 };
+        global.tauceti['alien_outpost'] = { count: 1, on: 1 };
         global.tauceti['colony'] = { count: 1, on: 1 };
         global.tauceti['fusion_generator'] = { count: 1, on: 1 };
         global.tauceti['infectious_disease_lab'] = { count : 0, on: 0, cure: 0 };

@@ -6,12 +6,12 @@ import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanati
 import { races, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
-import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
+import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
-import { setPowerGrid } from './industry.js';
+import { setPowerGrid, defineIndustry } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
 import { big_bang, cataclysm_end, descension, aiApocalypse } from './resets.js';
 
@@ -12876,6 +12876,28 @@ const techs = {
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain')){
                     global.tauceti['matrioshka_brain'] = { count: 0 };
                 }
+                return true;
+            }
+            return false;
+        }
+    },
+    replicator: {
+        id: 'tech-replicator',
+        title(){ return loc('tech_replicator'); },
+        desc(){ return loc('tech_replicator'); },
+        category: 'special',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { tau_home: 4, isolation: 1},
+        trait: ['lone_survivor'],
+        grant: ['replicator',1],
+        cost: {
+            Knowledge(){ return 7250000; },
+        },
+        effect(){ return loc('tech_replicator_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.race['replicator'] = { res: 'Unobtainium', pow: 1 };
                 return true;
             }
             return false;

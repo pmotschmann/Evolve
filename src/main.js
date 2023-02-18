@@ -5,8 +5,8 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, ti
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
-import { f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources } from './industry.js';
-import { defineIndustry, checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
+import { checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
@@ -1641,6 +1641,10 @@ function fastLoop(){
             power_grid -= citizens;
         }
 
+        if (global.race['replicator']){
+            global.city['replicator'] = { count: global.race.replicator.pow, on: global.race.replicator.pow };
+        }
+
         // Power usage
         let p_structs = global.power;
         if (global.settings.lowPowerBalance){
@@ -2432,6 +2436,13 @@ function fastLoop(){
             support_on['g_factory'] = p_on['refueling_station'];
             global.space.g_factory.count = global.tauceti.refueling_station.count;
             global.space.g_factory.on = global.tauceti.refueling_station.on;
+        }
+
+        if (global.race['replicator'] && p_on['replicator']){
+            let res = global.race.replicator.res;
+            let vol = p_on['replicator'] * replicator(res);
+            breakdown.p.consume[res][loc('tau_replicator_db')] = vol;
+            modRes(res, time_multiplier * vol);
         }
 
         // Stargate
@@ -3594,7 +3605,7 @@ function fastLoop(){
                 else if (global.tauceti.alien_space_station.decrypted >= 500000000 && global.tech['alien_data'] && global.tech.alien_data === 1){
                     global.tech.alien_data = 2;
                     global.race.tau_food_item = Math.rand(0,10);
-                    messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item}`)]),'success',false,['progress']);
+                    messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]),'success',false,['progress']);
                     drawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= 750000000 && global.tech['alien_data'] && global.tech.alien_data === 2){
@@ -3605,7 +3616,7 @@ function fastLoop(){
                 else if (global.tauceti.alien_space_station.decrypted >= 1200000000 && global.tech['alien_data'] && global.tech.alien_data === 3){
                     global.tech.alien_data = 4;
                     global.race.tau_junk_item = Math.rand(0,10);
-                    messageQueue(loc('tau_gas2_alien_station_data4',[loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item }`)]),'success',false,['progress']);
+                    messageQueue(loc('tau_gas2_alien_station_data4',[loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item || 0}`)]),'success',false,['progress']);
                     drawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= 1500000000 && global.tech['alien_data'] && global.tech.alien_data === 4){
@@ -6873,6 +6884,8 @@ function midLoop(){
             caps['Money'] += 1000000000;
             caps['Knowledge'] += 100000;
             caps['Food'] += 9000;
+            caps['Water'] += 10000;
+            caps['Elerium'] += 999;
         }
 
         if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
@@ -7590,6 +7603,9 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('city_university')] = gain+'v';
         }
+        if (global.race['lone_survivor'] && global.tauceti['alien_outpost']){
+            lCaps['professor'] += jobScale(global.tauceti.alien_outpost.count);
+        }
         if (global.city['library']){
             let shelving = 125;
             if (global.race['nearsighted']){
@@ -8278,7 +8294,7 @@ function midLoop(){
         if (p_on['alien_outpost']){
             let iso = 0;
             if (global.tech['isolation']){
-                iso = 6500000;
+                iso = global.race['lone_survivor'] ? 3500000 : 6500000;
                 caps['Knowledge'] += iso;
             }
             let boost = 0.2;

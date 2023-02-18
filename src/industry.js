@@ -40,6 +40,72 @@ export function loadIndustry(industry,parent,bind){
         case 'alien_space_station':
             loadAlienSpaceStation(parent,bind);
             break;
+        case 'replicator':
+            loadReplicator(parent,bind);
+            break;
+    }
+}
+
+export function defineIndustry(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
+        return;
+    }
+    clearElement($('#industry'));
+
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
+        var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
+        $(`#industry`).append(smelter);
+        loadIndustry('smelter',smelter,'#iSmelter');
+    }
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
+        var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
+        $(`#industry`).append(factory);
+        loadIndustry('factory',factory,'#iFactory');
+    }
+    if (global.interstellar['mining_droid'] && global.interstellar.mining_droid.count > 0){
+        var droid = $(`<div id="iDroid" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_mining_droid_title')}</h2></div>`);
+        $(`#industry`).append(droid);
+        loadIndustry('droid',droid,'#iDroid');
+    }
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || global.space['g_factory'] && global.space.g_factory.count > 0){
+        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
+        $(`#industry`).append(graphene);
+        loadIndustry('graphene',graphene,'#iGraphene');
+    }
+    if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'])){
+        var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
+        $(`#industry`).append(casting);
+        loadIndustry('pylon',casting,'#iPylon');
+    }
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
+        var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('rock_quarry',ratio,'#iQuarry');
+    }
+    if (global.space['titan_mine'] && global.space['titan_mine'].count > 0){
+        var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('titan_mine',ratio,'#iTMine');
+    }
+    if (global.tech['tau_roid'] && global.tech.tau_roid >= 4 && global.tauceti['mining_ship']){
+        var mining_ship = $(`<div id="iMiningShip" class="industry"><h2 class="header has-text-advanced">${loc('tau_roid_mining_ship')}</h2></div>`);
+        $(`#industry`).append(mining_ship);
+        loadIndustry('mining_ship',mining_ship,'#iMiningShip');
+    }
+    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station']){
+        var alien_space_station = $(`<div id="iAlienSpaceStation" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas2_alien_station')}</h2></div>`);
+        $(`#industry`).append(alien_space_station);
+        loadIndustry('alien_space_station',alien_space_station,'#iAlienSpaceStation');
+    }
+    if (global.race['deconstructor'] && global.city['nanite_factory']){
+        var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
+        $(`#industry`).append(nanite);
+        loadIndustry('nanite_factory',nanite,'#iNFactory');
+    }
+    if (global.race['replicator'] && global.tech['replicator']){
+        var replicator = $(`<div id="iReplicator" class="industry"><h2 class="header has-text-advanced">${loc('tech_replicator')}</h2></div>`);
+        $(`#industry`).append(replicator);
+        loadIndustry('replicator',replicator,'#iReplicator');
     }
 }
 
@@ -1312,6 +1378,81 @@ function loadAlienSpaceStation(parent,bind){
     });
 }
 
+function loadReplicator(parent,bind){
+    if (global.race['replicator']){
+        parent.append($(`<div>${loc('tech_replicator')}</div>`));
+
+        let content = $(`<div class="doublePane"></div>`);
+        parent.append(content);
+        
+        let values = ``;
+        Object.keys(atomic_mass).forEach(function(res){
+            values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
+        });
+
+        content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
+            <button class="button is-info" slot="trigger">
+                <span>{{ res | resName }}</span>
+            </button>${values}
+        </b-dropdown></div>`);
+
+        let power = $(`<div></div>`);
+        content.append(power);
+
+        let current = $(`<span :aria-label="aria" class="current"><span>{{ pow }}MW</span></span>`);
+        let less = $(`<span role="button" class="sub" @click="less" aria-label="Reduce power by 1"><span>&laquo;</span></span>`);
+        let more = $(`<span role="button" class="add" @click="more" aria-label="Increase power by 1"><span>&raquo;</span></span>`);
+        power.append(less);
+        power.append(current);
+        power.append(more);
+
+        parent.append(`<div class="topPad">{{ res | result }}</div>`); 
+
+        vBind({
+            el: bind ? bind : '#specialModal',
+            data: global.race.replicator,
+            methods: {
+                less(){
+                    let keyMult = keyMultiplier();
+                    if (global.race.replicator.pow > 0){
+                        global.race.replicator.pow -= keyMult;
+                        if (global.race.replicator.pow < 0){
+                            global.race.replicator.pow = 0;
+                        }
+                    }
+                },
+                more(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.pow += keyMult;
+                },
+                setVal(r){
+                    if (global.resource[r].display){
+                        global.race.replicator.res = r;
+                    }
+                },
+                avail(r){
+                    return global.resource[r].display;
+                },
+                aria(){
+                    return global.race.replicator.pow + 'MW';
+                }
+            },
+            filters: {
+                resName(r){
+                    return global.resource[r].name;
+                },
+                result(r){
+                    return loc(`tau_replicator`,[replicator(r).toFixed(3),global.resource[r].name]);
+                }
+            }
+        });
+    }
+}
+
+export function replicator(res){
+    return 100 / atomic_mass[res];
+}
+
 export function manaCost(spell,rate){
     rate = typeof rate === 'undefined' ? 0.0025 : rate;
     return spell * ((1 + rate) ** spell - 1);
@@ -1342,7 +1483,15 @@ export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
         case 'city':
-            isOk = global.race['cataclysm'] || global.race['orbit_decayed'] ? false : checkCityRequirements(p1);
+            if (p1 === 'replicator' && global.race['replicator']){
+                isOk = true;
+            }
+            else {
+                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : checkCityRequirements(p1);
+            }
+            break;
+        case 'space':
+            isOk = global.tech['isolation'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);

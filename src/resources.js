@@ -114,6 +114,7 @@ export const atomic_mass = {
     Graphene: 26.9615,
     Stanene: 33.9615,
     Bolognium: 75.898,
+    Unobtainium: 168.59,
     Vitreloy: 41.08,
     Orichalcum: 237.8,
     Water: 18.01,
@@ -124,7 +125,8 @@ export const atomic_mass = {
     Mythril: 94.239,
     Aerogel: 7.84,
     Nanoweave: 23.71,
-    Scarletite: 188.6
+    Scarletite: 188.6,
+    Quantium: 241.35
 };
 
 export const supplyValue = {

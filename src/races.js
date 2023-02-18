@@ -1,6 +1,6 @@
 import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
-import { defineIndustry } from './civics.js';
+import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';

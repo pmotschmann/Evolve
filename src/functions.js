@@ -238,7 +238,8 @@ export function powerGrid(type,reset){
                 'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
-                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center'
+                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
+                'city:replicator'
             ];
             break;
         case 'moon':
@@ -1515,6 +1516,7 @@ export function adjustCosts(c_action, offset, wiki){
         return newCosts;
     }
     costs = truthAdjust(costs, c_action, offset, wiki);
+    costs = loneAdjust(costs, offset, wiki);
     costs = inflationAdjust(costs, offset, wiki);
     costs = technoAdjust(costs, offset, wiki);
     costs = kindlingAdjust(costs, offset, wiki);
@@ -1524,6 +1526,28 @@ export function adjustCosts(c_action, offset, wiki){
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
     return craftAdjust(costs, offset, wiki);
+}
+
+function loneAdjust(costs, offset, wiki){
+    if (global.race['lone_survivor']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+            else if (['Knowledge'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.5); }
+            }
+            else if (['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Quantium'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.15); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.35); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function truthAdjust(costs, c_action, offset, wiki){

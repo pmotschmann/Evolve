@@ -68,64 +68,6 @@ export function defineGovernment(define){
     defineGovernor();
 }
 
-export function defineIndustry(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
-        return;
-    }
-    clearElement($('#industry'));
-
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
-        var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
-        $(`#industry`).append(smelter);
-        loadIndustry('smelter',smelter,'#iSmelter');
-    }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
-        var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
-        $(`#industry`).append(factory);
-        loadIndustry('factory',factory,'#iFactory');
-    }
-    if (global.interstellar['mining_droid'] && global.interstellar.mining_droid.count > 0){
-        var droid = $(`<div id="iDroid" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_mining_droid_title')}</h2></div>`);
-        $(`#industry`).append(droid);
-        loadIndustry('droid',droid,'#iDroid');
-    }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || global.space['g_factory'] && global.space.g_factory.count > 0){
-        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
-        $(`#industry`).append(graphene);
-        loadIndustry('graphene',graphene,'#iGraphene');
-    }
-    if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'])){
-        var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
-        $(`#industry`).append(casting);
-        loadIndustry('pylon',casting,'#iPylon');
-    }
-    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
-        var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
-        $(`#industry`).append(ratio);
-        loadIndustry('rock_quarry',ratio,'#iQuarry');
-    }
-    if (global.space['titan_mine'] && global.space['titan_mine'].count > 0){
-        var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
-        $(`#industry`).append(ratio);
-        loadIndustry('titan_mine',ratio,'#iTMine');
-    }
-    if (global.tech['tau_roid'] && global.tech.tau_roid >= 4 && global.tauceti['mining_ship']){
-        var mining_ship = $(`<div id="iMiningShip" class="industry"><h2 class="header has-text-advanced">${loc('tau_roid_mining_ship')}</h2></div>`);
-        $(`#industry`).append(mining_ship);
-        loadIndustry('mining_ship',mining_ship,'#iMiningShip');
-    }
-    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station']){
-        var alien_space_station = $(`<div id="iAlienSpaceStation" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas2_alien_station')}</h2></div>`);
-        $(`#industry`).append(alien_space_station);
-        loadIndustry('alien_space_station',alien_space_station,'#iAlienSpaceStation');
-    }
-    if (global.race['deconstructor'] && global.city['nanite_factory']){
-        var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
-        $(`#industry`).append(nanite);
-        loadIndustry('nanite_factory',nanite,'#iNFactory');
-    }
-}
-
 // Sets up garrison in civics tab
 export function defineGarrison(){
     commisionGarrison();
