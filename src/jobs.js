@@ -355,6 +355,9 @@ export function workerScale(num,job){
         if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
             num *= 80;
         }
+        else if (['craftsman'].includes(job)){
+            num *= 60;
+        }
         else if (['miner','coal_miner','cement_worker','banker','entertainer','priest','pit_miner'].includes(job)){
             num *= 45;
         }

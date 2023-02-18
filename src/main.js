@@ -6605,7 +6605,7 @@ function fastLoop(){
                     return;
                 }
                 breakdown.p[craft] = {};
-                let num = global.city.foundry[craft];
+                let num = workerScale(global.city.foundry[craft],'craftsman');
                 if (global.race['servants'] && global.race.servants.hasOwnProperty('sjobs') && global.race.servants.sjobs.hasOwnProperty(craft)){
                     num += jobScale(global.race.servants.sjobs[craft]);
                 }
@@ -8287,6 +8287,7 @@ function midLoop(){
                 if (Math.rand(0,10) < global.tauceti.womling_lab.scientist){
                     global.tauceti.womling_lab.tech += Math.rand(0,global.tauceti.womling_lab.scientist + 1);
                     let expo = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 4.9 : 5;
+                    if (global.race['lone_survivor']){ expo -= 0.1; }
                     if (global.tauceti.womling_lab.tech >= Math.round((global.tech.womling_tech + 2) ** expo)){
                         global.tech.womling_tech++;
                         global.tauceti.womling_lab.tech = 0;

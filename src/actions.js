@@ -543,6 +543,7 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_carnivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_carnivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
+                    global.tech['evo'] = 7;
                     global.tech['evo_carnivore'] = 2;
                     global.evolution['final'] = 100;
                     return true;
@@ -565,6 +566,7 @@ export const actions = {
             effect(){ return global.city.biome === 'hellscape' && global.race.universe !== 'evil' ? `<div>${loc('evo_herbivore_effect')}</div><div class="has-text-special">${loc('evo_warn_unwise')}</div>` : loc('evo_herbivore_effect'); },
             action(){
                 if (payCosts($(this)[0])){
+                    global.tech['evo'] = 7;
                     global.tech['evo_herbivore'] = 2;
                     global.evolution['final'] = 100;
                     return true;

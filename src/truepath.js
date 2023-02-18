@@ -2099,7 +2099,7 @@ const tauCetiModules = {
             },
             special: true,
             support(){ return -1; },
-            powered(){ return powerModifier(global.tech['isolation'] ? 2 : 5); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_factory.count++;
@@ -2152,7 +2152,7 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return -1; },
-            powered(){ return powerModifier(global.tech['isolation'] ? 8 : 35); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 2 : 8) : 35); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.infectious_disease_lab.count++;
@@ -2190,7 +2190,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 2 ? 2 : 3); },
+            powered(){ return powerCostMod(global.race['lone_survivor'] ? 1 : 2); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tauceti_casino.count++;
@@ -2472,16 +2472,20 @@ const tauCetiModules = {
                 return desc;
             },
             val(){
+                let val = 0;
                 if (global.race['womling_lord']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
                 }
                 else if (global.race['womling_god']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 6 : 5;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 6 : 5;
                 }
                 else if (global.race['womling_friend']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 10 : 8;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 10 : 8;
                 }
-                return 0;
+                if (global.race['lone_survivor']){
+                    val *= 2;
+                }
+                return val;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },
@@ -2645,16 +2649,20 @@ const tauCetiModules = {
                 return desc;
             },
             val(){
+                let val = 0;
                 if (global.race['womling_lord']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 24 : 20;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 24 : 20;
                 }
                 else if (global.race['womling_god']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 12 : 10;
                 }
                 else if (global.race['womling_friend']){
-                    return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 18 : 15;
+                    val = global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? 18 : 15;
                 }
-                return 0;
+                if (global.race['lone_survivor']){
+                    val *= 2;
+                }
+                return val;
             },
             support(){ return -1; },
             powered(){ return powerCostMod(1); },

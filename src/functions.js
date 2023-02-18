@@ -1538,6 +1538,9 @@ function loneAdjust(costs, offset, wiki){
             else if (['Knowledge'].includes(res)){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.5); }
             }
+            else if (['Money'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.22); }
+            }
             else if (['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Quantium'].includes(res)){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.14); }
             }

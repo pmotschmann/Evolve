@@ -1719,7 +1719,7 @@ export function tradeSellPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.03 : 0.02;
         price = price * (1 + (global.tech['railway'] * boost));
     }
-    if (global.race['truepath']){
+    if (global.race['truepath'] && !global.race['lone_survivor']){
         price *= 1 - (global.civic.foreign.gov3.hstl / 101);
     }
     if (global.race['inflation']){
@@ -1748,7 +1748,7 @@ export function tradeBuyPrice(res){
         let boost = global.stats.achieve['banana'] && global.stats.achieve.banana.l >= 1 ? 0.97 : 0.98;
         price = price * (boost ** global.tech['railway']);
     }
-    if (global.race['truepath']){
+    if (global.race['truepath'] && !global.race['lone_survivor']){
         price *= 1 + (global.civic.foreign.gov3.hstl / 101);
     }
     if (global.race['inflation']){
