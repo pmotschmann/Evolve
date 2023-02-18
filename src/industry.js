@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation, p_on, support_on } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
@@ -1450,7 +1450,7 @@ function loadReplicator(parent,bind){
 }
 
 export function replicator(res){
-    return 100 / atomic_mass[res];
+    return 17.5 * quantum_level / atomic_mass[res];
 }
 
 export function manaCost(spell,rate){

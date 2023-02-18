@@ -12892,12 +12892,35 @@ const techs = {
         trait: ['lone_survivor'],
         grant: ['replicator',1],
         cost: {
-            Knowledge(){ return 7250000; },
+            Knowledge(){ return 6250000; },
         },
         effect(){ return loc('tech_replicator_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.race['replicator'] = { res: 'Unobtainium', pow: 1 };
+                return true;
+            }
+            return false;
+        }
+    },
+    womling_unlock: {
+        id: 'tech-womling_unlock',
+        title: loc('tech_womling_unlock'),
+        desc: loc('tech_womling_unlock'),
+        category: 'womling',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { replicator: 1 },
+        grant: ['tau_red',4],
+        cost: {
+            Knowledge(){ return 6500000; }
+        },
+        effect(){ return loc('tech_womling_unlock_effect',[loc('tau_planet',[planetName().red])]); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.settings.tau.red = true;
+                global.tauceti.orbital_platform.count = 1;
+                global.tauceti.orbital_platform.on = 1;
                 return true;
             }
             return false;

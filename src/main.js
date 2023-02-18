@@ -5271,8 +5271,37 @@ function fastLoop(){
                     iron_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                 }
 
+                let pit_miner = 0; let womling = 0;
+                if (global.tech['isolation'] && global.race['lone_survivor']){
+                    { // Pit Miner
+                        let miner_base = workerScale(global.civic.pit_miner.workers,'pit_miner');
+                        miner_base *= racialTrait(miner_base,'miner');
+                        let colony_val = 1 + ((support_on['colony'] || 0) * 0.5);
+
+                        let pit_base = miner_base;
+                        pit_base *= production('mining_pit','iron');
+                        pit_miner = pit_base * colony_val;
+    
+                        iron_bd[loc('job_pit_miner')] = pit_base + 'v';
+                        if (pit_base > 0){
+                            iron_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                        }
+                    }
+
+                    { // Womling Mine
+                        let prod = global.tauceti.overseer.prod / 100;
+                        let iron_base = global.tauceti.womling_mine.miners * production('womling_mine','iron');
+                        iron_bd[loc('tau_red_womlings')] = iron_base + 'v';
+                        womling = iron_base * prod;
+    
+                        if (iron_base > 0){
+                            iron_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                        }
+                    }
+                }
+
                 let eship_iron = e_ship['iron'] ? e_ship.iron * womling_technician : 0;
-                let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron)) * smelter_mult * shrineMetal.mult;
+                let delta = ((iron_base * iron_power * q_multiplier) + (space_iron * qs_multiplier * zigVal) + (eship_iron) + (pit_miner) + (womling)) * smelter_mult * shrineMetal.mult;
                 global.city.mine['ipow'] = +(iron_base * q_multiplier * hunger * global_multiplier * (iron_single - 1)).toFixed(5);
                 delta *= hunger * global_multiplier;
 
@@ -5700,12 +5729,6 @@ function fastLoop(){
             modRes('Iridium', iridium_delta * time_multiplier);
         }
 
-        if (shrineBonusActive()){
-            iridium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
-        }
-        iridium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-        breakdown.p['Iridium'] = iridium_bd;
-
         // Helium 3
         let helium_bd = {};
         if (global.space['moon_base'] && support_on['helium_mine']){
@@ -5876,9 +5899,6 @@ function fastLoop(){
             }
             modRes('Neutronium', neutronium_delta * time_multiplier);
         }
-
-        neutronium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-        breakdown.p['Neutronium'] = neutronium_bd;
 
         // Elerium
         let elerium_bd = {};
@@ -6122,6 +6142,19 @@ function fastLoop(){
     
                         modRes('Coal', delta * time_multiplier);
                     }
+
+                    if (global.race['lone_survivor']){ // Aluminium
+                        let alum_base = miner_base;
+                        alum_base *= production('mining_pit','aluminium');
+                        let delta = alum_base * shrineMetal.mult * global_multiplier * colony_val;
+    
+                        alumina_bd[loc('job_pit_miner')] = alum_base + 'v';
+                        if (alum_base > 0){
+                            alumina_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                        }
+    
+                        modRes('Aluminium', delta * time_multiplier);
+                    }
                 }
             }
             else {
@@ -6265,12 +6298,50 @@ function fastLoop(){
 
                     let titanium_base = global.tauceti.womling_mine.miners * production('womling_mine','titanium');
                     titanium_bd[loc('tau_red_womlings')] = titanium_base + 'v';
-                    let titanium_delta = titanium_base * prod * global_multiplier;
+                    let titanium_delta = titanium_base * prod * shrineMetal.mult * global_multiplier;
 
                     if (titanium_base > 0){
                         titanium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
                     }
                     modRes('Titanium', titanium_delta * time_multiplier);
+
+                    if (global.race['lone_survivor']){
+                        let copper_base = global.tauceti.womling_mine.miners * production('womling_mine','copper');
+                        copper_bd[loc('tau_red_womlings')] = copper_base + 'v';
+                        let copper_delta = copper_base * prod * shrineMetal.mult * global_multiplier;
+    
+                        if (copper_delta > 0){
+                            copper_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                        }
+                        modRes('Copper', copper_delta * time_multiplier);
+    
+                        let alumina_base = global.tauceti.womling_mine.miners * production('womling_mine','aluminium');
+                        alumina_bd[loc('tau_red_womlings')] = alumina_base + 'v';
+                        let alumina_delta = alumina_base * prod * shrineMetal.mult * global_multiplier;
+    
+                        if (alumina_base > 0){
+                            alumina_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                        }
+                        modRes('Aluminium', alumina_delta * time_multiplier);
+
+                        let iridium_base = global.tauceti.womling_mine.miners * production('womling_mine','iridium');
+                        iridium_bd[loc('tau_red_womlings')] = iridium_base + 'v';
+                        let iridium_delta = iridium_base * prod * shrineMetal.mult * global_multiplier;
+    
+                        if (iridium_base > 0){
+                            iridium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                        }
+                        modRes('Iridium', iridium_delta * time_multiplier);
+
+                        let neutronium_base = global.tauceti.womling_mine.miners * production('womling_mine','neutronium');
+                        neutronium_bd[loc('tau_red_womlings')] = neutronium_base + 'v';
+                        let neutronium_delta = neutronium_base * prod * hunger * global_multiplier;
+    
+                        if (neutronium_base > 0){
+                            neutronium_bd[`ᄂ${loc('tau_red_womling_prod_label')}`] = -((1 - prod) * 100) + '%';
+                        }
+                        modRes('Neutronium', neutronium_delta * time_multiplier);
+                    }
                 }
             }
             breakdown.p['Unobtainium'] = unobtainium_bd;
@@ -6278,6 +6349,15 @@ function fastLoop(){
 
         breakdown.p['Uranium'] = uranium_bd;
         breakdown.p['Titanium'] = titanium_bd;
+
+        neutronium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Neutronium'] = neutronium_bd;
+
+        if (shrineBonusActive()){
+            iridium_bd[loc('city_shrine')] = ((shrineMetal.mult - 1) * 100).toFixed(1) + '%';
+        }
+        iridium_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+        breakdown.p['Iridium'] = iridium_bd;
 
         // Income
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;

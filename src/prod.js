@@ -309,6 +309,16 @@ export function production(id,val){
                     mats = highPopAdjust(0.13);
                     break;
                 }
+                case 'iron':
+                {
+                    mats = highPopAdjust(0.74);
+                    break;
+                }
+                case 'aluminium':
+                {
+                    mats = highPopAdjust(0.88);
+                    break;
+                }
             }
             if (global.tech['tau_pit_mining']){
                 mats *= 1.18;
@@ -357,6 +367,26 @@ export function production(id,val){
                 case 'titanium':
                 {
                     return 0.616 * boost;
+                }
+                case 'copper':
+                {
+                    return 1.191 * boost;
+                }
+                case 'iron':
+                {
+                    return 1.377 * boost;
+                }
+                case 'aluminium':
+                {
+                    return 1.544 * boost;
+                }
+                case 'neutronium':
+                {
+                    return 0.382 * boost;
+                }
+                case 'iridium':
+                {
+                    return 0.535 * boost;
                 }
             }
         }

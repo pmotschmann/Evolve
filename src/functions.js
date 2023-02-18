@@ -1539,10 +1539,10 @@ function loneAdjust(costs, offset, wiki){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.5); }
             }
             else if (['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Quantium'].includes(res)){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.15); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.14); }
             }
             else {
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.35); }
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.28); }
             }
         });
         return newCosts;

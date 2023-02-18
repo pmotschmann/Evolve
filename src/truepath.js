@@ -1578,9 +1578,9 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 25 : 400 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 18 : 25) : 400 }; },
             support(){ return 3; },
-            powered(){ return powerCostMod(global.tech['isolation'] ? 6 : 30); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 4 : 6) : 30); },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -1799,7 +1799,12 @@ const tauCetiModules = {
                 }
                 else {
                     if (global.tech['isolation']){
-                        desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Coal.name])}</div>`;
+                        if (global.race['lone_survivor']){
+                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2c',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Iron.name,global.resource.Aluminium.name,global.resource.Coal.name])}</div>`;
+                        }
+                        else {
+                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Coal.name])}</div>`;
+                        }
                         desc = desc + `<div>${loc('tau_gas_womling_station_effect',[8,global.resource.Cement.name])}</div>`;
                     }
                     else {
@@ -1871,7 +1876,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 12 : 25) : 100); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 25) : 100); },
             special(){
                 return global.tech['replicator'] ? true : false;
             },
@@ -1944,7 +1949,7 @@ const tauCetiModules = {
                 }
                 return desc;
             },
-            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -100 : 75) : 500 }; },
+            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -50 : 75) : 500 }; },
             powered(){ return powerModifier(-32); },
             action(){
                 if (payCosts($(this)[0])){
@@ -2320,9 +2325,13 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Oil', a: global.tech['isolation'] ? 32 : 125 }; },
-            support(){ return global.tech['womling_logistics'] ? 2.5 : 2; },
-            powered(){ return powerCostMod(global.tech['isolation'] ? 3 : 18); },
+            support_fuel(){ return { r: global.race['lone_survivor'] ? 'Helium_3' : 'Oil', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 8 : 32) : 125 }; },
+            support(){
+                let sup = global.tech['womling_logistics'] ? 2.5 : 2;
+                if (global.race['lone_survivor']){ sup *= 2; }
+                return sup;
+            },
+            powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 2 : 3) : 18); },
             refresh: true,
             action(){
                 if (tauEnabled() && payCosts($(this)[0])){
@@ -2572,7 +2581,15 @@ const tauCetiModules = {
             effect(){
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('tau_red_womling_mine_effect_b',[global.resource.Unobtainium.name,global.resource.Uranium.name,global.resource.Titanium.name])}</div>`;
+                    if (global.race['lone_survivor']){
+                        desc = desc + `<div>${loc('tau_red_womling_mine_effect_c',[
+                            global.resource.Unobtainium.name,global.resource.Uranium.name,global.resource.Titanium.name,global.resource.Iron.name,
+                            global.resource.Copper.name,global.resource.Aluminium.name,global.resource.Neutronium.name,global.resource.Iridium.name
+                        ])}</div>`;
+                    }
+                    else {
+                        desc = desc + `<div>${loc('tau_red_womling_mine_effect_b',[global.resource.Unobtainium.name,global.resource.Uranium.name,global.resource.Titanium.name])}</div>`;
+                    }
                 }
                 else {
                     desc = desc + `<div>${loc('tau_red_womling_mine_effect_a',[global.resource.Unobtainium.name])}</div>`;
@@ -3427,8 +3444,8 @@ function retireProjection(){
 
 function defineWomlings(){
     global.tauceti['overseer'] = { count : 0, on: 0, pop: 0, working: 0, injured: 0, morale: 0, loyal: 0, prod: 0 };
-    global.tauceti['womling_village'] = { count : 1, on: 1 };
-    global.tauceti['womling_mine'] = { count : 0, on: 0, miners: 0 };
+    global.tauceti['womling_village'] = global.race['lone_survivor'] ? { count : 2, on: 2 } : { count : 1, on: 1 };
+    global.tauceti['womling_mine'] = global.race['lone_survivor'] ? { count : 1, on: 1, miners: 0 } : { count : 0, on: 0, miners: 0 };
     global.tauceti['womling_farm'] = { count : 1, on: 1, farmers: 0 };
     global.tauceti['womling_fun'] = { count : 0, on: 0 };
 }
