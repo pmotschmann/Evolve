@@ -67,7 +67,7 @@ export function defineIndustry(){
         $(`#industry`).append(droid);
         loadIndustry('droid',droid,'#iDroid');
     }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || global.space['g_factory'] && global.space.g_factory.count > 0){
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
         var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
         $(`#industry`).append(graphene);
         loadIndustry('graphene',graphene,'#iGraphene');
@@ -1385,18 +1385,29 @@ function loadReplicator(parent,bind){
         let content = $(`<div class="doublePane"></div>`);
         parent.append(content);
         
+        if (bind){
         let values = ``;
-        Object.keys(atomic_mass).forEach(function(res){
-            values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
-        });
+            Object.keys(atomic_mass).forEach(function(res){
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
+            });
 
-        content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
-            <button class="button is-info" slot="trigger">
-                <span>{{ res | resName }}</span>
-            </button>${values}
-        </b-dropdown></div>`);
+            content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
+                <button class="button is-info" slot="trigger">
+                    <span>{{ res | resName }}</span>
+                </button>${values}
+            </b-dropdown></div>`);
+        }
+        else {
+            let scrollMenu = ``;
+            Object.keys(atomic_mass).forEach(function(res){
+                if (global.resource[res].display){
+                    scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
+                }
+            });
+            content.append(`<div class="left hscroll"><b-field>${scrollMenu}</b-field></div>`);
+        }
 
-        let power = $(`<div></div>`);
+        let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
         content.append(power);
 
         let current = $(`<span :aria-label="aria" class="current"><span>{{ pow }}MW</span></span>`);

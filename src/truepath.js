@@ -1578,7 +1578,7 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend_power',[fuel,global.resource[$(this)[0].support_fuel().r].name,$(this)[0].powered()])}</div>`;
                 return desc;
             },
-            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 18 : 25) : 400 }; },
+            support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? 5 : 25) : 400 }; },
             support(){ return 3; },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 4 : 6) : 30); },
             refresh: true,
@@ -1949,7 +1949,7 @@ const tauCetiModules = {
                 }
                 return desc;
             },
-            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -50 : 75) : 500 }; },
+            p_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -15 : 75) : 500 }; },
             powered(){ return powerModifier(-32); },
             action(){
                 if (payCosts($(this)[0])){
@@ -5307,7 +5307,7 @@ export function loneSurvivor(){
         global.space['exotic_lab'] = { count: 0, on: 0 };
         global.space['fabrication'] = { count: 0, on: 0 };
         global.space['fob'] = { count: 0, on: 0, troops: 0, enemy: 0 };
-        global.space['g_factory'] = { count: 0 };
+        global.space['g_factory'] = { count: 0, on: 0, Lumber: 0, Coal: 0, Oil: 0 };
         global.space['garage'] = { count: 0 };
         global.space['gas_mining'] = { count: 0, on: 0 };
         global.space['gas_storage'] = { count: 0 };
