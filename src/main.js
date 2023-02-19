@@ -9768,7 +9768,7 @@ function longLoop(){
             setWeather();
         }
 
-        if (!global.race['cataclysm'] && !global.race['orbit_decayed']){
+        if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && !global.race['lone_survivor'] && !global.race['vax']){
             let deterioration = Math.floor(50000000 / (1 + global.race.mutation)) - global.stats.days;
             if (global.race.deterioration === 0 && deterioration < 40000000){
                 global.race.deterioration = 1;
