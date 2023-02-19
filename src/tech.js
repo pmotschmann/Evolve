@@ -12334,6 +12334,7 @@ const techs = {
         path: ['truepath'],
         reqs: { disease: 2 },
         grant: ['disease',3],
+        not_trait: ['lone_survivor'],
         cost: {
             Knowledge(){ return 8500000; }
         },
@@ -12356,6 +12357,7 @@ const techs = {
         path: ['truepath'],
         reqs: { disease: 2 },
         grant: ['disease',3],
+        not_trait: ['lone_survivor'],
         cost: {
             Knowledge(){ return 8500000; }
         },
@@ -12690,8 +12692,7 @@ const techs = {
                 return true;
             }
             return false;
-        },
-        flair(){ return loc('tech_cultural_center_flair'); }
+        }
     },
     alien_research: {
         id: 'tech-alien_research',
@@ -12845,6 +12846,7 @@ const techs = {
         path: ['truepath'],
         reqs: { alien_data: 6, tau_gas2: 6 },
         grant: ['tau_gas2',7],
+        not_trait: ['lone_survivor'],
         cost: {
             Knowledge(){ return 10000000; }
         },
@@ -12926,6 +12928,27 @@ const techs = {
             return false;
         }
     },
+    garden_of_eden: {
+        id: 'tech-garden_of_eden',
+        title: loc('tech_garden_of_eden'),
+        desc: loc('tech_garden_of_eden'),
+        category: 'special',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { eden: 1 },
+        grant: ['eden',2],
+        cost: {
+            Knowledge(){ return 10000000; }
+        },
+        effect(){ return loc('tech_garden_of_eden_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.tauceti['goe_facility'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    }
 };
 
 function uniteEffect(){

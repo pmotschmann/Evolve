@@ -1335,14 +1335,14 @@ const tauCetiModules = {
             queue_size: 50,
             queue_complete(){ return 1000 - global.tauceti.ringworld.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 100000000 : 0; },
-                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 100000 : 0; },
-                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 350000 : 0; },
-                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1000000 : 0; },
-                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 88000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 125000 : 0; },
-                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? 1800 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(101000) : 0; },
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 10000000 : 100000000) : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 20000 : 100000) : 0; },
+                Nano_Tube(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 70000 : 350000) : 0; },
+                Adamantite(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 200000 : 1000000) : 0; },
+                Bolognium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 17600 : 88000) : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 25000 : 125000) : 0; },
+                Unobtainium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? (global.race['lone_survivor'] ? 360 : 1800) : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ringworld') ? global.tauceti.ringworld.count : 0)) < 1000 ? wom_recycle(global.race['lone_survivor'] ? 10100 : 101000) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -1353,7 +1353,7 @@ const tauCetiModules = {
                     effectText += `<div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    effectText += `<div class="has-text-special">${loc('space_dwarf_reactor_effect1',[10000])}</div>`;
+                    effectText += `<div class="has-text-special">${loc('space_dwarf_reactor_effect1',[global.race['lone_survivor'] ? 100 : 10000])}</div>`;
                 }
                 return effectText;
             },
@@ -1362,8 +1362,13 @@ const tauCetiModules = {
                     if (global.tauceti.ringworld.count < 1000){
                         global.tauceti.ringworld.count++;
                         if (global.tauceti.ringworld.count >= 1000){
-                            global.tech.matrix = 3;
-                            global.tauceti['matrix'] = { count: 1, on: 0 };
+                            if (global.race['lone_survivor']){
+                                global.tech['eden'] = 1;
+                            }
+                            else {
+                                global.tech.matrix = 3;
+                                global.tauceti['matrix'] = { count: 1, on: 0 };
+                            }
                             renderTauCeti();
                             clearPopper();
                         }
@@ -2243,7 +2248,7 @@ const tauCetiModules = {
                 let mon = 5 * modifier;
                 let bake = 15 * modifier;
 
-                let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[500,global.resource.Food.name,$(this)[0].title])}</div>`;
+                let desc = `<div class="has-text-caution">${loc('tau_home_cultureal_effect1',[$(this)[0].p_fuel().a,global.resource[$(this)[0].p_fuel().r].name,$(this)[0].title])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect3',[cas])}</div>`;
                 desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
@@ -2254,7 +2259,7 @@ const tauCetiModules = {
                 return desc;
             },
             powered(){ return powerCostMod(1); },
-            p_fuel(){ return { r: 'Food', a: 500 }; },
+            p_fuel(){ return { r: 'Food', a: (global.race['lone_survivor'] ? 25 : 500) }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_cultural_center.count++;
@@ -2818,7 +2823,7 @@ const tauCetiModules = {
             cost: {
                 Money(){ return 10000000; }
             },
-            effect(){ return loc('tau_gas_contest_effect'); },
+            effect(){ return global.race['lone_survivor'] ? loc('tau_gas_contest_effect_alt') : loc('tau_gas_contest_effect'); },
             action(){
                 if (payCosts($(this)[0])){
                     return true;
@@ -3178,13 +3183,13 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.tech.tau_gas3 >= 4 ? 0 : 1; },
             cost: {
-                Money(){ return 3000000000; },
+                Money(){ return global.race['lone_survivor'] ? 1500000000 : 3000000000; },
                 Helium_3(){ return 5000000; }
             },
             effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
             action(){
                 if (payCosts($(this)[0])){
-                    global.tauceti['alien_station'] = { count: 99 };
+                    global.tauceti['alien_station'] = { count: 0 };
                     messageQueue(loc('tau_gas2_alien_station_msg',[tauCetiModules.tau_gas2.info.name()]),'info',false,['progress']);
                     return true;
                 }
@@ -3208,11 +3213,11 @@ const tauCetiModules = {
             queue_size: 5,
             queue_complete(){ return 100 - global.tauceti.alien_station.count; },
             cost: {
-                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 50000000 : 0; },
-                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 2560000 : 0; },
-                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 989000 : 0; },
+                Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 12000000 : 50000000) : 0; },
+                Aluminium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256000 : 2560000) : 0; },
+                Polymer(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 198900 : 989000) : 0; },
                 Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
-                Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? 2001 : 0; },
+                Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
             },
             effect(wiki){
                 let effectText = '';
@@ -3257,14 +3262,15 @@ const tauCetiModules = {
                 let fuel = $(this)[0].p_fuel().a;
                 let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
                 if (global.tech['tau_gas2'] && global.tech.tau_gas2 >= 6 && global.tauceti.alien_space_station.hasOwnProperty('decrypted')){
-                    let decrypted = +(global.tauceti.alien_space_station.decrypted / 25000000).toFixed(2);
+                    let devisor = global.race['lone_survivor'] ? 100000 : 25000000;
+                    let decrypted = +(global.tauceti.alien_space_station.decrypted / devisor).toFixed(2);
                     if (decrypted > 100){ decrypted = 100; }
                     desc = desc + `<div>${loc('tau_gas2_alien_station_effect',[decrypted])}</div>`;
                 }
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].p_fuel().r].name])}</div>`;
                 return desc;
             },
-            p_fuel(){ return { r: 'Elerium', a: 10 }; },
+            p_fuel(){ return { r: 'Elerium', a: (global.race['lone_survivor'] ? 1 : 10) }; },
             powered(){ return powerModifier(-75); },
             action(){
                 return false;
@@ -4961,7 +4967,7 @@ export function loneSurvivor(){
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
-        global.tech['disease'] = 1;
+        global.tech['disease'] = 2;
         global.tech['drone'] = 1;
         global.tech['elerium'] = 2;
         global.tech['explosives'] = 3;
