@@ -6466,6 +6466,8 @@
   "tau_star_matrix_servants": "+%0 Servant",
   "tau_star_blue_pill": "Enter the Matrix",
   "tau_star_blue_pill_effect": "Indefinitely pause your entire civilization",
+  "tau_star_goe_facility": "Garden of Eden Facility",
+  "tau_star_goe_facility_effect": "Cloning facility constructed on the Ringworld which will create more of your species from stored DNA samples and allow you to populate the Tau Ceti system.",
   "tau_planet": "New %0",
   "tau_new_support": "%0 New %1 Support",
   "tau_home": "New %0 is the 3rd closest planet to the star Tau Ceti, it is at the inner edge of the habitable zone at 0.5 AU.",

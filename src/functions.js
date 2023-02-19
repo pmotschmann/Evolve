@@ -1394,6 +1394,13 @@ export function calcPrestige(type,inputs){
             phage_mult = 3.2;
             plasmid_cap = 1800;
             break;
+        case 'eden':
+            pop_divisor = 1;
+            k_inc = 18000;
+            k_mult = 1.004;
+            phage_mult = 2.5;
+            plasmid_cap = 1800;
+            break;
     }
 
     if (challenge !== undefined){
@@ -1414,6 +1421,9 @@ export function calcPrestige(type,inputs){
 
         if (global.race['cataclysm']){
             new_plasmid += 300;
+        }
+        else if (global.race['lone_survivor']){
+            new_plasmid += 800;
         }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);

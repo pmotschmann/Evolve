@@ -1458,6 +1458,30 @@ const tauCetiModules = {
                 return false;
             }
         },
+        goe_facility: {
+            id: 'tauceti-goe_facility',
+            title: loc('tau_star_goe_facility'),
+            desc(){ return `<div>${loc('tau_star_goe_facility')}</div>`; },
+            reqs: { eden: 2 },
+            condition(){
+                return global.tauceti.ringworld.count >= 1000 ? true : false;
+            },
+            queue_complete(){ return 0; },
+            cost: {
+                Money(o){ return 1000000; },
+                Copper(o){ return 10000000; },
+                Graphene(o){ return 5000000; },
+                Stanene(o){ return 8000000; },
+                Elerium(o){ return 10000; },
+            },
+            effect(){
+                let reward = edenProjection();
+                return `<div>${loc('tau_star_goe_facility_effect')}</div>${reward}`;
+            },
+            action(){
+                return false;
+            }
+        },
     },
     tau_home: {
         info: {
@@ -3456,6 +3480,12 @@ function retireProjection(){
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.cores,loc('resource_AICore_name')])}</div><div class="has-text-advanced">${loc('tau_star_matrix_servants',[1])}</div>`;
 }
 
+function edenProjection(){
+    let gains = calcPrestige('eden');
+    let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
+    return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.cores,loc('resource_AICore_name')])}</div><div class="has-text-advanced">${loc('tau_star_matrix_servants',[1])}</div>`;
+}
+
 function defineWomlings(){
     global.tauceti['overseer'] = { count : 0, on: 0, pop: 0, working: 0, injured: 0, morale: 0, loyal: 0, prod: 0 };
     global.tauceti['womling_village'] = global.race['lone_survivor'] ? { count : 2, on: 2 } : { count : 1, on: 1 };
@@ -4977,7 +5007,7 @@ export function loneSurvivor(){
         global.tech['gas_giant'] = 1;
         global.tech['gas_moon'] = 2;
         global.tech['genesis'] = 2;
-        global.tech['genetics'] = 8;
+        global.tech['genetics'] = 2;
         global.tech['gov_corp'] = 1;
         global.tech['gov_fed'] = 1;
         global.tech['gov_soc'] = 1;
@@ -5069,6 +5099,7 @@ export function loneSurvivor(){
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 6;
         global.settings.showGenetics = true;
+        global.settings.arpa.genetics = true
 
         //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
@@ -5384,6 +5415,16 @@ export function loneSurvivor(){
             wounded: 0,
             raid: 0,
             max: 2
+        };
+
+        global.arpa['sequence'] = {
+            max: 50000,
+            progress: 0,
+            time: 50000,
+            on: true,
+            boost: false,
+            auto: false,
+            labs: 0,
         };
 
         global.tech['stock_exchange'] = 0;

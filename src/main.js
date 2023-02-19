@@ -8769,6 +8769,7 @@ function midLoop(){
         if (global.arpa['sequence'] && global.arpa.sequence.on && gene_sequence){
             let labs = global.race['cataclysm'] || global.race['orbit_decayed'] ? support_on['exotic_lab'] : p_on['biolab'];
             if (global.tech['isolation']){ labs = support_on['infectious_disease_lab'] * 5; }
+            if (global.race['lone_survivor']){ labs += 2; }
             if (labs > 0 && global.city.ptrait.includes('toxic')){
                 labs += planetTraits.toxic.vars()[0];
             }
