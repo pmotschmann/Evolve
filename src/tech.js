@@ -12850,7 +12850,7 @@ const techs = {
         cost: {
             Knowledge(){ return 10000000; }
         },
-        effect(){ return loc('matrioshka_brain_effect',[actions.tauceti.tau_gas2.info.name()]); },
+        effect(){ return loc('tech_matrioshka_brain_effect',[actions.tauceti.tau_gas2.info.name()]); },
         action(){
             if (payCosts($(this)[0])){
                 global.tauceti['matrioshka_brain'] = { count: 0 };

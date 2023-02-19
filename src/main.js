@@ -763,8 +763,8 @@ function fastLoop(){
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if ((global.city.ptrait.includes('trashed') || global.race['scavenger']) && global.civic['scavenger']){
-        let scavenger = workerScale(global.civic.scavenger.workers,'scavenger');
+    if ((global.city.ptrait.includes('trashed') || global.race['scavenger'] || (global.race['servants'] && global.race.servants['force_scavenger'])) && global.civic['scavenger']){
+        let scavenger = global.city.ptrait.includes('trashed') || global.race['scavenger'] ? workerScale(global.civic.scavenger.workers,'scavenger') : 0;
         if (global.race['servants']){ scavenger += jobScale(global.race.servants.jobs.scavenger); }
         if (scavenger > 0){
             let bonus = (scavenger * traits.scavenger.vars()[0]);
@@ -5296,7 +5296,7 @@ function fastLoop(){
                         }
                     }
 
-                    { // Womling Mine
+                    if (global.tauceti.hasOwnProperty('womling_mine') && global.tauceti.hasOwnProperty('overseer')){ // Womling Mine
                         let prod = global.tauceti.overseer.prod / 100;
                         let iron_base = global.tauceti.womling_mine.miners * production('womling_mine','iron');
                         iron_bd[loc('tau_red_womlings')] = iron_base + 'v';
@@ -8461,6 +8461,13 @@ function midLoop(){
 
         let unlock_servants = false;
         let total_servants = 0;
+        let not_scavanger_jobs_avail = 0;
+        Object.keys(lCaps).forEach(function (job){
+            if (global.civic[job].max === -1 && global.civic[job].display && job !== 'unemployed' && job !== 'scavenger'){
+                not_scavanger_jobs_avail++;
+            }
+        });
+
         Object.keys(lCaps).forEach(function (job){
             global.civic[job].max = lCaps[job];
             if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
@@ -8475,7 +8482,7 @@ function midLoop(){
                     unlock_servants = true;
                 }
                 if (global.race.servants.jobs.hasOwnProperty(job)){
-                    if (!global.civic[job].display){
+                    if (!global.civic[job].display && (job !== 'scavenger' || not_scavanger_jobs_avail > 0)){
                         global.race.servants.jobs[job] = 0;
                     }
                     else {
@@ -8491,7 +8498,8 @@ function midLoop(){
         if (unlock_servants){
             loadServants();
         }
-        else if (total_servants > 0 && global.race['servants']){
+        else if (global.race['servants']){
+            global.race.servants['force_scavenger'] = not_scavanger_jobs_avail === 0 ? true : false;
             global.race.servants.used = total_servants;
         }
 
@@ -9998,6 +10006,7 @@ function longLoop(){
                 sused: 0,
                 jobs: {},
                 sjobs: {},
+                force_scavenger: false
             };
             messageQueue((womlings + skilled) === 1 ? loc('civics_servants_msg1') : loc('civics_servants_msg2',[womlings + skilled]),'caution',false,['events','major_events']);
         }

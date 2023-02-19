@@ -425,12 +425,12 @@ function loadJob(job, define, impact, stress, color){
 
     var id = servant ? 'servant-' + job : 'civ-' + job;
 
-    var civ_container = $(`<div id="${id}" v-show="civic.${job}.display" class="job"></div>`);
+    var civ_container = $(`<div id="${id}" v-show="showJob('${job}')" class="job"></div>`);
     var controls = servant ? $(`<div class="controls"></div>`) : $(`<div v-show="!isDefault('${job}')" class="controls"></div>`);
     if (!color || job === 'unemployed'){
         color = color || 'info';
         let job_label = servant
-         ? $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span class="count">{{ servant.${job} }}</span></div>`)
+         ? $(`<div class="job_label"><h3 class="has-text-${color}">{{ civic.${job}.name }}</h3><span class="count">{{ sjob.${job} }}</span></div>`)
          : $(`<div class="job_label"><h3><a class="has-text-${color}" @click="setDefault('${job}')">{{ civic.${job}.name }}{{ '${job}' | d_state }}</a></h3><span class="count" v-html="$options.filters.event(civic.${job}.workers)">{{ civic.${job}.workers }}</span></div>`);
         civ_container.append(job_label);
     }
@@ -453,9 +453,12 @@ function loadJob(job, define, impact, stress, color){
             el: `#${id}`,
             data: {
                 civic: global.civic,
-                servant: global.race.servants.jobs
+                sjob: global.race.servants.jobs
             },
             methods: {
+                showJob(j){
+                    return global.civic[j].display || (j === 'scavenger' && global.race.servants.force_scavenger);
+                },
                 add(){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
@@ -490,6 +493,9 @@ function loadJob(job, define, impact, stress, color){
                 civic: global.civic
             },
             methods: {
+                showJob(j){
+                    return global.civic[j].display;
+                },
                 add(){
                     let keyMult = keyMultiplier();
                     for (let i=0; i<keyMult; i++){
@@ -582,13 +588,9 @@ export function loadServants(){
         var servants = $(`<div id="servantList" class="job"><div class="foundry job_label"><h3 class="serveHeader has-text-warning">${loc('civics_servants')}</h3><span :class="level()">{{ s.used }} / {{ s.max }}</span></div></div>`);
         $('#servants').append(servants);
 
-        loadJob('hunter','servant');
-        loadJob('forager','servant');
-        loadJob('farmer','servant');
-        loadJob('lumberjack','servant');
-        loadJob('quarry_worker','servant');
-        loadJob('crystal_miner','servant');
-        loadJob('scavenger','servant');
+        ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].forEach(function(job){
+            loadJob(job,'servant');
+        });
 
         vBind({
             el: `#servantList`,
