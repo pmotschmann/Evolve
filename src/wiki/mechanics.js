@@ -7,7 +7,8 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { sideMenu, infoBoxBuilder, createCalcSection, getSolarName } from './functions.js';
+import { shipAttackPower, sensorRange, shipCrewSize } from './../truepath.js';
+import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
     let mainContent = sideMenu('create',content);
@@ -659,6 +660,137 @@ export function mechanicsPage(content){
             `);
         });
         sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'));
+    }
+
+    { // Syndicate
+        let syndicate = infoBoxBuilder(mainContent,{ name: 'syndicate', template: 'mechanics', label: loc('wiki_mechanics_syndicate'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('wiki_mechanics_syndicate'),loc('wiki_challenges_scenarios_truepath'),loc('wiki_mechanics_syndicate_para1_note1'),loc('tech_shipyard',[races[global.race.species ? global.race.species : human].solar.dwarf])],
+                2: [loc('galaxy_piracy'),loc('tab_galactic')]
+            },
+            data_link: {
+                1: [false,'wiki.html#challenges-gameplay-scenarios_truepath','wiki.html#progress-events-syndicate','wiki.html#solar-tp_tech-shipyard'],
+                2: ['wiki.html#mechanics-gameplay-piracy']
+            }
+        });
+        
+        let syndicate_influence = infoBoxBuilder(syndicate,{ name: 'syndicate_influence', template: 'mechanics', label: loc('wiki_mechanics_syndicate_influence'), paragraphs: 3, break:[3], h_level: 2,
+            para_data: {
+                1: [0],
+                2: [loc(`space_mission_title`,[getSolarName('triton')]),loc('tech_data_analysis')],
+                3: ['1/10',1,getSolarName('triton'),'1/5']
+            },
+            data_link: {
+                2: ['wiki.html#space-tp_structures-triton_mission','wiki.html#solar-tp_tech-data_analysis']
+            }
+        });
+        
+        { // Current Syndicate Influence List
+            let syndicate_influence_reveal = createRevealSection(syndicate_influence,'mechanics','syndicate_influence_current',loc('wiki_mechanics_syndicate_influence_current'));
+            
+            ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','kuiper','eris'].forEach(function(region){
+                let influence = global.space['syndicate'] && global.space.syndicate['spc_'+region] ? global.space.syndicate['spc_'+region] : 0;
+                
+                syndicate_influence_reveal.append(`<div><span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">${influence}</span>`);
+            });
+        }
+        
+        let syndicate_cap_calc = createCalcSection(syndicate_influence,'mechanics','syndicate_cap');
+        syndicateCapCalc(syndicate_cap_calc);
+        
+        let syndicate_penalty = infoBoxBuilder(syndicate,{ name: 'syndicate_penalty', template: 'mechanics', label: loc('wiki_mechanics_syndicate_penalty'), paragraphs: 6, break: [2,4,5], h_level: 2,
+            para_data: {
+                1: [loc('galaxy_piracy'),loc('portal_ruins_security')],
+                2: [getSolarName('titan')],
+                3: [loc('civics_gov_relations'),loc('wiki_mechanics_rival')],
+                5: [loc('galaxy_armada'),loc('tab_galactic'),loc('portal_ruins_security')],
+                6: [loc('portal_ruins_security'),loc('firepower'),loc('outer_shipyard_hull'),loc('space_scan_effectiveness')]
+            },
+            data_link: {
+                1: ['wiki.html#mechanics-gameplay-piracy']
+            }
+        });
+        let syndicate_penalty_calc = createCalcSection(syndicate_penalty,'mechanics','syndicate_penalty',loc('wiki_mechanics_syndicate_penalty'));
+        syndicatePenaltyCalc(syndicate_penalty_calc);
+        
+        sideMenu('add',`mechanics-gameplay`,`syndicate`,loc('wiki_mechanics_syndicate'));
+    }
+
+    { // Truepath Ship Mechanics
+        let tp_ships = infoBoxBuilder(mainContent,{ name: 'tp_ships', template: 'mechanics', label: loc('wiki_mechanics_tp_ships'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('outer_shipyard_title'),loc('tab_shipyard'),loc('tab_civics')],
+                2: [loc('tab_galactic'),loc('galaxy_piracy')]
+            },
+            data_link: {
+                1: ['wiki.html#space-tp_structures-shipyard'],
+                2: [false,'wiki.html#mechanics-gameplay-piracy']
+            }
+        });
+        
+        let tp_ships_costs = infoBoxBuilder(tp_ships,{ name: 'tp_ships_costs', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_costs'), paragraphs: 3, break:[3], h_level: 2,
+            para_data: {
+                2: [loc(`outer_shipyard_class`)],
+                3: [loc(`outer_shipyard_class`)]
+            }
+        });
+        let costs_calc = createCalcSection(tp_ships_costs,'mechanics','tp_ships_costs',loc('wiki_mechanics_tp_ships_costs'));
+        
+        let tp_ships_crew = infoBoxBuilder(tp_ships,{ name: 'tp_ships_crew', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_crew'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`outer_shipyard_class`)]
+            }
+        });
+        
+        { // Current TP Ship Crew
+            let tp_ships_crew_reveal = createRevealSection(tp_ships_crew,'mechanics','tp_ships_crew',loc('wiki_mechanics_tp_ships_crew'));
+            
+            ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'].forEach(function(shipClass){
+                tp_ships_crew_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+shipClass)}</span>: <span class="has-text-warning">${shipCrewSize({ class: shipClass })}</span>`);
+            });
+        }
+        
+        let tp_ships_power = infoBoxBuilder(tp_ships,{ name: 'tp_ships_power', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_power'), paragraphs: 4, break:[3], h_level: 2,
+            para_data: {
+                3: [loc('outer_shipyard_power'),loc('outer_shipyard_class')],
+                4: [loc('outer_shipyard_weapon'),loc('outer_shipyard_engine'),loc('outer_shipyard_sensor'),loc(`outer_shipyard_class`)]
+            }
+        });
+        let power_calc = createCalcSection(tp_ships_power,'mechanics','tp_ships_power',loc('wiki_mechanics_tp_ships_power'));
+        
+        let tp_ships_firepower = infoBoxBuilder(tp_ships,{ name: 'tp_ships_firepower', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_firepower'), paragraphs: 2, break:[3], h_level: 2,
+            para_data: {
+                1: [loc('firepower'),loc('outer_shipyard_class'),loc('outer_shipyard_weapon')],
+                2: [loc('firepower'),loc('outer_shipyard_hull')]
+            }
+        });
+        let firepower_calc = createCalcSection(tp_ships_firepower,'mechanics','tp_ships_firepower',loc('wiki_mechanics_tp_ships_firepower'));
+        tpShipsFirepowerCalc(firepower_calc);
+        
+        let tp_ships_hull = infoBoxBuilder(tp_ships,{ name: 'tp_ships_hull', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_hull'), paragraphs: 7, break:[3,6,7], h_level: 2,
+            para_data: {
+                1: [loc('firepower'),loc('outer_shipyard_hull')],
+                2: [loc('outer_shipyard_hull'),`90%`,loc('firepower'),0.9],
+                3: [getSolarName('dwarf'),`1/10`,loc('outer_shipyard_hull')],
+                4: [loc('outer_shipyard_armor')],
+                5: [getSolarName('triton')],
+                6: [`1%`,loc('outer_shipyard_hull')],
+                7: [loc('outer_shipyard_hull'),`10%`]
+            }
+        });
+        let hull_calc = createCalcSection(tp_ships_hull,'mechanics','tp_ships_hull',loc('wiki_calc_tp_ships_hull_damage_range'));
+        tpShipsHullCalc(hull_calc);
+        
+        let tp_ships_sensors = infoBoxBuilder(tp_ships,{ name: 'tp_ships_sensors', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_sensors'), paragraphs: 2, h_level: 2,
+            para_data: {
+                1: [loc('space_scan_effectiveness')],
+                2: [loc('space_scan_effectiveness'),loc('outer_shipyard_sensors'),loc('outer_shipyard_sensor'),getSolarName('triton'),loc('space_fob_title')]
+            }
+        });
+        let sensors_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_sensors',loc('wiki_mechanics_tp_ships_sensors'));
+        tpShipsSensorsCalc(sensors_calc);
+        
+        sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
     }
 
     { // Seeded Randomness
@@ -1985,6 +2117,823 @@ function untappedCalc(info){
                     show.result.val = +(inputs.genes.val / (inputs.genes.val + 20) / 10 + 0.00024).toFixed(5);
                     
                     return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+function syndicateCapCalc(info){
+    let calc = $(`<div class="calc" id="syndicateCapCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_syndicate_caps')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        triton1: { val: false },
+        outer4: { val: false }
+    }
+    
+    let regions = ``;
+    ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','kuiper','eris'].forEach(function(region){
+        regions += `
+            <div>
+                <span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">{{ '${region}' | calc }}</span>
+            </div>
+        `;
+    });
+    
+    formula.append(regions);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><div><span>${loc(`space_mission_title`,[getSolarName('triton')])}</span></div><div><b-checkbox class="patrol" v-model="i.triton1.val"></b-checkbox></div></div>
+            <div class="calcInput" v-show="i.triton1.val"><div><span>${loc('tech_data_analysis')}</span></div><div><b-checkbox class="patrol" v-model="i.outer4.val"></b-checkbox></div></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#syndicateCapCalc`,
+        data: {
+            i: inputs
+        },
+        methods: {
+            resetInputs(){
+                inputs.triton1.val = false;
+                inputs.outer4.val = false;
+            },
+            importInputs(){
+                inputs.triton1.val = global.tech['triton'] && global.tech.triton >= 1;
+                inputs.outer4.val = global.tech['outer'] && global.tech.outer >= 4;
+            }
+        },
+        filters: {
+            calc(region){
+                switch (region){
+                    case 'titan':
+                        return inputs.triton1.val ? inputs.outer4.val ? 2000 : 1000 : 600;
+                    case 'enceladus':
+                        return inputs.triton1.val ? inputs.outer4.val ? 1500 : 1000 : 600;
+                    case 'triton':
+                        return inputs.triton1.val && inputs.outer4.val ? 5000 : 3000;
+                    case 'kuiper':
+                        return 2500;
+                    case 'eris':
+                        return 7500;
+                    default:
+                        return 500;
+                }
+            }
+        }
+    });
+}
+
+function syndicatePenaltyCalc(info){
+    let calc = $(`<div class="calc" id="syndicatePenaltyCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        region: { val: undefined },
+        relations: { val: undefined, vis: false, alliance: false, war: false },
+        triton1: { val: false, vis: false },
+        outer4: { val: false, vis: false },
+        ship_security: { val: undefined },
+        base: { val: undefined, vis: false },
+        sam: { val: undefined, vis: false },
+        fob: { val: false, vis: false },
+        intel: { val: undefined },
+        syndicate: { val: undefined }
+    };
+    
+    let show = {
+        divisor: { vis: false, val: undefined },
+        region_security: { vis: false, val: undefined },
+        residual: { vis: false, val: undefined },
+        penalty: { vis: false, val: undefined }
+    };
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_syndicate_penalty_divisor')}</h2><h2 class="has-text-caution" v-show="i.relations.vis"> - {{ i.relations.val | relationsType}}</h2>
+        </div>
+        <div>
+            <span>{{ i.region.val | divisorBase }}</span><span v-show="i.relations.vis && i.relations.alliance"> + (25 * ({{ i.relations.val, 'relations' | generic }} - 90))</span><span v-show="i.relations.vis && i.relations.war"> + (13 * ({{ i.relations.val, 'relations' | generic }} - 40))</span><span v-show="s.divisor.vis"> = {{ | calcDivisor }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_syndicate_penalty_region_security')}</h2>
+        </div>
+        <div>
+            <span>({{ i.ship_security.val, 'ship_security' | generic }}</span><span v-show="i.base.vis"> + (50 * {{ i.base.val, 'base' | generic }})</span><span v-show="i.sam.vis"> + (25 * {{ i.sam.val, 'sam' | generic }})</span><span v-show="i.fob.val && i.fob.vis"> + 500</span>) * ({{ i.intel.val, 'intel' | generic }} / 100)</span><span v-show="s.region_security.vis"> = {{ | calcSecurity }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_syndicate_penalty_residual')}</h2>
+        </div>
+        <div>
+            <span>{{ i.syndicate.val, 'syndicate' | generic }} - {{ s.region_security.val, 'region_security' | generic }}</span><span v-show="s.residual.vis"> = {{ | calcResidual }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_mechanics_syndicate_penalty')}</h2>
+        </div>
+        <div>
+            <span>{{ s.residual.val, 'residual' | generic }} / {{ s.divisor.val, 'divisor' | generic }} </span><span v-show="s.penalty.vis"> = {{ false | calcPenalty }}</span><span v-show="s.penalty.vis"> = -{{ true | calcPenalty }}%
+        </div>
+    `);
+   
+    variables.append(`
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('wiki_calc_syndicate_penalty_region')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.region.val | regionLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickRegion('moon')">{{ 'moon' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('red')">{{ 'red' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('gas')">{{ 'gas' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('gas_moon')">{{ 'gas_moon' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('belt')">{{ 'belt' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('titan')">{{ 'titan' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('enceladus')">{{ 'enceladus' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('triton')">{{ 'triton' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('kuiper')">{{ 'kuiper' | regionLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickRegion('eris')">{{ 'eris' | regionLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput"><span>${loc('wiki_calc_syndicate_penalty_rival_relations')}</span> <b-numberinput :input="val('relations')" min="0" max="100" v-model="i.relations.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.triton1.vis"><div><span>${loc(`space_mission_title`,[getSolarName('triton')])}</span></div><div><b-checkbox class="patrol" v-model="i.triton1.val"></b-checkbox></div></div>
+            <div class="calcInput" v-show="i.triton1.val && i.triton1.vis"><div><span>${loc('tech_data_analysis')}</span></div><div><b-checkbox class="patrol" v-model="i.outer4.val"></b-checkbox></div></div>
+            <div class="calcInput"><span>${loc('wiki_calc_syndicate_penalty_ship_security')}</span> <b-numberinput :input="val('ship_security')" min="0" v-model="i.ship_security.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.base.vis"><span>${loc('tech_operating_base')}</span> <b-numberinput :input="val('base')" min="0" v-model="i.base.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.sam.vis"><span>${loc('space_sam_title')}</span> <b-numberinput :input="val('sam')" min="0" v-model="i.sam.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput" v-show="i.fob.vis"><div><span>${loc('space_fob_title')}</span></div><div><b-checkbox class="patrol" v-model="i.fob.val"></b-checkbox></div></div>
+            <div class="calcInput"><span>${loc('space_scan_effectiveness')}</span> <b-numberinput :input="val('intel')" min="0" v-model="i.intel.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('space_syndicate')}</span> <b-numberinput :input="val('syndicate')" min="0" v-model="i.syndicate.val" :controls="false"></b-numberinput></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    let calcSyndicateCap = function (region){
+        switch (region){
+            case 'titan':
+                return inputs.triton1.val ? inputs.outer4.val ? 2000 : 1000 : 600;
+            case 'enceladus':
+                return inputs.triton1.val ? inputs.outer4.val ? 1500 : 1000 : 600;
+            case 'triton':
+                return inputs.triton1.val && inputs.outer4.val ? 5000 : 3000;
+            case 'kuiper':
+                return 2500;
+            case 'eris':
+                return 7500;
+            default:
+                return 500;
+        }
+    };
+    
+    vBind({
+        el: `#syndicatePenaltyCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+                if (type === 'relations'){
+                    if (inputs[type].val > 100){
+                        inputs[type].val = 100;
+                    }
+                }
+                else if (type === 'syndicate' && inputs['region'].val && inputs[type].val > calcSyndicateCap(inputs['region'].val)){
+                    inputs[type].val = calcSyndicateCap(inputs['region'].val);
+                }
+            },
+            pickRegion(region){
+                inputs.region.val = region;
+                inputs.relations.vis = ['moon','red','gas','gas_moon','belt'].includes(region);
+                inputs.triton1.vis = ['titan','enceladus','triton'].includes(region);
+                if (inputs.syndicate.val && inputs.syndicate.val > calcSyndicateCap(region)){
+                    inputs.syndicate.val = calcSyndicateCap(region);
+                }
+                inputs.base.vis = region === 'enceladus';
+                inputs.sam.vis = region === 'titan';
+                inputs.fob.vis = region === 'triton';
+            },
+            resetInputs(){
+                inputs.region = { val: undefined };
+                inputs.relations = { val: undefined, vis: false, alliance: false, war: false };
+                inputs.triton1 = { val: false, vis: false };
+                inputs.outer4 = { val: false, vis: false };
+                inputs.ship_security = { val: undefined };
+                inputs.base = { val: undefined, vis: false };
+                inputs.sam = { val: undefined, vis: false };
+                inputs.fob = { val: false, vis: false };
+                inputs.intel = { val: undefined };
+                inputs.syndicate = { val: undefined };
+            },
+            importInputs(){
+                if (global.civic['foreign'] && global.civic.foreign['gov3']){
+                    inputs.relations.val = 100 - global.civic.foreign.gov3.hstl;
+                }
+                inputs.relations.alliance = inputs.relations.val > 90;
+                inputs.relations.war = inputs.relations.val < 40;
+                inputs.relations.vis = inputs.region.val && ['moon','red','gas','gas_moon','belt'].includes(inputs.region.val);
+                
+                inputs.triton1.vis = inputs.region.val && ['titan','enceladus','triton'].includes(inputs.region.val);
+                inputs.triton1.val = global.tech['triton'] && global.tech.triton >= 1;
+                inputs.outer4.val = global.tech['outer'] && global.tech.outer >= 4;
+                
+                if (inputs.region.val && global.space.hasOwnProperty('shipyard') && global.space.shipyard.hasOwnProperty('ships')){
+                    inputs.ship_security.val = 0;
+                    inputs.intel.val = 0;
+                    global.space.shipyard.ships.forEach(function(ship){
+                        if (ship.location === 'spc_'+inputs.region.val && ship.transit === 0 && ship.fueled){
+                            let rating = shipAttackPower(ship);
+                            inputs.ship_security.val += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
+                            inputs.intel.val += sensorRange(ship.sensor);
+                        }
+                    });
+                    if (inputs.region.val === 'triton' && global.space['fob'] && global.space.fob.on > 0){
+                        inputs.intel.val += 10;
+                    }
+                    inputs.intel.val  = (((Math.round((inputs.intel.val - 100) / ((inputs.intel.val - 100) + 200) * 100) + 100) + 25) / 1.25);
+                
+                    inputs.syndicate.val = global.space['syndicate'] && global.space.syndicate['spc_'+inputs.region.val] ? global.space.syndicate['spc_'+inputs.region.val] : 0;
+                }
+                
+                inputs.base.val = global.space['operating_base'] ? global.space.operating_base.on : 0;
+                inputs.base.vis = inputs.region.val && inputs.region.val === 'enceladus';
+                
+                inputs.sam.val = global.space['sam'] ? global.space.sam.on : 0;
+                inputs.sam.vis = inputs.region.val && inputs.region.val === 'titan';
+                
+                inputs.fob.val = global.space['fob'] && global.space.fob.on > 0;
+                inputs.fob.vis = inputs.region.val && inputs.region.val === 'triton';
+            }
+        },
+        filters: {
+            generic(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'base':
+                        return loc('tech_operating_base');
+                    case 'sam':
+                    case 'fob':
+                        return loc('space_'+ type + '_title');
+                    case 'intel':
+                        return loc('space_scan_effectiveness');
+                    case 'relations':
+                        return loc('wiki_calc_syndicate_penalty_rival_relations');
+                    case 'syndicate':
+                        return loc('space_syndicate');
+                    default:
+                        return loc('wiki_calc_syndicate_penalty_' + type);
+                }
+            },
+            regionLabel(region){
+                return region ? getSolarName(region) : loc('wiki_calc_syndicate_penalty_region');
+            },
+            relationsType(relations){
+                if (relations > 90){
+                    inputs.relations.alliance = true;
+                    inputs.relations.war = false;
+                }
+                else if (relations < 40){
+                    inputs.relations.war = true;
+                    inputs.relations.alliance = false;
+                }
+                else {
+                    inputs.relations.war = false;
+                    inputs.relations.alliance = false;
+                }
+                return relations < 40 ? loc('wiki_calc_syndicate_penalty_rival_war') : relations > 90 ? loc('wiki_calc_syndicate_penalty_rival_ally') : loc('wiki_calc_syndicate_penalty_rival_neutral');
+            },
+            divisorBase(region){
+                if (!region){
+                    return loc('wiki_calc_syndicate_penalty_region_divisor_base');
+                }
+                switch (region){
+                    case 'moon':
+                    case 'red':
+                        return 1250;
+                    case 'gas':
+                    case 'gas_moon':
+                    case 'belt':
+                        return 1020;
+                    default:
+                        return calcSyndicateCap(region);
+                }
+            },
+            calcDivisor(){
+                if (inputs.region.val){
+                    if (['moon','red','gas','gas_moon','belt'].includes(inputs.region.val)){
+                        if ((inputs.relations.war || inputs.relations.alliance) && inputs.relations.val === undefined){
+                            show.divisor.val = undefined;
+                            show.divisor.vis = false;
+                        }
+                        else {
+                            let rival = 0;
+                            let base = ['moon','red'].includes(inputs.region.val) ? 1250 : 1020;
+                            if (inputs.relations.war){
+                                rival = (13 * (inputs.relations.val - 40))
+                            }
+                            else if (inputs.relations.alliance){
+                                rival = (25 * (inputs.relations.val - 90));
+                            }
+                            show.divisor.val = base + rival;
+                            show.divisor.vis = true;
+                        }
+                    }
+                    else {
+                        show.divisor.val = calcSyndicateCap(inputs.region.val);
+                        show.divisor.vis = true;
+                    }
+                }
+                else {
+                    show.divisor.val = undefined;
+                    show.divisor.vis = false;
+                }
+                return show.divisor.val;
+            },
+            calcSecurity(){
+                let security = 0;
+                let vis = inputs.ship_security.val !== undefined && inputs.intel.val !== undefined;
+                if (vis){
+                    security += inputs.ship_security.val;
+                    if (inputs.region.val){
+                        switch (inputs.region.val){
+                            case 'enceladus':
+                                if (inputs.base.val !== undefined){
+                                    security += inputs.base.val * 50;
+                                }
+                                else {
+                                    vis = false;
+                                }
+                                break;
+                            case 'titan':
+                                if (inputs.sam.val !== undefined){
+                                    security += inputs.sam.val * 25;
+                                }
+                                else {
+                                    vis = false;
+                                }
+                                break;
+                            case 'triton':
+                                if (inputs.fob.val){
+                                    security += 500;
+                                }
+                                break;
+                        }
+                    }
+                    if (!vis){
+                        show.region_security.val = undefined;
+                        show.region_security.vis = false;
+                    }
+                    else {
+                        show.region_security.val = Math.round(security * (inputs.intel.val / 100));
+                        show.region_security.vis = vis;
+                    }
+                }
+                else {
+                    show.region_security.val = undefined;
+                    show.region_security.vis = false;
+                }
+                
+                return show.region_security.val;
+            },
+            calcResidual(){
+                if (inputs.syndicate.val !== undefined && show.region_security.val !== undefined){
+                    let residual = inputs.syndicate.val - show.region_security.val;
+                    if (residual < 0) {
+                        residual = 0;
+                    }
+                    show.residual.val = residual;
+                    show.residual.vis = true;
+                }
+                else {
+                    show.residual.val = undefined;
+                    show.residual.vis = false;
+                }
+                
+                return show.residual.val;
+            },
+            calcPenalty(percent){
+                if (percent){
+                    return (show.penalty.val * 100).toFixed(2);
+                }
+                show.penalty.vis = show.residual.val !== undefined && show.divisor.val !== undefined;
+                
+                if (show.penalty.vis){
+                    show.penalty.val = +(show.residual.val / show.divisor.val).toFixed(4);
+                }
+                else {
+                    show.penalty.val = undefined;
+                }
+                
+                return show.penalty.val;
+            }
+        }
+    });
+}
+
+function tpShipsFirepowerCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsFirepowerCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_mechanics_tp_ships_firepower')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        weapon: { val: undefined },
+        class: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    
+    formula.append(`
+        <div>
+            <span>{{ i.weapon.val | weaponVal }} * {{ i.class.val | classVal }}<span v-show="s.result.vis"> = {{ | calc }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_weapon')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.weapon.val | weaponLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickWeapon('railgun')">{{ 'railgun' | weaponLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('laser')">{{ 'laser' | weaponLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('p_laser')">{{ 'p_laser' | weaponLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('plasma')">{{ 'plasma' | weaponLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('phaser')">{{ 'phaser' | weaponLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickWeapon('disruptor')">{{ 'disruptor' | weaponLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_class')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.class.val | classLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickClass('corvette')">{{ 'corvette' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('frigate')">{{ 'frigate' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('destroyer')">{{ 'destroyer' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('cruiser')">{{ 'cruiser' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('battlecruiser')">{{ 'battlecruiser' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('dreadnought')">{{ 'dreadnought' | classLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#tpShipsFirepowerCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            pickWeapon(weapon){
+                inputs.weapon.val = weapon;
+            },
+            pickClass(shipClass){
+                inputs.class.val = shipClass;
+            },
+            resetInputs(){
+                inputs.weapon.val = undefined;
+                inputs.class.val = undefined;
+            }
+        },
+        filters: {
+            weaponVal(weapon){
+                switch (weapon){
+                    case 'railgun':
+                        return 36;
+                    case 'laser':
+                        return 64;
+                    case 'p_laser':
+                        return 54;
+                    case 'plasma':
+                        return 90;
+                    case 'phaser':
+                        return 114;
+                    case 'disruptor':
+                        return 156;
+                    default:
+                        return loc('wiki_calc_tp_ships_firepower_weapon')
+                }
+            },
+            classVal(shipClass){
+                switch (shipClass){
+                    case 'corvette':
+                        return 1;
+                    case 'frigate':
+                        return 1.5;
+                    case 'destroyer':
+                        return 2.75;
+                    case 'cruiser':
+                        return 5.5;
+                    case 'battlecruiser':
+                        return 10;
+                    case 'dreadnought':
+                        return 22;
+                    default:
+                        return loc('wiki_calc_tp_ships_firepower_class')
+                }
+            },
+            weaponLabel(weapon){
+                return weapon ? loc('outer_shipyard_weapon_' + weapon) : loc('outer_shipyard_weapon');
+            },
+            classLabel(shipClass){
+                return shipClass ? loc('outer_shipyard_class_' + shipClass) : loc('outer_shipyard_class');
+            },
+            calc(){
+                show.result.vis = inputs.weapon.val && inputs.class.val;
+                
+                if (show.result.vis){
+                    show.result.val = shipAttackPower({ weapon: inputs.weapon.val, class: inputs.class.val });
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+function tpShipsHullCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsHullCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_tp_ships_hull_damage_range')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        hull: { val: undefined },
+        triton: { val: false }
+    }
+    
+    let show = {
+        result: { vis: false, val: undefined }
+    }
+    
+    formula.append(`
+        <div>
+            <span v-show="s.result.vis">1 - {{ | calc }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_armor')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.hull.val | hullLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickHull('steel')">{{ 'steel' | hullLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickHull('alloy')">{{ 'alloy' | hullLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickHull('neutronium')">{{ 'neutronium' | hullLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput"><div><span>${getSolarName('triton')}</span></div><div><b-checkbox class="patrol" v-model="i.triton.val"></b-checkbox></div></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#tpShipsHullCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            pickHull(hull){
+                inputs.hull.val = hull;
+            },
+            resetInputs(){
+                inputs.hull.val = undefined;
+                inputs.triton.val = false;
+            }
+        },
+        filters: {
+            hullLabel(hull){
+                return hull ? loc('outer_shipyard_armor_' + hull) : loc('outer_shipyard_armor');
+            },
+            calc(){
+                show.result.vis = inputs.hull.val;
+                
+                if (show.result.vis){
+                    let max = 0;
+                    switch (inputs.hull.val){
+                        case 'steel':
+                            max = 8;
+                            break;
+                        case 'alloy':
+                            max = 6;
+                            break;
+                        case 'neutronium':
+                            max = 4;
+                            break;
+                    }
+                    if (inputs.triton.val){
+                        max *= 2;
+                    }
+                    show.result.val = max - 1;
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+function tpShipsSensorsCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsSensorsCalc"></div>`);
+    info.append(calc);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        range: { val: undefined },
+        triton: { val: false },
+        fob: { val: false }
+    }
+    
+    let show = {
+        combined: { vis: false, val: undefined },
+        adjusted: { vis: false, val: undefined, adjust: false },
+        intel: { vis: false, val: undefined }
+    }
+    
+    
+    formula.append(`
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_combined_range')}</h2>
+        </div>
+        <div>
+            <span>{{ i.range.val, 'ship_range' | generic }}</span><span v-show="i.triton.val && i.fob.val"> + 10</span><span v-show="s.combined.vis"> = {{ | calcRange }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_adjusted_range_below',[loc('wiki_calc_tp_ships_sensors_adjusted_range'),loc('wiki_calc_tp_ships_sensors_combined_range')])}</h2>
+        </div>
+        <div>
+            <span>{{ s.combined.val, 'combined_range' | generic }}</span><span v-show="s.adjusted.vis && !s.adjusted.adjust"> = {{ | calcAdjusted }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_adjusted_range_above',[loc('wiki_calc_tp_ships_sensors_adjusted_range'),loc('wiki_calc_tp_ships_sensors_combined_range')])}</h2>
+        </div>
+        <div>
+            <span>(({{ s.combined.val, 'combined_range' | generic }} - 100) / (({{ s.combined.val, 'combined_range' | generic }} - 100) + 200) * 100) + 100</span><span v-show="s.adjusted.vis && s.adjusted.adjust"> = {{ | calcAdjusted }}</span>
+        </div>
+        <div>
+            <h2 class="has-text-caution">${loc('space_scan_effectiveness')}</h2>
+        </div>
+        <div>
+            <span>({{ s.adjusted.val, 'adjusted_range' | generic }} + 25) / 1.25</span><span v-show="s.intel.vis"> = {{ | calcIntel }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_tp_ships_sensors_ship_range')}</span> <b-numberinput :input="val('range')" min="0" v-model="i.range.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><div><span>${getSolarName('triton')}</span></div><div><b-checkbox class="patrol" v-model="i.triton.val"></b-checkbox></div></div>
+            <div class="calcInput" v-show="i.triton.val"><div><span>${loc('space_fob_title')}</span></div><div><b-checkbox class="patrol" v-model="i.fob.val"></b-checkbox></div></div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#tpShipsSensorsCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            resetInputs(){
+                inputs.range.val = undefined;
+                inputs.triton.val = false;
+                inputs.fob.val = false;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_tp_ships_sensors_' + type);
+            },
+            calcRange(){
+                show.combined.vis = inputs.range.val !== undefined;
+                
+                if (show.combined.vis){
+                    show.combined.val = inputs.range.val + (inputs.triton.val && inputs.fob.val ? 10 : 0);
+                    
+                    return show.combined.val;
+                }
+                else {
+                    show.combined.val = undefined;
+                }
+            },
+            calcAdjusted(){
+                show.adjusted.vis = show.combined.val !== undefined;
+                
+                if (show.adjusted.vis){
+                    let range = show.combined.val;
+                    if (range > 100){
+                        range = ((range - 100) / ((range - 100) + 200) * 100) + 100;
+                        show.adjusted.adjust = true;
+                    }
+                    else {
+                        show.adjusted.adjust = false;
+                    }
+                    show.adjusted.val = range;
+                    
+                    return show.adjusted.val;
+                }
+                else {
+                    show.adjusted.val = undefined;
+                }
+            },
+            calcIntel(){
+                show.intel.vis = show.adjusted.val !== undefined;
+                
+                if (show.intel.vis){
+                    show.intel.val = (show.adjusted.val + 25) / 1.25;
+                    
+                    return show.intel.val;
+                }
+                else {
+                    show.intel.val = undefined;
                 }
             }
         }

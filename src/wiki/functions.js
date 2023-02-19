@@ -251,9 +251,17 @@ export function subSideMenu(action,arg1,arg2,arg3){
 }
 
 export function getSolarName(planet) {
+    if (['moon','belt'].includes(planet)){
+        return loc('space_'+planet+'_info_name');
+    }
+    else if (['kuiper'].includes(planet)){
+        return loc('space_'+planet+'_title');
+    }
+    
     if (Object.keys(genusVars[races[global.race.species].type].solar).includes(planet)){
         return genusVars[races[global.race.species].type].solar[planet];
     }
+    
     if (global.race.species === 'protoplasm'){
         return planet === 'home' ? races.human.home : races.human.solar[planet];
     }
@@ -265,11 +273,46 @@ export function getSolarName(planet) {
     }
 }
 
+export function createRevealSection(info,id,type,insert){
+    let reveal = $(`<div></div>`);
+    info.append(reveal);
+    reveal.append(`<span role="button" id="${id}${type}Button" class="has-text-info reveal" @click="show()">{{ vis | label }}</span>`);
+    let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
+    reveal.append(section);
+    
+    let modSection = document.getElementById(id + type + 'Section');
+    let modDisplay = { vis: false };
+    
+    vBind({
+        el: `#${id}${type}Button`,
+        data: modDisplay,
+        methods: {
+            show(){
+                if (modSection.style.display === 'block'){
+                    modSection.style.display = 'none';
+                    modDisplay.vis = false;
+                }
+                else {
+                    modSection.style.display = 'block';
+                    modDisplay.vis = true;
+                }
+            }
+        },
+        filters: {
+            label(vis){
+                return vis ? loc(`wiki_reveal_hide`,[insert]) : loc(`wiki_reveal_show`,[insert]);
+            }
+        }
+    });
+    
+    return section;
+}
+
 export function createCalcSection(info,id,type,insert){
     insert = insert || loc(`wiki_calc_insert_` + type);
     let calc = $(`<div></div>`);
     info.append(calc);
-    calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info calcReveal" @click="show()">{{ vis | label }}</span>`);
+    calc.append(`<span role="button" id="${id}${type}Button" class="has-text-info reveal" @click="show()">{{ vis | label }}</span>`);
     let section = $(`<div id="${id}${type}Section" style="display: none;"></div>`);
     calc.append(section);
     

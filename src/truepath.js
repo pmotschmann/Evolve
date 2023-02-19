@@ -3988,7 +3988,7 @@ function shipPower(ship){
     return watts;
 }
 
-function shipAttackPower(ship){
+export function shipAttackPower(ship){
     let rating = 0;
     switch (ship.weapon){
         case 'railgun':
@@ -4029,7 +4029,7 @@ function shipAttackPower(ship){
     }
 }
 
-function shipSpeed(ship){
+export function shipSpeed(ship){
     let mass = 1;
     switch (ship.class){
         case 'corvette':
