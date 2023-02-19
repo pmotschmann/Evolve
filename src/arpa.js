@@ -1046,7 +1046,7 @@ export const genePool = {
         reqs: {},
         grant: ['blood',1],
         condition(){
-            return global.resource.Blood_Stone.amount >= 1 ? true : false;
+            return global.prestige.Blood_Stone.count >= 1 ? true : false;
         },
         cost: {
             Plasmid(){ return 1000; },
@@ -1406,32 +1406,20 @@ function payCrispr(gene){
     let afford = true;
     let costs = genePool[gene].cost;
     Object.keys(costs).forEach(function(res){
-        if (res === 'Artifact'){
-            if (!global.resource.Artifact || global.resource.Artifact.amount < costs[res]()){
-                afford = false;
-            }
+        if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+            res = 'AntiPlasmid';
         }
-        else {
-            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                res = 'AntiPlasmid';
-            }
-            if (global.prestige[res].count < costs[res]()){
-                afford = false;
-            }
+        if (global.prestige[res].count < costs[res]()){
+            afford = false;
         }
     });
 
     if (afford){
         Object.keys(costs).forEach(function(res){
-            if (res === 'Artifact'){
-                global.resource.Artifact.amount -= costs[res]();
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                res = 'AntiPlasmid';
             }
-            else {
-                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
-                    res = 'AntiPlasmid';
-                }
-                global.prestige[res].count -= costs[res]();
-            }
+            global.prestige[res].count -= costs[res]();
         });
         return true;
     }
@@ -1441,8 +1429,7 @@ function payCrispr(gene){
 export function payBloodPrice(costs){
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            let cost = costs[res]();
-            global['resource'][res].amount -= cost;
+            global.prestige[res].count -= costs[res]();
         });
         return true;
     }

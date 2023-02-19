@@ -627,9 +627,9 @@ export function descension(){
         unlockFeat('slime_lord');
     }
 
-    let artifacts = calcPrestige('descend').artifact;
-    global.resource.Artifact.amount += artifacts;
-    global.resource.Artifact.display = true;
+    let gains = calcPrestige('descend');
+    global.prestige.Artifact.count += gains.artifact;
+    global.stats.artifact += gains.artifact;
 
     let affix = universeAffix();
     if (global.stats.spire.hasOwnProperty(affix)){
@@ -660,7 +660,6 @@ export function descension(){
     let atmo = global.city.ptrait;
     let geo = global.city.geology;
 
-    global.stats.artifact += artifacts;
     global.stats.descend++;
     updateResetStats();
     checkAchievements();

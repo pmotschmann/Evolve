@@ -1144,23 +1144,26 @@ if (convertVersion(global['version']) < 103001){
             delete global.race[res];
         }
     });
+    ['Artifact','Blood_Stone'].forEach(function (res){
+        if (global.resource.hasOwnProperty(res)) {
+            global.prestige[res] = { count: global.resource[res].amount };
+            delete global.resource[res];
+        }
+    });
 }
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 29;
-
+global['beta'] = 30;
 
 if (!global.hasOwnProperty('prestige')){
-    global['prestige'] = {
-        Plasmid: { count: 0 },
-        AntiPlasmid: { count: 0 },
-        Phage: { count: 0 },
-        Dark: { count: 0 },
-        Harmony: { count: 0 },
-        AICore: { count: 0 }
-    };
+    global.prestige = {};
 }
+['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
+    if (!global.prestige.hasOwnProperty(res)){
+        global.prestige[res] = { count: 0 };
+    }
+});
 
 if (!global.hasOwnProperty('power')){
     global['power'] = [];       
@@ -1178,7 +1181,6 @@ if (!global.hasOwnProperty('support')){
         global.support[s] = [];
     }
 });
-
 
 if (global.civic['cement_worker'] && global.civic.cement_worker.impact === 0.25){
     global.civic.cement_worker.impact = 0.4;
@@ -1217,7 +1219,6 @@ if (!global.settings['showStorage']){
         global.settings['showStorage'] = false;
     }
 }
-
 
 if (!global.settings['space']){
     global.settings['space'] = {
@@ -2211,19 +2212,11 @@ export function clearStates(){
             buy: false
         }
     };
+    if (!global.genes['blood']){
+        global.prestige.Blood_Stone.count = 0;
+    }
 
-    let artifacts = global.resource.Artifact;
-    if (global.genes['blood']){
-        let stones = global.resource.Blood_Stone;
-        global.resource = {};
-        global.resource['Blood_Stone'] = stones;
-    }
-    else {
-        global.resource = {};
-    }
-    if (artifacts.amount > 0){
-        global.resource['Artifact'] = artifacts;
-    }
+    global.resource = {};
     global.evolution = {};
     global.event = { t: 100, l: false };
     global.m_event = { t: 499, l: false };

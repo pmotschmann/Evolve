@@ -8923,13 +8923,12 @@ function midLoop(){
             }
             if (global.portal.spire.progress >= 100){
                 global.portal.spire.progress = 0;
-                global.resource.Blood_Stone.display = true;
                 let rank = Number(alevel());
                 let stones = rank;
                 if (global.genes['blood'] && global.genes['blood'] >= 2){
                     stones *= 2;
                 }
-                global.resource.Blood_Stone.amount += stones;
+                global.prestige.Blood_Stone.count += stones;
                 global.stats.blood += stones;
                 arpa('Blood');
                 if (!global.tech.hasOwnProperty('b_stone')){

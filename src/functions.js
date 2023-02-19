@@ -831,7 +831,7 @@ export function timeCheck(c_action,track,detailed){
             });
         }
         Object.keys(costs).forEach(function (res){
-            if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
+            if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;

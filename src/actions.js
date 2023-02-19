@@ -1031,9 +1031,9 @@ export const actions = {
                                     if (descend > 0){
                                         let blood = descend * 5;
                                         let art = descend;
-                                        global.resource.Blood_Stone.amount += blood;
+                                        global.prestige.Blood_Stone.count += blood;
                                         global.stats.blood += blood;
-                                        global.resource.Artifact.amount += art;
+                                        global.prestige.Artifact.count += art;
                                         global.stats.artifact += art;
                                         gift.push(`${blood} ${loc(`resource_Blood_Stone_name`)}`);
                                         gift.push(`${art} ${loc(`resource_Artifact_name`)}`);
@@ -5893,7 +5893,7 @@ function srDesc(c_action,old){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+            else if (global.prestige.hasOwnProperty(res)){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -6015,7 +6015,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+            else if (global.prestige.hasOwnProperty(res)){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     if (res === 'Plasmid' && global.race.universe === 'antimatter'){
@@ -6176,7 +6176,7 @@ export function payCosts(c_action, costs){
     costs = costs || adjustCosts(c_action);
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+            if (global.prestige.hasOwnProperty(res)){
                 let cost = costs[res]();
                 if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                     res = 'AntiPlasmid';
@@ -6226,7 +6226,7 @@ function checkMaxCosts(costs){
                 return;
             }
         }
-        else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+        else if (global.prestige.hasOwnProperty(res)){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 res = 'AntiPlasmid';
             }
@@ -6293,7 +6293,7 @@ export function checkCosts(costs){
                 return;
             }
         }
-        else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+        else if (global.prestige.hasOwnProperty(res)){
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 res = 'AntiPlasmid';
             }

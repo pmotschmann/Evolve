@@ -46,9 +46,7 @@ export const resource_values = {
     Corrupt_Gem: 0,
     Codex: 0,
     Cipher: 0,
-    Demonic_Essence: 0,
-    Blood_Stone: 0,
-    Artifact: 0
+    Demonic_Essence: 0
 };
 
 export const tradeRatio = {
@@ -610,9 +608,9 @@ export function defineResources(wiki){
     loadResource('Codex',wiki,-2,0,false,false,'caution');
     loadResource('Cipher',wiki,0,1,false,false,'caution');
     loadResource('Demonic_Essence',wiki,-2,0,false,false,'caution');
-    loadResource('Blood_Stone',wiki,-2,0,false,false,'caution');
-    loadResource('Artifact',wiki,-2,0,false,false,'caution');
     if (wiki){ return; }
+    loadSpecialResource('Blood_Stone','caution');
+    loadSpecialResource('Artifact','caution');
     loadSpecialResource('Plasmid');
     loadSpecialResource('AntiPlasmid');
     loadSpecialResource('Phage');
@@ -1059,6 +1057,10 @@ function loadSpecialResource(name,color) {
             round(n){ return +(n).toFixed(3); }
         }
     });
+
+    if (name === "Artifact" || name === "Blood_Stone"){
+        return;
+    }
 
     popover(`res${name}`, function(){
         let desc = $(`<div></div>`);
