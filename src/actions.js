@@ -4318,7 +4318,7 @@ const advancedChallengeList = {
     'cataclysm': {t: 's', e: 'iron_will' },
     'banana': {t: 's', e: 'banana' },
     'truepath': {t: 's', e: 'pathfinder' },
-    'lone_survivor': {t: 's', e: 'notdecided' },
+    'lone_survivor': {t: 's', e: 'adam_eve' },
 };
 Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challenge] = {
     id: `evolution-${challenge}`,

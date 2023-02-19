@@ -10,7 +10,7 @@ import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements
 import { removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources } from './industry.js';
 import { arpa } from './arpa.js';
-import { matrix, retirement } from './resets.js';
+import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -1479,6 +1479,10 @@ const tauCetiModules = {
                 return `<div>${loc('tau_star_goe_facility_effect')}</div>${reward}`;
             },
             action(){
+                if (payCosts($(this)[0])){
+                    gardenOfEden();
+                    return false;
+                }
                 return false;
             }
         },
@@ -3367,8 +3371,8 @@ const tauCetiModules = {
                 Money(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 250000000 : 0; },
                 Uranium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 50000 : 0; },
                 Elerium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
-                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 38000000 : 0; },
-                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000000 : 0; },
+                Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
                 Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(10000000) : 0; },
             },
             effect(wiki){

@@ -1411,7 +1411,7 @@ if (!global.settings.hasOwnProperty('mtorder')){
     'reset','plasmid','antiplasmid','universes','phage','starved','tstarved','died','tdied',
     'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
     'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
-    'aiappoc','matrix','retire','geck','dark','harmony','blood','cores','artifact',
+    'aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
 ].forEach(function(k){
     if (!global.stats.hasOwnProperty(k)){
         global.stats[k] = 0;

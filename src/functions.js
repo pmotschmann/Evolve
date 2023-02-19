@@ -1507,7 +1507,7 @@ export function calcPrestige(type,inputs){
         }
     }
 
-    if (type === 'ai' || type === 'matrix' || type === 'retire'){
+    if (type === 'ai'){
         gains.cores = universe === 'micro' ? 2 : 5;
     }
 

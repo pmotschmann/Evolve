@@ -924,6 +924,9 @@ export const gov_tasks = {
     spy: { // Spy Recruiter
         name: loc(`gov_task_spy`),
         req(){
+            if (global.tech['isolation']){
+                return false;
+            }
             if (global.race['truepath'] && global.tech['spy']){
                 return true;
             }
@@ -946,6 +949,9 @@ export const gov_tasks = {
     spyop: { // Spy Operator
         name: loc(`gov_task_spyop`),
         req(){
+            if (global.tech['isolation']){
+                return false;
+            }
             if (global.race['truepath'] && global.tech['spy'] && global.tech.spy >= 2){
                 return true;
             }

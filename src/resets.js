@@ -65,25 +65,12 @@ export function warhead(){
             global.race['srace'] = srace;
         }
         
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: orbit
-            },
-            biome: biome,
-            ptrait: atmo,
+        resetCommon({
+            orbit: orbit, 
+            biome: biome, 
+            ptrait: atmo, 
             geology: geo
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        });
         
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         window.location.reload();
@@ -212,24 +199,12 @@ export function bioseed(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: false
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -293,25 +268,12 @@ export function cataclysm_end(){
             global.race['srace'] = srace;
         }
 
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: global.city.calendar.orbit
-            },
-            biome: global.city.biome,
-            ptrait: global.city.ptrait,
+        resetCommon({
+            orbit: global.city.calendar.orbit, 
+            biome: global.city.biome, 
+            ptrait: global.city.ptrait, 
             geology: global.city.geology
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        });
 
         if (global.race.universe === 'antimatter') {
             global.race['weak_mastery'] = 1;
@@ -428,24 +390,12 @@ export function big_bang(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: false
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -534,24 +484,12 @@ export function vacuumCollapse(){
             global.race['srace'] = srace;
         }
 
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: orbit
-            },
-            biome: biome,
-            ptrait: atmo
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        resetCommon({
+            orbit: orbit, 
+            biome: biome, 
+            ptrait: atmo, 
+            geology: false
+        });
 
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         window.location.reload();
@@ -648,25 +586,12 @@ export function ascend(){
         geo[g] += 0.02;
     });
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -755,25 +680,12 @@ export function descension(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -858,25 +770,12 @@ export function terraform(planet){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -941,26 +840,12 @@ export function aiApocalypse(){
         global.race['corruption'] = corruption;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -968,6 +853,9 @@ export function aiApocalypse(){
 
 // Matrix
 export function matrix(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     clearSavedMessages();
 
@@ -998,7 +886,6 @@ export function matrix(){
     unlockAchieve(`bluepill`);
 
     trackWomling();
-
     checkAchievements();
 
     global.stats.matrix++;
@@ -1017,13 +904,12 @@ export function matrix(){
     global.prestige.AICore.count += gains.cores;
     global.stats.cores += gains.cores;
 
-    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        srace: srace,
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -1032,27 +918,16 @@ export function matrix(){
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
+    if (srace){
+        global.race['srace'] = srace;
+    }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -1060,6 +935,9 @@ export function matrix(){
 
 // Retirement
 export function retirement(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
     save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     clearSavedMessages();
 
@@ -1090,7 +968,88 @@ export function retirement(){
     unlockAchieve(`retired`);
 
     trackWomling();
+    checkAchievements();
 
+    global.stats.eden++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+// Garden of Eden
+export function gardenOfEden(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'eden'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('eden');
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`adam_eve`);
+
+    trackWomling();
     checkAchievements();
 
     global.stats.retire++;
@@ -1109,13 +1068,12 @@ export function retirement(){
     global.prestige.AICore.count += gains.cores;
     global.stats.cores += gains.cores;
 
-    let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        srace: srace,
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -1124,7 +1082,22 @@ export function retirement(){
     if (corruption > 0){
         global.race['corruption'] = corruption;
     }
+    if (srace){
+        global.race['srace'] = srace;
+    }
 
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+function resetCommon(args){
     global.city = {
         calendar: {
             day: 0,
@@ -1133,21 +1106,21 @@ export function retirement(){
             temp: 1,
             moon: 0,
             wind: 0,
-            orbit: orbit
+            orbit: args.orbit
         },
-        biome: biome,
-        ptrait: atmo,
-        geology: geo
+        biome: args.biome,
+        ptrait: args.ptrait
     };
+
+    if (args.geo){
+        global.city['geology'] = args.geology;
+    }
 
     global.tech = { theology: 1 };
     clearStates();
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
-
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
 }
 
 function trackWomling(){

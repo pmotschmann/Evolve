@@ -9990,7 +9990,7 @@ function longLoop(){
         }
 
         if ((global.stats.matrix > 0 || global.stats.retire > 0) && !global.race['servants'] && Math.rand(0,25) === 0){
-            let womlings = global.stats.matrix + global.stats.retire;
+            let womlings = global.stats.matrix + global.stats.retire + global.stats.eden;
             let skilled = global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? 2 : 0;
             if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
                 universe_affixes.forEach(function(uni){

@@ -1820,7 +1820,7 @@ function genetics(){
         global.settings.mtorder.forEach(function(trait){
             if ((traits[trait] && traits[trait].type === 'minor') || trait === 'mastery' || trait === 'fortify'){
                 if (trait !== 'fortify' || (global.tech['decay'] && global.tech['decay'] >= 2)){
-                    if ((!['promiscuous','content'].includes(trait) && global.race['lone_survivor']) || !global.race['lone_survivor']){
+                    if ((!['promiscuous','content','resilient','industrious','tactical','fibroblast'].includes(trait) && global.race['lone_survivor']) || !global.race['lone_survivor']){
                         minor = true;
                         bindTrait(minorList,trait);
                         minor_list.push(trait);
