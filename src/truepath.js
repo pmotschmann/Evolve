@@ -3214,6 +3214,7 @@ const tauCetiModules = {
                 Money(){ return global.race['lone_survivor'] ? 1500000000 : 3000000000; },
                 Helium_3(){ return 5000000; }
             },
+            wiki: false,
             effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
             action(){
                 if (payCosts($(this)[0])){
@@ -3247,6 +3248,7 @@ const tauCetiModules = {
                 Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
                 Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
             },
+            wiki: false,
             effect(wiki){
                 let effectText = '';
                 let count = (wiki || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0);

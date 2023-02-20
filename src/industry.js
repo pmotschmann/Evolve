@@ -1465,7 +1465,8 @@ export function replicator(res,pow){
         return 17.5 * quantum_level / atomic_mass[res] * pow;
     }
     else {
-        return 12.5 * quantum_level / atomic_mass[res] * (pow ** 0.75);
+        let qLevel = quantum_level || 1;
+        return 12.5 * qLevel / atomic_mass[res] * (pow ** 0.75);
     }
 }
 

@@ -4090,6 +4090,28 @@ const techs = {
             return false;
         }
     },
+    matter_replicator: {
+        id: 'tech-matter_replicator',
+        title(){ return loc('tech_replicator'); },
+        desc(){ return loc('tech_replicator'); },
+        category: 'special',
+        era: 'discovery',
+        reqs: { high_tech: 2},
+        condition(){ return global.stats.achieve['adam_eve'] && global.stats.achieve.adam_eve.l >= 5 ? true : false; },
+        not_trait: ['lone_survivor'],
+        grant: ['replicator',1],
+        cost: {
+            Knowledge(){ return 25000; },
+        },
+        effect(){ return loc('tech_replicator_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.race['replicator'] = { res: 'Stone', pow: 1 };
+                return true;
+            }
+            return false;
+        }
+    },
     industrialization: {
         id: 'tech-industrialization',
         title: loc('tech_industrialization'),

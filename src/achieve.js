@@ -1647,6 +1647,16 @@ export const perkList = {
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_overlord_name`)}</span>`]),
         ]
     },
+    adam_eve: {
+        name: loc(`achieve_adam_eve_name`),
+        desc(){
+            return loc(`achieve_perks_adam_eve`);
+        },
+        active(){
+            return global.stats.achieve['adam_eve'] && global.stats.achieve.adam_eve.l >= 5 ? true : false;
+        },
+        notes: []
+    },
     creep: {
         name: loc(`wiki_arpa_crispr_creep`),
         desc(wiki){
