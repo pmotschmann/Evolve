@@ -969,7 +969,7 @@ export function retirement(){
     trackWomling();
     checkAchievements();
 
-    global.stats.eden++;
+    global.stats.retire++;
     updateResetStats();
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
@@ -1051,7 +1051,7 @@ export function gardenOfEden(){
     trackWomling();
     checkAchievements();
 
-    global.stats.retire++;
+    global.stats.eden++;
     updateResetStats();
     if (global.race.universe === 'antimatter'){
         global.prestige.AntiPlasmid.count += gains.plasmid;
