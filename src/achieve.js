@@ -2575,6 +2575,12 @@ export function drawStats(){
     if (global.stats.matrix > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_matrix_resets")}</span> {{ s.matrix | format }}</div>`);
     }
+    if (global.stats.retire > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_retire_resets")}</span> {{ s.retire | format }}</div>`);
+    }
+    if (global.stats.eden > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_eden_resets")}</span> {{ s.eden | format }}</div>`);
+    }
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ s.terraform | format }}</div>`);
     }

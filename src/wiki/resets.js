@@ -237,7 +237,6 @@ export function resetsPage(content){
     section = createCalcSection(section,'matrix','gain');
     prestigeCalc(section,'plasmid',false,'matrix');
     prestigeCalc(section,'phage',false,'matrix');
-    prestigeCalc(section,'cores',false,'matrix');
     sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'));
 
     // Retirement
@@ -259,7 +258,6 @@ export function resetsPage(content){
     section = createCalcSection(section,'retired','gain');
     prestigeCalc(section,'plasmid',false,'retired');
     prestigeCalc(section,'phage',false,'retired');
-    prestigeCalc(section,'cores',false,'retired');
     sideMenu('add',`resets-prestige`,'retired',loc('wiki_resets_retired'));
 
     // Garden of Eden
@@ -281,8 +279,7 @@ export function resetsPage(content){
         }
     });
     section = createCalcSection(section,'eden','gain');
-    prestigeCalc(section,'plasmid',false,'retired');
-    prestigeCalc(section,'phage',false,'retired');
-    prestigeCalc(section,'cores',false,'retired');
+    prestigeCalc(section,'plasmid',false,'eden');
+    prestigeCalc(section,'phage',false,'eden');
     sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'));
 }

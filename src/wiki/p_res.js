@@ -114,6 +114,32 @@ export function pResPage(content){
     subSection = createCalcSection(section,'cores','bonus');
     coresQuantumCalc(subSection);
     sideMenu('add',`resources-prestige`,'ai_core',loc('wiki_p_res_ai_core'));
+
+    //Servants
+    section = infoBoxBuilder(mainContent,{ name: 'servants', template: 'p_res', paragraphs: 5, h_level: 2, break: [3,4,5],
+        para_data: {
+            1: [loc('wiki_resets_matrix'),loc('wiki_resets_retired'),loc('wiki_resets_eden')],
+            5: [loc('achieve_overlord_name')],
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-matrix','wiki.html#resets-prestige-retired','wiki.html#resets-prestige-eden'],
+            5: ['wiki.html#perks-prestige-overlord'],
+        }
+    });
+    sideMenu('add',`resources-prestige`,'servants',loc('wiki_p_res_servants'));
+
+    //Skilled Servants
+    section = infoBoxBuilder(mainContent,{ name: 'skilled_servants', template: 'p_res', paragraphs: 6, h_level: 2, break: [3,4,5,6],
+        para_data: {
+            1: [loc('wiki_resets_matrix'),loc('wiki_resets_retired')],
+            6: [loc('achieve_pathfinder_name'),loc('achieve_overlord_name')],
+        },
+        data_link: {
+            1: ['wiki.html#resets-prestige-matrix','wiki.html#resets-prestige-retired'],
+            6: ['wiki.html#perks-prestige-pathfinder','wiki.html#perks-prestige-overlord'],
+        }
+    });
+    sideMenu('add',`resources-prestige`,'skilled_servants',loc('wiki_p_res_skilled_servants'));
 }
 
 const calcVars = {
