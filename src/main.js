@@ -2440,7 +2440,7 @@ function fastLoop(){
 
         if (global.race['replicator'] && p_on['replicator']){
             let res = global.race.replicator.res;
-            let vol = p_on['replicator'] * replicator(res);
+            let vol = replicator(res,p_on['replicator']);
             breakdown.p.consume[res][loc('tau_replicator_db')] = vol;
             modRes(res, time_multiplier * vol);
         }

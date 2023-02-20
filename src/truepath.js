@@ -4984,6 +4984,9 @@ export function jumpGateShutdown(){
     let pop = support_on['colony'] * tauCetiModules.tau_home.colony.citizens();
     if (global.resource[global.race.species].amount > pop){ global.resource[global.race.species].amount = pop; }
 
+    removeTask('spy');
+    removeTask('spyop');
+
     clearElement($(`#infoTimer`));
     global.race['inactive'] = inactive;
 }

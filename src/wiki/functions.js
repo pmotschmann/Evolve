@@ -179,7 +179,7 @@ export function actionDesc(info, c_action, extended, isStruct){
                     });
                 });
             }
-            else if (res === 'Plasmid' || res === 'Phage' || res === 'Dark' || res === 'Harmony'){
+            else if (['Plasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone','AntiPlasmid'].includes(res)){
                 let resName = res;
                 if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                     resName = 'AntiPlasmid';

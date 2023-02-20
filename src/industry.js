@@ -1453,15 +1453,20 @@ function loadReplicator(parent,bind){
                     return global.resource[r].name;
                 },
                 result(r){
-                    return loc(`tau_replicator`,[replicator(r).toFixed(3),global.resource[r].name]);
+                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(3),global.resource[r].name]);
                 }
             }
         });
     }
 }
 
-export function replicator(res){
-    return 17.5 * quantum_level / atomic_mass[res];
+export function replicator(res,pow){
+    if (global.race['lone_survivor']){
+        return 17.5 * quantum_level / atomic_mass[res] * pow;
+    }
+    else {
+        return 12.5 * quantum_level / atomic_mass[res] * (pow ** 0.75);
+    }
 }
 
 export function manaCost(spell,rate){
