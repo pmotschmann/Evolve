@@ -10246,6 +10246,9 @@ function longLoop(){
                 }
             }
         }
+        else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
+            global.tech['plague'] = 5; 
+        }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
             global.civic.govern.protest--;
