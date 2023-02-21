@@ -4176,7 +4176,6 @@ export function shipCosts(bp){
             costs['Adamantite'] = 9500000;
             h_inflate = 1.45;
             p_inflate = 1;
-            creep_factor = 5;
             break;
     }
 

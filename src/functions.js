@@ -540,32 +540,17 @@ function dragQueue(){
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
         let id = `q${global.queue.queue[i].id}${i}`;
+        let struct = decodeStructId(global.queue.queue[i].id);
+        let isWide = struct.s[0].substring(0,4) !== 'arpa' && struct.a['wide'] ? true : false;
 
-        let c_action;
-        let segments = global.queue.queue[i].id.split("-");
-        if (segments[0].substring(0,4) === 'arpa'){
-            c_action = segments[0].substring(4);
-        }
-        else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
-            c_action = actions[segments[0]][segments[1]];
-        }
-        else {
-            Object.keys(actions[segments[0]]).forEach(function (region){
-                if (actions[segments[0]][region].hasOwnProperty(segments[1])){
-                    c_action = actions[segments[0]][region][segments[1]];
-                }
-            });
-        }
-
-        let isWide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? true : false;
         popover(id,
             function(obj){
                 let b_res = global.queue.queue[i].hasOwnProperty('bres') ? global.queue.queue[i].bres : false;
-                if (segments[0].substring(0,4) === 'arpa'){
-                    obj.popper.append(arpaProjectCosts(100,c_action));
+                if (struct.s[0].substring(0,4) === 'arpa'){
+                    obj.popper.append(arpaProjectCosts(100,struct.a));
                 }
                 else {
-                    actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false,false,false,b_res);
+                    actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
             },
             {
@@ -579,6 +564,25 @@ function attachQueuePopovers(){
             }
         );
     }
+}
+
+export function decodeStructId(id){
+    let c_action;
+    let segments = id.split("-");
+    if (segments[0].substring(0,4) === 'arpa'){
+        c_action = segments[0].substring(4);
+    }
+    else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
+        c_action = actions[segments[0]][segments[1]];
+    }
+    else {
+        Object.keys(actions[segments[0]]).forEach(function (region){
+            if (actions[segments[0]][region].hasOwnProperty(segments[1])){
+                c_action = actions[segments[0]][region][segments[1]];
+            }
+        });
+    }
+    return { s: segments, a: c_action };
 }
 
 const tagDebug = false;
@@ -830,6 +834,7 @@ export function timeCheck(c_action,track,detailed){
                 }
             });
         }
+        let shorted = {};
         Object.keys(costs).forEach(function (res){
             if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
@@ -866,6 +871,7 @@ export function timeCheck(c_action,track,detailed){
                                 bottleneck = f_res;
                                 time = r_time;
                             }
+                            shorted[f_res] = r_time;
                         }
                         else {
                             if (track){
@@ -886,7 +892,7 @@ export function timeCheck(c_action,track,detailed){
             }
             track.t += time;
         }
-        return detailed ? { t: time, r: bottleneck } : time;
+        return detailed ? { t: time, r: bottleneck, s: shorted } : time;
     }
     else {
         return 0;

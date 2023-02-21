@@ -1,5 +1,5 @@
 import { global, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
@@ -523,6 +523,26 @@ export function drawnGovernOffice(){
         Object.keys(global.race.governor.config.trash).forEach(function(res){
             trash.append($(`<b-field>${loc(`gov_task_trash_min`,[global.resource[res].name])}<b-numberinput min="0" :max="1000000" v-model="c.trash.${res}" :controls="false"></b-numberinput></b-field>`));
         });
+    }
+
+    { // Replicator
+        if (!global.race.governor.config.hasOwnProperty('replicate')){
+            global.race.governor.config['replicate'] = {};
+        }
+        if (!global.race.governor.config.replicate.hasOwnProperty('pow')){
+            global.race.governor.config.replicate['pow'] = { on: false, cap: 100, buffer: 5 };
+        }
+        if (!global.race.governor.config.replicate.hasOwnProperty('strat')){
+            global.race.governor.config.replicate['strat'] = 0;
+        }
+
+        let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning">${loc(`gov_task_replicate`)}</div></div>`);
+        options.append(contain);
+        let replicate = $(`<div class="storage"><div class="chk"><b-checkbox v-model="c.replicate.pow.on">${loc(`gov_task_replicate_auto`)}</b-checkbox></div></div>`);
+        contain.append(replicate);
+
+        replicate.append($(`<b-field>${loc(`gov_task_replicate_pmax`)}<b-numberinput min="0" v-model="c.replicate.pow.cap" :controls="false"></b-numberinput></b-field>`));
+        replicate.append($(`<b-field>${loc(`gov_task_replicate_buff`)}<b-numberinput min="0" v-model="c.replicate.pow.buffer" :controls="false"></b-numberinput></b-field>`));
     }
 
     vBind({
@@ -1266,6 +1286,73 @@ export const gov_tasks = {
                     });
                     global.portal.mechbay.bay += size;
                     global.portal.mechbay.active++;
+                }
+            }
+        }
+    },
+    replicate: { // Replicator Scheduler
+        name: loc(`gov_task_replicate`),
+        req(){
+            return global.tech['replicator'] && global.race['replicator'] ? true : false;
+        },
+        task(){
+            if (global.race.governor.config.replicate.pow.on){
+                let cap = global.race.governor.config.replicate.pow.cap;
+                let buffer = global.race.governor.config.replicate.pow.buffer;
+                if (global.city.power < buffer && global.race.replicator.pow > 0){
+                    let drain = global.city.power < 0 ? Math.abs(global.city.power) + buffer : buffer - global.city.power;
+                    global.race.replicator.pow -= drain;
+                    if (global.race.replicator.pow < 0){
+                        global.race.replicator.pow = 0;
+                    }
+                }
+                else if (global.city.power > buffer && global.race.replicator.pow < cap){
+                    global.race.replicator.pow += (global.city.power - buffer);
+                    if (global.race.replicator.pow > cap){
+                        global.race.replicator.pow = cap;
+                    }
+                }
+                else if (global.race.replicator.pow > cap){
+                    global.race.replicator.pow = cap;
+                }
+            }
+
+            let rBal = false;
+            if (global.queue.queue.length > 0){
+                let struct = decodeStructId(global.queue.queue[0].id);
+                let tc = timeCheck(struct.a,false,true);
+                let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
+                for (let i=0; i<resSorted.length; i++){
+                    if (global.resource[resSorted[i]].display && atomic_mass[resSorted[i]]){
+                        global.race.replicator.res = resSorted[i];
+                        rBal = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!rBal){
+                let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
+                resSorted = resSorted.filter(item => global.resource[item].display);
+
+                if (global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
+                    global.race.replicator.res = resSorted[0];
+                }
+                else if (global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
+                    let cappable = resSorted.filter(item => global.resource[item].max > 0);
+                    for (let i=0; i<cappable.length; i++){
+                        if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
+                            global.race.replicator.res = cappable[i];
+                            rBal = true;
+                            break;
+                        }
+                    }
+                    if (!rBal){
+                        let uncappable = resSorted.filter(item => global.resource[item].max === -1);
+                        if (uncappable.length > 0){
+                            global.race.replicator.res = uncappable[0];
+                        }
+                    }
                 }
             }
         }
