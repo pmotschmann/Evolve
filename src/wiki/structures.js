@@ -65,10 +65,10 @@ function addInfomration(parent,section,key){
 }
 
 const calcInfo = {
-    include: {
+    include: { // Things that are not one-offs (only used for prehistoric since most are one-offs).
         prehistoric: ['membrane','organelles','nucleus','eukaryotic_cell','mitochondria']
     },
-    exclude: {
+    exclude: { // Things that are one-offs, disappearing after they're clicked. Automatically excludes creep. Does not add a calculator.
         planetary: ['food','lumber','stone','chrysotile','slaughter','slave_market',''],
         space: ['test_launch','moon_mission','terraform','red_mission','hell_mission','sun_mission','gas_mission','gas_moon_mission','belt_mission','dwarf_mission','titan_mission','enceladus_mission','triton_mission','kuiper_mission','eris_mission','crashed_ship','digsite'],
         starDock: ['prep_ship','launch_ship'],
@@ -76,17 +76,17 @@ const calcInfo = {
         intergalactic: ['gateway_mission','gorddon_mission','alien2_mission','chthonian_mission'],
         hell: ['pit_mission','assault_forge','ruins_mission','gate_mission','lake_mission','spire_mission','bribe_sphinx','spire_survey','spire'],
         tauceti: [
-            'home_mission','dismantle','excavate','alien_outpost','red_mission','matrix','roid_mission','alien_space_station',
+            'home_mission','dismantle','excavate','alien_outpost','red_mission','matrix','roid_mission','alien_station_survey',
             'contact','introduce','subjugate','gas_contest','gas_contest2','ignite_gas_giant','jeff','goe_facility'
         ],
     },
-    excludeCreep: {
+    excludeCreep: { // Things that aren't one-offs, but also don't have conventional cost creep.
         planetary: ['horseshoe'],
         space: ['horseshoe'],
         hell: ['ancient_pillars','sphinx','waygate'],
-        tauceti: ['horseshoe','ringworld','matrioshka_brain','ignition_device']
+        tauceti: ['horseshoe']
     },
-    max: {
+    max: { // Structures that can have a max to the number of them that you can get. Things with a max of 1 that are included here as opposed to in the exclude section are things that linger around after being purchased, usually having a changing text after being bought.
         prehistoric: {},
         planetary: {
             s_alter: 1
@@ -132,11 +132,12 @@ const calcInfo = {
             alien_outpost: 1,
             jump_gate: 100,
             ringworld: 1000,
+            alien_station: 100,
             matrioshka_brain: 1000,
             ignition_device: 10
         }
     },
-    count: {
+    count: { // Structures that have "count" values that aren't tracked in the building itself. Here you calculate the count that building would have from the save provided.
         planetary: {
             horseshoe: global.race['shoecnt'] ? global.race['shoecnt'] : 0,
             assembly: global.resource[global.race.species] ? global.resource[global.race.species].amount : 0
@@ -154,7 +155,7 @@ const calcInfo = {
         },
         tauceti: {}
     },
-    creepCalc: {
+    creepCalc: { // Because the cost creep is reverse engineered, buildings with very low cost creep can calculation discrepencies by using the base offset of 100. Here you set higher amounts for those specific buildings to use with the calculation to get a more accurate result.
         planetary: {
             assembly: 1000
         },

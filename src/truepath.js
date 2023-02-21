@@ -3215,7 +3215,6 @@ const tauCetiModules = {
                 Money(){ return global.race['lone_survivor'] ? 1500000000 : 3000000000; },
                 Helium_3(){ return 5000000; }
             },
-            wiki: false,
             effect(){ return loc('tau_gas2_alien_station_repair_effect',[tauCetiModules.tau_gas2.info.name()]); },
             action(){
                 if (payCosts($(this)[0])){
@@ -3231,7 +3230,7 @@ const tauCetiModules = {
             title: loc('tau_gas2_alien_station'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('alien_station') || global.tauceti.alien_station.count < 100 || wiki){
-                    return `<div>${loc('tau_gas2_alien_station')}</div><div class="has-text-special">${loc('tau_gas2_alien_station_repair')}</div>`;
+                    return `<div>${loc('tau_gas2_alien_station')}</div>` + (global.tauceti.hasOwnProperty('alien_station') && global.tauceti.alien_station.count >= 100 ? `<div class="has-text-special">${loc('space_dwarf_reactor_desc_req')}</div>` : `<div class="has-text-special">${loc('tau_gas2_alien_station_repair')}</div>`);
                 }
                 else {
                     return `<div>${loc('tau_gas2_alien_station')}</div>`;
@@ -3249,14 +3248,16 @@ const tauCetiModules = {
                 Mythril(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? wom_recycle(125000) : 0; },
                 Cipher(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0)) < 100 ? (global.race['lone_survivor'] ? 256 : 2001) : 0; },
             },
-            wiki: false,
             effect(wiki){
                 let effectText = '';
                 let count = (wiki || 0) + (global.tauceti.hasOwnProperty('alien_station') ? global.tauceti.alien_station.count : 0);
                 if (count < 100){
                     effectText += `<div class="has-text-special">${loc('tau_gas2_alien_station_repaired',[count])}</div>`;
+                    return effectText;
                 }
-                return effectText;
+                else {
+                    return tauCetiModules.tau_gas2.alien_space_station.effect(wiki);
+                }
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -3289,6 +3290,7 @@ const tauCetiModules = {
             cost: {},
             queue_complete(){ return 0; },
             special(){ return global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 ? true : false; },
+            wiki: false,
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
                 let desc = `<div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
