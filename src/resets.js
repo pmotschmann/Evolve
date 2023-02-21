@@ -1111,7 +1111,7 @@ function resetCommon(args){
         ptrait: args.ptrait
     };
 
-    if (args.geo){
+    if (args.geology){
         global.city['geology'] = args.geology;
     }
 

@@ -532,17 +532,25 @@ export function drawnGovernOffice(){
         if (!global.race.governor.config.replicate.hasOwnProperty('pow')){
             global.race.governor.config.replicate['pow'] = { on: false, cap: 100, buffer: 5 };
         }
-        if (!global.race.governor.config.replicate.hasOwnProperty('strat')){
-            global.race.governor.config.replicate['strat'] = 0;
+        if (!global.race.governor.config.replicate.hasOwnProperty('res')){
+            global.race.governor.config.replicate['res'] = { que: true, neg: true, cap: true };
         }
 
         let contain = $(`<div class="tConfig" v-show="showTask('replicate')"><div class="has-text-warning">${loc(`gov_task_replicate`)}</div></div>`);
         options.append(contain);
-        let replicate = $(`<div class="storage"><div class="chk"><b-checkbox v-model="c.replicate.pow.on">${loc(`gov_task_replicate_auto`)}</b-checkbox></div></div>`);
+        let replicate = $(`<div class="storage"></div>`);
         contain.append(replicate);
 
+        replicate.append($(`<div class="chk"><b-checkbox v-model="c.replicate.pow.on">${loc(`gov_task_replicate_auto`)}</b-checkbox></div>`));
         replicate.append($(`<b-field>${loc(`gov_task_replicate_pmax`)}<b-numberinput min="0" v-model="c.replicate.pow.cap" :controls="false"></b-numberinput></b-field>`));
         replicate.append($(`<b-field>${loc(`gov_task_replicate_buff`)}<b-numberinput min="0" v-model="c.replicate.pow.buffer" :controls="false"></b-numberinput></b-field>`));
+
+        let res_bal = $(`<div class="storage"></div>`);
+        contain.append(res_bal);
+
+        res_bal.append($(`<div class="chk"><b-checkbox v-model="c.replicate.res.que">${loc(`gov_task_replicate_que`)}</b-checkbox></div>`));
+        res_bal.append($(`<div class="chk"><b-checkbox v-model="c.replicate.res.neg">${loc(`gov_task_replicate_neg`)}</b-checkbox></div>`));
+        res_bal.append($(`<div class="chk"><b-checkbox v-model="c.replicate.res.cap">${loc(`gov_task_replicate_cap`)}</b-checkbox></div>`));
     }
 
     vBind({
@@ -1315,10 +1323,11 @@ export const gov_tasks = {
                 else if (global.race.replicator.pow > cap){
                     global.race.replicator.pow = cap;
                 }
+                global.race.replicator.pow = Math.floor(global.race.replicator.pow);
             }
 
             let rBal = false;
-            if (global.queue.queue.length > 0){
+            if (global.race.governor.config.replicate.res.que && global.queue.queue.length > 0){
                 let struct = decodeStructId(global.queue.queue[0].id);
                 let tc = timeCheck(struct.a,false,true);
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
@@ -1335,10 +1344,10 @@ export const gov_tasks = {
                 let resSorted = Object.keys(atomic_mass).sort(function(a,b){return global.resource[a].diff-global.resource[b].diff});
                 resSorted = resSorted.filter(item => global.resource[item].display);
 
-                if (global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
+                if (global.race.governor.config.replicate.res.neg && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
                     global.race.replicator.res = resSorted[0];
                 }
-                else if (global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
+                else if (global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
                     let cappable = resSorted.filter(item => global.resource[item].max > 0);
                     for (let i=0; i<cappable.length; i++){
                         if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){
