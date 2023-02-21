@@ -7,7 +7,7 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
-import { shipAttackPower, sensorRange, shipCrewSize } from './../truepath.js';
+import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
 export function mechanicsPage(content){
@@ -735,6 +735,7 @@ export function mechanicsPage(content){
             }
         });
         let costs_calc = createCalcSection(tp_ships_costs,'mechanics','tp_ships_costs',loc('wiki_mechanics_tp_ships_costs'));
+        tpShipsCostsCalc(costs_calc);
         
         let tp_ships_crew = infoBoxBuilder(tp_ships,{ name: 'tp_ships_crew', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_crew'), paragraphs: 1, h_level: 2,
             para_data: {
@@ -745,7 +746,7 @@ export function mechanicsPage(content){
         { // Current TP Ship Crew
             let tp_ships_crew_reveal = createRevealSection(tp_ships_crew,'mechanics','tp_ships_crew',loc('wiki_mechanics_tp_ships_crew'));
             
-            ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought'].forEach(function(shipClass){
+            ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','explorer'].forEach(function(shipClass){
                 tp_ships_crew_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+shipClass)}</span>: <span class="has-text-warning">${shipCrewSize({ class: shipClass })}</span>`);
             });
         }
@@ -757,6 +758,7 @@ export function mechanicsPage(content){
             }
         });
         let power_calc = createCalcSection(tp_ships_power,'mechanics','tp_ships_power',loc('wiki_mechanics_tp_ships_power'));
+        tpShipsPowerCalc(power_calc);
         
         let tp_ships_firepower = infoBoxBuilder(tp_ships,{ name: 'tp_ships_firepower', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_firepower'), paragraphs: 2, break:[3], h_level: 2,
             para_data: {
@@ -784,11 +786,13 @@ export function mechanicsPage(content){
         let tp_ships_sensors = infoBoxBuilder(tp_ships,{ name: 'tp_ships_sensors', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_sensors'), paragraphs: 2, h_level: 2,
             para_data: {
                 1: [loc('space_scan_effectiveness')],
-                2: [loc('space_scan_effectiveness'),loc('outer_shipyard_sensors'),loc('outer_shipyard_sensor'),getSolarName('triton'),loc('space_fob_title')]
+                2: [loc('space_scan_effectiveness'),loc('outer_shipyard_sensors'),loc('outer_shipyard_class'),loc('outer_shipyard_sensor'),getSolarName('triton'),loc('space_fob_title')]
             }
         });
-        let sensors_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_sensors',loc('wiki_mechanics_tp_ships_sensors'));
-        tpShipsSensorsCalc(sensors_calc);
+        let scan_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_scan',loc('wiki_calc_tp_ships_scan_ship'));
+        tpShipsScanCalc(scan_calc);
+        let intel_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_intel',loc('space_scan_effectiveness'));
+        tpShipsIntelCalc(intel_calc);
         
         sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
     }
@@ -2375,7 +2379,7 @@ function syndicatePenaltyCalc(info){
                         if (ship.location === 'spc_'+inputs.region.val && ship.transit === 0 && ship.fueled){
                             let rating = shipAttackPower(ship);
                             inputs.ship_security.val += ship.damage > 0 ? Math.round(rating * (100 - ship.damage) / 100) : rating;
-                            inputs.intel.val += sensorRange(ship.sensor);
+                            inputs.intel.val += sensorRange(ship);
                         }
                     });
                     if (inputs.region.val === 'triton' && global.space['fob'] && global.space.fob.on > 0){
@@ -2563,6 +2567,892 @@ function syndicatePenaltyCalc(info){
     });
 }
 
+function tpShipsCostsCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsCostsCalc"></div>`);
+    info.append(calc);
+    
+    let formulaBase = $(`<div></div>`);
+    let formulaCreep = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formulaBase);
+    calc.append(formulaCreep);
+    calc.append(variables);
+    
+    let inputs = {
+        owned: { val: undefined },
+        class: { val: undefined },
+        power: { val: undefined },
+        weapon: { val: undefined },
+        armor: { val: undefined },
+        engine: { val: undefined },
+        sensor: { val: undefined }
+    }
+    
+    let res = {
+        Money: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Aluminium: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Adamantite: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Steel: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Alloy: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Neutronium: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Titanium: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Copper: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Orichalcum: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Iridium: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Iron: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Nano_Tube: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false },
+        Quantium: { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false }
+    }
+    
+    let show = {
+        exp1: { val: undefined },
+        exp2: { val: undefined },
+        creep: { val: undefined }
+    }
+    
+    formulaBase.append(`
+        <div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_costs_base_costs')}</h2>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Money_name')}:</h3><span> {{ i.class.val, 'class', 'Money' | getBase }}</span><span v-show="i.class.val !== 'explorer'">^{{ i.sensor.val, 'sensor', 'Money' | getExponent }}</span><span v-show="r.Money.preVis"> = {{ 'Money' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Aluminium_name')}:</h3><span> {{ i.class.val, 'class', 'Aluminium' | getBase }}</span><span v-show="r.Aluminium.preVis"> = {{ 'Aluminium' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Adamantite_name')}:</h3><span> {{ i.class.val, 'class', 'Adamantite' | getBase }}</span><span v-show="r.Adamantite.preVis"> = {{ 'Adamantite' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Steel_name')}:</h3><span> {{ i.armor.val, 'armor', 'Steel' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Steel.preVis"> = {{ 'Steel' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Alloy_name')}:</h3><span> {{ i.armor.val, 'armor', 'Alloy' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Alloy.preVis"> = {{ 'Alloy' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Neutronium_name')}:</h3><span> {{ i.armor.val, 'armor', 'Neutronium' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Neutronium.preVis"> = {{ 'Neutronium' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Titanium_name')}:</h3><span> {{ i.engine.val, 'engine', 'Titanium' | getBase }}^{{ s.exp2.val, 'exp2' | generic }}</span><span v-show="i.class.val === 'explorer'"> * 5</span><span v-show="r.Titanium.preVis"> = {{ 'Titanium' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Copper_name')}:</h3><span> {{ i.power.val, 'power', 'Copper' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Copper.preVis"> = {{ 'Copper' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Orichalcum_name')}:</h3><span> {{ i.power.val, 'power', 'Orichalcum' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Orichalcum.preVis"> = {{ 'Orichalcum' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Iridium_name')}:</h3><span> ({{ i.power.val, 'power', 'Iridium' | getBase }}^{{ s.exp2.val, 'exp2' | generic }})^{{ i.weapon.val, 'weapon', 'Iridium' | getExponent }}</span><span v-show="i.class.val === 'explorer'"> * 50</span><span v-show="r.Iridium.preVis"> = {{ 'Iridium' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Iron_name')}:</h3><span> {{ i.weapon.val, 'weapon', 'Iron' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="i.class.val === 'explorer'"> * 10</span><span v-show="r.Iron.preVis"> = {{ 'Iron' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Nano_Tube_name')}:</h3><span> {{ i.weapon.val, 'weapon', 'Nano_Tube' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Nano_Tube.preVis"> = {{ 'Nano_Tube' | calcPre }}</span>
+            </div>
+            <div>
+                <h3 class="has-text-info">${loc('resource_Quantium_name')}:</h3><span> {{ i.weapon.val, 'weapon', 'Quantium' | getBase }}^{{ s.exp1.val, 'exp1' | generic }}</span><span v-show="r.Quantium.preVis"> = {{ 'Quantium' | calcPre }}</span>
+            </div>
+        </div>
+    `);
+    
+    let finalForms = `
+        <div>
+            <div>
+                <h2 class="has-text-caution">{{ i.owned.val, i.class.val | finalLabel }}</h2>
+            </div>
+    `;
+    ['Money', 'Aluminium', 'Adamantite', 'Steel', 'Alloy', 'Neutronium', 'Titanium', 'Copper', 'Orichalcum', 'Iridium', 'Iron', 'Nano_Tube', 'Quantium'].forEach(function(resource) {
+        finalForms += `
+            <div>
+                <h3 class="has-text-info">${loc('resource_' + resource + '_name')}:</h3><span> {{ r.${resource}.preVal, 'base' | generic }} * </span><span v-show="i.class.val !== 'explorer' && i.owned.val === 0">0.75</span><span v-show="i.class.val !== 'explorer' && i.owned.val === 1">0.9</span><span v-show="i.class.val !== 'explorer' && i.owned.val !== 0 && i.owned.val !== 1">(1 + ({{ i.owned.val, 'owned' | generic }} - 2) / 25 * {{ s.creep.val, 'creep' | generic }})</span><span v-show="i.class.val === 'explorer'">3 * (1 + {{ i.owned.val, 'owned' | generic }})</span><span v-show="r.${resource}.vis"> = {{ '${resource}' | calcFinal }}</span>
+            </div>
+        `;
+    });
+    finalForms += `</div>`;
+    formulaCreep.append(finalForms);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput"><span>${loc('wiki_calc_tp_ships_costs_owned')}</span> <b-numberinput :input="val('owned')" min="0" v-model="i.owned.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_class')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'class', i.class.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'corvette')">{{ 'class', 'corvette' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'frigate')">{{ 'class', 'frigate' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'destroyer')">{{ 'class', 'destroyer' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'cruiser')">{{ 'class', 'cruiser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'battlecruiser')">{{ 'class', 'battlecruiser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'dreadnought')">{{ 'class', 'dreadnought' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'explorer')">{{ 'class', 'explorer' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_power')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'power', i.power.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'solar')">{{ 'power', 'solar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'diesel')">{{ 'power', 'diesel' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'fission')">{{ 'power', 'fission' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'fusion')">{{ 'power', 'fusion' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'elerium')">{{ 'power', 'elerium' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_weapon')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'weapon', i.weapon.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'railgun')">{{ 'weapon', 'railgun' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'laser')">{{ 'weapon', 'laser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'p_laser')">{{ 'weapon', 'p_laser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ 'weapon', 'plasma' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ 'weapon', 'phaser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ 'weapon', 'disruptor' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_armor')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'armor', i.armor.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('armor', 'steel')">{{ 'armor', 'steel' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('armor', 'alloy')">{{ 'armor', 'alloy' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('armor', 'neutronium')">{{ 'armor', 'neutronium' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_engine')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'engine', i.engine.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'ion')">{{ 'engine', 'ion' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'tie')">{{ 'engine', 'tie' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'pulse')">{{ 'engine', 'pulse' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'photon')">{{ 'engine', 'photon' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'vacuum')">{{ 'engine', 'vacuum' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'emdrive')">{{ 'engine', 'emdrive' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_sensor')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'sensor', i.sensor.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'visual')">{{ 'sensor', 'visual' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'radar')">{{ 'sensor', 'radar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'lidar')">{{ 'sensor', 'lidar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'quantum')">{{ 'sensor', 'quantum' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+            <button class="button" @click="importInputs()">${loc('wiki_calc_import')}</button>
+        </div>
+    `);
+    
+    let getExp = function(val, type){
+        switch (type){
+            case 'sensor':
+                switch (val){
+                    case 'visual':
+                        return 1;
+                    case 'radar':
+                        return 1.04;
+                    case 'lidar':
+                        return 1.08;
+                    case 'quantum':
+                        return 1.12;
+                }
+            case 'weapon':
+                switch (val){
+                    case 'railgun':
+                        return 1;
+                    case 'laser':
+                        return 1.05;
+                    case 'p_laser':
+                        return 1.035;
+                    case 'plasma':
+                        return 1.1;
+                    case 'phaser':
+                        return 1.15;
+                    case 'disruptor':
+                        return 1.2;
+                }
+
+        }
+    }
+    
+    vBind({
+        el: `#tpShipsCostsCalc`,
+        data: {
+            i: inputs,
+            r: res,
+            s: show
+        },
+        methods: {
+            val(type){
+                if (inputs[type].val && inputs[type].val < 0){
+                    inputs[type].val = 0;
+                }
+            },
+            pickGeneric(type, val){
+                inputs[type].val = val;
+                if (type === 'class'){
+                    let h_inflate = 1;
+                    let p_inflate = 1;
+                    let creep_factor = 1;
+                    switch (val){
+                        case 'corvette':
+                            h_inflate = 1;
+                            p_inflate = 1;
+                            creep_factor = 2;
+                            break;
+                        case 'frigate':
+                            h_inflate = 1.1;
+                            p_inflate = 1.09;
+                            creep_factor = 1.5;
+                            break;
+                        case 'destroyer':
+                            h_inflate = 1.2;
+                            p_inflate = 1.18;
+                            creep_factor = 1.2;
+                            break;
+                        case 'cruiser':
+                            h_inflate = 1.3;
+                            p_inflate = 1.25;
+                            break;
+                        case 'battlecruiser':
+                            h_inflate = 1.35;
+                            p_inflate = 1.3;
+                            creep_factor = 0.8;
+                            break;
+                        case 'dreadnought':
+                            h_inflate = 1.4;
+                            p_inflate = 1.35;
+                            creep_factor = 0.5;
+                            break;
+                        case 'explorer':
+                            h_inflate = 1.45;
+                            p_inflate = 1;
+                            creep_factor = 5;
+                            break;
+                    }
+                    show.exp1.val = h_inflate;
+                    show.exp2.val = p_inflate;
+                    show.creep.val = creep_factor;
+                }
+            },
+            resetInputs(){
+                inputs.owned.val = undefined;
+                inputs.class.val = undefined;
+                inputs.power.val = undefined;
+                inputs.weapon.val = undefined;
+                inputs.armor.val = undefined;
+                inputs.engine.val = undefined;
+                inputs.sensor.val = undefined;
+                ['Money', 'Aluminium', 'Adamantite', 'Steel', 'Alloy', 'Neutronium', 'Titanium', 'Copper', 'Orichalcum', 'Iridium', 'Iron', 'Nano_Tube', 'Quantium'].forEach(function(resource) {
+                    res[resource] = { base: undefined, preVal: undefined, preVis: false, val: undefined, vis: false }
+                });
+                show.exp1.val = undefined;
+                show.exp2.val = undefined;
+                show.creep.val = undefined;
+            },
+            importInputs(){
+                if (inputs.class.val){
+                    if (global.space.shipyard && global.space.shipyard.ships){
+                        let owned = 0;
+                        global.space.shipyard.ships.forEach(function(ship){
+                            if (ship.class === inputs.class.val){
+                                owned++;
+                            }
+                        });
+                        inputs.owned.val = owned;
+                    }
+                    else {
+                        inputs.owned.val = 0;
+                    }
+                }
+            }
+        },
+        filters: {
+            finalLabel(owned, shipClass){
+                if (shipClass === 'explorer'){
+                    return loc('wiki_calc_tp_ships_costs_final_costs_explorer');
+                }
+                if (owned !== 0 && owned !== 1){
+                    owned = '>1';
+                }
+                shipClass = shipClass ? loc(`outer_shipyard_class_${shipClass}`) : loc('outer_shipyard_class');
+                
+                return loc('wiki_calc_tp_ships_costs_final_costs',[loc('wiki_calc_tp_ships_costs_final_costs_owned',[owned, shipClass])]);
+            },
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_tp_ships_costs_' + type);
+            },
+            genericLabel(type, val){
+                return val ? loc(`outer_shipyard_${type}_${val}`) : loc(`outer_shipyard_${type}`);
+            },
+            getBase(val, type, resource){
+                if (!val){
+                    return loc('wiki_calc_tp_ships_costs_res_base',[loc(`outer_shipyard_${type}`)]);
+                }
+                let resVal = 0;
+                switch (type){
+                    case 'class':
+                        switch (val){
+                            case 'corvette':
+                                resVal = resource === 'Money' ? 2500000 : resource === 'Aluminium' ? 500000 : 0;
+                                break;
+                            case 'frigate':
+                                resVal = resource === 'Money' ? 5000000 : resource === 'Aluminium' ? 1250000 : 0;
+                                break;
+                            case 'destroyer':
+                                resVal = resource === 'Money' ? 15000000 : resource === 'Aluminium' ? 3500000 : 0;
+                                break;
+                            case 'cruiser':
+                                resVal = resource === 'Money' ? 50000000 : resource === 'Aluminium' ? 0 : 1000000;
+                                break;
+                            case 'battlecruiser':
+                                resVal = resource === 'Money' ? 125000000 : resource === 'Aluminium' ? 0 : 2600000;
+                                break;
+                            case 'dreadnought':
+                                resVal = resource === 'Money' ? 500000000 : resource === 'Aluminium' ? 0 : 8000000;
+                                break;
+                            case 'explorer':
+                                resVal = resource === 'Money' ? 800000000 : resource === 'Aluminium' ? 0 : 9500000;
+                                break;
+                        }
+                        break;
+                    case 'armor':
+                        switch (val){
+                            case 'steel':
+                                resVal = resource === 'Steel' ? 350000 : 0;
+                                break;
+                            case 'alloy':
+                                resVal = resource === 'Alloy' ? 250000 : 0;
+                                break;
+                            case 'neutronium':
+                                resVal = resource === 'Neutronium' ? 10000 : 0;
+                                break;
+                        }
+                        break;
+                    case 'engine':
+                        switch (val){
+                            case 'ion':
+                                resVal = 75000;
+                                break;
+                            case 'tie':
+                                resVal = 150000;
+                                break;
+                            case 'pulse':
+                                resVal = 125000;
+                                break;
+                            case 'photon':
+                                resVal = 210000;
+                                break;
+                            case 'vacuum':
+                                resVal = 300000;
+                                break;
+                            case 'emdrive':
+                                resVal = 1250000;
+                                break;
+                        }
+                        break;
+                    case 'power':
+                        let alt_mat = ['dreadnought','explorer'].includes(inputs.class.val);
+                        switch (val){
+                            case 'solar':
+                                resVal = resource === 'Iridium' ? 15000 : ((resource === 'Orichalcum' && alt_mat) || (resource === 'Copper' && !alt_mat)) ? 40000 : 0;
+                                break;
+                            case 'diesel':
+                                resVal = resource === 'Iridium' ? 15000 : ((resource === 'Orichalcum' && alt_mat) || (resource === 'Copper' && !alt_mat)) ? 40000 : 0;
+                                break;
+                            case 'fission':
+                                resVal = resource === 'Iridium' ? 30000 : ((resource === 'Orichalcum' && alt_mat) || (resource === 'Copper' && !alt_mat)) ? 50000 : 0;
+                                break;
+                            case 'fusion':
+                                resVal = resource === 'Iridium' ? 40000 : ((resource === 'Orichalcum' && alt_mat) || (resource === 'Copper' && !alt_mat)) ? 50000 : 0;
+                                break;
+                            case 'elerium':
+                                resVal = resource === 'Iridium' ? 55000 : ((resource === 'Orichalcum' && alt_mat) || (resource === 'Copper' && !alt_mat)) ? 60000 : 0;
+                                break;
+                        }
+                        break;
+                    case 'weapon':
+                        switch (val){
+                            case 'railgun':
+                                resVal = resource === 'Iron' ? 25000 : 0;
+                                break;
+                            case 'laser':
+                            case 'p_laser':
+                                resVal = resource === 'Nano_Tube' ? 12000 : 0;
+                                break;
+                            case 'plasma':
+                                resVal = resource === 'Nano_Tube' ? 20000 : 0;
+                                break;
+                            case 'phaser':
+                                resVal = resource === 'Quantium' ? 18000 : 0;
+                                break;
+                            case 'disruptor':
+                                resVal = resource === 'Quantium' ? 35000 : 0;
+                                break;
+                        }
+                        break;
+                }
+                res[resource].base = resVal;
+                return resVal;
+            },
+            getExponent(val, type){
+                if (!val){
+                    return loc('wiki_calc_tp_ships_costs_res_exp',[loc(`outer_shipyard_${type}`)]);
+                }
+                return getExp(val, type);
+            },
+            calcPre(resource){
+                if (res[resource].base !== undefined){
+                    let exponent = 0;
+                    let resVal = res[resource].base;
+                    switch (resource){
+                        case 'Money':
+                            if (inputs.class.val === 'explorer'){
+                                exponent = 1;
+                            }
+                            else if (inputs.sensor.val){
+                                exponent = getExp(inputs.sensor.val, 'sensor');
+                            }
+                            break;
+                        case 'Steel':
+                        case 'Alloy':
+                        case 'Neutronium':
+                        case 'Copper':
+                        case 'Orichalcum':
+                        case 'Iron':
+                        case 'Nano_Tube':
+                        case 'Quantium':
+                            if (show.exp1.val){
+                                exponent = show.exp1.val;
+                            }
+                            break;
+                        case 'Titanium':
+                        case 'Iridium':
+                            if (show.exp2.val){
+                                exponent = show.exp2.val;
+                            }
+                            break;
+                    }
+                    if (exponent){
+                        if (resource !== 'Iridium' || inputs.weapon.val){
+                            if (resource === 'Iridium'){
+                                resVal **= getExp(inputs.weapon.val, 'weapon');
+                            }
+                            resVal **= exponent;
+                            if (inputs.class.val === 'explorer'){
+                                if (resource === 'Titanium'){
+                                    resVal *= 5;
+                                }
+                                else if (resource === 'Iron'){
+                                    resVal *= 10;
+                                }
+                                else if (resource === 'Iridium'){
+                                    resVal *= 50;
+                                }
+                            }
+                            res[resource].preVal = +(resVal).toFixed(0);
+                            res[resource].preVis = true;
+                            return res[resource].preVal;
+                        }
+                    }
+                    else if (resource === 'Aluminium' || resource === 'Adamantite'){
+                        res[resource].preVal = resVal;
+                        res[resource].preVis = true;
+                        return res[resource].preVal;
+                    }
+                }
+                res[resource].preVal = undefined;
+                res[resource].preVis = false;
+            },
+            calcFinal(resource){
+                res[resource].vis = res[resource].preVal !== undefined && inputs.owned.val !== undefined;
+                
+                if (res[resource].vis){
+                    let owned = inputs.owned.val;
+                    if (inputs.class.val === 'explorer'){
+                        res[resource].val = +(res[resource].preVal * ((owned + 1) * 3)).toFixed(0);
+                    }
+                    else {
+                        let multi = owned === 0 ? 0.75 : owned === 1 ? 0.9 : (1 + (owned - 2) / 25 * show.creep.val);
+                        res[resource].val = +(res[resource].preVal * multi).toFixed(0);
+                    }
+                    
+                    return res[resource].val;
+                }
+                res[resource].val = undefined;
+            }
+        }
+    });
+}
+
+function tpShipsPowerCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsPowerCalc"></div>`);
+    info.append(calc);
+    
+    let shipClass = $(`<div></div>`);
+    let powerGen = $(`<div></div>`);
+    let powerUse = $(`<div></div>`);
+    
+    calc.append(shipClass);
+    calc.append(powerGen);
+    calc.append(powerUse);
+    
+    let inputs = {
+        class: { val: undefined },
+        power: { val: undefined },
+        weapon: { val: undefined },
+        engine: { val: undefined },
+        sensor: { val: undefined }
+    }
+    
+    let show = {
+        genMulti: { val: undefined },
+        useMulti: { val: undefined },
+        power: { val: undefined, vis: false },
+        weapon: { val: undefined, vis: false },
+        engine: { val: undefined, vis: false },
+        sensor: { val: undefined, vis: false },
+        net: { val: undefined, vis: false, neg: undefined }
+    }
+    
+    shipClass.append(`
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_class')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'class', i.class.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'corvette')">{{ 'class', 'corvette' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'frigate')">{{ 'class', 'frigate' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'destroyer')">{{ 'class', 'destroyer' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'cruiser')">{{ 'class', 'cruiser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'battlecruiser')">{{ 'class', 'battlecruiser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'dreadnought')">{{ 'class', 'dreadnought' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('class', 'explorer')">{{ 'class', 'explorer' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+    `);
+    
+    powerGen.append(`
+        <div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_gen')}</h2>
+            </div>
+            <div>
+                <span>{{ i.power.val, 'power' | genericVal }} * {{ s.genMulti.val, 'gen_multi' | generic }}</span><span v-show="s.power.vis"> = {{ | calcPower }}</span>
+            </div>
+        </div>
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_power')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'power', i.power.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'solar')">{{ 'power', 'solar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'diesel')">{{ 'power', 'diesel' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'fission')">{{ 'power', 'fission' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'fusion')">{{ 'power', 'fusion' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('power', 'elerium')">{{ 'power', 'elerium' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+    `);
+    
+    powerUse.append(`
+        <div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_use',[loc('outer_shipyard_weapon')])}</h2>
+            </div>
+            <div>
+                <span>{{ i.weapon.val, 'weapon' | genericVal }} * {{ s.useMulti.val, 'use_multi' | generic }}</span><span v-show="s.weapon.vis"> = {{ | calcWeapon }}</span>
+            </div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_use',[loc('outer_shipyard_engine')])}</h2>
+            </div>
+            <div>
+                <span>{{ i.engine.val, 'engine' | genericVal }} * {{ s.useMulti.val, 'use_multi' | generic }}</span><span v-show="s.engine.vis"> = {{ | calcEngine }}</span>
+            </div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_use',[loc('outer_shipyard_sensor')])}</h2>
+            </div>
+            <div>
+                <span>{{ i.sensor.val, 'sensor' | genericVal }} * {{ s.useMulti.val, 'use_multi' | generic }}</span><span v-show="s.sensor.vis"> = {{ | calcSensor }}</span>
+            </div>
+            <div>
+                <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_net')}</h2>
+            </div>
+            <div>
+                <span>{{ s.power.val, 'power' | genericResult }} - {{ s.weapon.val, 'weapon' | genericResult }} - {{ s.engine.val, 'engine' | genericResult }} - {{ s.sensor.val, 'sensor' | genericResult }}</span><span v-show="s.net.vis"> = {{ | calcNet }}</span><span v-show="s.net.neg === false"> = ${loc('wiki_calc_tp_ships_power_net_pos')}</span><span v-show="s.net.neg"> = ${loc('wiki_calc_tp_ships_power_net_neg')}</span>
+            </div>
+        </div>
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_weapon')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'weapon', i.weapon.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'railgun')">{{ 'weapon', 'railgun' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'laser')">{{ 'weapon', 'laser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'p_laser')">{{ 'weapon', 'p_laser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'plasma')">{{ 'weapon', 'plasma' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'phaser')">{{ 'weapon', 'phaser' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('weapon', 'disruptor')">{{ 'weapon', 'disruptor' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_engine')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'engine', i.engine.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'ion')">{{ 'engine', 'ion' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'tie')">{{ 'engine', 'tie' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'pulse')">{{ 'engine', 'pulse' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'photon')">{{ 'engine', 'photon' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'vacuum')">{{ 'engine', 'vacuum' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('engine', 'emdrive')">{{ 'engine', 'emdrive' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_sensor')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ 'sensor', i.sensor.val | genericLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'visual')">{{ 'sensor', 'visual' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'radar')">{{ 'sensor', 'radar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'lidar')">{{ 'sensor', 'lidar' | genericLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickGeneric('sensor', 'quantum')">{{ 'sensor', 'quantum' | genericLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#tpShipsPowerCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            pickGeneric(type, val){
+                inputs[type].val = val;
+                if (type === 'class'){
+                    let out_inflate = 1;
+                    let use_inflate = 1;
+                    switch (val){
+                        case 'frigate':
+                            out_inflate = 1.1;
+                            use_inflate = 1.2;
+                            break;
+                        case 'destroyer':
+                            out_inflate = 1.5;
+                            use_inflate = 1.65;
+                            break;
+                        case 'cruiser':
+                            out_inflate = 2;
+                            use_inflate = 2.5;
+                            break;
+                        case 'battlecruiser':
+                            out_inflate = 2.5;
+                            use_inflate = 3.5;
+                            break;
+                        case 'dreadnought':
+                            out_inflate = 5;
+                            use_inflate = 6.5;
+                            break;
+                        case 'explorer':
+                            out_inflate = 6;
+                            use_inflate = 2;
+                            break;
+                    }
+                    
+                    show.genMulti.val = out_inflate;
+                    show.useMulti.val = use_inflate;
+                }
+            },
+            resetInputs(){
+                inputs.class.val = undefined;
+                inputs.power.val = undefined;
+                inputs.weapon.val = undefined;
+                inputs.engine.val = undefined;
+                inputs.sensor.val = undefined;
+                show.genMulti.val = undefined;
+                show.useMulti.val = undefined;
+                show.power.val = undefined;
+                show.weapon.val = undefined;
+                show.engine.val = undefined;
+                show.sensor.val = undefined;
+                show.net.val = undefined;
+                show.power.vis = false;
+                show.weapon.vis = false;
+                show.engine.vis = false;
+                show.sensor.vis = false;
+                show.net.vis = false;
+                show.net.neg = undefined;
+            }
+        },
+        filters: {
+            generic(num, type){
+                return num !== undefined ? num : loc('wiki_calc_tp_ships_power_' + type);
+            },
+            genericResult(num, type){
+                if (num !== undefined){
+                    return num;
+                }
+                switch (type){
+                    case 'power':
+                        return loc('wiki_calc_tp_ships_power_gen');
+                    default:
+                        return loc('wiki_calc_tp_ships_power_use',[loc(`outer_shipyard_${type}`)]);
+                }
+            },
+            genericLabel(type, val){
+                return val ? loc(`outer_shipyard_${type}_${val}`) : loc(`outer_shipyard_${type}`);
+            },
+            genericVal(val, type){
+                if (!val){
+                    return loc('wiki_calc_tp_ships_power_base',[loc(`outer_shipyard_${type}`)]);
+                }
+                let ship = {};
+                ship[type] = val;
+                return Math.abs(shipPower(ship, inputs.class.val === 'explorer'));
+            },
+            calcPower(){
+                show.power.vis = inputs.class.val && inputs.power.val;
+                
+                if (show.power.vis){
+                    show.power.val = shipPower({ class: inputs.class.val, power: inputs.power.val });
+                    
+                    return show.power.val;
+                }
+            },
+            calcWeapon(){
+                show.weapon.vis = inputs.class.val && inputs.weapon.val;
+                
+                if (show.weapon.vis){
+                    show.weapon.val = Math.abs(shipPower({ class: inputs.class.val, weapon: inputs.weapon.val }));
+                    
+                    return show.weapon.val;
+                }
+            },
+            calcEngine(){
+                show.engine.vis = inputs.class.val && inputs.engine.val;
+                
+                if (show.engine.vis){
+                    show.engine.val = Math.abs(shipPower({ class: inputs.class.val, engine: inputs.engine.val }));
+                    
+                    return show.engine.val;
+                }
+            },
+            calcSensor(){
+                show.sensor.vis = inputs.class.val && inputs.sensor.val;
+                
+                if (show.sensor.vis){
+                    show.sensor.val = Math.abs(shipPower({ class: inputs.class.val, sensor: inputs.sensor.val }));
+                    
+                    return show.sensor.val;
+                }
+            },
+            calcNet(){
+                show.net.vis = inputs.class.val && inputs.power.val && inputs.weapon.val && inputs.engine.val && inputs.sensor.val;
+                
+                if (show.net.vis){
+                    show.net.val = shipPower({ class: inputs.class.val, power: inputs.power.val, weapon: inputs.weapon.val, engine: inputs.engine.val, sensor: inputs.sensor.val });
+                    show.net.neg = show.net.val < 0;
+                    
+                    return show.net.val;
+                }
+                else {
+                    show.net.neg = undefined;
+                }
+            }
+        }
+    });
+}
+
 function tpShipsFirepowerCalc(info){
     let calc = $(`<div class="calc" id="tpShipsFirepowerCalc"></div>`);
     info.append(calc);
@@ -2586,7 +3476,7 @@ function tpShipsFirepowerCalc(info){
     
     formula.append(`
         <div>
-            <span>{{ i.weapon.val | weaponVal }} * {{ i.class.val | classVal }}<span v-show="s.result.vis"> = {{ | calc }}</span>
+            <span>{{ i.weapon.val | weaponVal }} * {{ i.class.val | classVal }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
         </div>
     `);
     
@@ -2627,6 +3517,7 @@ function tpShipsFirepowerCalc(info){
                         <b-dropdown-item v-on:click="pickClass('cruiser')">{{ 'cruiser' | classLabel }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickClass('battlecruiser')">{{ 'battlecruiser' | classLabel }}</b-dropdown-item>
                         <b-dropdown-item v-on:click="pickClass('dreadnought')">{{ 'dreadnought' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('explorer')">{{ 'explorer' | classLabel }}</b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
@@ -2670,7 +3561,7 @@ function tpShipsFirepowerCalc(info){
                     case 'disruptor':
                         return 156;
                     default:
-                        return loc('wiki_calc_tp_ships_firepower_weapon')
+                        return loc('wiki_calc_tp_ships_firepower_weapon');
                 }
             },
             classVal(shipClass){
@@ -2687,8 +3578,10 @@ function tpShipsFirepowerCalc(info){
                         return 10;
                     case 'dreadnought':
                         return 22;
+                    case 'explorer':
+                        return 1.2;
                     default:
-                        return loc('wiki_calc_tp_ships_firepower_class')
+                        return loc('wiki_calc_tp_ships_firepower_class');
                 }
             },
             weaponLabel(weapon){
@@ -2809,8 +3702,149 @@ function tpShipsHullCalc(info){
     });
 }
 
-function tpShipsSensorsCalc(info){
-    let calc = $(`<div class="calc" id="tpShipsSensorsCalc"></div>`);
+function tpShipsScanCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsScanCalc"></div>`);
+    info.append(calc);
+    
+    calc.append(`<h2 class="has-text-caution">${loc('wiki_calc_tp_ships_scan_ship')}</h2>`);
+    
+    let formula = $(`<div></div>`);
+    let variables = $(`<div></div>`);
+    
+    calc.append(formula);
+    calc.append(variables);
+    
+    let inputs = {
+        sensor: { val: undefined },
+        class: { val: undefined }
+    }
+    
+    let show = {
+        result: { vis: false, val: 0 }
+    }
+    
+    formula.append(`
+        <div>
+            <span>{{ i.sensor.val | sensorVal }}</span><span v-show="i.sensor.val !== 'visual'"> * {{ i.class.val | classVal }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
+        </div>
+    `);
+    
+    variables.append(`
+        <div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_sensor')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.sensor.val | sensorLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickSensor('visual')">{{ 'visual' | sensorLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickSensor('radar')">{{ 'radar' | sensorLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickSensor('lidar')">{{ 'lidar' | sensorLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickSensor('quantum')">{{ 'quantum' | sensorLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+            <div class="calcInput">
+                <div>
+                    <span>${loc('outer_shipyard_class')}</span>
+                </div>
+                <div>
+                    <b-dropdown hoverable>
+                        <button class="button is-primary" slot="trigger">
+                            <span>{{ i.class.val | classLabel }}</span>
+                            <i class="fas fa-sort-down"></i>
+                        </button>
+                        <b-dropdown-item v-on:click="pickClass('corvette')">{{ 'corvette' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('frigate')">{{ 'frigate' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('destroyer')">{{ 'destroyer' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('cruiser')">{{ 'cruiser' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('battlecruiser')">{{ 'battlecruiser' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('dreadnought')">{{ 'dreadnought' | classLabel }}</b-dropdown-item>
+                        <b-dropdown-item v-on:click="pickClass('explorer')">{{ 'explorer' | classLabel }}</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="calcButton">
+            <button class="button" @click="resetInputs()">${loc('wiki_calc_reset')}</button>
+        </div>
+    `);
+    
+    vBind({
+        el: `#tpShipsScanCalc`,
+        data: {
+            i: inputs,
+            s: show
+        },
+        methods: {
+            pickSensor(sensor){
+                inputs.sensor.val = sensor;
+            },
+            pickClass(shipClass){
+                inputs.class.val = shipClass;
+            },
+            resetInputs(){
+                inputs.sensor.val = undefined;
+                inputs.class.val = undefined;
+            }
+        },
+        filters: {
+            sensorVal(sensor){
+                switch (sensor){
+                    case 'visual':
+                        return 1;
+                    case 'radar':
+                        return 10;
+                    case 'lidar':
+                        return 18;
+                    case 'quantum':
+                        return 32;
+                    default:
+                        return loc('wiki_calc_tp_ships_scan_sensor');
+                }
+            },
+            classVal(shipClass){
+                switch (shipClass){
+                    case 'corvette':
+                    case 'frigate':
+                        return 2;
+                    case 'destroyer':
+                    case 'cruiser':
+                        return 1.5;
+                    case 'battlecruiser':
+                    case 'dreadnought':
+                        return 1;
+                    case 'explorer':
+                        return 5;
+                    default:
+                        return loc('wiki_calc_tp_ships_firepower_class');
+                }
+            },
+            sensorLabel(sensor){
+                return sensor ? loc('outer_shipyard_sensor_' + sensor) : loc('outer_shipyard_sensor');
+            },
+            classLabel(shipClass){
+                return shipClass ? loc('outer_shipyard_class_' + shipClass) : loc('outer_shipyard_class');
+            },
+            calc(){
+                show.result.vis = inputs.sensor.val && (inputs.class.val || inputs.sensor.val === 'visual');
+                
+                if (show.result.vis){
+                    show.result.val = sensorRange({ sensor: inputs.sensor.val, class: inputs.class.val });
+                    
+                    return show.result.val;
+                }
+            }
+        }
+    });
+}
+
+function tpShipsIntelCalc(info){
+    let calc = $(`<div class="calc" id="tpShipsIntelCalc"></div>`);
     info.append(calc);
     
     let formula = $(`<div></div>`);
@@ -2834,19 +3868,19 @@ function tpShipsSensorsCalc(info){
     
     formula.append(`
         <div>
-            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_combined_range')}</h2>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_intel_combined_range')}</h2>
         </div>
         <div>
             <span>{{ i.range.val, 'ship_range' | generic }}</span><span v-show="i.triton.val && i.fob.val"> + 10</span><span v-show="s.combined.vis"> = {{ | calcRange }}</span>
         </div>
         <div>
-            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_adjusted_range_below',[loc('wiki_calc_tp_ships_sensors_adjusted_range'),loc('wiki_calc_tp_ships_sensors_combined_range')])}</h2>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_intel_adjusted_range_below',[loc('wiki_calc_tp_ships_intel_adjusted_range'),loc('wiki_calc_tp_ships_intel_combined_range')])}</h2>
         </div>
         <div>
             <span>{{ s.combined.val, 'combined_range' | generic }}</span><span v-show="s.adjusted.vis && !s.adjusted.adjust"> = {{ | calcAdjusted }}</span>
         </div>
         <div>
-            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_sensors_adjusted_range_above',[loc('wiki_calc_tp_ships_sensors_adjusted_range'),loc('wiki_calc_tp_ships_sensors_combined_range')])}</h2>
+            <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_intel_adjusted_range_above',[loc('wiki_calc_tp_ships_intel_adjusted_range'),loc('wiki_calc_tp_ships_intel_combined_range')])}</h2>
         </div>
         <div>
             <span>(({{ s.combined.val, 'combined_range' | generic }} - 100) / (({{ s.combined.val, 'combined_range' | generic }} - 100) + 200) * 100) + 100</span><span v-show="s.adjusted.vis && s.adjusted.adjust"> = {{ | calcAdjusted }}</span>
@@ -2861,7 +3895,7 @@ function tpShipsSensorsCalc(info){
     
     variables.append(`
         <div>
-            <div class="calcInput"><span>${loc('wiki_calc_tp_ships_sensors_ship_range')}</span> <b-numberinput :input="val('range')" min="0" v-model="i.range.val" :controls="false"></b-numberinput></div>
+            <div class="calcInput"><span>${loc('wiki_calc_tp_ships_intel_ship_range')}</span> <b-numberinput :input="val('range')" min="0" v-model="i.range.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><div><span>${getSolarName('triton')}</span></div><div><b-checkbox class="patrol" v-model="i.triton.val"></b-checkbox></div></div>
             <div class="calcInput" v-show="i.triton.val"><div><span>${loc('space_fob_title')}</span></div><div><b-checkbox class="patrol" v-model="i.fob.val"></b-checkbox></div></div>
         </div>
@@ -2871,7 +3905,7 @@ function tpShipsSensorsCalc(info){
     `);
     
     vBind({
-        el: `#tpShipsSensorsCalc`,
+        el: `#tpShipsIntelCalc`,
         data: {
             i: inputs,
             s: show
@@ -2890,7 +3924,7 @@ function tpShipsSensorsCalc(info){
         },
         filters: {
             generic(num, type){
-                return num !== undefined ? num : loc('wiki_calc_tp_ships_sensors_' + type);
+                return num !== undefined ? num : loc('wiki_calc_tp_ships_intel_' + type);
             },
             calcRange(){
                 show.combined.vis = inputs.range.val !== undefined;

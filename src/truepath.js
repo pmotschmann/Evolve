@@ -3882,7 +3882,7 @@ export function shipCrewSize(ship){
     }
 }
 
-function shipPower(ship){
+export function shipPower(ship, wiki){
     let watts = 0;
 
     let out_inflate = 1;
@@ -3924,7 +3924,7 @@ function shipPower(ship){
             watts = Math.round(150 * out_inflate);
             break;
         case 'fusion':
-            watts = Math.round((ship.class === 'explorer' ? 174 : 175) * out_inflate);
+            watts = Math.round((ship.class === 'explorer' || wiki ? 174 : 175) * out_inflate);
             break;
         case 'elerium':
             watts = Math.round(200 * out_inflate);
@@ -3969,7 +3969,7 @@ function shipPower(ship){
             watts -= Math.round(120 * use_inflate);
             break;
         case 'emdrive':
-            watts -= Math.round((ship.class !== 'explorer' ? 1024 : 515) * use_inflate);
+            watts -= Math.round((ship.class !== 'explorer' && !wiki ? 1024 : 515) * use_inflate);
             break;
     }
 
