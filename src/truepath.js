@@ -2724,7 +2724,8 @@ const tauCetiModules = {
                 Quantium(offset){ return spaceCostMultiplier('womling_lab', offset, wom_recycle(95000), 1.28, 'tauceti'); },
             },
             effect(){
-                let know = Math.round(25000 * global.tauceti.overseer.prod / 100);
+                let overseer = global.tauceti.hasOwnProperty('overseer') ? global.tauceti.overseer.prod : 100;
+                let know = Math.round(25000 * overseer / 100);
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), planetName().red])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_lab_effect',[know])}</div>`;
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
