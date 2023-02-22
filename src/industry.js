@@ -1404,7 +1404,7 @@ function loadReplicator(parent,bind){
                     scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
                 }
             });
-            content.append(`<div class="left hscroll"><b-field>${scrollMenu}</b-field></div>`);
+            content.append(`<div id="hscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
         }
 
         let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
@@ -1457,6 +1457,15 @@ function loadReplicator(parent,bind){
                 }
             }
         });
+
+        if (!bind){
+            const scrollContainer = document.getElementById('hscrolltarget');
+
+            scrollContainer.addEventListener("wheel", (evt) => {
+                evt.preventDefault();
+                scrollContainer.scrollLeft += evt.deltaY;
+            });
+        }
     }
 }
 
