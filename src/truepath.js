@@ -2281,7 +2281,7 @@ const tauCetiModules = {
                 desc += `<div>${loc('city_tourist_center_effect4',[mon])}</div>`;
                 desc += `<div>${loc('tau_home_cultureal_effect2',[womling,loc('tau_red_womlings')])}</div>`;
                 if (global.tech.tau_culture >= 2){
-                    desc += `<div>${loc('tau_home_cultureal_effect3',[bake,loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)])}</div>`;
+                    desc += `<div>${loc('tau_home_cultureal_effect3',[bake,loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`)])}</div>`;
                 }
                 desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;

@@ -12761,8 +12761,8 @@ const techs = {
     },
     food_culture: {
         id: 'tech-food_culture',
-        title(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
-        desc(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`)]); },
+        title(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`)]); },
+        desc(){ return loc('tech_food_culture',[loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`)]); },
         category: 'banking',
         era: 'tauceti',
         path: ['truepath'],
@@ -12771,7 +12771,7 @@ const techs = {
         cost: {
             Knowledge(){ return 9410000; }
         },
-        effect(){ return loc('tech_food_culture_effect',[loc(`tau_gas2_alien_station_data2_r${global.race.food_item || 0}`),loc('tech_cultural_center')]); },
+        effect(){ return loc('tech_food_culture_effect',[loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`),loc('tech_cultural_center')]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

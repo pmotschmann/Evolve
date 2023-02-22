@@ -18,6 +18,7 @@ const changeList = [
             `Syndicate will now also steal food from Biodomes.`,
             `Reinforced Shed upgrade now requires unlocking Iron Mining.`,
             `You must now construct a Titan Habitat before a Titan Mine.`,
+            `Removed dark background effect from modal popups.`,
         ]
     },
     {
