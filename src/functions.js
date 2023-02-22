@@ -878,6 +878,10 @@ export function timeCheck(c_action,track,detailed){
                                 track.r = og_track_r;
                             }
                             time = -9999999;
+                            shorted[f_res] = 99999999 - res_diff;
+                            if ((shorted[bottleneck] && shorted[f_res] > shorted[bottleneck]) || !shorted[bottleneck]){
+                                bottleneck = f_res;
+                            }
                         }
                     }
                 }
