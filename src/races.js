@@ -5,7 +5,7 @@ import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
-import { buildGarrison } from './civics.js';
+import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { actions, checkTechQualifications } from './actions.js';
@@ -4189,6 +4189,10 @@ export function racialTrait(workers,type){
     if (inspireVal && (type === 'farmer' || type === 'factory' || type === 'miner' || type === 'lumberjack')){
         modifier *= 1 + (inspireVal / 100);
     }
+    let dirtVal = govActive('dirty_jobs',2);
+    if (dirtVal && type === 'miner'){
+        modifier *= 1 + (dirtVal / 100);
+    }
     if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
         modifier *= 1.1;
     }
@@ -4280,7 +4284,7 @@ export function racialTrait(workers,type){
         modifier *= 1 - (traits.ooze.vars()[0] / 100);
     }
     if (global.civic.govern.type === 'democracy'){
-        modifier *= 0.95;
+        modifier *= 1 - (govEffect.democracy()[1] / 100);
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){

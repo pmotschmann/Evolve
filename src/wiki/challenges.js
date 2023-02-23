@@ -615,6 +615,18 @@ export function challengesPage(content){
                 }
             });
             addAchievements(lone,false,['adam_eve']);
+            addRequirements(lone,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_retired`),
+                            color: global.stats.achieve['retired'] ? true : false,
+                            link: 'wiki.html#resets-prestige-retired'
+                        }
+                    ]
+                }
+            ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_lone_survivor',loc('wiki_challenges_scenarios_lone_survivor'));
         }
     }

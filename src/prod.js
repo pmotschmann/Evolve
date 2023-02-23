@@ -4,6 +4,7 @@ import { govRelationFactor } from './civics.js';
 import { jobScale } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { flib } from './functions.js';
+import { govActive } from './governor.js';
 
 export function highPopAdjust(v){
     if (global.race['high_pop']){
@@ -38,6 +39,10 @@ export function production(id,val){
             }
             else if (global.city.biome === 'taiga'){
                 oil *= biomes.taiga.vars()[2];
+            }
+            let dirtVal = govActive('dirty_jobs',2);
+            if (dirtVal){
+                oil *= 1 + (dirtVal / 100);
             }
             return oil;
         }

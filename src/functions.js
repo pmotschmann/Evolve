@@ -7,6 +7,7 @@ import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
+import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 
 var popperRef = false;
@@ -1629,11 +1630,12 @@ function extraAdjust(costs, offset, wiki){
 
 function technoAdjust(costs, offset, wiki){
     if (global.civic.govern.type === 'technocracy'){
-        let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
+        let adjust = 1 + (govEffect.technocracy()[1] / 100);
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.92); }
+                let kAdjust = 1 - (govEffect.technocracy()[0] / 100);
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * kAdjust); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }

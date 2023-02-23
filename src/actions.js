@@ -3589,9 +3589,12 @@ export const actions = {
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc(global.race.universe === 'magic' ? 'city_mana_engine_effect' : 'city_coal_power_effect',[consume])}</span>`;
             },
             powered(){
-                return global.race['environmentalist']
-                    ? powerModifier(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4)
-                    : powerModifier(global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5);
+                let power = global.race['environmentalist']
+                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4
+                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                let dirt = govActive('dirty_jobs',1);
+                if (dirt){ power -= dirt; }
+                return powerModifier(power);
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -3629,23 +3632,27 @@ export const actions = {
                 return global.race['environmentalist'] ? `+${power}MW` : `<span>+${power}MW.</span> <span class="has-text-caution">${loc('city_oil_power_effect',[consume])}</span>`;
             },
             powered(){
+                let power = 0;
                 if (global.race['environmentalist']){
                     if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
                         let base = global.city.calendar.wind === 1 ? -7 : -5;
-                        return powerModifier(global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1));
+                        power = global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1);
                     }
                     else {
-                        return powerModifier(global.city.calendar.wind === 1 ? -7 : -5);
+                        power = global.city.calendar.wind === 1 ? -7 : -5;
                     }
                 }
                 else {
                     if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        return powerModifier(global.stats.achieve['dissipated'].l >= 5 ? -8 : -7);
+                        power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
                     }
                     else {
-                        return powerModifier(-6);
+                        power = -6;
                     }
                 }
+                let dirt = govActive('dirty_jobs',1);
+                if (dirt){ power -= dirt; }
+                return powerModifier(power);
             },
             p_fuel(){ return { r: 'Oil', a: global.race['environmentalist'] ? 0 : 0.65 }; },
             action(){
@@ -3942,7 +3949,10 @@ export function setChallengeScreen(){
     if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker']){
         global.evolution['sludge'] = { count: 0 };
     }
-    if (global.stats.achieve['retired'] || global.stats.achieve['bluepill']){
+    if (global.stats.achieve['bluepill']){
+        global.evolution['simulation'] = { count: 0 };
+    }
+    if (global.stats.achieve['retired']){
         global.evolution['lone_survivor'] = { count: 0 };
     }
     challengeGeneHeader();
@@ -3983,6 +3993,9 @@ export function setChallengeScreen(){
     if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
         addAction('evolution','orbit_decay');
     }
+    if (global.stats.achieve['bluepill']){
+        addAction('evolution','simulation');
+    }
     scenarioActionHeader();
     addAction('evolution','junker');
     if (global.stats.achieve['shaken']){
@@ -3994,7 +4007,7 @@ export function setChallengeScreen(){
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
         addAction('evolution','truepath');
     }
-    if (global.stats.achieve['retired'] || global.stats.achieve['bluepill']){
+    if (global.stats.achieve['retired']){
         addAction('evolution','lone_survivor');
     }
 }
@@ -4314,6 +4327,7 @@ const advancedChallengeList = {
     'inflation': {t: 'c', e: 'wheelbarrow' },
     'sludge': {t: 'c', e: 'extinct_sludge' },
     'orbit_decay': {t: 'c', e: 'lamentis' },
+    'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },
     'cataclysm': {t: 's', e: 'iron_will' },
     'banana': {t: 's', e: 'banana' },
@@ -4478,7 +4492,7 @@ export function templeEffect(){
             faith *= 1 + (traits.spiritual.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'theocracy'){
-            faith *= 1.12;
+            faith *= 1 + (govEffect.theocracy()[0] / 100);
         }
         if (global.race['ooze']){
             faith *= 1 - (traits.ooze.vars()[1] / 100);
@@ -4517,7 +4531,7 @@ export function templeEffect(){
             plasmid *= 1 + (traits.spiritual.vars()[0] / 100);
         }
         if (global.civic.govern.type === 'theocracy'){
-            plasmid *= 1.12;
+            plasmid *= 1 + (govEffect.theocracy()[0] / 100);
         }
         if (global.race['ooze']){
             plasmid *= 1 - (traits.ooze.vars()[1] / 100);
@@ -4824,9 +4838,6 @@ export function checkTechQualifications(c_action,type){
                 return false;
             }
         }
-    }
-    if (type === 'ancient_theology' && !global.genes['ancients']){
-        return false;
     }
     return true;
 }

@@ -4,6 +4,7 @@ import { traits } from './races.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
+import { govEffect } from './civics.js';
 import { highPopAdjust } from './prod.js';
 import { loc } from './locale.js';
 
@@ -386,8 +387,8 @@ export const craftingRatio = (function(){
             if (global.civic.govern.type === 'socialist'){
                 crafting.general.multi.push({
                     name: loc(`govern_socialist`),
-                    manual: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35,
-                    auto: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1.5 : 1.42 ) : 1.35
+                    manual: 1 + (govEffect.socialist()[0] / 100),
+                    auto: 1 + (govEffect.socialist()[0] / 100)
                 });
             }
             if (global.race['casting'] && global.race.casting['crafting']){

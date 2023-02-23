@@ -7367,6 +7367,9 @@ const techs = {
         era: 'early_space',
         reqs: { theology: 3, mars: 2 },
         grant: ['theology',4],
+        condition(){
+            return global.genes['ancients'] ? true : false;
+        },
         cost: {
             Knowledge(){ return 180000; }
         },

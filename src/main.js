@@ -6,7 +6,7 @@ import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, sha
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
-import { checkControlling, garrisonSize, armyRating, govTitle, govCivics } from './civics.js';
+import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect } from './civics.js';
 import { actions, updateDesc, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
@@ -248,14 +248,14 @@ popover('morale',
 
                 let value = global.city.morale[morale];
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
-                    let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.3 : 1.25 ) : 1.2;
+                    let democracy = 1 + (govEffect.democracy()[0] / 100);
                     value /= democracy;
                 }
 
                 obj.popper.append(`<p class="modal_bd"><span>${loc(`morale_${morale}`)}</span> <span class="has-text-${type}"> ${+(value).toFixed(1)}%</span></p>`)
 
                 if (morale === 'entertain' && global.civic.govern.type === 'democracy'){
-                    let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20;
+                    let democracy = govEffect.democracy()[0];
                     obj.popper.append(`<p class="modal_bd"><span>ᄂ${loc('govern_democracy')}</span> <span class="has-text-success"> +${democracy}%</span></p>`);
                 }
             }
@@ -269,18 +269,19 @@ popover('morale',
         }
 
         if (global.civic.govern.type === 'corpocracy'){
-            let penalty = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10;
+            let penalty = govEffect.corpocracy()[3];
             total -= penalty;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_corpocracy')}</span> <span class="has-text-danger"> -${penalty}%</span></p>`);
         }
         if (global.civic.govern.type === 'republic'){
-            let repub = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20;
+            let repub = govEffect.republic()[1];
             total += repub;
             obj.popper.append(`<p class="modal_bd"><span>${loc('govern_republic')}</span> <span class="has-text-success"> +${repub}%</span></p>`);
         }
         if (global.civic.govern.type === 'federation'){
-            total += 10;
-            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +10%</span></p>`);
+            let fed = govEffect.federation()[1];
+            total += fed;
+            obj.popper.append(`<p class="modal_bd"><span>${loc('govern_federation')}</span> <span class="has-text-success"> +${fed}%</span></p>`);
         }
 
         let milVal = govActive('militant',1);
@@ -701,7 +702,7 @@ function fastLoop(){
     if (global.tech['world_control']){
         let bonus = 25;
         if (global.civic.govern.type === 'federation'){
-            bonus = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32;
+            bonus = govEffect.federation()[2];
         }
         if (global.race['unified']){
             bonus += traits.unified.vars()[0];
@@ -713,7 +714,7 @@ function fastLoop(){
         let occupy = 0;
         for (let i=0; i<3; i++){
             if (global.civic.foreign[`gov${i}`].occ || global.civic.foreign[`gov${i}`].anx || global.civic.foreign[`gov${i}`].buy){
-                occupy += global.civic.govern.type === 'federation' ? 8 : 5;
+                occupy += global.civic.govern.type === 'federation' ? (5 + govEffect.federation()[0]) : 5;
             }
         }
         if (occupy > 0){
@@ -1100,13 +1101,13 @@ function fastLoop(){
             morale -= milVal;
         }
         if (global.civic.govern.type === 'corpocracy'){
-            morale -= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10;
+            morale -= govEffect.corpocracy()[3];
         }
         if (global.civic.govern.type === 'republic'){
-            morale += global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20;
+            morale += govEffect.republic()[1];
         }
         if (global.civic.govern.type === 'federation'){
-            morale += 10;
+            morale += govEffect.federation()[1];
         }
 
         if (global.race['blood_thirst'] && global.race.blood_thirst_count >= 1){
@@ -2644,7 +2645,7 @@ function fastLoop(){
             }
         }
         if (global.civic.govern.type === 'democracy'){
-            let democracy = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.3 : 1.25 ) : 1.2;
+            let democracy = 1 + (govEffect.democracy()[0] / 100);
             entertainment *= democracy;
         }
         global.city.morale.entertain = entertainment;
@@ -2691,10 +2692,10 @@ function fastLoop(){
             stress /= 2;
         }
         if (global.civic.govern.type === 'autocracy'){
-            stress *= global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1.1 : 1.18 ) : 1.25;
+            stress *= 1 + (govEffect.autocracy()[0] / 100);
         }
         if (global.civic.govern.type === 'socialist'){
-            stress *= 1.1;
+            stress *= 1 + (govEffect.socialist()[2] / 100);
         }
         if (global.race['emotionless']){
             stress *= 1 - (traits.emotionless.vars()[1] / 100);
@@ -3499,7 +3500,7 @@ function fastLoop(){
                 professors_base *= 1 + (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.05;
             }
             if (global.civic.govern.type === 'theocracy'){
-                professors_base *= 0.75;
+                professors_base *= 1 - (govEffect.theocracy()[1] / 100);
             }
 
             let scientist_base = workerScale(global.civic.scientist.workers,'scientist');
@@ -3516,7 +3517,7 @@ function fastLoop(){
                 scientist_base *= 1 + (global.space.satellite.count * 0.01);
             }
             if (global.civic.govern.type === 'theocracy'){
-                scientist_base *= global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 0.75 : 0.6 ) : 0.5;
+                scientist_base *= 1 - (govEffect.theocracy()[2] / 100);
             }
 
             let lib_multiplier = 0.05;
@@ -3578,8 +3579,8 @@ function fastLoop(){
                 know_bd[loc('tech_infectious_disease_lab_alt')] = ((lab_mult - 1) * 100) + '%';
             }
             if (global.civic.govern.type === 'technocracy'){
-                know_bd[loc('govern_technocracy')] = '10%';
-                delta *= 1.1;
+                know_bd[loc('govern_technocracy')] = govEffect.technocracy()[2] + '%';
+                delta *= 1 + (govEffect.technocracy()[2] / 100);
             }
 
             breakdown.p['Knowledge'] = know_bd;
@@ -3684,10 +3685,10 @@ function fastLoop(){
                     delta *= 1 + (traits.toxic.vars()[0] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    delta *= 2.5;
+                    delta *= 1 + (govEffect.corpocracy()[1] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    delta *= 0.8;
+                    delta *= 1 - (govEffect.socialist()[3] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     delta *= 1.1;
@@ -3734,10 +3735,10 @@ function fastLoop(){
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1.1;
+                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
@@ -3800,10 +3801,10 @@ function fastLoop(){
                     factory_output *= 1 + (traits.metallurgist.vars()[0] * global.race['metallurgist'] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1.1;
+                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
@@ -3871,10 +3872,10 @@ function fastLoop(){
                     factory_output *= 1.42;
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1.1;
+                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
@@ -3950,10 +3951,10 @@ function fastLoop(){
                     factory_output *= 1.42;
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1.1;
+                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
@@ -4017,10 +4018,10 @@ function fastLoop(){
                     factory_output *= 1 + (traits.toxic.vars()[1] / 100);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
-                    factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    factory_output *= 1.1;
+                    factory_output *= 1 + (govEffect.socialist()[1] / 100);
                 }
                 if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
                     factory_output *= 1.1;
@@ -4091,10 +4092,10 @@ function fastLoop(){
 
             let factory_output = workDone * cement_base;
             if (global.civic.govern.type === 'corpocracy'){
-                factory_output *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                factory_output *= 1.1;
+                factory_output *= 1 + (govEffect.socialist()[1] / 100);
             }
 
             let powered_mult = 1;
@@ -4326,6 +4327,11 @@ function fastLoop(){
                 iridium_smelter = 1 + (iridium_smelter * 0.05);
             }
 
+            let dirtVal = govActive('dirty_jobs',2);
+            if (dirtVal){
+                iron_smelter *= 1 + (dirtVal / 100);
+                iridium_smelter *= 1 + (dirtVal / 100);
+            }
             if (global.tech['smelting'] >= 7){
                 iron_smelter *= 1.25;
                 iridium_smelter *= 1.25;
@@ -4415,6 +4421,9 @@ function fastLoop(){
                 if (inferno_bonus > 0){
                     steel_smelter *= 1 + (inferno_bonus / 125);
                 }
+                if (dirtVal){
+                    steel_smelter *= 1 + (dirtVal / 100);
+                }
 
                 let smelter_output = steel_smelter * steel_base;
                 if (global.race['pyrophobia']){
@@ -4500,10 +4509,10 @@ function fastLoop(){
                 modRes('Oil', -(consume_oil * time_multiplier));
 
                 if (global.civic.govern.type === 'corpocracy'){
-                    graphene_production *= global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 1.4 : 1.3;
+                    graphene_production *= 1 + (govEffect.corpocracy()[4] / 100);
                 }
                 if (global.civic.govern.type === 'socialist'){
-                    graphene_production *= 1.1;
+                    graphene_production *= 1 + (govEffect.socialist()[1] / 100);
                 }
 
                 let ai = 1;
@@ -5103,8 +5112,8 @@ function fastLoop(){
                 mana_bd[loc('job_wizard')] = mana_base+'v';
 
                 if (global.civic.govern.type === 'magocracy'){
-                    delta *= 1.25;
-                    mana_bd[`ᄂ${loc('govern_magocracy')}`] = '25%';
+                    delta *= 1 + (govEffect.magocracy()[0] / 100);
+                    mana_bd[`ᄂ${loc('govern_magocracy')}`] = govEffect.magocracy()[0] + '%';
                 }
 
                 modRes('Mana', delta * time_multiplier);
@@ -5135,7 +5144,7 @@ function fastLoop(){
             crystal_bd[loc('job_crystal_miner')] = crystal_base + 'v';
 
             if (global.civic.govern.type === 'magocracy'){
-                let bonus = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 40 ) : 25;
+                let bonus = 1 + (govEffect.magocracy()[1] / 100);
                 crystal_base *= 1 + (bonus / 100);
                 crystal_bd[`ᄂ${loc('govern_magocracy')}`] = `${bonus}%`;
             }
@@ -6392,7 +6401,7 @@ function fastLoop(){
                         impact *= 1 - (traits.truthful.vars()[0] / 100);
                     }
                     if (global.civic.govern.type === 'republic'){
-                        impact *= 1.25;
+                        impact *= 1 + (govEffect.republic()[0] / 100);
                     }
                     if (global.race['high_pop']){
                         impact = highPopAdjust(impact);
@@ -6406,13 +6415,13 @@ function fastLoop(){
 
             income_base *= (global.civic.taxes.tax_rate / 20);
             if (global.civic.govern.type === 'oligarchy'){
-                income_base *= global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 1 : 0.98 ) : 0.95;
+                income_base *= 1 - (govEffect.oligarchy()[0] / 100);
             }
             if (global.civic.govern.type === 'corpocracy'){
                 income_base *= 0.5;
             }
             if (global.civic.govern.type === 'socialist'){
-                income_base *= 0.8;
+                income_base *= 1 - (govEffect.socialist()[3] / 100);
             }
             if (global.race['banana']){
                 income_base *= 0.05;
@@ -6493,10 +6502,10 @@ function fastLoop(){
                 cash *= 1 + (global.tech['stock_exchange'] * 0.01);
             }
             if (global.civic.govern.type === 'corpocracy'){
-                cash *= 3;
+                cash *= 1 + (govEffect.corpocracy()[0] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                cash *= 0.8;
+                cash *= 1 - (govEffect.socialist()[3] / 100);
             }
             if (global.race['inflation']){
                 cash *= 1 + (global.race.inflation / 1250);
@@ -6540,10 +6549,10 @@ function fastLoop(){
                 tourism += global.city['tourist_center'].on * global.city.temple.count * piousVal * amp;
             }
             if (global.civic.govern.type === 'corpocracy'){
-                tourism *= 2;
+                tourism *= 1 + (govEffect.corpocracy()[2] / 100);
             }
             if (global.civic.govern.type === 'socialist'){
-                tourism *= 0.8;
+                tourism *= 1 - (govEffect.socialist()[3] / 100);
             }
             money_bd[loc('tech_tourism')] = Math.round(tourism) + 'v';
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
@@ -6562,10 +6571,10 @@ function fastLoop(){
                 revenue += p_on['tau_cultural_center'] * support_on['colony'] * 15;
             }
             if (global.civic.govern.type === 'corpocracy'){
-                revenue *= 2;
+                revenue *= 1 + (govEffect.corpocracy()[2] / 100);
             }
             else if (global.civic.govern.type === 'socialist'){
-                revenue *= 0.8;
+                revenue *= 1 - (govEffect.socialist()[3] / 100);
             }
             money_bd[loc('tech_cultural_center')] = Math.round(revenue) + 'v';
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));

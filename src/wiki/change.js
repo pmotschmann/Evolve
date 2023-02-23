@@ -19,6 +19,14 @@ const changeList = [
             `Reinforced Shed upgrade now requires unlocking Iron Mining.`,
             `You must now construct a Titan Habitat before a Titan Mine.`,
             `Removed dark background effect from modal popups.`,
+            `Increased Dealmaker from 75% to 125%. Increased Risktaker from 10% to 12%.`,
+            `Increased Gaslighter morale bonuses. Increased Muckraker Library bonus.`,
+            `Increased Tactician from 5% to 25%.`,
+            `Increased Teacher bonus from 5% to 6%.`,
+            `Increased Inspirational from 10% to 20%. Increased Pious tourism bonus from $2 to $5 per Temple.`,
+            `Increased Aristocrat tax cap bonus from 10% to 20%.`,
+            `Dirty Jobs now increases output of Coal and Oil power plants and boosts Miners, Smelter, and Oil Derrick.`,
+            `Organizer now provides a slight boost to government effects.`,
         ]
     },
     {

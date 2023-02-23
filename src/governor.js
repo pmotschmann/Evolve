@@ -103,7 +103,7 @@ export const gov_traits = {
     tactician: {
         name: loc(`gov_trait_tactician`),
         effect(){ return loc(`gov_trait_tactician_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [5]; },
+        vars(){ return [25]; },
     },
     militant: {
         name: loc(`gov_trait_militant`),
@@ -123,17 +123,17 @@ export const gov_traits = {
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
         effect(){ return loc(`gov_trait_dealmaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [75]; },
+        vars(){ return [125]; },
     },
     risktaker: {
         name: loc(`gov_trait_risktaker`),
         effect(){ return loc(`gov_trait_risktaker_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [10]; },
+        vars(){ return [12]; },
     },
     teacher: {
         name: loc(`gov_trait_teacher`),
         effect(){ return loc(`gov_trait_teacher_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [5]; },
+        vars(){ return [6]; },
     },
     theorist: {
         name: loc(`gov_trait_theorist`),
@@ -143,7 +143,7 @@ export const gov_traits = {
     inspirational: {
         name: loc(`gov_trait_inspirational`),
         effect(){ return loc(`gov_trait_inspirational_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [10]; },
+        vars(){ return [20]; },
     },
     pious: {
         name: loc(`gov_trait_pious`),
@@ -153,7 +153,7 @@ export const gov_traits = {
             val = (global.civic.govern.type === 'corpocracy' ? (val * 2) : val) * xeno;
             return loc(`gov_trait_pious_effect`,[$(this)[0].vars()[0],val]);
         },
-        vars(){ return [10,2]; },
+        vars(){ return [10,5]; },
     },
     pragmatist: {
         name: loc(`gov_trait_pragmatist`),
@@ -162,8 +162,8 @@ export const gov_traits = {
     },
     dirty_jobs: {
         name: loc(`gov_trait_dirty_jobs`),
-        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [0.015]; },
+        effect(){ return loc(`gov_trait_dirty_jobs_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
+        vars(){ return [0.015,1,10]; },
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
@@ -173,21 +173,21 @@ export const gov_traits = {
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
         effect(){ return loc(`gov_trait_aristocrat_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [50,10,10]; },
+        vars(){ return [50,20,10]; },
     },
     gaslighter: {
         name: loc(`gov_trait_gaslighter`),
         effect(){
             return loc(`gov_trait_gaslighter_effect`,[$(this)[0].vars()[0],wardenLabel(),$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars(){ return [0.5,0.75,0.5]; },
+        vars(){ return [1,1,0.5]; },
     },
     muckraker: {
         name: loc(`gov_trait_muckraker`),
         effect(){
             return loc(`gov_trait_muckraker_effect`,[$(this)[0].vars()[1],$(this)[0].vars()[2]]);
         },
-        vars(){ return [8,10,3]; },
+        vars(){ return [8,12,3]; },
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
@@ -202,7 +202,7 @@ export const gov_traits = {
     organizer: {
         name: loc(`gov_trait_organizer`),
         effect(){ return loc(`gov_trait_organizer_effect`,[$(this)[0].vars()[0]]); },
-        vars(){ return [1]; },
+        vars(){ return [global.genes['governor'] && global.genes.governor >= 2 ? 2 : 1]; },
     }
 };
 
