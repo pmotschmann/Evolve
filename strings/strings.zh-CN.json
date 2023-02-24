@@ -5185,6 +5185,7 @@
   "space_mission_title": "%0任务",
   "space_mission_desc": "进行%0任务",
   "space_support": "需要%0支持",
+  "space_support_combo": "需要%0支持和%1",
   "space_used_support": "%0支持 -1",
   "space_rival_ally": "因联盟产量 +%0%",
   "space_rival_war": "因战争产量 %0%",
