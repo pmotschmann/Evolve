@@ -434,7 +434,7 @@ const spaceProjects = {
         spaceport: {
             id: 'space-spaceport',
             title: loc('space_red_spaceport_title'),
-            desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc: `<div>${loc('space_red_spaceport_desc')}</div><div class="has-text-special">${loc('requires_power_space',[global.resource_Helium_3_name])}</div>`,
             reqs: { space: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('spaceport', offset, 47500, 1.32); },
