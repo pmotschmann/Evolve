@@ -4787,15 +4787,33 @@ function checkTechPath(tech){
     return true;
 }
 
-function checkTechRequirements(tech){
-    let isMet = true;
+export function checkTechRequirements(tech,prediction){
+    let isMet = true; let precog = false;
+    let grantList = {};
+
+    let failChecks = {};
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
+            failChecks[req] = actions.tech[tech].reqs[req];
         }
     });
-    if (isMet && (!global.tech[actions.tech[tech].grant[0]] || global.tech[actions.tech[tech].grant[0]] < actions.tech[tech].grant[1])){
-        return true;
+    if (prediction && global.genes.hasOwnProperty('queue') && global.genes.queue >= 3){
+        precog = true;
+        global.r_queue.queue.forEach(function(q){
+            if (checkTechRequirements(q.type,false)){
+                grantList[actions[q.action][q.type].grant[0]] = actions[q.action][q.type].grant[1];
+            }
+        });
+        Object.keys(failChecks).forEach(function (req){
+            let cTech = global.tech[req] || 0;
+            if (!grantList[req] || grantList[req] < actions.tech[tech].reqs[req] || grantList[req] > cTech + 1){
+                precog = false;
+            }
+        });
+    }
+    if ((isMet || precog) && (!global.tech[actions.tech[tech].grant[0]] || global.tech[actions.tech[tech].grant[0]] < actions.tech[tech].grant[1])){
+        return isMet ? 'ok' : 'precog';
     }
     return false;
 }
@@ -5004,11 +5022,13 @@ export function drawTech(){
             old_techs[category].push(tech_name);
         }
         else {
-            if (!checkTechRequirements(tech_name)){
-                return;
-            }
             let c_action = actions['tech'][tech_name];
             if (!checkTechQualifications(c_action,tech_name)){
+                return;
+            }
+
+            let techAvail = checkTechRequirements(tech_name,true);
+            if (!techAvail){
                 return;
             }
 
@@ -5022,7 +5042,7 @@ export function drawTech(){
                 new_techs[era] = [];
             }
 
-            new_techs[era].push(tech_name);
+            new_techs[era].push({ t: tech_name, p: techAvail === 'precog' ? true : false });
         }
     });
 
@@ -5032,16 +5052,16 @@ export function drawTech(){
             $(`#tech`).append(`<div><h3 class="name has-text-warning">${loc(`tech_era_${era}`)}</h3></div>`);
 
             new_techs[era].sort(function(a, b){
-                if(actions.tech[a].cost.Knowledge == undefined){
+                if(actions.tech[a.t].cost.Knowledge == undefined){
                     return -1;
                 }
-                if(actions.tech[b].cost.Knowledge == undefined){
+                if(actions.tech[b.t].cost.Knowledge == undefined){
                     return 1;
                 }
-                return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+                return actions.tech[a.t].cost.Knowledge() > actions.tech[b.t].cost.Knowledge() ? 1 : -1;
             });
-            new_techs[era].forEach(function(tech_name){
-                addAction('tech', tech_name);
+            new_techs[era].forEach(function(tech){
+                addAction('tech', tech.t, false, tech.p);
             });
         }
     });
@@ -5066,17 +5086,17 @@ export function drawTech(){
         }
 
         old_techs[category].forEach(function(tech_name) {
-            addAction('tech', tech_name, true);
+            addAction('tech', tech_name, true, false);
         });
     });
 }
 
-export function addAction(action,type,old){
+export function addAction(action,type,old,prediction){
     let c_action = actions[action][type];
-    setAction(c_action,action,type,old)
+    setAction(c_action,action,type,old,prediction)
 }
 
-export function setAction(c_action,action,type,old){
+export function setAction(c_action,action,type,old,prediction){
     if (checkTechQualifications(c_action,type) === false) {
         return;
     }
@@ -5117,6 +5137,7 @@ export function setAction(c_action,action,type,old){
             });
         }
         let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
+        if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
         element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)">}</span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
@@ -5330,7 +5351,7 @@ function runAction(c_action,action,type){
     else {
         switch (action){
             case 'tech':
-                if (!(global.settings.qKey && keyMap.q) && c_action.action()){
+                if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action()){
                     gainTech(type);
                     if (c_action['post']){
                         setTimeout(function(){
@@ -5351,6 +5372,7 @@ function runAction(c_action,action,type){
                             if (!queued){
                                 global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, bres: false });
                                 resQueue();
+                                drawTech();
                             }
                         }
                     }
@@ -7795,6 +7817,7 @@ export function resQueue(){
                     clearPopper(`rq${global.r_queue.queue[index].id}`);
                     global.r_queue.queue.splice(index,1);
                     resQueue();
+                    drawTech();
                 },
                 setID(index){
                     return `rq${global.r_queue.queue[index].id}`;

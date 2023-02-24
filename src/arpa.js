@@ -743,6 +743,25 @@ export const genePool = {
             calcRQueueMax();
         }
     },
+    precognition: {
+        id: 'genes-precognition',
+        title: loc('arpa_genepool_precognition_title'),
+        desc: loc('arpa_genepool_precognition_desc'),
+        reqs: { queue: 2 },
+        grant: ['queue',3],
+        condition(){ return global.stats.aiappoc > 0 ? true : false; },
+        cost: {
+            Plasmid(){ return 3500; },
+            Phage(){ return 100; },
+            AICore(){ return 1; }
+        },
+        action(){
+            if (payCrispr('precognition')){
+                return true;
+            }
+            return false;
+        }
+    },
     governance: {
         id: 'genes-governance',
         title: loc('arpa_genepool_governance_title'),

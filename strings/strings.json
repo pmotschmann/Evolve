@@ -3583,6 +3583,8 @@
   "arpa_genepool_geographer_desc": "Start new games with the build and research queue unlocked",
   "arpa_genepool_architect_title": "Architect",
   "arpa_genepool_architect_desc": "Double the maximum number of construction and research projects that can be queued",
+  "arpa_genepool_precognition_title": "Precognition",
+  "arpa_genepool_precognition_desc": "Allows you to see future techs and queue them.",
   "arpa_genepool_governance_title": "Governance",
   "arpa_genepool_governance_desc": "Unlock the ability to assign governors to automate some basic tasks.",
   "arpa_genepool_civil_service_title": "Civil Service",

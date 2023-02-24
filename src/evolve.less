@@ -1336,6 +1336,25 @@ Misc ---------> Main template
                 .divider h2 {
                     background: @html-background;
                 }
+
+                .synth {
+                    box-shadow: 0 0 6px @has-text-success;
+                    > span {
+                        text-shadow: 1px 1px @has-text-success;
+                    }
+                }
+                
+                .precog {
+                    box-shadow: 0 0 6px @has-text-info;
+                    > span {
+                        text-shadow: 1px 1px @has-text-info;
+                    }
+                }
+                .cna .precog {
+                    > span {
+                        text-shadow: none !important;
+                    }
+                }
             }
 
             .government {
@@ -1631,13 +1650,6 @@ Misc ---------> Main template
     > span {
         color: #ebdbb2 !important;
         text-shadow: 2px 2px #000;
-    }
-}
-
-.synth {
-    box-shadow: 0 0 6px forestgreen;
-    > span {
-        text-shadow: 2px 2px forestgreen;
     }
 }
 
