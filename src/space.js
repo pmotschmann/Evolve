@@ -936,7 +936,7 @@ const spaceProjects = {
         red_factory: {
             id: 'space-red_factory',
             title: loc('space_red_factory_title'),
-            desc: `<div>${loc('space_red_factory_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc: `<div>${loc('space_red_factory_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource_Helium_3_name])}</div>`,
             reqs: { mars: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('red_factory', offset, 75000, 1.32); },
@@ -1674,7 +1674,7 @@ const spaceProjects = {
             id: 'space-outpost',
             title: loc('space_gas_moon_outpost_title'),
             desc(){
-                return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource_Oil_name])}</div>`;
             },
             reqs: { gas_moon: 1 },
             cost: {
@@ -2437,7 +2437,7 @@ const interstellarProjects = {
         fusion: {
             id: 'interstellar-fusion',
             title: loc('interstellar_fusion_title'),
-            desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('space_support',[loc('interstellar_alpha_name')])}</div>`,
+            desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource_Deuterium_name])}</div>`,
             reqs: { fusion: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('fusion', offset, 990000, 1.28, 'interstellar'); },
