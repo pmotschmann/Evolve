@@ -5215,6 +5215,7 @@
   "space_mission_title": "%0 Mission",
   "space_mission_desc": "Launch the %0 mission",
   "space_support": "Requires %0 Support",
+  "space_support_combo": "Requires %0 Support and %1",
   "space_used_support": "-1 %0 Support",
   "space_rival_ally": "+%0% Production from Alliance",
   "space_rival_war": "%0% Production from War",
