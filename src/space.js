@@ -2597,7 +2597,7 @@ const interstellarProjects = {
         int_factory: {
             id: 'interstellar-int_factory',
             title: loc('interstellar_int_factory_title'),
-            desc: `<div>${loc('interstellar_int_factory_title')}</div><div class="has-text-special">${loc('requires_power_combo',[loc('resource_Deuterium_name')])}</div>`,
+            desc: `<div>${loc('interstellar_int_factory_title')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Deuterium.name])}</div>`,
             reqs: { alpha: 4 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('int_factory', offset, 25000000, 1.26, 'interstellar'); },
@@ -3237,7 +3237,7 @@ const interstellarProjects = {
         neutron_miner: {
             id: 'interstellar-neutron_miner',
             title: loc('interstellar_neutron_miner_title'),
-            desc: `<div>${loc('interstellar_neutron_miner_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[loc('resource_Helium_3_name')])}</div>`,
+            desc: `<div>${loc('interstellar_neutron_miner_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Helium_3.name])}</div>`,
             reqs: { neutron: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('neutron_miner', offset, 1000000, 1.32, 'interstellar'); },
@@ -4985,7 +4985,7 @@ const galaxyProjects = {
         foothold: {
             id: 'galaxy-foothold',
             title: loc('galaxy_foothold'),
-            desc: `<div>${loc('galaxy_foothold')}</div><div class="has-text-special">${loc('requires_power_combo',[loc('resource_Elerium_name')])}</div>`,
+            desc: `<div>${loc('galaxy_foothold')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Elerium.name])}</div>`,
             reqs: { conflict: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('foothold', offset, 25000000, 1.25, 'galaxy'); },
