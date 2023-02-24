@@ -221,7 +221,7 @@ const spaceProjects = {
         moon_base: {
             id: 'space-moon_base',
             title: loc('space_moon_base_title'),
-            desc: `<div>${loc('space_moon_base_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`,
+            desc: `<div>${loc('space_moon_base_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource_Oil_name])}</div>`,
             reqs: { space: 3 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('moon_base', offset, 22000, 1.32); },
