@@ -2437,7 +2437,7 @@ const interstellarProjects = {
         fusion: {
             id: 'interstellar-fusion',
             title: loc('interstellar_fusion_title'),
-            desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('space_support_combo',[loc('interstellar_alpha_name'),global.resource.Deuterium.name])}</div>`,
+            desc: `<div>${loc('interstellar_fusion_title')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Deuterium.name])}</div>`,
             reqs: { fusion: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('fusion', offset, 990000, 1.28, 'interstellar'); },
@@ -2665,7 +2665,7 @@ const interstellarProjects = {
         zoo: {
             id: 'interstellar-zoo',
             title: loc('tech_zoo'),
-            desc: `<div>${loc('tech_zoo')}</div><div class="has-text-special">${loc('space_support_combo',[loc('interstellar_alpha_name'),global.resource.Food.name])}</div>`,
+            desc: `<div>${loc('tech_zoo')}</div><div class="has-text-special">${loc('requires_power_support_combo',[loc('interstellar_alpha_name'),global.resource.Food.name])}</div>`,
             reqs: { zoo: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('zoo', offset, 50000000, 1.24, 'interstellar'); },
