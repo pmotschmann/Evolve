@@ -325,6 +325,9 @@ export function production(id,val){
                     break;
                 }
             }
+            if (global.race['tough']){
+                mats *= 1 + (traits.tough.vars()[0] / 100);
+            }
             if (global.tech['tau_pit_mining']){
                 mats *= 1.18;
             }

@@ -9024,7 +9024,8 @@ function midLoop(){
                         global.r_queue.queue[i].cna = false;
                         let t_time = global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent);
                         if (t_time >= 0){
-                            if (!stop && checkAffordable(t_action) && checkTechRequirements(struct.type,false)){
+                            let reqMet = checkTechRequirements(struct.type,false);
+                            if (!stop && checkAffordable(t_action) && reqMet){
                                 c_action = t_action;
                                 idx = i;
                                 if (global.settings.qAny_res){
@@ -9034,7 +9035,7 @@ function midLoop(){
                             else {
                                 time += t_time;
                             }
-                            if (!global.settings.qAny_res){
+                            if (!global.settings.qAny_res && reqMet){
                                 stop = true;
                             }
                             global.r_queue.queue[i]['time'] = time;
@@ -9064,6 +9065,25 @@ function midLoop(){
             }
             if (global.r_queue.queue.length > global.r_queue.max){
                 global.r_queue.queue.splice(global.r_queue.max);
+            }
+
+            let q_techs = {}; let remove = [];
+            checkTechRequirements('club',q_techs);
+            for (let i=0; i<global.r_queue.queue.length; i++){
+                Object.keys(actions.tech[global.r_queue.queue[i].type].reqs).forEach(function(req){
+                    if (
+                        (!global.tech[req] || global.tech[req] < actions.tech[global.r_queue.queue[i].type].reqs[req])
+                        &&
+                        (!q_techs[req] || (q_techs[req] && q_techs[req].v < actions.tech[global.r_queue.queue[i].type].reqs[req]))
+                        ){
+                        remove.push(i);
+                    }
+                });
+            }
+            if (remove.length > 0){
+                for (let i=remove.length - 1; i>=0; i--){
+                    global.r_queue.queue.splice(remove[i],1);
+                }
             }
         }
 

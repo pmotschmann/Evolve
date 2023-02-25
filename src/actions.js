@@ -4787,9 +4787,8 @@ function checkTechPath(tech){
     return true;
 }
 
-export function checkTechRequirements(tech,prediction){
+export function checkTechRequirements(tech,predList){
     let isMet = true; let precog = false;
-    let grantList = {};
 
     let failChecks = {};
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
@@ -4798,16 +4797,16 @@ export function checkTechRequirements(tech,prediction){
             failChecks[req] = actions.tech[tech].reqs[req];
         }
     });
-    if (prediction && global.genes.hasOwnProperty('queue') && global.genes.queue >= 3){
+    if (predList && typeof predList === 'object' && global.genes.hasOwnProperty('queue') && global.genes.queue >= 3){
         precog = true;
         global.r_queue.queue.forEach(function(q){
             if (checkTechRequirements(q.type,false)){
-                grantList[actions[q.action][q.type].grant[0]] = actions[q.action][q.type].grant[1];
+                predList[actions[q.action][q.type].grant[0]] = { v: actions[q.action][q.type].grant[1], a: q.type };
             }
         });
         Object.keys(failChecks).forEach(function (req){
             let cTech = global.tech[req] || 0;
-            if (!grantList[req] || grantList[req] < actions.tech[tech].reqs[req] || grantList[req] > cTech + 1){
+            if (!predList[req] || predList[req].v < actions.tech[tech].reqs[req] || predList[req].v > cTech + 1){
                 precog = false;
             }
         });
@@ -4993,6 +4992,7 @@ export function drawTech(){
         interstellar: 'solar'
     };
 
+    let preReq = {};
     Object.keys(actions.tech).forEach(function (tech_name){
         if (!checkTechPath(tech_name)){
             return;
@@ -5027,7 +5027,7 @@ export function drawTech(){
                 return;
             }
 
-            let techAvail = checkTechRequirements(tech_name,true);
+            let techAvail = checkTechRequirements(tech_name,preReq);
             if (!techAvail){
                 return;
             }
@@ -5061,7 +5061,7 @@ export function drawTech(){
                 return actions.tech[a.t].cost.Knowledge() > actions.tech[b.t].cost.Knowledge() ? 1 : -1;
             });
             new_techs[era].forEach(function(tech){
-                addAction('tech', tech.t, false, tech.p);
+                addAction('tech', tech.t, false, tech.p ? preReq : false);
             });
         }
     });
@@ -5112,7 +5112,17 @@ export function setAction(c_action,action,type,old,prediction){
     }
     let id = c_action.id;
     removeAction(id);
-    let parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"></div>`) : $(`<div id="${id}" class="action"></div>`);
+
+    let reqs = ``;
+    if (prediction && c_action && c_action.reqs){
+        Object.keys(c_action.reqs).forEach(function(req){
+            if (prediction[req]){
+                reqs += ` data-req-${req}="${prediction[req].a}"`;
+            }
+        });
+    }
+
+    let parent = c_action['highlight'] && c_action.highlight() ? $(`<div id="${id}" class="action hl"${reqs}></div>`) : $(`<div id="${id}" class="action"${reqs}></div>`);
     if (!checkAffordable(c_action,false,(['genes','blood'].includes(action)))){
         parent.addClass('cna');
     }
@@ -6146,6 +6156,21 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
         parent.append($(`<div class="flair has-text-flair">${flair}</div>`));
         parent.addClass('flair');
     }
+
+    if (c_action['reqs']){
+        let reqList = [];
+        Object.keys(c_action.reqs).forEach(function(r){
+            let req = $(`#${c_action.id}`).attr(`data-req-${r}`);
+            if (req){
+                reqList.push(typeof actions.tech[req].title === 'string' ? actions.tech[req].title : actions.tech[req].title());
+            }
+        });
+        if (reqList.length > 0){
+            let listing = reqList.join(', ');
+            parent.append($(`<div class="has-text-caution">${loc('requires_tech',[listing])}</div>`));
+        }
+    }
+
     if (!old && c_action.id.substring(0,5) !== 'blood' && !checkAffordable(c_action) && checkAffordable(c_action,true)){
         if (typeof obj === 'string' && obj === 'notimer'){
             return;

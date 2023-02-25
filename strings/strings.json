@@ -304,6 +304,7 @@
   "speed": "Speed",
   "crew": "Crew",
   "transit_time": "%0 Days",
+  "requires_tech": "Requires: %0",
   "cheese_swiss": "Swiss",
   "cheese_gouda": "Gouda",
   "cheese_cheddar": "Cheddar",

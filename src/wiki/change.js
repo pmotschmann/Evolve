@@ -25,7 +25,7 @@ const changeList = [
             `Increased Soldier Governor combat bonus from 5% to 25%.`,
             `Increased Educator Governor knowledge bonus from 5% to 6%.`,
             `Increased Spiritualist Governor worker bonus from 10% to 20% and tourism bonus from $2 to $5 per Temple.`,
-            `Increased Nobel Governor tax cap bonus from 10% to 20%.`,
+            `Increased Noble Governor tax cap bonus from 10% to 20%.`,
             `Bluecollar Governor now increases output of Coal and Oil power plants and boosts Miners, Smelter, and Oil Derrick.`,
             `Bureaucrat Governor now provides a slight boost to government effects.`,
         ]
