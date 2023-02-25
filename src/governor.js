@@ -1,5 +1,5 @@
 import { global, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
@@ -1329,7 +1329,15 @@ export const gov_tasks = {
             let rBal = false;
             if (global.race.governor.config.replicate.res.que && global.queue.queue.length > 0){
                 let struct = decodeStructId(global.queue.queue[0].id);
-                let tc = timeCheck(struct.a,false,true);
+                let tc = false;
+                if (global.queue.queue[0].action === 'arpa'){
+                    let remain = (100 - global.arpa[struct.a].complete) / 100;
+                    let c_action = actions.arpa[struct.a];
+                    tc = arpaTimeCheck(c_action,remain,false,true);
+                }
+                else {
+                    tc = timeCheck(struct.a,false,true);
+                }
                 let resSorted = Object.keys(tc.s).sort(function(a,b){return tc.s[b]-tc.s[a]});
                 for (let i=0; i<resSorted.length; i++){
                     if (global.resource[resSorted[i]].display && atomic_mass[resSorted[i]]){

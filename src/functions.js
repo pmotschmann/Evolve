@@ -573,7 +573,7 @@ export function decodeStructId(id){
     if (segments[0].substring(0,4) === 'arpa'){
         c_action = segments[0].substring(4);
     }
-    else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
+    else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
         c_action = actions[segments[0]][segments[1]];
     }
     else {
@@ -927,6 +927,7 @@ export function arpaTimeCheck(project, remain, track, detailed){
         });
     }
 
+    let shorted = {};
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
             let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
@@ -962,12 +963,17 @@ export function arpaTimeCheck(project, remain, track, detailed){
                             allRemainingSegmentsTime = r_time;
                             bottleneck = res;
                         }
+                        shorted[res] = r_time;
                     }
                     else {
                         if (track){
                             track.r = og_track_r;
                         }
                         allRemainingSegmentsTime = -9999999;
+                        shorted[res] = 99999999 - res_diff;
+                        if ((shorted[bottleneck] && shorted[res] > shorted[bottleneck]) || !shorted[bottleneck]){
+                            bottleneck = res;
+                        }
                     }
                 }
             }
@@ -982,7 +988,7 @@ export function arpaTimeCheck(project, remain, track, detailed){
         }
         track.t += allRemainingSegmentsTime;
     }
-    return detailed ? { t: allRemainingSegmentsTime, r: bottleneck } : allRemainingSegmentsTime;
+    return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){

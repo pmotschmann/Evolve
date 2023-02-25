@@ -3,6 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 import { races, genusVars } from './../races.js';
+import { planetName } from './../space.js';
 
 export function headerBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('h_level')){
@@ -258,19 +259,7 @@ export function getSolarName(planet) {
         return loc('space_'+planet+'_title');
     }
     
-    if (Object.keys(genusVars[races[global.race.species].type].solar).includes(planet)){
-        return genusVars[races[global.race.species].type].solar[planet];
-    }
-    
-    if (global.race.species === 'protoplasm'){
-        return planet === 'home' ? races.human.home : races.human.solar[planet];
-    }
-    else if (global.race.species === 'custom') {
-        return global.custom.race0[planet];
-    }
-    else {
-        return planet === 'home' ? races[global.race.species].home : races[global.race.species].solar[planet];
-    }
+    return planetName()[planet];
 }
 
 export function createRevealSection(info,id,type,insert){
