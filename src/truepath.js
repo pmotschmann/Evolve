@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
@@ -1733,6 +1733,32 @@ const tauCetiModules = {
                     pop *= traits.high_pop.vars()[0];
                 }
                 return pop;
+            }
+        },
+        pylon: {
+            id: 'tauceti-pylon',
+            title: loc('tau_home_pylon'),
+            desc: loc('tau_home_pylon'),
+            reqs: { magic: 2 },
+            condition(){ return global.tech['isolation'] && global.tauceti.hasOwnProperty('pylon') ? true : false; },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('pylon', offset, 50, 1.48, 'tauceti'); },
+                Stone(offset){ return spaceCostMultiplier('pylon', offset, 100, 1.42, 'tauceti'); },
+                Crystal(offset){ return spaceCostMultiplier('pylon', offset, 8, 1.42, 'tauceti') - 3; }
+            },
+            effect(){
+                let max = spatialReasoning(2);
+                let mana = +(0.0125 * darkEffect('magic')).toFixed(3);
+                return `<div>${loc('gain',[mana,global.resource.Mana.name])}</div><div>${loc('plus_max_resource',[max,global.resource.Mana.name])}</div>`;
+            },
+            special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tauceti.pylon.count++;
+                    global.resource.Mana.max += spatialReasoning(2);
+                    return true;
+                }
+                return false;
             }
         },
         cloning_facility: {
@@ -4981,6 +5007,15 @@ export function jumpGateShutdown(){
             if (item.action === 'city' || item.action === 'space' || item.action === 'starDock'){
                 global.queue.queue.splice(i,1);
             }
+        }
+    }
+
+    if (global.tech['magic'] && global.tech.magic >= 2){
+        global.tauceti['pylon'] = { count: 0 };
+        if (global.race['casting']){
+            Object.keys(global.race.casting).forEach(function (c){
+                global.race.casting[0] = 0;
+            });
         }
     }
 

@@ -5073,12 +5073,25 @@ function fastLoop(){
                 });
             }
 
-            if (global.city['pylon'] || global.space['pylon']){
-                let mana_base = (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.pylon.count : global.city.pylon.count) * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 0.005 : 0.01);
+            if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
+                let mana_base = 0;
+                let name = 'city_pylon';
+                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                    mana_base = global.space.pylon.count * 0.005;
+                    name = 'space_red_pylon';
+                }
+                else if (global.tech['isolation'] && global.tauceti['pylon']){
+                    mana_base = global.tauceti.pylon.count * 0.0125;
+                    name = 'tau_home_pylon';
+                }
+                else if (global.city['pylon']){
+                    mana_base = global.city.pylon.count * 0.01;
+                }
+                
                 mana_base *= darkEffect('magic');
 
                 let delta = mana_base * hunger * global_multiplier;
-                mana_bd[loc(global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space_red_pylon' : 'city_pylon')] = mana_base+'v';
+                mana_bd[loc(name)] = mana_base+'v';
 
                 if (global.tech['nexus']){
                     let nexus = global.tech['nexus'] * 5;
@@ -7093,10 +7106,23 @@ function midLoop(){
             caps['Food'] += gain;
             bd_Food[loc('city_transmitter')] = gain+'v';
         }
-        if (global.city['pylon'] || global.space['pylon']){
-            let gain = (global.race['cataclysm'] || global.race['orbit_decayed'] ? global.space.pylon.count : global.city.pylon.count) * spatialReasoning(global.race['cataclysm'] ? 2 : 5);
+        if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
+            let gain = 0;
+            let name = 'city_pylon';
+            if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                gain = spatialReasoning(2);
+                name = 'space_red_pylon';
+            }
+            else if (global.tech['isolation'] && global.tauceti['pylon']){
+                gain = spatialReasoning(2);
+                name = 'tau_home_pylon';
+            }
+            else if (global.city['pylon']){
+                gain = spatialReasoning(5);
+            }
+
             caps['Mana'] += gain;
-            bd_Mana[loc(global.race['cataclysm'] || global.race['orbit_decayed'] ? 'space_red_pylon' : 'city_pylon')] = gain+'v';
+            bd_Mana[loc(name)] = gain+'v';
         }
         if (global.city['farm']){
             if (global.tech['farm']){

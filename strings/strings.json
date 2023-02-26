@@ -6502,6 +6502,7 @@
   "tau_home_colony": "Colony",
   "tau_home_colony_desc": "New %0 Colony",
   "tau_home_colony_effect": "+%0% New %1 Production",
+  "tau_home_pylon": "Tau Pylon",
   "tau_home_mining_pit": "Mining Pit",
   "tau_home_mining_pit_effect": "Employs workers to mine %0.",
   "tau_home_mining_pit_effect2": "Employs workers to mine %0, %1, & %2.",

@@ -10078,7 +10078,10 @@ const techs = {
         effect(){ return loc('tech_ley_lines_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                if (global.race['cataclysm'] || global.race['orbit_decayed']){
+                if (global.tech['isolation']){
+                    global.tauceti['pylon'] = { count: 0 };
+                }
+                else if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     global.space['pylon'] = { count: 0 };
                 }
                 else {

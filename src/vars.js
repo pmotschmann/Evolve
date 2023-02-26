@@ -1150,11 +1150,15 @@ if (convertVersion(global['version']) < 103001){
             delete global.resource[res];
         }
     });
+    if (!global.stats.hasOwnProperty('synth') && global.race.hasOwnProperty('srace')){
+        global.stats['synth'] = {};
+        global.stats.synth[global.race.srace] = true;
+    }
 }
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 40;
+global['beta'] = 41;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1429,6 +1433,9 @@ if (!global.stats.hasOwnProperty('womling')){
 
 if (!global.stats['spire']){
     global.stats['spire'] = {};
+}
+if (!global.stats['synth']){
+    global.stats['synth'] = {};
 }
 if (!global.stats.hasOwnProperty('banana')){
     global.stats['banana'] = {
