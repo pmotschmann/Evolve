@@ -210,6 +210,12 @@ vBind({
         }
     },
     filters: {
+        replicate(kw){
+            if (global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+                return kw + global.race.replicator.pow;
+            }
+            return kw;
+        },
         approx(kw){
             return +(kw).toFixed(2);
         },

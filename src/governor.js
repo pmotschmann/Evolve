@@ -566,6 +566,7 @@ export function drawnGovernOffice(){
                 tagEvent('govtask',{
                     'task': t
                 });
+                vBind({el: `#race`},'update');
             },
             showTask(t){
                 return Object.values(global.race.governor.tasks).includes(t);
