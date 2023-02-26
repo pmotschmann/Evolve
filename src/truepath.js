@@ -5158,6 +5158,7 @@ export function loneSurvivor(){
         global.resource.Cipher.display = true;
 
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
+            global.civic.lumberjack.display = true;
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
             global.resource.Lumber.max = 10000000;
@@ -5282,8 +5283,9 @@ export function loneSurvivor(){
 
         global.civic.taxes.display = true;
 
-        global.civic.lumberjack.display = true;
-        global.civic.quarry_worker.display = true
+        if (!global.race['sappy']){
+            global.civic.quarry_worker.display = true
+        }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
         global.civic.cement_worker.display = true;

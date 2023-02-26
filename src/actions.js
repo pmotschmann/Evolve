@@ -3982,7 +3982,7 @@ export function setChallengeScreen(){
         addAction('evolution','orbit_decay');
     }
     if (global.stats.achieve['bluepill']){
-        addAction('evolution','simulation');
+        // addAction('evolution','simulation');
     }
     scenarioActionHeader();
     addAction('evolution','junker');
