@@ -7110,15 +7110,15 @@ function midLoop(){
             let gain = 0;
             let name = 'city_pylon';
             if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
-                gain = spatialReasoning(2);
+                gain = spatialReasoning(2) * global.space.pylon.count;
                 name = 'space_red_pylon';
             }
             else if (global.tech['isolation'] && global.tauceti['pylon']){
-                gain = spatialReasoning(2);
+                gain = spatialReasoning(2) * global.tauceti.pylon.count;;
                 name = 'tau_home_pylon';
             }
             else if (global.city['pylon']){
-                gain = spatialReasoning(5);
+                gain = spatialReasoning(5) * global.city.pylon.count;;
             }
 
             caps['Mana'] += gain;
