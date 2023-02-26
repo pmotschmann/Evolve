@@ -1559,9 +1559,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['apartment'].count++;
-                    if (global.city.power >= $(this)[0].powered()){
+                    if (powerOnNewStruct($(this)[0])){
                         global['resource'][global.race.species].max += $(this)[0].citizens();
-                        global.city['apartment'].on++;
                     }
                     return true;
                 }
@@ -1727,9 +1726,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city.transmitter.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.city.transmitter.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2456,9 +2453,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.city['sawmill'].count++;
                     global['resource']['Lumber'].max += BHStorageMulti(spatialReasoning(200));
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.city.sawmill.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2520,8 +2515,8 @@ export const actions = {
                         global.settings.showIndustry = true;
                         global['resource']['Chrysotile'].max += stone;
                     }
-                    if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
-                        global.city['rock_quarry'].on++;
+                    if (global.tech['mine_conveyor']){
+                        powerOnNewStruct($(this)[0]);
                     }
                     return true;
                 }
@@ -2563,8 +2558,8 @@ export const actions = {
                     global.city.cement_plant.count++;
                     global.civic.cement_worker.display = true;
                     global.civic.cement_worker.max = global.city.cement_plant.count * jobScale(2);
-                    if (global.tech['cement'] && global.tech['cement'] >= 5 && global.city.power >= $(this)[0].powered()){
-                        global.city['cement_plant'].on++;
+                    if (global.tech['cement'] && global.tech['cement'] >= 5){
+                        powerOnNewStruct($(this)[0]);
                     }
                     return true;
                 }
@@ -2653,8 +2648,7 @@ export const actions = {
                     if (global.tech['polymer']){
                         global.resource.Polymer.display = true;
                     }
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.city.factory.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
@@ -2750,8 +2744,8 @@ export const actions = {
                     if (global.city['foundry'] && global.city.foundry.count > 0){
                         global.resource.Sheet_Metal.display = true;
                     }
-                    if (global.tech['alumina'] >= 2 && global.city.power >= $(this)[0].powered()){
-                        global.city.metal_refinery.on++;
+                    if (global.tech['alumina'] >= 2){
+                        powerOnNewStruct($(this)[0]);
                     }
                     return true;
                 }
@@ -2790,8 +2784,8 @@ export const actions = {
                     global.resource.Copper.display = true;
                     global.civic.miner.display = true;
                     global.civic.miner.max = jobScale(global.city.mine.count);
-                    if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
-                        global.city.mine.on++;
+                    if (global.tech['mine_conveyor']){
+                        powerOnNewStruct($(this)[0]);
                     }
                     return true;
                 }
@@ -2832,8 +2826,8 @@ export const actions = {
                     global.resource.Coal.display = true;
                     global.civic.coal_miner.display = true;
                     global.civic.coal_miner.max = jobScale(global.city.coal_mine.count);
-                    if (global.tech['mine_conveyor'] && global.city.power >= $(this)[0].powered()){
-                        global.city.coal_mine.on++;
+                    if (global.tech['mine_conveyor']){
+                        powerOnNewStruct($(this)[0]);
                     }
                     return true;
                 }
@@ -3098,9 +3092,7 @@ export const actions = {
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.city.casino.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3503,8 +3495,7 @@ export const actions = {
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
                     global.civic.scientist.max = global.city.wardenclyffe.count;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.city.wardenclyffe.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
                     if (global.tech['supercollider']){
@@ -3553,9 +3544,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city.biolab.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
+                    if (powerOnNewStruct($(this)[0])){
                         global.resource.Knowledge.max += 3000;
-                        global.city.biolab.on++;
                     }
                     return true;
                 }
@@ -3719,9 +3709,7 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city.mass_driver.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.city.mass_driver.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -5850,6 +5838,25 @@ function buildPlanet(aspect,opt,args){
         }
         return trait;
     }
+}
+
+export function powerOnNewStruct(c_action,extra){
+    let parts = c_action.id.split('-');
+    if (global.hasOwnProperty(parts[0]) && global[parts[0]].hasOwnProperty(parts[1]) && c_action.hasOwnProperty('powered')){
+        let power = global.city.power;
+        if (global.race.hasOwnProperty('replicator') && Object.values(window.evolve.global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+            power += global.race.replicator.pow;
+        }
+
+        if (global.city.hasOwnProperty('powered') && power >= c_action.powered()){
+            global[parts[0]][parts[1]].on++;
+            if (extra && typeof extra === 'function'){
+                return extra(c_action);
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 export function planetGeology(geology){

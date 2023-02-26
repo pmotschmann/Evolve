@@ -6,7 +6,7 @@ import { spatialReasoning, defineResources } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
-import { actions, payCosts, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
 import { outerTruth, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive } from './governor.js';
@@ -184,9 +184,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('nav_beacon');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.nav_beacon.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -251,9 +249,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('moon_base');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space['moon_base'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.space['moon_base'].count === 1){
                         global.tech['moon'] = 1;
                     }
@@ -475,9 +471,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('spaceport');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space['spaceport'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (!global.tech['mars']){
                         global.tech['mars'] = 1;
                     }
@@ -969,8 +963,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.red_factory.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.red_factory.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy++;
                     }
                     global.settings.showIndustry = true;
@@ -1375,9 +1368,7 @@ const spaceProjects = {
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.spc_casino.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1622,9 +1613,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('gas_mining');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.gas_mining.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1751,9 +1740,7 @@ const spaceProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('outpost');
                     global.resource['Neutronium'].display = true;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space['outpost'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1809,9 +1796,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('oil_extractor');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space['oil_extractor'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1890,8 +1875,7 @@ const spaceProjects = {
                     if (global.tech['asteroid'] < 3){
                         global.tech['asteroid'] = 3;
                     }
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.space_station.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         if (global.civic[global.civic.d_job].workers > 0){
                             let hired = jobScale(3);
                             if (global.civic[global.civic.d_job].workers - hired < 0){
@@ -2225,9 +2209,8 @@ const spaceProjects = {
             action(){
                 if (global.space.shipyard.count < 1 && payCosts($(this)[0])){
                     incrementStruct('shipyard');
-                    if (global.city.power >= $(this)[0].powered()){
+                    if (powerOnNewStruct($(this)[0])){
                         global.settings.showShipYard = true;
-                        global.space.shipyard.on++;
                     }
                     global.tech['syard_class'] = 2;
                     global.tech['syard_armor'] = 3;
@@ -2376,9 +2359,7 @@ const interstellarProjects = {
                     incrementStruct('starport','interstellar');
                     global.settings.space.proxima = true;
                     global.settings.space.nebula = true;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['starport'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['alpha'] === 1){
                         global.tech['alpha'] = 2;
                         global.interstellar['mining_droid'] = { count: 0, on: 0, adam: 0, uran: 0, coal: 0, alum: 0 };
@@ -2416,8 +2397,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('habitat','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['habitat'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += $(this)[0].citizens();
                     }
                     return true;
@@ -2681,8 +2661,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('int_factory','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar.int_factory.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy += 2;
                         defineIndustry();
                     }
@@ -2713,8 +2692,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('luxury_condo','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['luxury_condo'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += 2;
                     }
                     return true;
@@ -2905,8 +2883,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('xfer_station','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['xfer_station'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global['resource']['Uranium'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(5000);
                         global['resource']['Oil'].max += spatialReasoning(4000);
@@ -3177,8 +3154,7 @@ const interstellarProjects = {
                         global.interstellar['harvester'] = { count: 0, on: 0 };
                         global.tech['nebula'] = 2;
                     }
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['nexus'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global['resource']['Oil'].max += spatialReasoning(2500);
                         global['resource']['Helium_3'].max += spatialReasoning(4000);
                         global['resource']['Deuterium'].max += spatialReasoning(3000);
@@ -3300,9 +3276,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('neutron_miner','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['neutron_miner'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3346,9 +3320,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('citadel','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['citadel'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3380,8 +3352,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('stellar_forge','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['stellar_forge'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         if (global.tech['star_forge'] >= 2){
                             global.city.smelter.cap += 2;
                             global.city.smelter.Star += 2;
@@ -3463,9 +3434,7 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('far_reach','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['far_reach'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['blackhole'] === 1){
                         global.tech['blackhole'] = 2;
                         drawTech();
@@ -3568,9 +3537,7 @@ const interstellarProjects = {
                     }
                     global.settings.showEjector = true;
                     incrementStruct('mass_ejector','interstellar');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.interstellar['mass_ejector'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     clearElement($('#resources'));
                     defineResources();
                     return true;
@@ -4116,9 +4083,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('starbase','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['starbase'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['gateway'] === 2){
                         global.galaxy['bolognium_ship'] = { count: 0, on: 0, crew: 0 };
                         global.tech['gateway'] = 3;
@@ -4150,9 +4115,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('ship_dock','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['ship_dock'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4438,9 +4401,7 @@ const galaxyProjects = {
                         global.galaxy['telemetry_beacon'] = { count: 0, on: 0 };
                         global.tech['stargate'] = 5;
                     }
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['gateway_station'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4488,8 +4449,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('telemetry_beacon','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['telemetry_beacon'].on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global['resource']['Knowledge'].max += 1750;
                     }
                     if (!global.tech['gateway']){
@@ -4541,9 +4501,7 @@ const galaxyProjects = {
                     global['resource']['Nano_Tube'].max += (spatialReasoning(250000 * multiplier));
                     global['resource']['Neutronium'].max += (spatialReasoning(9001 * multiplier));
                     global['resource']['Infernite'].max += (spatialReasoning(6660 * multiplier));
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['gateway_depot'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4571,9 +4529,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('defense_platform','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['defense_platform'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4657,9 +4613,7 @@ const galaxyProjects = {
             action(){
                 if (global.galaxy.embassy.count < 1 && payCosts($(this)[0])){
                     incrementStruct('embassy','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['embassy'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['xeno'] === 4){
                         global.tech['xeno'] = 5;
                         global.galaxy['freighter'] = { count: 0, on: 0, crew: 0 };
@@ -4701,9 +4655,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('dormitory','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['dormitory'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4740,9 +4692,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('symposium','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['symposium'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4867,9 +4817,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['resort'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4900,9 +4848,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('vitreloy_plant','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['vitreloy_plant'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -5062,9 +5008,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('foothold','galaxy');
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.galaxy['foothold'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['conflict'] === 1){
                         global.galaxy['armed_miner'] = { count: 0, on: 0, crew: 0, mil: 0 };
                         global.tech['conflict'] = 2;
@@ -5340,9 +5284,7 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('excavator','galaxy');
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.galaxy.excavator.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;

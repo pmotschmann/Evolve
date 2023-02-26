@@ -5,7 +5,7 @@ import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
+import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources } from './industry.js';
@@ -82,9 +82,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.titan_spaceport.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.titan_spaceport.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -120,9 +118,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.electrolysis.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.electrolysis.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -430,9 +426,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.sam.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.sam.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -603,9 +597,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.ai_colonist.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.ai_colonist.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -890,9 +882,7 @@ export const outerTruth = {
             action(){
                 if (global.space.fob.count < 1 && payCosts($(this)[0])){
                     global.space.fob.count++;
-                    if (global.city.power >= $(this)[0].powered()){
-                        global.space.fob.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1027,9 +1017,7 @@ export const outerTruth = {
                 if (payCosts($(this)[0])){
                     global.space.orichalcum_mine.count++;
                     global.resource.Orichalcum.display = true;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.orichalcum_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1059,9 +1047,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.uranium_mine.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.uranium_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1091,9 +1077,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.neutronium_mine.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.neutronium_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1124,9 +1108,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.elerium_mine.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.elerium_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1208,9 +1190,7 @@ export const outerTruth = {
             action(){
                 if (payCosts($(this)[0])){
                     global.space.drone_control.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.space.drone_control.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1618,9 +1598,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.orbital_station.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.orbital_station.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1827,9 +1805,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_farm.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.tau_farm.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2257,9 +2233,7 @@ const tauCetiModules = {
                         global.civic.entertainer.max += jobScale(1);
                         global.civic.entertainer.display = true;
                     }
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.tauceti_casino.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2395,9 +2369,7 @@ const tauCetiModules = {
             action(){
                 if (tauEnabled() && payCosts($(this)[0])){
                     global.tauceti.orbital_platform.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.orbital_platform.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech['tau_red'] === 1){
                         global.tech['tau_red'] = 2;
                         messageQueue(loc('tau_red_orbital_platform_msg',[loc('tau_planet',[planetName().red]),loc('tau_planet',[races[global.race.species].home])]),'info',false,['progress']);
@@ -2920,9 +2892,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.refueling_station.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.refueling_station.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3015,9 +2985,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.whaling_station.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.whaling_station.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3058,9 +3026,7 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_station.count++;
-                    if (global.city.powered && global.city.power >= $(this)[0].powered()){
-                        global.tauceti.womling_station.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
