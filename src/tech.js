@@ -11284,7 +11284,7 @@ const techs = {
         category: 'storage',
         era: 'tauceti',
         path: ['truepath'],
-        reqs: { container: 7, tau_home: 4 },
+        reqs: { container: 7, tauceti: 4 },
         grant: ['container',8],
         cost: {
             Knowledge(){ return 6160000; },
@@ -11904,7 +11904,7 @@ const techs = {
         category: 'storage',
         era: 'tauceti',
         path: ['truepath'],
-        reqs: { tauceti: 3, tau_home: 4 },
+        reqs: { tauceti: 4, tau_home: 4 },
         grant: ['tau_home',5],
         cost: {
             Knowledge(){ return 6500000; }

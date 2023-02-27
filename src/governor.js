@@ -511,9 +511,9 @@ export function drawnGovernOffice(){
         }
         ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
             if (!global.race.governor.config.trash.hasOwnProperty(res)){
-                global.race.governor.config.trash[res] = 0;
+                global.race.governor.config.trash[res] = { v: 0, s: true } ;
             }
-        })
+        });
 
         let contain = $(`<div class="tConfig" v-show="showTask('trash')"><div class="has-text-warning">${loc(`gov_task_trash`)}</div></div>`);
         options.append(contain);
@@ -521,7 +521,7 @@ export function drawnGovernOffice(){
         contain.append(trash);
 
         Object.keys(global.race.governor.config.trash).forEach(function(res){
-            trash.append($(`<b-field>${loc(`gov_task_trash_min`,[global.resource[res].name])}<b-numberinput min="0" :max="1000000" v-model="c.trash.${res}" :controls="false"></b-numberinput></b-field>`));
+            trash.append($(`<b-field>${loc(`gov_task_trash_min`,[global.resource[res].name])}<b-numberinput min="0" :max="1000000" v-model="c.trash.${res}.v" :controls="false"></b-numberinput></b-field>`));
         });
     }
 
@@ -1100,8 +1100,8 @@ export const gov_tasks = {
                         ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
                         : 0;
                     
-                    if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res]){
-                        set = global.race.governor.config.trash[res];
+                    if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res].v){
+                        set = global.race.governor.config.trash[res].v;
                     }
                     if (set > remain){ set = remain; }
                     if (set < 0){ set = 0; }

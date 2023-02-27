@@ -1154,11 +1154,18 @@ if (convertVersion(global['version']) < 103001){
         global.stats['synth'] = {};
         global.stats.synth[global.race.srace] = true;
     }
+    if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('config') && global.race.governor.config.hasOwnProperty('trash')){
+        ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
+            if (global.race.governor.config.trash.hasOwnProperty(res) && typeof global.race.governor.config.trash[res] === 'number'){
+                global.race.governor.config.trash[res] = { v: global.race.governor.config.trash[res], s: true } ;
+            }
+        });
+    }
 }
 
 global['version'] = '1.3.0';
 delete global['revision'];
-global['beta'] = 43;
+global['beta'] = 44;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
