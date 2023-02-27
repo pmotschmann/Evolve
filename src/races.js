@@ -4850,7 +4850,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','hammer');
             if (global.tech['mining'] >= 1) {
                 checkPurgatory('city','rock_quarry',{ count: 0, asbestos: 0 });
-                if (global.city['rock_quarry'].count > 0) {
+                if ((global.city['rock_quarry'] && global.city.rock_quarry.count > 0) || global.race['lone_survivor']) {
                     global.civic.quarry_worker.display = true;
                 }
             }

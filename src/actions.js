@@ -4626,6 +4626,7 @@ function setChallenge(challenge){
         }
         if (challenge === 'orbit_decay'){
             delete global.race['cataclysm'];
+            delete global.race['lone_survivor'];
         }
     }
     setChallengeScreen();
@@ -4666,7 +4667,7 @@ function setScenario(scenario){
             }
         }
 
-        if (scenario === 'cataclysm'){
+        if (scenario === 'cataclysm' || scenario === 'lone_survivor'){
             delete global.race['orbit_decay'];
         }
 
