@@ -6568,6 +6568,7 @@
   "tau_red_womling_fun3": "Tavern",
   "tau_red_womling_fun_effect": "+%0% Womling Morale.",
   "tau_red_womling_lab_effect": "+%0 Max Knowledge per Womling Scientist.",
+  "tau_red_womling_advancement": "The Womlings have advanced to tech level %0.",
   "tau_gas_title": "Gas Giant",
   "tau_gas_title0a": "Grand %0",
   "tau_gas_title0b": "Spotted %0",
