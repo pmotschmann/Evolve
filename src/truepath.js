@@ -5097,6 +5097,28 @@ export function loneSurvivor(){
         global.tech['world_control'] = 1;
         global.tech['wsc'] = 0;
 
+        if (global.race.universe === 'magic'){
+            global.tech['gov_mage'] = 1;
+            global.tech['magic'] = 4;
+            global.tech['conjuring'] = 2;
+            global.resource.Mana.display = true;
+            global.resource.Crystal.display = true;
+            global.civic.crystal_miner.display = true;
+            global.tauceti['pylon'] = { count: 0 };
+            global.race['casting'] = {
+                farmer: 0,
+                miner: 0,
+                lumberjack: 0,
+                science: 0,
+                factory: 0,
+                army: 0,
+                hunting: 0,
+                crafting: 0,
+                total: 0,
+                crafting: 0
+            };
+        }
+
         global.settings.showSpace = false;
         global.settings.showTau = true;
         global.settings.tau.home = true;
@@ -5294,8 +5316,6 @@ export function loneSurvivor(){
 
         global.civic.professor.max = 1;
         global.civic.professor.workers = 1;
-        global.civic.cement_worker.max = 1;
-        global.civic.cement_worker.workers = 1;
 
         global.city.calendar.day++;
         global.city.market.active = true;

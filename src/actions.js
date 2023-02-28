@@ -1,9 +1,9 @@
-import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
+import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -5845,7 +5845,7 @@ export function powerOnNewStruct(c_action,extra){
     let parts = c_action.id.split('-');
     if (global.hasOwnProperty(parts[0]) && global[parts[0]].hasOwnProperty(parts[1]) && c_action.hasOwnProperty('powered')){
         let power = global.city.power;
-        if (global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+        if (global.race.hasOwnProperty('governor') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
             power += global.race.replicator.pow;
         }
 
@@ -7253,17 +7253,8 @@ function sentience(){
     }
 
     calc_mastery(true);
-    if (global.settings.tabLoad){
-        drawCity();
-        defineGarrison();
-        buildGarrison($('#c_garrison'),false);
-        foreignGov();
-    }
-    else {
-        loadTab('mTabCivil');
-    }
 
-    if (global.race['truepath'] || global.race['lone_survivor'] ){
+    if (global.race['truepath'] || global.race['lone_survivor']){
         Object.keys(resource_values).forEach(function(res){
             if (global.resource.hasOwnProperty(res)){
                 global.resource[res].value = resource_values[res] * 2;
@@ -7301,6 +7292,47 @@ function sentience(){
     }
     else if (global.race['artifical']){
         aiStart();
+    }
+
+    if (global.settings.tabLoad){
+        drawCity();
+        defineGarrison();
+        buildGarrison($('#c_garrison'),false);
+        foreignGov();
+
+        if (global.race['cataclysm'] || global.race['lone_survivor']){
+            clearElement($(`#r_civics`));
+            defineGovernment();
+            defineIndustry();
+            initResourceTabs('market');
+            initResourceTabs('storage');
+
+            if (tmp_vars.hasOwnProperty('resource')){
+                Object.keys(tmp_vars.resource).forEach(function(name){
+                    let color = tmp_vars.resource[name].color;
+                    let tradable = tmp_vars.resource[name].tradable;
+                    let stackable = tmp_vars.resource[name].stackable;
+                    if (stackable){
+                        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+                        $('#resStorage').append(market_item);
+                        containerItem(`#stack-${name}`,market_item,name,color,true);
+                    }
+                    if (tradable){
+                        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
+                        $('#market').append(market_item);
+                        marketItem(`#market-${name}`,market_item,name,color,true);
+                    }
+                });
+            }
+            tradeSummery();
+
+            arpa('Genetics');
+            arpa('Crispr');
+            arpa('Blood');
+        }
+    }
+    else {
+        loadTab('mTabCivil');
     }
 
     if (global.queue.hasOwnProperty('queue')){

@@ -211,7 +211,7 @@ vBind({
     },
     filters: {
         replicate(kw){
-            if (global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+            if (global.race.hasOwnProperty('governor') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
                 return kw + global.race.replicator.pow;
             }
             return kw;
@@ -8340,6 +8340,7 @@ function midLoop(){
                     if (global.tauceti.womling_lab.tech >= Math.round((global.tech.womling_tech + 2) ** expo)){
                         global.tech.womling_tech++;
                         global.tauceti.womling_lab.tech = 0;
+                        messageQueue(loc('tau_red_womling_advancement',[global.tech.womling_tech]),'advanced',false,['progress']);
                         drawTech();
                     }
                 }
