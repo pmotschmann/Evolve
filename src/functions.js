@@ -740,10 +740,11 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     return Math.round((mutiplier ** count) * base);
 }
 
-export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
+export function spaceCostMultiplier(action,offset,base,mutiplier,sector,c_min){
     if (!sector){
         sector = 'space';
     }
+    c_min = c_min || 1.005;
     if (global.race.universe === 'micro'){
         mutiplier -= darkEffect('micro',true);
     }
@@ -762,8 +763,8 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     if (nqVal){
         mutiplier -= nqVal;
     }
-    if (mutiplier < 1.005){
-        mutiplier = 1.005;
+    if (mutiplier < c_min){
+        mutiplier = c_min;
     }
     var count = action === 'citizen' ? global['resource'][global.race.species].amount : (global[sector][action] ? global[sector][action].count : 0);
     if (offset && typeof offset === 'number'){

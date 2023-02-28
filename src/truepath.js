@@ -1748,10 +1748,10 @@ const tauCetiModules = {
             path: ['truepath'],
             queue_complete(){ return global.resource[global.race.species].max - global.resource[global.race.species].amount; },
             cost: {
-                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, highPopAdjust(125000), global.race['high_pop'] ? 1.01 : 1.02) : 0; },
-                Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
-                Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01) : 0; },
-                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, highPopAdjust(500), 1.01) : 0) : 0; },
+                Money(offset){ return global['resource'][global.race.species].amount ? spaceCostMultiplier('citizen', offset, highPopAdjust(125000), global.race['high_pop'] ? 1.01 : 1.02, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Copper(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Aluminium(offset){ return !global.race['artifical'] || global.race['deconstructor'] ? 0 : global['resource'][global.race.species].amount >= 5 ? spaceCostMultiplier('citizen', offset, highPopAdjust(50), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0; },
+                Nanite(offset){ return global.race['deconstructor'] ? (global['resource'][global.race.species].amount >= 3 ? spaceCostMultiplier('citizen', offset, highPopAdjust(500), 1.01, 'tauceti', global.race['high_pop'] ? 1.0032 : 1.005) : 0) : 0; },
             },
             effect(){
                 let warn = '';
