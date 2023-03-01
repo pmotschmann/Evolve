@@ -6621,6 +6621,10 @@ export function ascendLab(wiki){
                 genome.gas = "";
                 genome.gas_moon = "";
                 genome.dwarf = "";
+                genome.titan = "";
+                genome.enceladus = "";
+                genome.triton = "";
+                genome.eris = "";
                 genome.genus = dGenus;
                 genome.traitlist = [];
                 genome.genes = calcGenomeScore(genome,(wiki ? wikiVars : false));
@@ -6641,13 +6645,14 @@ export function ascendLab(wiki){
                         }
                         let formatError = false;
                         Object.keys(genome).forEach(function (type){
-                            if (typeof genome[type] !== typeof importCustom[type]){
+                            if (importCustom[type] && typeof genome[type] !== typeof importCustom[type]){
                                 formatError = true;
                                 return;
                             }
                         });
                         if (formatError){
                             error.msg = loc(`string_pack_error`,[file.name]);
+                            console.log('format fail');
                             return;
                         }
 
@@ -6656,8 +6661,11 @@ export function ascendLab(wiki){
                                 genome[type] = importCustom[type];
                             }
                         });
-                        ['name','home','red','hell','gas','gas_moon','dwarf'].forEach(function(field){
-                            if (genome[field].length > 20){
+                        ['name','home','red','hell','gas','gas_moon','dwarf','titan','enceladus','triton','eris'].forEach(function(field){
+                            if (!importCustom[field] && ['titan','enceladus','triton','eris'].includes(field)){
+                                genome[field] = loc(`genus_${genome.genus}_solar_${field}`)
+                            }
+                            else if (genome[field].length > 20){
                                 genome[field] = genome[field].substring(0, 20);
                             }
                         });
