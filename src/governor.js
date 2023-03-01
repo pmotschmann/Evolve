@@ -530,7 +530,7 @@ export function drawnGovernOffice(){
             global.race.governor.config['replicate'] = {};
         }
         if (!global.race.governor.config.replicate.hasOwnProperty('pow')){
-            global.race.governor.config.replicate['pow'] = { on: false, cap: 100, buffer: 5 };
+            global.race.governor.config.replicate['pow'] = { on: false, cap: 10000, buffer: 0 };
         }
         if (!global.race.governor.config.replicate.hasOwnProperty('res')){
             global.race.governor.config.replicate['res'] = { que: true, neg: true, cap: true };
@@ -1328,10 +1328,10 @@ export const gov_tasks = {
             }
 
             let rBal = false;
-            if (global.race.governor.config.replicate.res.que && global.queue.queue.length > 0){
-                let struct = decodeStructId(global.queue.queue[0].id);
+            for (let idx = 0; global.race.governor.config.replicate.res.que && idx < global.queue.queue.length; idx++){
+                let struct = decodeStructId(global.queue.queue[idx].id);
                 let tc = false;
-                if (global.queue.queue[0].action === 'arpa'){
+                if (global.queue.queue[idx].action === 'arpa'){
                     let remain = (100 - global.arpa[struct.a].complete) / 100;
                     let c_action = actions.arpa[struct.a];
                     tc = arpaTimeCheck(c_action,remain,false,true);
@@ -1346,6 +1346,9 @@ export const gov_tasks = {
                         rBal = true;
                         break;
                     }
+                }
+                if (!global.settings.qAny || rBal){
+                    break;
                 }
             }
 
