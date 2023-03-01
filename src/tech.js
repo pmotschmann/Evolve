@@ -12941,6 +12941,7 @@ const techs = {
         era: 'tauceti',
         path: ['truepath'],
         reqs: { replicator: 1 },
+        trait: ['lone_survivor'],
         grant: ['tau_red',4],
         cost: {
             Knowledge(){ return 6500000; }

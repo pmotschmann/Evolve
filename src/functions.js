@@ -816,16 +816,21 @@ export function harmonyEffect(){
     return 0;
 }
 
-export function timeCheck(c_action,track,detailed){
+export function timeCheck(c_action,track,detailed,reqMet){
+    reqMet = typeof reqMet === 'undefined' ? true : reqMet;
     if (c_action.cost){
         let time = 0;
         let bottleneck = false;
         let offset = track && track.id[c_action.id] ? track.id[c_action.id] : false;
         let costs = adjustCosts(c_action,offset);
         let og_track_r = track ? {} : false;
+        let og_track_rr = track ? {} : false;
         if (track){
             Object.keys(track.r).forEach(function (res){
                 og_track_r[res] = track.r[res];
+            });
+            Object.keys(track.rr).forEach(function (res){
+                og_track_rr[res] = track.rr[res];
             });
         }
         let hasTrash = false;
@@ -854,13 +859,17 @@ export function timeCheck(c_action,track,detailed){
                     }
 
                     if (track){
-                        res_have += res_diff * track.t;
-                        if (track.r[f_res]){
+                        res_have += res_diff * (reqMet ? track.t.t : track.t.rt);
+                        if (!track.r.hasOwnProperty(f_res)){ track.r[f_res] = 0; }
+                        if (!track.rr.hasOwnProperty(f_res)){ track.rr[f_res] = 0; }
+                        if (reqMet){
                             res_have -= Number(track.r[f_res]);
                             track.r[f_res] += testCost;
+                            track.rr[f_res] += testCost;
                         }
                         else {
-                            track.r[f_res] = testCost;
+                            res_have -= Number(track.rr[f_res]);
+                            track.rr[f_res] += testCost;
                         }
                         if (res_max >= 0 && res_have > res_max){
                             res_have = res_max;
@@ -878,6 +887,7 @@ export function timeCheck(c_action,track,detailed){
                         else {
                             if (track){
                                 track.r = og_track_r;
+                                track.rr = og_track_rr;
                             }
                             time = -9999999;
                             shorted[f_res] = 99999999 - res_diff;
@@ -896,7 +906,10 @@ export function timeCheck(c_action,track,detailed){
             else {
                 track.id[c_action.id]++;
             }
-            track.t += time;
+            if (reqMet){
+                track.t.t += time;
+            }
+            track.t.rt += time;
         }
         return detailed ? { t: time, r: bottleneck, s: shorted } : time;
     }
