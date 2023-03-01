@@ -926,10 +926,14 @@ export function arpaTimeCheck(project, remain, track, detailed){
     let costs = arpaAdjustCosts(project.cost,offset);
     let allRemainingSegmentsTime = 0;
     let og_track_r = track ? {} : false;
+    let og_track_rr = track ? {} : false;
     let bottleneck = false;
     if (track){
         Object.keys(track.r).forEach(function (res){
             og_track_r[res] = track.r[res];
+        });
+        Object.keys(track.rr).forEach(function (res){
+            og_track_rr[res] = track.rr[res];
         });
     }
     let hasTrash = false;
@@ -957,13 +961,19 @@ export function arpaTimeCheck(project, remain, track, detailed){
                         }
                     }
 
-                    res_have += res_diff * track.t;
+                    res_have += res_diff * track.t.t;
                     if (track.r[res]){
                         res_have -= Number(track.r[res]);
                         track.r[res] += allRemainingSegmentsCost;
                     }
                     else {
                         track.r[res] = allRemainingSegmentsCost;
+                    }
+                    if (track.rr[res]){
+                        track.rr[res] += allRemainingSegmentsCost;
+                    }
+                    else {
+                        track.rr[res] = allRemainingSegmentsCost;
                     }
                     if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
                         res_have = global.resource[res].max;
@@ -982,6 +992,7 @@ export function arpaTimeCheck(project, remain, track, detailed){
                     else {
                         if (track){
                             track.r = og_track_r;
+                            track.rr = og_track_rr;
                         }
                         allRemainingSegmentsTime = -9999999;
                         shorted[res] = 99999999 - res_diff;
@@ -1000,7 +1011,8 @@ export function arpaTimeCheck(project, remain, track, detailed){
         else {
             track.id[project.id]++;
         }
-        track.t += allRemainingSegmentsTime;
+        track.t.t += allRemainingSegmentsTime;
+        track.t.rt += allRemainingSegmentsTime;
     }
     return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
