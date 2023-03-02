@@ -1462,6 +1462,7 @@
   "tech_pocket_dimensions_effect": "仓库的终级升级，物资储量上限 +21%，另外，每有一个超级对撞机，还可以使储量上限额外 +5%。",
   "tech_ai_logistics": "AI航运物流",
   "tech_ai_logistics_effect": "利用先进的人工智能协调航运物流，因此仓库可以存储更多东西，物资储量上限 +17%，另外，根据星际货仓数量和量子水平，仓库的物资储量上限还会进一步提升。",
+  "tech_containers": "%0集装箱",
   "tech_containerization": "集装技术",
   "tech_containerization_desc": "研究新的存储设施，存储内容可进行调整",
   "tech_containerization_effect": "新的存储设施，存储内容可根据需要进行调整，解锁货场。",
