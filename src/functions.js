@@ -7,6 +7,7 @@ import { universe_affixes } from './space.js';
 import { arpaAdjustCosts, arpaProjectCosts } from './arpa.js';
 import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
+import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
 
 var popperRef = false;
@@ -229,15 +230,17 @@ export function powerGrid(type,reset){
                 'city:transmitter','prtl_ruins:arcology','city:apartment','int_alpha:habitat','int_alpha:luxury_condo','spc_red:spaceport','spc_titan:titan_spaceport','spc_titan:electrolysis','int_alpha:starport',
                 'spc_dwarf:shipyard','spc_titan:ai_core2','spc_eris:drone_control','spc_titan:ai_colonist','int_blackhole:s_gate','gxy_gateway:starbase','spc_triton:fob',
                 'spc_enceladus:operating_base','spc_enceladus:zero_g_lab','spc_titan:sam','gxy_gateway:ship_dock','prtl_ruins:hell_forge','int_neutron:stellar_forge','int_neutron:citadel',
+                'tau_home:orbital_station','tau_red:orbital_platform','tau_gas:refueling_station','tau_home:tau_farm','tau_gas:ore_refinery','tau_gas:whaling_station',
                 'city:coal_mine','spc_moon:moon_base','spc_red:red_tower','spc_home:nav_beacon','int_proxima:xfer_station','gxy_stargate:telemetry_beacon','int_nebula:nexus','gxy_stargate:gateway_depot',
                 'spc_dwarf:elerium_contain','spc_gas:gas_mining','spc_belt:space_station','spc_gas_moon:outpost','gxy_gorddon:embassy','gxy_gorddon:dormitory','gxy_alien1:resort','spc_gas_moon:oil_extractor',
                 'int_alpha:int_factory','city:factory','spc_red:red_factory','spc_dwarf:world_controller','prtl_fortress:turret','prtl_badlands:war_drone','city:wardenclyffe','city:biolab','city:mine',
                 'city:rock_quarry','city:cement_plant','city:sawmill','city:mass_driver','int_neutron:neutron_miner','prtl_fortress:war_droid','prtl_pit:soul_forge','gxy_chthonian:excavator',
                 'int_blackhole:far_reach','prtl_badlands:sensor_drone','prtl_badlands:attractor','city:metal_refinery','gxy_stargate:gateway_station','gxy_alien1:vitreloy_plant','gxy_alien2:foothold',
-                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
+                'gxy_gorddon:symposium','int_blackhole:mass_ejector','city:casino','spc_hell:spc_casino','tau_home:tauceti_casino','prtl_fortress:repair_droid','gxy_stargate:defense_platform','prtl_ruins:guard_post',
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
-                'spc_red:atmo_terraformer'
+                'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
+                'city:replicator'
             ];
             break;
         case 'moon':
@@ -276,6 +279,15 @@ export function powerGrid(type,reset){
         case 'eris':
             power_structs = ['spc_eris:shock_trooper','spc_eris:tank'];
             break;
+        case 'tau_home':
+            power_structs = ['tau_home:colony','tau_home:tau_factory','tau_home:mining_pit','tau_home:infectious_disease_lab'];
+            break;
+        case 'tau_red':
+            power_structs = ['tau_red:womling_village','tau_red:womling_farm','tau_red:overseer','tau_red:womling_mine','tau_red:womling_fun','tau_red:womling_lab'];
+            break;
+        case 'tau_roid':
+            power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship'];
+            break;
     }
 
     if (reset){
@@ -287,6 +299,14 @@ export function powerGrid(type,reset){
             grids[type].l.push(struct);
         }
     });
+
+    if (grids[type].l.length > power_structs.length){
+        grids[type].l.forEach(function(struct){
+            if (!power_structs.includes(struct)){
+                grids[type].l.splice(grids[type].l.indexOf(struct),1);
+            }
+        });
+    }
 }
 
 export function initMessageQueue(filters){
@@ -521,31 +541,17 @@ function dragQueue(){
 function attachQueuePopovers(){
     for (let i=0; i<global.queue.queue.length; i++){
         let id = `q${global.queue.queue[i].id}${i}`;
+        let struct = decodeStructId(global.queue.queue[i].id);
+        let isWide = struct.s[0].substring(0,4) !== 'arpa' && struct.a['wide'] ? true : false;
 
-        let c_action;
-        let segments = global.queue.queue[i].id.split("-");
-        if (segments[0].substring(0,4) === 'arpa'){
-            c_action = segments[0].substring(4);
-        }
-        else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
-            c_action = actions[segments[0]][segments[1]];
-        }
-        else {
-            Object.keys(actions[segments[0]]).forEach(function (region){
-                if (actions[segments[0]][region].hasOwnProperty(segments[1])){
-                    c_action = actions[segments[0]][region][segments[1]];
-                }
-            });
-        }
-
-        let isWide = segments[0].substring(0,4) !== 'arpa' && c_action['wide'] ? true : false;
         popover(id,
             function(obj){
-                if (segments[0].substring(0,4) === 'arpa'){
-                    obj.popper.append(arpaProjectCosts(100,c_action));
+                let b_res = global.queue.queue[i].hasOwnProperty('bres') ? global.queue.queue[i].bres : false;
+                if (struct.s[0].substring(0,4) === 'arpa'){
+                    obj.popper.append(arpaProjectCosts(100,struct.a));
                 }
                 else {
-                    actionDesc(obj.popper,c_action,global[segments[0]][segments[1]],false);
+                    actionDesc(obj.popper,struct.a,global[struct.s[0]][struct.s[1]],false,false,false,b_res);
                 }
             },
             {
@@ -559,6 +565,25 @@ function attachQueuePopovers(){
             }
         );
     }
+}
+
+export function decodeStructId(id){
+    let c_action;
+    let segments = id.split("-");
+    if (segments[0].substring(0,4) === 'arpa'){
+        c_action = segments[0].substring(4);
+    }
+    else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
+        c_action = actions[segments[0]][segments[1]];
+    }
+    else {
+        Object.keys(actions[segments[0]]).forEach(function (region){
+            if (actions[segments[0]][region].hasOwnProperty(segments[1])){
+                c_action = actions[segments[0]][region][segments[1]];
+            }
+        });
+    }
+    return { s: segments, a: c_action };
 }
 
 const tagDebug = false;
@@ -715,10 +740,11 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     return Math.round((mutiplier ** count) * base);
 }
 
-export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
+export function spaceCostMultiplier(action,offset,base,mutiplier,sector,c_min){
     if (!sector){
         sector = 'space';
     }
+    c_min = c_min || 1.005;
     if (global.race.universe === 'micro'){
         mutiplier -= darkEffect('micro',true);
     }
@@ -730,17 +756,17 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
     }
     if (global.race['small']){ mutiplier -= traits.small.vars()[1]; }
     if (global.race['compact']){ mutiplier -= traits.compact.vars()[1]; }
-    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+    if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         mutiplier -= harmonyEffect();
     }
     let nqVal = govActive('noquestions',0);
     if (nqVal){
         mutiplier -= nqVal;
     }
-    if (mutiplier < 1.005){
-        mutiplier = 1.005;
+    if (mutiplier < c_min){
+        mutiplier = c_min;
     }
-    var count = global[sector][action] ? global[sector][action].count : 0;
+    var count = action === 'citizen' ? global['resource'][global.race.species].amount : (global[sector][action] ? global[sector][action].count : 0);
     if (offset && typeof offset === 'number'){
         count += offset;
     }
@@ -748,37 +774,37 @@ export function spaceCostMultiplier(action,offset,base,mutiplier,sector){
 }
 
 export function harmonyEffect(){
-    if (global.race.Harmony.count > 0 && global.stats.achieve[`ascended`]){
+    if (global.prestige.Harmony.count > 0 && global.stats.achieve[`ascended`]){
         let boost = 0;
         switch (global.race.universe){
             case 'heavy':
                 if (global.stats.achieve.ascended.hasOwnProperty('h')){
-                    boost = global.stats.achieve.ascended.h * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.h * global.prestige.Harmony.count;
                 }
                 break;
             case 'antimatter':
                 if (global.stats.achieve.ascended.hasOwnProperty('a')){
-                    boost = global.stats.achieve.ascended.a * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.a * global.prestige.Harmony.count;
                 }
                 break;
             case 'evil':
                 if (global.stats.achieve.ascended.hasOwnProperty('e')){
-                    boost = global.stats.achieve.ascended.e * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.e * global.prestige.Harmony.count;
                 }
                 break;
             case 'micro':
                 if (global.stats.achieve.ascended.hasOwnProperty('m')){
-                    boost = global.stats.achieve.ascended.m * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.m * global.prestige.Harmony.count;
                 }
                 break;
             case 'magic':
                 if (global.stats.achieve.ascended.hasOwnProperty('mg')){
-                    boost = global.stats.achieve.ascended.mg * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.mg * global.prestige.Harmony.count;
                 }
                 break;
             default:
                 if (global.stats.achieve.ascended.hasOwnProperty('l')){
-                    boost = global.stats.achieve.ascended.l * global.race.Harmony.count;
+                    boost = global.stats.achieve.ascended.l * global.prestige.Harmony.count;
                 }
                 break;
         }
@@ -790,16 +816,21 @@ export function harmonyEffect(){
     return 0;
 }
 
-export function timeCheck(c_action,track,detailed){
+export function timeCheck(c_action,track,detailed,reqMet){
+    reqMet = typeof reqMet === 'undefined' ? true : reqMet;
     if (c_action.cost){
         let time = 0;
         let bottleneck = false;
         let offset = track && track.id[c_action.id] ? track.id[c_action.id] : false;
         let costs = adjustCosts(c_action,offset);
         let og_track_r = track ? {} : false;
+        let og_track_rr = track ? {} : false;
         if (track){
             Object.keys(track.r).forEach(function (res){
                 og_track_r[res] = track.r[res];
+            });
+            Object.keys(track.rr).forEach(function (res){
+                og_track_rr[res] = track.rr[res];
             });
         }
         let hasTrash = false;
@@ -810,8 +841,9 @@ export function timeCheck(c_action,track,detailed){
                 }
             });
         }
+        let shorted = {};
         Object.keys(costs).forEach(function (res){
-            if (time >= 0 && !['Morale','HellArmy','Structs','Bool','Plasmid','AntiPlasmid','Phage','Dark','Harmony'].includes(res)){
+            if (time >= 0 && !global.prestige.hasOwnProperty(res) && !['Morale','HellArmy','Structs','Bool'].includes(res)){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
@@ -827,13 +859,17 @@ export function timeCheck(c_action,track,detailed){
                     }
 
                     if (track){
-                        res_have += res_diff * track.t;
-                        if (track.r[f_res]){
+                        res_have += res_diff * (reqMet ? track.t.t : track.t.rt);
+                        if (!track.r.hasOwnProperty(f_res)){ track.r[f_res] = 0; }
+                        if (!track.rr.hasOwnProperty(f_res)){ track.rr[f_res] = 0; }
+                        if (reqMet){
                             res_have -= Number(track.r[f_res]);
                             track.r[f_res] += testCost;
+                            track.rr[f_res] += testCost;
                         }
                         else {
-                            track.r[f_res] = testCost;
+                            res_have -= Number(track.rr[f_res]);
+                            track.rr[f_res] += testCost;
                         }
                         if (res_max >= 0 && res_have > res_max){
                             res_have = res_max;
@@ -846,12 +882,18 @@ export function timeCheck(c_action,track,detailed){
                                 bottleneck = f_res;
                                 time = r_time;
                             }
+                            shorted[f_res] = r_time;
                         }
                         else {
                             if (track){
                                 track.r = og_track_r;
+                                track.rr = og_track_rr;
                             }
                             time = -9999999;
+                            shorted[f_res] = 99999999 - res_diff;
+                            if ((shorted[bottleneck] && shorted[f_res] > shorted[bottleneck]) || !shorted[bottleneck]){
+                                bottleneck = f_res;
+                            }
                         }
                     }
                 }
@@ -864,9 +906,12 @@ export function timeCheck(c_action,track,detailed){
             else {
                 track.id[c_action.id]++;
             }
-            track.t += time;
+            if (reqMet){
+                track.t.t += time;
+            }
+            track.t.rt += time;
         }
-        return detailed ? { t: time, r: bottleneck } : time;
+        return detailed ? { t: time, r: bottleneck, s: shorted } : time;
     }
     else {
         return 0;
@@ -876,14 +921,19 @@ export function timeCheck(c_action,track,detailed){
 // This function returns the time to complete all remaining Arpa segments.
 // Note: remain is a fraction between 0 and 1 representing the fraction of
 // remaining arpa segments to be completed
-export function arpaTimeCheck(project, remain, track){
+export function arpaTimeCheck(project, remain, track, detailed){
     let offset = track && track.id[project.id] ? track.id[project.id] : false;
     let costs = arpaAdjustCosts(project.cost,offset);
     let allRemainingSegmentsTime = 0;
     let og_track_r = track ? {} : false;
+    let og_track_rr = track ? {} : false;
+    let bottleneck = false;
     if (track){
         Object.keys(track.r).forEach(function (res){
             og_track_r[res] = track.r[res];
+        });
+        Object.keys(track.rr).forEach(function (res){
+            og_track_rr[res] = track.rr[res];
         });
     }
     let hasTrash = false;
@@ -894,13 +944,15 @@ export function arpaTimeCheck(project, remain, track){
             }
         });
     }
+
+    let shorted = {};
     Object.keys(costs).forEach(function (res){
         if (allRemainingSegmentsTime >= 0){
             let allRemainingSegmentsCost = Number(costs[res](offset)) * remain;
             if (allRemainingSegmentsCost > 0){
                 let res_have = Number(global.resource[res].amount);
-
                 let res_diff = global.resource[res].diff;
+
                 if (track){
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
@@ -909,13 +961,19 @@ export function arpaTimeCheck(project, remain, track){
                         }
                     }
 
-                    res_have += res_diff * track.t;
+                    res_have += res_diff * track.t.t;
                     if (track.r[res]){
                         res_have -= Number(track.r[res]);
                         track.r[res] += allRemainingSegmentsCost;
                     }
                     else {
                         track.r[res] = allRemainingSegmentsCost;
+                    }
+                    if (track.rr[res]){
+                        track.rr[res] += allRemainingSegmentsCost;
+                    }
+                    else {
+                        track.rr[res] = allRemainingSegmentsCost;
                     }
                     if (global.resource[res].max >= 0 && res_have > global.resource[res].max){
                         res_have = global.resource[res].max;
@@ -927,13 +985,20 @@ export function arpaTimeCheck(project, remain, track){
                         let r_time = (allRemainingSegmentsCost - res_have) / res_diff;
                         if (r_time > allRemainingSegmentsTime){
                             allRemainingSegmentsTime = r_time;
+                            bottleneck = res;
                         }
+                        shorted[res] = r_time;
                     }
                     else {
                         if (track){
                             track.r = og_track_r;
+                            track.rr = og_track_rr;
                         }
                         allRemainingSegmentsTime = -9999999;
+                        shorted[res] = 99999999 - res_diff;
+                        if ((shorted[bottleneck] && shorted[res] > shorted[bottleneck]) || !shorted[bottleneck]){
+                            bottleneck = res;
+                        }
                     }
                 }
             }
@@ -946,9 +1011,10 @@ export function arpaTimeCheck(project, remain, track){
         else {
             track.id[project.id]++;
         }
-        track.t += allRemainingSegmentsTime;
+        track.t.t += allRemainingSegmentsTime;
+        track.t.rt += allRemainingSegmentsTime;
     }
-    return allRemainingSegmentsTime;
+    return detailed ? { t: allRemainingSegmentsTime, r: bottleneck, s: shorted } : allRemainingSegmentsTime;
 }
 
 export function clearElement(elm,remove){
@@ -1041,8 +1107,8 @@ export function powerCostMod(energy){
 
 export function darkEffect(universe, flag, info, inputs){
     if (!inputs) { inputs = {}; }
-    let dark = inputs.dark !== undefined ? inputs.dark : global.race.Dark.count;
-    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.race.Harmony.count;
+    let dark = inputs.dark !== undefined ? inputs.dark : global.prestige.Dark.count;
+    let harmony = inputs.harmony !== undefined ? inputs.harmony : global.prestige.Harmony.count;
     let sludge = inputs.sludge !== undefined ? inputs.sludge : (global.stats.achieve['extinct_sludge'] && global.stats.achieve.extinct_sludge[universeAffix(universe)]) ? global.stats.achieve.extinct_sludge[universeAffix(universe)] : 0;
 
     switch (universe){
@@ -1147,7 +1213,7 @@ export const calc_mastery = (function(){
         if (mastery && !recalc){
             return mastery;
         }
-        else if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+        else if (global.genes['challenge'] && global.genes.challenge >= 2){
             mastery = masteryType(global.race.universe);
             return mastery;
         }
@@ -1156,12 +1222,12 @@ export const calc_mastery = (function(){
 })();
 
 export function masteryType(universe,detailed){
-    if (global.genes['challenge'] && global.genes['challenge'] >= 2){
+    if (global.genes['challenge'] && global.genes.challenge >= 2){
         universe = universe || global.race.universe;
         let ua_level = universeLevel(universe);
         let m_rate = universe === 'standard' ? 0.25 : 0.15;
-        let u_rate = global.genes['challenge'] >= 3 ? 0.15 : 0.1;
-        if (global.genes['challenge'] >= 4 && universe !== 'standard'){
+        let u_rate = global.genes.challenge >= 3 ? 0.15 : 0.1;
+        if (global.genes.challenge >= 4 && universe !== 'standard'){
             m_rate += 0.05;
             u_rate -= 0.05;
         }
@@ -1177,12 +1243,17 @@ export function masteryType(universe,detailed){
             m_rate *= 1 - (traits.ooze.vars()[2] / 100);
             u_rate *= 1 - (traits.ooze.vars()[2] / 100);
         }
+        let perk_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
+        if (perk_rank > 0){
+            m_rate *= 1 + (perk_rank / 100);
+            u_rate *= 1 + (perk_rank / 100);
+        }
         let m_mastery = ua_level.aLvl * m_rate;
         let u_mastery = 0;
         if (universe !== 'standard'){
             u_mastery = ua_level.uLvl * u_rate;
         }
-        if (global.genes['challenge'] && global.genes['challenge'] >= 5 && global.race.hasOwnProperty('mastery')){
+        if (global.genes.challenge >= 5 && global.race.hasOwnProperty('mastery')){
             m_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
             u_mastery *= 1 + (traits.mastery.vars()[0] * global.race.mastery / 100);
         }
@@ -1352,6 +1423,27 @@ export function calcPrestige(type,inputs){
             phage_mult = 4;
             plasmid_cap = 2000;
             break;
+        case 'matrix':
+            pop_divisor = 1.5;
+            k_inc = 32000;
+            k_mult = 1.01;
+            phage_mult = 3.2;
+            plasmid_cap = 1800;
+            break;
+        case 'retire':
+            pop_divisor = 1.15;
+            k_inc = 32000;
+            k_mult = 1.006;
+            phage_mult = 3.2;
+            plasmid_cap = 1800;
+            break;
+        case 'eden':
+            pop_divisor = 1;
+            k_inc = 18000;
+            k_mult = 1.004;
+            phage_mult = 2.5;
+            plasmid_cap = 1800;
+            break;
     }
 
     if (challenge !== undefined){
@@ -1372,6 +1464,9 @@ export function calcPrestige(type,inputs){
 
         if (global.race['cataclysm']){
             new_plasmid += 300;
+        }
+        else if (global.race['lone_survivor']){
+            new_plasmid += 800;
         }
 
         gains.plasmid = challenge_multiplier(new_plasmid,type,false,inputs);
@@ -1474,6 +1569,7 @@ export function adjustCosts(c_action, offset, wiki){
         return newCosts;
     }
     costs = truthAdjust(costs, c_action, offset, wiki);
+    costs = loneAdjust(costs, offset, wiki);
     costs = inflationAdjust(costs, offset, wiki);
     costs = technoAdjust(costs, offset, wiki);
     costs = kindlingAdjust(costs, offset, wiki);
@@ -1483,6 +1579,31 @@ export function adjustCosts(c_action, offset, wiki){
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
     return craftAdjust(costs, offset, wiki);
+}
+
+function loneAdjust(costs, offset, wiki){
+    if (global.race['lone_survivor']){
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Structs','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+            else if (['Knowledge'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.5); }
+            }
+            else if (['Money'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.22); }
+            }
+            else if (['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Quantium'].includes(res)){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.14); }
+            }
+            else {
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.28); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function truthAdjust(costs, c_action, offset, wiki){
@@ -1541,11 +1662,12 @@ function extraAdjust(costs, offset, wiki){
 
 function technoAdjust(costs, offset, wiki){
     if (global.civic.govern.type === 'technocracy'){
-        let adjust = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 1 : 1.01 ) : 1.02;
+        let adjust = 1 + (govEffect.technocracy()[1] / 100);
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * 0.92); }
+                let kAdjust = 1 - (govEffect.technocracy()[0] / 100);
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * kAdjust); }
             }
             else if (res === 'Money' || res === 'Structs' || res === 'Custom'){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -1918,18 +2040,18 @@ export function easterEggBind(id){
             global.special.egg[year][`egg${id}`] = true;
             if (id <= 10){
                 if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 10;
+                    global.prestige.AntiPlasmid.count += 10;
                     global.stats.antiplasmid += 10;
                     messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.race.Plasmid.count += 10;
+                    global.prestige.Plasmid.count += 10;
                     global.stats.plasmid += 10;
                     messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             else {
-                global.race.Phage.count += 4;
+                global.prestige.Phage.count += 4;
                 global.stats.phage += 4;
                 messageQueue(loc('city_egg_msg',[4,loc('resource_Phage_name')]),'success',false,['events']);
             }
@@ -1959,18 +2081,18 @@ export function trickOrTreatBind(id,trick){
         if (!global.special.trick[year][`${tot}${id}`]){
             global.special.trick[year][`${tot}${id}`] = true;
             if (trick){
-                global.race.Phage.count += 2;
+                global.prestige.Phage.count += 2;
                 global.stats.phage += 2;
                 messageQueue(loc('city_ghost_msg',[2,loc('resource_Phage_name')]),'success',false,['events']);
             }
             else {
                 if (global.race.universe === 'antimatter'){
-                    global.race.Plasmid.anti += 13;
+                    global.prestige.AntiPlasmid.count += 13;
                     global.stats.antiplasmid += 13;
                     messageQueue(loc('city_trick_msg',[13,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.race.Plasmid.count += 13;
+                    global.prestige.Plasmid.count += 13;
                     global.stats.plasmid += 13;
                     messageQueue(loc('city_trick_msg',[13,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
@@ -2140,20 +2262,25 @@ export function deepClone(obj){
 }
 
 // function library
-export function flib(func,val){
+export function flib(func,val,val2){
     switch (func){
         case 'reverse':
-            {
-                let str = val.toLowerCase().split('').reverse().join('');
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
+        {
+            let str = val.toLowerCase().split('').reverse().join('');
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
         case 'name':
-            {
-                if (eventActive('fool',2021)){
-                    return flib('reverse',races[global.race.species].name);
-                }
-                return races[global.race.species].name;
+        {
+            if (eventActive('fool',2021)){
+                return flib('reverse',races[global.race.species].name);
             }
+            return races[global.race.species].name;
+        }
+        case 'curve':
+        {   
+            let exp = val2 || 1.5;
+            return 1-((1-(val))**exp);
+        }
     }
     return false;
 }

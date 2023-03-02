@@ -3,7 +3,6 @@ import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
-import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
@@ -66,54 +65,6 @@ export function defineGovernment(define){
     $('#r_govern0').append(civ_garrison);
 
     defineGovernor();
-}
-
-export function defineIndustry(){
-    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
-        return;
-    }
-    clearElement($('#industry'));
-
-    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'])){
-        var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
-        $(`#industry`).append(smelter);
-        loadIndustry('smelter',smelter,'#iSmelter');
-    }
-    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0)){
-        var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
-        $(`#industry`).append(factory);
-        loadIndustry('factory',factory,'#iFactory');
-    }
-    if (global.interstellar['mining_droid'] && global.interstellar.mining_droid.count > 0){
-        var droid = $(`<div id="iDroid" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_mining_droid_title')}</h2></div>`);
-        $(`#industry`).append(droid);
-        loadIndustry('droid',droid,'#iDroid');
-    }
-    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || global.space['g_factory'] && global.space.g_factory.count > 0){
-        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
-        $(`#industry`).append(graphene);
-        loadIndustry('graphene',graphene,'#iGraphene');
-    }
-    if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'])){
-        var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
-        $(`#industry`).append(casting);
-        loadIndustry('pylon',casting,'#iPylon');
-    }
-    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
-        var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
-        $(`#industry`).append(ratio);
-        loadIndustry('rock_quarry',ratio,'#iQuarry');
-    }
-    if (global.space['titan_mine'] && global.space['titan_mine'].count > 0){
-        var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
-        $(`#industry`).append(ratio);
-        loadIndustry('titan_mine',ratio,'#iTMine');
-    }
-    if (global.race['deconstructor'] && global.city['nanite_factory']){
-        var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
-        $(`#industry`).append(nanite);
-        loadIndustry('nanite_factory',nanite,'#iNFactory');
-    }
 }
 
 // Sets up garrison in civics tab
@@ -198,20 +149,81 @@ export function govTitle(id){
 const government_desc = (function(){
     return {
         anarchy: loc('govern_anarchy_effect'),
-        autocracy: loc('govern_autocracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 10 : 18 ) : 25, 35]),
-        democracy: loc('govern_democracy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20, 5]),
-        oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? loc('govern_oligarchy_effect_alt',[20]) : loc('govern_oligarchy_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? 2 : 5, 20]),
-        theocracy: loc('govern_theocracy_effect',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
-        theocracy_alt: loc('govern_theocracy_effect_alt',[12,25,global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50]),
-        republic: loc('govern_republic_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20]),
-        socialist: loc('govern_socialist_effect',[global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 42 ) : 35, 10,10,20]),
-        corpocracy: loc('govern_corpocracy_effect',[200,150,100, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10, global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 40 : 30]),
-        technocracy: global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? loc('govern_technocracy_effect_alt',[8,10]) : loc('govern_technocracy_effect',[8, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 1 : 2, 10]),
-        federation: loc('govern_federation_effect',[3,10]),
-        federation_alt: loc('govern_federation_effect_alt',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32, 10]),
-        magocracy: loc('govern_magocracy_effect',[25, global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 40 ) : 25]),
+        autocracy: loc('govern_autocracy_effect',govEffect.autocracy()),
+        democracy: loc('govern_democracy_effect',govEffect.democracy()),
+        oligarchy: global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? loc('govern_oligarchy_effect_alt',[govEffect.oligarchy()[1]]) : loc('govern_oligarchy_effect',[govEffect.oligarchy()[0], govEffect.oligarchy()[1]]),
+        theocracy: loc('govern_theocracy_effect',govEffect.theocracy()),
+        theocracy_alt: loc('govern_theocracy_effect_alt',govEffect.theocracy()),
+        republic: loc('govern_republic_effect',govEffect.republic()),
+        socialist: loc('govern_socialist_effect',govEffect.socialist()),
+        corpocracy: loc('govern_corpocracy_effect',govEffect.corpocracy()),
+        technocracy: global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? loc('govern_technocracy_effect_alt',[govEffect.technocracy()[0],govEffect.technocracy()[2]]) : loc('govern_technocracy_effect',govEffect.technocracy()),
+        federation: loc('govern_federation_effect',[govEffect.federation()[0],govEffect.federation()[1]]),
+        federation_alt: loc('govern_federation_effect_alt',[25, govEffect.federation()[2], govEffect.federation()[1]]),
+        magocracy: loc('govern_magocracy_effect',govEffect.magocracy()),
     };
 });
+
+export const govEffect = {
+    autocracy(){
+        let stress = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 10 : 18 ) : 25;
+        let attack = govActive('organizer',0) ? 40 : 35;
+        return [stress, attack];
+    },
+    democracy(){
+        let entertainer = global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? ( global.tech['high_tech'] >= 12 ? 30 : 25 ) : 20;
+        let work_malus = govActive('organizer',0) ? 1 : 5;
+        return [entertainer, work_malus];
+    },
+    oligarchy(){
+        let tax_penalty = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 0 : ( global.tech['high_tech'] && global.tech['high_tech'] >= 2 ? 2 : 5 );
+        let tax_cap = govActive('organizer',0) ? 25 : 20;
+        return [tax_penalty, tax_cap];
+    },
+    theocracy(){
+        let temple = 12;
+        let prof_malus = govActive('organizer',0) ? 10 : 25;
+        let sci_malus = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 25 : 40 ) : 50;
+        return [temple, prof_malus, sci_malus];
+    },
+    republic(){
+        let bankers = govActive('organizer',0) ? 30 : 25;
+        let morale = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 30 ) : 20;
+        return [bankers, morale];
+    },
+    socialist(){
+        let crafting = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 42 ) : 35;
+        let manufacture = govActive('organizer',0) ? 12 : 10;
+        let stress = 10;
+        let money_malus = govActive('organizer',0) ? 10 : 20;
+        return [crafting, manufacture, stress, money_malus];
+    },
+    corpocracy(){
+        let casino = govActive('organizer',0) ? 220 : 200;
+        let lux = govActive('organizer',0) ? 175 : 150;
+        let tourism = govActive('organizer',0) ? 110 : 100;
+        let morale = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 5 : 10;
+        let factory = global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 40 : 30;
+        return [casino, lux, tourism, morale, factory];
+    },
+    technocracy(){
+        let knowCost = 8;
+        let mat = global.tech['high_tech'] && global.tech['high_tech'] >= 16 ? 0 : ( global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? 1 : 2 );
+        let knowGen = govActive('organizer',0) ? 18 : 10;
+        return [knowCost, mat, knowGen];
+    },
+    federation(){
+        let city = 3;
+        let morale = govActive('organizer',0) ? 12 : 10;
+        let unified = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 40 : 36 ) : 32;
+        return [city,morale,unified];
+    },
+    magocracy(){
+        let wiz = govActive('organizer',0) ? 30 : 25;
+        let crystal = global.tech['high_tech'] && global.tech['high_tech'] >= 12 ? ( global.tech['high_tech'] >= 16 ? 50 : 40 ) : 25;
+        return [wiz, crystal];
+    }
+}
 
 function government(govern){
     var gov = $('<div id="govType" class="govType" v-show="vis()"></div>');
@@ -396,7 +408,7 @@ function drawGovModal(){
 }
 
 export function foreignGov(){
-    if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath'])){
+    if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath']) && !global.tech['isolation']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
         foreign.append($(`<div class="header"><h2 class="has-text-warning">${loc('civics_foreign')}</h2></div>`));
         $('#r_govern0').append(foreign);
@@ -572,9 +584,10 @@ export function foreignGov(){
                     return espDesc();
                 },
                 vis(){
-                    return global.civic.garrison.display && (!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] ? true : false;
+                    return global.civic.garrison.display && (!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] && !global.tech['isolation'] ? true : false;
                 },
                 gvis(g){
+                    if (global.tech['isolation']){ return false; }
                     if (g <= 2){
                         return global.tech['world_control'] ? false : true;
                     }
@@ -871,7 +884,7 @@ function taxCap(min){
             cap += 20;
         }
         if (global.civic.govern.type === 'oligarchy'){
-            cap += 20;
+            cap += govEffect.oligarchy()[1];
         }
         let aristoVal = govActive('aristocrat',1);
         if (aristoVal){
@@ -1044,12 +1057,13 @@ export function buildGarrison(garrison,full){
     var bunks = $('<div class="bunks"></div>');
     barracks.append(bunks);
     let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
-    
-    bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
-    bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
-    bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
+    if (!global.tech['isolation']){
+        bunks.append($(`<div class="barracks"><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }}<span></div>`));
+        bunks.append($(`<div class="barracks" v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }}</span></div>`));
+        bunks.append($(`<div class="barracks"><span class="wounded">${loc('civics_garrison_wounded')}</span> <span v-html="$options.filters.wounded(g.wounded)"></span></div>`));
 
-    barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
+        barracks.append($(`<div class="hire"><button v-show="g.mercs" class="button first hmerc" @click="hire">${loc('civics_garrison_hire_mercenary')}</button><div>`));
+    }
     
     if (full){
         garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
@@ -1061,7 +1075,7 @@ export function buildGarrison(garrison,full){
     var wrap = $('<div class="war"></div>');
     campaign.append(wrap);
 
-    if ((!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm']){
+    if ((!global.tech['world_control'] || global.race['truepath']) && !global.race['cataclysm'] && !global.tech['isolation']){
         var tactics = $(`<div id="${full ? 'tactics' : 'c_tactics'}" v-show="g.display" class="tactics"><span>${loc('civics_garrison_campaign')}</span></div>`);
         wrap.append(tactics);
             
@@ -1147,7 +1161,7 @@ export function buildGarrison(garrison,full){
                 return global.civic.garrison.display;
             },
             rvis(){
-                return global.tech['rival'] ? true : false;
+                return global.tech['rival'] && !global.tech['isolation'] ? true : false;
             }
         },
         filters: {
@@ -1273,7 +1287,7 @@ export function buildGarrison(garrison,full){
                 }
             );
         }
-        if (global.race['truepath']){
+        if (global.race['truepath'] && !global.tech['isolation']){
             popover(`garRivaldesc2`,
                 function(){ return loc(`civics_gov_tp_rival`,[govTitle(3),races[global.race.species].home]); },
                 {
@@ -2026,7 +2040,7 @@ export function armyRating(val,type,wound){
         army *= 1.05;
     }
     if (global.civic.govern.type === 'autocracy'){
-        army *= 1.35;
+        army *= 1 + (govEffect.autocracy()[1] / 100);
     }
     army = Math.floor(army);
     return army * racialTrait(val,type);

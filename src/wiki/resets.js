@@ -15,6 +15,7 @@ export function resetsPage(content){
     });
     sideMenu('add',`resets-prestige`,'intro',loc('wiki_menu_intro'));
 
+    // MAD
     let section = infoBoxBuilder(mainContent,{ name: 'mad', template: 'resets', paragraphs: 9, break: [6,9], h_level: 2,
         para_data: {
             3: [loc('wiki_p_res_plasmids')],
@@ -34,6 +35,7 @@ export function resetsPage(content){
     prestigeCalc(section,'plasmid',false,'mad');
     sideMenu('add',`resets-prestige`,'mad',loc('wiki_resets_mad'));
 
+    // Bioseed
     section = infoBoxBuilder(mainContent,{ name: 'bioseed', template: 'resets', paragraphs: 12, break: [5,8,12], h_level: 2,
         para_data: {
             2: [loc('tech_genesis_ship')],
@@ -57,6 +59,7 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'bioseed');
     sideMenu('add',`resets-prestige`,'bioseed',loc('wiki_resets_bioseed'));
 
+    // Blackhole
     let universes = [];
     Object.keys(universe_types).forEach(function (universe){
         universes.push(universe);
@@ -89,6 +92,7 @@ export function resetsPage(content){
     prestigeCalc(section,'dark',false,'bigbang');
     sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'));
 
+    // Vacuum Collapse
     section = infoBoxBuilder(mainContent,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
         para_data: {
             4: [80],
@@ -110,6 +114,7 @@ export function resetsPage(content){
     prestigeCalc(section,'dark','vacuum','vacuum');
     sideMenu('add',`resets-prestige`,'vacuum',loc('wiki_resets_vacuum'));
 
+    // Ascension
     section = infoBoxBuilder(mainContent,{ name: 'ascension', template: 'resets', paragraphs: 10, break: [3,5,7,10], h_level: 2,
         para_data: {
             2: [loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('wiki_p_res_harmony')],
@@ -129,6 +134,7 @@ export function resetsPage(content){
     prestigeCalc(section,'harmony',false,'ascend');
     sideMenu('add',`resets-prestige`,'ascension',loc('wiki_resets_ascension'));
 
+    // Cataclysm
     section = infoBoxBuilder(mainContent,{ name: 'cataclysm', template: 'resets', paragraphs: 10, break: [4,7,10], h_level: 2,
         para_data: {
             1: [loc('planet_unstable')],
@@ -146,6 +152,7 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'cataclysm');
     sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'));
 
+    // Terraform
     section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 19, break: [3,6,7,10,12,19], h_level: 2,
         para_data: {
             1: [loc('wiki_resets_terraform'),loc(`evo_challenge_orbit_decay`)],
@@ -184,6 +191,7 @@ export function resetsPage(content){
     prestigeCalc(section,'artifact',false,'descend');
     sideMenu('add',`resets-prestige`,'infusion',loc('wiki_resets_infusion'));
 
+    // AI Appoc
     section = infoBoxBuilder(mainContent,{ name: 'ai', template: 'resets', paragraphs: 8, break: [3,6,7,8], h_level: 2,
         para_data: {
             2: [loc('evo_challenge_truepath')],
@@ -209,4 +217,69 @@ export function resetsPage(content){
     prestigeCalc(section,'phage',false,'ai');
     prestigeCalc(section,'cores',false,'ai');
     sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
+
+    // Matrix
+    section = infoBoxBuilder(mainContent,{ name: 'matrix', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            3: [loc('tau_star_ringworld')],
+            5: [loc('wiki_resets_matrix'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('civics_servants')],
+            6: [loc('wiki_resets_matrix')],
+        },
+        data_color: {
+            5: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#tauceti-structures-ringworld'],
+        }
+    });
+    section = createCalcSection(section,'matrix','gain');
+    prestigeCalc(section,'plasmid',false,'matrix');
+    prestigeCalc(section,'phage',false,'matrix');
+    sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'));
+
+    // Retirement
+    section = infoBoxBuilder(mainContent,{ name: 'retired', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_truepath')],
+            3: [loc('tech_matrioshka_brain'),loc('tech_ignition_device')],
+            5: [loc('wiki_resets_retired'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('civics_servants')],
+            6: [loc('wiki_resets_retired')],
+        },
+        data_color: {
+            5: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#tauceti-structures-matrioshka_brain','wiki.html#tauceti-structures-ignition_device'],
+        }
+    });
+    section = createCalcSection(section,'retired','gain');
+    prestigeCalc(section,'plasmid',false,'retired');
+    prestigeCalc(section,'phage',false,'retired');
+    sideMenu('add',`resets-prestige`,'retired',loc('wiki_resets_retired'));
+
+    // Garden of Eden
+    section = infoBoxBuilder(mainContent,{ name: 'eden', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
+        para_data: {
+            2: [loc('evo_challenge_lone_survivor')],
+            3: [loc('tau_star_ringworld')],
+            4: [loc('tau_star_goe_facility')],
+            5: [loc('wiki_resets_eden'),loc('wiki_p_res_plasmids'),loc('wiki_p_res_phage'),loc('civics_servants')],
+            6: [loc('wiki_resets_eden')],
+        },
+        data_color: {
+            5: ['warning','danger','danger','danger'],
+        },
+        data_link: {
+            2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
+            3: ['wiki.html#tauceti-structures-ringworld'],
+            4: ['wiki.html#tauceti-structures-goe_facility'],
+        }
+    });
+    section = createCalcSection(section,'eden','gain');
+    prestigeCalc(section,'plasmid',false,'eden');
+    prestigeCalc(section,'phage',false,'eden');
+    sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'));
 }

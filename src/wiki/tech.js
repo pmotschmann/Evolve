@@ -1576,11 +1576,17 @@ const extraInformation = {
     adamantite_crates: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),1500,1000])
     ],
+    bolognium_crates_tp: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Crates_name`),6200,2200])
+    ],
     adamantite_containers_tp: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),2200,1600])
     ],
     quantium_containers: [
         loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),3200,2200])
+    ],
+    unobtainium_containers: [
+        loc(`wiki_tech_containerized_upgrade`,[loc(`resource_Containers_name`),9700,3200])
     ],
     reinforced_shelving: [
         loc(`wiki_tech_reinforced_shelving`)
@@ -1645,6 +1651,166 @@ const extraInformation = {
     ],
     quantum_signatures: [
         loc(`wiki_tech_ship_sensor_unlock`,[loc('outer_shipyard_sensor_quantum')])
+    ],
+    interstellar_drive: [
+        loc(`wiki_tech_ship_class_unlock`,[loc('outer_shipyard_class_explorer')]),
+        loc(`wiki_tech_ship_engine_unlock`,[loc('outer_shipyard_engine_emdrive')])
+    ],
+    alien_outpost: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_alien_outpost')])
+    ],
+    jumpgates: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_jump_gate')]),
+        loc(`wiki_tech_building_unlock`,[loc('tau_jump_gate')])
+    ],
+    system_survey: [
+        loc(`wiki_tech_destination_unlock`,[loc('tau_gas_contest_title'),loc(`tau_gas_title`)]),
+        loc(`wiki_tech_destination_unlock`,[loc(`space_mission_title`,[loc('tau_roid_title')]),loc('tau_roid_title')])
+    ],
+    repository: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_repository')])
+    ],
+    fusion_generator: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_fusion_generator')])
+    ],
+    tau_cultivation: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_home_tau_farm')])
+    ],
+    tau_manufacturing: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_home_tau_factory')])
+    ],
+    jeff: [
+        loc(`wiki_tech_jeff`)
+    ],
+    womling_fun: [
+        loc(`wiki_tech_building_unlock`,[loc('wiki_tech_multi_unlock',[loc('wiki_tech_multi_unlock',[loc('tau_red_womling_fun1'),loc('tau_red_womling_fun2')]),loc('tau_red_womling_fun3')])])
+    ],
+    womling_lab: [
+        loc(`wiki_tech_building_unlock`,[loc('interstellar_laboratory_title')]),
+        loc(`wiki_tech_womling_lab`)
+    ],
+    womling_mining: [
+        loc(`wiki_tech_womling_mining`,[15,loc('wiki_tech_tree_womling_mining')])
+    ],
+    womling_firstaid: [
+        loc(`wiki_tech_womling_firstaid`)
+    ],
+    womling_logistics: [
+        loc(`wiki_tech_womling_logistics`)
+    ],
+    womling_repulser: [
+        loc(`wiki_tech_womling_repulser`)
+    ],
+    womling_farming: [
+        loc(`wiki_tech_womling_farming1`),
+        loc(`wiki_tech_womling_farming2`)
+    ],
+    womling_housing: [
+        loc(`wiki_tech_womling_housing`)
+    ],
+    womling_support: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_gas_womling_station_title')])
+    ],
+    womling_recycling: [
+        loc(`wiki_tech_womling_recycling`)
+    ],
+    belt_mining: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_gas_ore_refinery_title')])
+    ],
+    adv_belt_mining: [
+        loc(`wiki_tech_adv_belt_mining`)
+    ],
+    space_whaling: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_gas_whaling_station_title')])
+    ],
+    infectious_disease_lab: [
+        loc(`wiki_tech_building_unlock`,[global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab')])
+    ],
+    isolation_protocol: [
+        loc(`wiki_tech_isolation_protocol1`),
+        loc(`wiki_tech_isolation_protocol2`)
+    ],
+    decode_virus: [
+        loc(`wiki_tech_decode_virus`,[global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab')])
+    ],
+    vaccine_campaign: [
+        loc(`wiki_tech_vaccine_campaign1`,[(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))]),
+        loc(`wiki_tech_vaccine_campaign2`,[(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))])
+    ],
+    vax_strat1: [ //Propaganda
+        loc(`wiki_tech_vax_strat`,[`250`,(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))])
+    ],
+    vax_strat2: [ //Force
+        loc(`wiki_tech_vax_strat`,[`25`,(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))]),
+        loc(`wiki_tech_vax_morale`,[`-50%`])
+    ],
+    vax_strat3: [ //Science/Transparency
+        loc(`wiki_tech_vax_strat`,[`390`,(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))]),
+        loc(`wiki_tech_vax_morale`,[`+20%`])
+    ],
+    vax_strat4: [ //Secret
+        loc(`wiki_tech_vax_strat`,[`125`,(races[global.race.species].type === 'synthetic' ? loc(`city_boot_camp_art`) : loc(`tech_hospital`))]),
+        loc(`wiki_tech_vax_morale`,[`-10%`])
+    ],
+    cloning: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_home_cloning')])
+    ],
+    ringworld: [
+        loc(`wiki_tech_destination_unlock2`,[loc('tab_tauceti')]),
+        loc(`wiki_tech_building_unlock`,[loc('tau_star_ringworld')])
+    ],
+    iso_gambling: [
+        loc(`wiki_tech_iso_gambling`)
+    ],
+    outpost_boost: [
+        loc(`wiki_tech_outpost_boost`)
+    ],
+    cultural_center: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_cultural_center')])
+    ],
+    outer_tau_survey: [
+        loc(`wiki_tech_destination_unlock`,[loc('tau_gas2_contest_title'),loc(`tau_gas2_title`)]),
+    ],
+    alien_research: [
+        loc(`wiki_tech_alien_research`)
+    ],
+    womling_gene_therapy: [
+        loc(`wiki_tech_womling_gene_therapy1`),
+        loc(`wiki_tech_womling_gene_therapy2`),
+        loc(`wiki_tech_womling_gene_therapy3`),
+        loc(`wiki_tech_womling_gene_therapy4`,[loc(`tau_gas_title`)])
+    ],
+    food_culture: [
+        loc(`wiki_tech_food_culture`)
+    ],
+    advanced_refinery: [
+        loc(`wiki_tech_advanced_refinery`)
+    ],
+    advanced_pit_mining: [
+        loc(`wiki_tech_advanced_pit_mining`)
+    ],
+    useless_junk: [
+        loc(`wiki_tech_useless_junk`)
+    ],
+    advanced_asteroid_mining: [
+        loc(`wiki_tech_advanced_asteroid_mining`)
+    ],
+    matrioshka_brain: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_matrioshka_brain')])
+    ],
+    ignition_device: [
+        loc(`wiki_tech_building_unlock`,[loc('tech_ignition_device')])
+    ],
+    replicator: [
+        loc(`wiki_tech_replicator`)
+    ],
+    womling_unlock: [
+        loc(`wiki_tech_destination_unlock2`,[loc('tau_planet',[getSolarName('red')])]),
+        loc(`wiki_tech_building_unlock`,[loc('tau_red_orbital_platform')]),
+        loc(`wiki_tech_womling_unlock`)
+    ],
+    garden_of_eden: [
+        loc(`wiki_tech_building_unlock`,[loc('tau_star_goe_facility')]),
     ],
     geck: [
         loc(`wiki_tech_geck`)
@@ -1954,6 +2120,118 @@ const extraRequirements = {
     },
     corrupted_ai1 : {
         title: loc('wiki_tech_req_corrupted_ai1')
+    },
+    tauceti2 : {
+        title: loc('wiki_tech_req_tauceti2')
+    },
+    tauceti4 : {
+        title: loc('wiki_tech_req_tauceti4'),
+        link: 'wiki.html#space-tp_structures-jump_gate'
+    },
+    tau_home3 : {
+        title: loc('wiki_tech_req_task',[loc('tau_home_excavate')]),
+        link: 'wiki.html#tauceti-structures-excavate'
+    },
+    tau_red2 : {
+        title: loc('wiki_tech_req_building',[loc('tau_red_orbital_platform')]),
+        link: 'wiki.html#tauceti-structures-orbital_platform'
+    },
+    tau_gas3 : {
+        title: loc('wiki_tech_req_building',[loc('tau_gas_refueling_station_title')]),
+        link: 'wiki.html#tauceti-structures-refueling_station'
+    },
+    tau_gas25 : {
+        title: loc('wiki_tech_req_megabuilding',[loc('tau_gas2_alien_station')]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    tau_roid1 : {
+        title: loc('wiki_tech_req_mission',[loc('space_mission_title',[loc('tau_roid_title')])]),
+        link: 'wiki.html#tauceti-structures-roid_mission'
+    },
+    tau_roid4 : {
+        title: loc('wiki_tech_req_building',[loc('tau_gas_ore_refinery_title')]),
+        link: 'wiki.html#tauceti-structures-ore_refinery'
+    },
+    womling_tech1 : {
+        title: loc('wiki_tech_req_womling_tech',[1]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech2 : {
+        title: loc('wiki_tech_req_womling_tech',[2]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech3 : {
+        title: loc('wiki_tech_req_womling_tech',[3]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech4 : {
+        title: loc('wiki_tech_req_womling_tech',[4]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech5 : {
+        title: loc('wiki_tech_req_womling_tech',[5]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech6 : {
+        title: loc('wiki_tech_req_womling_tech',[6]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech7 : {
+        title: loc('wiki_tech_req_womling_tech',[7]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    womling_tech8 : {
+        title: loc('wiki_tech_req_womling_tech',[8]),
+        link: 'wiki.html#tauceti-structures-jeff'
+    },
+    plague2 : {
+        title: loc('wiki_tech_req_plague',[2]),
+        link: 'wiki.html#progress-events-plague'
+    },
+    plague5 : {
+        title: loc('wiki_tech_req_plague5'),
+        link: 'wiki.html#tauceti-tp_tech-isolation_protocol'
+    },
+    disease2 : {
+        title: loc('wiki_tech_req_building',[global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab')]),
+        link: 'wiki.html#tauceti-structures-infectious_disease_lab'
+    },
+    focus_cure3 : {
+        title: loc('wiki_tech_req_focus_cure3')
+    },
+    focus_cure5 : {
+        title: loc('wiki_tech_req_focus_cure',[25])
+    },
+    focus_cure7 : {
+        title: loc('wiki_tech_req_focus_cure',[100])
+    },
+    alien_data1 : {
+        title: loc('wiki_tech_req_alien_data',[10]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    alien_data2 : {
+        title: loc('wiki_tech_req_alien_data',[20]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    alien_data3 : {
+        title: loc('wiki_tech_req_alien_data',[30]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    alien_data4 : {
+        title: loc('wiki_tech_req_alien_data',[48]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    alien_data5 : {
+        title: loc('wiki_tech_req_alien_data',[60]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    alien_data6 : {
+        title: loc('wiki_tech_req_alien_data',[100]),
+        link: 'wiki.html#tauceti-structures-alien_station'
+    },
+    eden1 : {
+        title: loc('wiki_tech_req_megabuilding',[loc('tau_star_ringworld')]),
+        link: 'wiki.html#tauceti-structures-ringworld'
     },
     decay1 : {
         title: loc('wiki_tech_req_decay1'),
@@ -3342,6 +3620,212 @@ const specialRequirements = {
                 }
             ]
         }
+    ],
+    womling_fun: [
+        {
+            category: 'unique',
+            subreqs: [
+                {
+                    title: loc(`tau_red_contact`),
+                    color: global.race['womling_friend'] ? true : false,
+                    link: 'wiki.html#tauceti-structures-contact'
+                },
+                {
+                    title: loc(`tau_red_introduce`),
+                    color: global.race['womling_god'] ? true : false,
+                    link: 'wiki.html#tauceti-structures-introduce'
+                },
+                {
+                    title: loc(`tau_red_subjugate`),
+                    color: global.race['womling_lord'] ? true : false,
+                    link: 'wiki.html#tauceti-structures-subjugate'
+                }
+            ]
+        }
+    ],
+    isolation_protocol: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    focus_cure: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    decode_virus: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    vaccine_campaign: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    vax_strat1: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    vax_strat2: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    vax_strat3: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    vax_strat4: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    cloning: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    clone_degredation: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    digital_paradise: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    ringworld: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    matrioshka_brain: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    ignition_device: [
+        {
+            category: 'scenario',
+            not: true,
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    replicator: [
+        {
+            category: 'scenario',
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    womling_unlock: [
+        {
+            category: 'scenario',
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
+    ],
+    garden_of_eden: [
+        {
+            category: 'scenario',
+            subreqs: [
+                {
+                    name: 'lone_survivor'
+                }
+            ]
+        }
     ]
 };
 
@@ -3426,6 +3910,22 @@ function getTechTrees(path){
                 name: 'arpa',
                 title: loc('tech_arpa'),
                 era: 'globalized'
+            }
+        ];
+        techTrees['isolation'] = {};
+        techTrees['isolation'][1] = [
+            {
+                name: 'isolation_protocol',
+                title: loc('tech_isolation_protocol'),
+                era: 'tauceti'
+            }
+        ];
+        techTrees['focus_cure'] = {};
+        techTrees['focus_cure'][1] = [
+            {
+                name: 'focus_cure',
+                title: loc('tech_focus_cure'),
+                era: 'tauceti'
             }
         ];
     }

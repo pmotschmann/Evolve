@@ -1,6 +1,10 @@
-import { global } from './vars.js';
+import { global, p_on } from './vars.js';
 import { biomes, traits } from './races.js';
 import { govRelationFactor } from './civics.js';
+import { jobScale } from './jobs.js';
+import { hellSupression } from './portal.js';
+import { flib } from './functions.js';
+import { govActive } from './governor.js';
 
 export function highPopAdjust(v){
     if (global.race['high_pop']){
@@ -35,6 +39,10 @@ export function production(id,val){
             }
             else if (global.city.biome === 'taiga'){
                 oil *= biomes.taiga.vars()[2];
+            }
+            let dirtVal = govActive('dirty_jobs',2);
+            if (dirtVal){
+                oil *= 1 + (dirtVal / 100);
             }
             return oil;
         }
@@ -156,6 +164,25 @@ export function production(id,val){
         {
             return (global.tech.asteroid >= 6 ? (global.tech.asteroid >= 7 ? 4 : 3) : 2);
         }
+        case 'g_factory':
+        {
+            if (global.race['truepath']){
+                if (global.tech['isolation']){
+                    return 1.8;
+                }
+                else {
+                    let titan_colonists = p_on['ai_colonist'] ? global.civic.titan_colonist.workers + jobScale(p_on['ai_colonist']) : global.civic.titan_colonist.workers;
+                    let gain = 0.05 * titan_colonists;
+                    if (global.race['high_pop']){
+                        gain = highPopAdjust(gain);
+                    }
+                    return gain;
+                }
+            }
+            else {
+                return 0.6;
+            }
+        }
         case 'harvester':
         {
             switch (val){
@@ -191,6 +218,11 @@ export function production(id,val){
                 vitreloy *= 1.1;
             }
             return vitreloy;
+        }
+        case 'infernite_mine':
+        {
+            let sup = hellSupression('gate');
+            return 0.5 * sup.supress;
         }
         case 'water_freighter':
         {
@@ -247,6 +279,195 @@ export function production(id,val){
                 return 0.0018;
             }
             return 0;
+        }
+        case 'mining_pit':
+        {
+            let mats = 0;
+            switch (val){
+                case 'materials':
+                {
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.12 : 0.09);
+                    break;
+                }
+                case 'bolognium':
+                {
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.0288 : 0.0216);
+                    break;
+                }
+                case 'stone':
+                {
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.8 : 0.6);
+                    break;
+                }
+                case 'adamantite':
+                {
+                    mats = highPopAdjust(global.tech['isolation'] ? 0.448 : 0.336);
+                    break;
+                }
+                case 'copper':
+                {
+                    mats = highPopAdjust(0.58);
+                    break;
+                }
+                case 'coal':
+                {
+                    mats = highPopAdjust(0.13);
+                    break;
+                }
+                case 'iron':
+                {
+                    mats = highPopAdjust(0.74);
+                    break;
+                }
+                case 'aluminium':
+                {
+                    mats = highPopAdjust(0.88);
+                    break;
+                }
+            }
+            if (global.race['tough']){
+                mats *= 1 + (traits.tough.vars()[0] / 100);
+            }
+            if (global.tech['tau_pit_mining']){
+                mats *= 1.18;
+            }
+            return mats;
+        }
+        case 'tau_farm':
+        {
+            switch (val){
+                case 'food':
+                {
+                    return global.tech['isolation'] ? 15 : 9;
+                }
+                case 'lumber':
+                {
+                    return global.tech['isolation'] ? 12 : 5.5;
+                }
+                case 'water':
+                {
+                    return 0.35;
+                }
+            }
+        }
+        case 'womling_mine':
+        {
+            let boost = 1;
+            if (global.tech['womling_mining']){
+                boost += global.tech.womling_mining * 0.15;
+            }
+            if (global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5){
+                boost *= 1.1;
+            }
+            if (global.tech['womling_gene']){
+                boost *= 1.25;
+            }
+
+            switch (val){
+                case 'unobtainium':
+                {
+                    return 0.0305 * boost;
+                }
+                case 'uranium':
+                {
+                    return 0.047 * boost;
+                }
+                case 'titanium':
+                {
+                    return 0.616 * boost;
+                }
+                case 'copper':
+                {
+                    return 1.191 * boost;
+                }
+                case 'iron':
+                {
+                    return 1.377 * boost;
+                }
+                case 'aluminium':
+                {
+                    return 1.544 * boost;
+                }
+                case 'neutronium':
+                {
+                    return 0.382 * boost;
+                }
+                case 'iridium':
+                {
+                    return 0.535 * boost;
+                }
+            }
+        }
+        case 'refueling_station':
+        {
+            return global.tech['isolation'] ? 18.5 : 9.35;
+        }
+        case 'ore_refinery':
+        {
+            return global.tech['tau_ore_mining'] ? 40 : 25;
+        }
+        case 'whaling_station':
+        {
+            return 12;
+        }
+        case 'mining_ship':
+        {
+            if (global.tauceti['patrol_ship']){
+                let patrol = 1;
+                if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
+                    patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
+                }
+                return (global.tech['tau_ore_mining'] && global.tech.tau_ore_mining >= 2 ? 12 : 10) * patrol;
+            }
+            return 0;
+        }
+        case 'mining_ship_ore':
+        {
+            switch (val){
+                case 'iron':
+                {
+                    return 1.85;
+                }
+                case 'aluminium':
+                {
+                    return 1.85;
+                }
+                case 'iridium':
+                {
+                    return 0.35;
+                }
+                case 'neutronium':
+                {
+                    return 0.35;
+                }
+                case 'orichalcum':
+                {
+                    return 0.25;
+                }
+                case 'elerium':
+                {
+                    return 0.02;
+                }
+            }
+        }
+        case 'whaling_ship':
+        {
+            if (global.tauceti['patrol_ship']){
+                let patrol = 1;
+                if (global.tauceti.patrol_ship.support > global.tauceti.patrol_ship.s_max){
+                    patrol = flib('curve',global.tauceti.patrol_ship.s_max / global.tauceti.patrol_ship.support,1.4);
+                }
+                return 8 * patrol;
+            }
+            return 0;
+        }
+        case 'whaling_ship_oil':
+        {
+            return global.tech['isolation'] ? 0.78 : 0.42;
+        }
+        case 'alien_outpost':
+        {
+            return 0.01;
         }
     }
 }

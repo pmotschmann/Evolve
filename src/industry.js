@@ -1,11 +1,12 @@
-import { global, keyMultiplier, sizeApproximation, p_on } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, genusVars } from './races.js';
 import { atomic_mass } from './resources.js';
-import { checkRequirements, checkSpaceRequirements } from './space.js';
+import { checkRequirements, checkSpaceRequirements, convertSpaceSector } from './space.js';
 import { fortressTech } from './portal.js';
+import { checkPathRequirements } from './truepath.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -33,6 +34,78 @@ export function loadIndustry(industry,parent,bind){
         case 'nanite_factory':
             loadNFactory(parent,bind);
             break;
+        case 'mining_ship':
+            loadMiningShip(parent,bind);
+            break;
+        case 'alien_space_station':
+            loadAlienSpaceStation(parent,bind);
+            break;
+        case 'replicator':
+            loadReplicator(parent,bind);
+            break;
+    }
+}
+
+export function defineIndustry(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 1)){
+        return;
+    }
+    clearElement($('#industry'));
+
+    if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
+        var smelter = $(`<div id="iSmelter" class="industry"><h2 class="header has-text-advanced">${loc('city_smelter')}</h2></div>`);
+        $(`#industry`).append(smelter);
+        loadIndustry('smelter',smelter,'#iSmelter');
+    }
+    if ((global.city['factory'] && global.city.factory.count > 0) || (global.space['red_factory'] && global.space.red_factory.count > 0) || (global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0)){
+        var factory = $(`<div id="iFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_factory')}</h2></div>`);
+        $(`#industry`).append(factory);
+        loadIndustry('factory',factory,'#iFactory');
+    }
+    if (global.interstellar['mining_droid'] && global.interstellar.mining_droid.count > 0){
+        var droid = $(`<div id="iDroid" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_mining_droid_title')}</h2></div>`);
+        $(`#industry`).append(droid);
+        loadIndustry('droid',droid,'#iDroid');
+    }
+    if ((global.interstellar['g_factory'] && global.interstellar.g_factory.count > 0) || (global.space['g_factory'] && (global.space.g_factory.count > 0 || (global.tauceti['refueling_station'] && global.tauceti.refueling_station.count > 0)))){
+        var graphene = $(`<div id="iGraphene" class="industry"><h2 class="header has-text-advanced">${loc('interstellar_g_factory_title')}</h2></div>`);
+        $(`#industry`).append(graphene);
+        loadIndustry('graphene',graphene,'#iGraphene');
+    }
+    if (global.race['casting'] && (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon'])){
+        var casting = $(`<div id="iPylon" class="industry"><h2 class="header has-text-advanced">${loc('city_pylon')}</h2></div>`);
+        $(`#industry`).append(casting);
+        loadIndustry('pylon',casting,'#iPylon');
+    }
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
+        var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('rock_quarry',ratio,'#iQuarry');
+    }
+    if (global.space['titan_mine'] && global.space['titan_mine'].count > 0){
+        var ratio = $(`<div id="iTMine" class="industry"><h2 class="header has-text-advanced">${loc('city_mine')}</h2></div>`);
+        $(`#industry`).append(ratio);
+        loadIndustry('titan_mine',ratio,'#iTMine');
+    }
+    if (global.tech['tau_roid'] && global.tech.tau_roid >= 4 && global.tauceti['mining_ship']){
+        var mining_ship = $(`<div id="iMiningShip" class="industry"><h2 class="header has-text-advanced">${loc('tau_roid_mining_ship')}</h2></div>`);
+        $(`#industry`).append(mining_ship);
+        loadIndustry('mining_ship',mining_ship,'#iMiningShip');
+    }
+    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station']){
+        var alien_space_station = $(`<div id="iAlienSpaceStation" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas2_alien_station')}</h2></div>`);
+        $(`#industry`).append(alien_space_station);
+        loadIndustry('alien_space_station',alien_space_station,'#iAlienSpaceStation');
+    }
+    if (global.race['deconstructor'] && global.city['nanite_factory']){
+        var nanite = $(`<div id="iNFactory" class="industry"><h2 class="header has-text-advanced">${loc('city_nanite_factory')}</h2></div>`);
+        $(`#industry`).append(nanite);
+        loadIndustry('nanite_factory',nanite,'#iNFactory');
+    }
+    if (global.race['replicator'] && global.tech['replicator']){
+        var replicator = $(`<div id="iReplicator" class="industry"><h2 class="header has-text-advanced">${loc('tech_replicator')}</h2></div>`);
+        $(`#industry`).append(replicator);
+        loadIndustry('replicator',replicator,'#iReplicator');
     }
 }
 
@@ -541,6 +614,9 @@ function loadFactory(parent,bind){
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
+                }
                 let keyMult = keyMultiplier();
                 for (var i=0; i<keyMult; i++){
                     let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
@@ -568,6 +644,9 @@ function loadFactory(parent,bind){
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
                 }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
+                }
                 return colorRange(on,max);
             }
         },
@@ -579,6 +658,9 @@ function loadFactory(parent,bind){
                 let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
                 if (global.interstellar['int_factory'] && p_on['int_factory']){
                     max += p_on['int_factory'] * 2;
+                }
+                if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+                    max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
                 }
                 return max;
             },
@@ -613,6 +695,9 @@ function loadFactory(parent,bind){
                 }
                 if (global.race['inflation']){
                     demand *= 1 + (global.race.inflation / 1250);
+                }
+                if (global.tech['isolation']){
+                    demand *= 1 + ((support_on['colony'] || 0) * 0.5);
                 }
                 demand = demand.toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
@@ -1221,6 +1306,179 @@ function loadTMine(parent,bind){
     });
 }
 
+function loadMiningShip(parent,bind){
+    parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iron.name,global.resource.Aluminium.name])}</div>`));
+    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('common')" aria-label="Increase Iron Production">&laquo;</span><b-slider v-model="common" format="percent"></b-slider><span class="add" role="button" @click="add('common')" aria-label="Increase Aluminium Production">&raquo;</span></div>`);
+    parent.append(common);
+
+    parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Iridium.name,global.resource.Neutronium.name])}</div>`));
+    let uncommon = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('uncommon')" aria-label="Increase Iridium Production">&laquo;</span><b-slider v-model="uncommon" format="percent"></b-slider><span class="add" role="button" @click="add('uncommon')" aria-label="Increase Neutronium Production">&raquo;</span></div>`);
+    parent.append(uncommon);
+
+    if (global.tech.tau_roid >= 5){
+        parent.append($(`<div>${loc('tau_roid_mining_ship_ratio',[global.resource.Orichalcum.name,global.resource.Elerium.name])}</div>`));
+        let rare = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('rare')" aria-label="Increase Orichalcum Production">&laquo;</span><b-slider v-model="rare" format="percent"></b-slider><span class="add" role="button" @click="add('rare')" aria-label="Increase Elerium Production">&raquo;</span></div>`);
+        parent.append(rare);
+    }
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.tauceti.mining_ship,
+        methods: {
+            sub(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.mining_ship[r] > 0){
+                    global.tauceti.mining_ship[r] -= keyMult;
+                    if (global.tauceti.mining_ship[r] < 0){
+                        global.tauceti.mining_ship[r] = 0;
+                    }
+                }
+            },
+            add(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.mining_ship[r] < 100){
+                    global.tauceti.mining_ship[r] += keyMult;
+                    if (global.tauceti.mining_ship[r] > 100){
+                        global.tauceti.mining_ship[r] = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadAlienSpaceStation(parent,bind){
+    parent.append($(`<div>${loc('tau_gas2_alien_station_focus',[global.resource.Knowledge.name])}</div>`));
+    let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('focus')" aria-label="Decrease Knowledge Focus">&laquo;</span><b-slider v-model="focus" format="percent"></b-slider><span class="add" role="button" @click="add('focus')" aria-label="Increase Knowledge Focus">&raquo;</span></div>`);
+    parent.append(common);
+
+    vBind({
+        el: bind ? bind : '#specialModal',
+        data: global.tauceti.alien_space_station,
+        methods: {
+            sub(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.alien_space_station[r] > 0){
+                    global.tauceti.alien_space_station[r] -= keyMult;
+                    if (global.tauceti.alien_space_station[r] < 0){
+                        global.tauceti.alien_space_station[r] = 0;
+                    }
+                }
+            },
+            add(r){
+                let keyMult = keyMultiplier();
+                if (global.tauceti.alien_space_station[r] < 100){
+                    global.tauceti.alien_space_station[r] += keyMult;
+                    if (global.tauceti.alien_space_station[r] > 100){
+                        global.tauceti.alien_space_station[r] = 100;
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadReplicator(parent,bind){
+    if (global.race['replicator']){
+        parent.append($(`<div>${loc('tech_replicator')}</div>`));
+
+        let content = $(`<div class="doublePane"></div>`);
+        parent.append(content);
+        
+        if (bind){
+        let values = ``;
+            Object.keys(atomic_mass).forEach(function(res){
+                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
+            });
+
+            content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
+                <button class="button is-info" slot="trigger">
+                    <span>{{ res | resName }}</span>
+                </button>${values}
+            </b-dropdown></div>`);
+        }
+        else {
+            let scrollMenu = ``;
+            Object.keys(atomic_mass).forEach(function(res){
+                if (global.resource[res].display){
+                    scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
+                }
+            });
+            content.append(`<div id="hscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`);
+        }
+
+        let power = bind ? $(`<div></div>`) : $(`<div class="right"></div>`);
+        content.append(power);
+
+        let current = $(`<span :aria-label="aria" class="current"><span>{{ pow }}MW</span></span>`);
+        let less = $(`<span role="button" class="sub" @click="less" aria-label="Reduce power by 1"><span>&laquo;</span></span>`);
+        let more = $(`<span role="button" class="add" @click="more" aria-label="Increase power by 1"><span>&raquo;</span></span>`);
+        power.append(less);
+        power.append(current);
+        power.append(more);
+
+        parent.append(`<div class="topPad">{{ res | result }}</div>`); 
+
+        vBind({
+            el: bind ? bind : '#specialModal',
+            data: global.race.replicator,
+            methods: {
+                less(){
+                    let keyMult = keyMultiplier();
+                    if (global.race.replicator.pow > 0){
+                        global.race.replicator.pow -= keyMult;
+                        if (global.race.replicator.pow < 0){
+                            global.race.replicator.pow = 0;
+                        }
+                    }
+                },
+                more(){
+                    let keyMult = keyMultiplier();
+                    global.race.replicator.pow += keyMult;
+                },
+                setVal(r){
+                    if (global.resource[r].display){
+                        global.race.replicator.res = r;
+                    }
+                },
+                avail(r){
+                    return global.resource[r].display;
+                },
+                aria(){
+                    return global.race.replicator.pow + 'MW';
+                }
+            },
+            filters: {
+                resName(r){
+                    return global.resource[r].name;
+                },
+                result(r){
+                    return loc(`tau_replicator`,[replicator(r,global.race.replicator.pow).toFixed(3),global.resource[r].name]);
+                }
+            }
+        });
+
+        if (!bind){
+            const scrollContainer = document.getElementById('hscrolltarget');
+
+            scrollContainer.addEventListener("wheel", (evt) => {
+                evt.preventDefault();
+                scrollContainer.scrollLeft += evt.deltaY;
+            });
+        }
+    }
+}
+
+export function replicator(res,pow){
+    if (global.race['lone_survivor']){
+        return 17.5 * quantum_level / atomic_mass[res] * pow;
+    }
+    else {
+        let qLevel = quantum_level || 1;
+        return 12.5 * qLevel / atomic_mass[res] * (pow ** 0.75);
+    }
+}
+
 export function manaCost(spell,rate){
     rate = typeof rate === 'undefined' ? 0.0025 : rate;
     return spell * ((1 + rate) ** spell - 1);
@@ -1251,10 +1509,21 @@ export function gridEnabled(c_action,region,p0,p1){
     let isOk = false;
     switch (region){
         case 'city':
-            isOk = global.race['cataclysm'] || global.race['orbit_decayed'] ? false : checkCityRequirements(p1);
+            if (p1 === 'replicator' && global.race['replicator']){
+                isOk = true;
+            }
+            else {
+                isOk = global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : checkCityRequirements(p1);
+            }
+            break;
+        case 'space':
+            isOk = global.tech['isolation'] ? false : checkSpaceRequirements(region,p0,p1);
             break;
         case 'portal':
             isOk = checkRequirements(fortressTech(),p0,p1);
+            break;
+        case 'tauceti':
+            isOk = checkPathRequirements(region,p0,p1);
             break;
         default:
             isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
@@ -1271,7 +1540,11 @@ export function setPowerGrid(){
     clearGrids(grids);
 
     clearElement($('#powerGrid'));
-    $('#powerGrid').append(`<div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div>`);
+    $('#powerGrid').append(`<div class="powerGridHead"><div class="powerGridHeader has-text-info">${loc(`power_grid_header`)}</div><div id="powerModeSwitch"><b-switch class="setting" v-model="lowPowerBalance">Distribute Low Power</b-switch></div></div>`);
+    vBind({
+        el: `#powerModeSwitch`,
+        data: global.settings
+    });
 
     Object.keys(grids).forEach(function(grid_type){
         if (!grids[grid_type].s){
@@ -1302,7 +1575,7 @@ export function setPowerGrid(){
             let struct = grids[grid_type].l[i];
 
             let parts = struct.split(":");
-            let space = parts[0].substr(0,4) === 'spc_' ? 'space' : (parts[0].substr(0,5) === 'prtl_' ? 'portal' : (parts[0].substr(0,4) === 'gxy_' ? 'galaxy' : 'interstellar'));
+            let space = convertSpaceSector(parts[0]);
             let region = parts[0] === 'city' ? parts[0] : space;
             let c_action = parts[0] === 'city' ? actions.city[parts[1]] : actions[space][parts[0]][parts[1]];
 
@@ -1436,6 +1709,9 @@ export function gridDefs(){
         titan: { l: global.support.titan, n: genusVars[type].solar.titan, s: global.settings.space.titan, r: 'space', rs: 'electrolysis'  },
         enceladus: { l: global.support.enceladus, n: genusVars[type].solar.enceladus, s: global.settings.space.enceladus, r: 'space', rs: 'titan_spaceport'  },
         eris: { l: global.support.eris, n: genusVars[type].solar.eris, s: global.settings.space.eris, r: 'space', rs: 'drone_control'  },
+        tau_home: { l: global.support.tau_home, n: loc(`tau_planet`,[races[global.race.species].home]), s: global.settings.tau.home, r: 'tauceti', rs: 'orbital_station'  },
+        tau_red: { l: global.support.tau_red, n: loc(`tau_planet`,[races[global.race.species].solar.red]), s: global.settings.tau.red, r: 'tauceti', rs: 'orbital_platform'  },
+        tau_roid: { l: global.support.tau_roid, n: loc(`tau_roid_title`), s: global.settings.tau.roid, r: 'tauceti', rs: 'patrol_ship'  },
     };
 }
 

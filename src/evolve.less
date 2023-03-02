@@ -455,7 +455,7 @@ Misc ---------> Main template
 
             // .meter
             @meter-low: @disabled;
-            @meter-neutral: @has-text-warning;
+            @meter-neutral: @has-text-caution;
             @meter-high: @has-text-info;
 
             // .main
@@ -577,7 +577,7 @@ Misc ---------> Main template
 
             // .meter
             @meter-low: @disabled;
-            @meter-neutral: @has-text-warning;
+            @meter-neutral: @has-text-caution;
             @meter-high: @has-text-info;
 
             // .main
@@ -822,7 +822,7 @@ Misc ---------> Main template
 
             // .meter
             @meter-low: @disabled;
-            @meter-neutral: @has-text-warning;
+            @meter-neutral: @has-text-caution;
             @meter-high: @has-text-info;
 
             // .main
@@ -943,6 +943,10 @@ Misc ---------> Main template
             .has-text-warning {
                 color: @popper-has-text-warning;
             }
+
+            .divide-line {
+                border-top: @secondary-border solid .0625rem;
+            }
         }
 
         .main>div.popper,
@@ -992,6 +996,16 @@ Misc ---------> Main template
             }
             .is-primary .b-slider-fill {
                 background: @has-text-success !important;
+            }
+        }
+
+        .sliderbar.thin {
+            > span {
+                bottom: .625rem;
+            }
+            .b-slider {
+                margin-top: .5rem;
+                margin-bottom: .5rem;
             }
         }
 
@@ -1322,6 +1336,25 @@ Misc ---------> Main template
                 .divider h2 {
                     background: @html-background;
                 }
+
+                .synth {
+                    box-shadow: 0 0 6px @has-text-success;
+                    > span {
+                        text-shadow: 1px 1px @has-text-success;
+                    }
+                }
+                
+                .precog {
+                    box-shadow: 0 0 6px @has-text-info;
+                    > span {
+                        text-shadow: 1px 1px @has-text-info;
+                    }
+                }
+                .cna .precog {
+                    > span {
+                        text-shadow: none !important;
+                    }
+                }
             }
 
             .government {
@@ -1389,6 +1422,11 @@ Misc ---------> Main template
             border-top: @secondary-border solid .0625rem;
             margin: .25rem 0 .25rem 1rem;
             padding-top: .25rem;
+        }
+
+        .powerGridHead {
+            display: flex;
+            justify-content: space-between;
         }
 
         .powerGridHeader {
@@ -1615,13 +1653,6 @@ Misc ---------> Main template
     }
 }
 
-.synth {
-    box-shadow: 0 0 6px forestgreen;
-    > span {
-        text-shadow: 2px 2px forestgreen;
-    }
-}
-
 // Dark theme
 html.dark {
     #lib.themes.dark(); // Highest priority
@@ -1636,6 +1667,22 @@ html.dark {
         .has-text-caution {
             color: #a30500 !important;
         }
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
     }
 }
 
@@ -1725,6 +1772,25 @@ html.light {
     .progress::-moz-progress-bar {
         background-color: #898989;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
+    .modal .buttonList .is-focused {
+        color: @primary-color !important;
+    }
 }
 
 // Night theme
@@ -1736,6 +1802,22 @@ html.night {
     // Theme specific
     .modal .action {
         #lib.mainTemplate.main.content.action();
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
     }
 }
 
@@ -1803,6 +1885,22 @@ html.redgreen {
                 #000000 10px,
                 #000000 20px);
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
 }
 
 // Dark Night theme
@@ -1822,6 +1920,22 @@ html.darkNight {
     textarea {
         background: @primary-color;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
 }
 
 // GruvBox Light theme
@@ -1835,6 +1949,22 @@ html.gruvboxLight {
     textarea,
     .notification {
         background: @secondary-color;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
     }
 }
 
@@ -1859,6 +1989,22 @@ html.gruvboxDark {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
     }
 }
 
@@ -1888,6 +2034,22 @@ html.orangeSoda {
     .notification {
         background: @primary-color;
     }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
+    }
 }
 
 // Dracula theme
@@ -1911,6 +2073,22 @@ html.dracula {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+
+    .popper {
+        .grad-from-left {
+            background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
+        }
+        .grad-from-left-warn {
+            background-image: linear-gradient(90deg, @has-text-alert 45%, @has-text-danger 55%);
+        }
+        .grad-from-right {
+            background-image: linear-gradient(90deg, @popper 45%, @has-text-danger 55%);
+        }
+    }
+
+    .modal .buttonList .is-selected {
+        border-color: @enabled;
     }
 }
 
@@ -2149,6 +2327,30 @@ a {
 
 #egg4 {
     right: 0 !important;
+}
+
+.doublePane {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: .5rem;
+    > div {
+        width: 50%;
+    }
+
+    > div.left {
+        width: 70%;
+    }
+
+    > div.right {
+        width: 30%;
+    }
+    
+}
+
+
+.topPad {
+    margin-top: .5rem;
 }
 
 .main {
@@ -3198,7 +3400,7 @@ a {
         margin-top: 1rem;
     }
 
-    #achievePanel>span {
+    #achievePanel>div {
         width: 100%;
     }
 
@@ -3506,6 +3708,17 @@ a {
     .craft-elm {
         white-space: nowrap;
     }
+
+    .grad-from-left,
+    .grad-from-left-warn,
+    .grad-from-right {
+        background-clip: text;
+        background-size: 100%;
+        -webkit-background-clip: text;
+        -moz-background-clip: text;
+        -webkit-text-fill-color: transparent; 
+        -moz-text-fill-color: transparent;
+    }
 }
 
 .storage-header {
@@ -3633,6 +3846,15 @@ a {
     
     .msgInputApply {
         margin-top: 1rem;
+    }
+
+    .modal-background {
+        background-color: rgba(10,10,10,0);
+    }
+
+    .modal-content {
+        box-shadow: 0px 0px 1rem black;
+        border-radius: 1rem;
     }
 }
 
@@ -4685,4 +4907,10 @@ div.bigbang {
     cursor: pointer;
     margin-left: .5rem;
     top: .2rem;
+}
+
+.font-overlay {
+    z-index: 999;
+    position: absolute;
+    top: 1rem;
 }

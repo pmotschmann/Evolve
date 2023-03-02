@@ -3,6 +3,34 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.0`,
+        date: `3/1/2023`,
+        changes: [
+            `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
+            `Added Perks: Evolve Master and Evolve Grandmaster.`,
+            `Added Distributed Low Power mode setting.`,
+            `Added Precognition CRISPR upgrade.`,
+            `Strong trait now buffs basic jobs but has a weaker effect on manual resource collection.`,
+            `Ships in Truepath can now only be scrapped at the Shipyard.`,
+            `Truepath Sensor Range and Costs adjusted. Range now depends partly on base ship class.`,
+            `Queue stacks now indicate first block vs last blocking resource with a gradient indicator.`,
+            `Added screen reader improvements for blocking resources.`,
+            `You can no longer unlock Anarchist by Cataclysm.`,
+            `Syndicate will now also steal food from Biodomes.`,
+            `Reinforced Shed upgrade now requires unlocking Iron Mining.`,
+            `You must now construct a Titan Habitat before a Titan Mine.`,
+            `Removed dark background effect from modal popups.`,
+            `Increased Entrepreneur Governor trade bonus from 75% to 125% and Bank capacity boost from 10% to 12%.`,
+            `Increased Media Governor morale bonuses and Library bonus.`,
+            `Increased Soldier Governor combat bonus from 5% to 25%.`,
+            `Increased Educator Governor knowledge bonus from 5% to 6%.`,
+            `Increased Spiritualist Governor worker bonus from 10% to 20% and tourism bonus from $2 to $5 per Temple.`,
+            `Increased Noble Governor tax cap bonus from 10% to 20%.`,
+            `Bluecollar Governor now increases output of Coal and Oil power plants and boosts Miners, Smelter, and Oil Derrick.`,
+            `Bureaucrat Governor now provides a slight boost to government effects.`,
+        ]
+    },
+    {
         version: `1.2.21`,
         date: `1/10/2023`,
         changes: [
@@ -31,7 +59,7 @@ const changeList = [
         revision: `a`,
         date: `8/21/2022`,
         changes: [
-            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Catacylsm.`,
+            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Cataclysm.`,
         ]
     },
     {

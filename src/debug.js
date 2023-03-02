@@ -4,6 +4,7 @@ import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
 import { actions, checkAffordable } from './actions.js';
 import { fuel_adjust, int_fuel_adjust } from './space.js';
+import { shipCosts } from './truepath.js';
 import { f_rate } from './industry.js';
 import { armyRating } from './civics.js';
 import { alevel } from './achieve.js';
@@ -29,6 +30,7 @@ export function enableDebug(){
             alevel: deepClone(alevel),
             messageQueue: deepClone(messageQueue),
             loc: deepClone(loc),
+            shipCosts: deepClone(shipCosts),
             updateDebugData: deepClone(updateDebugData),
             global: {},
             breakdown: {},
