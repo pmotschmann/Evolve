@@ -1425,20 +1425,22 @@ function payCrispr(gene){
     let afford = true;
     let costs = genePool[gene].cost;
     Object.keys(costs).forEach(function(res){
+        let oRes = res;
         if (res === 'Plasmid' && global.race.universe === 'antimatter'){
             res = 'AntiPlasmid';
         }
-        if (global.prestige[res].count < costs[res]()){
+        if (global.prestige[res].count < costs[oRes]()){
             afford = false;
         }
     });
 
     if (afford){
         Object.keys(costs).forEach(function(res){
+            let oRes = res;
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 res = 'AntiPlasmid';
             }
-            global.prestige[res].count -= costs[res]();
+            global.prestige[res].count -= costs[oRes]();
         });
         return true;
     }
