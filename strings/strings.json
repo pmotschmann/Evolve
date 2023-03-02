@@ -6661,7 +6661,7 @@
   "tau_roid_mission_result": "Many mineral rich sites have been detected but several of your probes were destroyed by aggressive space creatures.",
   "tau_roid_patrol_ship": "Patrol Ship",
   "tau_roid_patrol_ship_security": "+%0 Security",
-  "tau_roid_patrol_ship_effect": "Each patrol ship can protect one of your asteroid belt interests, you can have more interests then you can safely gaurd but they will suffer penalties if you don't have enough ships to patrol all your sectors.",
+  "tau_roid_patrol_ship_effect": "Each patrol ship can protect one of your asteroid belt interests, you can have more interests then you can safely guard but they will suffer penalties if you don't have enough ships to patrol all your sectors.",
   "tau_roid_mining_ship": "Extractor Ship",
   "tau_roid_mining_ship_effect": "+%0 Ore Mining",
   "tau_roid_mining_ship_ratio": "%0 <---> %1",

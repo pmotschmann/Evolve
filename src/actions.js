@@ -6293,10 +6293,11 @@ function checkMaxCosts(costs){
             }
         }
         else if (global.prestige.hasOwnProperty(res)){
+            let oRes = res;
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 res = 'AntiPlasmid';
             }
-            if (global.prestige[res].count < Number(costs[res]())){
+            if (global.prestige[res].count < Number(costs[oRes]())){
                 test = false;
                 return;
             }
@@ -6360,10 +6361,11 @@ export function checkCosts(costs){
             }
         }
         else if (global.prestige.hasOwnProperty(res)){
+            let oRes = res;
             if (res === 'Plasmid' && global.race.universe === 'antimatter'){
                 res = 'AntiPlasmid';
             }
-            if (global.prestige[res].count < Number(costs[res]())){
+            if (global.prestige[res].count < Number(costs[oRes]())){
                 test = false;
                 return;
             }

@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.0`,
+        revision: `a`,
+        date: `3/1/2023`,
+        changes: [
+            `Fixed AntiMatter universe.`,
+        ]
+    },
+    {
+        version: `1.3.0`,
         date: `3/1/2023`,
         changes: [
             `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
