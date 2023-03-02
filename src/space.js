@@ -1716,7 +1716,7 @@ const spaceProjects = {
             id: 'space-outpost',
             title: loc('space_gas_moon_outpost_title'),
             desc(){
-                return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name)}</div>`;
+                return `<div>${loc('space_gas_moon_outpost_desc')}</div><div class="has-text-special">${loc('requires_power_combo',[global.resource.Oil.name])}</div>`;
             },
             reqs: { gas_moon: 1 },
             cost: {
