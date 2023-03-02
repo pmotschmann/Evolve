@@ -278,6 +278,20 @@ function achieveDesc(achievement,showFlair,universe){
         checklist = checklist + `</div>`;
         popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${checklist}${flair}`));
     }
+    else if (achievement === 'pathfinder'){
+        let path = `<div class="flexed">`;
+        ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){
+            let label = loc(`achieve_${key}_name`);
+            if (global.stats.achieve[key][uAffix] >= 5){
+                path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}</span>`;
+            }
+            else {
+                path = path + `<span class="wide has-text-danger">${label}</span>`;
+            }
+        });
+        path = path + `</div>`;
+        popover(`a-${achievement}`,$(`<div class="has-text-label">${achievements[achievement].desc}</div><div>${loc(`wiki_achieve_${achievement}`)}</div>${path}${flair}`));
+    }
     else if (achievement === 'overlord'){
         let wom_list = `<div class="flexed">`;
         let womling = {
