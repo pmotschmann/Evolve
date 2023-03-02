@@ -282,7 +282,7 @@ function achieveDesc(achievement,showFlair,universe){
         let path = `<div class="flexed">`;
         ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (key){
             let label = loc(`achieve_${key}_name`);
-            if (global.stats.achieve[key][uAffix] >= 5){
+            if (global.stats.achieve[key] && global.stats.achieve[key][uAffix] >= 5){
                 path = path + `<span class="wide iclr${global.stats.achieve[key][uAffix]}">${label}</span>`;
             }
             else {
