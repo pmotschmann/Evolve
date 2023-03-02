@@ -7436,6 +7436,13 @@
   "wiki_mechanics_queue_para11": "默认设置下，队列中的相同项目如果相邻，则会自动合并。",
   "wiki_mechanics_queue_para12": "调整%0设置后，您可以使队列永不进行合并，或者是无视项目位置合并相同项目。",
   "wiki_mechanics_queue_para13": "您可以通过队列计数旁的按钮来开始和暂停每个队列。暂停后队列将停止运转，直到重新开始为止。",
+  "wiki_mechanics_blocking": "建筑所需资源",
+  "wiki_mechanics_blocking_para1": "如果建筑的资源不足，将以指定的颜色表示名称。",
+  "wiki_mechanics_blocking_para2": "以默认主题 [Gruvbox主题（黑暗）]为例，需要最长时间补充的所需资源以%0颜色表示。",
+  "wiki_mechanics_blocking_para3": "其他时间能够补充的所需资源以%0颜色表示。",
+  "wiki_mechanics_blocking_para4": "合并队列时，如果第一个不足的建筑所需资源和最后一个不足的建筑所需资源不同，它们将以渐变的形式表示。"
+  "wiki_mechanics_blocking_para5": "即首次需要最长时间补充的所需资源，在左边以%0颜色表示，其次在右边以%0颜色表示。"
+  "wiki_mechanics_blocking_para6": "以下图片为示例。",
   "wiki_mechanics_bank_vault": "银行保险库",
   "wiki_mechanics_bank_vault_para1": "%0、%1和%2的%3储量上限都受到%4的影响，另外在%6剧情模式中%5也受到影响。",
   "wiki_mechanics_bank_vault_para2": "因此，只要是可以影响%1的%0储量上限的游戏内容，都会对上面的所有建筑造成影响。可能造成影响的游戏内容包括%2研究，%3总督，%4，%5等级，%6，%7挑战模式等。",
