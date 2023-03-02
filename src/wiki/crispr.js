@@ -51,7 +51,7 @@ const specialRequirements = {
     blood_remembrance: [
         {
             title: loc(`wiki_arpa_crispr_special_blood_remembrance`),
-            color: global.resource['Blood_Stone'] && global.resource.Blood_Stone.amount >= 1,
+            color: global.prestige.Blood_Stone.count >= 1,
             link: 'wiki.html#resources-prestige-blood'
         }
     ]

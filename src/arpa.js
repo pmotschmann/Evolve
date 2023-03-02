@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -53,7 +53,7 @@ export const arpaProjects = {
                 }
             }
             else {
-                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]);
+                return global.race['cataclysm'] ? loc('arpa_projects_lhc_cataclysm1',[sc]) : global.tech['isolation'] ? loc('arpa_projects_lhc_iso1',[sc,loc('tech_infectious_disease_lab_alt')]) : (loc('arpa_projects_lhc_effect1',[sc,global.race['orbit_decayed'] ? loc('space_home_satellite_title') : wardenLabel()]));
             }
         },
         cost: {
@@ -98,7 +98,7 @@ export const arpaProjects = {
         grant: 'tp_depot',
         path: ['truepath'],
         effect(){
-            return loc('arpa_projects_depot_effect',[5,50]);
+            return loc(global.tech['isolation'] ? 'arpa_projects_depot_effect_iso' : 'arpa_projects_depot_effect',[5,50]);
         },
         cost: {
             Money(offset,wiki){ return costMultiplier('tp_depot', offset, 1800000, 1.08, wiki); },
@@ -113,7 +113,7 @@ export const arpaProjects = {
         desc: loc('arpa_projects_launch_facility_desc'),
         reqs: { high_tech: 7 },
         condition(){
-            return global.race['cataclysm'] ? false : true;
+            return global.race['cataclysm'] || global.race['lone_survivor'] ? false : true;
         },
         grant: 'launch_facility',
         rank: 1,
@@ -743,6 +743,25 @@ export const genePool = {
             calcRQueueMax();
         }
     },
+    precognition: {
+        id: 'genes-precognition',
+        title: loc('arpa_genepool_precognition_title'),
+        desc: loc('arpa_genepool_precognition_desc'),
+        reqs: { queue: 2 },
+        grant: ['queue',3],
+        condition(){ return global.stats.aiappoc > 0 ? true : false; },
+        cost: {
+            Plasmid(){ return 3500; },
+            Phage(){ return 100; },
+            AICore(){ return 1; }
+        },
+        action(){
+            if (payCrispr('precognition')){
+                return true;
+            }
+            return false;
+        }
+    },
     governance: {
         id: 'genes-governance',
         title: loc('arpa_genepool_governance_title'),
@@ -1046,7 +1065,7 @@ export const genePool = {
         reqs: {},
         grant: ['blood',1],
         condition(){
-            return global.resource.Blood_Stone.amount >= 1 ? true : false;
+            return global.prestige.Blood_Stone.count >= 1 ? true : false;
         },
         cost: {
             Plasmid(){ return 1000; },
@@ -1406,28 +1425,20 @@ function payCrispr(gene){
     let afford = true;
     let costs = genePool[gene].cost;
     Object.keys(costs).forEach(function(res){
-        if (res === 'Artifact'){
-            if (!global.resource.Artifact || global.resource.Artifact.amount < costs[res]()){
-                afford = false;
-            }
+        if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+            res = 'AntiPlasmid';
         }
-        else {
-            let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-            if (!global.race.hasOwnProperty(res) || global.race[res][affix] < costs[res]()){
-                afford = false;
-            }
+        if (global.prestige[res].count < costs[res]()){
+            afford = false;
         }
     });
 
     if (afford){
         Object.keys(costs).forEach(function(res){
-            if (res === 'Artifact'){
-                global.resource.Artifact.amount -= costs[res]();
+            if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                res = 'AntiPlasmid';
             }
-            else {
-                let affix = global.race.universe === 'antimatter' && res === 'Plasmid' ? 'anti' : 'count';
-                global.race[res][affix] -= costs[res]();
-            }
+            global.prestige[res].count -= costs[res]();
         });
         return true;
     }
@@ -1437,8 +1448,7 @@ function payCrispr(gene){
 export function payBloodPrice(costs){
     if (checkCosts(costs)){
         Object.keys(costs).forEach(function (res){
-            let cost = costs[res]();
-            global['resource'][res].amount -= cost;
+            global.prestige[res].count -= costs[res]();
         });
         return true;
     }
@@ -1816,9 +1826,11 @@ function genetics(){
         global.settings.mtorder.forEach(function(trait){
             if ((traits[trait] && traits[trait].type === 'minor') || trait === 'mastery' || trait === 'fortify'){
                 if (trait !== 'fortify' || (global.tech['decay'] && global.tech['decay'] >= 2)){
-                    minor = true;
-                    bindTrait(minorList,trait);
-                    minor_list.push(trait);
+                    if ((!['promiscuous','content','resilient','industrious','tactical','fibroblast'].includes(trait) && global.race['lone_survivor']) || !global.race['lone_survivor']){
+                        minor = true;
+                        bindTrait(minorList,trait);
+                        minor_list.push(trait);
+                    }
                 }
             }
         });
@@ -1991,8 +2003,8 @@ function genetics(){
                     while (curr_iteration < iterations && can_purchase){
                         let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
                         if (t === 'mastery'){ cost *= 2; }
-                        if (global.race.Phage.count >= cost){
-                            global.race.Phage.count -= cost;
+                        if (global.prestige.Phage.count >= cost){
+                            global.prestige.Phage.count -= cost;
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
                             global.race[t] ? global.race[t]++ : global.race[t] = 1;
                             redraw = true;
@@ -2023,13 +2035,9 @@ function genetics(){
                     if (cost < 0){
                         cost *= -1;
                     }
-                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe === 'antimatter'){
-                            global.race.Plasmid.anti -= cost;
-                        }
-                        else {
-                            global.race.Plasmid.count -= cost;
-                        }
+                    let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+                    if (global.prestige[res].count >= cost){
+                        global.prestige[res].count -= cost;
                         let rank = global.race[t];
                         delete global.race[t];
                         if (!global.race['modified']){
@@ -2068,13 +2076,9 @@ function genetics(){
                     if (cost < 0){
                         cost *= -1;
                     }
-                    if ((global.race.universe !== 'antimatter' && global.race.Plasmid.count >= cost) || (global.race.universe === 'antimatter' && global.race.Plasmid.anti >= cost)){
-                        if (global.race.universe === 'antimatter'){
-                            global.race.Plasmid.anti -= cost;
-                        }
-                        else {
-                            global.race.Plasmid.count -= cost;
-                        }
+                    let res = global.race.universe === 'antimatter' ? 'AntiPlasmid' : 'Plasmid';
+                    if (global.prestige[res].count >= cost){
+                        global.prestige[res].count -= cost;
                         global.race[t] = 1;
                         if (!global.race['modified']){
                             global.race['modified'] = 1;
@@ -2111,7 +2115,7 @@ function genetics(){
                 phagePurchasable(t){
                     let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
                     if (t === 'mastery'){ cost *= 2; }
-                    return global.race.Phage.count >= cost;
+                    return global.prestige.Phage.count >= cost;
                 }
             }
         });
@@ -2125,7 +2129,7 @@ function genetics(){
                 classes: `has-background-light has-text-dark`
             });
 
-            if (global.race.Phage.count > 0){
+            if (global.prestige.Phage.count > 0){
                 popover(`popGenetrait${t}`, function(){
                     return mPhageCost(t);
                 },
@@ -2194,7 +2198,7 @@ function bindTrait(breakdown,trait){
     let m_trait = $(`<div class="trait t-${trait} traitRow"></div>`);
     let gene = $(`<span v-bind:class="['basic-button', 'gene', 'gbuy', genePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="geneCost('${trait}')" @click="gene('${trait}')">${global.resource.Genes.name} (${global.race.minor[trait] || 0})</span>`);
     m_trait.append(gene);
-    if (global.race.Phage.count > 0){
+    if (global.prestige.Phage.count > 0){
         let phage = $(`<span v-bind:class="['basic-button', 'gene', 'pbuy', phagePurchasable('${trait}') ? '' : 'has-text-fade']" role="button" :aria-label="phageCost('${trait}')" @click="phage('${trait}')">${loc('resource_Phage_name')} (${global.genes.minor[trait] || 0})</span>`);
         m_trait.append(phage);
     }
@@ -2420,11 +2424,13 @@ export function arpaProjectCosts(id,project){
     let inc = id === 100 ? 100 - global.arpa[project].complete : id;
     var cost = $('<div></div>');
     var costs = arpaAdjustCosts(arpaProjects[project].cost);
+    let tc = arpaTimeCheck(arpaProjects[project], inc / 100, false, true);
+
     Object.keys(costs).forEach(function (res){
         var res_cost = +(costs[res]() * (inc / 100)).toFixed(0);
         if (res_cost > 0){
             var label = res === 'Money' ? '$' : global.resource[res].name + ': ';
-            var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : 'has-text-danger';
+            var color = global.resource[res].amount >= res_cost ? 'has-text-dark' : ( res === tc.r ? 'has-text-danger' : 'has-text-alert');
             cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}${sizeApproximation(res_cost,2)}</div>`));
         }
     });

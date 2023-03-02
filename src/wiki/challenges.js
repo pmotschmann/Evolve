@@ -579,7 +579,9 @@ export function challengesPage(content){
                 } 
             });
 
-            addAchievements(truth,false,['pathfinder','ashanddust','exodus','obsolete'],{ ashanddust: true, exodus: true, obsolete: true });
+            addAchievements(truth,false,
+                ['pathfinder','overlord','ashanddust','exodus','obsolete','bluepill','retired'],
+                { ashanddust: true, exodus: true, obsolete: true, bluepill: true, retired: true });
             //addAchievements(truth,true,[]);
             addRequirements(truth,[
                 {
@@ -599,6 +601,33 @@ export function challengesPage(content){
                 }
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_truepath',loc('wiki_challenges_scenarios_truepath'));
+        }
+
+        {   // Lone Survivor
+            let lone = infoBoxBuilder(scenarios,{ name: 'scenarios_lone_survivor', template: 'challenges', paragraphs: 4, break: [4], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_lone_survivor`),loc(`wiki_challenges_scenario`),loc(`tab_tauceti`)],
+                    3: [loc(`evo_challenge_truepath`)],
+                    4: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_eden`)],
+                },
+                data_link: {
+                    3: [false,'wiki.html#resets-prestige-eden']
+                }
+            });
+            addAchievements(lone,false,['adam_eve']);
+            addRequirements(lone,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_retired`),
+                            color: global.stats.achieve['retired'] ? true : false,
+                            link: 'wiki.html#resets-prestige-retired'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_lone_survivor',loc('wiki_challenges_scenarios_lone_survivor'));
         }
     }
 }

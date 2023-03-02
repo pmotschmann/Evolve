@@ -107,7 +107,8 @@ function initPage(){
             submenu: [
                 { key: 'prehistoric' },
                 { key: 'planetary' },
-                { key: 'space' }
+                { key: 'space' },
+                { key: 'tauceti' }
             ]
         },
         {
@@ -120,7 +121,8 @@ function initPage(){
                 { key: 'globalized' },
                 { key: 'early_space' },
                 { key: 'deep_space' },
-                { key: 'solar' }
+                { key: 'solar' },
+                { key: 'tauceti' }
             ]
         },
         {

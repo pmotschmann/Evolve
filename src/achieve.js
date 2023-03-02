@@ -48,7 +48,10 @@ const achieve_list = {
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
         'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
     ],
-    challenge: ['joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder','ashanddust','exodus','obsolete','gross','lamentis'],
+    challenge: [
+        'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`
+    ],
 };
 
 const flairData = {
@@ -691,7 +694,7 @@ export function checkAchievements(){
         let uAffix = universeAffix();
         ['l',uAffix].forEach(function (affix){
             let rank = 0;
-            ['ashanddust','exodus','obsolete'].forEach(function (achieve){
+            ['ashanddust','exodus','obsolete','bluepill','retired'].forEach(function (achieve){
                 if (global.stats.achieve[achieve] && global.stats.achieve[achieve][affix] && global.stats.achieve[achieve][affix] >= 5){
                     rank++;
                 }
@@ -1603,18 +1606,18 @@ export const perkList = {
             },
             {
                 desc(){
-                    return loc("unavailable_content");
+                    return loc("achieve_perks_pathfinder4");
                 },
                 active(){
-                    return false;
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 4 ? true : false;
                 }
             },
             {
                 desc(){
-                    return loc("unavailable_content");
+                    return loc("achieve_perks_pathfinder5");
                 },
                 active(){
-                    return false;
+                    return global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 5 ? true : false;
                 }
             },
         ],
@@ -1624,7 +1627,35 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['ashanddust'] ? 'success' : 'danger'}">${loc(`wiki_resets_mad`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['exodus'] ? 'success' : 'danger'}">${loc(`wiki_resets_bioseed`)}</span>`]),
             loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['obsolete'] ? 'success' : 'danger'}">${loc(`wiki_resets_ai`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['bluepill'] ? 'success' : 'danger'}">${loc(`wiki_resets_matrix`)}</span>`]),
+            loc(`wiki_perks_achievement_note_pathfinder_reset`,[`<span class="has-text-${global.stats.achieve['retired'] ? 'success' : 'danger'}">${loc(`wiki_resets_retired`)}</span>`]),
         ]
+    },
+    overlord: {
+        name: loc(`achieve_overlord_name`),
+        desc(){
+            let desc = `<div>${loc("achieve_perks_overlord1",[10])}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord2")}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord3")}</div>`;
+            desc += `<div>${loc("achieve_perks_overlord4")}</div>`;
+            return desc;
+        },
+        active(){
+            return global.stats.achieve['overlord'] && global.stats.achieve.overlord.l >= 5 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_overlord_name`)}</span>`]),
+        ]
+    },
+    adam_eve: {
+        name: loc(`achieve_adam_eve_name`),
+        desc(){
+            return loc(`achieve_perks_adam_eve`);
+        },
+        active(){
+            return global.stats.achieve['adam_eve'] && global.stats.achieve.adam_eve.l >= 5 ? true : false;
+        },
+        notes: []
     },
     creep: {
         name: loc(`wiki_arpa_crispr_creep`),
@@ -1859,8 +1890,8 @@ export const perkList = {
             {
                 desc(wiki){
                     return loc("arpa_perks_challenge2",[
-                        wiki ? "60/80" : global.genes['challenge'] && global.genes['challenge'] >= 4 ? 80 : 60,
-                        wiki ? "60/40" : global.genes['challenge'] && global.genes['challenge'] >= 4 ? 40 : 60
+                        wiki ? "60/80" : global.genes['challenge'] && global.genes.challenge >= 4 ? 80 : 60,
+                        wiki ? "60/40" : global.genes['challenge'] && global.genes.challenge >= 4 ? 40 : 60
                     ]);
                 },
                 active(){
@@ -2422,6 +2453,37 @@ export const perkList = {
             loc(`wiki_perks_progress_note2`)
         ]
     },
+    master: {
+        name: loc(`perk_master`),
+        desc(wiki){
+            let rank = global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? Math.min(global.stats.achieve.ascended.l,global.stats.feat['master']) : 1;
+            let boost1 = wiki ? "1/2/3/4/5" : rank;
+            let boost2 = wiki ? "2/4/6/8/10" : rank * 2;
+            return loc("achieve_perks_master",[boost1,boost2,loc('evo_mitochondria_title'),loc('evo_eukaryotic_title'),loc('evo_membrane_title'),loc('evo_organelles_title'),loc('evo_nucleus_title')]);
+        },
+        active(){
+            return global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[75,loc(`wiki_resets_ascension`)]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
+    grandmaster: {
+        name: loc(`perk_grandmaster`),
+        desc(wiki){
+            let rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 1;
+            let boost = wiki ? "1/2/3/4/5" : rank;
+            return loc("achieve_perks_grandmaster",[boost]);
+        },
+        active(){
+            return global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_progress_note1`,[100,loc(`wiki_resets_infusion`)]),
+            loc(`wiki_perks_progress_note2`)
+        ]
+    },
 };
 
 export function drawPerks(){
@@ -2509,6 +2571,15 @@ export function drawStats(){
     }
     if (global.stats.aiappoc > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_aiappoc_resets")}</span> {{ s.aiappoc | format }}</div>`);
+    }
+    if (global.stats.matrix > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_matrix_resets")}</span> {{ s.matrix | format }}</div>`);
+    }
+    if (global.stats.retire > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_retire_resets")}</span> {{ s.retire | format }}</div>`);
+    }
+    if (global.stats.eden > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_eden_resets")}</span> {{ s.eden | format }}</div>`);
     }
     if (global.stats.terraform > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_terraform_resets")}</span> {{ s.terraform | format }}</div>`);

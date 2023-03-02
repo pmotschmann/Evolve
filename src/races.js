@@ -1,11 +1,11 @@
 import { global, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
-import { defineIndustry } from './civics.js';
+import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
-import { buildGarrison } from './civics.js';
+import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { actions, checkTechQualifications } from './actions.js';
@@ -362,19 +362,19 @@ export const traits = {
         name: loc('trait_strong_name'),
         desc: loc('trait_strong'),
         type: 'genus',
-        val: 1,
+        val: 5,
         vars(r){
             switch (r || global.race.strong || 1){
                 case 0.25:
-                    return [2];
+                    return [2,1.25];
                 case 0.5:
-                    return [3];
+                    return [3,1.5];
                 case 1:
-                    return [5];
+                    return [4,2];
                 case 2:
-                    return [8];
+                    return [5,2.25];
                 case 3:
-                    return [10];
+                    return [6,2.5];
             }
         },
     },
@@ -4189,6 +4189,10 @@ export function racialTrait(workers,type){
     if (inspireVal && (type === 'farmer' || type === 'factory' || type === 'miner' || type === 'lumberjack')){
         modifier *= 1 + (inspireVal / 100);
     }
+    let dirtVal = govActive('dirty_jobs',2);
+    if (dirtVal && type === 'miner'){
+        modifier *= 1 + (dirtVal / 100);
+    }
     if (global.race['rejuvenated'] && ['lumberjack','miner','factory'].includes(type)){
         modifier *= 1.1;
     }
@@ -4280,7 +4284,7 @@ export function racialTrait(workers,type){
         modifier *= 1 - (traits.ooze.vars()[0] / 100);
     }
     if (global.civic.govern.type === 'democracy'){
-        modifier *= 0.95;
+        modifier *= 1 - (govEffect.democracy()[1] / 100);
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){
@@ -4846,7 +4850,7 @@ export function cleanRemoveTrait(trait,rank){
             checkPurgatory('tech','hammer');
             if (global.tech['mining'] >= 1) {
                 checkPurgatory('city','rock_quarry',{ count: 0, asbestos: 0 });
-                if (global.city['rock_quarry'].count > 0) {
+                if ((global.city['rock_quarry'] && global.city.rock_quarry.count > 0) || global.race['lone_survivor']) {
                     global.civic.quarry_worker.display = true;
                 }
             }

@@ -1,7 +1,7 @@
 import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races, planetTraits } from './races.js';
-import { unlockAchieve, unlockFeat, checkAchievements, universeAffix } from './achieve.js';
+import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
 
 // Mutual Assured Destruction
 export function warhead(){
@@ -19,29 +19,18 @@ export function warhead(){
         let biome = global.city.biome;
         let atmo = global.city.ptrait;
         let geo = global.city.geology;
-        let plasmid = global.race.Plasmid.count;
-        let antiplasmid = global.race.Plasmid.anti;
 
         let gains = calcPrestige('mad');
-        let new_plasmid = gains.plasmid;
 
-        global.stats.reset++;
         global.stats.mad++;
-        global.stats.tdays += global.stats.days;
-        global.stats.days = 0;
-        global.stats.tknow += global.stats.know;
-        global.stats.know = 0;
-        global.stats.tstarved += global.stats.starved;
-        global.stats.starved = 0;
-        global.stats.tdied += global.stats.died;
-        global.stats.died = 0;
+        updateResetStats();
         if (global.race.universe === 'antimatter'){
-            antiplasmid += new_plasmid;
-            global.stats.antiplasmid += new_plasmid;
+            global.prestige.AntiPlasmid.count += gains.plasmid;
+            global.stats.antiplasmid += gains.plasmid;
         }
         else {
-            plasmid += new_plasmid;
-            global.stats.plasmid += new_plasmid;
+            global.prestige.Plasmid.count += gains.plasmid;
+            global.stats.plasmid += gains.plasmid;
         }
         unlockAchieve(`apocalypse`);
         unlockAchieve(`squished`,true);
@@ -65,11 +54,6 @@ export function warhead(){
             old_gods: old_god,
             rapid_mutation: 1,
             ancient_ruins: 1,
-            Plasmid: { count: plasmid, anti: antiplasmid },
-            Phage: { count: global.race.Phage.count },
-            Dark: { count: global.race.Dark.count },
-            Harmony: { count: global.race.Harmony.count },
-            AICore: { count: global.race.AICore.count },
             universe: global.race.universe,
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
@@ -81,25 +65,12 @@ export function warhead(){
             global.race['srace'] = srace;
         }
         
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: orbit
-            },
-            biome: biome,
-            ptrait: atmo,
+        resetCommon({
+            orbit: orbit, 
+            biome: biome, 
+            ptrait: atmo, 
             geology: geo
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        });
         
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         window.location.reload();
@@ -121,26 +92,21 @@ export function bioseed(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
 
     let gains = calcPrestige('bioseed');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
 
-    phage += new_phage;
     global.stats.bioseed++;
     updateResetStats();
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
     }
-    global.stats.phage += new_phage;
     unlockAchieve(`seeder`);
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
@@ -219,11 +185,6 @@ export function bioseed(){
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: global.race.Harmony.count },
-        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: true,
         probes: probes,
@@ -238,24 +199,12 @@ export function bioseed(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: false
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -275,33 +224,24 @@ export function cataclysm_end(){
 
         clearSavedMessages();
 
-        let plasmid = global.race.Plasmid.count;
-        let antiplasmid = global.race.Plasmid.anti;
-        let phage = global.race.Phage.count;
-
         let gains = calcPrestige('cataclysm');
-        let new_plasmid = gains.plasmid;
-        let new_phage = gains.phage;
 
         global.stats.cataclysm++;
         updateResetStats();
 
-        phage += new_phage;
+        global.prestige.Phage.count += gains.phage;
+        global.stats.phage += gains.phage;
         if (global.race.universe === 'antimatter'){
-            antiplasmid += new_plasmid;
-            global.stats.antiplasmid += new_plasmid;
+            global.prestige.AntiPlasmid.count += gains.plasmid;
+            global.stats.antiplasmid += gains.plasmid;
         }
         else {
-            plasmid += new_plasmid;
-            global.stats.plasmid += new_plasmid;
+            global.prestige.Plasmid.count += gains.plasmid;
+            global.stats.plasmid += gains.plasmid;
         }
-        global.stats.phage += new_phage;
 
         unlockAchieve(`squished`,true);
         unlockAchieve(`extinct_${global.race.species}`);
-        if (global.civic.govern.type === 'anarchy'){
-            unlockAchieve(`anarchist`);
-        }
         if (global.city.biome === 'hellscape' && races[global.race.species].type !== 'demonic'){
             unlockFeat('take_no_advice');
         }
@@ -317,11 +257,6 @@ export function cataclysm_end(){
             species : global.race.species,
             gods: global.race.gods,
             old_gods: global.race.old_gods,
-            Plasmid: { count: plasmid, anti: antiplasmid },
-            Phage: { count: phage },
-            Dark: { count: global.race.Dark.count },
-            Harmony: { count: global.race.Harmony.count },
-            AICore: { count: global.race.AICore.count },
             universe: global.race.universe,
             seeded: false,
             ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
@@ -333,25 +268,12 @@ export function cataclysm_end(){
             global.race['srace'] = srace;
         }
 
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: global.city.calendar.orbit
-            },
-            biome: global.city.biome,
-            ptrait: global.city.ptrait,
+        resetCommon({
+            orbit: global.city.calendar.orbit, 
+            biome: global.city.biome, 
+            ptrait: global.city.ptrait, 
             geology: global.city.geology
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        });
 
         if (global.race.universe === 'antimatter') {
             global.race['weak_mastery'] = 1;
@@ -425,31 +347,25 @@ export function big_bang(){
     let orbit = global.city.calendar.orbit;
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let dark = global.race.Dark.count;
 
     let gains = calcPrestige('bigbang');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
-    let new_dark = gains.dark;
 
     checkAchievements();
 
-    phage += new_phage;
     global.stats.blackhole++;
     updateResetStats();
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
     }
-    global.stats.phage += new_phage;
-    global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
+    global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
+    global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
     global.stats.universes++;
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
@@ -459,11 +375,6 @@ export function big_bang(){
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: +(dark + new_dark).toFixed(3) },
-        Harmony: { count: global.race.Harmony.count },
-        AICore: { count: global.race.AICore.count },
         universe: 'bigbang',
         seeded: true,
         bigbang: true,
@@ -479,24 +390,12 @@ export function big_bang(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: false
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -541,32 +440,26 @@ export function vacuumCollapse(){
         let orbit = global.city.calendar.orbit;
         let biome = global.city.biome;
         let atmo = global.city.ptrait;
-        let plasmid = global.race.Plasmid.count;
-        let antiplasmid = global.race.Plasmid.anti;
-        let phage = global.race.Phage.count;
-        let dark = global.race.Dark.count;
 
         let gains = calcPrestige('vacuum');
-        let new_plasmid = gains.plasmid;
-        let new_phage = gains.phage;
-        let new_dark = gains.dark;
 
         checkAchievements();
 
-        phage += new_phage;
         global.stats.blackhole++;
         updateResetStats();
-        
+
+        global.prestige.Phage.count += gains.phage;
+        global.stats.phage += gains.phage;
         if (global.race.universe === 'antimatter'){
-            antiplasmid += new_plasmid;
-            global.stats.antiplasmid += new_plasmid;
+            global.prestige.AntiPlasmid.count += gains.plasmid;
+            global.stats.antiplasmid += gains.plasmid;
         }
         else {
-            plasmid += new_plasmid;
-            global.stats.plasmid += new_plasmid;
+            global.prestige.Plasmid.count += gains.plasmid;
+            global.stats.plasmid += gains.plasmid;
         }
-        global.stats.phage += new_phage;
-        global.stats.dark = +(global.stats.dark + new_dark).toFixed(3);
+        global.prestige.Dark.count = +(global.prestige.Dark.count + gains.dark).toFixed(3);
+        global.stats.dark = +(global.stats.dark + gains.dark).toFixed(3);
         global.stats.universes++;
 
         let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
@@ -576,11 +469,6 @@ export function vacuumCollapse(){
             species : 'protoplasm',
             gods: god,
             old_gods: old_god,
-            Plasmid: { count: plasmid, anti: antiplasmid },
-            Phage: { count: phage },
-            Dark: { count: +(dark + new_dark).toFixed(3) },
-            Harmony: { count: global.race.Harmony.count },
-            AICore: { count: global.race.AICore.count },
             universe: 'bigbang',
             seeded: true,
             bigbang: true,
@@ -596,24 +484,12 @@ export function vacuumCollapse(){
             global.race['srace'] = srace;
         }
 
-        global.city = {
-            calendar: {
-                day: 0,
-                year: 0,
-                weather: 2,
-                temp: 1,
-                moon: 0,
-                wind: 0,
-                orbit: orbit
-            },
-            biome: biome,
-            ptrait: atmo
-        };
-        global.tech = { theology: 1 };
-        clearStates();
-        global.new = true;
-        Math.seed = Math.rand(0,10000);
-        global.seed = Math.seed;
+        resetCommon({
+            orbit: orbit, 
+            biome: biome, 
+            ptrait: atmo, 
+            geology: false
+        });
 
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         window.location.reload();
@@ -634,34 +510,25 @@ export function ascend(){
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
     let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
 
     let gains = calcPrestige('ascend');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
-    let new_harmony = gains.harmony;
-
-    phage += new_phage;
-    harmony += new_harmony;
-    harmony = parseFloat(harmony.toFixed(2));
 
     global.stats.ascend++;
     updateResetStats();
 
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
     }
-    global.stats.phage += new_phage;
-    global.stats.harmony += new_harmony;
-    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
+
+    global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
+    global.stats.harmony = parseFloat((global.stats.Harmony + gains.harmony).toFixed(2));
 
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
@@ -703,11 +570,6 @@ export function ascend(){
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -724,25 +586,12 @@ export function ascend(){
         geo[g] += 0.02;
     });
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -778,9 +627,9 @@ export function descension(){
         unlockFeat('slime_lord');
     }
 
-    let artifacts = calcPrestige('descend').artifact;
-    global.resource.Artifact.amount += artifacts;
-    global.resource.Artifact.display = true;
+    let gains = calcPrestige('descend');
+    global.prestige.Artifact.count += gains.artifact;
+    global.stats.artifact += gains.artifact;
 
     let affix = universeAffix();
     if (global.stats.spire.hasOwnProperty(affix)){
@@ -810,12 +659,7 @@ export function descension(){
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
     let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
 
-    global.stats.artifact += artifacts;
     global.stats.descend++;
     updateResetStats();
     checkAchievements();
@@ -825,11 +669,6 @@ export function descension(){
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -840,25 +679,12 @@ export function descension(){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -878,34 +704,25 @@ export function terraform(planet){
     let biome = planet.biome;
     let atmo = planet.traitlist;
     let geo = planet.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let harmony = global.race.Harmony.count;
 
     let gains = calcPrestige('terraform');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
-    let new_harmony = gains.harmony;
-
-    phage += new_phage;
-    harmony += new_harmony;
-    harmony = parseFloat(harmony.toFixed(2));
 
     global.stats.terraform++;
     updateResetStats();
 
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
     }
-    global.stats.phage += new_phage;
-    global.stats.harmony += new_harmony;
-    global.stats.harmony = parseFloat(global.stats.harmony.toFixed(2));
+
+    global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
+    global.stats.harmony = parseFloat((global.stats.Harmony + gains.harmony).toFixed(2));
 
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
@@ -939,11 +756,6 @@ export function terraform(planet){
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: global.race.Dark.count },
-        Harmony: { count: harmony },
-        AICore: { count: global.race.AICore.count },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -957,25 +769,12 @@ export function terraform(planet){
         global.race['srace'] = srace;
     }
 
-    global.city = {
-        calendar: {
-            day: 0,
-            year: 0,
-            weather: 2,
-            temp: 1,
-            moon: 0,
-            wind: 0,
-            orbit: orbit
-        },
-        biome: biome,
-        ptrait: atmo,
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
         geology: geo
-    };
-    global.tech = { theology: 1 };
-    clearStates();
-    global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     window.location.reload();
@@ -1004,47 +803,35 @@ export function aiApocalypse(){
     let biome = global.city.biome;
     let atmo = global.city.ptrait;
     let geo = global.city.geology;
-    let plasmid = global.race.Plasmid.count;
-    let antiplasmid = global.race.Plasmid.anti;
-    let phage = global.race.Phage.count;
-    let dark = global.race.Dark.count;
-    let cores = global.race.AICore.count;
 
     let gains = calcPrestige('ai');
-    let new_plasmid = gains.plasmid;
-    let new_phage = gains.phage;
-    let new_cores = gains.cores;
-
     checkAchievements();
 
-    phage += new_phage;
     global.stats.aiappoc++;
     updateResetStats();
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
     if (global.race.universe === 'antimatter'){
-        antiplasmid += new_plasmid;
-        global.stats.antiplasmid += new_plasmid;
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
     }
     else {
-        plasmid += new_plasmid;
-        global.stats.plasmid += new_plasmid;
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
     }
-    global.stats.phage += new_phage;
 
-    cores += new_cores;
-    global.stats.cores += new_cores;
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
 
     let srace = races[god].type !== 'synthetic' ? god : (global.race.hasOwnProperty('srace') ? global.race.srace : god);
+    global.stats.synth[srace] = true;
+
     let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
     global['race'] = {
         species : 'protoplasm',
         gods: god,
         old_gods: old_god,
         srace: srace,
-        Plasmid: { count: plasmid, anti: antiplasmid },
-        Phage: { count: phage },
-        Dark: { count: dark },
-        Harmony: { count: global.race.Harmony.count },
-        AICore: { count: cores },
         universe: global.race.universe,
         seeded: false,
         seed: Math.floor(Math.seededRandom(10000)),
@@ -1054,6 +841,264 @@ export function aiApocalypse(){
         global.race['corruption'] = corruption;
     }
 
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+// Matrix
+export function matrix(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'matrix'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('matrix');
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`bluepill`);
+
+    trackWomling();
+    checkAchievements();
+
+    global.stats.matrix++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+// Retirement
+export function retirement(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'retire'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('retire');
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`retired`);
+
+    trackWomling();
+    checkAchievements();
+
+    global.stats.retire++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+// Garden of Eden
+export function gardenOfEden(){
+    if (webWorker.w){
+        webWorker.w.terminate();
+    }
+    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    clearSavedMessages();
+
+    tagEvent('reset',{
+        'end': 'eden'
+    });
+
+    let god = global.race.species;
+    let old_god = global.race.gods;
+    let genus = races[god].type;
+    let orbit = global.city.calendar.orbit;
+    let biome = global.city.biome;
+    let atmo = global.city.ptrait;
+    let geo = global.city.geology;
+
+    let gains = calcPrestige('eden');
+
+    unlockAchieve(`biome_${biome}`);
+    atmo.forEach(function(a){
+        if (planetTraits.hasOwnProperty(a)){
+            unlockAchieve(`atmo_${a}`);
+        }
+    });
+    unlockAchieve(`genus_${genus}`);
+    if (global.race['gross_enabled'] && global.race['ooze'] && global.race.species !== 'custom' && global.race.species !== 'sludge'){
+        unlockAchieve(`gross`);
+    }
+    unlockAchieve(`adam_eve`);
+
+    trackWomling();
+    checkAchievements();
+
+    global.stats.eden++;
+    updateResetStats();
+    if (global.race.universe === 'antimatter'){
+        global.prestige.AntiPlasmid.count += gains.plasmid;
+        global.stats.antiplasmid += gains.plasmid;
+    }
+    else {
+        global.prestige.Plasmid.count += gains.plasmid;
+        global.stats.plasmid += gains.plasmid;
+    }
+    global.prestige.Phage.count += gains.phage;
+    global.stats.phage += gains.phage;
+
+    global.prestige.AICore.count += gains.cores;
+    global.stats.cores += gains.cores;
+
+    let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
+    let corruption = global.race.hasOwnProperty('corruption') && global.race.corruption > 1 ? global.race.corruption - 1 : 0;
+    global['race'] = {
+        species : 'protoplasm',
+        gods: god,
+        old_gods: old_god,
+        universe: global.race.universe,
+        seeded: false,
+        seed: Math.floor(Math.seededRandom(10000)),
+        ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
+    };
+    if (corruption > 0){
+        global.race['corruption'] = corruption;
+    }
+    if (srace){
+        global.race['srace'] = srace;
+    }
+
+    resetCommon({
+        orbit: orbit, 
+        biome: biome, 
+        ptrait: atmo, 
+        geology: geo
+    });
+
+    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    window.location.reload();
+}
+
+function resetCommon(args){
     global.city = {
         calendar: {
             day: 0,
@@ -1062,19 +1107,64 @@ export function aiApocalypse(){
             temp: 1,
             moon: 0,
             wind: 0,
-            orbit: orbit
+            orbit: args.orbit
         },
-        biome: biome,
-        ptrait: atmo,
-        geology: geo
+        biome: args.biome,
+        ptrait: args.ptrait
     };
+
+    if (args.geology){
+        global.city['geology'] = args.geology;
+    }
 
     global.tech = { theology: 1 };
     clearStates();
     global.new = true;
     Math.seed = Math.rand(0,10000);
     global.seed = Math.seed;
-
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
 }
+
+function trackWomling(){
+    let uni = universeAffix();
+    if (global.race['womling_friend']){
+        if (uni !== 'm'){
+            global.stats.womling.friend.l++;
+        }
+        if (uni !== 'l'){
+            if (!global.stats.womling.friend.hasOwnProperty(uni)){
+                global.stats.womling.friend[uni] = 0;
+            }
+            global.stats.womling.friend[uni]++;
+        }
+    }
+    else if (global.race['womling_lord']){
+        if (uni !== 'm'){
+            global.stats.womling.lord.l++;
+        }
+        if (uni !== 'l'){
+            if (!global.stats.womling.lord.hasOwnProperty(uni)){
+                global.stats.womling.lord[uni] = 0;
+            }
+            global.stats.womling.lord[uni]++;
+        }
+    }
+    else if (global.race['womling_god']){
+        if (uni !== 'm'){
+            global.stats.womling.god.l++;
+        }
+        if (uni !== 'l'){
+            if (!global.stats.womling.god.hasOwnProperty(uni)){
+                global.stats.womling.god[uni] = 0;
+            }
+            global.stats.womling.god[uni]++;
+        }
+    }
+
+    if (global.stats.womling.friend.l > 0 && global.stats.womling.lord.l > 0 && global.stats.womling.god.l > 0){
+        unlockAchieve('overlord',uni === 'm' ? true : false,alevel(),'l');
+    }
+    if (global.stats.womling.friend[uni] > 0 && global.stats.womling.lord[uni] > 0 && global.stats.womling.god[uni] > 0){
+        unlockAchieve('overlord',uni === 'm' ? true : false,alevel(),uni);
+    }
+}
+
