@@ -21,8 +21,6 @@ import { index, mainVue, initTabs, loadTab } from './index.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
-delete global.genes['bleed'];
-
 {
     $(document).ready(function() {
         if (!window.matchMedia)
