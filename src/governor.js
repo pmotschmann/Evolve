@@ -510,8 +510,8 @@ export function drawnGovernOffice(){
             global.race.governor.config['trash'] = {};
         }
         ['Infernite','Elerium','Copper','Iron'].forEach(function(res){
-            if (!global.race.governor.config.trash.hasOwnProperty(res)){
-                global.race.governor.config.trash[res] = { v: 0, s: true } ;
+            if (!global.race.governor.config.trash.hasOwnProperty(res) || typeof global.race.governor.config.trash[res] !== 'object' || global.race.governor.config.trash[res] === null){
+                global.race.governor.config.trash[res] = { v: 0, s: true };
             }
         });
 

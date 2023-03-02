@@ -133,6 +133,23 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
     }
 
+    { // Blocking Resources
+        let blocking = infoBoxBuilder(mainContent,{ name: 'blocking', template: 'mechanics', label: loc('wiki_mechanics_blocking'), paragraphs: 6, break: [4,6], h_level: 2,
+            para_data: {
+                2: [loc('color_red')],
+                3: [loc('color_orange')],
+                5: [loc('color_red')],
+            },
+            data_color: {
+                2: ['danger'],
+                3: ['caution'],
+                5: ['danger'],
+            }
+        });
+        blocking.append(`<div class="doublePane"><img src="lib/blocking-resource.png"><img src="lib/blocking-stack.png"></div>`);
+        sideMenu('add',`mechanics-gameplay`,`blocking`,loc('wiki_mechanics_blocking'));
+    }
+
     { // Bank Vault
         infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
             para_data: {
