@@ -6101,6 +6101,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     let aria = '';
+                    let f_res = res === 'Species' ? global.race.species : res;
                     if (res === 'HellArmy'){
                         let label = loc('fortress_troops');
                         let color = 'has-text-dark';
@@ -6117,7 +6118,6 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                     }
                     else {
-                        let f_res = res === 'Species' ? global.race.species : res;
                         let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
                         let color = 'has-text-dark';
