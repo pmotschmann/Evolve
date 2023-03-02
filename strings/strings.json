@@ -7940,7 +7940,7 @@
   "wiki_mechanics_blocking_para2": "With the default game theme (Gruvbox Dark) the resource that will take the longest to get the required amount of will show up in %0.",
   "wiki_mechanics_blocking_para3": "Other resouces you currently have insufficant quantity of will be displayed in %0.",
   "wiki_mechanics_blocking_para4": "If you queue a stack of structures for construction and the blocking resource on the first in the stack is different from the last one in the stack a gradient effect will be used to show this.",
-  "wiki_mechanics_blocking_para5": "In this case the blocking resource with longest time to aquire for the first in the stack will be shown with %0 on the left, and the resource which will take the longest to aquire to copmlete the entire stack will be shown in %0 on the right.",
+  "wiki_mechanics_blocking_para5": "In this case the blocking resource with longest time to aquire for the first in the stack will be shown with %0 on the left, and the resource which will take the longest to aquire to complete the entire stack will be shown in %0 on the right.",
   "wiki_mechanics_blocking_para6": "Example images are shown below.",
   "wiki_mechanics_bank_vault": "Bank Vaults",
   "wiki_mechanics_bank_vault_para1": "The %0, %1, and %2 all scale their %3 storage off of the same %4, as does the %5 during %6.",
