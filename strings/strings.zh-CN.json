@@ -1478,6 +1478,7 @@
   "tech_titanium_crates_effect": "对板条箱添加坚固的钛条，使每个板条箱的基础储量由 500 提升到 750。",
   "tech_mythril_crates": "秘银板条箱",
   "tech_mythril_crates_effect": "给板条箱镀上秘银，使每个板条箱的基础储量由 750 提升到 1000。",
+  "tech_crates": "%0板条箱",
   "tech_infernite_crates": "地狱石板条箱",
   "tech_infernite_crates_desc": "在板条箱内添加地狱石成分",
   "tech_infernite_crates_effect": "在板条箱内添加地狱石成分，使它们变得更加坚固，从而使每个板条箱的基础储量由 1000 提升到 1500。",
