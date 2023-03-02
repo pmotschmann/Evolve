@@ -3247,7 +3247,7 @@ function fastLoop(){
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
                 // Do Nothing
             }
-            if (global.race['vax'] && global.race.vax >= 100){
+            else if (global.race['vax'] && global.race.vax >= 100){
                 // Do Nothing
             }
             else {
