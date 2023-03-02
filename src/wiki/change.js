@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.0`,
+        revision: `b`,
+        date: `3/1/2023`,
+        changes: [
+            `Fixed issue with Mass Ejector Optimizer gov task breaking the governor subtab.`,
+        ]
+    },
+    {
+        version: `1.3.0`,
         revision: `a`,
         date: `3/1/2023`,
         changes: [
