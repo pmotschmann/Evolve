@@ -3237,6 +3237,8 @@
   "perk_novice": "进化新手",
   "perk_journeyman": "进化熟练工",
   "perk_adept": "进化专家",
+  "perk_master": "进化大师",
+  "perk_grandmaster": "超级进化大师",
   "arpa_projects_lhc_title": "超级对撞机",
   "arpa_projects_lhc_desc": "超级对撞机有助于加深对理论科学的理解。",
   "arpa_projects_lhc_effect1": "每有一个超级对撞机，就使%1和大学的知识上限 +%0%。",
