@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.1`,
+        date: `3/3/2023`,
+        changes: [
+            `Updated Mass Ejector Optimizer.`
+        ]
+    },
+    {
         version: `1.3.0`,
         revision: `b`,
         date: `3/1/2023`,
