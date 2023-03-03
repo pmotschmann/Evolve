@@ -1558,7 +1558,7 @@ export function calcPrestige(type,inputs){
 }
 
 export function adjustCosts(c_action, offset, wiki){
-    let costs = c_action.cost;
+    let costs = c_action.cost || {};
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
