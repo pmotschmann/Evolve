@@ -6,7 +6,10 @@ const changeList = [
         version: `1.3.1`,
         date: `3/3/2023`,
         changes: [
-            `Updated Mass Ejector Optimizer.`
+            `Updated Mass Ejector Optimizer.`,
+            `Fixed fuel calculation bug with Moon Bases and Spaceports.`,
+            `Fixed issue with self replicating Synth and Nano.`,
+            `Fixed bugs with purchasing CRISPR techs in Antimatter universe.`,
         ]
     },
     {
@@ -22,7 +25,7 @@ const changeList = [
         revision: `a`,
         date: `3/1/2023`,
         changes: [
-            `Fixed AntiMatter universe.`,
+            `Fixed Antimatter universe.`,
         ]
     },
     {
