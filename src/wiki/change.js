@@ -8,7 +8,8 @@ const changeList = [
         changes: [
             `Added Advanced Material Synthesis tech to Isolation path.`,
             `High-Tech Factory crafting bonus changed from a Tool modifier to a direct multiplier.`,
-            `Updated Mass Ejector Optimizer.`,
+            `Updated Mass Ejector Optimizer logic.`,
+            `Fixed a bug that broke Cataclysm reset.`,
             `Fixed fuel calculation bug with Moon Bases and Spaceports.`,
             `Fixed issue with self replicating Synth and Nano.`,
             `Fixed bugs with purchasing CRISPR techs in Antimatter universe.`,

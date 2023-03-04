@@ -2049,9 +2049,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('elerium_contain');
-                    if (global.city.power >= 6){
-                        global.space['elerium_contain'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;

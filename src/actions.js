@@ -26,7 +26,7 @@ export const actions = {
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
             },
-            condition(){ return global.resource.RNA.display; },
+            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display; },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
@@ -39,7 +39,7 @@ export const actions = {
             id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
-            condition(){ return global.resource.DNA.display; },
+            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display; },
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
