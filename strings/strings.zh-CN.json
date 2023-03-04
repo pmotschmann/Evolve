@@ -7450,7 +7450,7 @@
   "wiki_mechanics_blocking_para3": "其他时间能够补充的所需资源以%0表示。",
   "wiki_mechanics_blocking_para4": "合并队列时，如果第一个和最后一个不足的建筑所需资源不同，它们将以渐变的形式表示。",
   "wiki_mechanics_blocking_para5": "即首次需要最长时间补充的建筑所需资源，在左边以%0表示，其次在右边以%0表示。",
-  "wiki_mechanics_blocking_para6": "以下图片为示例。",
+  "wiki_mechanics_blocking_para6": "以下图片展示出了建筑所需资源的示例。",
   "wiki_mechanics_bank_vault": "银行保险库",
   "wiki_mechanics_bank_vault_para1": "%0、%1和%2的%3储量上限都受到%4的影响，另外在%6剧情模式中%5也受到影响。",
   "wiki_mechanics_bank_vault_para2": "因此，只要是可以影响%1的%0储量上限的游戏内容，都会对上面的所有建筑造成影响。可能造成影响的游戏内容包括%2研究，%3总督，%4，%5等级，%6，%7挑战模式等。",
