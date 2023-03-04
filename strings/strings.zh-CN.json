@@ -2607,7 +2607,7 @@
   "achieve_perks_mass_extinction2": "进化阶段，开局获得 %0 RNA 和 DNA",
   "achieve_perks_explorer": "播种重置后，可选星球数量 +%0",
   "achieve_perks_doomed": "选择星球时，可能出现一个地狱/伊甸星球",
-  "achieve_perks_miners_dream": "选择星球时，可以看到星球矿产属性的具体数值，但至多只能看到 %0 项数值",
+  "achieve_perks_miners_dream": "选择星球时，可以看到星球矿产属性的具体数值，但最多只能看到 %0 项数值",
   "achieve_perks_enlightened": "知识基础产量 +1，知识基础上限 +900",
   "achieve_perks_joyless": "士气上限 +%0%",
   "achieve_perks_steelen": "钢产量 +%0%",
