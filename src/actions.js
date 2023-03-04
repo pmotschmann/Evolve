@@ -26,7 +26,7 @@ export const actions = {
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
             },
-            condition(){ return global.resource.RNA.display; },
+            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display; },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
@@ -39,7 +39,7 @@ export const actions = {
             id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
-            condition(){ return global.resource.DNA.display; },
+            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display; },
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
@@ -6101,6 +6101,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                 let res_cost = costs[res]();
                 if (res_cost > 0){
                     let aria = '';
+                    let f_res = res === 'Species' ? global.race.species : res;
                     if (res === 'HellArmy'){
                         let label = loc('fortress_troops');
                         let color = 'has-text-dark';
@@ -6117,7 +6118,6 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
                         cost.append($(`<div class="${color}" data-${res}="${res_cost}">${label}: ${res_cost}${aria}</div>`));
                     }
                     else {
-                        let f_res = res === 'Species' ? global.race.species : res;
                         let label = f_res === 'Money' ? '$' : global.resource[f_res].name+': ';
                         label = label.replace("_", " ");
                         let color = 'has-text-dark';

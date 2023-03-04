@@ -2128,7 +2128,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
-                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 75 : 25])}</div>`;
+                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 60 : 20])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -2176,6 +2176,9 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_wardenclyffe_effect1',[jobScale(1), global.civic.scientist.name])}</div>`;
                     desc = desc + `<div>${loc('space_zero_g_lab_effect',[jobScale(1)])}</div>`;
                     desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
+                }
+                if (global.tech['alien_crafting']){
+                    desc = desc + `<div>${loc('tau_gas_womling_station_effect',[50,global.resource.Quantium.name])}</div>`;
                 }
                 if (global.tech['focus_cure']){
                     desc = desc + `<div>${loc('tau_home_disease_lab_cure',[+global.tauceti.infectious_disease_lab.cure.toFixed(1)])}</div>`;
@@ -3370,7 +3373,7 @@ const tauCetiModules = {
                 Elerium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 25000 : 0; },
                 Graphene(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 22500000 : 0; },
                 Orichalcum(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? 15000000 : 0; },
-                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(10000000) : 0; },
+                Quantium(offset){ return ((offset || 0) + (global.tauceti.hasOwnProperty('ignition_device') ? global.tauceti.ignition_device.count : 0)) < 10 ? wom_recycle(8000000) : 0; },
             },
             effect(wiki){
                 let effectText = '';

@@ -1918,7 +1918,7 @@ function fastLoop(){
                     }
                     for (let j=0; j<s_fuels.length; j++){
                         let fuel = s_fuels[j];
-                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? ([sup.a] === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
+                        let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? (sup.a === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
                         let mb_consume = p_on[sup.s] * fuel_cost;
                         breakdown.p.consume[fuel.r][actions[sup.a][sup.r][sup.s].title] = -(mb_consume);
                         for (let i=0; i<p_on[sup.s]; i++){
@@ -1990,7 +1990,7 @@ function fastLoop(){
                             }
                             for (let j=0; j<s_fuels.length; j++){
                                 let fuel = s_fuels[j];
-                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? ([sup.a] === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
+                                let fuel_cost = ['Oil','Helium_3'].includes(fuel.r) ? (sup.a === 'space' ? +fuel_adjust(fuel.a,true) : +int_fuel_adjust(fuel.a)) : fuel.a;
                                 let mb_consume = operating * fuel_cost;
                                 breakdown.p.consume[fuel.r][actions[sup.a][sup.r2][area_structs[i]].title] = -(mb_consume);
                                 for (let i=0; i<operating; i++){
@@ -3247,7 +3247,7 @@ function fastLoop(){
             else if (global.race['parasite'] && global.city.calendar.wind === 0 && !global.race['cataclysm'] && !global.race['orbit_decayed']){
                 // Do Nothing
             }
-            if (global.race['vax'] && global.race.vax >= 100){
+            else if (global.race['vax'] && global.race.vax >= 100){
                 // Do Nothing
             }
             else {

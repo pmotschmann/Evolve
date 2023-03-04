@@ -236,7 +236,7 @@ const spaceProjects = {
             },
             effect(wiki){
                 let iridium = spatialReasoning(500);
-                let oil = +(fuel_adjust(2,true,wiki)).toFixed(2);
+                let oil = +(fuel_adjust($(this)[0].support_fuel().a,true,wiki)).toFixed(2);
                 return `<div>${loc('space_moon_base_effect1')}</div><div>${loc('plus_max_resource',[iridium,loc('resource_Iridium_name')])}</div><div class="has-text-caution">${loc('space_moon_base_effect3',[oil,$(this)[0].powered()])}</div>`;
             },
             support(){ return 2; },
@@ -449,7 +449,7 @@ const spaceProjects = {
                 Titanium(offset){ return spaceCostMultiplier('spaceport', offset, 22500, 1.32); }
             },
             effect(wiki){
-                let helium = +(fuel_adjust(1.25,true,wiki)).toFixed(2);
+                let helium = +(fuel_adjust($(this)[0].support_fuel().a,true,wiki)).toFixed(2);
                 let bank = ``;
                 if (global.race['cataclysm'] || global.race['orbit_decayed']){
                     let vault = spatialReasoning(bank_vault() * 4);
@@ -508,9 +508,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('red_tower');
-                    if (global.city.power >= 2){
-                        global.space['red_tower'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2051,9 +2049,7 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('elerium_contain');
-                    if (global.city.power >= 6){
-                        global.space['elerium_contain'].on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;

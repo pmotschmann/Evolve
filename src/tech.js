@@ -12855,9 +12855,29 @@ const techs = {
         reqs: { alien_data: 5, tau_ore_mining: 1 },
         grant: ['tau_ore_mining',2],
         cost: {
-            Knowledge(){ return 9880000; }
+            Knowledge(){ return 9750000; }
         },
         effect(){ return loc('tech_advanced_asteroid_mining_effect',[loc(`tau_roid_mining_ship`)]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    advanced_material_synthesis: {
+        id: 'tech-advanced_material_synthesis',
+        title: loc('tech_advanced_material_synthesis'),
+        desc: loc('tech_advanced_material_synthesis'),
+        category: 'crafting',
+        era: 'tauceti',
+        path: ['truepath'],
+        reqs: { alien_data: 5, disease: 1 },
+        grant: ['alien_crafting',1],
+        cost: {
+            Knowledge(){ return 9880000; }
+        },
+        effect(){ return loc('tech_advanced_material_synthesis_effect',[global.resource.Quantium.name]); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

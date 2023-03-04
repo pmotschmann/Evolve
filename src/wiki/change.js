@@ -3,6 +3,19 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.1`,
+        date: `3/3/2023`,
+        changes: [
+            `Added Advanced Material Synthesis tech to Isolation path.`,
+            `High-Tech Factory crafting bonus changed from a Tool modifier to a direct multiplier.`,
+            `Updated Mass Ejector Optimizer logic.`,
+            `Fixed a bug that broke Cataclysm reset.`,
+            `Fixed fuel calculation bug with Moon Bases and Spaceports.`,
+            `Fixed issue with self replicating Synth and Nano.`,
+            `Fixed bugs with purchasing CRISPR techs in Antimatter universe.`,
+        ]
+    },
+    {
         version: `1.3.0`,
         revision: `b`,
         date: `3/1/2023`,
@@ -15,7 +28,7 @@ const changeList = [
         revision: `a`,
         date: `3/1/2023`,
         changes: [
-            `Fixed AntiMatter universe.`,
+            `Fixed Antimatter universe.`,
         ]
     },
     {
