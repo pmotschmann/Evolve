@@ -6,6 +6,8 @@ const changeList = [
         version: `1.3.1`,
         date: `3/3/2023`,
         changes: [
+            `Added Advanced Material Synthesis tech to Isolation path.`,
+            `High-Tech Factory crafting bonus changed from a Tool modifier to a direct multiplier.`,
             `Updated Mass Ejector Optimizer.`,
             `Fixed fuel calculation bug with Moon Bases and Spaceports.`,
             `Fixed issue with self replicating Synth and Nano.`,
