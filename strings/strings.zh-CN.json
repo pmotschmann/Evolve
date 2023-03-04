@@ -2490,6 +2490,7 @@
   "tech_fusion_generator_effect": "聚变发生器可以为舰船提供前所未有的电力。",
   "tech_elerium_generator": "超铀发生器",
   "tech_elerium_generator_effect": "超铀发生器可以为舰船提供无与伦比的电力。",
+  "tech_replicator": "物质复制器",
   "star_dock_probe": "星际探测器",
   "star_dock_probe_desc": "星际探测器",
   "star_dock_probe_effect": "播种重置时，每有一个星际探测器，就使能探测到的宜居星球数量 +1。",
