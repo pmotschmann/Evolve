@@ -853,8 +853,8 @@ export function timeCheck(c_action,track,detailed,reqMet){
 
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
-                        if (global.race.governor.config.trash[res]){
-                            res_diff -= global.race.governor.config.trash[res];
+                        if (global.race.governor.config.trash.hasOwnProperty(res)){
+                            res_diff -= Math.min(global.race.governor.config.trash[res].v,global.interstellar.mass_ejector[res]);
                         }
                     }
 
@@ -956,8 +956,8 @@ export function arpaTimeCheck(project, remain, track, detailed){
                 if (track){
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
-                        if (global.race.governor.config.trash[res]){
-                            res_diff -= global.race.governor.config.trash[res];
+                        if (global.race.governor.config.trash.hasOwnProperty(res)){
+                            res_diff -= Math.min(global.race.governor.config.trash[res].v,global.interstellar.mass_ejector[res]);
                         }
                     }
 
@@ -1558,7 +1558,7 @@ export function calcPrestige(type,inputs){
 }
 
 export function adjustCosts(c_action, offset, wiki){
-    let costs = c_action.cost;
+    let costs = c_action.cost || {};
     if ((costs['RNA'] || costs['DNA']) && global.genes['evolve']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
