@@ -5164,6 +5164,7 @@
   "resource_Artifact_name": "上古遗物",
   "resource_Thermite_name": "铝热剂",
   "resource_Supply_name": "物资补给",
+  "resource_Materials_name": "外星材料",
   "resource_Plasmid_name": "质粒",
   "resource_Plasmid_plural_name": "质粒",
   "resource_Plasmid_desc": "目前激活了 %0 质粒，全局产量 +%1%。",
