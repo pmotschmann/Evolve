@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.2`,
+        date: `3/4/2023`,
+        changes: [
+            `High-Tech Factory changed back to tool modifer, however value is increased from orignal 25% to 90%.`,
+            `Advanced Material Synthesis increased from 50% to 65%.`
+        ]
+    },
+    {
         version: `1.3.1`,
         date: `3/3/2023`,
         changes: [

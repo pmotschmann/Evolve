@@ -2128,7 +2128,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
-                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 60 : 20])}</div>`;
+                desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 275 : 90])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
@@ -2178,7 +2178,7 @@ const tauCetiModules = {
                     desc = desc + `<div>${loc('city_library_effect',[75])}</div>`;
                 }
                 if (global.tech['alien_crafting']){
-                    desc = desc + `<div>${loc('tau_gas_womling_station_effect',[50,global.resource.Quantium.name])}</div>`;
+                    desc = desc + `<div>${loc('tau_gas_womling_station_effect',[65,global.resource.Quantium.name])}</div>`;
                 }
                 if (global.tech['focus_cure']){
                     desc = desc + `<div>${loc('tau_home_disease_lab_cure',[+global.tauceti.infectious_disease_lab.cure.toFixed(1)])}</div>`;
