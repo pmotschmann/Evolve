@@ -2331,7 +2331,7 @@ export function bloodwar(){
                     global.portal.soul_forge.kills += killed;
                 }
                 let final_chance = gem_chance - killed + 40;
-                if (final_chance < 1){ final_chance = 1; }
+                if (final_chance < 75){ final_chance = 75; }
                 if (killed > 0 && Math.rand(0,final_chance) === 0){
                     patrol_report.gem = true;
                     day_report.stats.gems.patrols++;
@@ -2513,8 +2513,8 @@ export function bloodwar(){
                 surv_report.bodies = searched;
                 if (searched > 0){
                     let final_chance = gem_chance - searched;
-                    if (final_chance < 1){ final_chance = 1; }
-                    if (Math.rand(0,gem_chance) === 0){
+                    if (final_chance < 25){ final_chance = 25; }
+                    if (Math.rand(0,final_chance) === 0){
                         surv_report.gem = true;
                         day_report.stats.gems.surveyors++;
                         global.resource.Soul_Gem.amount++;

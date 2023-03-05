@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.2`,
+        revision: `a`,
+        date: `3/5/2023`,
+        changes: [
+            `Adjusted hell calculation.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
         date: `3/4/2023`,
         changes: [
             `High-Tech Factory changed back to tool modifier, however value is increased from original 25% to 90%.`,
