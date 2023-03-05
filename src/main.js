@@ -6191,6 +6191,22 @@ function fastLoop(){
     
                         modRes('Aluminium', delta * time_multiplier);
                     }
+
+                    { // Chrysotile
+                        let chrysotile_bd = {};
+                        let cry_base = miner_base;
+                        cry_base *= production('mining_pit','chrysotile');
+                        let delta = cry_base * global_multiplier * colony_val * hunger;
+    
+                        chrysotile_bd[loc('job_pit_miner')] = cry_base + 'v';
+                        if (cry_base > 0){
+                            chrysotile_bd[`ᄂ${loc('tau_home_colony')}`] = ((colony_val - 1) * 100) + '%';
+                            chrysotile_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
+                        }
+    
+                        breakdown.p['Chrysotile'] = chrysotile_bd;
+                        modRes('Chrysotile', delta * time_multiplier);
+                    }
                 }
             }
             else {

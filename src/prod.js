@@ -324,6 +324,11 @@ export function production(id,val){
                     mats = highPopAdjust(0.88);
                     break;
                 }
+                case 'chrysotile':
+                {
+                    mats = highPopAdjust(1.44);
+                    break;
+                }
             }
             if (global.race['tough']){
                 mats *= 1 + (traits.tough.vars()[0] / 100);

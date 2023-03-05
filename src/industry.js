@@ -77,7 +77,7 @@ export function defineIndustry(){
         $(`#industry`).append(casting);
         loadIndustry('pylon',casting,'#iPylon');
     }
-    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed']){
+    if (global.race['smoldering'] && global.city['rock_quarry'] && !global.race['cataclysm'] && !global.race['orbit_decayed'] && ![global.race['isolation']]){
         var ratio = $(`<div id="iQuarry" class="industry"><h2 class="header has-text-advanced">${loc('city_rock_quarry')}</h2></div>`);
         $(`#industry`).append(ratio);
         loadIndustry('rock_quarry',ratio,'#iQuarry');
@@ -92,7 +92,7 @@ export function defineIndustry(){
         $(`#industry`).append(mining_ship);
         loadIndustry('mining_ship',mining_ship,'#iMiningShip');
     }
-    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station']){
+    if (global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && global.tauceti['alien_space_station'] && (!global.tech['alien_data'] || global.tech.alien_data < 6)){
         var alien_space_station = $(`<div id="iAlienSpaceStation" class="industry"><h2 class="header has-text-advanced">${loc('tau_gas2_alien_station')}</h2></div>`);
         $(`#industry`).append(alien_space_station);
         loadIndustry('alien_space_station',alien_space_station,'#iAlienSpaceStation');

@@ -1835,10 +1835,24 @@ const tauCetiModules = {
                 else {
                     if (global.tech['isolation']){
                         if (global.race['lone_survivor']){
-                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2c',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Iron.name,global.resource.Aluminium.name,global.resource.Coal.name])}</div>`;
+                            let res_list = [global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Iron.name,global.resource.Aluminium.name,global.resource.Coal.name];
+                            if (global.race['smoldering']){
+                                res_list.push(global.resource.Chrysotile.name);
+                                desc = desc + `<div>${loc('tau_home_mining_pit_effect2cs',res_list)}</div>`;
+                            }
+                            else {
+                                desc = desc + `<div>${loc('tau_home_mining_pit_effect2c',res_list)}</div>`;
+                            }
                         }
                         else {
-                            desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',[global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Coal.name])}</div>`;
+                            let res_list = [global.resource.Bolognium.name,global.resource.Adamantite.name,global.resource.Stone.name,global.resource.Copper.name,global.resource.Coal.name];
+                            if (global.race['smoldering']){
+                                res_list.push(global.resource.Chrysotile.name);
+                                desc = desc + `<div>${loc('tau_home_mining_pit_effect2bs',res_list)}</div>`;
+                            }
+                            else {
+                                desc = desc + `<div>${loc('tau_home_mining_pit_effect2b',res_list)}</div>`;
+                            }
                         }
                         desc = desc + `<div>${loc('tau_gas_womling_station_effect',[8,global.resource.Cement.name])}</div>`;
                     }
@@ -3284,7 +3298,7 @@ const tauCetiModules = {
             path: ['truepath'],
             cost: {},
             queue_complete(){ return 0; },
-            special(){ return global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 ? true : false; },
+            special(){ return global.tech['tau_gas2'] && global.tech.tau_gas2 === 6 && (!global.tech['alien_data'] || global.tech.alien_data < 6) ? true : false; },
             wiki: false,
             effect(){
                 let fuel = $(this)[0].p_fuel().a;
