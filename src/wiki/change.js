@@ -3,6 +3,25 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.2`,
+        revision: `a`,
+        date: `3/5/2023`,
+        changes: [
+            `Adjusted hell calculation.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
+        date: `3/4/2023`,
+        changes: [
+            `High-Tech Factory changed back to tool modifier, however value is increased from original 25% to 90%.`,
+            `Advanced Material Synthesis increased from 50% to 65%.`,
+            `Added new interaction between Hell Surveyors and Drone victims.`,
+            `Fixed bug that would cause Replicator Governor task to swap resources when focusing a resource without a cap.`,
+            `Fixed inability to produce Chrysotile in Isolation.`
+        ]
+    },
+    {
         version: `1.3.1`,
         date: `3/3/2023`,
         changes: [

@@ -1359,7 +1359,7 @@ export const gov_tasks = {
                 if (global.race.governor.config.replicate.res.neg && global.resource[resSorted[0]].diff < 0 && ((global.resource[resSorted[0]].amount <= global.resource[resSorted[0]].max * 0.95) || global.resource[resSorted[0]].max === -1)){
                     global.race.replicator.res = resSorted[0];
                 }
-                else if (global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
+                else if (global.resource[global.race.replicator.res].max !== -1 && global.race.governor.config.replicate.res.cap && global.resource[global.race.replicator.res].amount >= global.resource[global.race.replicator.res].max){
                     let cappable = resSorted.filter(item => global.resource[item].max > 0);
                     for (let i=0; i<cappable.length; i++){
                         if (global.resource[cappable[i]].amount < global.resource[cappable[i]].max){

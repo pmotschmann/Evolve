@@ -340,10 +340,10 @@ export const craftingRatio = (function(){
             }
 
             if (global.tauceti['tau_factory'] && support_on['tau_factory']){
-                crafting.general.multi.push({
+                crafting.general.add.push({
                     name: loc(`tau_home_tau_factory`),
-                    manual: 1,
-                    auto: support_on['tau_factory'] * (global.tech['isolation'] ? 0.6 : 0.2)
+                    manual: 0,
+                    auto: (support_on['tau_factory'] * (global.tech['isolation'] ? 2.75 : 0.9))
                 });
             }
 
@@ -364,7 +364,7 @@ export const craftingRatio = (function(){
                 });
             }
             if (global.tech['alien_crafting'] && support_on['infectious_disease_lab'] && p_on['infectious_disease_lab']){
-                let qCraft = 1 + (0.5 * Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']));
+                let qCraft = 1 + (0.65 * Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']));
                 crafting.Quantium.multi.push({
                     name: loc(`tech_infectious_disease_lab_alt`),
                     manual: 1,

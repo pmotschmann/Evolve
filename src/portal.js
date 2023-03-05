@@ -2183,7 +2183,8 @@ export function bloodwar(){
                 guns: 0,
                 soul_forge: 0,
                 crafted: 0,
-                turrets: 0
+                turrets: 0,
+                surveyors: 0
             },
         }
     };
@@ -2213,6 +2214,7 @@ export function bloodwar(){
     }
 
     // Drones
+    let drone_kills = 0;
     if (global.tech['portal'] >= 3 && p_on['war_drone']){
         day_report.drones = {};
         for (let i=0; i<p_on['war_drone']; i++){
@@ -2230,6 +2232,7 @@ export function bloodwar(){
                 }
                 drone_report = { encounter: true, kills: killed };
                 day_report.stats.kills.drones += killed;
+                drone_kills += killed;
             }
             day_report.drones[i+1] = drone_report;
         }
@@ -2327,7 +2330,9 @@ export function bloodwar(){
                 if (forgeOperating){
                     global.portal.soul_forge.kills += killed;
                 }
-                if (Math.rand(0,gem_chance) === 0){
+                let final_chance = gem_chance - killed + 40;
+                if (final_chance < 75){ final_chance = 75; }
+                if (killed > 0 && Math.rand(0,final_chance) === 0){
                     patrol_report.gem = true;
                     day_report.stats.gems.patrols++;
                     global.resource.Soul_Gem.amount++;
@@ -2497,6 +2502,32 @@ export function bloodwar(){
                 global.portal.carport.damaged += dead;
             }
         }
+
+        day_report.surveyor_finds = {};
+        if (global.civic.hell_surveyor.workers > 0 && drone_kills > 0){
+            for (let i=0; i<global.civic.hell_surveyor.workers; i++){
+                let surv_report = { gem: false, bodies: 0 };
+                let searched = Math.rand(0,Math.round(drone_kills / global.civic.hell_surveyor.workers)) - 10;
+                if (searched > 100){ searched = 100; }
+                else if (searched < 0){ searched = 0; }
+                surv_report.bodies = searched;
+                if (searched > 0){
+                    let final_chance = gem_chance - searched;
+                    if (final_chance < 25){ final_chance = 25; }
+                    if (Math.rand(0,final_chance) === 0){
+                        surv_report.gem = true;
+                        day_report.stats.gems.surveyors++;
+                        global.resource.Soul_Gem.amount++;
+                        global.portal.fortress.pity = 0;
+                        if (!global.resource.Soul_Gem.display){
+                            global.resource.Soul_Gem.display = true;
+                            messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                        }
+                    }
+                }
+                day_report.surveyor_finds[i+1] = surv_report;
+            }
+        } 
     }
 
     if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
@@ -4482,6 +4513,7 @@ function drawHellAnalysis(){
                 <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.soul_forge, 'gems_soul_forge', s.average | genericSub }}</h2></div>
                 <div v-show="p.soul_forge"><h2>{{ st.${type}.gems.crafted, 'gems_crafted', s.average | genericSub }}</h2></div>
                 <div v-show="p.gate_turret"><h2>{{ st.${type}.gems.turrets, 'gems_turrets', s.average | genericSub }}</h2></div>
+                <div v-show="p.war_drone && p.carport"><h2>{{ st.${type}.gems.surveyors, 'gems_surveyors', s.average | genericSub }}</h2></div>
             </div>
             <div><h2>{{ st.${type}.wounded, 'wounded', s.average | generic }}</h2></div>
             <div><h2>{{ st.${type}.died, 'died', s.average | generic }}</h2></div>
@@ -4754,8 +4786,6 @@ function drawGraph(info,graphInfo){
         hell_graphs[id].graph.destroy();
     }
     
-    let underscored = graphInfo.name.replaceAll(' ','-');
-    
     let chartCont = $(`<div id="graph-${id}-container" class="graphContainer"></div>`);
     info.append(chartCont);
     chartCont.append(`<div id="graph-${id}-controls" class="graphControls">
@@ -4963,6 +4993,21 @@ function drawHellReports(){
                 }
             });
         }
+
+        if (curr_report.surveyor_finds){
+            Object.keys(curr_report.surveyor_finds).forEach(function(num){
+                let surveyor = curr_report.surveyor_finds[num];
+                let name = loc('hell_report_log_obj_counter',[loc('job_hell_surveyor'),num]);
+
+                let displayText = $(`<p></p>`);
+                displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);
+                if (surveyor.gem){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_search',[global.resource.Soul_Gem.name])}</span>`);
+                }
+                info.append(displayText);
+            });
+        }
+
         if (curr_report.revived){
             info.append(`<p>${curr_report.revived > 1 ? loc('hell_report_log_revived_plural',[curr_report.revived]) : loc('hell_report_log_revived')}</p>`);
         }
