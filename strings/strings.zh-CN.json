@@ -6135,7 +6135,7 @@
   "hell_report_log_surveyors": "1名勘探者遭遇游荡的恶魔，被杀死。",
   "hell_report_log_surveyors_plural": "%0名勘探者遭遇游荡的恶魔，被杀死。",
   "hell_report_log_soul_attractors": "灵魂引渡器在灵魂锻炉里制造了%0个灵魂。",
-  "hell_report_log_misc_kills": "%0在%2周边发现并击败%1只恶魔。",
+  "hell_report_log_misc_kills": "%0在%2周围发现并杀死了%1只恶魔。",
   "hell_report_log_soul_forge": "灵魂锻炉结界在陨石坑周围杀死了%0只恶魔。",
   "hell_report_log_soul_craft": "灵魂锻炉中灵魂积累数量充足，并产生了%0。",
   "hell_analysis_total": "本周目统计",
