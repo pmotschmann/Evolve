@@ -1163,7 +1163,14 @@ if (convertVersion(global['version']) < 103001){
     }
 }
 
-global['version'] = '1.3.1';
+if (convertVersion(global['version']) < 103002){
+    if (global.portal.hasOwnProperty('observe') && global.portal.observe.hasOwnProperty('stats')){
+        global.portal.observe.stats.period.gems['surveyors'] = 0;
+        global.portal.observe.stats.total.gems['surveyors'] = 0;
+    }
+}
+
+global['version'] = '1.3.2';
 delete global['revision'];
 delete global['beta'];
 
