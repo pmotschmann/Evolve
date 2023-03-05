@@ -6,7 +6,7 @@ const changeList = [
         version: `1.3.2`,
         date: `3/4/2023`,
         changes: [
-            `High-Tech Factory changed back to tool modifer, however value is increased from orignal 25% to 90%.`,
+            `High-Tech Factory changed back to tool modifier, however value is increased from original 25% to 90%.`,
             `Advanced Material Synthesis increased from 50% to 65%.`,
             `Added new interaction between Hell Surveyors and Drone victims.`,
             `Fixed bug that would cause Replicator Governor task to swap resources when focusing a resource without a cap.`,
