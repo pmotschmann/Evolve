@@ -6288,6 +6288,8 @@
   "tau_star_goe_facility_effect": "在光环世界复制设施，可以使您通过已存储的DNA样本创造更多的种族，以及在天仓五星系上定居。",
   "tau_planet": "新%0",
   "tau_new_support": "新%1支持 %0",
+  "tau_new_mission_title": "探索新%0",
+  "tau_home_dismantle": "拆除飞船",
   "tau_home_orbital_station": "轨道控制站",
   "tau_home_colony": "生活区",
   "tau_home_colony_desc": "新%0生活区",
