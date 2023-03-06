@@ -508,6 +508,7 @@
   "manual_crafting_hover_bonus": "%1产量 +%0%",
   "manual_crafting_hover_craft": "制造：",
   "manual_crafting_hover_use": "消耗：",
+  "rejuvenated": "活力",
   "event_dna": "一些DNA分子进行了复制，你获得了 %0 DNA。",
   "event_rna": "流星撞击了地球，带来了新的遗传物质，你获得了 %0 RNA。",
   "event_inspiration": "科学家们来了灵感，知识产量暂时翻倍。",
