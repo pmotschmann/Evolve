@@ -4745,6 +4745,8 @@
   "civics_mad_missiles_world_control_desc": "启用或禁用发射按钮。只要你想，就可以用核武器将世界重归于宁静。",
   "civics_mad_missiles_desc": "启用或禁用发射按钮。发动核打击将引发核报复，最后导致一切的终结。",
   "civics_mad_missiles_warning": "行星上所有生命都将终结。你将回到进化阶段重新开始。你可以获得 %0 %1。",
+  "civics_servants": "雇用工",
+  "civics_skilled_servants": "雇用专员",
   "governor_appoint": "任命",
   "governor_candidate": "候选人",
   "governor_background": "职业背景",
