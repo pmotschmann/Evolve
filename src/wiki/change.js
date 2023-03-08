@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.2`,
+        revision: `c`,
+        date: `3/8/2023`,
+        changes: [
+            `Fixed cataclysm reset while having preload tab content enabled.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
         revision: `b`,
         date: `3/5/2023`,
         changes: [
