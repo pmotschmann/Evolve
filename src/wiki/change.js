@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.3`,
+        date: `3/8/2023`,
+        changes: [
+            `Fixed High Pop issue with Pit Miners.`,
+        ]
+    },
+    {
         version: `1.3.2`,
         revision: `c`,
         date: `3/8/2023`,

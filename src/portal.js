@@ -2253,18 +2253,21 @@ export function bloodwar(){
     }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
-        for (let i=0; i<p_on['attractor']; i++){
-            gem_chance = Math.round(gem_chance * 0.92);
-        }
+        gem_chance = Math.round(gem_chance * (0.945 ** p_on['attractor']));
     }
+
     if (global.race['ghostly']){
         gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars()[2]) / 100));
+    }
+
+    if (gem_chance < 10){
+        gem_chance = 10;
     }
 
     // Patrols
     let dead = 0;
     let terminators = p_on['war_droid'] ? p_on['war_droid'] : 0;
-    let failed_drop = false;
+    let has_drop = false;
     let wounded = 0;
     if (global.civic.garrison.wounded > global.civic.garrison.workers - global.portal.fortress.garrison){
         wounded = global.civic.garrison.wounded - (global.civic.garrison.workers - global.portal.fortress.garrison);
@@ -2279,7 +2282,7 @@ export function bloodwar(){
     let brkpnt = +(wounded % 1).toFixed(10);
     day_report.patrols = {};
     for (let i=0; i<global.portal.fortress.patrols; i++){
-        let patrol_report = { encounter: false, droid: false, ambush: false, gem: false, kills: 0, wounded: 0, died: 0};
+        let patrol_report = { encounter: false, droid: false, ambush: false, gem: 0, kills: 0, wounded: 0, died: 0};
         let hurt = brkpnt > (1 / global.portal.fortress.patrols * i) ? Math.ceil(wounded) : Math.floor(wounded);
         if (Math.rand(0,global.portal.fortress.threat) >= Math.rand(0,999)){
             patrol_report.encounter = true;
@@ -2330,22 +2333,26 @@ export function bloodwar(){
                 if (forgeOperating){
                     global.portal.soul_forge.kills += killed;
                 }
-                let final_chance = gem_chance - killed + 40;
-                if (final_chance < 75){ final_chance = 75; }
-                if (killed > 0 && Math.rand(0,final_chance) === 0){
-                    patrol_report.gem = true;
-                    day_report.stats.gems.patrols++;
-                    global.resource.Soul_Gem.amount++;
-                    global.portal.fortress.pity = 0;
-                    if (!global.resource.Soul_Gem.display){
-                        global.resource.Soul_Gem.display = true;
-                        messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                if (killed > 0){
+                    let div = 35 - Math.floor(p_on['attractor'] / 3);
+                    if (div < 5){ div = 5; }
+                    let chances = Math.round(killed / div);
+                    for (let j=0; j<chances; j++){
+                        if (Math.rand(0,gem_chance) === 0){
+                            patrol_report.gem++;
+                            day_report.stats.gems.patrols++;
+                            global.resource.Soul_Gem.amount++;
+                            global.portal.fortress.pity = 0;
+                            if (!global.resource.Soul_Gem.display){
+                                global.resource.Soul_Gem.display = true;
+                                messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                            }
+                            has_drop = true;
+                        }
                     }
                 }
-                else {
-                    failed_drop = true;
-                }
             }
+                
             day_report.stats.kills.patrols += patrol_report.kills;
             day_report.stats.wounded += patrol_report.wounded;
             day_report.stats.died += patrol_report.died;
@@ -2382,10 +2389,6 @@ export function bloodwar(){
         else {
             messageQueue(loc('fortress_patrol_casualties',[dead]),false,false,['hell']);
         }
-    }
-    
-    if (failed_drop && global.portal.fortress.pity < 10000){
-        global.portal.fortress.pity++;
     }
 
     // Siege Chance
@@ -2506,28 +2509,38 @@ export function bloodwar(){
         day_report.surveyor_finds = {};
         if (global.civic.hell_surveyor.workers > 0 && drone_kills > 0){
             for (let i=0; i<global.civic.hell_surveyor.workers; i++){
-                let surv_report = { gem: false, bodies: 0 };
-                let searched = Math.rand(0,Math.round(drone_kills / global.civic.hell_surveyor.workers)) - 10;
+                let surv_report = { gem: 0, bodies: 0 };
+                let searched = Math.rand(
+                    Math.round(drone_kills / 2 / global.civic.hell_surveyor.workers),
+                    Math.round(drone_kills / global.civic.hell_surveyor.workers)
+                );
                 if (searched > 100){ searched = 100; }
-                else if (searched < 0){ searched = 0; }
                 surv_report.bodies = searched;
                 if (searched > 0){
-                    let final_chance = gem_chance - searched;
-                    if (final_chance < 25){ final_chance = 25; }
-                    if (Math.rand(0,final_chance) === 0){
-                        surv_report.gem = true;
-                        day_report.stats.gems.surveyors++;
-                        global.resource.Soul_Gem.amount++;
-                        global.portal.fortress.pity = 0;
-                        if (!global.resource.Soul_Gem.display){
-                            global.resource.Soul_Gem.display = true;
-                            messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                    let div = 25 - Math.floor(p_on['attractor'] / 5);
+                    if (div < 5){ div = 5; }
+                    let chances = Math.round(searched / div);
+                    for (let j=0; j<chances; j++){
+                        if (Math.rand(0,gem_chance) === 0){
+                            surv_report.gem++;
+                            day_report.stats.gems.surveyors++;
+                            global.resource.Soul_Gem.amount++;
+                            global.portal.fortress.pity = 0;
+                            if (!global.resource.Soul_Gem.display){
+                                global.resource.Soul_Gem.display = true;
+                                messageQueue(loc('portal_first_gem'),'info',false,['progress','hell']);
+                            }
+                            has_drop = true;
                         }
                     }
                 }
                 day_report.surveyor_finds[i+1] = surv_report;
             }
         } 
+    }
+
+    if (!has_drop && global.portal.fortress.pity < 10000){
+        global.portal.fortress.pity++;
     }
 
     if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
@@ -4983,8 +4996,8 @@ function drawHellReports(){
                     if (patrol.died){
                         displayText.append(`<span class="has-text-danger">${patrol.died > 1 ? loc('hell_report_log_patrol_killed_plural',[patrol.died]) : loc('hell_report_log_patrol_killed')}</span>`);
                     }
-                    if (patrol.gem){
-                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                    if (patrol.gem > 0){
+                        displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,patrol.gem])}</span>`);
                     }
                     info.append(displayText);
                 }
@@ -5001,8 +5014,8 @@ function drawHellReports(){
 
                 let displayText = $(`<p></p>`);
                 displayText.append(`<span>${loc('hell_report_log_search',[name,surveyor.bodies])}</span>`);
-                if (surveyor.gem){
-                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_search',[global.resource.Soul_Gem.name])}</span>`);
+                if (surveyor.gem > 0){
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_search',[global.resource.Soul_Gem.name,surveyor.gem])}</span>`);
                 }
                 info.append(displayText);
             });
