@@ -339,7 +339,7 @@ export function defineJobs(define){
     loadJob('archaeologist',define,1,1,'advanced');
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
-    if (!define){
+    if (!define && !global.race['start_cataclysm']){
         loadFoundry();
         if (global.race['servants']){
             loadServants();
