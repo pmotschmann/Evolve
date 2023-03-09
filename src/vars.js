@@ -1172,7 +1172,7 @@ if (convertVersion(global['version']) < 103002){
 
 global['version'] = '1.3.3';
 delete global['revision'];
-global['beta'] = 1;
+global['beta'] = 2;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -2029,12 +2029,15 @@ export function srSpeak(text, priority) {
 }
 
 // executes a soft reset
-window.soft_reset = function reset(){
+window.soft_reset = function reset(source){
     try {
-        gtag('event', 'reset', { 'end': 'soft'});
+        source = source && source === 'replicator' ? 'replicator' : 'soft';
+        gtag('event', 'reset', { 'end': source});
     } catch (err){}
     
-    clearSavedMessages();
+    if (!source){
+        clearSavedMessages();
+    }
 
     let srace = global.race.hasOwnProperty('srace') ? global.race.srace : false;
     let gecks = global.race.hasOwnProperty('geck') ? global.race.geck : 0;

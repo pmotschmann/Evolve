@@ -193,6 +193,11 @@ export const feats = {
         desc: loc("feat_slime_lord_desc"),
         flair: loc("feat_slime_lord_flair")
     },
+    annihilation: {
+        name: loc("feat_annihilation_name"),
+        desc: loc("feat_annihilation_desc"),
+        flair: loc("feat_annihilation_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),

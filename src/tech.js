@@ -1,7 +1,7 @@
 import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
-import { unlockAchieve, alevel, universeAffix } from './achieve.js';
+import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
@@ -4092,8 +4092,8 @@ const techs = {
     },
     matter_replicator: {
         id: 'tech-matter_replicator',
-        title(){ return loc('tech_replicator'); },
-        desc(){ return loc('tech_replicator'); },
+        title(){ return global.race.universe === 'antimatter' && !global.race['amexplode'] ? loc('tech_antireplicator') : loc('tech_replicator'); },
+        desc(){ return global.race.universe === 'antimatter' && !global.race['amexplode'] ? loc('tech_antireplicator') : loc('tech_replicator'); },
         category: 'special',
         era: 'discovery',
         reqs: { high_tech: 2},
@@ -4103,10 +4103,28 @@ const techs = {
         cost: {
             Knowledge(){ return 25000; },
         },
-        effect(){ return loc('tech_replicator_effect'); },
+        effect(){ return global.race.universe === 'antimatter' && !global.race['amexplode'] ? loc('tech_antireplicator_effect_alt') : loc('tech_replicator_effect_alt'); },
         action(){
             if (payCosts($(this)[0])){
-                global.race['replicator'] = { res: 'Stone', pow: 1 };
+                if (global.race.universe === 'antimatter' && global.race['amexplode']){
+                    unlockFeat('annihilation');
+                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    $('body').addClass('nuke');
+                    let nuke = $('<div class="nuke"></div>');
+                    $('body').append(nuke);
+                    setTimeout(function(){
+                        nuke.addClass('burn');
+                    }, 500);
+                    setTimeout(function(){
+                        nuke.addClass('b');
+                    }, 600);
+                    setTimeout(function(){
+                        window.soft_reset();
+                    }, 4000);
+                }
+                else {
+                    global.race['replicator'] = { res: 'Stone', pow: 1 };
+                }
                 return true;
             }
             return false;
@@ -12935,8 +12953,8 @@ const techs = {
     },
     replicator: {
         id: 'tech-replicator',
-        title(){ return loc('tech_replicator'); },
-        desc(){ return loc('tech_replicator'); },
+        title(){ return global.race.universe === 'antimatter' ? loc('tech_antireplicator') : loc('tech_replicator'); },
+        desc(){ return global.race.universe === 'antimatter' ? loc('tech_antireplicator') : loc('tech_replicator'); },
         category: 'special',
         era: 'tauceti',
         path: ['truepath'],
@@ -12946,7 +12964,7 @@ const techs = {
         cost: {
             Knowledge(){ return 6250000; },
         },
-        effect(){ return loc('tech_replicator_effect'); },
+        effect(){ return global.race.universe === 'antimatter' ? loc('tech_antireplicator_effect') : loc('tech_replicator_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.race['replicator'] = { res: 'Unobtainium', pow: 1 };
