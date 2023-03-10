@@ -1442,7 +1442,7 @@
   "tech_infernium_fuel": "炼狱燃料",
   "tech_infernium_fuel_effect": "混合了石油、煤炭、地狱石的新型燃料，可供冶炼厂使用。",
   "tech_rotary_kiln": "回转炉",
-  "tech_rotary_kiln_effect": "通过它可以更好地精炼铜，使矿井的铜产量 +20%。",
+  "tech_rotary_kiln_effect": "通过它可以更好地精炼铜，矿井的铜产量 +20%。",
   "tech_metal_working": "金属加工",
   "tech_metal_working_desc": "学习冶炼和加工金属的基础知识",
   "tech_metal_working_effect": "学习如何开采和提炼纯铜，解锁铜。",
