@@ -6,7 +6,7 @@ const changeList = [
         version: `1.3.3`,
         date: `3/8/2023`,
         changes: [
-            `Rebalanced Hell Stuff`,
+            `Rebalanced Hell Stuff.`,
             `Added Annihilation Feat.`,
             `Fixed High Pop issue with Pit Miners.`,
             `Fixed bug with unlocking Replicator without a Governor.`
