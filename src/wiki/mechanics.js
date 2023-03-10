@@ -133,6 +133,33 @@ export function mechanicsPage(content){
         sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
     }
 
+    { // Stacking Multipliers
+        let multipliers = infoBoxBuilder(mainContent,{ name: 'multipliers', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 1, h_level: 2 });
+
+        let prod = infoBoxBuilder(multipliers,{ name: 'multipliers_prod', template: 'mechanics', label: loc('wiki_mechanics_multipliers_prod'), paragraphs: 4, break: [3,4], h_level: false,
+            para_data: {
+                3: [loc('wiki_mechanics_multipliers_struct'),loc('wiki_mechanics_multipliers_bonus')],
+            },
+        });
+        prod.append(`<div class="doublePane"><img src="lib/mine.png"><img src="lib/copper-miner.png"></div>`);
+
+        infoBoxBuilder(multipliers,{ name: 'multipliers_dis', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 7, break: [3,4], h_level: false,
+            para_data: {
+                3: [loc('wiki_mechanics_multipliers_base'),loc('wiki_mechanics_multipliers_discount'),loc('wiki_mechanics_multipliers_struct')],
+                5: [loc('city_mass_driver')],
+                6: [100,loc('city_mass_driver'),'5%',95,35.84],
+                7: [100,0.95,20,35.84],
+            },
+            data_link: {
+                5: ['wiki.html#planetary-structures-mass_driver'],
+            }
+        });
+
+        multipliers.append(`<div>${loc(`wiki_mechanics_multipliers_exception`)}</div>`)
+
+        sideMenu('add',`mechanics-gameplay`,`multipliers`,loc('wiki_mechanics_multipliers'));
+    }
+
     { // Blocking Resources
         let blocking = infoBoxBuilder(mainContent,{ name: 'blocking', template: 'mechanics', label: loc('wiki_mechanics_blocking'), paragraphs: 6, break: [4,6], h_level: 2,
             para_data: {
