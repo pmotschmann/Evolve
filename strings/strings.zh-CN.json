@@ -51,6 +51,7 @@
   "to_empty": "耗尽",
   "requires_power": "需要电力",
   "requires_power_combo": "需要电力和%0",
+  "requires_power_space": "需要电力、%0和氦-3",
   "requires_power_combo_effect": "电力 -%0MW，%2 -%1/s",
   "requires_power_support": "需要%0支持和电力",
   "requires_power_support_combo": "需要%0支持和%1",

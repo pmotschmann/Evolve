@@ -51,6 +51,7 @@
   "to_empty": "To Empty",
   "requires_power": "Requires Power",
   "requires_power_combo": "Requires Power and %0",
+  "requires_power_space": "Requires Power, %0 and Helium-3",
   "requires_power_combo_effect": "-%0MW, -%1 %2/s",
   "requires_power_support": "Requires %0 Support and Power",
   "requires_power_support_combo": "Requires %0 Support and %1",
