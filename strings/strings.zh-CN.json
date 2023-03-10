@@ -7585,7 +7585,7 @@
   "wiki_mechanics_multipliers_dis_para5": "例如，%0可以减少燃料成本。",
   "wiki_mechanics_multipliers_dis_para6": "如果基础燃料的消耗为%0，而每个%1使燃料成本 -%2，则建造一个%1可以使燃料成本降低到%3，20个%1将使燃料成本降低到%4，以此类推。"
   "wiki_mechanics_multipliers_dis_para7": "由于 %0 * %1 ^ %2 = %3，因此不可能无能源消耗。",
-  "wiki_mechanics_multipliers_exception": "如无特殊说明，部分例外情况也可以遵循以上原则。",
+  "wiki_mechanics_multipliers_exception": "部分例外情况在上述原则中亦可应用。",
   "wiki_mechanics_blocking": "建筑所需资源",
   "wiki_mechanics_blocking_para1": "如果建筑的资源不足，将以指定的颜色表示名称。",
   "wiki_mechanics_blocking_para2": "以默认主题 [Gruvbox主题（黑暗）]为例，需要最长时间补充的建筑所需资源以%0表示。",
