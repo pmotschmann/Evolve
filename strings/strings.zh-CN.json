@@ -7577,13 +7577,13 @@
   "wiki_mechanics_multipliers_prod_para1": "生产类建筑的产量加成随供能的建筑而叠加。",
   "wiki_mechanics_multipliers_prod_para2": "产量的加成可按以下公式计算：",
   "wiki_mechanics_multipliers_prod_para3": "<%0> * <%1>",
-  "wiki_mechanics_multipliers_prod_para4": "例如，每个供能的矿井使矿工产量 +5%。如果您为两个矿井供能，就使矿工产量 +10%，为 20 个矿井供能 +100%，以此类推。",
+  "wiki_mechanics_multipliers_prod_para4": "例如，每个供能的矿井使矿工产量 +5%。如果您为两个矿井供能，就使矿工产量 +10%，20个供能的矿井使矿工产量 +100%，以此类推。",
   "wiki_mechanics_multipliers_dis_para1": "消耗类建筑的消耗减少随供能的建筑而叠乘。",
   "wiki_mechanics_multipliers_dis_para2": "消耗的减少可按以下公式计算：",
   "wiki_mechanics_multipliers_dis_para3": "<%0> * <%1> ^ <%2>",
   "wiki_mechanics_multipliers_dis_para4": "消耗减少即降低建筑的建造成本。",
   "wiki_mechanics_multipliers_dis_para5": "例如，%0可以减少燃料成本。",
-  "wiki_mechanics_multipliers_dis_para6": "如果基础燃料的消耗为%0，而每个%1使燃料成本 -%2，则建造一个%1可以使燃料成本降低到%3，20个%1将使燃料成本降低到%4，以此类推。"
+  "wiki_mechanics_multipliers_dis_para6": "如果基础燃料的消耗为%0，而每个%1使燃料成本 -%2，则建造一个%1就使燃料成本降低到%3，20个%1使燃料成本降低到%4，以此类推。"
   "wiki_mechanics_multipliers_dis_para7": "由于 %0 * %1 ^ %2 = %3，因此不可能无能源消耗。",
   "wiki_mechanics_multipliers_exception": "部分例外情况在上述原则中亦可应用。",
   "wiki_mechanics_blocking": "建筑所需资源",
