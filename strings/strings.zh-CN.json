@@ -1080,7 +1080,7 @@
   "city_factory_desc": "生产工业产品",
   "city_factory_effect": "工厂可用于生产工业产品。",
   "city_nanite_factory": "纳米机器人工厂",
-  "city_nanite_factory_effect": "拆解资源用于制造 %0",
+  "city_nanite_factory_effect": "拆解资源用于制造%0",
   "city_nanite_factory_flair": "自助餐厅营业中",
   "city_smelter": "冶炼厂",
   "city_smelter_desc": "提升铁产量",
