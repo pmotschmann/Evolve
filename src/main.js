@@ -7540,9 +7540,6 @@ function midLoop(){
                 caps['Crates'] += (global.tauceti.repository.count * containers);
                 bd_Crates[loc('tech_repository')] = (global.tauceti.repository.count * containers) + 'v';
             }
-            if (global.race['artifical']) {
-                caps['Food'] += global.tauceti.repository.count * 10000;
-            }
         }
 
         if (global.galaxy['gateway_depot']){
