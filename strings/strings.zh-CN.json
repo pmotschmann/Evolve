@@ -488,6 +488,8 @@
   "job_hell_surveyor_desc": "勘探者的任务是寻找地狱维度的地狱石，他们可能会被恶魔杀死，需要巡逻队的保护。这几乎是帝国最糟糕的工作了……",
   "job_archaeologist": "考古学家",
   "job_archaeologist_desc": "考古学家通过挖掘古城遗迹寻找失落的知识。每位考古学家使知识上限 +%0。",
+  "job_pit_miner": "深渊矿工",
+  "job_pit_miner_desc": "深渊矿工会努力地从%0获取资源。",
   "job_crew": "船员",
   "job_crew_civ": "平民船员",
   "job_crew_mil": "军人船员",
