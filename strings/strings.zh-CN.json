@@ -542,7 +542,7 @@
   "event_slave_none": "部下正在密谋推翻你！你太弱了！证明你的价值！",
   "event_demon_influx": "堡垒周围聚集了 %0 个恶魔生物。",
   "event_mine_collapse": "1 名矿工死于塌方。",
-  "event_protest0": "市民们就 %0 漏风的问题提出抗议。",
+  "event_protest0": "市民们就%0漏风的问题提出抗议。",
   "event_protest1": "市民们就外来务工人员过多挤占工作岗位的问题提出抗议。",
   "event_protest2": "市民们就贸易政策的问题提出抗议。",
   "event_protest3": "市民们就警察击毙闹事醉汉的问题提出抗议。",
