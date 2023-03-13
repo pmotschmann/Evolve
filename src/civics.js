@@ -1530,6 +1530,11 @@ function war_campaign(gov){
             Titanium: 0,
             Crystal: 0,
             Chrysotile: 0,
+            Furs: 0,
+            Iridium: 0,
+            Alloy: 0,
+            Polymer: 0,
+            Oil: 0,
         };
 
         let basic = gov === 3 && global.race['truepath'] ? ['Food','Lumber','Stone','Copper','Iron'] : ['Food','Lumber','Stone'];

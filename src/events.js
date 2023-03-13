@@ -229,7 +229,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov0`);
@@ -242,7 +242,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov1`);
@@ -255,7 +255,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov2`);
@@ -267,7 +267,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov3`,true);
