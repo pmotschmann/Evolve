@@ -1989,6 +1989,8 @@ export function getBaseIcon(name,type){
                 return 'floppy';
             case 'slime_lord':
                 return 'slime';
+            case 'annihilation':
+                return 'lightning';
             case 'friday':
                 return 'mask';
             case 'valentine':
