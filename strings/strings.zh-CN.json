@@ -96,6 +96,7 @@
   "icons": "图标",
   "add": "添加",
   "remove": "移除",
+  "active": "已激活",
   "not_active": "未激活",
   "unavailable_content": "当前版本不可用",
   "multitab_warning": "注意：《进化-Evolve》正在多个标签页下运行，这可能造成存档数据丢失等问题，请尽可能使用单标签页运行游戏。",
