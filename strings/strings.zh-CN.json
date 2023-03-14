@@ -5240,7 +5240,7 @@
   "gov_task_mech": "构建机甲",
   "gov_task_replicate": "调度复制器",
   "gov_task_replicate_auto": "自动调节使用的电力",
-  "gov_task_replicate_pmax": "至多使用电力",
+  "gov_task_replicate_pmax": "最多使用电力",
   "gov_task_replicate_buff": "可用电力缓冲值",
   "gov_task_replicate_que": "优先产生队列中缺少的资源",
   "gov_task_replicate_neg": "优先产生负产量资源",
