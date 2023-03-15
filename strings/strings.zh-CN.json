@@ -2508,7 +2508,7 @@
   "star_dock_probe": "星际探测器",
   "star_dock_probe_desc": "星际探测器",
   "star_dock_probe_effect": "播种重置时，每有一个星际探测器，就使能探测到的宜居星球数量 +1。",
-  "star_dock_geck_effect": "建造生态系统建造设施，可以使下一个宜居星球焕然一新。在同一星球上建造多个生态系统建造设施可能会带来负面影响。",
+  "star_dock_geck_effect": "建造生态系统建造设施，可以改善我们的家园。在同一星球上建造多个生态系统建造设施可能会带来负面影响。",
   "star_dock_seeder": "生命播种飞船",
   "star_dock_seeder_desc1": "需完成 100 段分项工程",
   "star_dock_seeder_desc2": "飞船建造进度：已完成",
