@@ -7643,7 +7643,7 @@
   "wiki_mechanics_religion_para8": "通常推荐在长时间的周目选择%0科技树，后续研究为：%0、%1、%2和%3。",
   "wiki_mechanics_religion_para9": "研究%0后，您可以获得上周目游戏使用种族的主要特质。",
   "wiki_mechanics_religion_para10": "您可以在此处查看研究狂热信仰后获得的特质：%0。",
-  "wiki_mechanics_religion_para11": "如果您已经拥有了该特质，该特质的级别将会提升。",
+  "wiki_mechanics_religion_para11": "如果您已经拥有了该特质，该特质的级别将会提升 1 级；如果您拥有的特质级别已经达到上限，则改为随机选取一个次要特质升 %0 级。",
   "wiki_mechanics_religion_para12": "研究%0后，教授可以提升寺庙的效果。",
   "wiki_mechanics_religion_para13": "研究%0后，寺庙可以增加贸易路线。",
   "wiki_mechanics_religion_para14": "研究%0后，寺庙可以增加士兵战斗评级。",
