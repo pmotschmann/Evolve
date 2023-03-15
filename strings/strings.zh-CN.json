@@ -7595,7 +7595,7 @@
   "wiki_mechanics_multipliers_dis_para3": "<%0> * <%1> ^ <%2>",
   "wiki_mechanics_multipliers_dis_para4": "消耗减少即降低建筑的建造成本。",
   "wiki_mechanics_multipliers_dis_para5": "例如，%0可以减少燃料成本。",
-  "wiki_mechanics_multipliers_dis_para6": "如果基础燃料的消耗为%0，而每个%1使燃料成本 -%2，则建造一个%1就使燃料成本降低到%3，20个%1使燃料成本降低到%4，以此类推。"
+  "wiki_mechanics_multipliers_dis_para6": "如果基础燃料的消耗为%0，而每个%1使燃料成本 -%2，则建造一个%1就使燃料成本降低到%3，20个%1使燃料成本降低到%4，以此类推。",
   "wiki_mechanics_multipliers_dis_para7": "由于 %0 * %1 ^ %2 = %3，因此不可能无能源消耗。",
   "wiki_mechanics_multipliers_exception": "部分例外情况在上述原则中亦可应用。",
   "wiki_mechanics_blocking": "建筑所需资源",
