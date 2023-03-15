@@ -9,6 +9,7 @@ const changeList = [
             `Rebalanced Hell Stuff.`,
             `Added Annihilation Feat.`,
             `Servants are no longer affected by most racial traits.`,
+            `The Lone Survivor can no longer benefit from Hivemind.`,
             `Fixed High Pop issue with Pit Miners.`,
             `Fixed bug with unlocking Replicator without a Governor.`
         ]

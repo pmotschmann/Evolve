@@ -4205,7 +4205,7 @@ export function racialTrait(workers,type){
     if (global.race['artifical'] && type === 'science'){
         modifier *= 1 + (traits.artifical.vars()[0] / 100);
     }
-    if (global.race['hivemind'] && type !== 'farmer'){
+    if (global.race['hivemind'] && type !== 'farmer' && !global.race['lone_survivor']){
         let breakpoint = traits.hivemind.vars()[0];
         let scale = 0.05;
         if (global.race['high_pop'] && type !== 'army' && type !== 'hellArmy'){

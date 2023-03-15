@@ -50,19 +50,17 @@ export const job_desc = {
         return desc;
     },
     lumberjack: function(servant){
-        let workers = global.civic.lumberjack.workers;
-        if (global.race['servants'] && global.race.servants.jobs.lumberjack > 0){
-            workers += jobScale(global.race.servants.jobs.lumberjack);
-        }
+        let workers = servant && global.race['servants'] ? global.race.servants.jobs.lumberjack : global.civic.lumberjack.workers;
         let impact = global.civic.lumberjack.impact;
         if (!servant){
             workers = +workerScale(workers,'lumberjack').toFixed(2);
             impact = +workerScale(impact,'lumberjack').toFixed(2);
         }
-        if (servant){ impact *= jobScale(1); }
         if (global.race['evil'] && (!global.race['soul_eater'] || global.race.species === 'wendigo')){
             let multiplier = 1;
-            multiplier *= racialTrait(workers,'lumberjack');
+            if (!servant){
+                multiplier *= racialTrait(workers,'lumberjack');
+            }
             let bone = +(impact * multiplier).toFixed(2);
             let flesh = +(impact / 4 * multiplier).toFixed(2);
             let desc = global.race.species === 'wendigo' ? loc('job_reclaimer_desc2',[bone]) : loc('job_reclaimer_desc',[bone,flesh]);
@@ -73,7 +71,9 @@ export const job_desc = {
         }
         else {
             let multiplier = (global.tech['axe'] && global.tech['axe'] > 0 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
-            multiplier *= racialTrait(workers,'lumberjack');
+            if (!servant){
+                multiplier *= racialTrait(workers,'lumberjack');
+            }
             if (global.city.biome === 'forest'){
                 impact *= biomes.forest.vars()[0];
             }
@@ -89,7 +89,7 @@ export const job_desc = {
             if (global.city.biome === 'taiga'){
                 impact *= biomes.taiga.vars()[0];
             }
-            let gain = +(impact * multiplier).toFixed(1);
+            let gain = +(impact * multiplier).toFixed(2);
             let desc = loc('job_lumberjack_desc',[gain,global.resource.Lumber.name]);
             if (global.civic.d_job === 'lumberjack' && !servant){
                 desc = desc + ' ' + loc('job_default',[loc('job_lumberjack')]);
@@ -98,17 +98,16 @@ export const job_desc = {
         }
     },
     quarry_worker: function(servant){
-        let workers = global.civic.quarry_worker.workers;
-        if (global.race['servants'] && global.race.servants.jobs.quarry_worker > 0){
-            workers += jobScale(global.race.servants.jobs.quarry_worker);
-        }
+        let workers = servant && global.race['servants'] ? global.race.servants.jobs.quarry_worker : global.civic.quarry_worker.workers;
         let impact = global.civic.quarry_worker.impact;
         if (!servant){
             workers = +workerScale(workers,'quarry_worker').toFixed(2);
             impact = +workerScale(impact,'quarry_worker').toFixed(2);
         }
         let multiplier = (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
-        multiplier *= racialTrait(workers,'miner');
+        if (!servant){
+            multiplier *= racialTrait(workers,'miner');
+        }
         if (global.city.biome === 'desert'){
             multiplier *= biomes.desert.vars()[0];
         }
@@ -118,7 +117,6 @@ export const job_desc = {
         if (global.tech['explosives'] && global.tech['explosives'] >= 2){
             multiplier *= global.tech['explosives'] >= 3 ? 1.75 : 1.5;
         }
-        if (servant){ impact *= jobScale(1); }
         let gain = +(impact * multiplier).toFixed(1);
         let desc = global.resource.Aluminium.display ? loc('job_quarry_worker_desc2',[gain, global.resource.Stone.name,global.resource.Aluminium.name]) : loc('job_quarry_worker_desc1',[gain,global.resource.Stone.name]);
         if (global.race['smoldering']){
@@ -130,18 +128,14 @@ export const job_desc = {
         return desc;
     },
     crystal_miner: function(servant){
-        let workers = global.civic.crystal_miner.workers;
-        if (global.race['servants'] && global.race.servants.jobs.crystal_miner > 0){
-            workers += jobScale(global.race.servants.jobs.crystal_miner);
-        }
+        let workers = servant && global.race['servants'] ? global.race.servants.jobs.crystal_miner : global.civic.crystal_miner.workers;
         let impact = global.civic.crystal_miner.impact;
+        let multiplier = 1;
         if (!servant){
             workers = +workerScale(workers,'crystal_miner').toFixed(2);
             impact = +workerScale(impact,'crystal_miner').toFixed(2);
+            multiplier *= racialTrait(workers,'miner');
         }
-        let multiplier = 1;
-        multiplier *= racialTrait(workers,'miner');
-        if (servant){ impact *= jobScale(1); }
         let gain = +(impact * multiplier).toFixed(2);
         let desc = loc('job_crystal_miner_desc',[gain,global.resource.Crystal.name]);
         if (global.civic.d_job === 'crystal_miner' && !servant){
