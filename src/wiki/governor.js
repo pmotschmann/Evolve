@@ -231,10 +231,10 @@ export function governPage(content){
                     7: `wiki_governor_task_${task}4`
                 },
                 para_data: {
-                    4: [loc(`interstellar_mass_ejector`)],
+                    7: [loc(`interstellar_mass_ejector`)],
                 },
                 data_link: {
-                    4: ['wiki.html#interstellar-structures-mass_ejector']
+                    7: ['wiki.html#interstellar-structures-mass_ejector']
                 }
             });
             sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));

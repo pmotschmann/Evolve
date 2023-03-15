@@ -8,7 +8,7 @@ const changeList = [
         changes: [
             `Rebalanced Hell Stuff.`,
             `Added Annihilation Feat.`,
-            `Added additional Mass Ejector Optimizer config mode`,
+            `Added additional Mass Ejector Optimizer config mode.`,
             `Servants are no longer affected by most racial traits.`,
             `The Lone Survivor can no longer benefit from Hivemind.`,
             `Fixed High Pop issue with Pit Miners.`,
