@@ -2253,15 +2253,15 @@ export function bloodwar(){
     }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
-        gem_chance = Math.round(gem_chance * (0.945 ** p_on['attractor']));
+        gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
     }
 
     if (global.race['ghostly']){
         gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars()[2]) / 100));
     }
 
-    if (gem_chance < 10){
-        gem_chance = 10;
+    if (gem_chance < 12){
+        gem_chance = 12;
     }
 
     // Patrols
