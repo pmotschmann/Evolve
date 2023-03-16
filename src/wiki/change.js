@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.4`,
+        date: `3/16/2023`,
+        changes: [
+            `Evolving Synth can now chose imitation race from any speices killed by an AI Apocalypse.`,
+        ]
+    },
+    {
         version: `1.3.3`,
         date: `3/15/2023`,
         changes: [

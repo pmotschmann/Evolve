@@ -26,7 +26,7 @@ export const actions = {
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
             },
-            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display; },
+            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display && !global.race['evoFinalMenu']; },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
@@ -39,7 +39,7 @@ export const actions = {
             id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
-            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display; },
+            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display && !global.race['evoFinalMenu']; },
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
@@ -55,7 +55,7 @@ export const actions = {
             id: 'evolution-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
-            condition(){ return global.evolution.hasOwnProperty('membrane'); },
+            condition(){ return global.evolution.hasOwnProperty('membrane') && !global.race['evoFinalMenu']; },
             cost: { RNA(offset){ return evolveCosts('membrane',2,2,offset); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
@@ -74,7 +74,7 @@ export const actions = {
             id: 'evolution-organelles',
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
-            condition(){ return global.evolution.hasOwnProperty('organelles'); },
+            condition(){ return global.evolution.hasOwnProperty('organelles') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('organelles',12,8,offset); },
                 DNA(offset){ return evolveCosts('organelles',4,4,offset); }
@@ -98,7 +98,7 @@ export const actions = {
             id: 'evolution-nucleus',
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
-            condition(){ return global.evolution.hasOwnProperty('nucleus'); },
+            condition(){ return global.evolution.hasOwnProperty('nucleus') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('nucleus',38, global.tech['evo'] && global.tech.evo >= 4 ? 16 : 32, offset ); },
                 DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4  ? 12 : 16, offset ); }
@@ -119,7 +119,7 @@ export const actions = {
             id: 'evolution-eukaryotic_cell',
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
-            condition(){ return global.evolution.hasOwnProperty('eukaryotic_cell'); },
+            condition(){ return global.evolution.hasOwnProperty('eukaryotic_cell') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('eukaryotic_cell',20,20,offset); },
                 DNA(offset){ return evolveCosts('eukaryotic_cell',40,12,offset); }
@@ -141,7 +141,7 @@ export const actions = {
             id: 'evolution-mitochondria',
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
-            condition(){ return global.evolution.hasOwnProperty('mitochondria'); },
+            condition(){ return global.evolution.hasOwnProperty('mitochondria') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('mitochondria',75,50,offset); },
                 DNA(offset){ return evolveCosts('mitochondria',65,35,offset); }
@@ -4243,7 +4243,7 @@ raceList.forEach(race => actions.evolution[race] = {
     reqs: { evo: 7 },
     grant: ['evo',8],
     condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100; },
+      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
     cost: {
         RNA(){ return 320; },
         DNA(){ return 320; }
@@ -4252,14 +4252,44 @@ raceList.forEach(race => actions.evolution[race] = {
     effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
     action(){
         if (payCosts($(this)[0])){
-            global.race.species = race;
-            sentience();
+            if (race === 'synth'){
+                return evoSynth();
+            }
+            else {
+                global.race.species = race;
+                sentience();
+            };
         }
         return false;
     },
     queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
     emblem(){ return format_emblem(`extinct_${race}`); }
 });
+
+if (Object.keys(global.stats.synth).length > 1){
+    raceList.forEach(race => actions.evolution[`s-${race}`] = {
+        id: `evolution-s-${race}`,
+        title(){ return races[race].name; },
+        desc(){ return `${loc("evo_imitate")} ${races[race].name}`; },
+        reqs: { evo: 8 },
+        grant: ['evo',9],
+        condition(){
+            return global.stats.synth[race] && global.race['evoFinalMenu'];
+        },
+        cost: {},
+        race: true,
+        effect(){ return loc(`evo_imitate_race`,[races[race].name]); },
+        action(){
+            if (global.stats.synth[race]){
+                global.race.species = 'synth';
+                global.race['srace'] = race;
+                sentience();
+            }
+            return false;
+        },
+        queue_complete(){ return global.tech['evo'] && global.tech.evo === 8 ? 1 : 0; }
+    });
+}
             
 const challengeList = {
     'plasmid': 'no_plasmid',
@@ -4364,7 +4394,7 @@ actions.evolution['bunker'] = {
     desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
     reqs: { evo: 6 },
     grant: ['evo_challenge',1],
-    condition(){ return global.genes['challenge'] && global.evolution['final'] === 100; },
+    condition(){ return global.genes['challenge'] && global.evolution['final'] === 100 && !global.race['evoFinalMenu']; },
     cost: {
         DNA(){ return 10; }
     },
@@ -4413,11 +4443,13 @@ export function drawEvolution(){
         }
     });
 
-    if (global.tech['evo'] && global.tech.evo >= 2){
-        evoProgress();
-    }
-    if (global.tech['evo_challenge']){
-        setChallengeScreen();
+    if (!global.race['evoFinalMenu']){
+        if (global.tech['evo'] && global.tech.evo >= 2){
+            evoProgress();
+        }
+        if (global.tech['evo_challenge']){
+            setChallengeScreen();
+        }
     }
 }
 
@@ -6831,6 +6863,17 @@ export function updateQueueNames(both, items){
                 actions.tech[global.r_queue.queue[i].type].title : 
                 actions.tech[global.r_queue.queue[i].type].title();
         }
+    }
+}
+
+function evoSynth(){
+    if (Object.keys(global.stats.synth).length > 1){
+        global.race['evoFinalMenu'] = true;
+        drawEvolution();
+        return true;
+    }
+    else {
+        sentience();
     }
 }
 
