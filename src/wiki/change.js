@@ -6,7 +6,7 @@ const changeList = [
         version: `1.3.3`,
         date: `3/15/2023`,
         changes: [
-            `Rebalanced Hell Stuff.`,
+            `Rebalanced Soul Gem drop mechanics.`,
             `Added Annihilation Feat.`,
             `Added additional Mass Ejector Optimizer config mode.`,
             `Servants are no longer affected by most racial traits.`,
