@@ -4252,8 +4252,8 @@ raceList.forEach(race => actions.evolution[race] = {
     effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
     action(){
         if (payCosts($(this)[0])){
-            if (race === 'synth'){
-                return evoSynth();
+            if (['synth'].includes(race)){
+                return evoExtraState(race);
             }
             else {
                 global.race.species = race;
@@ -6866,13 +6866,14 @@ export function updateQueueNames(both, items){
     }
 }
 
-function evoSynth(){
-    if (Object.keys(global.stats.synth).length > 1){
+function evoExtraState(race){
+    if (race === 'synth' && Object.keys(global.stats.synth).length > 1){
         global.race['evoFinalMenu'] = true;
         drawEvolution();
         return true;
     }
     else {
+        global.race.species = race;
         sentience();
     }
 }
