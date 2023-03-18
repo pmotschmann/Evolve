@@ -1155,7 +1155,7 @@ const spaceProjects = {
             },
             effect(){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
-                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
+                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){

@@ -3586,6 +3586,14 @@ export const actions = {
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
             },
+            p_fuel(){
+                if (global.race.universe === 'magic'){
+                    return { r: 'Mana', a: global.race['environmentalist'] ? 0 : 0.05 };
+                }
+                else {
+                    return { r: 'Coal', a: global.race['environmentalist'] ? 0 : 0.35 };
+                }
+            },
             action(){
                 if (payCosts($(this)[0])){
                     global.city.coal_power.count++;
@@ -3982,7 +3990,7 @@ export function setChallengeScreen(){
         addAction('evolution','orbit_decay');
     }
     if (global.stats.achieve['bluepill']){
-        // addAction('evolution','simulation');
+        addAction('evolution','simulation');
     }
     scenarioActionHeader();
     addAction('evolution','junker');
