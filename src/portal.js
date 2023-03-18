@@ -591,6 +591,7 @@ const fortressModules = {
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
+                vBind({el: `#srprtl_gate`},'update');
             },
             citizens(){
                 let pop = 8;

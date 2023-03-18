@@ -4252,7 +4252,7 @@ raceList.forEach(race => actions.evolution[race] = {
     effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
     action(){
         if (payCosts($(this)[0])){
-            if (['synth'].includes(race)){
+            if (['synth','custom'].includes(race)){
                 return evoExtraState(race);
             }
             else {
@@ -4281,7 +4281,7 @@ if (Object.keys(global.stats.synth).length > 1){
         effect(){ return loc(`evo_imitate_race`,[races[race].name]); },
         action(){
             if (global.stats.synth[race]){
-                global.race.species = 'synth';
+                global.race.species = global.race['evoFinalMenu'];
                 global.race['srace'] = race;
                 sentience();
             }
@@ -6867,8 +6867,8 @@ export function updateQueueNames(both, items){
 }
 
 function evoExtraState(race){
-    if (race === 'synth' && Object.keys(global.stats.synth).length > 1){
-        global.race['evoFinalMenu'] = true;
+    if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
+        global.race['evoFinalMenu'] = race;
         drawEvolution();
         return true;
     }
