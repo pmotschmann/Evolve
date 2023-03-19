@@ -579,6 +579,7 @@ challengeIcon();
 if (global.race.species === 'protoplasm'){
     global.resource.RNA.display = true;
     let perk_rank = global.stats.feat['master'] && global.stats.achieve['ascended'] && global.stats.achieve.ascended.l > 0 ? Math.min(global.stats.achieve.ascended.l,global.stats.feat['master']) : 0;
+    if (global['sim']){ perk_rank = 5; }
     if (perk_rank > 0 && !global.evolution['mloaded']){
         let evolve_actions = ['dna','membrane','organelles','nucleus','eukaryotic_cell','mitochondria'];
         for (let i = 0; i < evolve_actions.length; i++) {
@@ -597,6 +598,7 @@ if (global.race.species === 'protoplasm'){
         global.evolution['mloaded'] = 1;
     }
     let grand_rank = global.stats.feat['grandmaster'] && global.stats.achieve['corrupted'] && global.stats.achieve.corrupted.l > 0 ? Math.min(global.stats.achieve.corrupted.l,global.stats.feat['grandmaster']) : 0;
+    if (global['sim']){ grand_rank = 5; }
     if (grand_rank >= 5 && !global.evolution['gmloaded']){
         global.tech['evo'] = 6;
         global.evolution['gselect'] = true;
@@ -969,8 +971,8 @@ function fastLoop(){
             modRes('RNA',global.evolution['organelles'].count * rna_multiplier * global_multiplier * time_multiplier);
         }
 
-        if (global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0 && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
-            let rank = Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']);
+        if (((global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0) || global['sim']) && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
+            let rank = global['sim'] ? 5 : Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']);
             modRes('RNA', (rank / 2) * time_multiplier * global_multiplier);
             if (global.resource.DNA.display){
                 modRes('DNA', (rank / 4) * time_multiplier * global_multiplier);
