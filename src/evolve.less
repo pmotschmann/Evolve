@@ -934,6 +934,22 @@ Misc ---------> Main template
             .simButton {
                 border-color: @has-text-success;
             }
+
+            .configList {
+                display: flex;
+                flex-flow: wrap;
+                justify-content: space-around;
+                > div {
+                    margin: 0 .25rem;
+                    width: 10rem;
+
+                    > input {
+                        height: 1.25rem;
+                        text-align: center;
+                        padding: 0;
+                    }
+                }
+            }
         }
 
         // .popper

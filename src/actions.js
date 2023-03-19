@@ -4009,6 +4009,9 @@ export function setChallengeScreen(){
     if (global['sim']){
         exitSimulation();
     }
+    else if (global.race['simulation']){
+        configSimulation();
+    }
 }
 
 export function buildTemplate(key, region){
@@ -6538,6 +6541,29 @@ function exitSimulation(){
     });
 }
 
+function configSimulation(){
+    let challenge = $(`<div id="simSection" class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_simulation')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_simulation_desc')}</div>`));
+
+    let config = $($(`<div class="configList"></div>`));
+    challenge.append(config);
+
+    if (!global.race['simConfig']){
+        global.race['simConfig'] = {};
+    }
+    ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
+        global.race.simConfig[res] = global.race.simConfig[res] || 0;
+        config.append($(`<div><span class="has-text-warning">${loc(`resource_${res}_name`)}</span><input type="number" min="0" class="input" v-model="${res}"></div>`));
+    });
+
+    vBind({
+        el: '#simSection',
+        data: global.race.simConfig
+    });
+}
+
 function drawModal(c_action,type){
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
@@ -7461,7 +7487,7 @@ function simulation(){
             global.race.old_gods = 'none';
             
             ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
-                global.prestige[res] = { count: 0 };
+                global.prestige[res] = { count: Number(global.race.simConfig[res]) };
             });
         }
     }
