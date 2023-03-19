@@ -3989,7 +3989,7 @@ export function setChallengeScreen(){
     if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','orbit_decay');
     }
-    if (global.stats.achieve['bluepill'] || global['sim']){
+    if (global.stats.achieve['bluepill'] && !global['sim']){
         addAction('evolution','simulation');
     }
     scenarioActionHeader();
@@ -4005,6 +4005,9 @@ export function setChallengeScreen(){
     }
     if (global.stats.achieve['retired'] || global['sim']){
         addAction('evolution','lone_survivor');
+    }
+    if (global['sim']){
+        exitSimulation();
     }
 }
 
@@ -6517,6 +6520,24 @@ function scenarioActionHeader(){
     challenge.append($(`<div class="has-text-advanced">${loc('evo_scenario_desc')}</div>`));
 }
 
+function exitSimulation(){
+    let challenge = $(`<div id="simSection" class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_simulation')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_simulation_desc')}</div>`));
+    challenge.append($(`<button class="button simButton" @click="exitsim()">${loc(`evo_challenge_end_sim`)}</button>`));
+
+    vBind({
+        el: '#simSection',
+        data: {},
+        methods: {
+            exitsim(){
+                exitSim();
+            }
+        }
+    });
+}
+
 function drawModal(c_action,type){
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
@@ -7455,6 +7476,15 @@ function exitSim(){
         global.pillars = deepClone(global.sim.pillars);
         global.race = deepClone(global.sim.race);
         delete global['sim'];
+        
+        global.race.species = 'protoplasm';
+        delete global.race['simulation'];
+
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+        window.location.reload();
     }
 }
 

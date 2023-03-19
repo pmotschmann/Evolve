@@ -431,6 +431,9 @@ vBind({
         showUniverse(){
             return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
         },
+        showSim(){
+            return global['sim'] ? true : false;
+        },
         atRemain(){
             return loc(`accelerated_time`);
         },
@@ -560,6 +563,17 @@ popover('topBarUniverse',
     },
     {
         elm: `#topBar .planetWrap .universe`,
+        classes: `has-background-light has-text-dark`
+    }
+);
+
+popover('topBarSimulation',
+    function(obj){
+        obj.popper.append($(`<div>${loc(`evo_challenge_simulation_topbar`)}</div>`));
+        return undefined;
+    },
+    {
+        elm: `#topBar .planetWrap .simulation`,
         classes: `has-background-light has-text-dark`
     }
 );
