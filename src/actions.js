@@ -6937,6 +6937,12 @@ function sentience(){
     if (global.race['simulation']){
         simulation();
     }
+    if (global['sim']){
+        global.settings.showGenetics = true;
+        global.settings.arpa.physics = false;
+        global.settings.arpa.crispr = true;
+        global.settings.arpa.arpaTabs = 2;
+    }
 
     if (global.resource.hasOwnProperty('RNA')){
         global.resource.RNA.display = false;
@@ -7476,7 +7482,7 @@ function simulation(){
             setupStats();
 
             global.genes = { minor: {}, challenge: 1 };
-            global.blood = {};
+            global.blood = { aware: 1 };
             global.pillars = {};
             delete global.race['ancient_ruins'];
             delete global.race['rapid_mutation'];
@@ -7767,6 +7773,7 @@ function cataclysm(){
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 1;
         global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
 
         //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;

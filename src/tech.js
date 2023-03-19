@@ -4224,6 +4224,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.showGenetics = true;
+                global.settings.arpa.physics = true;
                 if (global.race['truepath'] && !global.tech['unify']){
                     global.tech['unify'] = 1;
                 }

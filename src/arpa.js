@@ -1620,11 +1620,13 @@ function costMultiplier(project,offset,base,mutiplier,wiki){
 }
 
 function physics(){
-    let parent = $('#arpaPhysics');
-    clearElement(parent);
-    Object.keys(arpaProjects).forEach(function (project){
-        addProject(parent,project);
-    });
+    if (global.tech['high_tech'] && global.tech.high_tech >= 6){
+        let parent = $('#arpaPhysics');
+        clearElement(parent);
+        Object.keys(arpaProjects).forEach(function (project){
+            addProject(parent,project);
+        });
+    }
 }
 
 export function clearGeneticsDrag(){
@@ -2219,7 +2221,7 @@ function fibonacci(num, memo){
 }
 
 function crispr(){
-    if (global.tech['genetics'] && global.tech['genetics'] > 3){
+    if ((global.tech['genetics'] && global.tech['genetics'] > 3) || global['sim']){
         clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');

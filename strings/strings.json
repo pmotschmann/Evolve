@@ -896,7 +896,7 @@
   "evo_challenge_lone_survivor_flair": "Everyone is dead",
   "evo_challenge_simulation": "Simulation",
   "evo_challenge_simulation_desc": "All of life is a simulation, nothing you do matters.",
-  "evo_challenge_simulation_effect": "Everything you do is temporary.",
+  "evo_challenge_simulation_effect": "Everything you do is temporary. All Simulatoin progress is erased on exiting the simulation.",
   "evo_challenge_simulation_flair": "Dead pixels everywhere",
   "evo_challenge_simulation_topbar": "You are living in a simulation. No progress will be kept from the simulation once leaving it.",
   "evo_challenge_end_sim": "End Simulation",

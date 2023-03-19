@@ -5152,6 +5152,7 @@ export function loneSurvivor(){
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 6;
         global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
         global.settings.arpa.genetics = true
 
         //global.civic.garrison.display = true;
