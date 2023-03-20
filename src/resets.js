@@ -6,7 +6,9 @@ import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } f
 // Mutual Assured Destruction
 export function warhead(){
     if (!global.civic.mad.armed && !global.race['cataclysm']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        if (!global['sim']){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        }
         clearSavedMessages();
 
         tagEvent('reset',{
@@ -79,7 +81,9 @@ export function warhead(){
 
 //Bioseed
 export function bioseed(){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{
@@ -216,7 +220,9 @@ export function cataclysm_end(){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        if (!global['sim']){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        }
 
         tagEvent('reset',{
             'end': 'cataclysm'
@@ -296,7 +302,9 @@ export function cataclysm_end(){
 
 // Blackhole
 export function big_bang(){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{
@@ -409,7 +417,9 @@ export function vacuumCollapse(){
         global.queue.queue = [];
 
         global.stats['current'] = Date.now();
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        if (!global['sim']){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        }
         clearSavedMessages();
 
         tagEvent('reset',{
@@ -782,7 +792,9 @@ export function terraform(planet){
 
 // AI Appocalypse
 export function aiApocalypse(){
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{
@@ -857,7 +869,9 @@ export function matrix(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{
@@ -939,7 +953,9 @@ export function retirement(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{
@@ -1021,7 +1037,9 @@ export function gardenOfEden(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{

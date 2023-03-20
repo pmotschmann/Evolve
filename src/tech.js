@@ -4584,7 +4584,9 @@ const techs = {
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            if (!global['sim']){
+                save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            }
             if (payCosts($(this)[0])){
                 descension();
             }
@@ -8457,7 +8459,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    if (!global['sim']){
+                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    }
                     delete global.race['banana'];
                 }
                 if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){

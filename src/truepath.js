@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
@@ -13,7 +13,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
 
-export const outerTruth = {
+const outerTruth = {
     spc_titan: {
         info: {
             name(){
@@ -1460,6 +1460,10 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    let costs = adjustCosts(tauCetiModules.tau_star.goe_facility);
+                    Object.keys(costs).forEach(function(res){
+                        global.resource[res].amount += costs[res]();
+                    });
                     gardenOfEden();
                     return false;
                 }
@@ -3526,6 +3530,10 @@ function wom_recycle(v){
         v *= (global.tech['isolation'] ? 0.97 : 0.98) ** global.tech.womling_tech;
     }
     return v;
+}
+
+export function outerTruthTech(){
+    return outerTruth;
 }
 
 export function tauCetiTech(){

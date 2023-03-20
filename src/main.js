@@ -358,7 +358,6 @@ popover('powerStatus',function(obj){
     }
 );
 
-
 if (global.settings.pause){
     $(`#pausegame`).addClass('pause');
 }
