@@ -1172,7 +1172,7 @@ if (convertVersion(global['version']) < 103002){
 
 global['version'] = '1.3.4';
 delete global['revision'];
-global['beta'] = 5;
+global['beta'] = 6;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1219,6 +1219,14 @@ if (!global['settings']){
     };
 }
 
+if (!global.settings['space']){
+    global.settings['space'] = {};
+}
+
+if (!global.settings.space.hasOwnProperty('home')){
+    global.settings.space['home'] = true;
+}
+
 setRegionStates(false);
 
 if (!global.settings['icon']){
@@ -1235,12 +1243,6 @@ if (!global.settings['showStorage']){
     }
     else {
         global.settings['showStorage'] = false;
-    }
-}
-
-if (!global.settings['space']){
-    global.settings['space'] = {
-        home: true,
     }
 }
 
