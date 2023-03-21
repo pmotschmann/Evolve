@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.3`,
+        revision: `a`,
+        date: `3/20/2023`,
+        changes: [
+            `Fixed a bug that could cause the Test Launch to be unavailable.`,
+        ]
+    },
+    {
+        version: `1.3.3`,
         date: `3/15/2023`,
         changes: [
             `Rebalanced Soul Gem drop mechanics.`,
