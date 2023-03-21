@@ -6264,7 +6264,7 @@
   "hell_analysis_hyperSlow": "随游戏速度特质变化",
   "hell_analysis_toggle_bd": "切换%0分析",
   "hell_analysis_toggle_bd_kills": "击杀",
-  "hell_analysis_start": "开始：%0 年，%1 日",
+  "hell_analysis_start": "记录开始于：%0 年，%1 日",
   "hell_analysis_time": "时间经过：%1 %0",
   "hell_analysis_time_game_days": "游戏天数",
   "hell_analysis_time_seconds": "秒",
