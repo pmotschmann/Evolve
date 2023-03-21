@@ -1981,7 +1981,7 @@ const tauCetiModules = {
             id: 'tauceti-fusion_generator',
             title: loc('tech_fusion_generator'),
             desc(){
-                return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
             reqs: { tau_home: 6 },
             path: ['truepath'],
