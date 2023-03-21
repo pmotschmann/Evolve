@@ -3989,7 +3989,7 @@ export function setChallengeScreen(){
     if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','orbit_decay');
     }
-    if ((global.stats.achieve['bluepill'] || global.hasOwnProperty('beta')) && !global['sim']){
+    if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
     }
     scenarioActionHeader();
