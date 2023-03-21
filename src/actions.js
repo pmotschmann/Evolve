@@ -7159,6 +7159,9 @@ function sentience(){
             global.settings.msgFilters.research_queue.unlocked = true;
             global.settings.msgFilters.research_queue.vis = true;
         }
+        if (global.settings.tabLoad){
+            $(`#resQueue`).removeAttr('style');
+        }
     }
 
     Object.keys(global.genes.minor).forEach(function (trait){
@@ -7441,6 +7444,10 @@ function sentience(){
             tradeSummery();
 
             arpa('Genetics');
+            arpa('Crispr');
+            arpa('Blood');
+        }
+        else if (global['sim']){
             arpa('Crispr');
             arpa('Blood');
         }

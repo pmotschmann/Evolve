@@ -2455,6 +2455,9 @@ const techs = {
         },
         post(){
             calcRQueueMax();
+            if (global.settings.tabLoad){
+                $(`#resQueue`).removeAttr('style');
+            }
         }
     },
     government: {
@@ -2471,11 +2474,17 @@ const techs = {
         effect: loc('tech_government_effect'),
         action(){
             if (payCosts($(this)[0])){
-                vBind({el: '#govType'},'update');
-                vBind({el: '#foreign'},'update');
                 return true;
             }
             return false;
+        },
+        post(){
+            vBind({el: '#govType'},'update');
+            vBind({el: '#foreign'},'update');
+            vBind({el: '#government .govTabs2'},'update');
+            if (global.settings.tabLoad){
+                $(`#government .govTabs2`).removeAttr('style');
+            }
         }
     },
     theocracy: {
