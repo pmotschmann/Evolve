@@ -5086,7 +5086,7 @@
   "gov_trait_pragmatist_effect": "建築隊列上限 +%0%，知識成本 +%1%。",
   "gov_trait_dirty_jobs": "髒活累活",
   "gov_trait_dirty_jobs_desc": "專業人士知道如何搞定髒活累活。",
-  "gov_trait_dirty_jobs_effect": "煤電廠、石油發電廠、燃料庫、工廠、納米機器人工廠、冶煉廠、礦井、煤礦和石油井架的成本蠕變 -%0。基礎發電廠的發電量 +%1MW。礦工、冶煉廠和石油井架產量 +%2%。",
+  "gov_trait_dirty_jobs_effect": "煤電廠、石油發電廠、燃料庫、工廠、納米機器人工廠、冶煉廠、礦井、煤礦和石油井架的成本蠕變 -%0。煤電廠和石油發電廠的基礎發電量 +%1MW。礦工、冶煉廠和石油井架產量 +%2%。",
   "gov_trait_extravagant": "豪華奢靡",
   "gov_trait_extravagant_desc": "更好的品位，更高的價格。",
   "gov_trait_extravagant_effect": "資金成本 +%0%，大廈（電力 -%2MW，市民上限 +%3）取代%1出現。",
