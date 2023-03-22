@@ -7873,7 +7873,7 @@
   "wiki_mechanics_seed_para3": "當某個機制使用隨機種子決定結果後，該隨機種子的數值將發生變化，所有使用相同隨機種子的機制結果也會隨之變化。",
   "wiki_mechanics_seed_para4": "進行任意類型的威望重置，以及進行%0，都將重新生成隨機種子。",
   "wiki_mechanics_seed_para5": "進行戰役使用的隨機種子與其他機制不同，因此進行戰役後，其他機制的結果也不會變化。",
-  "wiki_mechanics_seed_para6": "以下游戲機制與隨機種子有關：",
+  "wiki_mechanics_seed_para6": "以下遊戲機制與隨機種子有關：",
   "wiki_mechanics_seed_para7": "選擇%0時隨機到的種族。",
   "wiki_mechanics_seed_para8": "%0的結果，包括士兵損失情況，戰利品獲取情況和與戰鬥有關的特質效果，例如%1和%2。",
   "wiki_mechanics_seed_para9": "%0、%1以及%2間諜行動的結果。",
