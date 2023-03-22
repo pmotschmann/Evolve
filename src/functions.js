@@ -2608,8 +2608,20 @@ export function hoovedRename(style){
     else if (global.race.species === 'seraph'){
         return style ? 'forge' : loc('resource_Halo_name');
     }
+    else if (global.race.species === 'cyclops'){
+        return style ? 'craft' : loc('resource_Monocle_name');
+    }
+    else if (global.race.species === 'kobold'){
+        return style ? 'craft' : loc('resource_Candle_name');
+    }
+    else if (global.race.species === 'tuskin'){
+        return style ? 'craft' : loc('resource_Goggles_name');
+    }
     else if (races[global.race.species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');
+    }
+    else if (races[global.race.species].type === 'fungi'){
+        return style ? 'craft' : loc('resource_DampCloth_name');
     }
     else if (races[global.race.species].type === 'reptilian'){
         return style ? 'craft' : loc('resource_HeatRock_name');
