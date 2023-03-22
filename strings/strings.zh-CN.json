@@ -7313,6 +7313,7 @@
   "wiki_tech_portland_cement": "使水泥工人的基础产量 +20%。",
   "wiki_tech_screw_conveyor": "每个供能的水泥厂使水泥工人产量 +%0%。",
   "wiki_tech_hunter_process": "您可以以冶炼厂冶炼%0产量的 1/%1 生产钛。",
+  "wiki_tech_kroll_process": "您可以以冶炼厂冶炼%0产量的 (矿工/40+供能的铁采矿船/20) 的 1/%1 生产钛。",
   "wiki_tech_matter_compression": "使%1的%0上限翻倍。",
   "wiki_tech_higgs_boson": "每级超级对撞机使沃登克里弗塔（或通天塔、法师塔）和大学的知识上限由 +4% 提升到 +8%。",
   "wiki_tech_dimensional_compression": "每级超级对撞机使格纳库的储量上限 +5%，集装箱上限 +1。",
