@@ -4,11 +4,12 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.4`,
-        date: `3/21/2023`,
+        date: `3/24/2023`,
         changes: [
             `Evolving Synth can now chose imitation race from any speices killed by an AI Apocalypse.`,
             `Fixed issue with miscalculating low fuel usage for various power generating structures.`,
-            `Added additional Hooved reskins for: Wolven, Seraph, Synthetic, and Reptilian species.`
+            `Added additional Hooved reskins.`,
+            `Fixed various issues with Preload Tab Content.`,
         ]
     },
     {

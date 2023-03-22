@@ -2617,6 +2617,9 @@ export function hoovedRename(style){
     else if (global.race.species === 'tuskin'){
         return style ? 'craft' : loc('resource_Goggles_name');
     }
+    else if (races[global.race.species].type === 'humanoid'){
+        return style ? 'craft' : loc('resource_Sandals_name');
+    }
     else if (races[global.race.species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');
     }
