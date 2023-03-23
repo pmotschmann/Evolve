@@ -8025,7 +8025,7 @@
   "wiki_governor_task_horseshoe1": "%0任務可以在材料充足時自動鍛造%1。",
   "wiki_governor_task_trash1": "質量噴射可以自動進行噴射。",
   "wiki_governor_task_trash2": "它只會使用達到上限的資源，並且會盡可能噴射質量更大的資源。",
-  "wiki_governor_task_trash3": "您可以設置超鈾、地獄石、銅和鐵的最低噴射數量，這樣無論產量和儲量如何，都會噴射相應數量。",
+  "wiki_governor_task_trash3": "您可以設置超鈾、地獄石、銅和鐵的最低噴射數量。",
   "wiki_governor_task_trash3min": "此時的設置為“資源 <=”，即在未到達上限的前提下，將您設置的值作為相應資源的最低噴射數量進行噴射。",
   "wiki_governor_task_trash3a": "您也可以設置超鈾、地獄石、銅和鐵的最高噴射數量。",
   "wiki_governor_task_trash3max": "此時的設置為“資源 >=”，即在未到達上限的前提下，將您設置的值作為相應資源的最低產量進行噴射。",
