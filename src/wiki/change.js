@@ -6,7 +6,7 @@ const changeList = [
         version: `1.3.4`,
         date: `3/24/2023`,
         changes: [
-            `Evolving Synth can now chose imitation race from any speices killed by an AI Apocalypse.`,
+            `Evolving Synth can now chose imitation race from any species killed by an AI Apocalypse.`,
             `Fixed issue with miscalculating low fuel usage for various power generating structures.`,
             `Extractor Ship Isolation output boosted by 20%.`,
             `Added additional Hooved reskins.`,
