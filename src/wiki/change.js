@@ -12,6 +12,7 @@ const changeList = [
             `Extractor Ship Isolation output boosted by 20%.`,
             `Fixed various issues with Preload Tab Content.`,
             `Explorer Ship config is now locked down for Engine, Sensor, and Weapon components.`,
+            `Skilled Servants assigned to craft inactive resources will now be refunded.`,
         ]
     },
     {

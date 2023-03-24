@@ -8554,6 +8554,9 @@ function midLoop(){
         if (global.race['servants'] && global.race.servants.hasOwnProperty('smax') && global.race.servants.smax > 0){
             let used = 0;
             Object.keys(global.race.servants.sjobs).forEach(function(res){
+                if (!global.resource[res].display){
+                    global.race.servants.sjobs[res] = 0;
+                }
                 used += global.race.servants.sjobs[res];
                 if (used > global.race.servants.smax){
                     global.race.servants.sjobs[res] -= used - global.race.servants.smax;
