@@ -8,8 +8,8 @@ const changeList = [
         changes: [
             `Evolving Synth can now chose imitation race from any speices killed by an AI Apocalypse.`,
             `Fixed issue with miscalculating low fuel usage for various power generating structures.`,
-            `Added additional Hooved reskins.`,
             `Extractor Ship Isolation output boosted by 20%.`,
+            `Added additional Hooved reskins.`,
             `Fixed various issues with Preload Tab Content.`,
             `Explorer Ship config is now locked down for Engine, Sensor, and Weapon components.`,
             `Skilled Servants assigned to craft inactive resources will now be refunded.`,
