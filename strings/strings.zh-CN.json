@@ -282,6 +282,7 @@
   "reactor": "反应堆",
   "build_success": "%0已竣工。",
   "research_success": "%0研发完成。",
+  "action_options": "%0设置",
   "action_ready": " [%0] 后可支付",
   "floor_clearing": " [%0] 后可通过",
   "cancel_routes": "清零",
