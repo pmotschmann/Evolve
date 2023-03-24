@@ -2166,7 +2166,7 @@ const tauCetiModules = {
         },
         infectious_disease_lab: {
             id: 'tauceti-infectious_disease_lab',
-            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : (loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab')); },
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
@@ -3721,6 +3721,17 @@ export function drawShipYard(){
                 avail(k,i,v){
                     if ((k === 'class' || k === 'engine') && global.tech['tauceti'] && (v === 'emdrive' || v === 'explorer')){
                         return true;
+                    }
+                    else if (global.space.shipyard.blueprint.class === 'explorer'){
+                        if (k === 'weapon'){
+                            return i === 1 ? true : false;
+                        }
+                        else if (k === 'engine'){
+                            return i === 6 ? true : false;
+                        }
+                        else if (k === 'sensor'){
+                            return i === 4 ? true : false;
+                        }
                     }
                     return global.tech[`syard_${k}`] > i ? true : false;
                 },

@@ -3572,7 +3572,7 @@ function fastLoop(){
                 know_bd[loc('city_library')] = ((library_mult - 1) * 100) + '%';
             }
             if (global.tech['isolation'] && support_on['infectious_disease_lab']){
-                know_bd[loc('tech_infectious_disease_lab_alt')] = ((lab_mult - 1) * 100) + '%';
+                know_bd[actions.tauceti.tau_home.infectious_disease_lab.title()] = ((lab_mult - 1) * 100) + '%';
             }
             if (global.civic.govern.type === 'technocracy'){
                 know_bd[loc('govern_technocracy')] = govEffect.technocracy()[2] + '%';
@@ -8292,12 +8292,12 @@ function midLoop(){
                 gain *= (global.tech['supercollider'] / ratio) + 1;
             }
             caps['Knowledge'] += (p_on['infectious_disease_lab'] * Math.round(gain));
-            bd_Knowledge[loc(global.tech['isolation'] ? 'tech_infectious_disease_lab_alt' : 'tau_home_disease_lab')] = (p_on['infectious_disease_lab'] * gain)+'v';
+            bd_Knowledge[actions.tauceti.tau_home.infectious_disease_lab.title()] = (p_on['infectious_disease_lab'] * gain)+'v';
 
             if (global.tech['isolation']){
                 let el_gain = support_on['infectious_disease_lab'] * spatialReasoning(375);
                 caps['Elerium'] += el_gain;
-                bd_Elerium[loc(global.tech['isolation'] ? 'tech_infectious_disease_lab_alt' : 'tau_home_disease_lab')] = el_gain+'v';
+                bd_Elerium[actions.tauceti.tau_home.infectious_disease_lab.title()] = el_gain+'v';
             }
         }
 
@@ -8904,6 +8904,13 @@ function midLoop(){
         }
         if ((global.race['kindling_kindred'] || global.race['smoldering']) && global.city['foundry'] && global.city.foundry['Plywood']){
             global.city.foundry['Plywood'] = 0;
+        }
+
+        if (eventActive('fool',2023) && !global.race['hooved']){
+            global.resource.Horseshoe.display = true;
+        }
+        else if (!global.race['hooved']){
+            global.resource.Horseshoe.display = false;
         }
 
         q_check(false);

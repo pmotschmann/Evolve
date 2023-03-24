@@ -4187,7 +4187,9 @@ export function buildTemplate(key, region){
                 desc(){ return loc(`city_${hoovedRename(true)}_desc`,[hoovedRename(false)]); },
                 category: 'outskirts',
                 reqs: { primitive: 3 },
-                trait: ['hooved'],
+                condition(){
+                    return global.race['hooved'] || eventActive('fool',2023);
+                },
                 inflation: false,
                 cost: {
                     Lumber(offset){
@@ -4221,6 +4223,9 @@ export function buildTemplate(key, region){
                     }
                 },
                 action(){
+                    if (!global.race['hooved'] && eventActive('fool',2023)){
+                        return true;
+                    }
                     if (global.resource.Horseshoe.display && payCosts($(this)[0])){
                         global.resource.Horseshoe.amount++;
                         global.race.shoecnt++;
@@ -5184,12 +5189,12 @@ export function setAction(c_action,action,type,old,prediction){
         let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)">}</span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
     if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
-        let special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+        let special = $(`<div class="special" role="button" v-bind:title="title | options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
                 L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
@@ -5373,6 +5378,9 @@ export function setAction(c_action,action,type,old,prediction){
             },
             title(t){
                 return t;
+            },
+            options(t){
+                return loc(`action_options`,[t]);
             }
         }
     });

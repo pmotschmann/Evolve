@@ -431,27 +431,27 @@ export function production(id,val){
             switch (val){
                 case 'iron':
                 {
-                    return 1.85;
+                    return global.tech['isolation'] ? 2.22 : 1.85;
                 }
                 case 'aluminium':
                 {
-                    return 1.85;
+                    return global.tech['isolation'] ? 2.22 : 1.85;
                 }
                 case 'iridium':
                 {
-                    return 0.35;
+                    return global.tech['isolation'] ? 0.42 : 0.35;
                 }
                 case 'neutronium':
                 {
-                    return 0.35;
+                    return global.tech['isolation'] ? 0.42 : 0.35;
                 }
                 case 'orichalcum':
                 {
-                    return 0.25;
+                    return global.tech['isolation'] ? 0.3 : 0.25;
                 }
                 case 'elerium':
                 {
-                    return 0.02;
+                    return global.tech['isolation'] ? 0.024 : 0.02;
                 }
             }
         }

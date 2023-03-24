@@ -11848,7 +11848,7 @@ const techs = {
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
-        reqs: { outer: 8, titan_ai_core: 2 },
+        reqs: { outer: 8, titan_ai_core: 2, syard_sensor: 4 },
         grant: ['tauceti',1],
         cost: {
             Knowledge(){ return 4500000; },
@@ -12448,10 +12448,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['artifical']){
-                    messageQueue(loc('tech_decode_virus_msg1s',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                    messageQueue(loc('tech_decode_virus_msg1s',[actions.tauceti.tau_home.infectious_disease_lab.title()]),'info',false,['progress']);
                 }
                 else {
-                    messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                    messageQueue(loc('tech_decode_virus_msg1',[actions.tauceti.tau_home.infectious_disease_lab.title()]),'info',false,['progress']);
                 }
                 return true;
             }
