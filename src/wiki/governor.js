@@ -1,6 +1,8 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 import { gmen, gov_traits, gov_tasks } from './../governor.js';
+import { hoovedRename } from './../functions.js';
+import { hoovedReskin } from './../races.js';
 
 export function governPage(content){
     let mainContent = sideMenu('create',content);
@@ -209,13 +211,14 @@ export function governPage(content){
                     2: `wiki_governor_task_trait`
                 },
                 para_data: {
-                    2: [loc(`trait_hooved_name`)],
+                    1: [loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]),hoovedRename(false)],
+                    2: [hoovedReskin(false)],
                 },
                 data_link: {
                     2: ['wiki.html#traits-species-major_hooved']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            sideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]));
         }
 
         {

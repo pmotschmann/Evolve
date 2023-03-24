@@ -741,6 +741,9 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                 return value ? sizeApproximation(value,0) : value;
             },
             diffSize: function (value){
+                if (name === 'Horseshoe' && !global.race['hooved'] && eventActive('fool',2023)){
+                    value = 5;
+                }
                 return sizeApproximation(value,2);
             },
             namespace(val){

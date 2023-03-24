@@ -591,6 +591,7 @@ const fortressModules = {
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
+                vBind({el: `#srprtl_gate`},'update');
             },
             citizens(){
                 let pop = 8;
@@ -5051,7 +5052,7 @@ function drawHellReports(){
                 let name = loc('hell_report_log_obj_counter',[loc('portal_gun_emplacement_title'),num]);
                 displayText.append($(`<span>${loc('hell_report_log_misc_kills',[name,gun.kills,loc('portal_pit_name')])}</span>`));
                 if (gun.gem){
-                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
                 }
                 info.append(displayText);
             });
@@ -5060,7 +5061,7 @@ function drawHellReports(){
             let displayText = $(`<p></p>`);
             displayText.append(`<span>${loc('hell_report_log_soul_forge',[curr_report.soul_forge.kills])}</span>`);
             if (curr_report.soul_forge.gem){
-                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
             }
             if (curr_report.soul_forge.gem_craft){
                 displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
@@ -5074,7 +5075,7 @@ function drawHellReports(){
                 let name = loc('hell_report_log_obj_counter',[loc('portal_gate_turret_title'),num]);
                 displayText.append(`<span>${loc('hell_report_log_misc_kills',[name,turret.kills,loc('portal_gate_name')])}</span>`);
                 if (turret.gem){
-                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name])}</span>`);
+                    displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
                 }
                 info.append(displayText);
             });

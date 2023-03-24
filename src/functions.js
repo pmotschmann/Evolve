@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits, traitSkin } from './races.js';
+import { races, traits, genus_traits, traitSkin, hoovedReskin } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -2602,8 +2602,35 @@ export function hoovedRename(style){
     else if (global.race.species === 'cath'){
         return style ? 'craft' : loc('resource_Box_name');
     }
+    else if (global.race.species === 'wolven'){
+        return style ? 'craft' : loc('resource_ChewToy_name');
+    }
+    else if (global.race.species === 'seraph'){
+        return style ? 'forge' : loc('resource_Halo_name');
+    }
+    else if (global.race.species === 'cyclops'){
+        return style ? 'craft' : loc('resource_Monocle_name');
+    }
+    else if (global.race.species === 'kobold'){
+        return style ? 'craft' : loc('resource_Candle_name');
+    }
+    else if (global.race.species === 'tuskin'){
+        return style ? 'craft' : loc('resource_Goggles_name');
+    }
+    else if (races[global.race.species].type === 'humanoid'){
+        return style ? 'craft' : loc('resource_Sandals_name');
+    }
     else if (races[global.race.species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');
+    }
+    else if (races[global.race.species].type === 'fungi'){
+        return style ? 'craft' : loc('resource_DampCloth_name');
+    }
+    else if (races[global.race.species].type === 'reptilian'){
+        return style ? 'craft' : loc('resource_HeatRock_name');
+    }
+    else if (races[global.race.species].type === 'synthetic'){
+        return style ? 'craft' : loc('resource_Battery_name');
     }
     else {
         return style ? 'forge' : loc('resource_Horseshoe_name');
@@ -2629,7 +2656,7 @@ const traitExtra = {
         loc(`wiki_trait_effect_sniper_ex1`),
     ],
     hooved: [
-        loc(`wiki_trait_effect_hooved_ex1`),
+        loc(`wiki_trait_effect_hooved_ex1`,[hoovedRename(false)]),
         loc(`wiki_trait_effect_hooved_ex2`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`,
@@ -2640,7 +2667,7 @@ const traitExtra = {
             12,75,150,500,5000
         ]),
         loc(`wiki_trait_effect_hooved_ex3`),
-        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`]),
+        loc(`wiki_trait_effect_hooved_ex4`,[`<span class="has-text-warning">${5}</span>`,hoovedRename(false)]),
         loc(`wiki_trait_effect_hooved_ex5`,[
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Lumber') ? global.resource.Lumber.name : loc('resource_Lumber_name')}</span>`,
             `<span class="has-text-warning">${global.resource.hasOwnProperty('Copper') ? global.resource.Copper.name : loc('resource_Copper_name')}</span>`

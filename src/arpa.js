@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck } from './functions.js';
+import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -1620,11 +1620,13 @@ function costMultiplier(project,offset,base,mutiplier,wiki){
 }
 
 function physics(){
-    let parent = $('#arpaPhysics');
-    clearElement(parent);
-    Object.keys(arpaProjects).forEach(function (project){
-        addProject(parent,project);
-    });
+    if (global.tech['high_tech'] && global.tech.high_tech >= 6){
+        let parent = $('#arpaPhysics');
+        clearElement(parent);
+        Object.keys(arpaProjects).forEach(function (project){
+            addProject(parent,project);
+        });
+    }
 }
 
 export function clearGeneticsDrag(){
@@ -1845,7 +1847,11 @@ function genetics(){
         let null_list = [];
         let traitListing = $(`<div class="traitListing"></div>`);
         breakdown.append(traitListing);
-        Object.keys(global.race).forEach(function (trait){
+        let trait_listing = deepClone(global.race);
+        if (eventActive('fool',2023)){
+            trait_listing['hooved'] = 1;
+        }
+        Object.keys(trait_listing).forEach(function (trait){
             if (traits[trait] && traits[trait].type !== 'minor' && traits[trait].type !== 'special' && trait !== 'evil' && trait !== 'soul_eater' && trait !== 'artifical'){
                 let readOnly = false;
                 if ((global.race['ss_traits'] && global.race.ss_traits.includes(trait)) || (global.race['iTraits'] && global.race.iTraits.hasOwnProperty(trait))){
@@ -1854,19 +1860,22 @@ function genetics(){
                 else if (global.race.species === 'sludge' && (trait === 'ooze' || global.race['modified'])){
                     readOnly = true;
                 }
+                else if (!global.race.hasOwnProperty(trait)){
+                    readOnly = true;
+                }
                 if (!readOnly && ((traits[trait].type === 'major' && global.genes['mutation']) || (traits[trait].type === 'genus' && global.genes['mutation'] && global.genes['mutation'] >= 2))){
                     let major = $(`<div class="traitRow"></div>`);
                     let purge = $(`<span class="remove${trait} basic-button has-text-danger" role="button" :aria-label="removeCost('${trait}')" @click="purge('${trait}')">${loc('arpa_remove_button')}</span>`);
                     remove_list.push(trait);
 
                     major.append(purge);
-                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</span>`));
+                    major.append($(`<span class="trait has-text-warning" id="raceTrait${trait}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[trait_listing[trait]])})</span>`));
 
                     traitListing.append(major);
                 }
                 else {
                     null_list.push(trait);
-                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[global.race[trait]])})</div></div>`);
+                    traitListing.append(`<div class="traitRow trait${trait}"><div class="trait has-text-warning${global.genes['mutation'] ? ' indent' : ''}">${traitName[trait] ? traitName[trait] : traits[trait].name} (${loc(`arpa_genepool_rank`,[trait_listing[trait]])})</div></div>`);
                 }
             }
         });
@@ -2219,7 +2228,7 @@ function fibonacci(num, memo){
 }
 
 function crispr(){
-    if (global.tech['genetics'] && global.tech['genetics'] > 3){
+    if ((global.tech['genetics'] && global.tech['genetics'] > 3) || global['sim']){
         clearElement($('#arpaCrispr'));
         $('#arpaCrispr').append(`<div class="has-text-warning">${loc('arpa_crispr_desc')}</div>`);
         $('#arpaCrispr').append('<div id="genes"></div>');

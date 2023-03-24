@@ -2455,6 +2455,9 @@ const techs = {
         },
         post(){
             calcRQueueMax();
+            if (global.settings.tabLoad){
+                $(`#resQueue`).removeAttr('style');
+            }
         }
     },
     government: {
@@ -2471,11 +2474,17 @@ const techs = {
         effect: loc('tech_government_effect'),
         action(){
             if (payCosts($(this)[0])){
-                vBind({el: '#govType'},'update');
-                vBind({el: '#foreign'},'update');
                 return true;
             }
             return false;
+        },
+        post(){
+            vBind({el: '#govType'},'update');
+            vBind({el: '#foreign'},'update');
+            vBind({el: '#government .govTabs2'},'update');
+            if (global.settings.tabLoad){
+                $(`#government .govTabs2`).removeAttr('style');
+            }
         }
     },
     theocracy: {
@@ -4224,6 +4233,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.settings.showGenetics = true;
+                global.settings.arpa.physics = true;
                 if (global.race['truepath'] && !global.tech['unify']){
                     global.tech['unify'] = 1;
                 }
@@ -4583,7 +4593,9 @@ const techs = {
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            if (!global['sim']){
+                save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            }
             if (payCosts($(this)[0])){
                 descension();
             }
@@ -8456,7 +8468,9 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    if (!global['sim']){
+                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    }
                     delete global.race['banana'];
                 }
                 if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
@@ -11834,7 +11848,7 @@ const techs = {
         category: 'progress',
         era: 'tauceti',
         path: ['truepath'],
-        reqs: { outer: 8, titan_ai_core: 2 },
+        reqs: { outer: 8, titan_ai_core: 2, syard_sensor: 4 },
         grant: ['tauceti',1],
         cost: {
             Knowledge(){ return 4500000; },
@@ -12434,10 +12448,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (global.race['artifical']){
-                    messageQueue(loc('tech_decode_virus_msg1s',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                    messageQueue(loc('tech_decode_virus_msg1s',[actions.tauceti.tau_home.infectious_disease_lab.title()]),'info',false,['progress']);
                 }
                 else {
-                    messageQueue(loc('tech_decode_virus_msg1',[loc('tech_infectious_disease_lab')]),'info',false,['progress']);
+                    messageQueue(loc('tech_decode_virus_msg1',[actions.tauceti.tau_home.infectious_disease_lab.title()]),'info',false,['progress']);
                 }
                 return true;
             }

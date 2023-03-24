@@ -1,5 +1,5 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
@@ -13,7 +13,7 @@ import { arpa } from './arpa.js';
 import { matrix, retirement, gardenOfEden } from './resets.js';
 import { loc } from './locale.js';
 
-export const outerTruth = {
+const outerTruth = {
     spc_titan: {
         info: {
             name(){
@@ -1460,6 +1460,10 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    let costs = adjustCosts(tauCetiModules.tau_star.goe_facility);
+                    Object.keys(costs).forEach(function(res){
+                        global.resource[res].amount += costs[res]();
+                    });
                     gardenOfEden();
                     return false;
                 }
@@ -1977,7 +1981,7 @@ const tauCetiModules = {
             id: 'tauceti-fusion_generator',
             title: loc('tech_fusion_generator'),
             desc(){
-                return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_power_support_combo',[races[global.race.species].home,global.resource.Helium_3.name])}</div>`;
+                return `<div>${loc('tech_fusion_generator')}</div><div class="has-text-special">${loc('requires_res',[global.resource.Helium_3.name])}</div>`;
             },
             reqs: { tau_home: 6 },
             path: ['truepath'],
@@ -2162,7 +2166,7 @@ const tauCetiModules = {
         },
         infectious_disease_lab: {
             id: 'tauceti-infectious_disease_lab',
-            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab'); },
+            title(){ return global.tech['isolation'] ? loc('tech_infectious_disease_lab_alt') : (loc(global.race['artifical'] ? 'tech_infectious_disease_lab_s' : 'tech_infectious_disease_lab')); },
             desc(){
                 return `<div>${$(this)[0].title()}</div><div class="has-text-special">${loc('requires_power_support',[races[global.race.species].home])}</div>`;
             },
@@ -3528,6 +3532,10 @@ function wom_recycle(v){
     return v;
 }
 
+export function outerTruthTech(){
+    return outerTruth;
+}
+
 export function tauCetiTech(){
     return tauCetiModules;
 }
@@ -3713,6 +3721,17 @@ export function drawShipYard(){
                 avail(k,i,v){
                     if ((k === 'class' || k === 'engine') && global.tech['tauceti'] && (v === 'emdrive' || v === 'explorer')){
                         return true;
+                    }
+                    else if (global.space.shipyard.blueprint.class === 'explorer'){
+                        if (k === 'weapon'){
+                            return i === 1 ? true : false;
+                        }
+                        else if (k === 'engine'){
+                            return i === 6 ? true : false;
+                        }
+                        else if (k === 'sensor'){
+                            return i === 4 ? true : false;
+                        }
                     }
                     return global.tech[`syard_${k}`] > i ? true : false;
                 },
@@ -5152,6 +5171,7 @@ export function loneSurvivor(){
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 6;
         global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
         global.settings.arpa.genetics = true
 
         //global.civic.garrison.display = true;

@@ -870,7 +870,7 @@ export function index(){
     // Top Bar
     $('body').append(`<div id="topBar" class="topBar">
         <h2 class="is-sr-only">Top Bar</h2>
-        <span class="planetWrap"><span class="planet">{{ race.species | planet }}</span><span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span></span>
+        <span class="planetWrap"><span class="planet">{{ race.species | planet }}</span><span class="universe" v-show="showUniverse()">{{ race.universe | universe }}</span><span class="simulation" v-show="showSim()">${loc(`evo_challenge_simulation`)}</span></span>
         <span class="calendar">
             <span class="infoTimer" id="infoTimer"></span>
             <span v-show="city.calendar.day">

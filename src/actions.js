@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars } from './vars.js';
+import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
@@ -26,7 +26,7 @@ export const actions = {
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
                 return loc('evo_rna',[rna]);
             },
-            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display; },
+            condition(){ return global.resource.hasOwnProperty('RNA') && global.resource.RNA.display && !global.race['evoFinalMenu']; },
             action(){
                 if(global['resource']['RNA'].amount < global['resource']['RNA'].max){
                     modRes('RNA',global.race['rapid_mutation'] ? 2 : 1,true);
@@ -39,7 +39,7 @@ export const actions = {
             id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
-            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display; },
+            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display && !global.race['evoFinalMenu']; },
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
@@ -55,7 +55,7 @@ export const actions = {
             id: 'evolution-membrane',
             title: loc('evo_membrane_title'),
             desc: loc('evo_membrane_desc'),
-            condition(){ return global.evolution.hasOwnProperty('membrane'); },
+            condition(){ return global.evolution.hasOwnProperty('membrane') && !global.race['evoFinalMenu']; },
             cost: { RNA(offset){ return evolveCosts('membrane',2,2,offset); } },
             effect(){
                 let effect = global.evolution['mitochondria'] ? global.evolution['mitochondria'].count * 5 + 5 : 5;
@@ -74,7 +74,7 @@ export const actions = {
             id: 'evolution-organelles',
             title: loc('evo_organelles_title'),
             desc: loc('evo_organelles_desc'),
-            condition(){ return global.evolution.hasOwnProperty('organelles'); },
+            condition(){ return global.evolution.hasOwnProperty('organelles') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('organelles',12,8,offset); },
                 DNA(offset){ return evolveCosts('organelles',4,4,offset); }
@@ -98,7 +98,7 @@ export const actions = {
             id: 'evolution-nucleus',
             title: loc('evo_nucleus_title'),
             desc: loc('evo_nucleus_desc'),
-            condition(){ return global.evolution.hasOwnProperty('nucleus'); },
+            condition(){ return global.evolution.hasOwnProperty('nucleus') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('nucleus',38, global.tech['evo'] && global.tech.evo >= 4 ? 16 : 32, offset ); },
                 DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4  ? 12 : 16, offset ); }
@@ -119,7 +119,7 @@ export const actions = {
             id: 'evolution-eukaryotic_cell',
             title: loc('evo_eukaryotic_title'),
             desc: loc('evo_eukaryotic_desc'),
-            condition(){ return global.evolution.hasOwnProperty('eukaryotic_cell'); },
+            condition(){ return global.evolution.hasOwnProperty('eukaryotic_cell') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('eukaryotic_cell',20,20,offset); },
                 DNA(offset){ return evolveCosts('eukaryotic_cell',40,12,offset); }
@@ -141,7 +141,7 @@ export const actions = {
             id: 'evolution-mitochondria',
             title: loc('evo_mitochondria_title'),
             desc: loc('evo_mitochondria_desc'),
-            condition(){ return global.evolution.hasOwnProperty('mitochondria'); },
+            condition(){ return global.evolution.hasOwnProperty('mitochondria') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('mitochondria',75,50,offset); },
                 DNA(offset){ return evolveCosts('mitochondria',65,35,offset); }
@@ -3586,6 +3586,14 @@ export const actions = {
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
             },
+            p_fuel(){
+                if (global.race.universe === 'magic'){
+                    return { r: 'Mana', a: global.race['environmentalist'] ? 0 : 0.05 };
+                }
+                else {
+                    return { r: 'Coal', a: global.race['environmentalist'] ? 0 : 0.35 };
+                }
+            },
             action(){
                 if (payCosts($(this)[0])){
                     global.city.coal_power.count++;
@@ -3915,32 +3923,32 @@ export function setChallengeScreen(){
     global.evolution['junker'] = { count: 0 };
     global.evolution['joyless'] = { count: 0 };
     global.evolution['steelen'] = { count: 0 };
-    if (global.stats.achieve['whitehole']){
+    if (global.stats.achieve['whitehole'] || global['sim']){
         global.evolution['decay'] = { count: 0 };
     }
-    if (global.stats.achieve['ascended']){
+    if (global.stats.achieve['ascended'] || global['sim']){
         global.evolution['emfield'] = { count: 0 };
     }
-    if (global.stats.achieve['scrooge']){
+    if (global.stats.achieve['scrooge'] || global['sim']){
         global.evolution['inflation'] = { count: 0 };
     }
-    if (global.stats.achieve['shaken']){
+    if (global.stats.achieve['shaken'] || global['sim']){
         global.evolution['cataclysm'] = { count: 0 };
     }
-    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         global.evolution['banana'] = { count: 0 };
         global.evolution['orbit_decay'] = { count: 0 };
     }
-    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
     }
-    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker']){
+    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
         global.evolution['sludge'] = { count: 0 };
     }
-    if (global.stats.achieve['bluepill']){
+    if (global.stats.achieve['bluepill'] || global['sim']){
         global.evolution['simulation'] = { count: 0 };
     }
-    if (global.stats.achieve['retired']){
+    if (global.stats.achieve['retired'] || global['sim']){
         global.evolution['lone_survivor'] = { count: 0 };
     }
     challengeGeneHeader();
@@ -3966,37 +3974,43 @@ export function setChallengeScreen(){
     challengeActionHeader();
     addAction('evolution','joyless');
     addAction('evolution','steelen');
-    if (global.stats.achieve['whitehole']){
+    if (global.stats.achieve['whitehole'] || global['sim']){
         addAction('evolution','decay');
     }
-    if (global.stats.achieve['ascended']){
+    if (global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','emfield');
     }
-    if (global.stats.achieve['scrooge']){
+    if (global.stats.achieve['scrooge'] || global['sim']){
         addAction('evolution','inflation');
     }
-    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker']){
+    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
         addAction('evolution','sludge');
     }
-    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','orbit_decay');
     }
-    if (global.stats.achieve['bluepill']){
-        // addAction('evolution','simulation');
+    if (global.hasOwnProperty('beta') && !global['sim']){
+        addAction('evolution','simulation');
     }
     scenarioActionHeader();
     addAction('evolution','junker');
-    if (global.stats.achieve['shaken']){
+    if (global.stats.achieve['shaken'] || global['sim']){
         addAction('evolution','cataclysm');
     }
-    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended']){
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
         addAction('evolution','banana');
     }
-    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted']){
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         addAction('evolution','truepath');
     }
-    if (global.stats.achieve['retired']){
+    if (global.stats.achieve['retired'] || global['sim']){
         addAction('evolution','lone_survivor');
+    }
+    if (global['sim']){
+        exitSimulation();
+    }
+    else if (global.race['simulation']){
+        configSimulation();
     }
 }
 
@@ -4173,7 +4187,9 @@ export function buildTemplate(key, region){
                 desc(){ return loc(`city_${hoovedRename(true)}_desc`,[hoovedRename(false)]); },
                 category: 'outskirts',
                 reqs: { primitive: 3 },
-                trait: ['hooved'],
+                condition(){
+                    return global.race['hooved'] || eventActive('fool',2023);
+                },
                 inflation: false,
                 cost: {
                     Lumber(offset){
@@ -4207,6 +4223,9 @@ export function buildTemplate(key, region){
                     }
                 },
                 action(){
+                    if (!global.race['hooved'] && eventActive('fool',2023)){
+                        return true;
+                    }
                     if (global.resource.Horseshoe.display && payCosts($(this)[0])){
                         global.resource.Horseshoe.amount++;
                         global.race.shoecnt++;
@@ -4243,7 +4262,7 @@ raceList.forEach(race => actions.evolution[race] = {
     reqs: { evo: 7 },
     grant: ['evo',8],
     condition(){ return (global.race.seeded || (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l >= 1) || (global.stats.achieve[`extinct_${race}`] && global.stats.achieve[`extinct_${race}`].l >= 1))
-      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100; },
+      && global.tech[`evo_${races[race].type}`] >= 2 && global.evolution.final === 100 && !global.race['evoFinalMenu']; },
     cost: {
         RNA(){ return 320; },
         DNA(){ return 320; }
@@ -4252,14 +4271,44 @@ raceList.forEach(race => actions.evolution[race] = {
     effect(){ return `${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()} ${loc(`evo_complete`)}`; },
     action(){
         if (payCosts($(this)[0])){
-            global.race.species = race;
-            sentience();
+            if (['synth','custom'].includes(race)){
+                return evoExtraState(race);
+            }
+            else {
+                global.race.species = race;
+                sentience();
+            };
         }
         return false;
     },
     queue_complete(){ return global.tech['evo'] && global.tech.evo === 7 ? 1 : 0; },
     emblem(){ return format_emblem(`extinct_${race}`); }
 });
+
+if (Object.keys(global.stats.synth).length > 1){
+    raceList.forEach(race => actions.evolution[`s-${race}`] = {
+        id: `evolution-s-${race}`,
+        title(){ return races[race].name; },
+        desc(){ return `${loc("evo_imitate")} ${races[race].name}`; },
+        reqs: { evo: 8 },
+        grant: ['evo',9],
+        condition(){
+            return global.stats.synth[race] && global.race['evoFinalMenu'];
+        },
+        cost: {},
+        race: true,
+        effect(){ return loc(`evo_imitate_race`,[races[race].name]); },
+        action(){
+            if (global.stats.synth[race]){
+                global.race.species = global.race['evoFinalMenu'];
+                global.race['srace'] = race;
+                sentience();
+            }
+            return false;
+        },
+        queue_complete(){ return global.tech['evo'] && global.tech.evo === 8 ? 1 : 0; }
+    });
+}
             
 const challengeList = {
     'plasmid': 'no_plasmid',
@@ -4364,7 +4413,7 @@ actions.evolution['bunker'] = {
     desc(){ return `<div>${loc('evo_bunker')}</div><div class="has-text-special">${loc('evo_challenge')}</div>`; },
     reqs: { evo: 6 },
     grant: ['evo_challenge',1],
-    condition(){ return global.genes['challenge'] && global.evolution['final'] === 100; },
+    condition(){ return global.genes['challenge'] && global.evolution['final'] === 100 && !global.race['evoFinalMenu']; },
     cost: {
         DNA(){ return 10; }
     },
@@ -4413,11 +4462,13 @@ export function drawEvolution(){
         }
     });
 
-    if (global.tech['evo'] && global.tech.evo >= 2){
-        evoProgress();
-    }
-    if (global.tech['evo_challenge']){
-        setChallengeScreen();
+    if (!global.race['evoFinalMenu']){
+        if (global.tech['evo'] && global.tech.evo >= 2){
+            evoProgress();
+        }
+        if (global.tech['evo_challenge']){
+            setChallengeScreen();
+        }
     }
 }
 
@@ -5138,12 +5189,12 @@ export function setAction(c_action,action,type,old,prediction){
         let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)">}</span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
     if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
-        let special = $(`<div class="special" role="button" title="${type} options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
+        let special = $(`<div class="special" role="button" v-bind:title="title | options" @click="trigModal"><svg version="1.1" x="0px" y="0px" width="12px" height="12px" viewBox="340 140 280 279.416" enable-background="new 340 140 280 279.416" xml:space="preserve">
             <path class="gear" d="M620,305.666v-51.333l-31.5-5.25c-2.333-8.75-5.833-16.917-9.917-23.917L597.25,199.5l-36.167-36.75l-26.25,18.083
                 c-7.583-4.083-15.75-7.583-23.916-9.917L505.667,140h-51.334l-5.25,31.5c-8.75,2.333-16.333,5.833-23.916,9.916L399.5,163.333
                 L362.75,199.5l18.667,25.666c-4.083,7.584-7.583,15.75-9.917,24.5l-31.5,4.667v51.333l31.5,5.25
@@ -5327,6 +5378,9 @@ export function setAction(c_action,action,type,old,prediction){
             },
             title(t){
                 return t;
+            },
+            options(t){
+                return loc(`action_options`,[t]);
             }
         }
     });
@@ -6477,6 +6531,47 @@ function scenarioActionHeader(){
     challenge.append($(`<div class="has-text-advanced">${loc('evo_scenario_desc')}</div>`));
 }
 
+function exitSimulation(){
+    let challenge = $(`<div id="simSection" class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_simulation')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_simulation_desc')}</div>`));
+    challenge.append($(`<button class="button simButton" @click="exitsim()">${loc(`evo_challenge_end_sim`)}</button>`));
+
+    vBind({
+        el: '#simSection',
+        data: {},
+        methods: {
+            exitsim(){
+                exitSim();
+            }
+        }
+    });
+}
+
+function configSimulation(){
+    let challenge = $(`<div id="simSection" class="challenge"></div>`);
+    $('#evolution').append(challenge);
+    challenge.append($(`<div class="divider has-text-warning"><h2 class="has-text-danger">${loc('evo_challenge_simulation')}</h2></div>`));
+    challenge.append($(`<div class="has-text-advanced">${loc('evo_challenge_simulation_desc')}</div>`));
+
+    let config = $($(`<div class="configList"></div>`));
+    challenge.append(config);
+
+    if (!global.race['simConfig']){
+        global.race['simConfig'] = {};
+    }
+    ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
+        global.race.simConfig[res] = global.race.simConfig[res] || 0;
+        config.append($(`<div><span class="has-text-warning">${loc(`resource_${res}_name`)}</span><input type="number" min="0" class="input" v-model="${res}"></div>`));
+    });
+
+    vBind({
+        el: '#simSection',
+        data: global.race.simConfig
+    });
+}
+
 function drawModal(c_action,type){
     let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
     $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${title}</p>`));
@@ -6834,7 +6929,29 @@ export function updateQueueNames(both, items){
     }
 }
 
+function evoExtraState(race){
+    if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
+        global.race['evoFinalMenu'] = race;
+        drawEvolution();
+        return true;
+    }
+    else {
+        global.race.species = race;
+        sentience();
+    }
+}
+
 function sentience(){
+    if (global.race['simulation']){
+        simulation();
+    }
+    if (global['sim']){
+        global.settings.showGenetics = true;
+        global.settings.arpa.physics = false;
+        global.settings.arpa.crispr = true;
+        global.settings.arpa.arpaTabs = 2;
+    }
+
     if (global.resource.hasOwnProperty('RNA')){
         global.resource.RNA.display = false;
     }
@@ -7049,6 +7166,9 @@ function sentience(){
             global.settings.msgFilters.building_queue.vis = true;
             global.settings.msgFilters.research_queue.unlocked = true;
             global.settings.msgFilters.research_queue.vis = true;
+        }
+        if (global.settings.tabLoad){
+            $(`#resQueue`).removeAttr('style');
         }
     }
 
@@ -7335,6 +7455,10 @@ function sentience(){
             arpa('Crispr');
             arpa('Blood');
         }
+        else if (global['sim']){
+            arpa('Crispr');
+            arpa('Blood');
+        }
     }
     else {
         loadTab('mTabCivil');
@@ -7345,6 +7469,64 @@ function sentience(){
     }
 
     if (global.race['slow'] || global.race['hyper'] || global.race.species === 'junker'){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        if (webWorker.w){
+            webWorker.w.terminate();
+        }
+        window.location.reload();
+    }
+}
+
+function simulation(){
+    if (global.race['simulation']){
+        if (!global.hasOwnProperty('sim')){
+            global['sim'] = {
+                stats: deepClone(global.stats),
+                prestige: deepClone(global.prestige),
+                genes: deepClone(global.genes),
+                blood: deepClone(global.blood),
+                pillars: deepClone(global.pillars),
+                race: deepClone(global.race)
+            };
+
+            global.stats = {
+                start: Date.now(),
+                days: 0,
+                tdays: 0
+            };
+            setupStats();
+
+            global.genes = { minor: {}, challenge: 1 };
+            global.blood = { aware: 1 };
+            global.pillars = {};
+            delete global.race['ancient_ruins'];
+            delete global.race['rapid_mutation'];
+            delete global.race['corruption'];
+            delete global.race['rejuvenated'];
+            global.race.ascended = false;
+            global.race.gods = 'none';
+            global.race.old_gods = 'none';
+            
+            ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
+                global.prestige[res] = { count: Number(global.race.simConfig[res]) };
+            });
+        }
+    }
+}
+
+function exitSim(){
+    if (global.hasOwnProperty('sim')){
+        global.stats = deepClone(global.sim.stats);
+        global.prestige = deepClone(global.sim.prestige);
+        global.genes = deepClone(global.sim.genes);
+        global.blood = deepClone(global.sim.blood);
+        global.pillars = deepClone(global.sim.pillars);
+        global.race = deepClone(global.sim.race);
+        delete global['sim'];
+        
+        global.race.species = 'protoplasm';
+        delete global.race['simulation'];
+
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
         if (webWorker.w){
             webWorker.w.terminate();
@@ -7606,6 +7788,7 @@ function cataclysm(){
         global.settings.civTabs = 1;
         global.settings.spaceTabs = 1;
         global.settings.showGenetics = true;
+        global.settings.arpa.physics = true;
 
         //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;

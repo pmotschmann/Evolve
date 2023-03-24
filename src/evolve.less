@@ -930,6 +930,28 @@ Misc ---------> Main template
             color: @has-text-warning;
         }
 
+        .challenge {
+            .simButton {
+                border-color: @has-text-success;
+            }
+
+            .configList {
+                display: flex;
+                flex-flow: wrap;
+                justify-content: space-around;
+                > div {
+                    margin: 0 .25rem;
+                    width: 10rem;
+
+                    > input {
+                        height: 1.25rem;
+                        text-align: center;
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
         // .popper
         .popper {
             .has-text-label {
@@ -2782,6 +2804,10 @@ a {
             width: 100%;
             .actionWidth();
             text-align: center;
+
+            .simButton {
+                margin-top: 0.5rem;
+            }
         }
 
         .divider {
@@ -4196,7 +4222,8 @@ span.inline {
     .planetWrap {
         margin-left: 1rem;
 
-        .universe {
+        .universe,
+        .simulation {
             border-left: 1px solid;
             margin-left: 1rem;
             padding-left: 1rem;

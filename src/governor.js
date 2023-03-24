@@ -1,5 +1,5 @@
 import { global, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck } from './functions.js';
+import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
@@ -623,7 +623,7 @@ export function drawnGovernOffice(){
         },
         filters: {
             label(t){
-                return gov_tasks[t] ? gov_tasks[t].name : loc(`gov_task_${t}`);
+                return gov_tasks[t] ? (typeof gov_tasks[t].name === 'string' ? gov_tasks[t].name : gov_tasks[t].name()) : loc(`gov_task_${t}`);
             }
         }
     });
@@ -1063,7 +1063,7 @@ export const gov_tasks = {
         }
     },
     horseshoe: { // Forge horseshoes
-        name: loc(global.race['sludge'] ? `gov_task_beaker` : `gov_task_horseshoe`),
+        name(){ return loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]); },
         req(){
             return global.race['hooved'] ? true : false;
         },

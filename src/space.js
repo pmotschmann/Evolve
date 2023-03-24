@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate } from './actions.js';
-import { outerTruth, syndicate } from './truepath.js';
+import { outerTruthTech, syndicate } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { govActive } from './governor.js';
 import { ascend, terraform } from './resets.js';
@@ -1155,7 +1155,7 @@ const spaceProjects = {
             },
             effect(){
                 let bonus = global.tech['ancient_study'] ? 0.6 : 0.4;
-                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2){
+                if (global.tech['ancient_deify'] && global.tech['ancient_deify'] >= 2 && support_on['exotic_lab']){
                     bonus += 0.01 * support_on['exotic_lab'];
                 }
                 if (global.civic.govern.type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
@@ -2293,11 +2293,11 @@ const spaceProjects = {
             }
         },
     },
-    spc_titan: outerTruth.spc_titan,
-    spc_enceladus: outerTruth.spc_enceladus,
-    spc_triton: outerTruth.spc_triton,
-    spc_kuiper: outerTruth.spc_kuiper,
-    spc_eris: outerTruth.spc_eris,
+    spc_titan: outerTruthTech().spc_titan,
+    spc_enceladus: outerTruthTech().spc_enceladus,
+    spc_triton: outerTruthTech().spc_triton,
+    spc_kuiper: outerTruthTech().spc_kuiper,
+    spc_eris: outerTruthTech().spc_eris,
 };
 
 const interstellarProjects = {
@@ -6341,7 +6341,9 @@ export function ascendLab(wiki){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        if (!global['sim']){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        }
 
         unlockAchieve(`biome_${global.city.biome}`);
         unlockAchieve(`genus_${races[global.race.species].type}`);
@@ -6783,7 +6785,9 @@ export function terraformLab(wiki){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        if (!global['sim']){
+            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        }
 
         unlockAchieve(`biome_${global.city.biome}`);
         unlockAchieve(`genus_${races[global.race.species].type}`);

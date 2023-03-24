@@ -5,15 +5,6 @@ import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
 import { loc } from './locale.js'
 
-
-if (!global.stats['achieve']){
-    global.stats['achieve'] = {};
-}
-
-if (!global.stats['feat']){
-    global.stats['feat'] = {};
-}
-
 const achieve_list = {
     misc: [
         'apocalypse','ascended','dreaded','anarchist','second_evolution','blackhole','warmonger',
