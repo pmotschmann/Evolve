@@ -4977,7 +4977,7 @@
   "gov_trait_racketeer_effect": "부패로 인한 소득 손실 -%0%, 카지노 효과가 +%1% 증가.",
   "gov_trait_dealmaker": "거래자",
   "gov_trait_dealmaker_desc": "거래 기술 전문가가 당신이 원하는 걸 얻기 위한 도움을 줄 것입니다.",
-  "gov_trait_dealmaker_effect": "교역로 효과가 +%0% 증가. 수출하는 양 보다 더 많이 수입할 수 없음"
+  "gov_trait_dealmaker_effect": "교역로 효과가 +%0% 증가. 수출하는 양 보다 더 많이 수입할 수 없음",
   "gov_trait_risktaker": "모험가",
   "gov_trait_risktaker_desc": "하이 리스크, 하이 리턴.",
   "gov_trait_risktaker_effect": "상품 시장 가격 변동률이 증가했습니다. 은행이 %0% 자금 용량을 추가합니다.",
