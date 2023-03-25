@@ -2629,6 +2629,9 @@ export function hoovedRename(style){
     else if (races[global.race.species].type === 'reptilian'){
         return style ? 'craft' : loc('resource_HeatRock_name');
     }
+    else if (races[global.race.species].type === 'fey'){
+        return style ? 'craft' : loc('resource_PixieDust_name');
+    }
     else if (races[global.race.species].type === 'synthetic'){
         return style ? 'craft' : loc('resource_Battery_name');
     }

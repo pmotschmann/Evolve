@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.4`,
+        revision: `a`,
+        date: `3/25/2023`,
+        changes: [
+            `A restore point is now made if you select isolation protocal.`,
+        ]
+    },
+    {
+        version: `1.3.4`,
         date: `3/24/2023`,
         changes: [
             `Evolving Synth can now chose imitation race from any species killed by an AI Apocalypse.`,

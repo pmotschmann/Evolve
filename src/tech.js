@@ -12403,6 +12403,9 @@ const techs = {
         effect(){ return `<div>${loc('tech_isolation_protocol_effect',[loc('tab_tauceti')])}</div><div class="has-text-special">${loc('tech_isolation_protocol_warning')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();
                 return true;

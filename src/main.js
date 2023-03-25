@@ -6159,7 +6159,7 @@ function fastLoop(){
                     { // Coal
                         let coal_base = miner_base;
                         coal_base *= production('mining_pit','coal');
-                        let delta = coal_base * shrineMetal.mult * global_multiplier * colony_val;
+                        let delta = coal_base * global_multiplier * colony_val;
     
                         coal_bd[loc('job_pit_miner')] = coal_base + 'v';
                         if (coal_base > 0){
