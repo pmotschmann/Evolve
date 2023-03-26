@@ -6895,7 +6895,7 @@
   "wiki_trait_effect_beast_of_burden": "额外获得一轮战利品。（特质级别无影响。）",
   "wiki_trait_effect_sniper": "武器升级研究效果 +%0%。",
   "wiki_trait_effect_sniper_ex1": "最终效果将乘上武器升级研究次数。",
-  "wiki_trait_effect_hooved": "需要%0才能使人口增长，锻造/制造%0的原料消耗为 %1%。",
+  "wiki_trait_effect_hooved": "需要%0才能使人口增长，%0的原料消耗为 %1%。",
   "wiki_trait_effect_hooved_ex1": "%0消耗的材料会根据%0获取总数而变化。",
   "wiki_trait_effect_hooved_ex2": "%0--%6 -> %1--%7 -> %2--%8 -> %3--%9 -> %4--%10 -> %5",
   "wiki_trait_effect_hooved_ex3": "如果达到对应数量后还未解锁下一种材料，则仍然会使用当前材料，但价格会更快地增长。",
