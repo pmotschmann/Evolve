@@ -8563,7 +8563,7 @@
   "wiki_p_res_dark_micro": "微型宇宙，减少成本蠕变。",
   "wiki_p_res_dark_magic": "魔法宇宙，增加法力产量。",
   "wiki_p_res_harmony": "和谐水晶",
-  "wiki_p_res_harmony_para1": "和谐水晶只能通过飞升重置获得。",
+  "wiki_p_res_harmony_para1": "和谐水晶可以通过飞升重置或星球重塑重置获得。",
   "wiki_p_res_harmony_para2": "和谐水晶可以增加暗能量的效果，并可以减少太空阶段的成本蠕变。",
   "wiki_p_res_harmony_para3": "只有在当前宇宙进行过飞升重置，才能使减少太空阶段成本蠕变的效果生效，且该效果随着本宇宙飞升成就等级增加而提升。",
   "wiki_p_res_blood": "鲜血之石",
