@@ -1701,33 +1701,35 @@ function fastLoop(){
                     let c_action = parts[0] === 'city' ? actions.city : actions[sector][parts[0]];
 
                     let balValues = c_action[parts[1]].powerBalancer();
-                    let on = p_on[parts[1]];
-                    balValues.forEach(function(v){
-                        let off = 0;
-                        if (v.hasOwnProperty('r') && v.hasOwnProperty('k')){
-                            let val = global[sector][parts[1]][v.k] ? global[sector][parts[1]][v.k] : 0;
-                            if (global.resource[v.r]['odif'] && global.resource[v.r]['odif'] < 0) { global.resource[v.r]['odif'] = 0; }
-                            let diff = global.resource[v.r].diff + (global.resource[v.r]['odif'] ? global.resource[v.r]['odif'] : 0);
-                            while (diff - (off * val) > val && on > 0 && totalPowerUsage > power_grid){
-                                on--;
-                                off++;
-                                totalPowerUsage -= c_action[parts[1]].powered();
+                    if (balValues){
+                        let on = p_on[parts[1]];
+                        balValues.forEach(function(v){
+                            let off = 0;
+                            if (v.hasOwnProperty('r') && v.hasOwnProperty('k')){
+                                let val = global[sector][parts[1]][v.k] ? global[sector][parts[1]][v.k] : 0;
+                                if (global.resource[v.r]['odif'] && global.resource[v.r]['odif'] < 0) { global.resource[v.r]['odif'] = 0; }
+                                let diff = global.resource[v.r].diff + (global.resource[v.r]['odif'] ? global.resource[v.r]['odif'] : 0);
+                                while (diff - (off * val) > val && on > 0 && totalPowerUsage > power_grid){
+                                    on--;
+                                    off++;
+                                    totalPowerUsage -= c_action[parts[1]].powered();
+                                }
+                                global.resource[v.r]['odif'] = val * off;
                             }
-                            global.resource[v.r]['odif'] = val * off;
-                        }
-                        else if (v.hasOwnProperty('s')){
-                            let sup = c_action[parts[1]].support();
-                            if (global[sector][parts[1]]['soff'] && global[sector][parts[1]]['soff'] < 0) { global[sector][parts[1]]['soff'] = 0; }
-                            let support = v.s + (global[sector][parts[1]]['soff'] ? global[sector][parts[1]]['soff'] : 0);
-                            while (support - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
-                                on--;
-                                off++;
-                                totalPowerUsage -= c_action[parts[1]].powered();
+                            else if (v.hasOwnProperty('s')){
+                                let sup = c_action[parts[1]].support();
+                                if (global[sector][parts[1]]['soff'] && global[sector][parts[1]]['soff'] < 0) { global[sector][parts[1]]['soff'] = 0; }
+                                let support = v.s + (global[sector][parts[1]]['soff'] ? global[sector][parts[1]]['soff'] : 0);
+                                while (support - (sup * off) >= sup && on > 0 && totalPowerUsage > power_grid){
+                                    on--;
+                                    off++;
+                                    totalPowerUsage -= c_action[parts[1]].powered();
+                                }
+                                global[sector][parts[1]]['soff'] = sup * off;
                             }
-                            global[sector][parts[1]]['soff'] = sup * off;
-                        }
-                    });
-                    p_on[parts[1]] = on;
+                        });
+                        p_on[parts[1]] = on;
+                    }
                 }
             }
 
@@ -6159,7 +6161,7 @@ function fastLoop(){
                     { // Coal
                         let coal_base = miner_base;
                         coal_base *= production('mining_pit','coal');
-                        let delta = coal_base * shrineMetal.mult * global_multiplier * colony_val;
+                        let delta = coal_base * global_multiplier * colony_val;
     
                         coal_bd[loc('job_pit_miner')] = coal_base + 'v';
                         if (coal_base > 0){

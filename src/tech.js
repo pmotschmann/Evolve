@@ -8514,6 +8514,24 @@ const techs = {
         effect(){ return `<div>${loc('tech_unite_effect')}</div><div class="has-text-warning">${loc('tech_unification_effect2')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
+                if (global.race['banana']){
+                    if (!global['sim']){
+                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    }
+                    delete global.race['banana'];
+                }
+                if (global.civic.foreign.gov0.occ && global.civic.foreign.gov1.occ && global.civic.foreign.gov2.occ){
+                    unlockAchieve(`world_domination`);
+                }
+                if (global.civic.foreign.gov0.anx && global.civic.foreign.gov1.anx && global.civic.foreign.gov2.anx){
+                    unlockAchieve(`illuminati`);
+                }
+                if (global.civic.foreign.gov0.buy && global.civic.foreign.gov1.buy && global.civic.foreign.gov2.buy){
+                    unlockAchieve(`syndicate`);
+                }
+                if (global.stats.attacks === 0){
+                    unlockAchieve(`pacifist`);
+                }
                 uniteEffect();
                 if (global.race['truepath'] && !global.tech['rival']){
                     global.tech['rival'] = 1;
@@ -12403,6 +12421,9 @@ const techs = {
         effect(){ return `<div>${loc('tech_isolation_protocol_effect',[loc('tab_tauceti')])}</div><div class="has-text-special">${loc('tech_isolation_protocol_warning')}</div>`; },
         action(){
             if (payCosts($(this)[0])){
+                if (!global['sim']){
+                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();
                 return true;
