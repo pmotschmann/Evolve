@@ -7496,7 +7496,7 @@
   "wiki_tech_req_dig_control1": "完全控制挖掘场",
   "wiki_tech_req_corrupted_ai1": "人工智能偏移达到 100%",
   "wiki_tech_vax_morale": "士气 %0",
-  "wiki_tech_vax_strat": "每个游戏日使每家%1拥有(1/%0)%的概率接种疫苗。",
+  "wiki_tech_vax_strat": "每个游戏日使每家%1拥有(1/%0)%的概率为您的种族接种疫苗。",
   "wiki_tech_special_species": "种族为：%0",
   "wiki_tech_special_species_not": "种族不为：%0",
   "wiki_tech_special_genus_not": "种群不为：%0",
