@@ -2404,6 +2404,7 @@
   "tech_zero_g_lab_effect": "在太空中建造零重力实验室，可以做一些有重力环境下无法进行的实验。",
   "tech_alien_biotech": "外星生物技术",
   "tech_alien_biotech_effect": "将废弃飞船上获得的技术用于升级生命科学实验室。",
+  "tech_alien_biotech_effect_alt": "将废弃飞船上获得的技术用于升级大学。",
   "tech_operating_base": "卫星军事基地",
   "tech_operating_base_effect": "准备好在%0设立永久军事基地。",
   "tech_munitions_depot": "弹药库",
