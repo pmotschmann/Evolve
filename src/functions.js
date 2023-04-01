@@ -1572,6 +1572,7 @@ export function adjustCosts(c_action, offset, wiki){
     costs = loneAdjust(costs, offset, wiki);
     costs = inflationAdjust(costs, offset, wiki);
     costs = technoAdjust(costs, offset, wiki);
+    costs = flierAdjust(costs, offset, wiki);
     costs = kindlingAdjust(costs, offset, wiki);
     costs = smolderAdjust(costs, offset, wiki);
     costs = scienceAdjust(costs, offset, wiki);
@@ -1745,6 +1746,31 @@ function kindlingAdjust(costs, offset, wiki){
                 newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
             else if (res === 'Structs'){
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
+}
+
+function flierAdjust(costs, offset, wiki){
+    if (global.race['flier'] && (costs['Stone'] || costs['Cement'])){
+        var newCosts = {};
+        let adjustRate = 1 - (traits.flier.vars()[0] / 100);
+        Object.keys(costs).forEach(function (res){
+            if (res === 'Stone' && !costs['Cement']){
+                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+            }
+            else if (res === 'Cement'){
+                if (costs['Stone']){
+                    newCosts['Stone'] = function(){ return Math.round((costs['Stone'](offset, wiki) * adjustRate) + (costs[res](offset, wiki) * 1.2)) || 0; }
+                }
+                else {
+                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 1.2); }
+                }
+            }
+            else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
         });
@@ -2616,6 +2642,9 @@ export function hoovedRename(style){
     }
     else if (global.race.species === 'tuskin'){
         return style ? 'craft' : loc('resource_Goggles_name');
+    }
+    else if (global.race.species === 'sharkin'){
+        return style ? 'craft' : loc('resource_ToothSharpener_name');
     }
     else if (races[global.race.species].type === 'humanoid'){
         return style ? 'craft' : loc('resource_Sandals_name');

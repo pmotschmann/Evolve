@@ -2461,8 +2461,8 @@ export const actions = {
         },
         rock_quarry: {
             id: 'city-rock_quarry',
-            title: loc('city_rock_quarry'),
-            desc: loc('city_rock_quarry_desc'),
+            title(){ return global.race['flier'] ? loc('city_rock_quarry_alt') : loc('city_rock_quarry'); },
+            desc(){ return global.race['flier'] ? loc('city_rock_quarry_desc_alt',[global.resource.Stone.name]) : loc('city_rock_quarry_desc'); },
             category: 'industrial',
             reqs: { mining: 1 },
             not_trait: ['cataclysm','sappy'],
@@ -2529,7 +2529,7 @@ export const actions = {
             desc: loc('city_cement_plant_desc'),
             category: 'industrial',
             reqs: { cement: 1 },
-            not_trait: ['cataclysm','lone_survivor'],
+            not_trait: ['cataclysm','lone_survivor','flier'],
             cost: {
                 Money(offset){ return costMultiplier('cement_plant', offset, 3000, 1.5); },
                 Lumber(offset){ return costMultiplier('cement_plant', offset, 1800, 1.36); },
@@ -2928,6 +2928,9 @@ export const actions = {
                 let routes = global.race['xenophobic'] || global.race['nomadic'] ? global.tech.trade : global.tech.trade + 1;
                 if (global.tech['trade'] && global.tech['trade'] >= 3){
                     routes--;
+                }
+                if (global.race['flier']){
+                    routes += traits.flier.vars()[1];
                 }
                 return loc('city_trade_effect',[routes]);
             },
@@ -4079,9 +4082,9 @@ export function buildTemplate(key, region){
                 desc: loc('city_firework'),
                 category: 'outskirts',
                 wiki: false,
-                reqs: { mining: 3, cement: 1 },
+                reqs: { mining: 3 },
                 condition(){
-                    return eventActive(`firework`);
+                    return eventActive(`firework`) && (global.tech['cement'] || global.race['flier']);
                 },
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
@@ -7633,7 +7636,9 @@ function aiStart(){
         global.civic.quarry_worker.display = true;
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
-        global.civic.cement_worker.display = true;
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+        }
         global.civic.banker.display = true;
 
         global.city.calendar.day++;
@@ -7881,9 +7886,14 @@ function cataclysm(){
 
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
-        global.civic.cement_worker.display = true;
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
+
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+            global.civic.cement_worker.max = 1;
+            global.civic.cement_worker.workers = 1;
+        }
 
         global.civic.colonist.max = 4;
         global.civic.colonist.workers = 4;
@@ -7891,8 +7901,6 @@ function cataclysm(){
         global.civic.space_miner.workers = 2;
         global.civic.professor.max = 1;
         global.civic.professor.workers = 1;
-        global.civic.cement_worker.max = 1;
-        global.civic.cement_worker.workers = 1;
 
         global.city.calendar.day++;
         global.city.market.active = true;

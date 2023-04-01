@@ -171,7 +171,7 @@ export const supplyValue = {
 export function craftCost(){
     let costs = {
         Plywood: [{ r: 'Lumber', a: 100 }],
-        Brick: [{ r: 'Cement', a: 40 }],
+        Brick: global.race['flier'] ? [{ r: 'Stone', a: 60 }] : [{ r: 'Cement', a: 40 }],
         Wrought_Iron: [{ r: 'Iron', a: 80 }],
         Sheet_Metal: [{ r: 'Aluminium', a: 120 }],
         Mythril: [{ r: 'Iridium', a: 100 },{ r: 'Alloy', a: 250 }],
@@ -979,6 +979,16 @@ export function setResourceName(name){
         switch(name){
             case 'Stone':
                 global['resource'][name].name = loc('resource_Amber_name');
+                break;
+        }
+    }
+    else if (global.race['flier']){
+        switch(name){
+            case 'Stone':
+                global['resource'][name].name = loc('resource_Clay_name');
+                break;
+            case 'Brick':
+                global['resource'][name].name = loc('resource_Mud_Brick_name');
                 break;
         }
     }

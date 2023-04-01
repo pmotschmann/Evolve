@@ -2143,7 +2143,9 @@ const tauCetiModules = {
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('tau_home_tau_factory_effect',[global.tech['isolation'] ? 5 : 3])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                    if (!global.race['flier']){
+                        desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                    }
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
                 desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 275 : 90])}</div>`;
@@ -3039,7 +3041,9 @@ const tauCetiModules = {
                     prod *= 1.25;
                 }
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
-                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                if (!global.race['flier']){
+                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                }
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -5348,7 +5352,9 @@ export function loneSurvivor(){
         }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
-        global.civic.cement_worker.display = true;
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+        }
         global.civic.banker.display = true;
         global.civic.pit_miner.display = true;
 

@@ -1694,7 +1694,6 @@ export function setPowerGrid(){
 }
 
 export function gridDefs(){
-    let type = races[global.race.species].type === 'organism' ? 'humanoid' : races[global.race.species].type;
     return {
         power: { l: global.power, n: loc(`power`), s: true, r: false, rs: false },
         moon: { l: global.support.moon, n: loc(`space_moon_info_name`), s: global.settings.space.moon, r: 'space', rs: 'moon_base' },

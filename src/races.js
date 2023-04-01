@@ -103,6 +103,7 @@ export const genus_traits = {
         scales: 1
     },
     avian: {
+        flier: 1,
         hollow_bones: 1,
         rigid: 1
     },
@@ -420,11 +421,32 @@ export const traits = {
             }
         },
     },
+    flier: { // Use Clay instead of Stone or Cement
+        name: loc('trait_flier_name'),
+        desc: loc('trait_flier'),
+        type: 'genus',
+        val: 3,
+        vars(r){
+            // [Reduce Stone Costs, Extra Trade Post Route]
+            switch (r || global.race.flier || 1){
+                case 0.25:
+                    return [10,0];
+                case 0.5:
+                    return [15,0];
+                case 1:
+                    return [25,1];
+                case 2:
+                    return [40,1];
+                case 3:
+                    return [50,2];
+            }
+        },
+    },
     hollow_bones: { // Less Crafted Materials Needed
         name: loc('trait_hollow_bones_name'),
         desc: loc('trait_hollow_bones'),
         type: 'genus',
-        val: 3,
+        val: 2,
         vars(r){
             switch (r || global.race.hollow_bones || 1){
                 case 0.25:
@@ -444,7 +466,7 @@ export const traits = {
         name: loc('trait_rigid_name'),
         desc: loc('trait_rigid'),
         type: 'genus',
-        val: -1,
+        val: -2,
         vars(r){
             switch (r || global.race.rigid || 1){
                 case 0.25:
@@ -4618,6 +4640,15 @@ export function cleanAddTrait(trait){
         case 'herbivore':
             adjustFood();
             break;
+        case 'flier':
+            setResourceName('Stone');
+            setResourceName('Brick');
+            global.resource.Cement.display = false;
+            global.civic.cement_worker.display = false;
+            global.civic.cement_worker.workers = 0;
+            setPurgatory('tech','cement');
+            setPurgatory('city','cement_plant');
+            break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
                 global.civic.d_job = 'unemployed';
@@ -4844,6 +4875,16 @@ export function cleanRemoveTrait(trait,rank){
         case 'carnivore':
         case 'herbivore':
             adjustFood();
+            break;
+        case 'flier':
+            setResourceName('Stone');
+            setResourceName('Brick');
+            checkPurgatory('tech','cement');
+            if (global.tech['cement']){
+                checkPurgatory('city','cement_plant');
+                global.resource.Cement.display = true;
+                global.civic.cement_worker.display = true;
+            }
             break;
         case 'sappy':
             setResourceName('Stone');
@@ -5141,6 +5182,9 @@ export function hoovedReskin(desc){
     }
     else if (global.race.species === 'tuskin'){
         return desc ? loc('trait_hooved_tuskin') : loc('trait_hooved_tuskin_name');
+    }
+    else if (global.race.species === 'sharkin'){
+        return desc ? loc('trait_hooved_sharkin') : loc('trait_hooved_sharkin_name');
     }
     else if (races[global.race.species].type === 'humanoid'){
         return desc ? loc('trait_hooved_humanoid') : loc('trait_hooved_humanoid_name');

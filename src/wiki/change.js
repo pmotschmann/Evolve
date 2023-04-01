@@ -4,8 +4,9 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.5`,
-        date: `3/31/2023`,
+        date: `4/1/2023`,
         changes: [
+            `Avian species now have the Flier trait.`,
             `Fixed truepath dreadnought power costs.`,
         ]
     },

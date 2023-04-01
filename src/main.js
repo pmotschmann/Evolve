@@ -8198,6 +8198,9 @@ function midLoop(){
             if (global.tech['trade'] && global.tech['trade'] >= 3){
                 routes--;
             }
+            if (global.race['flier']){
+                routes += traits.flier.vars()[1];
+            }
             global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
