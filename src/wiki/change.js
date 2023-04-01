@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.5`,
+        date: `3/31/2023`,
+        changes: [
+            `Fixed truepath dreadnought power costs.`,
+        ]
+    },
+    {
         version: `1.3.4`,
         revision: `b`,
         date: `3/30/2023`,

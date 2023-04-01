@@ -3938,6 +3938,7 @@ export function shipPower(ship, wiki){
         case 'dreadnought':
             out_inflate = 5;
             use_inflate = 6.5;
+            break;
         case 'explorer':
             out_inflate = 6;
             use_inflate = 2;
