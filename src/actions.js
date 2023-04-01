@@ -4830,11 +4830,19 @@ function checkTechPath(tech){
     return true;
 }
 
+export function skipRequirement(req,rank){
+    if (global.race['flier'] && req === 'cement'){
+        return true;
+    }
+    return false;
+}
+
 export function checkTechRequirements(tech,predList){
     let isMet = true; let precog = false;
 
     let failChecks = {};
     Object.keys(actions.tech[tech].reqs).forEach(function (req){
+        if (skipRequirement(req, global.tech[req] || 0)){ return; }
         if (!global.tech[req] || global.tech[req] < actions.tech[tech].reqs[req]){
             isMet = false;
             failChecks[req] = actions.tech[tech].reqs[req];
@@ -4849,6 +4857,7 @@ export function checkTechRequirements(tech,predList){
         });
         Object.keys(failChecks).forEach(function (req){
             let cTech = global.tech[req] || 0;
+            if (skipRequirement(req, global.tech[req] || 0)){ return; }
             if (!predList[req] || predList[req].v < actions.tech[tech].reqs[req] || predList[req].v > cTech + 1){
                 precog = false;
             }
@@ -6849,6 +6858,9 @@ function basicHousingLabel(){
 }
 
 function mediumHousingLabel(){
+    if (global.race['flier']){
+        return loc('city_cottage_title6');
+    }
     switch (global.race.species){
         case 'sporgar':
             return loc('city_cottage_title2');
