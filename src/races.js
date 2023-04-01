@@ -5154,6 +5154,9 @@ export function hoovedReskin(desc){
     else if (races[global.race.species].type === 'reptilian'){
         return desc ? loc('trait_hooved_reptilian') : loc('trait_hooved_reptilian_name');
     }
+    else if (races[global.race.species].type === 'fey'){
+        return desc ? loc('trait_hooved_fey') : loc('trait_hooved_fey_name');
+    }
     else if (races[global.race.species].type === 'synthetic'){
         return desc ? loc('trait_hooved_synthetic') : loc('trait_hooved_synthetic_name');
     }
