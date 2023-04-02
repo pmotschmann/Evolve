@@ -2631,6 +2631,9 @@ export function hoovedRename(style){
     else if (global.race.species === 'wolven'){
         return style ? 'craft' : loc('resource_ChewToy_name');
     }
+    else if (global.race.species === 'dracnid'){
+        return style ? 'craft' : loc('resource_Hoard_name');
+    }
     else if (global.race.species === 'seraph'){
         return style ? 'forge' : loc('resource_Halo_name');
     }
@@ -2648,6 +2651,9 @@ export function hoovedRename(style){
     }
     else if (races[global.race.species].type === 'humanoid'){
         return style ? 'craft' : loc('resource_Sandals_name');
+    }
+    else if (races[global.race.species].type === 'avian'){
+        return style ? 'craft' : loc('resource_Perch_name');
     }
     else if (races[global.race.species].type === 'plant'){
         return style ? 'craft' : loc('resource_Planter_name');

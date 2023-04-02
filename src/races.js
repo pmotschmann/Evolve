@@ -5171,6 +5171,9 @@ export function hoovedReskin(desc){
     else if (global.race.species === 'wolven'){
         return desc ? loc('trait_hooved_wolven') : loc('trait_hooved_wolven_name');
     }
+    else if (global.race.species === 'dracnid'){
+        return desc ? loc('trait_hooved_dracnid') : loc('trait_hooved_dracnid_name');
+    }
     else if (global.race.species === 'seraph'){
         return desc ? loc('trait_hooved_seraph') : loc('trait_hooved_seraph_name');
     }
@@ -5188,6 +5191,9 @@ export function hoovedReskin(desc){
     }
     else if (races[global.race.species].type === 'humanoid'){
         return desc ? loc('trait_hooved_humanoid') : loc('trait_hooved_humanoid_name');
+    }
+    else if (races[global.race.species].type === 'avian'){
+        return desc ? loc('trait_hooved_avian') : loc('trait_hooved_avian_name');
     }
     else if (races[global.race.species].type === 'plant'){
         return desc ? loc('trait_hooved_plant') : loc('trait_hooved_plant_name');
