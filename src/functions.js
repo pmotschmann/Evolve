@@ -1764,10 +1764,10 @@ function flierAdjust(costs, offset, wiki){
             }
             else if (res === 'Cement'){
                 if (costs['Stone']){
-                    newCosts['Stone'] = function(){ return Math.round((costs['Stone'](offset, wiki) * adjustRate) + (costs[res](offset, wiki) * 1.2)) || 0; }
+                    newCosts['Stone'] = function(){ return Math.round((costs['Stone'](offset, wiki) * adjustRate) + (costs[res](offset, wiki) * 2 * adjustRate)) || 0; }
                 }
                 else {
-                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 1.2); }
+                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 2 * adjustRate); }
                 }
             }
             else {

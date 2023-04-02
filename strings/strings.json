@@ -977,6 +977,7 @@
   "city_assembly_effect": "Build a %0",
   "city_assembly_effect_warn": "Need more housing",
   "city_garrison": "Barracks",
+  "city_garrison_flier": "Watch Tower",
   "city_garrison_desc": "Increases soldier capacity",
   "city_hospital": "Hospital",
   "city_hospital_desc": "Heals wounded soldiers",

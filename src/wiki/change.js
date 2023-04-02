@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Avian species now have the Flier trait.`,
             `Fixed truepath dreadnought power costs.`,
+            `Added Wireless storage to High-Tech farm in isolation`,
         ]
     },
     {

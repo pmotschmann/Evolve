@@ -1924,7 +1924,7 @@ export const actions = {
         assembly: buildTemplate(`assembly`,'city'),
         garrison: {
             id: 'city-garrison',
-            title: loc('city_garrison'),
+            title(){ return global.race['flier'] ? loc('city_garrison_flier') : loc('city_garrison'); },
             desc: loc('city_garrison_desc'),
             category: 'military',
             reqs: { military: 1, housing: 1 },
@@ -7754,7 +7754,6 @@ function cataclysm(){
         global.tech['container'] = 4;
         global.tech['steel_container'] = 3;
         global.tech['mining'] = 4;
-        global.tech['cement'] = 5;
         global.tech['oil'] = 7;
         global.tech['mass'] = 1;
         global.tech['alumina'] = 1;
@@ -7902,6 +7901,7 @@ function cataclysm(){
         global.civic.space_miner.display = true;
 
         if (!global.race['flier']){
+            global.tech['cement'] = 5;
             global.civic.cement_worker.display = true;
             global.civic.cement_worker.max = 1;
             global.civic.cement_worker.workers = 1;

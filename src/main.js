@@ -7534,6 +7534,12 @@ function midLoop(){
             }
         }
 
+        if (global.tech['isolation'] && p_on['tau_farm'] && global.race['artifical']){
+            let gain = p_on['tau_farm'] * spatialReasoning(350);
+            caps['Food'] += gain;
+            bd_Food[loc('tau_home_tau_farm')] = gain+'v';
+        }
+
         if (global.galaxy['gateway_depot']){
             let containers = global.tech['world_control'] ? 150 : 100;
             caps['Crates'] += (global.galaxy.gateway_depot.count * containers);

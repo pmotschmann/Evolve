@@ -1520,11 +1520,14 @@ export function gainBlood(action){
 
 function pick_monument(){
     let monuments = [];
-    ['Obelisk','Statue','Sculpture','Monolith'].forEach(function (type){
+    ['Obelisk','Statue','Sculpture'].forEach(function (type){
         if (type !== global.arpa['m_type']){
             monuments.push(type);
         }
     });
+    if (!global.race['flier'] && global.arpa['m_type'] !== 'Monolith'){
+        monuments.push('Monolith');
+    }
     if (global.race['evil'] && global.arpa['m_type'] !== 'Pillar' && !global.race['kindling_kindred'] && !global.race['smoldering']){
         monuments.push('Pillar');
     }

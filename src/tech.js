@@ -1978,7 +1978,7 @@ const techs = {
         desc: loc('tech_containerization_desc'),
         category: 'storage',
         era: 'civilized',
-        reqs: { cement: 1 },
+        reqs: { cement: 1, mining: 1, storage: 1, science: 1 },
         grant: ['container',1],
         cost: {
             Knowledge(){ return 2700; }
