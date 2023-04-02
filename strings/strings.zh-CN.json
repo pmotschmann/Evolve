@@ -7759,7 +7759,7 @@
   "wiki_mechanics_homeless": "无家可归",
   "wiki_mechanics_homeless_para1": "如果您关闭了住房，市民将无家可归。",
   "wiki_mechanics_homeless_para2": "无家可归的市民不工作、不缴税，士气低落。",
-  "wiki_mechanics_homeless_para3": "无家可归的市民将逐渐离开您的居住地，%0越多，离开速度越快。",
+  "wiki_mechanics_homeless_para3": "无家可归的市民将逐渐离开您的居住地，%0越多，市民离开的速度越快。",
   "wiki_mechanics_homeless_para4": "如果恢复了可用的居住地，则无家可归的人口会立即转为普通市民。",
   "wiki_mechanics_warmonger": "战争贩子",
   "wiki_mechanics_warmonger_para1": "大部分种族进行战役时会产生战争贩子惩罚，降低士气。",
