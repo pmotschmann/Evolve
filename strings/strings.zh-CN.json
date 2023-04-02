@@ -8663,6 +8663,7 @@
   "wiki_arpa_project_monument_type": "%0需要%1来进行建造。",
   "wiki_arpa_project_monument_random": "纪念碑的种类是随机选取的。同一种纪念碑无法连续出现两次。",
   "wiki_arpa_project_monument_exceptions": "拥有 [邪恶] 特质的种族才可以建造骸骨立柱，在魔法宇宙中才可以建造巨石。",
+  "wiki_arpa_project_railway_homeless": "铁路拥有减少无家可归人口的隐藏效果，相应铁路数量节点为：%0、%1、%2、%3、%4、%5、%6、%7、%8。每到达一个铁路数量节点时，无家可归的市民离开速度将会加快。",
   "wiki_arpa_project_roid_eject": "通过变轨获得的黑洞质量不影响获取黑洞质量相关的成就和壮举，也不影响黑洞重置时暗能量的获取数量。",
   "wiki_arpa_project_depot": "只在智械黎明剧情模式中出现。",
   "wiki_arpa_project_magic": "只在魔法宇宙中出现。",
