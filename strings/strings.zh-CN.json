@@ -5471,6 +5471,7 @@
   "space_red_ziggurat_title": "通灵塔",
   "space_red_ziggurat_desc": "建造通灵塔，对更古老的种族，一种%0顶礼膜拜吧",
   "space_red_ziggurat_effect": "每行星居民使太空物资产量 +%0%",
+  "space_red_ziggurat_effect_tp": "每行星居民使%1星系物资产量 +%0%",
   "space_red_space_barracks_title": "太空驻军",
   "space_red_space_barracks_desc": "太空驻军",
   "space_red_space_barracks_desc_req": "需要石油",
