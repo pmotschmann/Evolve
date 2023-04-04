@@ -6233,7 +6233,7 @@
   "portal_mech_chassis_hover_desc": "A mech which glides over the terrain by hovering.",
   "portal_mech_size_small": "Scout",
   "portal_mech_size_small_desc": "Scout-class mech with limited firepower. Not very powerful, but they help larger mechs navigate terrain.",
-  "portal_mech_size_medium": "Standard"
+  "portal_mech_size_medium": "Standard",
   "portal_mech_size_medium_desc": "Standard-sized mechs are often the most versatile, being adaptable to any role.",
   "portal_mech_size_large": "Heavy",
   "portal_mech_size_large_desc": "Heavy mechs are often deployed to counter serious threats; they are costly and slow-moving but powerful.",
