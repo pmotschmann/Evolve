@@ -5165,50 +5165,15 @@ export function hoovedReskin(desc){
     if (global.race['sludge']){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
-    else if (global.race.species === 'cath'){
-        return desc ? loc('trait_hooved_cath') : loc('trait_hooved_cath_name');
+    else if ([
+        'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin'
+        ].includes(global.race.species)){
+        return desc ? loc(`trait_hooved_${global.race.species}`) : loc(`trait_hooved_${global.race.species}_name`);
     }
-    else if (global.race.species === 'wolven'){
-        return desc ? loc('trait_hooved_wolven') : loc('trait_hooved_wolven_name');
-    }
-    else if (global.race.species === 'dracnid'){
-        return desc ? loc('trait_hooved_dracnid') : loc('trait_hooved_dracnid_name');
-    }
-    else if (global.race.species === 'seraph'){
-        return desc ? loc('trait_hooved_seraph') : loc('trait_hooved_seraph_name');
-    }
-    else if (global.race.species === 'cyclops'){
-        return desc ? loc('trait_hooved_cyclops') : loc('trait_hooved_cyclops_name');
-    }
-    else if (global.race.species === 'kobold'){
-        return desc ? loc('trait_hooved_kobold') : loc('trait_hooved_kobold_name');
-    }
-    else if (global.race.species === 'tuskin'){
-        return desc ? loc('trait_hooved_tuskin') : loc('trait_hooved_tuskin_name');
-    }
-    else if (global.race.species === 'sharkin'){
-        return desc ? loc('trait_hooved_sharkin') : loc('trait_hooved_sharkin_name');
-    }
-    else if (races[global.race.species].type === 'humanoid'){
-        return desc ? loc('trait_hooved_humanoid') : loc('trait_hooved_humanoid_name');
-    }
-    else if (races[global.race.species].type === 'avian'){
-        return desc ? loc('trait_hooved_avian') : loc('trait_hooved_avian_name');
-    }
-    else if (races[global.race.species].type === 'plant'){
-        return desc ? loc('trait_hooved_plant') : loc('trait_hooved_plant_name');
-    }
-    else if (races[global.race.species].type === 'fungi'){
-        return desc ? loc('trait_hooved_fungi') : loc('trait_hooved_fungi_name');
-    }
-    else if (races[global.race.species].type === 'reptilian'){
-        return desc ? loc('trait_hooved_reptilian') : loc('trait_hooved_reptilian_name');
-    }
-    else if (races[global.race.species].type === 'fey'){
-        return desc ? loc('trait_hooved_fey') : loc('trait_hooved_fey_name');
-    }
-    else if (races[global.race.species].type === 'synthetic'){
-        return desc ? loc('trait_hooved_synthetic') : loc('trait_hooved_synthetic_name');
+    else if ([
+        'humanoid','avian','plant','fungi','reptilian','fey','synthetic'
+        ].includes(races[global.race.species].type)){
+        return desc ? loc(`trait_hooved_${races[global.race.species].type}`) : loc(`trait_hooved_${races[global.race.species].type}_name`);
     }
     else {
         return desc ? traits['hooved'].desc : traits['hooved'].name;
