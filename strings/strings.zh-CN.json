@@ -6903,7 +6903,7 @@
   "wiki_trait_effect_cautious": "下雨时战斗评级 -%0%。",
   "wiki_trait_effect_small": "地面建筑成本蠕变 -%0，太空建筑成本蠕变 -%1。",
   "wiki_trait_effect_flier": "粘土取代石头和水泥出现，粘土资源成本 -%0%。贸易站的贸易路线 +%1。",
-  "wiki_trait_effect_flier_ex1": "将水泥转化为粘土，转化效率为水泥的 1.75 倍，粘土资源成本减少。",
+  "wiki_trait_effect_flier_ex1": "消耗正常1.75倍的水泥转化为粘土，减少粘土资源成本。",
   "wiki_trait_effect_weak": "伐木工人、石工、回收者、水晶矿工、矿工和煤矿工人的产量 -%0%。",
   "wiki_trait_effect_large": "地面建筑成本蠕变 +%0。",
   "wiki_trait_effect_strong": "手动收集资源获取量变为正常的 %0 倍（食物、木材、石头），基础工作效率变为正常的 %1 倍。",
