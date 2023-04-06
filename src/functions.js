@@ -1767,7 +1767,7 @@ function flierAdjust(costs, offset, wiki){
                     newCosts['Stone'] = function(){ return Math.round((costs['Stone'](offset, wiki) * adjustRate) + (costs[res](offset, wiki) * 1.8 * adjustRate)) || 0; }
                 }
                 else {
-                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 2 * adjustRate); }
+                    newCosts['Stone'] = function(){ return Math.round(costs[res](offset, wiki) * 1.75 * adjustRate); }
                 }
             }
             else {
@@ -2722,6 +2722,9 @@ const traitExtra = {
     ],
     high_pop: [
         loc(`wiki_trait_effect_high_pop_ex1`)
+    ],
+    flier: [
+        loc(`wiki_trait_effect_flier_ex1`)
     ]
 };
 

@@ -463,8 +463,8 @@ export const traits = {
         },
     },
     sky_lover: { // Mining type jobs more stressful
-        name: loc('sky_lover_name'),
-        desc: loc('sky_lover'),
+        name: loc('trait_sky_lover_name'),
+        desc: loc('trait_sky_lover'),
         type: 'genus',
         val: -2,
         vars(r){

@@ -7097,6 +7097,7 @@
   "wiki_trait_effect_cold_blooded": "Farmers, Hunters, Lumberjacks, Reclaimers, Quarry Workers, Miners, and Coal Miners: -%0% production when Cold or Raining, +%1% production when Hot or Sunny.",
   "wiki_trait_effect_scales": "-%0 soldier deaths on success, -%1 death on failure. +%2 Hell Patrol Armor.",
   "wiki_trait_effect_flier": "Clay replaces Stone and Cement. Clay costs reduced by %0%. +%1 Trade Post trade route.",
+  "wiki_trait_effect_flier_ex1": "Cement is converted to Clay at 1.75x original Cement cost, but is then discounted by the Clay discount.",
   "wiki_trait_effect_hollow_bones": "-%0% crafted material costs.",
   "wiki_trait_effect_sky_lover": "Increased stress for mining jobs by %0%.",
   "wiki_trait_effect_rigid": "-%0% crafting material production.",
