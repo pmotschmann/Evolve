@@ -2791,6 +2791,9 @@ export const actions = {
                     return true;
                 }
                 return false;
+            },
+            flair(){
+                return races[global.race.species].type === 'avian' ? loc(`city_mine_flair_avian`) : loc(``);
             }
         },
         coal_mine: {
@@ -6923,7 +6926,7 @@ export function housingLabel(type,flag){
 
 export function updateQueueNames(both, items){
     if (global.tech['queue'] && global.queue.display){
-        let deepScan = ['space','interstellar','galaxy','portal'];
+        let deepScan = ['space','interstellar','galaxy','portal','tauceti'];
         for (let i=0; i<global.queue.queue.length; i++){
             let currItem = global.queue.queue[i];
             if (!items || items.indexOf(currItem.id) > -1){
@@ -6938,7 +6941,7 @@ export function updateQueueNames(both, items){
                         }
                     });
                 }
-                else {
+                else if (actions[currItem.action][currItem.type]){
                     global.queue.queue[i].label = 
                         typeof actions[currItem.action][currItem.type].title === 'string' ? 
                         actions[currItem.action][currItem.type].title : 

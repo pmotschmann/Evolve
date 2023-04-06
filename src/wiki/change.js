@@ -11,6 +11,7 @@ const changeList = [
             `Added Wireless storage to High-Tech farm in isolation`,
             `Fixed truepath dreadnought power costs.`,
             `Fixed a bug that could assign extra challenge genes.`,
+            `Fixed a bug with changing languages with active Tau Ceti content.`,
         ]
     },
     {

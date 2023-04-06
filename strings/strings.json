@@ -1124,6 +1124,7 @@
   "city_mine_desc": "Employs miners",
   "city_mine_effect1": "+%0 Max Miner",
   "city_mine_effect2": "If powered, consumes %0MW but increases ore yield by %1%",
+  "city_mine_flair_avian": "You are the canary!",
   "city_coal_mine": "Coal Mine",
   "city_coal_mine_desc": "Employs coal miners",
   "city_coal_mine_effect1": "+%0 Max Coal Miner",
