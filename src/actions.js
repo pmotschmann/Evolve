@@ -6832,16 +6832,6 @@ function basicHousingLabel(){
             return loc('city_basic_housing_orc_title');
         case 'wolven':
             return loc('city_basic_housing_wolven_title');
-        case 'cacti':
-            return loc('city_basic_housing_entish_title');
-        case 'entish':
-            return loc('city_basic_housing_entish_title');
-        case 'pinguicula':
-            return loc('city_basic_housing_entish_title');
-        case 'arraak':
-            return loc('city_basic_housing_nest_title');
-        case 'pterodacti':
-            return loc('city_basic_housing_nest_title');
         case 'sporgar':
             return loc('city_basic_housing_sporgar_title');
         case 'dracnid':
@@ -6854,19 +6844,23 @@ function basicHousingLabel(){
             return loc('city_basic_housing_seraph_title');
         case 'unicorn':
             return loc('city_basic_housing_unicorn_title');
-        case 'tuskin':
-            return loc('city_basic_housing_sand_title');
-        case 'kamel':
-            return loc('city_basic_housing_sand_title');
-        default:
-            return global.city.ptrait.includes('trashed') ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
     }
+
+    switch (races[global.race.species].type){
+        case 'avian':
+            return loc('city_basic_housing_nest_title');
+        case 'plant':
+            return loc('city_basic_housing_entish_title');
+        case 'sand':
+            return loc('city_basic_housing_sand_title');
+        case 'polar':
+            return loc('city_basic_housing_polar_title');
+    }
+
+    return global.city.ptrait.includes('trashed') ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
 }
 
 function mediumHousingLabel(){
-    if (global.race['flier']){
-        return loc('city_cottage_title6');
-    }
     switch (global.race.species){
         case 'sporgar':
             return loc('city_cottage_title2');
@@ -6878,29 +6872,42 @@ function mediumHousingLabel(){
             return loc('city_cottage_title4');
         case 'unicorn':
             return loc('city_cottage_title5');
-        default:
-            return loc('city_cottage_title1');
+        case 'dracnid':
+            return loc('city_cottage_title7');
     }
+
+    switch (races[global.race.species].type){
+        case 'avian':
+            return loc('city_cottage_title6');
+    }
+
+    return loc('city_cottage_title1');
 }
 
 function largeHousingLabel(basic){
     if (!basic && govActive('extravagant',0)){
         return loc(`city_mansion`);
     }
+
     switch (global.race.species){
         case 'sporgar':
             return loc('city_apartment_title2');
-        case 'balorg':
-            return loc('city_apartment_title3');
-        case 'imp':
-            return loc('city_apartment_title3');
-        case 'seraph':
-            return loc('city_apartment_title4');
-        case 'unicorn':
-            return loc('city_apartment_title4');
-        default:
-            return loc('city_apartment_title1');
     }
+
+    switch (races[global.race.species].type){
+        case 'avian':
+            return loc('city_apartment_title5');
+        case 'sand':
+            return loc('city_apartment_title6');
+        case 'demonic':
+            return loc('city_apartment_title3');
+        case 'angelic':
+            return loc('city_apartment_title4');
+        case 'giant':
+            return loc('city_apartment_title7');
+    }
+
+    return loc('city_apartment_title1');
 }
 
 export function housingLabel(type,flag){
