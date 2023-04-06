@@ -831,7 +831,7 @@
   "evo_challenge_junker_effect": "该挑战强制启用所有挑战基因（关闭初始质粒效果或弱精通效果、关闭手动交易、关闭手动锻造、垃圾基因），该种族有许多可怕的基因缺陷，试着用核爆重置以求安乐……",
   "evo_challenge_junker_flair": "生不如死",
   "evo_challenge_junker_conditions": "核爆重置后可以完成此挑战。",
-  "evo_challenge_scenario_warn": "警告：你的精通等级过低，不建议开启这个剧情模式。",
+  "evo_challenge_scenario_warn": "警告：您的精通等级过低，不建议开启该剧情模式。",
   "evo_challenge_scenario_failwarn": "该挑战可能会以失败告终。",
   "evo_challenge_cataclysm": "大灾变",
   "evo_challenge_cataclysm_desc": "大灾变摧毁了你的家园，无法从地面获取任何资源，请存活下来。",
