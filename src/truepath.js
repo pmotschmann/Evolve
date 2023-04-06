@@ -1800,6 +1800,10 @@ const tauCetiModules = {
                 if (global.tech['isolation']){
                     let water = +(production('tau_farm','water')).toFixed(2);
                     desc = desc + `<div>${loc('produce',[water,global.resource.Water.name])}</div>`;
+                    if (global.race['artifical']){
+                        let sig_cap = spatialReasoning(350);
+                        desc = desc + `<div>${loc('city_transmitter_effect',[sig_cap])}</div>`;
+                    }
                 }
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -2143,7 +2147,9 @@ const tauCetiModules = {
                 let desc = `<div class="has-text-caution">${loc('tau_new_support',[$(this)[0].support(), races[global.race.species].home])}</div>`;
                 desc = desc + `<div>${loc('tau_home_tau_factory_effect',[global.tech['isolation'] ? 5 : 3])}</div>`;
                 if (global.tech['isolation']){
-                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                    if (!global.race['flier']){
+                        desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                    }
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
                 desc = desc + `<div>${loc('city_crafted_mats',[global.tech['isolation'] ? 275 : 90])}</div>`;
@@ -3039,7 +3045,9 @@ const tauCetiModules = {
                     prod *= 1.25;
                 }
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
-                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                if (!global.race['flier']){
+                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                }
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
@@ -3938,6 +3946,7 @@ export function shipPower(ship, wiki){
         case 'dreadnought':
             out_inflate = 5;
             use_inflate = 6.5;
+            break;
         case 'explorer':
             out_inflate = 6;
             use_inflate = 2;
@@ -5043,7 +5052,6 @@ export function loneSurvivor(){
         global.tech['biotech'] = 1;
         global.tech['boot_camp'] = 2;
         global.tech['broadcast'] = 2;
-        global.tech['cement'] = 5;
         global.tech['container'] = 7;
         global.tech['copper'] = 1;
         global.tech['currency'] = 6;
@@ -5133,6 +5141,11 @@ export function loneSurvivor(){
         global.tech['world_control'] = 1;
         global.tech['wsc'] = 0;
 
+        if (!global.race['flier']){
+            global.tech['cement'] = 5;
+            global.resource.Cement.display = true;
+        }
+
         if (global.race.universe === 'magic'){
             global.tech['gov_mage'] = 1;
             global.tech['magic'] = 4;
@@ -5187,7 +5200,6 @@ export function loneSurvivor(){
         global.resource.Copper.display = true;
         global.resource.Iron.display = true;
         global.resource.Aluminium.display = true;
-        global.resource.Cement.display = true;
         global.resource.Coal.display = true;
         global.resource.Oil.display = true;
         global.resource.Uranium.display = true;
@@ -5303,8 +5315,10 @@ export function loneSurvivor(){
         global.resource.Mythril.amount = 2500000;
         global.resource.Quantium.amount = 2500000;
 
-        global.resource.Food.crates = 10;
-        global.resource.Food.containers = 10;
+        if (!global.race['artifical']){
+            global.resource.Food.crates = 10;
+            global.resource.Food.containers = 10;
+        }
         global.resource.Stone.crates = 25;
         global.resource.Stone.containers = 25;
         global.resource.Furs.crates = 25;
@@ -5317,8 +5331,6 @@ export function loneSurvivor(){
         global.resource.Iron.containers = 25;
         global.resource.Aluminium.crates = 25;
         global.resource.Aluminium.containers = 25;
-        global.resource.Cement.crates = 25;
-        global.resource.Cement.containers = 25;
         global.resource.Steel.crates = 25;
         global.resource.Steel.containers = 25;
         global.resource.Titanium.crates = 25;
@@ -5342,12 +5354,17 @@ export function loneSurvivor(){
 
         global.civic.taxes.display = true;
 
+        if (!global.race['flier']){
+            global.civic.cement_worker.display = true;
+            global.resource.Cement.crates = 25;
+            global.resource.Cement.containers = 25;
+        }
+
         if (!global.race['sappy']){
             global.civic.quarry_worker.display = true
         }
         global.civic.professor.display = true;
         global.civic.scientist.display = true;
-        global.civic.cement_worker.display = true;
         global.civic.banker.display = true;
         global.civic.pit_miner.display = true;
 

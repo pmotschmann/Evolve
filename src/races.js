@@ -103,8 +103,9 @@ export const genus_traits = {
         scales: 1
     },
     avian: {
+        flier: 1,
         hollow_bones: 1,
-        rigid: 1
+        sky_lover: 1,
     },
     insectoid: {
         high_pop: 1,
@@ -420,11 +421,32 @@ export const traits = {
             }
         },
     },
+    flier: { // Use Clay instead of Stone or Cement
+        name: loc('trait_flier_name'),
+        desc: loc('trait_flier'),
+        type: 'genus',
+        val: 3,
+        vars(r){
+            // [Reduce Stone Costs, Extra Trade Post Route]
+            switch (r || global.race.flier || 1){
+                case 0.25:
+                    return [10,0];
+                case 0.5:
+                    return [15,0];
+                case 1:
+                    return [25,1];
+                case 2:
+                    return [40,1];
+                case 3:
+                    return [50,2];
+            }
+        },
+    },
     hollow_bones: { // Less Crafted Materials Needed
         name: loc('trait_hollow_bones_name'),
         desc: loc('trait_hollow_bones'),
         type: 'genus',
-        val: 3,
+        val: 2,
         vars(r){
             switch (r || global.race.hollow_bones || 1){
                 case 0.25:
@@ -440,11 +462,31 @@ export const traits = {
             }
         },
     },
+    sky_lover: { // Mining type jobs more stressful
+        name: loc('trait_sky_lover_name'),
+        desc: loc('trait_sky_lover'),
+        type: 'genus',
+        val: -2,
+        vars(r){
+            switch (r || global.race.sky_lover || 1){
+                case 0.25:
+                    return [40];
+                case 0.5:
+                    return [30];
+                case 1:
+                    return [20];
+                case 2:
+                    return [15];
+                case 3:
+                    return [10];
+            }
+        },
+    },
     rigid: { // Crafting production lowered slightly
         name: loc('trait_rigid_name'),
         desc: loc('trait_rigid'),
         type: 'genus',
-        val: -1,
+        val: -2,
         vars(r){
             switch (r || global.race.rigid || 1){
                 case 0.25:
@@ -4618,6 +4660,15 @@ export function cleanAddTrait(trait){
         case 'herbivore':
             adjustFood();
             break;
+        case 'flier':
+            setResourceName('Stone');
+            setResourceName('Brick');
+            global.resource.Cement.display = false;
+            global.civic.cement_worker.display = false;
+            global.civic.cement_worker.workers = 0;
+            setPurgatory('tech','cement');
+            setPurgatory('city','cement_plant');
+            break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
                 global.civic.d_job = 'unemployed';
@@ -4844,6 +4895,16 @@ export function cleanRemoveTrait(trait,rank){
         case 'carnivore':
         case 'herbivore':
             adjustFood();
+            break;
+        case 'flier':
+            setResourceName('Stone');
+            setResourceName('Brick');
+            checkPurgatory('tech','cement');
+            if (global.tech['cement']){
+                checkPurgatory('city','cement_plant');
+                global.resource.Cement.display = true;
+                global.civic.cement_worker.display = true;
+            }
             break;
         case 'sappy':
             setResourceName('Stone');
@@ -5124,38 +5185,15 @@ export function hoovedReskin(desc){
     if (global.race['sludge']){
         return desc ? loc('trait_hooved_slime') : loc('trait_hooved_slime_name');
     }
-    else if (global.race.species === 'cath'){
-        return desc ? loc('trait_hooved_cath') : loc('trait_hooved_cath_name');
+    else if ([
+        'cath','wolven','dracnid','seraph','cyclops','kobold','tuskin','sharkin'
+        ].includes(global.race.species)){
+        return desc ? loc(`trait_hooved_${global.race.species}`) : loc(`trait_hooved_${global.race.species}_name`);
     }
-    else if (global.race.species === 'wolven'){
-        return desc ? loc('trait_hooved_wolven') : loc('trait_hooved_wolven_name');
-    }
-    else if (global.race.species === 'seraph'){
-        return desc ? loc('trait_hooved_seraph') : loc('trait_hooved_seraph_name');
-    }
-    else if (global.race.species === 'cyclops'){
-        return desc ? loc('trait_hooved_cyclops') : loc('trait_hooved_cyclops_name');
-    }
-    else if (global.race.species === 'kobold'){
-        return desc ? loc('trait_hooved_kobold') : loc('trait_hooved_kobold_name');
-    }
-    else if (global.race.species === 'tuskin'){
-        return desc ? loc('trait_hooved_tuskin') : loc('trait_hooved_tuskin_name');
-    }
-    else if (races[global.race.species].type === 'humanoid'){
-        return desc ? loc('trait_hooved_humanoid') : loc('trait_hooved_humanoid_name');
-    }
-    else if (races[global.race.species].type === 'plant'){
-        return desc ? loc('trait_hooved_plant') : loc('trait_hooved_plant_name');
-    }
-    else if (races[global.race.species].type === 'fungi'){
-        return desc ? loc('trait_hooved_fungi') : loc('trait_hooved_fungi_name');
-    }
-    else if (races[global.race.species].type === 'reptilian'){
-        return desc ? loc('trait_hooved_reptilian') : loc('trait_hooved_reptilian_name');
-    }
-    else if (races[global.race.species].type === 'synthetic'){
-        return desc ? loc('trait_hooved_synthetic') : loc('trait_hooved_synthetic_name');
+    else if ([
+        'humanoid','avian','plant','fungi','reptilian','fey','synthetic'
+        ].includes(races[global.race.species].type)){
+        return desc ? loc(`trait_hooved_${races[global.race.species].type}`) : loc(`trait_hooved_${races[global.race.species].type}_name`);
     }
     else {
         return desc ? traits['hooved'].desc : traits['hooved'].name;

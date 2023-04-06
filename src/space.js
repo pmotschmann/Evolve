@@ -912,7 +912,7 @@ const spaceProjects = {
                 Wrought_Iron(offset){ return spaceCostMultiplier('fabrication', offset, 1200, 1.32); }
             },
             effect(){
-                let c_worker = global.race['cataclysm'] ? `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>` : ``;
+                let c_worker = global.race['cataclysm'] && !global.race['flier'] ? `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>` : ``;
                 let fab = global.race['cataclysm'] || global.race['orbit_decayed'] ? 5 : 2;
                 if (global.race['high_pop']){
                     fab = highPopAdjust(fab);
@@ -949,7 +949,7 @@ const spaceProjects = {
                 if (global.tech['foundry'] >= 7){
                     desc = desc + `<div>${loc('space_red_factory_effect2')}</div>`;
                 }
-                if (global.race['orbit_decayed']){
+                if (global.race['orbit_decayed'] && !global.race['flier']){
                     desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
                 }
                 let helium = +(fuel_adjust(1,true,wiki)).toFixed(2);
@@ -3296,7 +3296,9 @@ const interstellarProjects = {
                 let desc = `<div class="has-text-warning">${loc('interstellar_citadel_stat',[+(quantum_level).toFixed(1)])}</div><div>${loc('interstellar_citadel_effect',[5])}</div>`;
                 if (global.tech['ai_core']){
                     let cement = +(quantum_level / 1.75).toFixed(1);
-                    desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
+                    if (!global.race['flier']){
+                        desc = desc + `<div>${loc('interstellar_citadel_effect2',[cement])}</div>`;
+                    }
                     if (global.tech['ai_core'] >= 2){
                         desc = desc + `<div>${loc('interstellar_citadel_effect3',[2])}</div>`;
                     }
