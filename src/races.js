@@ -105,7 +105,7 @@ export const genus_traits = {
     avian: {
         flier: 1,
         hollow_bones: 1,
-        rigid: 1
+        sky_lover: 1,
     },
     insectoid: {
         high_pop: 1,
@@ -457,6 +457,26 @@ export const traits = {
                     return [5];
                 case 2:
                     return [8];
+                case 3:
+                    return [10];
+            }
+        },
+    },
+    sky_lover: { // Mining type jobs more stressful
+        name: loc('sky_lover_name'),
+        desc: loc('sky_lover'),
+        type: 'genus',
+        val: -2,
+        vars(r){
+            switch (r || global.race.sky_lover || 1){
+                case 0.25:
+                    return [40];
+                case 0.5:
+                    return [30];
+                case 1:
+                    return [20];
+                case 2:
+                    return [15];
                 case 3:
                     return [10];
             }
