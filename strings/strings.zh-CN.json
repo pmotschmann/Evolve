@@ -6290,7 +6290,7 @@
   "hell_report_log_encounter": "%0在堡垒周围发现并杀死了%1只恶魔。",
   "hell_report_log_encounter_fail": "%0在当天未发现恶魔。",
   "hell_report_log_search": "%0发现并探测到%1只恶魔残骸。",
-  "hell_report_log_obj_counter": "%0 #%1",
+  "hell_report_log_obj_counter": "%1号%0",
   "hell_report_log_patrol": "巡逻队",
   "hell_report_log_patrol_droid": "%0和战斗机器人",
   "hell_report_log_patrol_ambush": "%0杀死了%1只恶魔，但遭到攻击。",
