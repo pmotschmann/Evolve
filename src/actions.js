@@ -4680,7 +4680,12 @@ function setChallenge(challenge){
         }
         if (challenge === 'orbit_decay'){
             delete global.race['cataclysm'];
-            delete global.race['lone_survivor'];
+            if (global.race['lone_survivor']){
+                delete global.race['lone_survivor'];
+                ['nerfed','badgenes'].forEach(function(gene){
+                    delete global.race[challengeList[gene]];
+                });
+            }
         }
     }
     setChallengeScreen();

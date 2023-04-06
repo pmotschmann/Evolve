@@ -4,11 +4,12 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.5`,
-        date: `4/1/2023`,
+        date: `4/5/2023`,
         changes: [
             `Avian species now have the Flier trait.`,
-            `Fixed truepath dreadnought power costs.`,
             `Added Wireless storage to High-Tech farm in isolation`,
+            `Fixed truepath dreadnought power costs.`,
+            `Fixed a bug that could assign extra challenge genes.`,
         ]
     },
     {
