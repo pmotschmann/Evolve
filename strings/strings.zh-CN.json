@@ -1119,6 +1119,7 @@
   "city_mine_desc": "雇佣矿工",
   "city_mine_effect1": "矿工上限 +%0",
   "city_mine_effect2": "电力 -%0MW，矿石产量 +%1%",
+  "city_mine_flair_avian": "你就是金丝雀！",
   "city_coal_mine": "煤矿",
   "city_coal_mine_desc": "雇佣煤矿工人",
   "city_coal_mine_effect1": "煤矿工人上限 +%0",
