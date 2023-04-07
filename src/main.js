@@ -6841,7 +6841,7 @@ function fastLoop(){
 
     let easter = eventActive('easter');
     if (easter.active){
-        for (i=1; i<=15; i++){
+        for (i=1; i<=18; i++){
             if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
                 easterEggBind(i);
                 $(`#egg${i}`).addClass('binded');
@@ -8912,6 +8912,7 @@ function midLoop(){
 
         if (global.tech['foundry'] === 3 && (global.race['kindling_kindred'] || global.race['smoldering'])){
             global.tech['foundry'] = 4;
+            drawTech();
         }
 
         if (global.race['kindling_kindred'] || global.race['smoldering']){

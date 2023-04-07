@@ -2,7 +2,7 @@ import { global, tmp_vars, save, message_logs, message_filters, webWorker } from
 import { loc, locales } from './locale.js';
 import { setupStats, alevel } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
-import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
+import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -653,77 +653,27 @@ export function loadTab(tab){
                                 switch (tab){
                                     case 0:
                                         {
-                                            initResourceTabs('market');
-                                            if (tmp_vars.hasOwnProperty('resource')){
-                                                Object.keys(tmp_vars.resource).forEach(function(name){
-                                                    let color = tmp_vars.resource[name].color;
-                                                    let tradable = tmp_vars.resource[name].tradable;
-                                                    if (tradable){
-                                                        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
-                                                        $('#market').append(market_item);
-                                                        marketItem(`#market-${name}`,market_item,name,color,true);
-                                                    }
-                                                });
-                                            }
-                                            tradeSummery();
+                                            drawResourceTab('market');
                                         }
                                         break;
                                     case 1:
                                         {
-                                            initResourceTabs('storage');
-                                            if (tmp_vars.hasOwnProperty('resource')){
-                                                Object.keys(tmp_vars.resource).forEach(function(name){
-                                                    let color = tmp_vars.resource[name].color;
-                                                    let stackable = tmp_vars.resource[name].stackable;
-                                                    if (stackable){
-                                                        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
-                                                        $('#resStorage').append(market_item);
-                                                        containerItem(`#stack-${name}`,market_item,name,color,true);
-                                                    }
-                                                });
-                                            }
-                                            tradeSummery();
+                                            drawResourceTab('storage');
                                         }
                                         break;
                                     case 2:
                                         {
-                                            initResourceTabs('ejector');
-                                            if (tmp_vars.hasOwnProperty('resource')){
-                                                Object.keys(tmp_vars.resource).forEach(function(name){
-                                                    let color = tmp_vars.resource[name].color;
-                                                    if (atomic_mass[name]){
-                                                        loadEjector(name,color);
-                                                    }
-                                                });
-                                            }
+                                            drawResourceTab('ejector');
                                         }
                                         break;
                                     case 3:
                                         {
-                                            initResourceTabs('supply');
-                                            if (tmp_vars.hasOwnProperty('resource')){
-                                                Object.keys(tmp_vars.resource).forEach(function(name){
-                                                    let color = tmp_vars.resource[name].color;
-                                                    if (supplyValue[name]){
-                                                        loadSupply(name,color);
-                                                    }
-                                                });
-                                            }
+                                            drawResourceTab('supply');
                                         }
                                         break;
                                     case 4:
                                         {
-                                            initResourceTabs('alchemy');
-                                            if (tmp_vars.hasOwnProperty('resource')){
-                                                Object.keys(tmp_vars.resource).forEach(function(name){
-                                                    let color = tmp_vars.resource[name].color;
-                                                    let tradable = tmp_vars.resource[name].tradable;
-                                                    if (tradeRatio[name] && global.race.universe === 'magic'){
-                                                        global['resource'][name]['basic'] = tradable;
-                                                        loadAlchemy(name,color,tradable);
-                                                    }
-                                                });
-                                            }
+                                            drawResourceTab('alchemy');
                                         }
                                         break;
                                 }
@@ -975,7 +925,8 @@ export function index(){
                 let checkExist = setInterval(function(){
                     if ($('#modalBox').length > 0){
                         clearInterval(checkExist);
-                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('message_log')}</p>`));
+                        let egg16 = easterEgg(16,12);
+                        $('#modalBox').append($(`<p id="modalBoxTitle" class="has-text-warning modalTitle">${loc('message_log')}${egg16.length > 0 ? egg16 : ''}</p>`));
 
                         var body = $('<div id="specialModal" class="modalBody vscroll"></div>');
                         $('#modalBox').append(body);

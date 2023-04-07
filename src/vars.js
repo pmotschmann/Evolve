@@ -1172,7 +1172,7 @@ if (convertVersion(global['version']) < 103002){
 
 global['version'] = '1.3.5';
 delete global['revision'];
-global['beta'] = 6;
+global['beta'] = 7;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

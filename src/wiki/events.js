@@ -1477,7 +1477,10 @@ function specialEventsPage(content){
                 `U2FsdGVkX18brcDy1P4HEGkmTw5t19CgWEshDFRSByELjSG9MtvSdSBbj13JhYuG`,
                 `U2FsdGVkX1/vr39YAfqKcFM7c8ed6Oi7lRrDYKDtfUJRKF3pcrIRAWc4FF/Tt5BjwaXOi0slDE9JmeIDifD2gw==`,
                 `U2FsdGVkX19KtuHoWRLTz0wLH8D/fLoOriDsmk6agzT85xsAAXv26ILjSV2C8mpi`,
-                `U2FsdGVkX18/Tyjq6czHYJKjJQPXcRCgqmZqu2AFmx2FddfQPzM+YkXXECLMVA+e`
+                `U2FsdGVkX18/Tyjq6czHYJKjJQPXcRCgqmZqu2AFmx2FddfQPzM+YkXXECLMVA+e`,
+                `U2FsdGVkX19kn6Hj9vQq5JxU9dsKsu0U+qADHauwh7TPf1enfhF1VQamBs7VFuX5`,
+                `U2FsdGVkX19ICmvq9eubXYyGpmRML9aqTzBZMRvvOWFMwp2IiJBUUpl4LgLJOwLqnEISPAepbrdrfJn8miQIgA==`,
+                `U2FsdGVkX19P0vr33mSfkSTDVz7N3a59YF5Cc+/NMC0f1tT3fXJDLqZMi98gGOrv`
             ];
 
             let solutions = [
@@ -1495,7 +1498,10 @@ function specialEventsPage(content){
                 `U2FsdGVkX1/f1jFsIVKmxsXq85PuOj+fq+9WtYf1AZbPsuChio/XV6mpCxlTJz8X`,
                 `U2FsdGVkX1+NRsztgBjDQeevIAYiHJ+X9dUERkDoYpLcvYAvWWzVvbjk4uq4dSMPEuykMqsZGGwvBtl1V0T+pO254xK8+5xWjZYnE9x6A+I=`,
                 `U2FsdGVkX1//Crqk3ZOt8MHG/C4V91VEORQ3rQe4CEBHQhqfMD84PrEBZkwN7VpKvBgcg+2FsDknW+LDnNPIZA==`,
-                `U2FsdGVkX1/bUrGTAmEkt6ukJKG8tIAIUVr4fnMFPsdamUtLJBGIG2dwQyaYywTD`
+                `U2FsdGVkX1/bUrGTAmEkt6ukJKG8tIAIUVr4fnMFPsdamUtLJBGIG2dwQyaYywTD`,
+                `U2FsdGVkX1/zl2y8RCXettY8EAPFE+cc/qImK4n5BocvEV2YvFKSyrOGxfLd3qBD`,
+                `U2FsdGVkX19GszY2Yf01gUZnzs9F51vUgYu/FlRIPiFt9zasXhFP9tzX1en5/483mZeqi/uNRhV+zfoHd6qcYA==`,
+                `U2FsdGVkX1+4syPwX9UT2KAsJj8uv43olf/GOTOudd/RbwnHsybitwYU4kk2ZVWx`
             ];
 
             const date = new Date();
@@ -1503,7 +1509,7 @@ function specialEventsPage(content){
             const passphrase = 'egghunt';
             let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div>`;
             eggs = eggs + `<div class="tbl">`;
-            for (let i=1; i<=15; i++){
+            for (let i=1; i<=18; i++){
                 let egg = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
                 let found = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'found' : 'missing';
                 

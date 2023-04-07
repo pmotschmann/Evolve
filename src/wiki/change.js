@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.5`,
-        date: `4/6/2023`,
+        date: `4/7/2023`,
         changes: [
             `Avian species now have the Flier trait.`,
             `Avian Rigid trait replaced with Sky Lover.`,
@@ -12,6 +12,7 @@ const changeList = [
             `Fixed truepath dreadnought power costs.`,
             `Fixed a bug that could assign extra challenge genes.`,
             `Fixed a bug with changing languages with active Tau Ceti content.`,
+            `Fixed many issues with preload tab content in the early game.`,
         ]
     },
     {

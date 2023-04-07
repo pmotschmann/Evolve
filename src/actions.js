@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -13,7 +13,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask } from './governor.js';
+import { govActive, removeTask, defineGovernor } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -2220,6 +2220,10 @@ export const actions = {
                         global.resource.Crates.display = true;
                         clearElement($('#resources'));
                         defineResources();
+                        if (global.settings.tabLoad){
+                            drawResourceTab('storage');
+                            defineGovernor();
+                        }
                     }
                     return true;
                 }
@@ -2274,6 +2278,9 @@ export const actions = {
                         global.resource.Containers.display = true;
                         clearElement($('#resources'));
                         defineResources();
+                        if (global.settings.tabLoad){
+                            drawResourceTab('storage');
+                        }
                     }
                     return true;
                 }
@@ -2742,8 +2749,9 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.city.metal_refinery.count++;
                     global.resource.Aluminium.display = true;
-                    if (global.city['foundry'] && global.city.foundry.count > 0){
+                    if (global.city['foundry'] && global.city.foundry.count > 0 && !global.resource.Sheet_Metal.display){
                         global.resource.Sheet_Metal.display = true;
+                        loadFoundry();
                     }
                     if (global.tech['alumina'] >= 2){
                         powerOnNewStruct($(this)[0]);
@@ -2793,7 +2801,7 @@ export const actions = {
                 return false;
             },
             flair(){
-                return races[global.race.species].type === 'avian' ? loc(`city_mine_flair_avian`) : loc(``);
+                return races[global.race.species].type === 'avian' ? loc(`city_mine_flair_avian`) : '';
             }
         },
         coal_mine: {

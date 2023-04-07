@@ -1,6 +1,6 @@
 import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits, traitSkin, hoovedReskin } from './races.js';
+import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -2072,16 +2072,16 @@ export function easterEggBind(id){
         let year = date.getFullYear();
         if (!global.special.egg[year][`egg${id}`]){
             global.special.egg[year][`egg${id}`] = true;
-            if (id <= 10){
+            if (id <= 12){
                 if (global.race.universe === 'antimatter'){
-                    global.prestige.AntiPlasmid.count += 10;
-                    global.stats.antiplasmid += 10;
-                    messageQueue(loc('city_egg_msg',[10,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.AntiPlasmid.count += 9;
+                    global.stats.antiplasmid += 9;
+                    messageQueue(loc('city_egg_msg',[9,loc('resource_AntiPlasmid_plural_name')]),'success',false,['events']);
                 }
                 else {
-                    global.prestige.Plasmid.count += 10;
-                    global.stats.plasmid += 10;
-                    messageQueue(loc('city_egg_msg',[10,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
+                    global.prestige.Plasmid.count += 9;
+                    global.stats.plasmid += 9;
+                    messageQueue(loc('city_egg_msg',[9,loc('resource_Plasmid_plural_name')]),'success',false,['events']);
                 }
             }
             else {
@@ -2426,6 +2426,12 @@ export function getEaster(){
         global.special.egg[year]['egg15'] = false;
     }
 
+    if (global.special.egg.hasOwnProperty(year) && !global.special.egg[year].hasOwnProperty('egg16')){
+        global.special.egg[year]['egg16'] = false;
+        global.special.egg[year]['egg17'] = false;
+        global.special.egg[year]['egg18'] = false;
+    }
+
 	let f = Math.floor,
 		// Golden Number - 1
 		G = year % 19,
@@ -2470,6 +2476,7 @@ export function getEaster(){
         easter.solveDate[1] -= easter.solveDate[0] === 2 ? 31 : 30;
         easter.solveDate[0]++;
     }
+
     if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
         easter.active = true;
         if (date.getMonth() >= easter.hintDate[0] && date.getDate() >= easter.hintDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){

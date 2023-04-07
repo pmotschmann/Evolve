@@ -1599,7 +1599,7 @@ export function setPowerGrid(){
             if (gridEnabled(c_action,region,parts[0],parts[1])){
                 idx++;
                 let circuit = $(`<div id="pg${c_action.id}${grid_type}" class="circuit" data-idx="${i}"></div>`);
-                circuit.append(`<span>${idx}</span> <span class="struct has-text-warning">${title}${extra}</span>`);
+                circuit.append(`<span v-html="$options.filters.idx(${idx})"></span> <span class="struct has-text-warning">${title}${extra}</span>`);
                 circuit.append(`<span role="button" class="sub off" @click="power_off" aria-label="Powered Off"><span>{{ on | off }}</span></span> <span role="button" class="add on" @click="power_on" aria-label="Powered On"><span>{{ on }}</span></span>`);
                 circuit.append(`<span role="button" class="sub is-sr-only" @click="higher" aria-label="Raise Power Priority"><span>&laquo;</span></span> <span role="button" class="add is-sr-only" @click="lower" aria-label="Lower Power Priority"><span>&raquo;</span></span>`);
                 grid.append(circuit);
@@ -1664,6 +1664,13 @@ export function setPowerGrid(){
                     filters: {
                         off(c){
                             return global[region][parts[1]].count - c;
+                        },
+                        idx(idx){
+                            let egg18 = easterEgg(18,11);
+                            if (idx === 10 && egg18.length > 0){
+                                return '1'+egg18;
+                            }
+                            return idx;
                         }
                     }
                 });

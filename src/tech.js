@@ -4,7 +4,7 @@ import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, message
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory } from './races.js';
-import { defineResources, resource_values, atomic_mass } from './resources.js';
+import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
@@ -4137,6 +4137,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     industrialization: {
@@ -10380,6 +10383,9 @@ const techs = {
         post(){
             clearElement($('#resources'));
             defineResources();
+            if (global.settings.tabLoad){
+                drawResourceTab('alchemy');
+            }
         }
     },
     transmutation: {
