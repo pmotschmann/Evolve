@@ -1457,7 +1457,7 @@ function specialEventsPage(content){
             let event = 'egghunt';
             let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 5, break: [2,3,4], h_level: 2,
                 para_data: {
-                    2: [loc('feat_egghunt_name'),12,15],
+                    2: [loc('feat_egghunt_name'),12,18],
                     5: [loc('trait_hyper_name'),loc('trait_fast_growth_name'),loc('trait_rainbow_name'),loc('trait_optimistic_name')],
                 }
             });
