@@ -1455,10 +1455,11 @@ function specialEventsPage(content){
 
         {   // Egg Hunt
             let event = 'egghunt';
-            let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 5, break: [2,3,4], h_level: 2,
+            let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 7, break: [2,3,4,6], h_level: 2,
                 para_data: {
                     2: [loc('feat_egghunt_name'),12,18],
                     5: [loc('trait_hyper_name'),loc('trait_fast_growth_name'),loc('trait_rainbow_name'),loc('trait_optimistic_name')],
+                    7: [loc('trait_cannibalize_name'),loc('trait_rage_name'),loc('trait_blood_thirst_name'),loc('trait_sticky_name')],
                 }
             });
 

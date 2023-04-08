@@ -1616,7 +1616,7 @@ export const actions = {
         },
         smokehouse: {
             id: 'city-smokehouse',
-            title: loc('city_smokehouse'),
+            title(){ return altRace('vulpine') ? loc('city_smokehouse_easter') : loc('city_smokehouse'); },
             desc: loc('city_smokehouse_desc'),
             category: 'trade',
             reqs: { hunting: 1 },
@@ -7074,10 +7074,16 @@ function sentience(){
 
     const easter = eventActive('easter');
     if (global.race.species === 'wolven' && easter.active){
-        global.race['hyper'] = 1;
-        global.race['fast_growth'] = 1;
-        global.race['rainbow'] = 1;
-        global.race['optimistic'] = 1;
+        setTraitRank('hyper',{ set: 1 });
+        setTraitRank('fast_growth',{ set: 1 });
+        setTraitRank('rainbow',{ set: 1 });
+        setTraitRank('optimistic',{ set: 1 });
+    }
+    else if (global.race.species === 'vulpine' && easter.active){
+        setTraitRank('cannibalize',{ set: 2 });
+        setTraitRank('rage',{ set: 1 });
+        setTraitRank('blood_thirst',{ set: 1 });
+        setTraitRank('sticky',{ set: 1 });
     }
 
     if (global.race['no_crispr'] || global.race['badgenes']){

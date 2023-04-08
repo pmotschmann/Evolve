@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory } from './races.js';
+import { races, checkAltPurgatory, altRace } from './races.js';
 import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -466,8 +466,8 @@ const techs = {
     },
     smokehouse: {
         id: 'tech-smokehouse',
-        title: loc('tech_smokehouse'),
-        desc: loc('tech_smokehouse_desc'),
+        title(){ return altRace('vulpine') ? loc('city_smokehouse_easter') : loc('tech_smokehouse'); },
+        desc(){ return altRace('vulpine') ? loc('tech_smokehouse_easter_desc') : loc('tech_smokehouse_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
@@ -477,7 +477,7 @@ const techs = {
         cost: {
             Knowledge(){ return 80; }
         },
-        effect: loc('tech_smokehouse_effect'),
+        effect(){ return altRace('vulpine') ? loc('tech_smokehouse_easter_effect') : loc('tech_smokehouse_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
