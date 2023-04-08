@@ -45,6 +45,14 @@ export function altRace(race,set){
                 }
                 return false;
             }
+        case 'vulpine':
+            {
+                if (easter.active || (global.race['hrt'] && global.race.hrt === race)){
+                    if (set){global.race['hrt'] = race;}
+                    return true;
+                }
+                return false;
+            }
         case 'arraak':
             {
                 if ((date.getMonth() === 10 && date.getDate() >= 22 && date.getDate() <= 28) || (global.race['hrt'] && global.race.hrt === race)){
@@ -3202,21 +3210,21 @@ export const races = {
         fanaticism: 'tracker'
     },
     vulpine: {
-        name: loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'),
-        desc(){ return loc('race_vulpine_desc',[loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'), foxColor()]); },
+        name: altRace('vulpine') ? loc('race_chocolate_rabbit') : (loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine')),
+        desc(){ return altRace('vulpine') ? loc('race_chocolate_rabbit_desc') : (loc('race_vulpine_desc',[loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'), foxColor()])); },
         type: 'carnivore',
-        home: loc('race_vulpine_home'),
+        home: altRace('vulpine') ? loc('race_chocolate_rabbit_home') : loc('race_vulpine_home'),
         entity: loc('race_vulpine_entity'),
         traits: {
             playful: 1,
             freespirit: 1
         },
         solar: {
-            red: loc('race_vulpine_solar_red'),
-            hell: loc('race_vulpine_solar_hell'),
-            gas: loc('race_vulpine_solar_gas'),
-            gas_moon: loc('race_vulpine_solar_gas_moon'),
-            dwarf: loc('race_vulpine_solar_dwarf'),
+            red: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_red') : loc('race_vulpine_solar_red'),
+            hell: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_hell') : loc('race_vulpine_solar_hell'),
+            gas: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_gas') : loc('race_vulpine_solar_gas'),
+            gas_moon: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_gas_moon') : loc('race_vulpine_solar_gas_moon'),
+            dwarf: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_dwarf') : loc('race_vulpine_solar_dwarf'),
         },
         fanaticism: 'playful'
     },
