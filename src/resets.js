@@ -538,7 +538,7 @@ export function ascend(){
     }
 
     global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
-    global.stats.harmony = parseFloat((global.stats.Harmony + gains.harmony).toFixed(2));
+    global.stats.harmony = parseFloat((global.stats.harmony + gains.harmony).toFixed(2));
 
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
@@ -732,7 +732,7 @@ export function terraform(planet){
     }
 
     global.prestige.Harmony.count = parseFloat((global.prestige.Harmony.count + gains.harmony).toFixed(2));
-    global.stats.harmony = parseFloat((global.stats.Harmony + gains.harmony).toFixed(2));
+    global.stats.harmony = parseFloat((global.stats.harmony + gains.harmony).toFixed(2));
 
     atmo.forEach(function(a){
         if (planetTraits.hasOwnProperty(a)){
