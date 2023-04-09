@@ -722,7 +722,7 @@ export function checkAchievements(){
         unlockFeat('easter',global.race.universe === 'micro' ? true : false);
 
         let eggs = 0;
-        for (let i=1; i<=15; i++){
+        for (let i=1; i<=18; i++){
             if (global.special.egg[year][`egg${i}`]){
                 eggs++;
             }
