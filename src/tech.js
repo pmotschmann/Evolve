@@ -7055,10 +7055,15 @@ const techs = {
             Oil(){ return global.city.ptrait.includes('dense') ? 10000 : 8500; },
             Uranium(){ return 1250; }
         },
-        effect: loc('tech_mad_effect'),
+        effect(){ return altRace('wolven') || altRace('vulpine') ? loc('tech_mad_effect_easter') : loc('tech_mad_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                messageQueue(loc('tech_mad_info'),'info',false,['progress']);
+                if (altRace('wolven') || altRace('vulpine')){
+                    messageQueue(loc('tech_mad_info_easter'),'info',false,['progress']);
+                }
+                else {
+                    messageQueue(loc('tech_mad_info'),'info',false,['progress']);
+                }
                 global.civic.mad.display = true;
                 return true;
             }

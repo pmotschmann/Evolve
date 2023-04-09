@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation } from './vars.j
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, altRace } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
@@ -2072,12 +2072,14 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc('civics_mad_arm_missiles')}</button></div>`));
-        mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc('civics_mad_launch_missiles')}</button></div>`));
+        let altText = altRace('wolven') || altRace('vulpine') ? true : false;
+
+        mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(altText ? 'civics_mad_arm_grenades' : 'civics_mad_arm_missiles')}</button></div>`));
+        mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc(altText ? 'civics_mad_launch_grenades' : 'civics_mad_launch_missiles')}</button></div>`));
 
         if (!global.civic.mad.armed){
             $('#mad').addClass('armed');
-            $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
+            $('#mad .arm').html(loc(altText ? 'civics_mad_disarm_grenades' : 'civics_mad_disarm_missiles'));
         }
 
         vBind({
@@ -2102,12 +2104,12 @@ function defineMad(){
                 },
                 arm(){
                     if (global.civic.mad.armed){
-                        $('#mad .arm').html(loc('civics_mad_disarm_missiles'));
+                        $('#mad .arm').html(loc(altText ? 'civics_mad_disarm_grenades' : 'civics_mad_disarm_missiles'));
                         global.civic.mad.armed = false;
                         $('#mad').addClass('armed');
                     }
                     else {
-                        $('#mad .arm').html(loc('civics_mad_arm_missiles'));
+                        $('#mad .arm').html(loc(altText ? 'civics_mad_arm_grenades' : 'civics_mad_arm_missiles'));
                         global.civic.mad.armed = true;
                         $('#mad').removeClass('armed');
                     }
@@ -2130,7 +2132,7 @@ function defineMad(){
                                         case 'mdarm':
                                             return global.tech['world_control'] && !global.race['truepath']
                                                 ? loc('civics_mad_missiles_world_control_desc')
-                                                : loc('civics_mad_missiles_desc');
+                                                : loc(altText ? 'civics_mad_missiles_desc_easter' : 'civics_mad_missiles_desc');
                                         case 'mdlaunch':
                                             {
                                                 let gains = calcPrestige('mad');
