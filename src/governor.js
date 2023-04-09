@@ -1,4 +1,4 @@
-import { global, p_on, breakdown } from './vars.js';
+import { global, seededRandom, p_on, breakdown } from './vars.js';
 import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
@@ -243,15 +243,15 @@ function genGovernor(setSize){
             backgrounds = Object.keys(gmen);
         }
 
-        let bgIdx = Math.floor(Math.seededRandom(0,backgrounds.length));
-        let nameIdx = Math.floor(Math.seededRandom(0,nameList.length));
+        let bgIdx = Math.floor(seededRandom(0,backgrounds.length));
+        let nameIdx = Math.floor(seededRandom(0,nameList.length));
 
         let bg = backgrounds.splice(bgIdx,1)[0];
         let name = loc("gov_name_" + nameList.splice(nameIdx,1)[0]);
 
-        let title = gmen[bg].title[Math.floor(Math.seededRandom(0,gmen[bg].title.length))];
+        let title = gmen[bg].title[Math.floor(seededRandom(0,gmen[bg].title.length))];
         if (typeof title === 'object'){
-            title = Math.floor(Math.seededRandom(0,2)) === 0 ? title.m : title.f;
+            title = Math.floor(seededRandom(0,2)) === 0 ? title.m : title.f;
         }
         governors.push({ bg: bg, t: title, n: name });
     }

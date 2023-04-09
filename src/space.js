@@ -1,4 +1,4 @@
-import { save, global, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
+import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
@@ -43,7 +43,7 @@ const spaceProjects = {
                         if (!checkControlling('gov0')){ sabotage++; }
                         if (!checkControlling('gov1')){ sabotage++; }
                         if (!checkControlling('gov2')){ sabotage++; }
-                        if (Math.floor(Math.seededRandom(0,sabotage)) !== 0){
+                        if (Math.floor(seededRandom(0,sabotage)) !== 0){
                             messageQueue(loc('space_home_test_launch_action_fail'),'danger',false,['progress']);
                             return 0;
                         }

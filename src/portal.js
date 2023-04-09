@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
+import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
@@ -3824,37 +3824,37 @@ export function updateMechbay(){
 
 export function genSpireFloor(){
     let types = ['sand','swamp','forest','jungle','rocky','gravel','muddy','grass','brush','concrete'];
-    global.portal.spire.type = types[Math.floor(Math.seededRandom(0,types.length))];
+    global.portal.spire.type = types[Math.floor(seededRandom(0,types.length))];
     if (global.portal.spire.count >= 10){
         global.portal.spire.status = {};
         let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
-        assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+        assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
         
         if (global.portal.spire.count >= 25 && global.portal.spire.count <= 100){
             let odds = 105 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 5)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 5)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 100 && global.portal.spire.count <= 250){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             let odds = 260 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 10)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 10)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 250 && global.portal.spire.count <= 1000){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             let odds = 1025 - global.portal.spire.count;
-            if (Math.floor(Math.seededRandom(0,odds) <= 25)){
-                assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            if (Math.floor(seededRandom(0,odds) <= 25)){
+                assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
             }
         }
         else if (global.portal.spire.count > 1000){
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
-            assignValidStatus(effects[Math.floor(Math.seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
+            assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
         }
     }
 
@@ -3865,7 +3865,7 @@ export function genSpireFloor(){
         }
         return true;
     });
-    global.portal.spire.boss = mobs[Math.floor(Math.seededRandom(0,mobs.length))];
+    global.portal.spire.boss = mobs[Math.floor(seededRandom(0,mobs.length))];
 }
 
 function assignValidStatus(effect){

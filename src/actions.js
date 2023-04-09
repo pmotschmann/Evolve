@@ -1,4 +1,4 @@
-import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
@@ -878,9 +878,9 @@ export const actions = {
                         }
                     }
 
-                    global.race.species = allowed[Math.floor(Math.seededRandom(0,allowed.length))];
+                    global.race.species = allowed[Math.floor(seededRandom(0,allowed.length))];
                     if (global.stats.achieve[`extinct_${global.race.species}`] && global.stats.achieve[`extinct_${global.race.species}`].l >= 1){
-                        global.race.species = allowed[Math.floor(Math.seededRandom(0,allowed.length))];
+                        global.race.species = allowed[Math.floor(seededRandom(0,allowed.length))];
                     }
 
                     sentience();
@@ -3202,7 +3202,7 @@ export const actions = {
                         global.city.shrine.tax++;
                     }
                     else {
-                        switch (Math.floor(Math.seededRandom(0,4))){
+                        switch (Math.floor(seededRandom(0,4))){
                             case 0:
                                 global.city.shrine.morale++;
                                 break;
@@ -5605,8 +5605,8 @@ export function setPlanet(opt){
     let geology = {};
     let custom = false;
 
-    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(Math.seededRandom(0,10)) === 0){
-        custom = opt.custom[Math.floor(Math.seededRandom(0,opt.custom.length))];
+    if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 4 && global.custom['planet'] && opt.custom && opt.custom.length > 0 && Math.floor(seededRandom(0,10)) === 0){
+        custom = opt.custom[Math.floor(seededRandom(0,opt.custom.length))];
         let target = custom.split(':');
 
         if (global.custom.planet[target[0]] && global.custom.planet[target[0]][target[1]]){
@@ -5626,7 +5626,7 @@ export function setPlanet(opt){
         trait = buildPlanet('trait',opt,{biome: biome});
         trait.sort();
 
-        let max = Math.floor(Math.seededRandom(0,3));
+        let max = Math.floor(seededRandom(0,3));
         let top = 30;
         if (global.stats.achieve['whitehole']){
             top += global.stats.achieve['whitehole'].l * 5;
@@ -5637,31 +5637,31 @@ export function setPlanet(opt){
         }
 
         for (let i=0; i<max; i++){
-            switch (Math.floor(Math.seededRandom(0,10))){
+            switch (Math.floor(seededRandom(0,10))){
                 case 0:
-                    geology['Copper'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Copper'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 1:
-                    geology['Iron'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Iron'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 2:
-                    geology['Aluminium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Aluminium'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 3:
-                    geology['Coal'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Coal'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 4:
-                    geology['Oil'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Oil'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 5:
-                    geology['Titanium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Titanium'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 6:
-                    geology['Uranium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                    geology['Uranium'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     break;
                 case 7:
                     if (global.stats.achieve['whitehole']){
-                        geology['Iridium'] = ((Math.floor(Math.seededRandom(0,top)) - 10) / 100);
+                        geology['Iridium'] = ((Math.floor(seededRandom(0,top)) - 10) / 100);
                     }
                     break;
                 default:
@@ -5677,12 +5677,12 @@ export function setPlanet(opt){
                 orbit = 777;
                 break;
             default:
-                orbit = Math.floor(Math.seededRandom(200,trait.includes('elliptical') ? 800 : 600));
+                orbit = Math.floor(seededRandom(200,trait.includes('elliptical') ? 800 : 600));
                 break;
         }
     }
 
-    let num = Math.floor(Math.seededRandom(0,10000));
+    let num = Math.floor(seededRandom(0,10000));
     var id = biome+num;
     id = id.charAt(0).toUpperCase() + id.slice(1);
 
@@ -5713,16 +5713,16 @@ export function setPlanet(opt){
     $('#'+id).on('click',function(){
         if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 5 && global.race.hasOwnProperty('geck') && global.race.geck > 0){
             Object.keys(geology).forEach(function (g){
-                geology[g] += Math.floor(Math.seededRandom(0,7)) / 100;
+                geology[g] += Math.floor(seededRandom(0,7)) / 100;
             });
             if (gecked > 0){
                 let odds = 8 - gecked;
                 if (odds < 1){ odds = 1; }
-                if (Math.floor(Math.seededRandom(0,odds)) === 0){
+                if (Math.floor(seededRandom(0,odds)) === 0){
                     biome = buildPlanet('biome',opt);
                 }
             }
-            if (Math.floor(Math.seededRandom(0,2)) === 0){
+            if (Math.floor(seededRandom(0,2)) === 0){
                 let pT = buildPlanet('trait',opt,{biome: biome, cap: 1});
                 if (pT.length > 0){
                     if (trait.includes(pT[0])){
@@ -5797,9 +5797,9 @@ function buildPlanet(aspect,opt,args){
     if (aspect === 'biome'){
         let biome = 'grassland';
         let max_bound = !opt.hell && global.stats.portals >= 1 ? 7 : 6;
-        let subbiome = Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
+        let subbiome = Math.floor(seededRandom(0,3)) === 0 ? true : false;
         let uAffix = universeAffix();
-        switch (Math.floor(Math.seededRandom(0,max_bound))){
+        switch (Math.floor(seededRandom(0,max_bound))){
             case 0:
                 {
                     let sb = subbiome && global.stats.achieve['biome_grassland'] && global.stats.achieve.biome_grassland[uAffix] && global.stats.achieve.biome_grassland[uAffix] > 0;
@@ -5815,7 +5815,7 @@ function buildPlanet(aspect,opt,args){
             case 2:
                 {
                     let sb = subbiome && global.stats.achieve['biome_forest'] && global.stats.achieve.biome_forest[uAffix] && global.stats.achieve.biome_forest[uAffix] > 0;
-                    biome = sb ? (Math.floor(Math.seededRandom(0,2)) === 0 ? 'taiga' : 'swamp') : 'forest';
+                    biome = sb ? (Math.floor(seededRandom(0,2)) === 0 ? 'taiga' : 'swamp') : 'forest';
                 }
                 break;
             case 3:
@@ -5850,7 +5850,7 @@ function buildPlanet(aspect,opt,args){
         let cap = args['cap'] || 2;
         for (let i=0; i<cap; i++){
             let top = 18 + (9 * i);
-            switch (Math.floor(Math.seededRandom(0,top))){
+            switch (Math.floor(seededRandom(0,top))){
                 case 0:
                     if (!trait.includes('toxic')){
                         trait.push('toxic');
@@ -7266,9 +7266,9 @@ function sentience(){
     
         global.civic.foreign['gov3'] = {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(20,40)),
-            mil: Math.floor(Math.seededRandom(650,750)),
-            eco: Math.floor(Math.seededRandom(250,300)),
+            hstl: Math.floor(seededRandom(20,40)),
+            mil: Math.floor(seededRandom(650,750)),
+            eco: Math.floor(seededRandom(250,300)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -7329,7 +7329,7 @@ function sentience(){
     }
 
     if (global.race.species === 'tortoisan'){
-        let color = Math.floor(Math.seededRandom(100));
+        let color = Math.floor(seededRandom(100));
         if (color === 99){
             global.race['shell_color'] = 'rainbow';
         }
@@ -7357,7 +7357,7 @@ function sentience(){
     }
 
     if (global.race.species === 'vulpine'){
-        let color = Math.floor(Math.seededRandom(100));
+        let color = Math.floor(seededRandom(100));
         if (color >= 85){
             global.race['fox_color'] = 'white';
         }

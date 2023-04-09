@@ -1,4 +1,4 @@
-import { global, save, webWorker, power_generated } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
@@ -4374,7 +4374,7 @@ export function randomMinorTrait(ranks){
             }
         });
     }
-    let trait = trait_list[Math.floor(Math.seededRandom(0,trait_list.length))];
+    let trait = trait_list[Math.floor(seededRandom(0,trait_list.length))];
     if (global.race[trait]){
         global.race[trait] += ranks;
     }

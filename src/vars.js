@@ -62,15 +62,14 @@ Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-Math.seed = 2;
-Math.war = 2;
-Math.seededRandom = function(min, max, alt) {
+global['seed'] = 2;
+global['warseed'] = 2;
+export function seededRandom(min, max, alt) {
     max = max || 1;
     min = min || 0;
 
-    Math[alt ? 'war' : 'seed'] = (Math[alt ? 'war' : 'seed'] * 9301 + 49297) % 233280;
-    let rnd = Math[alt ? 'war' : 'seed']/ 233280;
-    global[alt ? 'warseed' : 'seed'] = Math[alt ? 'war' : 'seed'];
+    global[alt ? 'warseed' : 'seed'] = (global[alt ? 'warseed' : 'seed'] * 9301 + 49297) % 233280;
+    let rnd = global[alt ? 'warseed' : 'seed'] / 233280;
     return min + rnd * (max - min);
 }
 
@@ -82,8 +81,6 @@ Math.seededRandom = function(min, max, alt) {
 
         if (saveState){
             global = saveState;
-            Math.seed = global.seed;
-            Math.war = global.hasOwnProperty('warseed') ? global.warseed : (global.seed + 1);
         }
         else {
             newGameData();
@@ -1171,7 +1168,7 @@ if (convertVersion(global['version']) < 103002){
 }
 
 global['version'] = '1.3.5';
-delete global['revision'];
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -1894,8 +1891,8 @@ if (global['arpa'] && global.arpa['launch_facility'] && global.arpa.launch_facil
 
 function newGameData(){
     global['race'] = { species : 'protoplasm', gods: 'none', old_gods: 'none', seeded: false };
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    global['seed'] = Math.rand(0,10000);
+    global['warseed'] = Math.rand(0,10000);
     global['new'] = true;
 }
 
@@ -2124,7 +2121,8 @@ window.soft_reset = function reset(source){
 
     clearStates();
     global.new = true;
-    Math.seed = Math.rand(0,10000);
+    global.seed = Math.rand(0,10000);
+    global.warseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -2208,9 +2206,9 @@ export function clearStates(){
     global.civic['foreign'] = {
         gov0: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(80,100)),
-            mil: Math.floor(Math.seededRandom(75,125)),
-            eco: Math.floor(Math.seededRandom(60,90)),
+            hstl: Math.floor(seededRandom(80,100)),
+            mil: Math.floor(seededRandom(75,125)),
+            eco: Math.floor(seededRandom(60,90)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -2222,9 +2220,9 @@ export function clearStates(){
         },
         gov1: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(0,20)),
-            mil: Math.floor(Math.seededRandom(125,175)),
-            eco: Math.floor(Math.seededRandom(80,120)),
+            hstl: Math.floor(seededRandom(0,20)),
+            mil: Math.floor(seededRandom(125,175)),
+            eco: Math.floor(seededRandom(80,120)),
             spy: 0,
             esp: 0,
             trn: 0,
@@ -2236,9 +2234,9 @@ export function clearStates(){
         },
         gov2: {
             unrest: 0,
-            hstl: Math.floor(Math.seededRandom(40,60)),
-            mil: Math.floor(Math.seededRandom(200,300)),
-            eco: Math.floor(Math.seededRandom(130,170)),
+            hstl: Math.floor(seededRandom(40,60)),
+            mil: Math.floor(seededRandom(200,300)),
+            eco: Math.floor(seededRandom(130,170)),
             spy: 0,
             esp: 0,
             trn: 0,
