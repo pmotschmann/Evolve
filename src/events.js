@@ -1,4 +1,4 @@
-import { global, p_on, support_on } from './vars.js';
+import { global, seededRandom, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
@@ -134,8 +134,8 @@ export const events = {
             let enemy = Math.rand(25,50) * eAdv;
 
             let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
-            let killed =  Math.floor(Math.seededRandom(0,injured));
-            let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
+            let killed =  Math.floor(seededRandom(0,injured));
+            let wounded = Math.floor(seededRandom(0,garrisonSize() - injured));
             if (global.race['instinct']){
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
@@ -189,8 +189,8 @@ export const events = {
             let enemy = (global.civic.foreign.gov0.mil + global.civic.foreign.gov1.mil + global.civic.foreign.gov2.mil) * eAdv;
 
             let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
-            let killed =  Math.floor(Math.seededRandom(0,injured));
-            let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
+            let killed =  Math.floor(seededRandom(0,injured));
+            let wounded = Math.floor(seededRandom(0,garrisonSize() - injured));
 
             if (global.race['instinct']){
                 killed = Math.round(killed / 2);
@@ -280,8 +280,8 @@ export const events = {
         },
         type: 'major',
         effect(){            
-            let killed = Math.floor(Math.seededRandom(0,global.civic.garrison.wounded));
-            let wounded = Math.floor(Math.seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
+            let killed = Math.floor(seededRandom(0,global.civic.garrison.wounded));
+            let wounded = Math.floor(seededRandom(0,global.civic.garrison.workers - global.civic.garrison.wounded));
             if (global.race['instinct']){
                 killed = Math.round(killed / 2);
                 wounded = Math.round(wounded / 2);
@@ -850,11 +850,11 @@ function slaveLoss(type,string){
 function pillaged(gov,serious){
     let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
     let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
-    let enemy = global.civic.foreign[gov].mil * (1 + Math.floor(Math.seededRandom(0,10) - 5) / 10) * eAdv;
+    let enemy = global.civic.foreign[gov].mil * (1 + Math.floor(seededRandom(0,10) - 5) / 10) * eAdv;
 
     let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
-    let killed = garrisonSize() > 0 ? Math.floor(Math.seededRandom(1,injured)) : 0;
-    let wounded = Math.floor(Math.seededRandom(0,garrisonSize() - injured));
+    let killed = garrisonSize() > 0 ? Math.floor(seededRandom(1,injured)) : 0;
+    let wounded = Math.floor(seededRandom(0,garrisonSize() - injured));
     if (global.race['instinct']){
         killed = Math.round(killed / 2);
         wounded = Math.round(wounded / 2);

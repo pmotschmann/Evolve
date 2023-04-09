@@ -337,7 +337,7 @@ function featDesc(feat,showFlair){
         const date = new Date();
         let year = date.getFullYear();
         let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div><div class="flexed">`;
-        for (let i=1; i<=15; i++){
+        for (let i=1; i<=18; i++){
             let egg = global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
             eggs = eggs + `<span class="${egg}">${loc('wiki_feat_egghunt_num',[i])}</span>`
         }

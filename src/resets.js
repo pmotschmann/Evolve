@@ -1,4 +1,4 @@
-import { global, save, webWorker, clearSavedMessages, clearStates } from './vars.js';
+import { global, save, seededRandom, webWorker, clearSavedMessages, clearStates } from './vars.js';
 import { tagEvent, calcPrestige, updateResetStats } from './functions.js';
 import { races, planetTraits } from './races.js';
 import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } from './achieve.js';
@@ -193,7 +193,7 @@ export function bioseed(){
         seeded: true,
         probes: probes,
         geck: gecks,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: false,
     };
     if (corruption > 0){
@@ -388,7 +388,7 @@ export function big_bang(){
         bigbang: true,
         probes: 4,
         //geck: gecks,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: false
     };
     if (corruption > 0){
@@ -484,7 +484,7 @@ export function vacuumCollapse(){
             bigbang: true,
             probes: 4,
             //geck: gecks,
-            seed: Math.floor(Math.seededRandom(10000)),
+            seed: Math.floor(seededRandom(10000)),
             ascended: false,
         };
         if (corruption > 0){
@@ -582,7 +582,7 @@ export function ascend(){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: true,
     };
     if (corruption > 0){
@@ -681,7 +681,7 @@ export function descension(){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         corruption: 5,
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
@@ -768,7 +768,7 @@ export function terraform(planet){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
         rejuvenated: true,
     };
@@ -846,7 +846,7 @@ export function aiApocalypse(){
         srace: srace,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     if (corruption > 0){
@@ -927,7 +927,7 @@ export function matrix(){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     if (corruption > 0){
@@ -1011,7 +1011,7 @@ export function retirement(){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     if (corruption > 0){
@@ -1095,7 +1095,7 @@ export function gardenOfEden(){
         old_gods: old_god,
         universe: global.race.universe,
         seeded: false,
-        seed: Math.floor(Math.seededRandom(10000)),
+        seed: Math.floor(seededRandom(10000)),
         ascended: global.race.hasOwnProperty('ascended') ? global.race.ascended : false,
     };
     if (corruption > 0){
@@ -1138,8 +1138,7 @@ function resetCommon(args){
     global.tech = { theology: 1 };
     clearStates();
     global.new = true;
-    Math.seed = Math.rand(0,10000);
-    global.seed = Math.seed;
+    global.seed = Math.rand(0,10000);
 }
 
 function trackWomling(){
