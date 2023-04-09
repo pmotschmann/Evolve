@@ -466,8 +466,8 @@ const techs = {
     },
     smokehouse: {
         id: 'tech-smokehouse',
-        title(){ return global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('tech_smokehouse'); },
-        desc(){ return global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? loc('tech_smokehouse_easter_desc') : loc('tech_smokehouse_desc'); },
+        title(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('tech_smokehouse'); },
+        desc(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_smokehouse_easter_desc') : loc('tech_smokehouse_desc'); },
         category: 'storage',
         era: 'civilized',
         reqs: { primitive: 3, storage: 1 },
@@ -477,7 +477,7 @@ const techs = {
         cost: {
             Knowledge(){ return 80; }
         },
-        effect(){ return global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? loc('tech_smokehouse_easter_effect') : loc('tech_smokehouse_effect'); },
+        effect(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_smokehouse_easter_effect') : loc('tech_smokehouse_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 checkAltPurgatory('city','smokehouse','silo',{ count: 0 });
@@ -7055,10 +7055,10 @@ const techs = {
             Oil(){ return global.city.ptrait.includes('dense') ? 10000 : 8500; },
             Uranium(){ return 1250; }
         },
-        effect(){ return global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? loc('tech_mad_effect_easter') : loc('tech_mad_effect'); },
+        effect(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('tech_mad_effect_easter') : loc('tech_mad_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                if (global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt'])){
+                if (global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt'])){
                     messageQueue(loc('tech_mad_info_easter'),'info',false,['progress']);
                 }
                 else {

@@ -1616,7 +1616,7 @@ export const actions = {
         },
         smokehouse: {
             id: 'city-smokehouse',
-            title(){ return global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('city_smokehouse'); },
+            title(){ return global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? loc('city_smokehouse_easter') : loc('city_smokehouse'); },
             desc: loc('city_smokehouse_desc'),
             category: 'trade',
             reqs: { hunting: 1 },
