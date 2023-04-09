@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation } from './vars.j
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes, altRace } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
@@ -2072,7 +2072,7 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        let altText = altRace('wolven') || altRace('vulpine') ? true : false;
+        let altText = global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? true : false;
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(altText ? 'civics_mad_arm_grenades' : 'civics_mad_arm_missiles')}</button></div>`));
         mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc(altText ? 'civics_mad_launch_grenades' : 'civics_mad_launch_missiles')}</button></div>`));
