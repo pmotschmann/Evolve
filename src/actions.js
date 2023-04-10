@@ -5381,7 +5381,11 @@ export function setAction(c_action,action,type,old,prediction){
             },
             p_off(p,id){
                 let value = global[action][type].count - p;
-                if (id === 'city-casino' || id === 'space-spc_casino'){
+                if (
+                    (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
+                    (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
+                    (id === 'tauceti-tauceti_casino' && global.tech['isolation'])
+                ){
                     let egg = easterEgg(5,12);
                     if (value === 0 && egg.length > 0){
                         return egg;
@@ -5390,7 +5394,11 @@ export function setAction(c_action,action,type,old,prediction){
                 return value;
             },
             p_on(p,id){
-                if (id === 'city-biolab'){
+                if (
+                    (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
+                    ((global.race['cataclysm'] || global.race['orbit_decayed']) && id === 'space-exotic_lab') ||
+                    (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab')
+                ){
                     let egg = easterEgg(12,12);
                     if (p === 0 && egg.length > 0){
                         return egg;
