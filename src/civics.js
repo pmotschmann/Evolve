@@ -2072,7 +2072,7 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        let altText = global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? true : false;
+        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? true : false;
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(altText ? 'civics_mad_arm_grenades' : 'civics_mad_arm_missiles')}</button></div>`));
         mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc(altText ? 'civics_mad_launch_grenades' : 'civics_mad_launch_missiles')}</button></div>`));
