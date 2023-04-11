@@ -950,7 +950,7 @@ function taxRates(govern){
             tax_level(rate){
                 let egg = easterEgg(11,14);
                 let trick = trickOrTreat(2,14,false);
-                if (rate === 0 && egg.length > 0){
+                if (egg.length > 0 && ((rate === 0 && !global.race['noble']) || (rate === 10 && global.race['noble']))){
                     return egg;
                 }
                 else if (rate === 13 && trick.length > 0){
@@ -1066,7 +1066,12 @@ export function buildGarrison(garrison,full){
     }
     
     if (full){
-        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
+        let egg8 = '';
+        if (global.tech['isolation']){
+            egg8 = easterEgg(8,12);
+        }
+
+        garrison.append($(`<div class="training"><span>${loc('civics_garrison_training')} - ${loc('arpa_to_complete')} {{ g.rate, g.progress | trainTime }}${egg8}</span> <progress class="progress" :value="g.progress" max="100">{{ g.progress }}%</progress></div>`));
     }
 
     var campaign = $('<div class="columns is-mobile battle"></div>');
@@ -2072,7 +2077,7 @@ function defineMad(){
 
         mad.append($(`<div class="warn">${loc('civics_mad_reset_desc',[plasmidType])}</div>`));
 
-        let altText = global.race['hrt'] && ['wolven','vulpine'].contains(global.race['hrt']) ? true : false;
+        let altText = global.race['hrt'] && ['wolven','vulpine'].includes(global.race['hrt']) ? true : false;
 
         mad.append($(`<div class="defcon mdarm"><button class="button arm" @click="arm">${loc(altText ? 'civics_mad_arm_grenades' : 'civics_mad_arm_missiles')}</button></div>`));
         mad.append($(`<div class="defcon mdlaunch"><button class="button" @click="launch" :disabled="armed">${loc(altText ? 'civics_mad_launch_grenades' : 'civics_mad_launch_missiles')}</button></div>`));

@@ -1777,7 +1777,7 @@ export function containerItem(mount,market_item,name,color){
                 return v;
             },
             cCnt(ct,res){
-                if (res === 'Food'){
+                if ((res === 'Food' && !global.race['artifical']) || (global.race['artifical'] && res === 'Coal')){
                     let egg = easterEgg(13,10);
                     if (ct === 10 && egg.length > 0){
                         return '1'+egg;
@@ -2160,7 +2160,7 @@ function loadRouteCounter(){
         filters: {
             tdeCnt(ct){
                 let egg17 = easterEgg(17,11);
-                if (ct === 100 && egg17.length > 0){
+                if (((ct === 100 && !global.tech['isolation']) || (ct === 10 && global.tech['isolation'])) && egg17.length > 0){
                     return '10'+egg17;
                 }
                 return ct;
@@ -2273,7 +2273,7 @@ function drawModal(name){
     let body = $('<div class="modalBody crateModal"></div>');
     $('#modalBox').append(body);
 
-    if (name === 'Food'){
+    if ((name === 'Food' && !global.race['artifical']) || (global.race['artifical'] && name === 'Coal')){
         let egg = easterEgg(7,10);
         if (egg.length > 0){
             $('#modalBoxTitle').prepend(egg);
