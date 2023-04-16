@@ -4,6 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.5`,
+        revision: `c`,
+        date: `4/16/2023`,
+        changes: [
+            `Made Egg #17 easier to get in Cataclysm mode.`,
+        ]
+    },
+    {
+        version: `1.3.5`,
         revision: `b`,
         date: `4/9/2023`,
         changes: [
