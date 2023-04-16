@@ -2160,7 +2160,7 @@ function loadRouteCounter(){
         filters: {
             tdeCnt(ct){
                 let egg17 = easterEgg(17,11);
-                if (((ct === 100 && !global.tech['isolation']) || (ct === 10 && global.tech['isolation'])) && egg17.length > 0){
+                if (((ct === 100 && !global.tech['isolation'] && !global.race['cataclysm']) || (ct === 10 && (global.tech['isolation'] || global.race['cataclysm']))) && egg17.length > 0){
                     return '10'+egg17;
                 }
                 return ct;
