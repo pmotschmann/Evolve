@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
@@ -18,6 +18,7 @@ import { production, highPopAdjust } from './prod.js';
 import { swissKnife } from './tech.js';
 import { vacuumCollapse } from './resets.js';
 import { index, mainVue, initTabs, loadTab } from './index.js';
+import { setWeather, seasonDesc, astrologySign, astroVal } from './seasons.js';
 import { getTopChange } from './wiki/change.js';
 import { enableDebug, updateDebugData } from './debug.js';
 
@@ -373,59 +374,20 @@ vBind({
         s: global.settings
     },
     methods: {
+        sign(){
+            return seasonDesc('sign');
+        },
+        getAstroSign(){
+            return seasonDesc('astrology');
+        },
         weather(){
-            switch(global.city.calendar.weather){
-                case 0:
-                    if (global.city.calendar.temp === 0){
-                        return global.city.calendar.wind === 1 ? loc('snowstorm') : loc('snow');
-                    }
-                    else {
-                        return global.city.calendar.wind === 1 ? loc('thunderstorm') : loc('rain');
-                    }
-                case 1:
-                    return global.city.calendar.wind === 1 ? loc('cloudy_windy') : loc('cloudy');
-                case 2:
-                    return global.city.calendar.wind === 1 ? loc('sunny_windy') : loc('sunny');
-            }
+            return seasonDesc('weather');
         },
         temp(){
-            switch(global.city.calendar.temp){
-                case 0:
-                    return loc('cold');// weather, cold weather may reduce food output.';
-                case 1:
-                    return loc('moderate');
-                case 2:
-                    return loc('hot');// weather, hot weather may reduce worker productivity.';
-            }
+            return seasonDesc('temp');
         },
         moon(){
-            if (global.race['orbit_decayed']){
-                return loc('moon0'); // New Moon
-            }
-            else if (global.city.calendar.moon === 0){
-                return loc('moon1'); // New Moon
-            }
-            else if (global.city.calendar.moon > 0 && global.city.calendar.moon < 7){
-                return loc('moon2'); // Waxing Crescent Moon
-            }
-            else if (global.city.calendar.moon === 7){
-                return loc('moon3'); // First Quarter Moon
-            }
-            else if (global.city.calendar.moon > 7 && global.city.calendar.moon < 14){
-                return loc('moon4'); // Waxing Gibbous Moon
-            }
-            else if (global.city.calendar.moon === 14){
-                return loc('moon5'); // Full Moon
-            }
-            else if (global.city.calendar.moon > 14 && global.city.calendar.moon < 21){
-                return loc('moon6'); // Waning Gibbous Moon
-            }
-            else if (global.city.calendar.moon === 21){
-                return loc('moon7'); // Third Quarter Moon
-            }
-            else if (global.city.calendar.moon > 21){
-                return loc('moon8'); // Waning Crescent Moon
-            }
+            return seasonDesc('moon');
         },
         showUniverse(){
             return global.race.universe === 'standard' || global.race.universe === 'bigbang' ? false : true;
@@ -686,6 +648,7 @@ function fastLoop(){
         });
     }
     const date = new Date();
+    const astroSign = astrologySign();
 
     breakdown.p['Global'] = {};
     var global_multiplier = 1;
@@ -727,6 +690,9 @@ function fastLoop(){
         }
         if (global.race['unified']){
             bonus += traits.unified.vars()[0];
+        }
+        if (astroSign === 'taurus'){
+            bonus += astroVal('taurus')[0];
         }
         breakdown.p['Global'][loc('tech_unification')] = `${bonus}%`;
         global_multiplier *= 1 + (bonus / 100);
@@ -2638,6 +2604,9 @@ function fastLoop(){
             if (global.race['musical']){
                 entertainment += workerScale(global.civic.entertainer.workers,'entertainer') * traits.musical.vars()[0];
             }
+            if (astroSign === 'sagittarius'){
+                entertainment *= 1 + (astroVal('sagittarius')[0] / 100);
+            }
             if (global.race['emotionless']){
                 entertainment *= 1 - (traits.emotionless.vars()[0] / 100);
             }
@@ -2942,6 +2911,8 @@ function fastLoop(){
         if (global.resource[global.race.species].amount >= 1 || global.city['farm'] || global.city['soul_well'] || global.city['compost'] || global.city['tourist_center'] || global.city['transmitter']){
             let food_bd = {};
             let food_base = 0;
+            let virgo = astroSign === 'virgo' ? 1 + (astroVal('virgo')[0] / 100) : 1;
+
             if (global.race['artifical']){
                 if (global.city['transmitter']){
                     food_base = p_on['transmitter'] * production('transmitter');
@@ -3046,10 +3017,11 @@ function fastLoop(){
                         let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
 
                         food_bd[loc('job_farmer')] = (food) + 'v';
-                        food_base += (food * weather_multiplier * mill_multiplier * q_multiplier);
+                        food_base += (food * virgo * weather_multiplier * mill_multiplier * q_multiplier);
 
                         if (food > 0){
                             food_bd[`ᄂ${loc('city_mill_title1')}`] = ((mill_multiplier - 1) * 100) + '%';
+                            food_bd[`ᄂ${loc('sign_virgo')}+0`] = ((virgo - 1) * 100) + '%';
                             food_bd[`ᄂ${loc('morale_weather')}`] = ((weather_multiplier - 1) * 100) + '%';
                             food_bd[`ᄂ${loc('quarantine')}+0`] = ((q_multiplier - 1) * 100) + '%';
                         }
@@ -3088,9 +3060,10 @@ function fastLoop(){
             if (biodome > 0){
                 food_bd[`ᄂ${loc('space_syndicate')}+0`] = -((1 - red_synd) * 100) + '%';
                 food_bd[`ᄂ${loc('space_red_ziggurat_title')}+0`] = ((zigVal - 1) * 100) + '%';
+                food_bd[`ᄂ${loc('sign_virgo')}+0`] = ((virgo - 1) * 100) + '%';
             }
 
-            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal);
+            let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo);
             generated *= global_multiplier;
 
             let soldiers = global.civic.garrison.workers;
@@ -3271,6 +3244,9 @@ function fastLoop(){
                 }
                 if (global.race['promiscuous']){
                     lowerBound += traits.promiscuous.vars()[0] * global.race['promiscuous'];
+                }
+                if (astroSign === 'libra'){
+                    lowerBound *= 1 + (astroVal('libra')[0] / 100);
                 }
                 if (global.race['high_pop']){
                     lowerBound *= traits.high_pop.vars()[2];
@@ -3534,6 +3510,7 @@ function fastLoop(){
                 }
             }
             let library_mult = global.city['library'] ? 1 + (global.city.library.count * lib_multiplier) : 1;
+            let astro_mult = astroSign === 'gemini' ? 1 + (astroVal('gemini')[0] / 100) : 1;
 
             let gene_consume = 0;
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
@@ -3576,6 +3553,9 @@ function fastLoop(){
             }
             if (global.city['library']){
                 know_bd[loc('city_library')] = ((library_mult - 1) * 100) + '%';
+            }
+            if (astroSign === 'gemini'){
+                know_bd[loc(`sign_${astroSign}`)] = ((astro_mult - 1) * 100) + '%';
             }
             if (global.tech['isolation'] && support_on['infectious_disease_lab']){
                 know_bd[actions.tauceti.tau_home.infectious_disease_lab.title()] = ((lab_mult - 1) * 100) + '%';
@@ -6869,6 +6849,7 @@ function fastLoop(){
 }
 
 function midLoop(){
+    const astroSign = astrologySign();
     if (global.race.species === 'protoplasm'){
         let base = 100;
         if (global.stats.achieve['mass_extinction'] && global.stats.achieve['mass_extinction'].l > 1){
@@ -8625,6 +8606,9 @@ function midLoop(){
                             }
                             else {
                                 let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                if (astroSign === 'scorpio'){
+                                    covert += astroVal('scorpio')[1];
+                                }
                                 global.civic.foreign[`gov${i}`].hstl -= covert;
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
@@ -8638,6 +8622,9 @@ function midLoop(){
                             }
                             else {
                                 let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                if (astroSign === 'scorpio'){
+                                    covert += astroVal('scorpio')[1];
+                                }
                                 global.civic.foreign[`gov${i}`].mil -= covert;
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
@@ -8651,6 +8638,9 @@ function midLoop(){
                             }
                             else {
                                 let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                if (astroSign === 'scorpio'){
+                                    covert += astroVal('scorpio')[1];
+                                }
                                 global.civic.foreign[`gov${i}`].unrest += covert;
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;
@@ -9468,6 +9458,7 @@ let sythMap = {
 var kplv = 60;
 function longLoop(){
     const date = new Date();
+    const astroSign = astrologySign();
     if (global.race.species !== 'protoplasm'){
         let grids = gridDefs();
         let updatePowerGrid = false;
@@ -9597,6 +9588,9 @@ function longLoop(){
                 let bonus = global.stats.achieve.lamentis.l;
                 if (bonus > 5){ bonus = 5; }
                 hc += bonus;
+            }
+            if (astroSign === 'cancer'){
+                hc += astroVal('cancer')[0];
             }
             if (global.tech['medic'] && global.tech['medic'] >= 2){
                 hc *= global.tech['medic'];
@@ -10636,225 +10630,6 @@ function steelCheck(){
         modRes('Steel',1);
         messageQueue(loc('steel_sample'),'info',false,['progress']);
     }
-}
-
-function setWeather(){
-    // Moon Phase
-    switch(global.city.calendar.moon){
-        case 0:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-1')
-                : $('#moon').removeClass('wi-moon-waning-crescent-6');
-            $('#moon').addClass('wi-moon-new');
-            break;
-        case 1:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-2')
-                : $('#moon').removeClass('wi-moon-new');
-            $('#moon').addClass('wi-moon-waxing-crescent-1');
-            break;
-        case 2:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-3')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-1');
-            $('#moon').addClass('wi-moon-waxing-crescent-2');
-            break;
-        case 3:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-4')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-2');
-            $('#moon').addClass('wi-moon-waxing-crescent-3');
-            break;
-        case 4:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-5')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-3');
-            $('#moon').addClass('wi-moon-waxing-crescent-4');
-            break;
-        case 5:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-6')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-4');
-            $('#moon').addClass('wi-moon-waxing-crescent-5');
-            break;
-        case 6:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-first-quarter')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-5');
-            $('#moon').addClass('wi-moon-waxing-crescent-6');
-            break;
-        case 7:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-1')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-6');
-            $('#moon').addClass('wi-moon-first-quarter');
-            break;
-        case 8:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-2')
-                : $('#moon').removeClass('wi-moon-first-quarter');
-            $('#moon').addClass('wi-moon-waxing-gibbous-1');
-            break;
-        case 9:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-3')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-1');
-            $('#moon').addClass('wi-moon-waxing-gibbous-2');
-            break;
-        case 10:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-4')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-2');
-            $('#moon').addClass('wi-moon-waxing-gibbous-3');
-            break;
-        case 11:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-5')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-3');
-            $('#moon').addClass('wi-moon-waxing-gibbous-4');
-            break;
-        case 12:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-6')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-4');
-            $('#moon').addClass('wi-moon-waxing-gibbous-5');
-            break;
-        case 13:
-            clearElement($('#moon'));
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-full')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-5');
-            $('#moon').addClass('wi-moon-waxing-gibbous-6');
-            break;
-        case 14:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-1')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-6');
-            let egg = easterEgg(2);
-            if (egg.length > 0){
-                $('#moon').append(egg);
-            }
-            else {
-                $('#moon').addClass('wi-moon-full');
-            }
-            break;
-        case 15:
-            clearElement($('#moon'));
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-2')
-                : $('#moon').removeClass('wi-moon-full');
-            $('#moon').addClass('wi-moon-waning-gibbous-1');
-            break;
-        case 16:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-3')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-1');
-            $('#moon').addClass('wi-moon-waning-gibbous-2');
-            break;
-        case 17:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-4')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-2');
-            $('#moon').addClass('wi-moon-waning-gibbous-3');
-            break;
-        case 18:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-5')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-3');
-            $('#moon').addClass('wi-moon-waning-gibbous-4');
-            break;
-        case 19:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-6')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-4');
-            $('#moon').addClass('wi-moon-waning-gibbous-5');
-            break;
-        case 20:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-third-quarter')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-5');
-            $('#moon').addClass('wi-moon-waning-gibbous-6');
-            break;
-        case 21:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-1')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-6');
-            $('#moon').addClass('wi-moon-third-quarter');
-            break;
-        case 22:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-2')
-                : $('#moon').removeClass('wi-moon-third-quarter');
-            $('#moon').addClass('wi-moon-waning-crescent-1');
-            break;
-        case 23:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-3')
-                : $('#moon').removeClass('wi-moon-waning-crescent-1');
-            $('#moon').addClass('wi-moon-waning-crescent-2');
-            break;
-        case 24:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-4')
-                : $('#moon').removeClass('wi-moon-waning-crescent-2');
-            $('#moon').addClass('wi-moon-waning-crescent-3');
-            break;
-        case 25:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-5')
-                : $('#moon').removeClass('wi-moon-waning-crescent-3');
-            $('#moon').addClass('wi-moon-waning-crescent-4');
-            break;
-        case 26:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-6')
-                : $('#moon').removeClass('wi-moon-waning-crescent-4');
-            $('#moon').addClass('wi-moon-waning-crescent-5');
-            break;
-        case 27:
-            global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-new')
-                : $('#moon').removeClass('wi-moon-waning-crescent-5');
-            $('#moon').addClass('wi-moon-waning-crescent-6');
-            break;
-    }
-
-    // Temp
-    $('#temp').removeClass('wi-thermometer');
-    $('#temp').removeClass('wi-thermometer-exterior');
-    if (global.city.calendar.temp === 0){
-        $('#temp').addClass('wi-thermometer-exterior');
-    }
-    else if (global.city.calendar.temp === 2){
-        $('#temp').addClass('wi-thermometer');
-    }
-
-    // Sky
-    $('#weather').removeClass('wi-day-sunny');
-    $('#weather').removeClass('wi-day-windy');
-    $('#weather').removeClass('wi-cloud');
-    $('#weather').removeClass('wi-cloudy-gusts');
-    $('#weather').removeClass('wi-rain');
-    $('#weather').removeClass('wi-storm-showers');
-    $('#weather').removeClass('wi-snow');
-    $('#weather').removeClass('wi-snow-wind');
-
-    let weather;
-    if (global.city.calendar.weather === 0){
-        if (global.city.calendar.temp === 0){
-            weather = global.city.calendar.wind === 0 ? 'wi-snow' : 'wi-snow-wind';
-        }
-        else {
-            weather = global.city.calendar.wind === 0 ? 'wi-rain' : 'wi-storm-showers';
-        }
-    }
-    else if (global.city.calendar.weather === 1){
-        weather = global.city.calendar.wind === 0 ? 'wi-cloud' : 'wi-cloudy-gusts';
-    }
-    else if (global.city.calendar.weather === 2){
-        weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
-    }
-    $('#weather').addClass(weather);
 }
 
 function resourceAlt(){

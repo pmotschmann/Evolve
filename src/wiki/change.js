@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.6`,
+        date: `4/18/2023`,
+        changes: [
+            `Added Astrological signs.`,
+        ]
+    },
+    {
         version: `1.3.5`,
         revision: `c`,
         date: `4/16/2023`,

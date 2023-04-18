@@ -9,6 +9,7 @@ import { gridDefs } from './industry.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
 import { universeLevel, universeAffix, alevel } from './achieve.js';
+import { astrologySign, astroVal } from './seasons.js';
 
 var popperRef = false;
 export function popover(id,content,opts){
@@ -1093,6 +1094,10 @@ export function timeFormat(time){
 export function powerModifier(energy){
     if (global.race.universe === 'antimatter'){
         energy *= darkEffect('antimatter');
+        energy = +energy.toFixed(2);
+    }
+    if (astrologySign() === 'leo'){
+        energy *= 1 + (astroVal('leo')[0] / 100);
         energy = +energy.toFixed(2);
     }
     return energy;

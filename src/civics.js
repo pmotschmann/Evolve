@@ -6,6 +6,7 @@ import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
+import { astrologySign, astroVal } from './seasons.js';
 import { warhead } from './resets.js';
 
 // Sets up government in civics tab
@@ -680,6 +681,9 @@ function spyCost(i){
     }
     if (global.race['infiltrator']){
         base /= 3;
+    }
+    if (astrologySign() === 'scorpio'){
+        base *= 1 - (astroVal('scorpio')[0] / 100);
     }
     return Math.round(base ** (global.civic.foreign[`gov${i}`].spy + 1)) + 500;
 }
@@ -2002,6 +2006,9 @@ export function armyRating(val,type,wound){
         }
         if (global.race['banana'] && type === 'hellArmy'){
             army *= 0.8;
+        }
+        if (astrologySign() === 'aries'){
+            army *= 1 + (astroVal('aries')[0] / 100);
         }
         let tacVal = govActive('tactician',0);
         if (tacVal){
