@@ -7870,7 +7870,7 @@
   "wiki_mechanics_astro_para12": "代表%1的%0，使贸易路线进口货物数量 +%2%。",
   "wiki_mechanics_astro_para13": "代表%1的%0，使游客中心收入 +%2%。",
   "wiki_mechanics_astro_para14": "代表%1的%0，使发生随机事件的概率提升。",
-  "wiki_mechanics_astro_para15": "当前日期所属星座：%0",
+  "wiki_mechanics_astro_para15": "当前日期所代表的星座：%0",
   "wiki_mechanics_bank_vault": "银行保险库",
   "wiki_mechanics_bank_vault_para1": "%0、%1和%2的%3储量上限都受到%4的影响，另外在%6剧情模式中%5也受到影响。",
   "wiki_mechanics_bank_vault_para2": "因此，只要是可以影响%1的%0储量上限的游戏内容，都会对上面的所有建筑造成影响。可能造成影响的游戏内容包括%2研究，%3总督，%4，%5等级，%6，%7挑战模式等。",
