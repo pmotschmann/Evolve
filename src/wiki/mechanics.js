@@ -193,7 +193,7 @@ export function mechanicsPage(content){
                 11: [loc('sign_sagittarius'),loc('sign_sagittarius_symbol'),astroVal('sagittarius')[0]],
                 12: [loc('sign_capricorn'),loc('sign_capricorn_symbol'),astroVal('capricorn')[0]],
                 13: [loc('sign_aquarius'),loc('sign_aquarius_symbol'),astroVal('aquarius')[0]],
-                14: [loc('sign_pisces'),loc('sign_pisces_symbol'),astroVal('pisces')[0]],
+                14: [loc('sign_pisces'),loc('sign_pisces_symbol')],
                 15: [loc(`sign_${astrologySign()}`)]
             },
             data_color: {

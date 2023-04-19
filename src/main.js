@@ -1213,6 +1213,9 @@ function fastLoop(){
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars()[1] / 100);
                         }
+                        if (astroSign === 'capricorn'){
+                            rate *= 1 + (astroVal('capricorn')[0] / 100);
+                        }
                         if (global.genes['trader']){
                             let mastery = calc_mastery();
                             rate *= 1 + (mastery / 100);
@@ -1315,6 +1318,9 @@ function fastLoop(){
                 }
                 if (global.race['merchant']){
                     imprt_vol *= 1 + (traits.merchant.vars()[1] / 100);
+                }
+                if (astroSign === 'capricorn'){
+                    imprt_vol *= 1 + (astroVal('capricorn')[0] / 100);
                 }
                 if (global.genes['trader']){
                     let mastery = calc_mastery();
@@ -6565,7 +6571,13 @@ function fastLoop(){
             if (global.civic.govern.type === 'socialist'){
                 tourism *= 1 - (govEffect.socialist()[3] / 100);
             }
+            if (astroSign === 'aquarius'){
+                tourism *= 1 + (astroVal('aquarius')[0] / 100);
+            }
             money_bd[loc('tech_tourism')] = Math.round(tourism) + 'v';
+            if (astroSign === 'aquarius'){
+                money_bd[`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
+            }
             modRes('Money', +(tourism * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += tourism* global_multiplier * hunger;
         }
@@ -6587,7 +6599,13 @@ function fastLoop(){
             else if (global.civic.govern.type === 'socialist'){
                 revenue *= 1 - (govEffect.socialist()[3] / 100);
             }
+            if (astroSign === 'aquarius'){
+                revenue *= 1 + (astroVal('aquarius')[0] / 100);
+            }
             money_bd[loc('tech_cultural_center')] = Math.round(revenue) + 'v';
+            if (astroSign === 'aquarius'){
+                revenue[`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
+            }
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += revenue * global_multiplier * hunger;
         }
@@ -10458,6 +10476,9 @@ function longLoop(){
                 global.event.l = event;
             }
             global.event.t = 999;
+            if (astroSign === 'pisces'){
+                global.event.t -= astroVal('pisces')[0];
+            }
         }
         else {
             global.event.t--;
@@ -10473,6 +10494,9 @@ function longLoop(){
                     global.m_event.l = event;
                 }
                 global.m_event.t = 850;
+                if (astroSign === 'pisces'){
+                    global.m_event.t -= astroVal('pisces')[1];
+                }
             }
             else {
                 global.m_event.t--;

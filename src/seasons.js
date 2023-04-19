@@ -313,12 +313,12 @@ export function astroVal(sign){
             return [12,1];
         case 'sagittarius': // Entertainer Morale
             return [5];
-        case 'capricorn':
-            return [0];
-        case 'aquarius':
-            return [0];
-        case 'pisces':
-            return [0];
+        case 'capricorn': // Trade gains
+            return [10];
+        case 'aquarius': // Boosts tourism revenue
+            return [20];
+        case 'pisces': // Random Events are more common
+            return [49,25];
     }
 }
 
