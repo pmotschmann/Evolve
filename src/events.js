@@ -47,6 +47,16 @@ export const events = {
             return loc('event_inspiration');
         }
     },
+    motivation: {
+        reqs: {
+            tech: 'primitive',
+        },
+        type: 'major',
+        effect(){
+            global.race['motivated'] = Math.rand(300,600);
+            return loc('event_motivation');
+        }
+    },
     fire: {
         reqs: {
             resource: 'Lumber',

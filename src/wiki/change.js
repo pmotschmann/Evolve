@@ -7,6 +7,7 @@ const changeList = [
         date: `4/18/2023`,
         changes: [
             `Added Astrological signs.`,
+            `Added Motivated Event.`,
         ]
     },
     {

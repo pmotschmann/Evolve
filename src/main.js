@@ -304,6 +304,12 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${swissKnife(true,false)}</span> <span class="has-text-success"> +${cheese}%</span></p>`);
         }
 
+        if (global.race['motivated']){
+            let boost = Math.ceil(global.race['motivated'] ** 0.4);
+            total += boost;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_motivation_bd`)}</span> <span class="has-text-success"> +${boost}%</span></p>`);
+        }
+
         if (global.civic['homeless']){
             let homeless = global.civic.homeless / 2;
             total -= homeless;
@@ -1148,6 +1154,11 @@ function fastLoop(){
 
         global.city.morale.weather = global.race['submerged'] ? 0 : weather_morale;
         morale += global.race['submerged'] ? 0 : weather_morale;
+
+        if (global.race['motivated']){
+            let boost = Math.ceil(global.race['motivated'] ** 0.4);
+            morale += boost;
+        }
 
         let stress = 0;
 
@@ -2745,6 +2756,11 @@ function fastLoop(){
 
         if (global.stats.achieve['joyless']){
             moraleCap += global.stats.achieve['joyless'].l * 2;
+        }
+
+        if (global.race['motivated']){
+            let boost = Math.ceil(global.race['motivated'] ** 0.4);
+            moraleCap += Math.round(boost / 2);
         }
 
         let m_min = 50;
@@ -8409,7 +8425,7 @@ function midLoop(){
             global.tauceti.overseer.prod = prod;
         }
 
-        ['inspired','distracted','stimulated'].forEach(function(t){
+        ['inspired','distracted','stimulated','motivated'].forEach(function(t){
             if (global.race[t]){
                 global.race[t]--;
                 if (global.race[t] <= 0){

@@ -1166,7 +1166,7 @@ export const actions = {
             id: 'city-stone',
             title(){
                 if (global.tech['conjuring'] && global.tech['conjuring'] >= 2){
-                    return global.race['sappy'] ? loc('city_amber_conjour') : loc('city_stone_conjour');
+                    return loc(`city_conjour`,[global.resource.Stone.name]);
                 }
                 else {
                     return loc(`city_gather`,[global.resource.Stone.name]);
