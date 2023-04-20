@@ -824,6 +824,7 @@ export function index(){
         <span class="calendar">
             <span class="infoTimer" id="infoTimer"></span>
             <span v-show="city.calendar.day">
+                <b-tooltip :label="sign()" :aria-label="sign()" position="is-bottom" size="is-small" class="astro" multilined animated><i id="astroSign" v-html="getAstroSign()"></i></b-tooltip>
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
                 <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>

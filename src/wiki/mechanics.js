@@ -7,6 +7,7 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
+import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
@@ -175,6 +176,43 @@ export function mechanicsPage(content){
         });
         blocking.append(`<div class="doublePane"><img src="lib/blocking-resource.png"><img src="lib/blocking-stack.png"></div>`);
         sideMenu('add',`mechanics-gameplay`,`blocking`,loc('wiki_mechanics_blocking'));
+    }
+
+    { // Astrology Signs
+        infoBoxBuilder(mainContent,{ name: 'astro', template: 'mechanics', label: loc('wiki_mechanics_astro'), paragraphs: 15, break: [3,4,5,6,7,8,9,10,11,12,13,14,15], h_level: 2,
+            para_data: {
+                2: [12],
+                3: [loc('sign_aries'),loc('sign_aries_symbol'),astroVal('aries')[0]+'%'],
+                4: [loc('sign_taurus'),loc('sign_taurus_symbol'),astroVal('taurus')[0]+'%'],
+                5: [loc('sign_gemini'),loc('sign_gemini_symbol'),astroVal('gemini')[0]+'%'],
+                6: [loc('sign_cancer'),loc('sign_cancer_symbol'),astroVal('cancer')[0]],
+                7: [loc('sign_leo'),loc('sign_leo_symbol'),astroVal('leo')[0]+'%'],
+                8: [loc('sign_virgo'),loc('sign_virgo_symbol'),astroVal('virgo')[0]+'%'],
+                9: [loc('sign_libra'),loc('sign_libra_symbol'),astroVal('libra')[0]+'%'],
+                10: [loc('sign_scorpio'),loc('sign_scorpio_symbol'),astroVal('scorpio')[0]+'%'],
+                11: [loc('sign_sagittarius'),loc('sign_sagittarius_symbol'),astroVal('sagittarius')[0]+'%'],
+                12: [loc('sign_capricorn'),loc('sign_capricorn_symbol'),astroVal('capricorn')[0]+'%'],
+                13: [loc('sign_aquarius'),loc('sign_aquarius_symbol'),astroVal('aquarius')[0]+'%'],
+                14: [loc('sign_pisces'),loc('sign_pisces_symbol')],
+                15: [loc(`sign_${astrologySign()}`)]
+            },
+            data_color: {
+                3: ['warning','caution','warning'],
+                4: ['warning','caution','warning'],
+                5: ['warning','caution','warning'],
+                6: ['warning','caution','warning'],
+                7: ['warning','caution','warning'],
+                8: ['warning','caution','warning'],
+                9: ['warning','caution','warning'],
+                10: ['warning','caution','warning'],
+                11: ['warning','caution','warning'],
+                12: ['warning','caution','warning'],
+                13: ['warning','caution','warning'],
+                14: ['warning','caution'],
+                15: ['caution'],
+            }
+        });
+        sideMenu('add',`mechanics-gameplay`,`astro`,loc('wiki_mechanics_astro'));
     }
 
     { // Bank Vault

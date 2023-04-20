@@ -83,6 +83,19 @@ function mainEventsPage(content){
         sideMenu('add',`major-events`,`inspiration`,loc('wiki_events_inspiration'));
     }
 
+    {   // Motivation
+        infoBoxBuilder(mainContent,{ name: 'motivation', template: 'events', label: loc('wiki_events_motivation'), paragraphs: 3, h_level: 2,
+            para_data: {
+                1: [300,600],
+                2: ['10%','13%'],
+            }, 
+            examples: [
+                loc(`event_motivation`)
+            ]
+        });
+        sideMenu('add',`major-events`,`motivation`,loc('wiki_events_motivation'));
+    }
+
     {   // Fire
         let section = infoBoxBuilder(mainContent,{ name: 'fire', template: 'events', label: loc('wiki_events_fire'), paragraphs: 1, h_level: 2,
             para_data: {
