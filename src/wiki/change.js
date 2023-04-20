@@ -8,6 +8,7 @@ const changeList = [
         changes: [
             `Added Astrological signs.`,
             `Added Motivated Event.`,
+            `Operating Bases now function as Hospitals in Orbit Decay scenario.`,
         ]
     },
     {

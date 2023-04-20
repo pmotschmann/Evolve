@@ -93,7 +93,7 @@ function mainEventsPage(content){
                 loc(`event_motivation`)
             ]
         });
-        sideMenu('add',`major-events`,`inspiration`,loc('wiki_events_motivation'));
+        sideMenu('add',`major-events`,`motivation`,loc('wiki_events_motivation'));
     }
 
     {   // Fire

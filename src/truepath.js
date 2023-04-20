@@ -743,6 +743,10 @@ const outerTruth = {
                 let desc = `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div>`;
                 desc += `<div>${loc('galaxy_defense_platform_effect',[50])}</div>`;
                 desc += loc('plus_max_resource',[jobScale(4),loc('civics_garrison_soldiers')]);
+                if (global.race['orbit_decayed']){
+                    let healing = global.tech['medic'] * 5;
+                    desc += `<div>${loc('city_hospital_effect',[healing])}</div>`;
+                }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             support(){ return -1; },

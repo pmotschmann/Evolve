@@ -9615,7 +9615,10 @@ function longLoop(){
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
-            if (global.race['artifical'] && global.city['boot_camp']){
+            if (global.race['orbit_decayed'] && global.race['truepath']){
+                hc = Math.min(support_on['operating_base'],p_on['operating_base']);
+            }
+            else if (global.race['artifical'] && global.city['boot_camp']){
                 hc = global.city.boot_camp.count;
             }
             if (global.race['rejuvenated'] && global.stats.achieve['lamentis']){
@@ -10159,6 +10162,9 @@ function longLoop(){
             }
             else if (global.tech.focus_cure >= 4 && global.race.hasOwnProperty('vax')){
                 let med = global.race['artifical'] ? global.city.boot_camp.count : global.city.hospital.count;
+                if (global.race['orbit_decayed']){
+                    med = Math.min(support_on['operating_base'],p_on['operating_base']);
+                }
 
                 if (global.tech.focus_cure === 4 && global.race.vax < 25){
                     global.race.vax += Math.rand(0, med * 2) / 150;
