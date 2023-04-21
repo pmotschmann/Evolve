@@ -4661,6 +4661,9 @@ export function cleanAddTrait(trait){
             }
             purgeLumber();
             break;
+        case 'forge':
+            defineIndustry();
+            break;
         case 'soul_eater':
             setJobName('lumberjack');
         case 'detritivore':
@@ -4896,6 +4899,9 @@ export function cleanRemoveTrait(trait,rank){
             if ((global.tech['axe'] || global.tech['reclaimer']) && !global.race['orbit_decayed']){
                 global.civic.lumberjack.display = true;
             }
+            break;
+        case 'forge':
+            defineIndustry();
             break;
         case 'soul_eater':
             setJobName('lumberjack');

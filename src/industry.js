@@ -160,11 +160,11 @@ function loadSmelter(parent,bind){
         }
     }
 
-    if (!global.race['forge']){
-        let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
-        let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
-        parent.append(fuelTypes);
+    let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+    let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
+    parent.append(fuelTypes);
 
+    if (!global.race['forge']){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
             let f_label = global.race['evil'] ? (global.race['soul_eater'] && global.race.species !== 'wendigo' && !global.race['artifical'] ? global.resource.Food.name : global.resource.Furs.name) : global.resource.Lumber.name;
             let wood = $(`<span :aria-label="buildLabel('wood') + ariaCount('Wood')" class="current wood">${f_label} {{ s.Wood }}</span>`);
@@ -183,59 +183,59 @@ function loadSmelter(parent,bind){
             fuelTypes.append(coal);
             fuelTypes.append(addCoal);
         }
+    }
 
-        if (global.resource.Oil.display){
-            let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
-            let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
-            let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subOil);
-            fuelTypes.append(oil);
-            fuelTypes.append(addOil);
-        }
+    if (global.race['forge']){
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil infoOnly">${loc('trait_forge_name')} {{ s.Oil }}</span>`);
+        fuelTypes.append(oil);
+    }
+    else if (global.resource.Oil.display){
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
+        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subOil);
+        fuelTypes.append(oil);
+        fuelTypes.append(addOil);
+    }
 
-        if (global.tech['star_forge'] && global.tech.star_forge >= 2){
-            let star = $(`<span :aria-label="buildLabel('star') + ariaCount('Star')" class="current star">${loc('star')} {{ s.Star }} / {{ s.StarCap }}</span>`);
-            let subStar = $(`<span role="button" class="sub" @click="subFuel('Star')" aria-label="Remove star fuel"><span>&laquo;</span></span>`);
-            let addStar = $(`<span role="button" class="add" @click="addFuel('Star')" aria-label="Add star fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subStar);
-            fuelTypes.append(star);
-            fuelTypes.append(addStar);
-        }
+    if (global.tech['star_forge'] && global.tech.star_forge >= 2){
+        let star = $(`<span :aria-label="buildLabel('star') + ariaCount('Star')" class="current star infoOnly">${loc('star')} {{ s.Star }}</span>`);
+        fuelTypes.append(star);
+    }
 
-        if (global.tech['smelting'] && global.tech.smelting >= 8){
-            let inferno = $(`<span :aria-label="buildLabel('inferno') + ariaCount('Inferno')" class="current inferno">${loc('modal_smelter_inferno')} {{ s.Inferno }}</span>`);
-            let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
-            let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subInferno);
-            fuelTypes.append(inferno);
-            fuelTypes.append(addInferno);
-        }
+    if (global.tech['smelting'] && global.tech.smelting >= 8){
+        let inferno = $(`<span :aria-label="buildLabel('inferno') + ariaCount('Inferno')" class="current inferno">${loc('modal_smelter_inferno')} {{ s.Inferno }}</span>`);
+        let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
+        let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subInferno);
+        fuelTypes.append(inferno);
+        fuelTypes.append(addInferno);
+    }
 
-        let available = $('<div class="avail"></div>');
-        parent.append(available);
+    let available = $('<div class="avail"></div>');
+    parent.append(available);
 
-        if (!bind && 1 === 2){
-            if (!global.race['kindling_kindred'] || global.race['evil']){
-                if (global.race['evil']){
-                    if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
-                        available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
-                    }
-                    else {
-                        available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
-                    }
+    if (!bind && 1 === 2){
+        if (!global.race['kindling_kindred'] || global.race['evil']){
+            if (global.race['evil']){
+                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+                    available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
                 }
                 else {
-                    available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+                    available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
                 }
             }
-
-            if (global.resource.Coal.display){
-                available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+            else {
+                available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
             }
+        }
 
-            if (global.resource.Oil.display){
-                available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
-            }
+        if (global.resource.Coal.display){
+            available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+        }
+
+        if (global.resource.Oil.display){
+            available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
         }
     }
 
@@ -310,10 +310,6 @@ function loadSmelter(parent,bind){
                             global.city.smelter.Oil--;
                             global.city.smelter[type]++;
                         }
-                        else if (type !== 'Star' && global.city.smelter.Star > 0){
-                            global.city.smelter.Star--;
-                            global.city.smelter[type]++;
-                        }
                         else if (type !== 'Inferno' && global.city.smelter.Inferno > 0){
                             global.city.smelter.Inferno--;
                             global.city.smelter[type]++;
@@ -329,6 +325,9 @@ function loadSmelter(parent,bind){
                 for (let i=0; i<keyMult; i++){
                     if (global.city.smelter[type] > 0){
                         global.city.smelter[type]--;
+                        if (global.race['forge'] && type === 'Inferno'){
+                            global.city.smelter.Oil++;
+                        }
                         let total = global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno;
                         let used = global.city.smelter.Iron + global.city.smelter.Steel + global.city.smelter.Iridium;
                         if (used > total){
@@ -445,7 +444,7 @@ function loadSmelter(parent,bind){
                     }
                 }
             case 'oil':
-                return loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
+                return global.race['forge'] ? loc('modal_build_forge') : loc('modal_build_oil',['0.35',loc('resource_Oil_name')]);
             case 'star':
                 return global.tech['irid_smelting'] ? loc('modal_build_star2',[loc('resource_Titanium_name'),loc('resource_Iridium_name')]) : loc('modal_build_star',[loc('resource_Titanium_name')]);
             case 'inferno':
@@ -491,17 +490,15 @@ function loadSmelter(parent,bind){
         }
     }
 
-    if (!global.race['forge']){
-        let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
-        ['wood','coal','oil','star','inferno'].forEach(function(fuel){
-            popover(`${id}${fuel}`,function(){
-                return tooltip(fuel);
-            }, {
-                elm: $(`#${id} > .${fuel}`),
-                attach: '#main',
-            });
+    let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+    ['wood','coal','oil','star','inferno'].forEach(function(fuel){
+        popover(`${id}${fuel}`,function(){
+            return tooltip(fuel);
+        }, {
+            elm: $(`#${id} > .${fuel}`),
+            attach: '#main',
         });
-    }
+    });
 
     if ((global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']) || (global.resource.Iridium.display && irid_smelt)){
         let id = parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`;

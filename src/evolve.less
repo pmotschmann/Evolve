@@ -1183,6 +1183,9 @@ Misc ---------> Main template
             border-top: @primary-border solid .0625rem;
             border-bottom: @primary-border solid .0625rem;
         }
+        .current.infoOnly {
+            border: @primary-border solid .0625rem;
+        }
 
         // UI Bars
         .topBar,
@@ -2011,6 +2014,9 @@ html.gruvboxDark {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
     }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
+    }
 
     .popper {
         .grad-from-left {
@@ -2094,6 +2100,9 @@ html.dracula {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
     }
 
     .popper {
@@ -2292,6 +2301,10 @@ a {
     line-height: 1rem;
     padding: 0 .125rem;
     cursor: default;
+}
+.current.infoOnly {
+    border-radius: .375rem;
+    padding: 0 .5rem;
 }
 
 .factory .current svg {

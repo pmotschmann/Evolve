@@ -367,7 +367,18 @@ export function astrologySign(){
 
 function astrologyDescription(){
     let sign = astrologySign();
-    return loc(`sign_description`,[loc(`sign_${sign}`),loc(`sign_${sign}_desc`)]);
+    let desc = `<div>${loc(`sign_description`,[loc(`sign_${sign}`),loc(`sign_${sign}_desc`)])}</div>`;
+    desc += `<div>${astroEffect(sign)}</div>`;
+    return desc;
+}
+
+function astroEffect(sign){
+    if (sign === 'pisces' || sign === 'cancer'){
+        return loc(`sign_${sign}_effect`);
+    }
+    else {
+        return loc(`sign_${sign}_effect`,[astroVal(sign)[0]]);
+    }
 }
 
 function astrologySymbol(){

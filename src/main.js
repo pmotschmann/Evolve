@@ -442,6 +442,14 @@ vBind({
     }
 });
 
+['astroSign'].forEach(function(topId){
+    popover(`${topId}`,function(){
+        return seasonDesc('sign');
+    }, {
+        elm: $(`#${topId}`)
+    });
+});
+
 popover('topBarPlanet',
     function(obj){
         if (global.race.species === 'protoplasm'){
@@ -4159,7 +4167,7 @@ function fastLoop(){
         let titanium_bd = {};
         if (global.city['smelter'] && (global.city.smelter.count > 0 || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'])){
             let capacity = global.city.smelter.count;
-            if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech['star_forge'] >= 2){
+            if (p_on['stellar_forge'] && global.tech['star_forge'] && global.tech.star_forge >= 2){
                 capacity += p_on['stellar_forge'] * 2;
             }
             if (p_on['hell_forge']){
@@ -4176,10 +4184,18 @@ function fastLoop(){
             }
             global.city.smelter.cap = capacity;
 
+            if (global.tech['star_forge'] >= 2){
+                global.city.smelter.StarCap = p_on['stellar_forge'] * 2;
+                global.city.smelter.Star = global.city.smelter.StarCap;
+            }
+            else {
+                global.city.smelter.StarCap = 0;
+            }
+
             if (global.race['forge']){
                 global.city.smelter.Wood = 0;
                 global.city.smelter.Coal = 0;
-                global.city.smelter.Oil = global.city.smelter.cap;
+                global.city.smelter.Oil = global.city.smelter.cap - global.city.smelter.Star - global.city.smelter.Inferno;
             }
 
             if ((global.race['kindling_kindred'] || global.race['smoldering']) && !global.race['evil']){
@@ -4219,12 +4235,6 @@ function fastLoop(){
                 }
             }
 
-            if (global.tech['star_forge'] >= 2){
-                global.city.smelter.StarCap = p_on['stellar_forge'] * 2;
-            }
-            else {
-                global.city.smelter.StarCap = 0;
-            }
             if (global.city.smelter.Star > global.city.smelter.StarCap){
                 let overflow = global.city.smelter.Star - global.city.smelter.StarCap;
                 global.city.smelter.Star = global.city.smelter.StarCap;
@@ -4237,9 +4247,9 @@ function fastLoop(){
             iron_smelter = global.city.smelter.Iron;
             let steel_smelter = global.city.smelter.Steel;
             iridium_smelter = global.city.smelter.Iridium;
-            let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil + global.city.smelter.Star + global.city.smelter.Inferno : global.city.smelter.Oil;
-            star_forge = global.race['forge'] ? 0 : global.city.smelter.Star;
-            let inferno_bonus = global.race['forge'] ? 0 : global.city.smelter.Inferno;
+            let oil_bonus = global.race['forge'] ? global.city.smelter.Wood + global.city.smelter.Coal + global.city.smelter.Oil : global.city.smelter.Oil;
+            star_forge = global.city.smelter.Star;
+            let inferno_bonus = global.city.smelter.Inferno;
 
             if (global.race['steelen']) {
                 iron_smelter += steel_smelter;
