@@ -11,6 +11,7 @@ const changeList = [
             `Operating Bases now function as Hospitals in Orbit Decay scenario.`,
             `Stellar Forge is now locked to using Star Fuel for smelting.`,
             `Species with the Forge trait can now use Inferno Fuel and Star Fuel.`,
+            `Reduced Wireless Signal needed to Contact womlings in Lone Survivor.`,
         ]
     },
     {

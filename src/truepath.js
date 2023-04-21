@@ -2420,7 +2420,7 @@ const tauCetiModules = {
             queue_complete(){ return global.tech.tau_red >= 5 ? 0 : 1; },
             cost: {
                 Money(){ return 600000000; },
-                Food(){ return 2500000; }
+                Food(){ return global.race['lone_survivor'] && global.race['artifical'] ? 62000 : 2500000; }
             },
             effect(){ return loc('tau_red_contact_effect'); },
             action(){
