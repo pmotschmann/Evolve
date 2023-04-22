@@ -9306,7 +9306,7 @@ function midLoop(){
             let triggerd = false;
             if (arpa){
                 let label = global.queue.queue[idx].label;
-                if (buildArpa(global.queue.queue[idx].type,100,true)){
+                if (buildArpa(global.queue.queue[idx].type,100,true,true)){
                     messageQueue(loc('build_success',[label]),'success',false,['queue','building_queue']);
                     if (global.queue.queue[idx].q > 1){
                         global.queue.queue[idx].q--;

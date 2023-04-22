@@ -2378,7 +2378,7 @@ function addProject(parent,project){
     }
 }
 
-export function buildArpa(pro,num,update){
+export function buildArpa(pro,num,update,queue){
     let completed = false;
     if (num === 100){
         num = 100 - global.arpa[pro].complete;
@@ -2407,7 +2407,9 @@ export function buildArpa(pro,num,update){
                     [1,10,25,100].forEach(function(amount){
                         clearPopper(`popArpalaunch_facility${amount}`);
                     });
-                    removeFromQueue(['arpalaunch_facility']);
+                    if (!queue){
+                        removeFromQueue(['arpalaunch_facility']);
+                    }
                     physics();
                     renderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);

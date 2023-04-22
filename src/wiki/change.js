@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.6`,
-        date: `4/21/2023`,
+        date: `4/22/2023`,
         changes: [
             `Added Astrological signs.`,
             `Added Motivated Event.`,
