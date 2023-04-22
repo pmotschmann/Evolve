@@ -29,7 +29,7 @@ export function hellPage(content){
     });
     let soul_extra = $(`<div></div>`);
     soul.append(soul_extra);
-    soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_hell_sim2`)}</a>`,'Zarakon'])}</div>`);
+    //soul_extra.append(`<div>${loc('wiki_hell_sim',[`<a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_hell_sim2`)}</a>`,'Zarakon'])}</div>`);
     sideMenu('add',`hell-gameplay`,'soul_gem',loc('wiki_hell_soul_gem'));
 
     infoBoxBuilder(mainContent,{ name: 'infernite', template: 'hell', paragraphs: 4 });
