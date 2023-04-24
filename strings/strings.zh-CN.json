@@ -6377,7 +6377,7 @@
   "hell_report_log_obj_counter": "%1号%0",
   "hell_report_log_patrol": "巡逻队",
   "hell_report_log_patrol_droid": "%0配备了战斗机器人，",
-  "hell_report_log_patrol_ambush": "%0杀死了%1只恶魔，但遭到攻击。",
+  "hell_report_log_patrol_ambush": "%0在堡垒周围发现并杀死了%1只恶魔，但遭到攻击。",
   "hell_report_log_patrol_wounded": "1名士兵受伤。",
   "hell_report_log_patrol_wounded_plural": "%0名士兵受伤。",
   "hell_report_log_patrol_killed": "1名士兵阵亡。",
