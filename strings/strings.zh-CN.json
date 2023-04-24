@@ -1035,7 +1035,7 @@
   "city_boot_camp_effect": "新兵训练速度 +%0%",
   "city_boot_camp_effect2": "间谍的培训时间 -%0 秒",
   "city_boot_camp_art": "战争装配工厂",
-  "city_boot_camp_art_desc": "装配 %0 级士兵",
+  "city_boot_camp_art_desc": "装配%0级士兵",
   "city_boot_camp_art_effect": "士兵修理速度 +%0%",
   "city_basic_housing_title": "小木屋",
   "city_basic_housing_orc_title": "棚屋",
