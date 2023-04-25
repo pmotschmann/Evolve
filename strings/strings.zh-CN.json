@@ -499,7 +499,7 @@
   "job_quarry_worker": "石工",
   "job_quarry_worker_desc1": "石工从挖掘场采集%1，每位石工每秒生产 %0 %1。",
   "job_quarry_worker_desc2": "石工从挖掘场采集%1和%2，每位石工每秒生产 %0 %1。",
-  "job_quarry_worker_smoldering": "石工现在也可以承担采集 %0 的任务。",
+  "job_quarry_worker_smoldering": "石工现在也可以承担采集%0的任务。",
   "job_crystal_miner": "水晶矿工",
   "job_crystal_miner_desc": "水晶矿工细致耐心地从地面提炼水晶，用于制造魔法物品，每位水晶矿工每秒生产 %0 %1。",
   "job_scavenger": "拾荒者",
