@@ -1296,6 +1296,7 @@ function fastLoop(){
 
                     if (trasmute >= time_multiplier){
                         let rate = global.resource[res].basic && global.tech.alchemy >= 2 ? tradeRatio[res] * 8 : tradeRatio[res] * 2;
+                        if (global.race['witch_hunter']){ rate *= 3; }
                         modRes(res,trasmute * time_multiplier * rate);
                         modRes('Mana', -(trasmute * time_multiplier));
                         modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
