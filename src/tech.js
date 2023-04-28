@@ -1472,7 +1472,7 @@ const techs = {
         cost: {
             Knowledge(){ return 4500; }
         },
-        effect: loc('tech_bayer_process_effect'),
+        effect(){ return global.race['sappy'] ? loc('tech_bayer_process_effect_alt') : loc('tech_bayer_process_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 global.city['metal_refinery'] = { count: 0, on: 0 };
