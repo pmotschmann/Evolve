@@ -6382,7 +6382,7 @@
   "hell_report_log_revived_plural": "%0名士兵復活。",
   "hell_report_log_patrols_lost": "由於沒有更多士兵，%0支巡邏隊被迫解散。",
   "hell_report_log_siege": "堡壘被惡魔生物佔領了，%0名勘探者和%1名士兵全部陣亡。我們即使寡不敵眾，也殺死了%2隻惡魔。",
-  "hell_report_log_siege_fail": "堡壘遭到惡魔生物圍攻，但我們擊退了它們。我們殺死了%1只惡魔，城牆耐久減少%0%。",
+  "hell_report_log_siege_fail": "堡壘遭到惡魔生物圍攻，但我們擊退了它們。我們殺死了%1隻惡魔，城牆耐久減少%0%。",
   "hell_report_log_demons": "堡壘周圍聚集了%0只惡魔生物。",
   "hell_report_log_surveyors": "1名勘探者死於惡魔生物之手。",
   "hell_report_log_surveyors_plural": "%0名勘探者死於惡魔生物之手。",
