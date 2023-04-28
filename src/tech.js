@@ -10625,7 +10625,7 @@ const techs = {
         cost: {
             Knowledge(){ return 2250000; },
             Quantium(){ return 250000; },
-            Cipher(){ return 40000; }
+            Cipher(){ return 8000; }
         },
         effect: loc('tech_medkit_effect'),
         action(){
@@ -10967,7 +10967,7 @@ const techs = {
         grant: ['outer',4],
         cost: {
             Knowledge(){ return 1800000; },
-            Cipher(){ return 25000; }
+            Cipher(){ return 12500; }
         },
         effect: loc('tech_data_analysis_effect'),
         action(){
@@ -11508,7 +11508,7 @@ const techs = {
         cost: {
             Knowledge(){ return 2250000; },
             Quantium(){ return 1000000; },
-            Cipher(){ return 50000; }
+            Cipher(){ return 25000; }
         },
         effect: loc('tech_warehouse_shelving_effect'),
         action(){
@@ -11530,7 +11530,7 @@ const techs = {
         cost: {
             Knowledge(){ return 2500000; },
             Orichalcum(){ return 100000; },
-            Cipher(){ return 20000; }
+            Cipher(){ return 12000; }
         },
         effect(){ return loc('tech_elerium_extraction_effect'); },
         action(){

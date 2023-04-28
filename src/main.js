@@ -4360,6 +4360,7 @@ function fastLoop(){
                 iridium_smelter *= 1 + (inferno_bonus / 125);
             }
             if (star_forge > 0){
+                iron_smelter *= 1 + (star_forge / 500);
                 iridium_smelter *= 1 + (star_forge / 75);
             }
             if (global.race['pyrophobia']){
@@ -4435,6 +4436,9 @@ function fastLoop(){
                 }
                 if (inferno_bonus > 0){
                     steel_smelter *= 1 + (inferno_bonus / 125);
+                }
+                if (star_forge){
+                    steel_smelter *= 1 + (star_forge / 500);
                 }
                 if (dirtVal){
                     steel_smelter *= 1 + (dirtVal / 100);
