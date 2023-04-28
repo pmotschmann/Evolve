@@ -930,7 +930,7 @@
   "evo_challenge_sludge_conditions": "勝利？沒有辦法勝利。",
   "evo_challenge_orbit_decay": "軌道衰變",
   "evo_challenge_orbit_decay_desc": "月球在衰變的軌道上運行。",
-  "evo_challenge_orbit_decay_impacted": "月球和%0發生撞擊而同歸於盡了。",
+  "evo_challenge_orbit_decay_impacted": "月球和%0相撞，因而同歸於盡了。",
   "evo_challenge_orbit_decay_effect": "月球在衰變的軌道上圍繞你的母星旋轉，將於%0天后發生撞擊。",
   "evo_challenge_orbit_decay_flair": "為什麼月球越來越大？",
   "evo_challenge_orbit_decay_conditions": "請在存活下來的同時，枝繁葉茂。",
