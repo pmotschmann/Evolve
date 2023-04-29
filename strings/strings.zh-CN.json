@@ -622,7 +622,7 @@
   "event_scandal": "丑闻",
   "event_spy": "间谍在%0的行动宣告失败，被抓捕并遭到处决。",
   "event_spy_fail": "间谍在%0的行动宣告失败。",
-  "event_spy_sellout": "间谍在%0的行动宣告失败，被抓捕，为了活命，他出卖了你。",
+  "event_spy_sellout": "间谍在%0的行动宣告失败，被抓捕；为了活命，他出卖了你。",
   "event_shooting_star": "一颗流星从天而降。",
   "event_tumbleweed": "风滚草吹遍了整个城市。",
   "event_flashmob": "一名快闪族表演了一套无懈可击的舞蹈。",
