@@ -4807,7 +4807,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[2])}</div>`;
+                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[jobScale(2)])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
