@@ -8447,7 +8447,7 @@
   "wiki_challenges_scenarios_truepath_para4": "此剧情模式没有特别的目标，它比起正常游戏更加困难。",
   "wiki_challenges_scenarios_truepath_para5": "该游戏模式的主要区别为：",
   "wiki_challenges_scenarios_truepath_genes": "负面基因和弱化基因",
-  "wiki_challenges_scenarios_truepath_genes_para1": "%2和%3取代%0和%1出现。",
+  "wiki_challenges_scenarios_truepath_genes_para1": "%2和%3分别取代%1和%0出现。",
   "wiki_challenges_scenarios_truepath_costs": "基础成本增加",
   "wiki_challenges_scenarios_truepath_costs_para1": "非智械黎明特有的所有建筑、研究、项目的成本增加。",
   "wiki_challenges_scenarios_truepath_costs_para2": "资金成本变为 %0 倍。",
