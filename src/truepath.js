@@ -3975,6 +3975,8 @@ export function shipPower(ship, wiki){
             break;
     }
 
+    watts = Math.round(powerModifier(watts));
+
     switch (ship.weapon){
         case 'railgun':
             watts -= Math.round(10 * use_inflate);
