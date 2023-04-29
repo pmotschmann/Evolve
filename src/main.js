@@ -6951,6 +6951,7 @@ function midLoop(){
             Money: 1000,
             Slave: 0,
             Mana: 0,
+            Sus: 100,
             Knowledge: global.stats.achieve['extinct_junker'] && global.stats.achieve['extinct_junker'].l >= 1 ? 1000 : 100,
             Zen: 0,
             Food: 1000,
@@ -7056,6 +7057,7 @@ function midLoop(){
         var bd_Citizen = {};
         var bd_Slave = {};
         var bd_Mana = { [loc('base')]: caps['Mana']+'v' };
+        var bd_Sus = { [loc('base')]: caps['Mana']+'v' };
         var bd_Knowledge = { [loc('base')]: caps['Knowledge']+'v' };
         var bd_Zen = {};
         var bd_Crates = {};
@@ -7101,6 +7103,7 @@ function midLoop(){
             [global.race.species]: bd_Citizen,
             Slave: bd_Slave,
             Mana: bd_Mana,
+            Sus: bd_Sus,
             Knowledge: bd_Knowledge,
             Zen: bd_Zen,
             Crates: bd_Crates,
@@ -8287,6 +8290,35 @@ function midLoop(){
         if (global.tauceti['mining_pit']){
             lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * (global.tech['isolation'] ? 6 : 8));
             caps['Materials'] += support_on['mining_pit'] * 1000000;
+        }
+
+        if (global.race['universe'] === 'magic' && global.race['witch_hunter']){
+            let sus = 0;
+
+            if (global.city['pylon'] || global.space['pylon'] || global.tauceti['pylon']){
+                let p_count = 0;
+                let name = 'city_pylon';
+                if ((global.race['cataclysm'] || global.race['orbit_decayed']) && global.space['pylon']){
+                    p_count = global.space.pylon.count;
+                    name = 'space_red_pylon';
+                }
+                else if (global.tech['isolation'] && global.tauceti['pylon']){
+                    p_count = global.tauceti.pylon.count;
+                    name = 'tau_home_pylon';
+                }
+                else if (global.city['pylon']){
+                    p_count = global.city.pylon.count;
+                }
+
+                if (!global.tech['roguemagic']){
+                    p_count *= 5;
+                }
+
+                bd_Sus[loc(name)] = p_count+'v';
+                sus += p_count;
+            }
+
+            global.resource.Sus.amount = sus;
         }
 
         breakdown['gt_route'] = {};

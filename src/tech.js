@@ -10142,6 +10142,9 @@ const techs = {
                 global.resource.Mana.display = true;
                 global.resource.Crystal.display = true;
                 global.civic.crystal_miner.display = true;
+                if (global.race['witch_hunter']){
+                    global.resource.Sus.display = true;
+                }
                 return true;
             }
             return false;
@@ -10271,6 +10274,29 @@ const techs = {
         },
         post(){
             arpa('Physics');
+        }
+    },
+    secret_society: {
+        id: 'tech-secret_society',
+        title: loc('tech_secret_society'),
+        desc: loc('tech_secret_society'),
+        category: 'magic',
+        era: 'civilized',
+        reqs: { magic: 1 },
+        grant: ['roguemagic',1],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Knowledge(){ return 45; },
+            Mana(){ return 10; },
+        },
+        effect(){ return loc('tech_secret_society_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
         }
     },
     clerics: {
