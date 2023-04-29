@@ -2469,7 +2469,7 @@
   "tech_mana_nexus": "魔法回路",
   "tech_mana_nexus_effect": "解锁魔法回路，它可以提升水晶塔的产量。",
   "tech_secret_society": "神秘法术",
-  "tech_secret_society_effect": "黑魔法师正在尝试绘制一个黑暗魔法阵，将会带来不好的后果，您和您的朋友们必须通过隐秘的魔法学习来和他们对抗到底。",
+  "tech_secret_society_effect": "黑魔法师正在尝试绘制一个黑暗魔法阵以施展禁咒，这将会带来不好的后果。您和您的朋友们必须通过隐秘的魔法学习来和他们对抗到底。",
   "tech_clerics": "神职人员",
   "tech_clerics_effect": "鼓励牧师们从神明中汲取法力，以缓解你的魔瘾。",
   "tech_conjuring": "魔法制造",
