@@ -3983,7 +3983,7 @@ export function setChallengeScreen(){
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
         global.evolution['gravity_well'] = { count: 0 };
     }
-    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['m']) || global['sim'])){
+    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         global.evolution['witch_hunter'] = { count: 0 };
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
@@ -4045,7 +4045,7 @@ export function setChallengeScreen(){
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
         addAction('evolution','gravity_well');
     }
-    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['m']) || global['sim'])){
+    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
