@@ -283,6 +283,18 @@ export const events = {
             return pillaged(`gov3`,true);
         }
     },
+    witch_hunt: {
+        reqs: {
+            tech: 'magic',
+        },
+        type: 'major',
+        condition(){
+            return global.race['witch_hunter'] && global.resource.Sus.amount >= 100 ? true : false;
+        },
+        effect(){
+            return pillaged(`witchhunt`,true);
+        }
+    },
     terrorist: {
         reqs: {
             tech: 'world_control',
@@ -860,7 +872,7 @@ function slaveLoss(type,string){
 function pillaged(gov,serious){
     let army = armyRating(garrisonSize(),'army',global.civic.garrison.wounded);
     let eAdv = global.tech['high_tech'] ? global.tech['high_tech'] + 1 : 1;
-    let enemy = global.civic.foreign[gov].mil * (1 + Math.floor(seededRandom(0,10) - 5) / 10) * eAdv;
+    let enemy = (gov === 'witchhunt' ? 1000 : global.civic.foreign[gov].mil) * (1 + Math.floor(seededRandom(0,10) - 5) / 10) * eAdv;
 
     let injured = global.civic.garrison.wounded > garrisonSize() ? garrisonSize() : global.civic.garrison.wounded;
     let killed = garrisonSize() > 0 ? Math.floor(seededRandom(1,injured)) : 0;
@@ -883,7 +895,7 @@ function pillaged(gov,serious){
         }
     }
 
-    let enemy_name = loc(`civics_gov${global.civic.foreign[gov].name.s0}`,[global.civic.foreign[gov].name.s1]);
+    let enemy_name = gov === 'witchhunt' ? loc(`witch_hunter_crusade`) : loc(`civics_gov${global.civic.foreign[gov].name.s0}`,[global.civic.foreign[gov].name.s1]);
 
     if (army > enemy){
         return loc('event_pillaged1',[enemy_name,killed.toLocaleString(),wounded.toLocaleString()]);

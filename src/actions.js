@@ -2353,8 +2353,31 @@ export const actions = {
             special(){ return global.tech['magic'] && global.tech.magic >= 3 ? true : false; },
             action(){
                 if (payCosts($(this)[0])){
-                    global.city['pylon'].count++;
+                    global.city.pylon.count++;
                     global.resource.Mana.max += spatialReasoning(5);
+                    return true;
+                }
+                return false;
+            }
+        },
+        conceal_ward: {
+            id: 'city-conceal_ward',
+            title: loc('city_conceal_ward'),
+            desc: loc('city_conceal_ward'),
+            category: 'industrial',
+            reqs: { roguemagic: 3 },
+            not_trait: ['cataclysm','orbit_decayed'],
+            cost: {
+                Money(offset){return costMultiplier('conceal_ward', offset, 500, 1.25);  },
+                Mana(offset){ return costMultiplier('conceal_ward', offset, 42, 1.25); },
+                Crystal(offset){ return costMultiplier('conceal_ward', offset, 5, 1.25); }
+            },
+            effect(){
+                return `<div>${loc('city_conceal_ward_effect',[1])}</div>`;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.city.conceal_ward.count++;
                     return true;
                 }
                 return false;

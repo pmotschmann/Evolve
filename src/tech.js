@@ -10276,29 +10276,6 @@ const techs = {
             arpa('Physics');
         }
     },
-    secret_society: {
-        id: 'tech-secret_society',
-        title: loc('tech_secret_society'),
-        desc: loc('tech_secret_society'),
-        category: 'magic',
-        era: 'civilized',
-        reqs: { magic: 1 },
-        grant: ['roguemagic',1],
-        condition(){
-            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
-        },
-        cost: {
-            Knowledge(){ return 45; },
-            Mana(){ return 10; },
-        },
-        effect(){ return loc('tech_secret_society_effect'); },
-        action(){
-            if (payCosts($(this)[0])){
-                return true;
-            }
-            return false;
-        }
-    },
     clerics: {
         id: 'tech-clerics',
         title: loc('tech_clerics'),
@@ -10445,6 +10422,149 @@ const techs = {
         post(){
             clearElement($('#resources'));
             defineResources();
+        }
+    },
+    secret_society: {
+        id: 'tech-secret_society',
+        title: loc('tech_secret_society'),
+        desc: loc('tech_secret_society'),
+        category: 'magic',
+        era: 'civilized',
+        reqs: { magic: 1 },
+        grant: ['roguemagic',1],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 10; },
+            Knowledge(){ return 45; },
+        },
+        effect(){ return loc('tech_secret_society_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    cultists: {
+        id: 'tech-cultists',
+        title: loc('tech_cultists'),
+        desc: loc('tech_cultists'),
+        category: 'magic',
+        era: 'civilized',
+        reqs: { roguemagic: 1, cleric: 1 },
+        grant: ['roguemagic',2],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 250; },
+            Knowledge(){ return 2125; }
+        },
+        effect(){ return loc('tech_cultists_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    conceal_ward: {
+        id: 'tech-conceal_ward',
+        title: loc('tech_conceal_ward'),
+        desc: loc('tech_conceal_ward'),
+        category: 'magic',
+        era: 'discovery',
+        reqs: { roguemagic: 2, theatre: 3 },
+        grant: ['roguemagic',3],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 500; },
+            Knowledge(){ return 8200; },
+            Crystal(){ return 1000; }
+        },
+        effect(){ return loc('tech_conceal_ward_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.city['conceal_ward'] = { count: 0 };
+                global.space['conceal_ward'] = { count: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    subtle_rituals: {
+        id: 'tech-subtle_rituals',
+        title: loc('tech_subtle_rituals'),
+        desc: loc('tech_subtle_rituals'),
+        category: 'magic',
+        era: 'discovery',
+        reqs: { roguemagic: 3, magic: 4 },
+        grant: ['roguemagic',4],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 100; },
+            Knowledge(){ return 15000; },
+            Crystal(){ return 2500; }
+        },
+        effect(){ return loc('tech_subtle_rituals_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    pylon_camouflage: {
+        id: 'tech-pylon_camouflage',
+        title: loc('tech_pylon_camouflage'),
+        desc: loc('tech_pylon_camouflage'),
+        category: 'magic',
+        era: 'industrialized',
+        reqs: { roguemagic: 4, high_tech: 3 },
+        grant: ['roguemagic',5],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 1000; },
+            Knowledge(){ return 30000; },
+            Crystal(){ return 3750; }
+        },
+        effect(){ return loc('tech_pylon_camouflage_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    fake_tech: {
+        id: 'tech-fake_tech',
+        title: loc('tech_fake_tech'),
+        desc: loc('tech_fake_tech'),
+        category: 'magic',
+        era: 'industrialized',
+        reqs: { roguemagic: 5, high_tech: 4 },
+        grant: ['roguemagic',6],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 2250; },
+            Knowledge(){ return 60000; }
+        },
+        effect(){ return loc('tech_fake_tech_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
         }
     },
     dark_bomb: {
