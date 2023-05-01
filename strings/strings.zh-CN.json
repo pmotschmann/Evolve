@@ -1122,7 +1122,7 @@
   "city_mill_title1": "磨坊",
   "city_mill_title2": "风车",
   "city_mill_desc1": "农业效率 +%0%",
-  "city_mill_desc2": "农业效率 +%0%，或 电力 +%1MW",
+  "city_mill_desc2": "农业效率 +%0% 或 电力 +%1MW",
   "city_mill_effect1": "可发电，",
   "city_mill_effect2": "可碾磨谷物。",
   "city_windmill_desc": "风力发电 +%0MW",
