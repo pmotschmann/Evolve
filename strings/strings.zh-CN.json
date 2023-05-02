@@ -6512,6 +6512,8 @@
   "outer_shipyard_class_battlecruiser_desc": "重型巡洋舰以其压倒性的力量摧毁敌军，通常作为一支舰队的旗舰。",
   "outer_shipyard_class_dreadnought": "无畏舰",
   "outer_shipyard_class_dreadnought_desc": "无畏舰是一种强悍到略微脱离现实的超大型战舰，其火力与装甲足以摧毁一整支舰队。",
+  "outer_shipyard_class_explorer": "探索舰",
+  "outer_shipyard_class_explorer_desc": "探索舰是一种可以搭载相对性推进器的特制舰船，该舰船是为穿越星际空间而定制的。",
   "outer_shipyard_engine": "引擎",
   "outer_shipyard_engine_ion": "离子引擎",
   "outer_shipyard_engine_ion_desc": "离子驱动是一款经济适用的驱动方式。",
