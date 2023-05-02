@@ -7916,7 +7916,7 @@
   "wiki_mechanics_blocking_para6": "以下图片展示出了建筑所需资源的示例。",
   "wiki_mechanics_astro": "星座符号",
   "wiki_mechanics_astro_para1": "星座符号根据当前游戏进行时的现实日期（非游戏日期）来确定。",
-  "wiki_mechanics_astro_para2": "加成效果因%0个不同的星座而异。",
+  "wiki_mechanics_astro_para2": "它有%0个不同的星座符号。这%0个星座符号在游戏中都会受到轻微的影响。",
   "wiki_mechanics_astro_para3": "%0（%1，3月21日-4月19日）使战斗评级 +%2。",
   "wiki_mechanics_astro_para4": "%0（%1，4月20日-5月20日）使统一加成 +%2。",
   "wiki_mechanics_astro_para5": "%0（%1，5月21日-6月20日）使知识产量 +%2。",
