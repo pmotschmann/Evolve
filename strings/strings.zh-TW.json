@@ -596,7 +596,7 @@
   "event_slave_escape1": "1 頭奴隸逃跑了。",
   "event_slave_escape2": "1 頭奴隸在逃跑途中身亡。",
   "event_slave_none": "部下正在密謀推翻你！你太弱了！證明你的價值！",
-  "event_demon_influx": "堡壘周圍聚集了 %0 個惡魔生物。",
+  "event_demon_influx": "堡壘周圍聚集了 %0 隻惡魔生物。",
   "event_mine_collapse": "1 名礦工死於塌方。",
   "event_protest0": "市民們就%0漏風的問題提出抗議。",
   "event_protest1": "市民們就外來務工人員過多擠佔工作崗位的問題提出抗議。",
