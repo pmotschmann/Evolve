@@ -6531,7 +6531,7 @@
   "outer_shipyard_engine_vacuum": "真空驱动",
   "outer_shipyard_engine_vacuum_desc": "真空驱动利用更为先进的物理法则来操控舰船移动。",
   "outer_shipyard_engine_emdrive": "相对性推进器",
-  "outer_shipyard_engine_emdrive_desc": "相对性推进器是一个可以接近光速的引擎，需要特定的舰船才能装备。",
+  "outer_shipyard_engine_emdrive_desc": "相对性推进器是一个移动速度可以接近光速的引擎，需要特定的舰船才能装备。",
   "outer_shipyard_weapon": "武器",
   "outer_shipyard_weapon_railgun": "磁轨炮",
   "outer_shipyard_weapon_railgun_desc": "磁轨炮是一款经济适用的小型武器。",
