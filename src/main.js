@@ -5179,7 +5179,7 @@ function fastLoop(){
             crystal_bd[loc('job_crystal_miner')] = crystal_base + 'v';
 
             if (global.civic.govern.type === 'magocracy'){
-                let bonus = 1 + (govEffect.magocracy()[1] / 100);
+                let bonus = govEffect.magocracy()[1];
                 crystal_base *= 1 + (bonus / 100);
                 crystal_bd[`ᄂ${loc('govern_magocracy')}`] = `${bonus}%`;
             }
@@ -8312,6 +8312,9 @@ function midLoop(){
 
             if (global.civic.scientist.workers > 0){
                 let wiz = global.civic.scientist.workers;
+                if (global.civic.govern.type === 'magocracy'){
+                    wiz /= 2;
+                }
                 bd_Sus[loc('job_wizard')] = wiz+'v';
                 sus += wiz;
             }
@@ -8407,6 +8410,18 @@ function midLoop(){
                 sus *= 5;
             }
 
+            if (global.tech['nexus']){
+                let nexus = global.tech['nexus'] * 0.25;
+                bd_Sus[loc('arpa_projects_nexus_title')] = nexus+'v';
+                sus += nexus;
+            }
+
+            if (global.tech['syphon']){
+                let syphon = global.tech['syphon'] * 2.5;
+                bd_Sus[loc('arpa_syphon_title')] = syphon+'v';
+                sus += syphon;
+            }
+
             if (global.tech['roguemagic'] && global.tech.roguemagic >= 3 && global.city['conceal_ward']){
                 let wards = global.city.conceal_ward.count;
                 bd_Sus[loc('city_conceal_ward')] = -(wards)+'v';
@@ -8430,6 +8445,9 @@ function midLoop(){
                 global.civic.foreign.gov0.hstl = 100;
                 global.civic.foreign.gov1.hstl = 100;
                 global.civic.foreign.gov2.hstl = 100;
+                if (global.race['truepath']){
+                    global.civic.foreign.gov3.hstl = 100;
+                }
             }
         }
 

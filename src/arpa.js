@@ -220,6 +220,9 @@ export const arpaProjects = {
         reqs: { magic: 5 },
         grant: 'nexus',
         effect(){
+            if (global.tech['roguemagic'] && global.tech.roguemagic >= 7){
+                return `<div>${loc('arpa_projects_nexus_effect1',[5])}</div><div>${loc('witch_hunter_nexus',[8])}</div>`;
+            }
             return loc('arpa_projects_nexus_effect1',[5]);
         },
         cost: {
@@ -231,12 +234,17 @@ export const arpaProjects = {
     syphon: {
         title: loc('arpa_syphon_title'),
         desc(){
+            let desc = '';
             if (global.tech['syphon'] && global.tech.syphon >= 0){
-                return `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn2')}</div>`;
+                desc = `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn2')}</div>`;
             }
             else {
-                return `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn1')}</div>`;
+                desc = `<div>${loc('arpa_syphon_desc')}</div><div class="has-text-danger">${loc('arpa_syphon_desc_warn1')}</div>`;
             }
+            if (global.race['witch_hunter']){
+                desc += `<div class="has-text-caution">${loc(`witch_hunter_suspicion`)}</div>`;
+            }
+            return desc;
         },
         reqs: { veil: 2 },
         grant: 'syphon',

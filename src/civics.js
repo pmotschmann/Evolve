@@ -286,7 +286,7 @@ function government(govern){
             if (effect_type === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effect_type = 'theocracy_alt';
             }
-            return $(`<div>${loc(`govern_${global.civic.govern.type}_desc`)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
+            return $(`<div>${govDescription(global.civic.govern.type)}</div><div class="has-text-advanced">${government_desc()[effect_type]}</div>`);
         }
     );
 
@@ -297,6 +297,13 @@ function government(govern){
             elm: `#govType .change`
         }
     );
+}
+
+function govDescription(type){
+    if (global.race['witch_hunter'] && type === 'magocracy'){
+        return loc(`witch_hunter_magocracy`);
+    }
+    return loc(`govern_${type}_desc`);
 }
 
 function drawGovModal(){
@@ -398,7 +405,7 @@ function drawGovModal(){
             if (effectType === 'theocracy' && global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
                 effectType = 'theocracy_alt';
             }
-            return $(`<div>${loc(`govern_${govType}_desc`)}</div><div class="has-text-advanced">${government_desc()[effectType]}</div>`);
+            return $(`<div>${govDescription(govType)}</div><div class="has-text-advanced">${government_desc()[effectType]}</div>`);
         },
         {
             elm: `#govModal button`,

@@ -10567,6 +10567,29 @@ const techs = {
             return false;
         }
     },
+    concealment: {
+        id: 'tech-concealment',
+        title: loc('tech_concealment'),
+        desc: loc('tech_concealment'),
+        category: 'magic',
+        era: 'early_space',
+        reqs: { roguemagic: 6, magic: 5 },
+        grant: ['roguemagic',7],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 3000; },
+            Knowledge(){ return 185000; }
+        },
+        effect(){ return loc('tech_concealment_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     dark_bomb: {
         id: 'tech-dark_bomb',
         title: loc('tech_dark_bomb'),
@@ -11208,7 +11231,7 @@ const techs = {
         grant: ['eris',3],
         cost: {
             Knowledge(){ return 3200000; },
-            Cipher(){ return 50000; }
+            Cipher(){ return 25000; }
         },
         effect(){ return loc('tech_dronewar_effect',[planetName().eris]); },
         action(){

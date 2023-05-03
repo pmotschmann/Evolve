@@ -2369,7 +2369,7 @@ export const actions = {
             not_trait: ['cataclysm','orbit_decayed'],
             cost: {
                 Money(offset){return costMultiplier('conceal_ward', offset, 500, 1.25);  },
-                Mana(offset){ return costMultiplier('conceal_ward', offset, 42, 1.25); },
+                Mana(offset){ return costMultiplier('conceal_ward', offset, conceal_adjust(42), 1.25); },
                 Crystal(offset){ return costMultiplier('conceal_ward', offset, 5, 1.25); }
             },
             effect(){
@@ -6586,6 +6586,13 @@ function checkStructs(structs){
         }
     });
     return test;
+}
+
+function conceal_adjust(mana){
+    if (global.tech['nexus'] && global.tech['roguemagic'] && global.tech.roguemagic >= 7){
+        mana *= 0.92 ** global.tech.nexus;
+    }
+    return mana;
 }
 
 function dirt_adjust(creep){
