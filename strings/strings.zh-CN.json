@@ -6030,7 +6030,7 @@
   "portal_carport_desc": "可供 %0 名勘探者使用，损坏后需要修理才可再次使用。",
   "portal_carport_effect": "勘探者上限 +%0",
   "portal_war_droid_title": "战斗机器人",
-  "portal_war_droid_effect": "每个机器人可以加强一支巡逻队，多余的机器人将守卫堡垒。",
+  "portal_war_droid_effect": "每个机器人可以加强一支巡逻队；多余的机器人将守卫堡垒。",
   "portal_war_droid_flair": "你有 20 秒的时间来投降",
   "portal_repair_droid_title": "修理机器人",
   "portal_repair_droid_effect": "城墙修理时间 -%0%",
