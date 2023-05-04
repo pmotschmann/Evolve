@@ -4387,7 +4387,7 @@ const galaxyProjects = {
             support(){ return 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
             powerBalancer(){
-                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+                return global.galaxy.hasOwnProperty('starbase') ? false : [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
             },
             refresh: true,
             action(){
@@ -4431,7 +4431,7 @@ const galaxyProjects = {
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
             powerBalancer(){
-                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+                return global.galaxy.hasOwnProperty('starbase') ? false : [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
             },
             postPower(o){
                 let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
