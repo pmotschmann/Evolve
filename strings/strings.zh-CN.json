@@ -5521,7 +5521,7 @@
   "space_home_gps_desc_req": "至少需要4颗GPS卫星",
   "space_home_gps_effect": "贸易盈利 +1%",
   "space_home_gps_effect2": "贸易路线 +%0",
-  "space_home_gps_effect_req": "至少需要4颗GPS卫星才能进行GPS定位。前三颗卫星啥也干不了。",
+  "space_home_gps_effect_req": "至少需要4颗GPS卫星才能进行GPS定位。前三颗卫星什么也做不了。",
   "space_home_propellant_depot_title": "推进剂库",
   "space_home_propellant_depot_desc": "建造轨道仓库",
   "space_home_nav_beacon_title": "导航灯塔",
