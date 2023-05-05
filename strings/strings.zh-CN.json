@@ -9171,7 +9171,7 @@
   "wiki_events_inspiration": "灵感",
   "wiki_events_inspiration_para1": "知识产量翻倍，时间在 %0 秒至 %1 秒范围之间随机取值。",
   "wiki_events_motivation": "激励",
-  "wiki_events_motivation_para1": "领导们受到了大家的激励，士气暂时提升，时间在 %0 至 %1 秒范围内取值。",
+  "wiki_events_motivation_para1": "大家受到了领导们的激励，士气暂时提升，时间在 %0 至 %1 秒范围内取值。",
   "wiki_events_motivation_para2": "士气提升效果在 %0 和 %1 范围内取值。随着游戏时间的推移，这个加成逐渐减少。",
   "wiki_events_motivation_para3": "士气上限提升效果为士气加成的 1/2。",
   "wiki_events_fire": "大火",
