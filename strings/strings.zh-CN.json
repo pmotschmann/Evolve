@@ -7180,7 +7180,7 @@
   "wiki_trait_effect_lawless": "改革政府体制的冷却时间 -%0%。",
   "wiki_trait_effect_mistrustful": "战争后双边关系额外 -%0%。",
   "wiki_trait_effect_humpback": "饿死的阈值 +%0 （阈值默认为 1.25，如果食物产量≥食物消耗/阈值，则不会有市民饿死）。伐木工人、石工、回收者、水晶矿工、矿工和煤矿工人产量 +%1%。",
-  "wiki_trait_effect_thalassophobia": "无法建造码头。（特质级别无影响。）",
+  "wiki_trait_effect_thalassophobia": "无法建造码头。（特质级别无影响）",
   "wiki_trait_effect_fiery": "战斗评级 +%0%，狩猎产量 +%1%。",
   "wiki_trait_effect_terrifying": "无法进行贸易，但可以从战利品中获取钛。特质级别影响获取钛的数量。",
   "wiki_trait_effect_slaver": "您可以通过战斗捕获奴隶，每个奴隶使全局产量 +%0%。",
