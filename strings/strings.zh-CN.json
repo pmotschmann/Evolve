@@ -571,7 +571,7 @@
   "event_rna": "流星撞击了地球，带来了新的遗传物质，你获得了 %0 RNA。",
   "event_inspiration": "科学家们来了灵感，知识产量暂时翻倍。",
   "event_inspiration_bd": "灵感",
-  "event_motivation": "领导们受到了大家的激励，士气暂时提升。",
+  "event_motivation": "大家受到了领导们的激励，士气暂时提升。",
   "event_motivation_bd": "激励",
   "event_fire": "一场大火烧毁了 %0 木材。",
   "event_flare": "太阳耀斑爆发击中%0，%1 位市民遇难，火灾向全球蔓延。",
