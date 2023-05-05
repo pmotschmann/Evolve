@@ -7059,7 +7059,7 @@
   "wiki_trait_effect_cold_blooded": "农民、伐木工人、石工、回收者、水晶矿工、矿工和煤矿工人：寒冷或下雨时产量 -%0%，炎热或晴天时产量 +%1%。",
   "wiki_trait_effect_scales": "战斗胜利时，士兵战死数量 -%0, 战斗失败时，士兵战死数量 -%1，地狱维度巡逻队护甲 +%2。",
   "wiki_trait_effect_hollow_bones": "锻造物消耗 -%0%。",
-  "wiki_trait_effect_sky_lover": "矿工工作压力 +%0%。",
+  "wiki_trait_effect_sky_lover": "挖矿类工作压力 +%0%。",
   "wiki_trait_effect_rigid": "锻造物产量 -%0%。",
   "wiki_trait_effect_high_pop": "市民上限变为 %0 倍，但每个市民的工作效率只有正常的 %1%。人口增长速率变为 %2 倍。",
   "wiki_trait_effect_high_pop_ex1": "您无法通过 [拟态] 特质模仿昆虫种群来获得 [人口众多] 特质。",
