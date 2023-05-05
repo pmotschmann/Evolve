@@ -519,6 +519,7 @@
   "job_cement_worker": "水泥工人",
   "job_cement_worker_desc": "水泥工人使用石头来加工成水泥，每位水泥工人每秒消耗 %1 石头，生产 %0 水泥。",
   "job_cement_worker_amber_desc": "水泥工人使用琥珀和矿物质来加工成水泥，每位水泥工人每秒消耗 3 琥珀，生产 %0 水泥。",
+  "job_cement_worker_bd": "水泥工人",
   "job_banker": "银行家",
   "job_banker_desc": "银行家管理银行与税收，每位银行家使税收收入 +%0%。",
   "job_entertainer": "艺人",
