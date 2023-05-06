@@ -3978,16 +3978,16 @@ export function setChallengeScreen(){
         global.evolution['orbit_decay'] = { count: 0 };
     }
     if (global.race.universe === 'standard' && (global.stats.achieve['whitehole'] || global['sim'])){
-        global.evolution['nonstandard'] = { count: 0 };
+        //global.evolution['nonstandard'] = { count: 0 };
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        global.evolution['gravity_well'] = { count: 0 };
+        //global.evolution['gravity_well'] = { count: 0 };
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         global.evolution['witch_hunter'] = { count: 0 };
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
-        global.evolution['warlord'] = { count: 0 };
+        //global.evolution['warlord'] = { count: 0 };
     }
     if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
         global.evolution['truepath'] = { count: 0 };
@@ -4040,16 +4040,16 @@ export function setChallengeScreen(){
         addAction('evolution','orbit_decay');
     }
     if (global.race.universe === 'standard' && (global.stats.achieve['whitehole'] || global['sim'])){
-        addAction('evolution','nonstandard');
+        //addAction('evolution','nonstandard');
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        addAction('evolution','gravity_well');
+        //addAction('evolution','gravity_well');
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
     }
     if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
-        addAction('evolution','warlord');
+        //addAction('evolution','warlord');
     }
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
@@ -4426,10 +4426,10 @@ const advancedChallengeList = {
     'inflation': {t: 'c', e: 'wheelbarrow' },
     'sludge': {t: 'c', e: 'extinct_sludge' },
     'orbit_decay': {t: 'c', e: 'lamentis' },
-    'nonstandard': {t: 'c', e: 'anathema' },
-    'gravity_well': {t: 'c', e: '???' },
+    //'nonstandard': {t: 'c', e: 'anathema' },
+    //'gravity_well': {t: 'c', e: '???' },
     'witch_hunter': {t: 'c', e: '???' },
-    'warlord': {t: 'c', e: '???' },
+    //'warlord': {t: 'c', e: '???' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },

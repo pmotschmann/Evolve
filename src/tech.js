@@ -4666,6 +4666,71 @@ const techs = {
             return false;
         }
     },
+    study_corrupt_gem: {
+        id: 'tech-study_corrupt_gem',
+        title: loc('tech_study_corrupt_gem'),
+        desc: loc('tech_study_corrupt_gem'),
+        category: 'hell_dimension',
+        era: 'intergalactic',
+        reqs: { high_tech: 16, corrupt: 1 },
+        grant: ['corrupt',2],
+        trait: ['witch_hunter'],
+        cost: {
+            Mana(){ return 50000; },
+            Knowledge(){ return 18500000; },
+            Corrupt_Gem(){ return 1; }
+        },
+        effect(){ return loc('tech_study_corrupt_gem_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_study_corrupt_gem_result'),'info',false,['progress','hell']);
+                global.resource.Corrupt_Gem.display = false;
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_binding: {
+        id: 'tech-soul_binding',
+        title: loc('tech_soul_binding'),
+        desc: loc('tech_soul_binding'),
+        category: 'hell_dimension',
+        era: 'intergalactic',
+        reqs: { corrupt: 2, science: 19 },
+        grant: ['forbidden',1],
+        trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 19000000; }
+        },
+        effect(){ return loc('tech_soul_binding_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_capacitor: {
+        id: 'tech-soul_capacitor',
+        title: loc('tech_soul_capacitor'),
+        desc: loc('tech_soul_capacitor'),
+        category: 'hell_dimension',
+        era: 'intergalactic',
+        reqs: { forbidden: 1 },
+        grant: ['forbidden',2],
+        trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 19500000; }
+        },
+        effect(){ return loc('tech_soul_capacitor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     corrupt_gem_analysis: {
         id: 'tech-corrupt_gem_analysis',
         title: loc('tech_corrupt_gem_analysis'),
@@ -4674,6 +4739,7 @@ const techs = {
         era: 'dimensional',
         reqs: { high_tech: 16, corrupt: 1 },
         grant: ['corrupt',2],
+        not_trait: ['witch_hunter'],
         cost: {
             Species(){ return 1; }, // Not scaled intentionally
             Knowledge(){ return 22000000; },
@@ -4871,7 +4937,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { science: 19 },
         grant: ['ascension',1],
-        not_trait: ['orbit_decay'],
+        not_trait: ['orbit_decay','witch_hunter'],
         cost: {
             Knowledge(){ return 17500000; },
             Phage(){ return 25; }
@@ -4892,7 +4958,7 @@ const techs = {
         era: 'intergalactic',
         reqs: { ascension: 1 },
         grant: ['ascension',2],
-        not_trait: ['orbit_decay'],
+        not_trait: ['orbit_decay','witch_hunter'],
         cost: {
             Knowledge(){ return 18500000; },
             Plasmid(){ return 100; }

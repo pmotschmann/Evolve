@@ -6,7 +6,7 @@ const changeList = [
         version: `1.3.7`,
         date: `5/1/2023`,
         changes: [
-            `Added new universe exclusive challenge modes.`,
+            `Added Magic universe exclusive challenge: Witch Hunter.`,
             `Reduced Encrypted Data cost of Data Analysis, Advanced Medkits, Automated Warehousing, Elerium Extraction, and Drone Warfare techs.`,
             `Star Forge smelting bonus rebalanced.`,
             `Antimatter Dark Energy effect now applies to Truepath Ship power generation.`,

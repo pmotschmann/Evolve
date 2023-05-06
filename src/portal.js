@@ -337,7 +337,7 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     if (global.portal.soul_forge.count < 1){
                         incrementStruct('soul_forge','portal');
-                        powerOnNewStruct($(this)[0])
+                        powerOnNewStruct($(this)[0]);
                         return true;
                     }
                 }
@@ -367,7 +367,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('gun_emplacement','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -396,7 +396,35 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('soul_attractor','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
+        soul_capacitor: {
+            id: 'portal-soul_capacitor',
+            title: loc('portal_soul_capacitor_title'),
+            desc(){
+                return `<div>${loc('portal_soul_capacitor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+            },
+            reqs: { forbidden: 2 },
+            powered(){ return powerCostMod(100); },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('soul_capacitor', offset, 12000000, 1.25, 'portal'); },
+                Stone(offset){ return spaceCostMultiplier('soul_capacitor', offset, 23000000, 1.25, 'portal'); },
+                Nano_Tube(offset){ return spaceCostMultiplier('soul_capacitor', offset, 314159, 1.25, 'portal'); },
+                Vitreloy(offset){ return spaceCostMultiplier('soul_capacitor', offset, 1618, 1.25, 'portal'); },
+                Aerogel(offset){ return spaceCostMultiplier('soul_capacitor', offset, 180000, 1.25, 'portal'); },
+            },
+            effect(){
+                return `<div class="has-text-danger">Not Implimented</div><div>${loc('portal_soul_capacitor_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+            },
+            action(){
+                return false;
+                if (payCosts($(this)[0])){
+                    global.portal.soul_capacitor.count++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
