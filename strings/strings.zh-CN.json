@@ -6073,7 +6073,7 @@
   "portal_soul_attractor_effect": "每天吸引 %0 至 %1 个游荡的灵魂进入灵魂锻炉。",
   "portal_soul_attractor_effect2": "灵魂锻炉的灵魂需求数量 -%0%。",
   "portal_soul_capacitor_title": "灵魂电容器",
-  "portal_soul_capacitor_effect": "存储从灵魂锻炉中获取的灵魂能量。",
+  "portal_soul_capacitor_desc": "存储从灵魂锻炉中获取的灵魂能量。",
   "portal_ruins_name": "远古废墟",
   "portal_ruins_desc": "这里是古城废墟，摇摇欲坠的建筑残骸随处可见，扭曲的生物们在废墟中肆意游荡。这里似乎在很久以前就被遗弃了。",
   "portal_ruins_mission_title": "勘察废墟",
