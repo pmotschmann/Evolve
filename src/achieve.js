@@ -37,7 +37,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal','pass'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge'
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
@@ -1557,6 +1557,20 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_lamentis_name`)}</span>`])
+        ]
+    },
+    soul_sponge: {
+        name: loc(`achieve_soul_sponge_name`),
+        desc(wiki){
+            let soul = wiki ? "100/200/300/400/500" : global.stats.achieve['soul_sponge'] ? global.stats.achieve.soul_sponge.mg * 100 : 100;
+            return loc("achieve_perks_soul_sponge",[soul]);
+        },
+        active(){
+            return global.stats.achieve['soul_sponge'] && global.stats.achieve.soul_sponge.mg >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_soul_sponge_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_soul_sponge_name`)}</span>`])
         ]
     },
     gladiator: {

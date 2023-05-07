@@ -3965,7 +3965,7 @@ const interstellarProjects = {
     }
 };
 
-function astrialProjection(){
+export function astrialProjection(){
     let gains = calcPrestige('ascend');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
@@ -6349,7 +6349,12 @@ export function ascendLab(wiki){
 
         unlockAchieve(`biome_${global.city.biome}`);
         unlockAchieve(`genus_${races[global.race.species].type}`);
-        unlockAchieve(`ascended`);
+        if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+            unlockAchieve(`soul_sponge`);
+        }
+        else {
+            unlockAchieve(`ascended`);
+        }
         if (global.race.species === 'junker'){
             unlockFeat('the_misery');
         }

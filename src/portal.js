@@ -5,8 +5,8 @@ import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
-import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault } from './actions.js';
-import { checkRequirements, incrementStruct } from './space.js';
+import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
+import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -406,26 +406,89 @@ const fortressModules = {
             id: 'portal-soul_capacitor',
             title: loc('portal_soul_capacitor_title'),
             desc(){
-                return `<div>${loc('portal_soul_capacitor_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
+                return `<div>${loc('portal_soul_capacitor_desc')}</div><div class="has-text-special">${loc('requires_power')}</div>`;
             },
             reqs: { forbidden: 2 },
-            powered(){ return powerCostMod(100); },
+            powered(){ return powerCostMod(125); },
+            queue_complete(){ return 40 - global.portal.soul_capacitor.count; },
             cost: {
-                Money(offset){ return spaceCostMultiplier('soul_capacitor', offset, 12000000, 1.25, 'portal'); },
-                Stone(offset){ return spaceCostMultiplier('soul_capacitor', offset, 23000000, 1.25, 'portal'); },
-                Nano_Tube(offset){ return spaceCostMultiplier('soul_capacitor', offset, 314159, 1.25, 'portal'); },
-                Vitreloy(offset){ return spaceCostMultiplier('soul_capacitor', offset, 1618, 1.25, 'portal'); },
-                Aerogel(offset){ return spaceCostMultiplier('soul_capacitor', offset, 180000, 1.25, 'portal'); },
+                Money(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 750000000, 1.01, 'portal'); },
+                Crystal(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1250000, 1.01, 'portal'); },
+                Adamantite(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 6500000, 1.01, 'portal'); },
+                Infernite(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 10000, 1.01, 'portal'); },
+                Stanene(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 2500000, 1.01, 'portal'); },
+                Bolognium(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1000000, 1.01, 'portal'); },
+                Soul_Gem(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 3, 1.01, 'portal'); },
+                Mythril(offset){ return global.portal.soul_capacitor.count >= 40 ? 0 : spaceCostMultiplier('soul_capacitor', offset, 1250000, 1.01, 'portal'); },
             },
             effect(){
-                return `<div class="has-text-danger">Not Implimented</div><div>${loc('portal_soul_capacitor_effect')}</div><div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let cap = 2500000;
+                let eCap = global.portal.soul_capacitor.ecap;
+                let energy = global.portal.hasOwnProperty('soul_capacitor') ? global.portal.soul_capacitor.energy : 0;
+                let desc = `<div>${loc('portal_soul_capacitor_effect',[energy.toLocaleString()])}</div>`;
+                desc += `<div>${loc('portal_soul_capacitor_effect2',[eCap.toLocaleString()])}</div>`;
+                desc += `<div>${loc('portal_soul_capacitor_effect3',[cap.toLocaleString()])}</div>`;
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                return desc;
             },
             action(){
-                return false;
-                if (payCosts($(this)[0])){
+                if (global.portal.soul_capacitor.count < 40 && payCosts($(this)[0])){
                     global.portal.soul_capacitor.count++;
                     powerOnNewStruct($(this)[0]);
                     return true;
+                }
+                return false;
+            },
+            postPower(){
+                updateDesc($(this)[0],'portal','soul_capacitor');
+            },
+        },
+        absorption_chamber: {
+            id: 'portal-absorption_chamber',
+            title: loc('portal_absorption_chamber_title'),
+            desc(wiki){
+                if (!global.interstellar.hasOwnProperty('absorption_chamber') || global.portal.absorption_chamber.count < 100 || wiki){
+                    return `<div>${loc('portal_absorption_chamber_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_absorption_chamber_title')}</div>`;
+                }
+            },
+            reqs: { forbidden: 3 },
+            queue_size: 5,
+            queue_complete(){ return 100 - global.portal.absorption_chamber.count; },
+            cost: {
+                Money(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 75000000 : 0; },
+                Alloy(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 750000 : 0; },
+                Neutronium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 125000 : 0; },
+                Elerium(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 1000 : 0; },
+                Orichalcum(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 250000 : 0; },
+                Nanoweave(offset){ return ((offset || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0)) < 100 ? 75000 : 0; },
+            },
+            effect(wiki){
+                let count = (wiki || 0) + (global.portal.hasOwnProperty('absorption_chamber') ? global.portal.absorption_chamber.count : 0);
+                if (count < 100){
+                    let remain = 100 - count;
+                    return `<div>${loc('portal_absorption_chamber_incomplete')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
+                }
+                else {
+                    let reward = astrialProjection();
+                    return `<div>${loc(`portal_absorption_chamber_effect`,[(100000000).toLocaleString()])}</div><div>${reward}</div>`;
+                }
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    if (global.portal.absorption_chamber.count < 100){
+                        incrementStruct('absorption_chamber','portal');
+                        if (global.portal.absorption_chamber.count >= 100){
+                            global.tech.forbidden = 4;
+                        }
+                        return true;
+                    }
+                    else if (global.portal.soul_capacitor.energy >= 100000000){
+                        ascendLab();
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -2258,6 +2321,7 @@ export function bloodwar(){
                 global.stats.dkills += killed;
                 if (forgeOperating){
                     global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
                 drone_report = { encounter: true, kills: killed };
                 day_report.stats.kills.drones += killed;
@@ -2345,6 +2409,7 @@ export function bloodwar(){
                 global.stats.dkills += killed;
                 if (forgeOperating){
                     global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
                 patrol_report.kills = killed;
             }
@@ -2361,6 +2426,7 @@ export function bloodwar(){
                 global.stats.dkills += killed;
                 if (forgeOperating){
                     global.portal.soul_forge.kills += killed;
+                    soulCapacitor(killed);
                 }
                 if (killed > 0){
                     let div = 35 - Math.floor(p_on['attractor'] / 3);
@@ -2443,6 +2509,7 @@ export function bloodwar(){
             global.stats.dkills += terminated;
             if (forgeOperating){
                 global.portal.soul_forge.kills += terminated;
+                soulCapacitor(terminated);
             }
             killed += terminated;
             if (siege > 0){
@@ -2585,6 +2652,7 @@ export function bloodwar(){
             let souls = p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
             global.portal.soul_forge.kills += souls;
             day_report.soul_attractors = souls;
+            soulCapacitor(souls);
         }
 
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
@@ -2598,6 +2666,7 @@ export function bloodwar(){
             }
             day_report.stats.kills.guns = gunKills;
             global.portal.soul_forge.kills += gunKills;
+            soulCapacitor(gunKills);
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 6750 : 7500;
             if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
@@ -2619,6 +2688,7 @@ export function bloodwar(){
             day_report.soul_forge.kills = forgeKills;
             global.stats.dkills += forgeKills;
             global.portal.soul_forge.kills += forgeKills;
+            soulCapacitor(forgeKills);
             let forge_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 4500 : 5000;
             if (Math.rand(0,forge_base) === 0){
                 day_report.soul_forge.gem = true;
@@ -2664,6 +2734,7 @@ export function bloodwar(){
             }
             day_report.stats.kills.turrets = gunKills;
             global.portal.soul_forge.kills += gunKills;
+            soulCapacitor(gunKills);
             global.stats.dkills += gunKills;
             let gun_base = global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 5 ? 2700 : 3000;
             for (let i=0; i<p_on['gate_turret']; i++){
@@ -2710,6 +2781,15 @@ export function bloodwar(){
             hell_graphs[id].graph.update();
         }
     });
+}
+
+function soulCapacitor(souls){
+    if (global.race['witch_hunter'] && global.portal.hasOwnProperty('soul_capacitor') && p_on['soul_capacitor'] > 0){
+        global.portal.soul_capacitor.energy += souls;
+        if (global.portal.soul_capacitor.energy > global.portal.soul_capacitor.ecap){
+            global.portal.soul_capacitor.energy = global.portal.soul_capacitor.ecap;
+        }
+    }
 }
 
 export function hellSupression(area, val){

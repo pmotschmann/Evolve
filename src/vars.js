@@ -42,6 +42,7 @@ export var spire_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export var universe_level = 0;
+export var atrack = {t:0};
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
@@ -1169,7 +1170,7 @@ if (convertVersion(global['version']) < 103002){
 
 global['version'] = '1.3.7';
 delete global['revision'];
-global['beta'] = 4;
+global['beta'] = 5;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};

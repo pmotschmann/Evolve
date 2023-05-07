@@ -2373,7 +2373,8 @@ export const actions = {
                 Crystal(offset){ return costMultiplier('conceal_ward', offset, 5, 1.25); }
             },
             effect(){
-                return `<div>${loc('city_conceal_ward_effect',[1])}</div>`;
+                let ward = global.tech['roguemagic'] && global.tech.roguemagic >= 8 ? 1.25 : 1;
+                return `<div>${loc('city_conceal_ward_effect',[ward])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -4428,7 +4429,7 @@ const advancedChallengeList = {
     'orbit_decay': {t: 'c', e: 'lamentis' },
     //'nonstandard': {t: 'c', e: 'anathema' },
     //'gravity_well': {t: 'c', e: '???' },
-    'witch_hunter': {t: 'c', e: '???' },
+    'witch_hunter': {t: 'c', e: 'soul_sponge' },
     //'warlord': {t: 'c', e: '???' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
@@ -5267,7 +5268,10 @@ export function setAction(c_action,action,type,old,prediction){
                 }
             });
         }
-        let clss = c_action['class'] ? ` ${c_action['class']}` : ``;
+        let clss = ``;
+        if (c_action['class']){
+            clss = typeof c_action['class'] === 'function' ? ` ${c_action.class()}`: ` ${c_action['class']}`;
+        }
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
         element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);

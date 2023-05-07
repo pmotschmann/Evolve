@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -118,6 +118,9 @@ export function gameLoop(act){
                     clearInterval(intervals['mid_loop']);
                     clearInterval(intervals['long_loop']);
                 }
+                if (global.settings.at > 0){
+                    global.settings.at = atrack.t;
+                }
                 webWorker.s = false;
             }
             break;
@@ -141,8 +144,8 @@ export function gameLoop(act){
                 webWorker.mt = main_timer;
 
                 calcATime();
-                
-                if (global.settings.at > 0){
+
+                if (atrack.t > 0){
                     main_timer = Math.ceil(main_timer * 0.5);
                     mid_timer = Math.ceil(mid_timer * 0.5);
                     long_timer = Math.ceil(long_timer * 0.5);
@@ -174,12 +177,16 @@ function calcATime(){
     let dt = Date.now();
     let timeDiff = dt - global.stats.current;
     if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
+        if (global.settings.at > 11520){
+            global.settings.at = 0;
+        }
         if (timeDiff >= 120000){
             global.settings.at += Math.floor(timeDiff / 3333);
         }
         if (global.settings.at > 11520){
             global.settings.at = 11520;
         }
+        atrack.t = global.settings.at;
     }
 }
 

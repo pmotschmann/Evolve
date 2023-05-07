@@ -383,6 +383,28 @@ export function challengesPage(content){
             ]);
             subSideMenu('add',`challenges-gameplay`,'modes_orbitdecay',loc('wiki_challenges_modes_orbitdecay'));
         }
+
+        {   // Witch Hunter
+            let witch = infoBoxBuilder(modes,{ name: 'modes_witchhunter', template: 'challenges', paragraphs: 3, break: [4], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_witch_hunter`)]
+                }
+            });
+            addAchievements(witch,false,['soul_sponge']);
+            addRequirements(witch,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: `${loc(`wiki_universe_magic`)} ${loc(`wiki_resets_ascension`)}`,
+                            color: global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg'] ? true : false,
+                            link: 'wiki.html#resets-prestige-ascension'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_witchhunter',loc('wiki_challenges_modes_witchhunter'));
+        }
     }
     
     // Scenarios

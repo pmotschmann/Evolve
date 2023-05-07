@@ -4725,7 +4725,49 @@ const techs = {
         effect(){ return loc('tech_soul_capacitor_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0 };
+                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0, ecap: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    soul_capacitor: {
+        id: 'tech-soul_capacitor',
+        title: loc('tech_soul_capacitor'),
+        desc: loc('tech_soul_capacitor'),
+        category: 'hell_dimension',
+        era: 'intergalactic',
+        reqs: { forbidden: 1 },
+        grant: ['forbidden',2],
+        trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 19500000; }
+        },
+        effect(){ return loc('tech_soul_capacitor_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0, ecap: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    absorption_chamber: {
+        id: 'tech-absorption_chamber',
+        title: loc('tech_absorption_chamber'),
+        desc: loc('tech_absorption_chamber'),
+        category: 'hell_dimension',
+        era: 'intergalactic',
+        reqs: { forbidden: 2 },
+        grant: ['forbidden',3],
+        trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 20000000; }
+        },
+        effect(){ return loc('tech_absorption_chamber_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.portal['absorption_chamber'] = { count: 0 };
                 return true;
             }
             return false;
@@ -10649,6 +10691,29 @@ const techs = {
             Knowledge(){ return 185000; }
         },
         effect(){ return loc('tech_concealment_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    improved_concealment: {
+        id: 'tech-improved_concealment',
+        title: loc('tech_improved_concealment'),
+        desc: loc('tech_improved_concealment'),
+        category: 'magic',
+        era: 'intergalactic',
+        reqs: { roguemagic: 7, forbidden: 1 },
+        grant: ['roguemagic',8],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 25000; },
+            Knowledge(){ return 20000000; }
+        },
+        effect(){ return loc('tech_improved_concealment_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

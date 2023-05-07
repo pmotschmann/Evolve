@@ -2767,7 +2767,12 @@ export function loadAlchemy(name,color,basic){
         });
 
         popover(`alchemy${name}`,function(){
-            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),basic && global.tech.alchemy >= 2 ? +(tradeRatio[name] * 8).toFixed(2) : +(tradeRatio[name] * 2).toFixed(2), global.resource[name].name])}</div>`);
+            let rate = basic && global.tech.alchemy >= 2 ? tradeRatio[name] * 8 : tradeRatio[name] * 2;
+            if (global.race['witch_hunter']){ rate *= 3; }
+            if (global.stats.achieve['soul_sponge'] && global.stats.achieve.soul_sponge['mg']){
+                rate *= global.stats.achieve.soul_sponge.mg + 1;
+            }
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),+rate.toFixed(2), global.resource[name].name])}</div>`);
         },
         {
             elm: `#alchemy${name} h3`
