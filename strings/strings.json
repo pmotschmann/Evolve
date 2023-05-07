@@ -6178,7 +6178,7 @@
   "portal_soul_attractor_effect": "Attracts %0-%1 roaming souls into your Soul Forge per day.",
   "portal_soul_attractor_effect2": "Decreases souls required by Soul Forge by %0%.",
   "portal_soul_capacitor_title": "Soul Capacitor",
-  "portal_soul_capacitor_desc": "Storges spirit energy harvested by the Soul Forge.",
+  "portal_soul_capacitor_desc": "Stores spirit energy harvested by the Soul Forge.",
   "portal_soul_capacitor_effect": "Spirit Energy: %0",
   "portal_soul_capacitor_effect2": "Max Spirit Energy: %0",
   "portal_soul_capacitor_effect3": "+%0 Max Spirit Energy",
