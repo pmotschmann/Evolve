@@ -1883,7 +1883,7 @@
   "tech_soul_capacitor": "灵魂电容器",
   "tech_soul_capacitor_effect": "如果想要进行飞升，您必须积累大量的灵魂能量。灵魂电容器可以积累从失落的灵魂获取的灵魂能量。",
   "tech_absorption_chamber": "灵魂吸收器",
-  "tech_absorption_chamber_effect": "需要用于吸收灵魂能量并进行飞升的特殊装置。",
+  "tech_absorption_chamber_effect": "用于吸收灵魂能量并进行飞升的特殊装置。",
   "tech_hell_search": "搜索地狱坐标",
   "tech_hell_search_effect": "派出一队探测无人机来侦察地狱维度新发现的坐标。",
   "tech_hell_search_result": "探测无人机发现了一个远古城市的废墟！",
