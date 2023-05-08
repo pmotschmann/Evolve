@@ -37,7 +37,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','horrorfest'
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',

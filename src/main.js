@@ -1291,8 +1291,8 @@ function fastLoop(){
                     if (global.resource.Mana.amount < trasmute){
                         trasmute = global.resource.Mana.amount;
                     }
-                    if (global.resource.Crystal.amount < trasmute * 0.5){
-                        trasmute = global.resource.Crystal.amount * 2;
+                    if (global.resource.Crystal.amount < trasmute * 0.15){
+                        trasmute = Math.floor(global.resource.Crystal.amount * (1/0.15));
                     }
                     totTransmute += trasmute;
 
@@ -1304,9 +1304,9 @@ function fastLoop(){
                         }
                         modRes(res,trasmute * time_multiplier * rate);
                         modRes('Mana', -(trasmute * time_multiplier));
-                        modRes('Crystal', -(trasmute * 0.5 * time_multiplier));
+                        modRes('Crystal', -(trasmute * 0.15 * time_multiplier));
                         totMana -= trasmute;
-                        totCrystal -= trasmute * 0.5;
+                        totCrystal -= trasmute * 0.15;
                         breakdown.p.consume[res][loc('tab_alchemy')] = trasmute * rate;
                         if (global.race.universe === 'magic' && !global.resource[res].basic && global.tech.alchemy >= 2){
                             unlockAchieve('fullmetal');

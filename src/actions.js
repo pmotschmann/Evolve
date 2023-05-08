@@ -4430,7 +4430,7 @@ const advancedChallengeList = {
     //'nonstandard': {t: 'c', e: 'anathema' },
     //'gravity_well': {t: 'c', e: '???' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
-    //'warlord': {t: 'c', e: '???' },
+    //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
     'simulation': {t: 'c', e: 'thereisnospoon' },
     'junker': {t: 's', e: 'extinct_junker' },

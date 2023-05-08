@@ -2772,7 +2772,7 @@ export function loadAlchemy(name,color,basic){
             if (global.stats.achieve['soul_sponge'] && global.stats.achieve.soul_sponge['mg']){
                 rate *= global.stats.achieve.soul_sponge.mg + 1;
             }
-            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.5,loc(`resource_Crystal_name`),+rate.toFixed(2), global.resource[name].name])}</div>`);
+            return $(`<div>${loc('resource_alchemy',[1,loc(`resource_Mana_name`),0.15,loc(`resource_Crystal_name`),+rate.toFixed(2), global.resource[name].name])}</div>`);
         },
         {
             elm: `#alchemy${name} h3`

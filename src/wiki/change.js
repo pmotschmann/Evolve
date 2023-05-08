@@ -11,6 +11,7 @@ const changeList = [
             `Star Forge smelting bonus rebalanced.`,
             `Antimatter Dark Energy effect now applies to Truepath Ship power generation.`,
             `Fixed Magocracy Crystal bonus.`,
+            `Reduced Crystal cost of Alchemy.`,
         ]
     },
     {

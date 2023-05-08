@@ -161,6 +161,10 @@ export const genus_traits = {
     synthetic: {
         artifical: 1,
         powered: 1
+    },
+    eldritch: {
+        psychic: 1,
+        tormented: 1
     }
 };
 
@@ -373,6 +377,7 @@ export const traits = {
         type: 'genus',
         val: 5,
         vars(r){
+            // [Manual Gathering, Basic Jobs]
             switch (r || global.race.strong || 1){
                 case 0.25:
                     return [2,1.25];
@@ -981,6 +986,48 @@ export const traits = {
                     return [0.1,20];
                 case 3:
                     return [0.05,24];
+            }
+        },
+    },
+    psychic: {
+        name: loc('trait_psychic_name'),
+        desc: loc('trait_psychic'),
+        type: 'genus',
+        val: 25,
+        vars(r){
+            // [???]
+            switch (r || global.race.psychic || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+            }
+        },
+    },
+    tormented: {
+        name: loc('trait_tormented_name'),
+        desc: loc('trait_tormented'),
+        type: 'genus',
+        val: -25,
+        vars(r){
+            // [???]
+            switch (r || global.race.tormented || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
             }
         },
     },
@@ -2968,6 +3015,46 @@ export const traits = {
             }
         }
     },
+    dark_dweller: {
+        name: loc('trait_dark_dweller_name'),
+        desc: loc('trait_dark_dweller'),
+        type: 'major',
+        val: -10,
+        vars(r){
+            switch (r || global.race.dark_dweller || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+            }
+        }
+    },
+    swift: {
+        name: loc('trait_swift_name'),
+        desc: loc('trait_swift'),
+        type: 'major',
+        val: 10,
+        vars(r){
+            switch (r || global.race.swift || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
+            }
+        }
+    },
     ooze: { // you are some kind of ooze, everything is bad
         name: loc('trait_ooze_name'),
         desc: loc('trait_ooze'),
@@ -4050,6 +4137,26 @@ export const races = {
             gas: loc('race_nano_solar_gas'),
             gas_moon: loc('race_nano_solar_gas_moon'),
             dwarf: loc('race_nano_solar_dwarf'),
+        },
+        fanaticism: 'shapeshifter'
+    },
+    ghast: {
+        name: loc('race_ghast'),
+        desc: loc('race_ghast_desc'),
+        type: 'eldritch',
+        home: loc('race_ghast_home'),
+        entity: loc('race_ghast_entity'),
+        traits: {
+            dark_dweller: 1,
+            swift: 1,
+            strong: 0.25,
+        },
+        solar: {
+            red: loc('race_ghast_solar_red'),
+            hell: loc('race_ghast_solar_hell'),
+            gas: loc('race_ghast_solar_gas'),
+            gas_moon: loc('race_ghast_solar_gas_moon'),
+            dwarf: loc('race_ghast_solar_dwarf'),
         },
         fanaticism: 'shapeshifter'
     },
