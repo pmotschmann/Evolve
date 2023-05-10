@@ -164,7 +164,8 @@ export const genus_traits = {
     },
     eldritch: {
         psychic: 1,
-        tormented: 1
+        tormented: 1,
+        darkness: 1
     }
 };
 
@@ -1016,18 +1017,39 @@ export const traits = {
         type: 'genus',
         val: -25,
         vars(r){
-            // [???]
+            // [Morale above 100% is greatly reduced]
             switch (r || global.race.tormented || 1){
+                case 0.25:
+                    return [99];
+                case 0.5:
+                    return [95];
+                case 1:
+                    return [90];
+                case 2:
+                    return [80];
+                case 3:
+                    return [75];
+            }
+        },
+    },
+    darkness: {
+        name: loc('trait_darkness_name'),
+        desc: loc('trait_darkness'),
+        type: 'genus',
+        val: 0,
+        vars(r){
+            // [Sunny Days less frequent]
+            switch (r || global.race.darkness || 1){
                 case 0.25:
                     return [1];
                 case 0.5:
-                    return [1];
+                    return [2];
                 case 1:
-                    return [1];
+                    return [3];
                 case 2:
-                    return [1];
+                    return [4];
                 case 3:
-                    return [1];
+                    return [5];
             }
         },
     },
@@ -4149,7 +4171,8 @@ export const races = {
         traits: {
             dark_dweller: 1,
             swift: 1,
-            strong: 0.25,
+            carnivore: 1,
+            strong: 0.25
         },
         solar: {
             red: loc('race_ghast_solar_red'),
@@ -4158,7 +4181,7 @@ export const races = {
             gas_moon: loc('race_ghast_solar_gas_moon'),
             dwarf: loc('race_ghast_solar_dwarf'),
         },
-        fanaticism: 'shapeshifter'
+        fanaticism: 'swift'
     },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),

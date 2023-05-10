@@ -620,7 +620,12 @@ export function descension(){
 
     unlockAchieve(`squished`,true);
     unlockAchieve(`extinct_${global.race.species}`);
-    unlockAchieve(`corrupted`);
+    if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+        unlockAchieve(`nightmare`);
+    }
+    else {
+        unlockAchieve(`corrupted`);
+    }
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
     }

@@ -327,6 +327,11 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${loc(`tech_vax_strat3_bd`)}</span> <span class="has-text-success"> +${gain}%</span></p>`);
         }
 
+        if (global.city['tormented']){
+            total -= global.city.tormented;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`trait_tormented_name`)}</span> <span class="has-text-danger"> -${global.city.tormented}%</span></p>`);
+        }
+
         total = +(total).toFixed(1);
 
         let container = $(`<div></div>`);
@@ -2793,6 +2798,18 @@ function fastLoop(){
         }
         else {
             global.city.morale.rev = 0;
+        }
+
+        if (global.race['tormented']){
+            if (morale > 100){
+                let excess = morale - 100;
+                excess = Math.ceil(excess * traits.tormented.vars()[0] / 100);
+                morale -= excess;
+                global.city['tormented'] = excess;
+            }
+            else {
+                global.city['tormented'] = 0;
+            }
         }
 
         global.city.morale.potential = +(morale).toFixed(1);
@@ -10016,6 +10033,11 @@ function longLoop(){
                         global.race['rainbow_active'] = Math.rand(10,20);
                     }
                     global.city.calendar.weather = 2;
+                    if (global.race['darkness']){
+                        if (Math.rand(0, 7 - traits.darkness.vars()[0]) === 0){
+                            global.city.calendar.weather = 1;
+                        }
+                    }
                 }
                 if (temp === 0){ // Get colder
                     let new_temp = global.city.calendar.temp - 1;

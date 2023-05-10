@@ -390,7 +390,7 @@ export function challengesPage(content){
                     1: [loc(`evo_challenge_witch_hunter`)]
                 }
             });
-            addAchievements(witch,false,['soul_sponge']);
+            addAchievements(witch,false,['soul_sponge','nightmare']);
             addRequirements(witch,[
                 {
                     text: `wiki_challenges_reqs_reset`,

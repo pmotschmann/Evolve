@@ -355,6 +355,7 @@ export const actions = {
                     global.tech['evo_insectoid'] = 1;
                     global.tech['evo_mammals'] = 1;
                     global.tech['evo_eggshell'] = 1;
+                    global.tech['evo_eldritch'] = 1;
                     global.tech['evo_aquatic'] = 1;
                     global.tech['evo_fey'] = 1;
                     global.tech['evo_sand'] = 1;
@@ -648,6 +649,31 @@ export const actions = {
             },
             queue_complete(){ return global.tech['evo'] && global.tech.evo === 6 ? 1 : 0; },
             emblem(){ return format_emblem('genus_demonic'); }
+        },
+        eldritch: {
+            id: 'evolution-eldritch',
+            title: loc('evo_eldritch_title'),
+            desc: loc('evo_eldritch_desc'),
+            reqs: { evo: 5, evo_eldritch: 1 },
+            grant: ['evo',7],
+            condition(){
+                let allowed = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? true : false;
+                return allowed && genus_condition(5);
+            },
+            cost: {
+                DNA(){ return 260; }
+            },
+            effect: loc('evo_eldritch_effect'),
+            action(){
+                if (payCosts($(this)[0])){
+                    global.tech.evo_eldritch = 2;
+                    global.evolution['final'] = 100;
+                    return true;
+                }
+                return false;
+            },
+            queue_complete(){ return global.tech['evo'] && global.tech.evo === 6 ? 1 : 0; },
+            emblem(){ return format_emblem('genus_eldritch'); }
         },
         aquatic: {
             id: 'evolution-aquatic',
@@ -6937,6 +6963,8 @@ function basicHousingLabel(){
             return loc('city_basic_housing_sand_title');
         case 'polar':
             return loc('city_basic_housing_polar_title');
+        case 'eldritch':
+            return loc('city_basic_housing_eldritch_title');
     }
 
     return global.city.ptrait.includes('trashed') ? loc('city_basic_housing_trash_title') : loc('city_basic_housing_title');
@@ -6961,6 +6989,8 @@ function mediumHousingLabel(){
     switch (races[global.race.species].type){
         case 'avian':
             return loc('city_cottage_title6');
+        case 'eldritch':
+            return loc('city_cottage_title8');
     }
 
     return loc('city_cottage_title1');
@@ -6987,6 +7017,8 @@ function largeHousingLabel(basic){
             return loc('city_apartment_title4');
         case 'giant':
             return loc('city_apartment_title7');
+        case 'eldritch':
+            return loc('city_apartment_title8');
     }
 
     return loc('city_apartment_title1');

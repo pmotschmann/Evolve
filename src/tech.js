@@ -4587,6 +4587,7 @@ const techs = {
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
         grant: ['waygate',4],
+        not_trait: ['witch_hunter'],
         cost: {
             Species(){ return popCost(1000); },
             Knowledge(){ return 55000000; },
@@ -10714,6 +10715,30 @@ const techs = {
             Knowledge(){ return 20000000; }
         },
         effect(){ return loc('tech_improved_concealment_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    outerplane_summon: {
+        id: 'tech-outerplane_summon',
+        title: loc('tech_outerplane_summon'),
+        desc: loc('tech_outerplane_summon'),
+        category: 'magic',
+        era: 'dimensional',
+        reqs: { roguemagic: 8, forbidden: 4, hell_spire: 10, b_stone: 2, waygate: 3 },
+        grant: ['forbidden',5],
+        condition(){
+            return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
+        },
+        cost: {
+            Mana(){ return 60000; },
+            Knowledge(){ return 60000000; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){ return loc('tech_outerplane_summon_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 return true;

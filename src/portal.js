@@ -472,8 +472,13 @@ const fortressModules = {
                     return `<div>${loc('portal_absorption_chamber_incomplete')}</div><div class="has-text-special">${loc('space_dwarf_collider_effect2',[remain])}</div>`;
                 }
                 else {
-                    let reward = astrialProjection();
-                    return `<div>${loc(`portal_absorption_chamber_effect`,[(100000000).toLocaleString()])}</div><div>${reward}</div>`;
+                    if (global.tech.forbidden === 5){
+                        return `<div>${loc('portal_absorption_chamber_effect_eld',[(100000000).toLocaleString()])}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
+                    }
+                    else {
+                        let reward = astrialProjection();
+                        return `<div>${loc(`portal_absorption_chamber_effect`,[(100000000).toLocaleString()])}</div><div>${reward}</div>`;
+                    }
                 }
             },
             action(){
@@ -486,7 +491,12 @@ const fortressModules = {
                         return true;
                     }
                     else if (global.portal.soul_capacitor.energy >= 100000000){
-                        ascendLab();
+                        if (global.tech.forbidden === 5){
+                            descension();
+                        }
+                        else {
+                            ascendLab();
+                        }
                         return true;
                     }
                 }
