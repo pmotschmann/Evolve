@@ -2,7 +2,7 @@ import { global, seededRandom, save, webWorker, power_generated } from './vars.j
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween } from './functions.js';
+import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween, randomKey } from './functions.js';
 import { setResourceName } from './resources.js';
 import { highPopAdjust } from './prod.js';
 import { buildGarrison, govEffect } from './civics.js';
@@ -156,7 +156,7 @@ export const genus_traits = {
     angelic: {
         blissful: 1,
         pompous: 1,
-        holy: 1,
+        holy: 1
     },
     synthetic: {
         artifical: 1,
@@ -165,7 +165,8 @@ export const genus_traits = {
     eldritch: {
         psychic: 1,
         tormented: 1,
-        darkness: 1
+        darkness: 1,
+        unfathomable: 1
     }
 };
 
@@ -994,7 +995,7 @@ export const traits = {
         name: loc('trait_psychic_name'),
         desc: loc('trait_psychic'),
         type: 'genus',
-        val: 25,
+        val: 15,
         vars(r){
             // [???]
             switch (r || global.race.psychic || 1){
@@ -1036,7 +1037,7 @@ export const traits = {
         name: loc('trait_darkness_name'),
         desc: loc('trait_darkness'),
         type: 'genus',
-        val: 0,
+        val: 1,
         vars(r){
             // [Sunny Days less frequent]
             switch (r || global.race.darkness || 1){
@@ -1050,6 +1051,27 @@ export const traits = {
                     return [4];
                 case 3:
                     return [5];
+            }
+        },
+    },
+    unfathomable: {
+        name: loc('trait_unfathomable_name'),
+        desc: loc('trait_unfathomable'),
+        type: 'genus',
+        val: 10,
+        vars(r){
+            // [Crazy Culture]
+            switch (r || global.race.unfathomable || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [2];
+                case 2:
+                    return [2];
+                case 3:
+                    return [3];
             }
         },
     },
@@ -3045,6 +3067,26 @@ export const traits = {
         vars(r){
             switch (r || global.race.dark_dweller || 1){
                 case 0.25:
+                    return [90];
+                case 0.5:
+                    return [75];
+                case 1:
+                    return [60];
+                case 2:
+                    return [45];
+                case 3:
+                    return [30];
+            }
+        }
+    },
+    swift: {
+        name: loc('trait_swift_name'),
+        desc: loc('trait_swift'),
+        type: 'major',
+        val: 10,
+        vars(r){
+            switch (r || global.race.swift || 1){
+                case 0.25:
                     return [1];
                 case 0.5:
                     return [1];
@@ -3057,13 +3099,13 @@ export const traits = {
             }
         }
     },
-    swift: {
-        name: loc('trait_swift_name'),
-        desc: loc('trait_swift'),
+    anthropophagite: {
+        name: loc('trait_anthropophagite_name'),
+        desc: loc('trait_anthropophagite'),
         type: 'major',
-        val: 10,
+        val: -2,
         vars(r){
-            switch (r || global.race.swift || 1){
+            switch (r || global.race.anthropophagite || 1){
                 case 0.25:
                     return [1];
                 case 0.5:
@@ -3221,7 +3263,8 @@ export const races = {
             gas_moon: loc('race_human_solar_gas_moon'),
             dwarf: loc('race_human_solar_dwarf'),
         },
-        fanaticism: 'none'
+        fanaticism: 'none',
+        basic(){ return false; }
     },
     human: {
         name: loc('race_human'),
@@ -3240,7 +3283,8 @@ export const races = {
             gas_moon: loc('race_human_solar_gas_moon'),
             dwarf: loc('race_human_solar_dwarf'),
         },
-        fanaticism: 'creative'
+        fanaticism: 'creative',
+        basic(){ return true; }
     },
     elven: {
         name: loc('race_elven'),
@@ -3259,7 +3303,8 @@ export const races = {
             gas_moon: loc(altRace('elven') ? 'race_xmas_elf_solar_gas_moon' : 'race_elven_solar_gas_moon'),
             dwarf: loc(altRace('elven') ? 'race_xmas_elf_solar_dwarf' : 'race_elven_solar_dwarf'),
         },
-        fanaticism: 'studious'
+        fanaticism: 'studious',
+        basic(){ return true; }
     },
     orc: {
         name: loc('race_orc'),
@@ -3278,7 +3323,8 @@ export const races = {
             gas_moon: loc('race_orc_solar_gas_moon'),
             dwarf: loc('race_orc_solar_dwarf'),
         },
-        fanaticism: 'brute'
+        fanaticism: 'brute',
+        basic(){ return true; }
     },
     cath: {
         name: loc('race_cath'),
@@ -3297,7 +3343,8 @@ export const races = {
             gas_moon: loc('race_cath_solar_gas_moon'),
             dwarf: loc('race_cath_solar_dwarf'),
         },
-        fanaticism: 'curious'
+        fanaticism: 'curious',
+        basic(){ return true; }
     },
     wolven: {
         name: altRace('wolven') ? loc('race_rabbit') : loc('race_wolven'),
@@ -3316,7 +3363,8 @@ export const races = {
             gas_moon: altRace('wolven') ? loc('race_rabbit_solar_gas_moon') : loc('race_wolven_solar_gas_moon'),
             dwarf: altRace('wolven') ? loc('race_rabbit_solar_dwarf') : loc('race_wolven_solar_dwarf'),
         },
-        fanaticism: 'tracker'
+        fanaticism: 'tracker',
+        basic(){ return true; }
     },
     vulpine: {
         name: altRace('vulpine') ? loc('race_chocolate_rabbit') : (loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine')),
@@ -3335,7 +3383,8 @@ export const races = {
             gas_moon: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_gas_moon') : loc('race_vulpine_solar_gas_moon'),
             dwarf: altRace('vulpine') ? loc('race_chocolate_rabbit_solar_dwarf') : loc('race_vulpine_solar_dwarf'),
         },
-        fanaticism: 'playful'
+        fanaticism: 'playful',
+        basic(){ return true; }
     },
     centaur: {
         name: loc(altRace('centaur') ? 'race_reindeer' : 'race_centaur'),
@@ -3354,7 +3403,8 @@ export const races = {
             gas_moon: loc(altRace('centaur') ? 'race_reindeer_solar_gas_moon' : 'race_centaur_solar_gas_moon'),
             dwarf: loc(altRace('centaur') ? 'race_reindeer_solar_dwarf' : 'race_centaur_solar_dwarf'),
         },
-        fanaticism: 'sniper'
+        fanaticism: 'sniper',
+        basic(){ return true; }
     },
     rhinotaur: {
         name: loc('race_rhinotaur'),
@@ -3373,7 +3423,8 @@ export const races = {
             gas_moon: loc('race_rhinotaur_solar_gas_moon'),
             dwarf: loc('race_rhinotaur_solar_dwarf'),
         },
-        fanaticism: 'rage'
+        fanaticism: 'rage',
+        basic(){ return true; }
     },
     capybara: {
         name: loc(altRace('capybara') ? 'race_donkey' : 'race_capybara'),
@@ -3392,7 +3443,8 @@ export const races = {
             gas_moon: loc(altRace('capybara') ? 'race_donkey_solar_gas_moon' : 'race_capybara_solar_gas_moon'),
             dwarf: loc(altRace('capybara') ? 'race_donkey_solar_dwarf' : 'race_capybara_solar_dwarf'),
         },
-        fanaticism: 'calm'
+        fanaticism: 'calm',
+        basic(){ return true; }
     },
     /*bearkin: {
         name: loc('race_bearkin'),
@@ -3410,7 +3462,8 @@ export const races = {
             gas_moon: loc('race_bearkin_solar_gas_moon'),
             dwarf: loc('race_bearkin_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },
     porkenari: {
         name: loc('race_porkenari'),
@@ -3428,7 +3481,8 @@ export const races = {
             gas_moon: loc('race_porkenari_solar_gas_moon'),
             dwarf: loc('race_porkenari_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },
     hedgeoken: {
         name: loc('race_hedgeoken'),
@@ -3446,7 +3500,8 @@ export const races = {
             gas_moon: loc('race_hedgeoken_solar_gas_moon'),
             dwarf: loc('race_hedgeoken_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },*/
     kobold: {
         name: loc('race_kobold'),
@@ -3465,7 +3520,8 @@ export const races = {
             gas_moon: loc('race_kobold_solar_gas_moon'),
             dwarf: loc('race_kobold_solar_dwarf'),
         },
-        fanaticism: 'pack_rat'
+        fanaticism: 'pack_rat',
+        basic(){ return true; }
     },
     goblin: {
         name: loc('race_goblin'),
@@ -3484,7 +3540,8 @@ export const races = {
             gas_moon: loc('race_goblin_solar_gas_moon'),
             dwarf: loc('race_goblin_solar_dwarf'),
         },
-        fanaticism: 'merchant'
+        fanaticism: 'merchant',
+        basic(){ return true; }
     },
     gnome: {
         name: loc('race_gnome'),
@@ -3503,7 +3560,8 @@ export const races = {
             gas_moon: loc('race_gnome_solar_gas_moon'),
             dwarf: loc('race_gnome_solar_dwarf'),
         },
-        fanaticism: 'smart'
+        fanaticism: 'smart',
+        basic(){ return true; }
     },
     ogre: {
         name: loc('race_ogre'),
@@ -3522,7 +3580,8 @@ export const races = {
             gas_moon: loc('race_ogre_solar_gas_moon'),
             dwarf: loc('race_ogre_solar_dwarf'),
         },
-        fanaticism: 'tough'
+        fanaticism: 'tough',
+        basic(){ return true; }
     },
     cyclops: {
         name: loc('race_cyclops'),
@@ -3541,7 +3600,8 @@ export const races = {
             gas_moon: loc('race_cyclops_solar_gas_moon'),
             dwarf: loc('race_cyclops_solar_dwarf'),
         },
-        fanaticism: 'intelligent'
+        fanaticism: 'intelligent',
+        basic(){ return true; }
     },
     troll: {
         name: loc('race_troll'),
@@ -3560,7 +3620,8 @@ export const races = {
             gas_moon: loc('race_troll_solar_gas_moon'),
             dwarf: loc('race_troll_solar_dwarf'),
         },
-        fanaticism: 'regenerative'
+        fanaticism: 'regenerative',
+        basic(){ return true; }
     },
     tortoisan: {
         name: loc('race_tortoisan'),
@@ -3579,7 +3640,8 @@ export const races = {
             gas_moon: loc('race_tortoisan_solar_gas_moon'),
             dwarf: loc('race_tortoisan_solar_dwarf'),
         },
-        fanaticism: 'armored'
+        fanaticism: 'armored',
+        basic(){ return true; }
     },
     gecko: {
         name: loc('race_gecko'),
@@ -3598,7 +3660,8 @@ export const races = {
             gas_moon: loc('race_gecko_solar_gas_moon'),
             dwarf: loc('race_gecko_solar_dwarf'),
         },
-        fanaticism: 'optimistic'
+        fanaticism: 'optimistic',
+        basic(){ return true; }
     },
     slitheryn: {
         name: loc('race_slitheryn'),
@@ -3617,7 +3680,8 @@ export const races = {
             gas_moon: loc('race_slitheryn_solar_gas_moon'),
             dwarf: loc('race_slitheryn_solar_dwarf'),
         },
-        fanaticism: 'slow_digestion'
+        fanaticism: 'slow_digestion',
+        basic(){ return true; }
     },
     arraak: {
         name: loc(altRace('arraak') ? 'race_turkey' : 'race_arraak'),
@@ -3636,7 +3700,8 @@ export const races = {
             gas_moon: loc(altRace('arraak') ? 'race_turkey_solar_gas_moon' : 'race_arraak_solar_gas_moon'),
             dwarf: loc(altRace('arraak') ? 'race_turkey_solar_dwarf' : 'race_arraak_solar_dwarf'),
         },
-        fanaticism: 'resourceful'
+        fanaticism: 'resourceful',
+        basic(){ return true; }
     },
     pterodacti: {
         name: loc('race_pterodacti'),
@@ -3655,7 +3720,8 @@ export const races = {
             gas_moon: loc('race_pterodacti_solar_gas_moon'),
             dwarf: loc('race_pterodacti_solar_dwarf'),
         },
-        fanaticism: 'leathery'
+        fanaticism: 'leathery',
+        basic(){ return true; }
     },
     dracnid: {
         name: loc('race_dracnid'),
@@ -3674,7 +3740,8 @@ export const races = {
             gas_moon: loc('race_dracnid_solar_gas_moon'),
             dwarf: loc('race_dracnid_solar_dwarf'),
         },
-        fanaticism: 'hoarder'
+        fanaticism: 'hoarder',
+        basic(){ return true; }
     },
     entish: {
         name: loc(altRace('entish') ? 'race_spruce' : 'race_entish'),
@@ -3693,7 +3760,8 @@ export const races = {
             gas_moon: loc(altRace('entish') ? 'race_spruce_solar_gas_moon' : 'race_entish_solar_gas_moon'),
             dwarf: loc(altRace('entish') ? 'race_spruce_solar_dwarf' : 'race_entish_solar_dwarf'),
         },
-        fanaticism: 'kindling_kindred'
+        fanaticism: 'kindling_kindred',
+        basic(){ return true; }
     },
     cacti: {
         name: loc('race_cacti'),
@@ -3712,7 +3780,8 @@ export const races = {
             gas_moon: loc('race_cacti_solar_gas_moon'),
             dwarf: loc('race_cacti_solar_dwarf'),
         },
-        fanaticism: 'hyper'
+        fanaticism: 'hyper',
+        basic(){ return true; }
     },
     pinguicula: {
         name: loc('race_pinguicula'),
@@ -3731,7 +3800,8 @@ export const races = {
             gas_moon: loc('race_pinguicula_solar_gas_moon'),
             dwarf: loc('race_pinguicula_solar_dwarf'),
         },
-        fanaticism: 'sticky'
+        fanaticism: 'sticky',
+        basic(){ return true; }
     },
     sporgar: {
         name: loc('race_sporgar'),
@@ -3750,7 +3820,8 @@ export const races = {
             gas_moon: loc('race_sporgar_solar_gas_moon'),
             dwarf: loc('race_sporgar_solar_dwarf'),
         },
-        fanaticism: 'infectious'
+        fanaticism: 'infectious',
+        basic(){ return true; }
     },
     shroomi: {
         name: loc('race_shroomi'),
@@ -3769,7 +3840,8 @@ export const races = {
             gas_moon: loc('race_shroomi_solar_gas_moon'),
             dwarf: loc('race_shroomi_solar_dwarf'),
         },
-        fanaticism: 'toxic'
+        fanaticism: 'toxic',
+        basic(){ return true; }
     },
     moldling: {
         name: loc('race_moldling'),
@@ -3788,7 +3860,8 @@ export const races = {
             gas_moon: loc('race_moldling_solar_gas_moon'),
             dwarf: loc('race_moldling_solar_dwarf'),
         },
-        fanaticism: 'infiltrator'
+        fanaticism: 'infiltrator',
+        basic(){ return true; }
     },
     mantis: {
         name: loc('race_mantis'),
@@ -3807,7 +3880,8 @@ export const races = {
             gas_moon: loc('race_mantis_solar_gas_moon'),
             dwarf: loc('race_mantis_solar_dwarf'),
         },
-        fanaticism: 'cannibalize'
+        fanaticism: 'cannibalize',
+        basic(){ return true; }
     },
     scorpid: {
         name: loc('race_scorpid'),
@@ -3826,7 +3900,8 @@ export const races = {
             gas_moon: loc('race_scorpid_solar_gas_moon'),
             dwarf: loc('race_scorpid_solar_dwarf'),
         },
-        fanaticism: 'claws'
+        fanaticism: 'claws',
+        basic(){ return true; }
     },
     antid: {
         name: loc('race_antid'),
@@ -3845,7 +3920,8 @@ export const races = {
             gas_moon: loc('race_antid_solar_gas_moon'),
             dwarf: loc('race_antid_solar_dwarf'),
         },
-        fanaticism: 'hivemind'
+        fanaticism: 'hivemind',
+        basic(){ return true; }
     },
     sharkin: {
         name: loc('race_sharkin'),
@@ -3864,7 +3940,8 @@ export const races = {
             gas_moon: loc('race_sharkin_solar_gas_moon'),
             dwarf: loc('race_sharkin_solar_dwarf'),
         },
-        fanaticism: 'blood_thirst'
+        fanaticism: 'blood_thirst',
+        basic(){ return ['oceanic','swamp'].includes(global.city.biome) ? true : false; }
     },
     octigoran: {
         name: loc('race_octigoran'),
@@ -3883,7 +3960,8 @@ export const races = {
             gas_moon: loc('race_octigoran_solar_gas_moon'),
             dwarf: loc('race_octigoran_solar_dwarf'),
         },
-        fanaticism: 'suction_grip'
+        fanaticism: 'suction_grip',
+        basic(){ return ['oceanic','swamp'].includes(global.city.biome) ? true : false; }
     },
     dryad: {
         name: loc('race_dryad'),
@@ -3903,7 +3981,8 @@ export const races = {
             gas_moon: loc('race_dryad_solar_gas_moon'),
             dwarf: loc('race_dryad_solar_dwarf'),
         },
-        fanaticism: 'befuddle'
+        fanaticism: 'befuddle',
+        basic(){ return ['forest','swamp','taiga'].includes(global.city.biome) ? true : false; }
     },
     satyr: {
         name: loc('race_satyr'),
@@ -3922,7 +4001,8 @@ export const races = {
             gas_moon: loc('race_satyr_solar_gas_moon'),
             dwarf: loc('race_satyr_solar_dwarf'),
         },
-        fanaticism: 'musical'
+        fanaticism: 'musical',
+        basic(){ return ['forest','swamp','taiga'].includes(global.city.biome) ? true : false; }
     },
     phoenix: {
         name: loc('race_phoenix'),
@@ -3941,7 +4021,8 @@ export const races = {
             gas_moon: loc('race_phoenix_solar_gas_moon'),
             dwarf: loc('race_phoenix_solar_dwarf'),
         },
-        fanaticism: 'revive'
+        fanaticism: 'revive',
+        basic(){ return ['volcanic','ashland'].includes(global.city.biome) ? true : false; }
     },
     salamander: {
         name: loc('race_salamander'),
@@ -3960,7 +4041,8 @@ export const races = {
             gas_moon: loc('race_salamander_solar_gas_moon'),
             dwarf: loc('race_salamander_solar_dwarf'),
         },
-        fanaticism: 'forge'
+        fanaticism: 'forge',
+        basic(){ return ['volcanic','ashland'].includes(global.city.biome) ? true : false; }
     },
     yeti: {
         name: loc(altRace('yeti') ? 'race_snowman' : 'race_yeti'),
@@ -3979,7 +4061,8 @@ export const races = {
             gas_moon: loc(altRace('yeti') ? 'race_snowman_solar_gas_moon' : 'race_yeti_solar_gas_moon'),
             dwarf: loc(altRace('yeti') ? 'race_snowman_solar_dwarf' : 'race_yeti_solar_dwarf'),
         },
-        fanaticism: 'blurry'
+        fanaticism: 'blurry',
+        basic(){ return ['tundra','taiga'].includes(global.city.biome) ? true : false; }
     },
     wendigo: {
         name: loc(altRace('wendigo') ? 'race_krampus' : 'race_wendigo'),
@@ -3999,7 +4082,8 @@ export const races = {
             gas_moon: loc(altRace('wendigo') ? 'race_krampus_solar_gas_moon' : 'race_wendigo_solar_gas_moon'),
             dwarf: loc(altRace('wendigo') ? 'race_krampus_solar_dwarf' : 'race_wendigo_solar_dwarf'),
         },
-        fanaticism: 'ghostly'
+        fanaticism: 'ghostly',
+        basic(){ return ['tundra','taiga'].includes(global.city.biome) ? true : false; }
     },
     tuskin: {
         name: loc('race_tuskin'),
@@ -4018,7 +4102,8 @@ export const races = {
             gas_moon: loc('race_tuskin_solar_gas_moon'),
             dwarf: loc('race_tuskin_solar_dwarf'),
         },
-        fanaticism: 'lawless'
+        fanaticism: 'lawless',
+        basic(){ return ['desert','ashland'].includes(global.city.biome) ? true : false; }
     },
     kamel: {
         name: loc('race_kamel'),
@@ -4037,7 +4122,8 @@ export const races = {
             gas_moon: loc('race_kamel_solar_gas_moon'),
             dwarf: loc('race_kamel_solar_dwarf')
         },
-        fanaticism: 'humpback'
+        fanaticism: 'humpback',
+        basic(){ return ['desert','ashland'].includes(global.city.biome) ? true : false; }
     },
     balorg: {
         name: loc('race_balorg'),
@@ -4057,7 +4143,8 @@ export const races = {
             gas_moon: loc('race_balorg_solar_gas_moon'),
             dwarf: loc('race_balorg_solar_dwarf'),
         },
-        fanaticism: 'fiery'
+        fanaticism: 'fiery',
+        basic(){ return global.city.biome === 'hellscape' ? true : false; }
     },
     imp: {
         name: loc('race_imp'),
@@ -4077,7 +4164,8 @@ export const races = {
             gas_moon: loc('race_imp_solar_gas_moon'),
             dwarf: loc('race_imp_solar_dwarf'),
         },
-        fanaticism: 'conniving'
+        fanaticism: 'conniving',
+        basic(){ return global.city.biome === 'hellscape' ? true : false; }
     },
     seraph: {
         name: loc(altRace('seraph') ? 'race_cherub' : 'race_seraph'),
@@ -4097,7 +4185,8 @@ export const races = {
             gas_moon: loc(altRace('seraph') ? 'race_cherub_solar_gas_moon' : 'race_seraph_solar_gas_moon'),
             dwarf: loc(altRace('seraph') ? 'race_cherub_solar_dwarf' : 'race_seraph_solar_dwarf'),
         },
-        fanaticism: 'spiritual'
+        fanaticism: 'spiritual',
+        basic(){ return global.city.biome === 'eden' ? true : false; }
     },
     unicorn: {
         name: loc('race_unicorn'),
@@ -4117,7 +4206,8 @@ export const races = {
             gas_moon: loc('race_unicorn_solar_gas_moon'),
             dwarf: loc('race_unicorn_solar_dwarf'),
         },
-        fanaticism: 'magnificent'
+        fanaticism: 'magnificent',
+        basic(){ return global.city.biome === 'eden' ? true : false; }
     },
     synth: {
         name: loc('race_synth'),
@@ -4140,7 +4230,8 @@ export const races = {
             gas_moon: loc('race_synth_solar_gas_moon'),
             dwarf: loc('race_synth_solar_dwarf'),
         },
-        fanaticism: 'logical'
+        fanaticism: 'logical',
+        basic(){ return false; }
     },
     nano: {
         name: loc('race_nano'),
@@ -4160,7 +4251,8 @@ export const races = {
             gas_moon: loc('race_nano_solar_gas_moon'),
             dwarf: loc('race_nano_solar_dwarf'),
         },
-        fanaticism: 'shapeshifter'
+        fanaticism: 'shapeshifter',
+        basic(){ return false; }
     },
     ghast: {
         name: loc('race_ghast'),
@@ -4171,7 +4263,7 @@ export const races = {
         traits: {
             dark_dweller: 1,
             swift: 1,
-            carnivore: 1,
+            anthropophagite: 1,
             strong: 0.25
         },
         solar: {
@@ -4181,7 +4273,8 @@ export const races = {
             gas_moon: loc('race_ghast_solar_gas_moon'),
             dwarf: loc('race_ghast_solar_dwarf'),
         },
-        fanaticism: 'swift'
+        fanaticism: 'swift',
+        basic(){ return false; }
     },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
@@ -4224,7 +4317,8 @@ export const races = {
             gas_moon: altRace('junker') ? loc('race_ghoul_solar_gas_moon') : loc('race_junker_solar_gas_moon'),
             dwarf: altRace('junker') ? loc('race_ghoul_solar_dwarf') : loc('race_junker_solar_dwarf'),
         },
-        fanaticism: 'none'
+        fanaticism: 'none',
+        basic(){ return false; }
     },
     sludge: {
         name: loc('race_sludge'),
@@ -4277,7 +4371,8 @@ export const races = {
             gas_moon: loc('race_sludge_solar_gas_moon'),
             dwarf: loc('race_sludge_solar_dwarf'),
         },
-        fanaticism: 'ooze'
+        fanaticism: 'ooze',
+        basic(){ return false; }
     },
     custom: customRace()
 };
@@ -4302,7 +4397,8 @@ export const genusVars = {
     sand: {},
     demonic: {},
     angelic: {},
-    synthetic: {}
+    synthetic: {},
+    eldritch: {}
 };
 
 Object.keys(genusVars).forEach(function(k){
@@ -4348,7 +4444,8 @@ function customRace(){
                 gas_moon: global.custom.race0.gas_moon,
                 dwarf: global.custom.race0.dwarf,
             },
-            fanaticism: fanatic
+            fanaticism: fanatic,
+            basic(){ return false; }
         };
     }
     else {
@@ -4733,7 +4830,7 @@ function adjustFood() {
     else {
         jobDisabled.push('farmer');
     }
-    if ((global.race['carnivore'] && !global.race['herbivore']) || global.race['soul_eater']) {
+    if ((global.race['carnivore'] && !global.race['herbivore']) || global.race['soul_eater'] || global.race['unfathomable']) {
         jobEnabled.push('hunter');
         jobDisabled.push('unemployed');
     }
@@ -4808,6 +4905,18 @@ export function cleanAddTrait(trait){
         case 'carnivore':
         case 'herbivore':
             adjustFood();
+            break;
+        case 'unfathomable':
+            adjustFood();
+            if (!global.city.hasOwnProperty('surfaceDwellers')){
+                global.city['surfaceDwellers'] = [];
+            }
+            while (global.city.surfaceDwellers.length < traits.unfathomable.vars()[0]){
+                global.city.surfaceDwellers.push(basicRace());
+            }
+            if (global.city.surfaceDwellers.length > traits.unfathomable.vars()[0]){
+                global.city.surfaceDwellers.length = traits.unfathomable.vars()[0];
+            }
             break;
         case 'flier':
             setResourceName('Stone');
@@ -5046,6 +5155,7 @@ export function cleanRemoveTrait(trait,rank){
         case 'detritivore':
         case 'carnivore':
         case 'herbivore':
+        case 'unfathomable':
             adjustFood();
             break;
         case 'flier':
@@ -5546,4 +5656,10 @@ function foxColor(){
         return loc(`color_${global.race.fox_color}`);
     }
     return loc(`color_red`);
+}
+
+export function basicRace(){
+    let basicList = Object.keys(races).filter(function(r){ return races[r].basic() });
+    let key = randomKey(basicList);
+    return basicList[key];
 }

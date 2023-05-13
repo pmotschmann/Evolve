@@ -93,8 +93,8 @@ const techs = {
     },
     sundial: {
         id: 'tech-sundial',
-        title: loc('tech_sundial'),
-        desc: loc('tech_sundial_desc'),
+        title(){ return global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial'); },
+        desc(){ return global.race['unfathomable'] ? loc('tech_moondial_desc') : loc('tech_sundial_desc'); },
         category: 'science',
         era: 'primitive',
         reqs: { primitive: 2 },
@@ -103,7 +103,7 @@ const techs = {
             Lumber(){ return 8; },
             Stone(){ return 10; }
         },
-        effect: loc('tech_sundial_effect'),
+        effect(){ return global.race['unfathomable'] ? loc('tech_moondial_effect') : loc('tech_sundial_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 messageQueue(loc('tech_sundial_msg'),'info',false,['progress']);
@@ -518,7 +518,7 @@ const techs = {
         grant: ['s_lodge',1],
         condition(){
             return (((global.race.species === 'wendigo' || global.race['detritivore']) && !global.race['carnivore'] && !global.race['herbivore'])
-              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical']) ? true : false;
+              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical'] || global.race['unfathomable']) ? true : false;
         },
         cost: {
             Knowledge(){ return global.race['artifical'] ? 10000 : 180; }
@@ -646,7 +646,7 @@ const techs = {
         condition(){
             return (global.race['herbivore'] || (!global.race['carnivore'] && !global.race['detritivore'] && !global.race['soul_eater'])) ? true : false;
         },
-        not_trait: ['cataclysm','artifical','lone_survivor'],
+        not_trait: ['cataclysm','artifical','lone_survivor','unfathomable'],
         grant: ['agriculture',1],
         cost: {
             Knowledge(){ return 10; }

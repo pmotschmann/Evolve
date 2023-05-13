@@ -1818,6 +1818,10 @@ export function tradeSellPrice(res){
     if (global.race['inflation']){
         price *= 1 + (global.race.inflation / 500);
     }
+    if (global.race['witch_hunter'] && global.resource.Sus.amount > 50){
+        let wariness = (global.resource.Sus.amount - 50) / 52;
+        price *= 1 - wariness;
+    }
     price = +(price).toFixed(1);
     return price;
 }
@@ -1849,6 +1853,10 @@ export function tradeBuyPrice(res){
     }
     if (global.race['quarantine']){
         price *= 1 + Math.round(global.race.quarantine ** 3.5);
+    }
+    if (global.race['witch_hunter'] && global.resource.Sus.amount > 50){
+        let wariness = (global.resource.Sus.amount - 50) / 8;
+        price *= 1 + wariness;
     }
     price = +(price).toFixed(1);
     return price;

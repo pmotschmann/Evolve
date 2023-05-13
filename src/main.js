@@ -606,6 +606,7 @@ if (global.race.species === 'protoplasm'){
         global.tech['evo_angelic'] = 1;
         global.tech['evo_insectoid'] = 1;
         global.tech['evo_eggshell'] = 2;
+        global.tech['evo_eldritch'] = 1;
         global.tech['evo_sand'] = 1;
         global.tech['evo_polar'] = 1;
         global.tech['evo_heat'] = 1;
@@ -3002,7 +3003,7 @@ function fastLoop(){
                         food_base += food_compost;
                     }
                 }
-                if (global.race['carnivore'] || global.race['soul_eater']){
+                if (global.race['carnivore'] || global.race['soul_eater'] || global.race['unfathomable']){
                     let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
                     if (global.race['servants']){ food_hunt += global.race.servants.jobs.hunter; }
@@ -3444,7 +3445,7 @@ function fastLoop(){
         // Furs
         let fur_bd = {};
         if (global.resource.Furs.display){
-            if (global.race['evil'] || global.race['artifical']){
+            if (global.race['evil'] || global.race['artifical'] || global.race['unfathomable']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
                 if (global.race['servants']){ hunters += jobScale(global.race.servants.jobs.hunter); }
@@ -3600,7 +3601,7 @@ function fastLoop(){
             know_bd[loc('job_scientist')] = scientist_base + 'v';
             know_bd[loc('tau_red_womlings')] = womling + 'v';
             know_bd[loc('hunger')] = ((hunger - 1) * 100) + '%';
-            know_bd[loc('tech_sundial')] = sundial_base + 'v';
+            know_bd[global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
             if (global.race['inspired']){
                 know_bd[loc('event_inspiration_bd')] = '100%';
                 delta *= 2;

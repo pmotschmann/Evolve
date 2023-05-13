@@ -1,5 +1,5 @@
 import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost } from './functions.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
@@ -9,6 +9,7 @@ import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
+import { descension } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
