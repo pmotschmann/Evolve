@@ -1,5 +1,5 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
-import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
+import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
 import { renderSpace } from './space.js';
@@ -2229,13 +2229,6 @@ function bindTrait(breakdown,trait){
     m_trait.append(`<span class="has-text-warning name">${total}${traitSkin('name',trait)}</span>`);
 
     breakdown.append(m_trait);
-}
-
-function fibonacci(num, memo){
-    memo = memo || {};
-    if (memo[num]) return memo[num];
-    if (num <= 1) return 1;
-    return memo[num] = fibonacci(num - 1, memo) + fibonacci(num - 2, memo);
 }
 
 function crispr(){

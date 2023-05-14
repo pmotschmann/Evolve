@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, fibonacci, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
@@ -3003,7 +3003,36 @@ function fastLoop(){
                         food_base += food_compost;
                     }
                 }
-                if (global.race['carnivore'] || global.race['soul_eater'] || global.race['unfathomable']){
+
+                if (global.race['unfathomable'] && global.city['captive_housing']){
+                    let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                    let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
+                    if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
+
+                    if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap){
+                        hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
+                        if (hunt > 0){
+                            global.city.captive_housing.cattleCatch += hunt * time_multiplier;
+                        }
+                        if (global.city.captive_housing.cattleCatch >= global.city.captive_housing.cattle ** 2){
+                            global.city.captive_housing.cattle++;
+                            global.city.captive_housing.cattleCatch = 0;
+                        }
+                        if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.9){
+                            global.city.captive_housing.cattle--;
+                            global.resource.Food.amount += 1000;
+                            global.stats.cattle++;
+                        }
+                    }
+
+                    if (global.city.captive_housing.cattle > 0){
+                        let food = global.city.captive_housing.cattle / 3;
+                        food_bd[loc('city_captive_housing_cattle_bd')] = food + 'v';
+                        food_base += food;
+                    }
+                }
+
+                if (global.race['carnivore'] || global.race['soul_eater']){
                     let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
                     if (global.race['servants']){ food_hunt += global.race.servants.jobs.hunter; }
@@ -3222,24 +3251,30 @@ function fastLoop(){
             breakdown.p['Food'] = food_bd;
 
             if (!modRes('Food', delta * time_multiplier)){
-                fed = false;
-                let threshold = 1.25;
-                if (global.race['slow_digestion']){
-                    threshold += traits.slow_digestion.vars()[0];
+                if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1){
+                    global.resource[global.race.species].amount--;
+                    modRes('Food', 10000 * traits.anthropophagite.vars()[0] * time_multiplier);
                 }
-                if (global.race['humpback']){
-                    threshold += traits.humpback.vars()[0];
-                }
-                if (global.race['atrophy']){
-                    threshold -= traits.atrophy.vars()[0];
-                }
+                else {
+                    fed = false;
+                    let threshold = 1.25;
+                    if (global.race['slow_digestion']){
+                        threshold += traits.slow_digestion.vars()[0];
+                    }
+                    if (global.race['humpback']){
+                        threshold += traits.humpback.vars()[0];
+                    }
+                    if (global.race['atrophy']){
+                        threshold -= traits.atrophy.vars()[0];
+                    }
 
-                // threshold can be thought of as the inverse of nutrition ratio per unit of food.
-                // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
-                if (generated < consume / threshold){
-                    if (Math.rand(0, 10) === 0){
-                        global['resource'][global.race.species].amount--;
-                        global.stats.starved++;
+                    // threshold can be thought of as the inverse of nutrition ratio per unit of food.
+                    // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
+                    if (generated < consume / threshold){
+                        if (Math.rand(0, 10) === 0){
+                            global['resource'][global.race.species].amount--;
+                            global.stats.starved++;
+                        }
                     }
                 }
             }
@@ -7198,6 +7233,11 @@ function midLoop(){
 
             caps['Mana'] += gain;
             bd_Mana[loc(name)] = gain+'v';
+        }
+        if (global.city['captive_housing']){
+            let houses = global.city.captive_housing.count;
+            global.city.captive_housing.raceCap = houses * 2;
+            global.city.captive_housing.cattleCap = houses * 5;
         }
         if (global.city['farm']){
             if (global.tech['farm']){

@@ -1610,7 +1610,7 @@ export const actions = {
             reqs: { housing: 1, currency: 1 },
             not_trait: ['cataclysm','lone_survivor'],
             condition(){
-                return ((global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
+                return ((global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical'] || global.race['unfathomable']) && global.tech['s_lodge']) || (global.tech['hunting'] && global.tech['hunting'] >= 2) ? true : false;
             },
             cost: {
                 Money(offset){ return costMultiplier('lodge', offset, 50, 1.32); },
@@ -1754,6 +1754,56 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     global.city.transmitter.count++;
                     powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
+        captive_housing: {
+            id: 'city-captive_housing',
+            title: loc('city_captive_housing'),
+            desc: loc('city_captive_housing_desc'),
+            category: 'residential',
+            reqs: { unfathomable: 1 },
+            trait: ['unfathomable'],
+            cost: {
+                Money(offset){
+                    offset = offset || 0;
+                    if ((global.city['captive_housing'] ? global.city.captive_housing.count : 0) + offset >= 3){
+                        return costMultiplier('captive_housing', offset, 50, 1.32);
+                    }
+                    else {
+                        return 0;
+                    }
+                },
+                Lumber(offset){ return costMultiplier('captive_housing', offset, 20, 1.36); },
+                Stone(offset){ return costMultiplier('captive_housing', offset, 10, 1.36); },
+            },
+            effect(){
+                let desc = ``;
+                desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
+
+                let usedCap = 0;
+                if (global.city.hasOwnProperty('surfaceDwellers')){
+                    for (let i = 0; i < global.city.surfaceDwellers.length; i++){
+                        let r = global.city.surfaceDwellers[i];
+                        let mindbreak = global.city.captive_housing[`race${i}`];
+                        let jailed = global.city.captive_housing[`jailrace${i}`];
+                        usedCap += mindbreak + jailed;
+                        desc += `<div>${loc(`city_captive_housing_broken`,[races[r].name,mindbreak])}</div>`;
+                        desc += `<div>${loc(`city_captive_housing_untrained`,[races[r].name,jailed])}</div>`;
+                    }
+                }
+
+                desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,global.city.captive_housing.raceCap])}</div>`;
+                return desc;
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    global.city.captive_housing.count++;
+                    let houses = global.city.captive_housing.count;
+                    global.city.captive_housing.raceCap = houses * 2;
+                    global.city.captive_housing.cattleCap = houses * 5;
                     return true;
                 }
                 return false;
@@ -2127,10 +2177,15 @@ export const actions = {
                 if (global.tech['shelving'] && global.tech.shelving >= 3 && global.resource.Stanene.display){
                     r_list.push('Stanene');
                 }
+                if (global.race['unfathomable']){
+                    r_list.push('Food');
+                }
                 return r_list;
             },
             val(res){
                 switch (res){
+                    case 'Food':
+                        return 50;
                     case 'Lumber':
                         return 300;
                     case 'Stone':

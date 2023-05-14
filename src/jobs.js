@@ -16,6 +16,9 @@ export const job_desc = {
     },
     hunter: function(servant){
         let desc = loc('job_hunter_desc',[global.resource.Food.name]);
+        if (global.race['unfathomable']){
+            desc = loc('job_eld_hunter_desc');
+        }
         if (global.race['artifical']){
             desc = global.race['soul_eater'] ? loc('job_art_demon_hunter_desc',[global.resource.Furs.name, global.resource.Lumber.name]) : loc('job_art_hunter_desc',[global.resource.Furs.name]);
         }

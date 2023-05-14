@@ -3107,15 +3107,15 @@ export const traits = {
         vars(r){
             switch (r || global.race.anthropophagite || 1){
                 case 0.25:
-                    return [1];
+                    return [0.5];
                 case 0.5:
-                    return [1];
+                    return [0.75];
                 case 1:
                     return [1];
                 case 2:
-                    return [1];
+                    return [1.5];
                 case 3:
-                    return [1];
+                    return [2];
             }
         }
     },

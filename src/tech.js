@@ -360,6 +360,32 @@ const techs = {
             return false;
         }
     },
+    captive_housing: {
+        id: 'tech-captive_housing',
+        title: loc('tech_captive_housing'),
+        desc: loc('tech_captive_housing'),
+        category: 'housing',
+        era: 'civilized',
+        reqs: { housing: 1 },
+        grant: ['unfathomable',1],
+        cost: {
+            Knowledge(){ return 12; }
+        },
+        effect: loc('tech_captive_housing_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.city['captive_housing'] = {
+                    count: 0, cattle: 0, cattleCatch: 0,
+                    race0: 0, jailrace0: 0,
+                    race1: 0, jailrace1: 0,
+                    race2: 0, jailrace2: 0,
+                    raceCap: 0, cattleCap: 0,
+                };
+                return true;
+            }
+            return false;
+        }
+    },
     spear: {
         id: 'tech-spear',
         title: loc('tech_spear'),

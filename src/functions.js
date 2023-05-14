@@ -2199,6 +2199,13 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
     return emblem;
 }
 
+export function fibonacci(num, memo){
+    memo = memo || {};
+    if (memo[num]) return memo[num];
+    if (num <= 1) return 1;
+    return memo[num] = fibonacci(num - 1, memo) + fibonacci(num - 2, memo);
+}
+
 export function randomKey(obj){
     var keys = Object.keys(obj);
     return keys[ keys.length * Math.random() << 0];
@@ -2275,6 +2282,8 @@ export function updateResetStats(){
     global.stats.died = 0;
     global.stats.tsac += global.stats.sac;
     global.stats.sac = 0;
+    global.stats.tcattle += global.stats.cattle;
+    global.stats.cattle = 0;
 }
 
 export function deepClone(obj){
