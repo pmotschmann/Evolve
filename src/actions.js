@@ -2,7 +2,7 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
@@ -1767,17 +1767,9 @@ export const actions = {
             reqs: { unfathomable: 1 },
             trait: ['unfathomable'],
             cost: {
-                Money(offset){
-                    offset = offset || 0;
-                    if ((global.city['captive_housing'] ? global.city.captive_housing.count : 0) + offset >= 3){
-                        return costMultiplier('captive_housing', offset, 50, 1.32);
-                    }
-                    else {
-                        return 0;
-                    }
-                },
-                Lumber(offset){ return costMultiplier('captive_housing', offset, 20, 1.36); },
-                Stone(offset){ return costMultiplier('captive_housing', offset, 10, 1.36); },
+                Money(offset){ return costMultiplier('captive_housing', offset, 40, 1.35); },
+                Lumber(offset){ return costMultiplier('captive_housing', offset, 30, 1.35); },
+                Stone(offset){ return costMultiplier('captive_housing', offset, 18, 1.35); },
             },
             effect(){
                 let desc = ``;
@@ -1796,6 +1788,9 @@ export const actions = {
                 }
 
                 desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,global.city.captive_housing.raceCap])}</div>`;
+                if (global.tech['unfathomable'] && global.tech.unfathomable >= 2){
+                    desc += `<div>${loc(`plus_max_resource`,[1,loc('job_torturer')])}</div>`;
+                }
                 return desc;
             },
             action(){
@@ -3395,6 +3390,10 @@ export const actions = {
                 if (global.race['curious']){
                     multiplier *= 1 + (traits.curious.vars()[0] / 100 * global.resource[global.race.species].amount);
                 }
+                let fathom = fathomCheck('cath');
+                if (fathom > 0){
+                    multiplier *= 1 + (traits.curious.vars(3)[0] * fathom);
+                }
                 if (p_on['s_gate'] && gal_on['scavenger']){
                     let pirate_alien2 = piracy('gxy_alien2');
                     let uni = gal_on['scavenger'] * pirate_alien2 / 4;
@@ -3471,6 +3470,10 @@ export const actions = {
                 }
                 if (global.race['studious']){
                     gain *= 1 + (traits.studious.vars()[1] / 100);
+                }
+                let fathom = fathomCheck('elven');
+                if (fathom > 0){
+                    gain *= 1 + (traits.studious.vars(1)[1] / 100 * fathom);
                 }
                 if (global.tech['science'] && global.tech['science'] >= 8){
                     gain *= 1.4;
@@ -4679,6 +4682,10 @@ export function templeEffect(){
         if (global.race['spiritual']){
             faith *= 1 + (traits.spiritual.vars()[0] / 100);
         }
+        let fathom = fathomCheck('seraph');
+        if (fathom > 0){
+            faith *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
+        }
         if (global.civic.govern.type === 'theocracy'){
             faith *= 1 + (govEffect.theocracy()[0] / 100);
         }
@@ -4717,6 +4724,10 @@ export function templeEffect(){
         }
         if (global.race['spiritual']){
             plasmid *= 1 + (traits.spiritual.vars()[0] / 100);
+        }
+        let fathom = fathomCheck('seraph');
+        if (fathom > 0){
+            plasmid *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
         }
         if (global.civic.govern.type === 'theocracy'){
             plasmid *= 1 + (govEffect.theocracy()[0] / 100);
@@ -4927,6 +4938,10 @@ export function storageMultipler(){
     }
     if (global.race['pack_rat']){
         multiplier *= 1 + (traits.pack_rat.vars()[1] / 100);
+    }
+    let fathom = fathomCheck('kobold');
+    if (fathom > 0){
+        multiplier *= 1 + (traits.pack_rat.vars(1)[1] / 100 * fathom);
     }
     if (global.tech['storage'] >= 6){
         multiplier *= 1 + (global.tech['supercollider'] / 20);
@@ -8389,6 +8404,10 @@ export function bank_vault(){
     }
     if (global.race['hoarder']){
         vault *= 1 + (traits.hoarder.vars()[0] / 100);
+    }
+    let fathom = fathomCheck('dracnid');
+    if (fathom > 0){
+        vault *= 1 + (traits.hoarder.vars(1)[0] / 100 * fathom);
     }
     if (global.tech['banking'] >= 7){
         vault *= 1 + highPopAdjust(workerScale(global.civic.banker.workers,'banker') * 0.05);

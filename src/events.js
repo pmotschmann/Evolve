@@ -1,6 +1,6 @@
 import { global, seededRandom, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits } from './races.js';
+import { races, traits, fathomCheck } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
 import { housingLabel, drawTech, actions } from './actions.js';
 import { tradeRatio } from './resources.js';
@@ -495,6 +495,10 @@ export const events = {
         type: 'major',
         condition(){
             if (global.race['elusive']){
+                return false;
+            }
+            let fathom = fathomCheck('satyr');
+            if (fathom > 0.25){
                 return false;
             }
             for (let i=0; i<3; i++){

@@ -1,8 +1,8 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, fibonacci, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift } from './races.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
@@ -753,13 +753,28 @@ function fastLoop(){
         breakdown.p['Global'][loc('rejuvenated')] = `${decay * 100}%`;
         global_multiplier *= 1 + decay;
     }
-    if (global.race['suction_grip']){
-        let bonus = traits.suction_grip.vars()[0];
+    let octFathom = fathomCheck('octigoran');
+    if (global.race['suction_grip'] || octFathom > 0){
+        let bonus = 0;
+        if (global.race['suction_grip']){
+            bonus += traits.suction_grip.vars()[0];
+        }
+        if (octFathom > 0){
+            bonus += +(traits.suction_grip.vars(1)[0] * octFathom).toFixed(2);
+        }
         breakdown.p['Global'][loc('trait_suction_grip_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
-    if (global.race['intelligent']){
-        let bonus = (workerScale(global.civic.scientist.workers,'scientist') * traits.intelligent.vars()[1]) + (workerScale(global.civic.professor.workers,'professor') * traits.intelligent.vars()[0]);
+
+    let cyclopsFathom = fathomCheck('cyclops');
+    if (global.race['intelligent'] || cyclopsFathom > 0){
+        let bonus = 0;
+        if (global.race['intelligent']){
+            bonus += (workerScale(global.civic.scientist.workers,'scientist') * traits.intelligent.vars()[1]) + (workerScale(global.civic.professor.workers,'professor') * traits.intelligent.vars()[0]);
+        }
+        if (cyclopsFathom > 0){
+            bonus += (workerScale(global.civic.scientist.workers,'scientist') * traits.intelligent.vars(1)[1] * cyclopsFathom) + (workerScale(global.civic.professor.workers,'professor') * traits.intelligent.vars(1)[0] * cyclopsFathom);
+        }
         if (global.race['high_pop']){
             bonus = highPopAdjust(bonus);
         }
@@ -798,14 +813,26 @@ function fastLoop(){
         breakdown.p['Global'][loc('planet_ozone_bd')] = `-${uv}%`;
         global_multiplier *= 1 - (uv / 100);
     }
-    if (global.race['smoldering'] && global.city['hot']){
+    let phoenixFathom = fathomCheck('phoenix');
+    if ((global.race['smoldering'] || phoenixFathom > 0) && global.city['hot']){
         let heat = 0;
-        if (global.city['hot'] > 100){
-            heat += 100 * traits.smoldering.vars()[1];
-            heat += (global.city['hot'] - 100) * traits.smoldering.vars()[2];
+        if (global.race['smoldering']){
+            if (global.city['hot'] > 100){
+                heat += 100 * traits.smoldering.vars()[1];
+                heat += (global.city['hot'] - 100) * traits.smoldering.vars()[2];
+            }
+            else {
+                heat = global.city['hot'] * traits.smoldering.vars()[1];
+            }
         }
-        else {
-            heat = global.city['hot'] * traits.smoldering.vars()[1];
+        if (phoenixFathom > 0){
+            if (global.city['hot'] > 100){
+                heat += 100 * traits.smoldering.vars(0.25)[1] * phoenixFathom;
+                heat += (global.city['hot'] - 100) * traits.smoldering.vars(0.25)[2] * phoenixFathom;
+            }
+            else {
+                heat = global.city['hot'] * traits.smoldering.vars(0.25)[1] * phoenixFathom;
+            }
         }
         breakdown.p['Global'][loc('trait_smoldering_name')] = `${heat}%`;
         global_multiplier *= 1 + (heat / 100);
@@ -848,8 +875,14 @@ function fastLoop(){
             global_multiplier *= 1 - (muckVal / 100);
         }
     }
-    if (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display) {
-        let zen = global.resource.Zen.amount / (global.resource.Zen.amount + 5000);
+    let capyFathom = fathomCheck('capybara');
+    if (capyFathom > 0 || (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display)){
+        let rawZen = global.resource.Zen.amount;
+        let fathom = fathomCheck('capybara');
+        if (fathom > 0){
+            rawZen += Math.round(fathom * 500);
+        }
+        let zen = rawZen / (rawZen + 5000);
         breakdown.p['Global'][loc('trait_calm_bd')] = `+${(zen * 100).toFixed(2)}%`;
         global_multiplier *= 1 + zen;
     }
@@ -1187,8 +1220,13 @@ function fastLoop(){
         }
 
         if (global.race['playful'] && global.civic.hunter.display){
-            morale += global.civic.hunter.workers * traits.playful.vars()[0];
-            global.city.morale.unemployed = global.civic.hunter.workers * traits.playful.vars()[0];
+            let val = traits.playful.vars()[0];
+            let fathom = fathomCheck('vulpine');
+            if (fathom > 0){
+                val += traits.playful.vars(1)[0] * fathom;
+            }
+            morale += global.civic.hunter.workers * val;
+            global.city.morale.unemployed = global.civic.hunter.workers * val;
         }
         else {
             stress -= global.civic.hunter.workers / divisor;
@@ -1196,6 +1234,10 @@ function fastLoop(){
 
         if (global.race['optimistic']){
             stress += traits.optimistic.vars()[0];
+        }
+        let geckoFathom = fathomCheck('gecko');
+        if (geckoFathom > 0){
+            stress += traits.optimistic.vars(1)[0] * geckoFathom;
         }
 
         if (global.race['pessimistic']){
@@ -1237,6 +1279,10 @@ function fastLoop(){
                         }
                         if (global.race['merchant']){
                             rate *= 1 + (traits.merchant.vars()[1] / 100);
+                        }
+                        let fathom = fathomCheck('goblin');
+                        if (fathom > 0){
+                            rate *= 1 + (traits.merchant.vars(1)[1] / 100 * fathom);
                         }
                         if (astroSign === 'capricorn'){
                             rate *= 1 + (astroVal('capricorn')[0] / 100);
@@ -1350,6 +1396,10 @@ function fastLoop(){
                 }
                 if (global.race['merchant']){
                     imprt_vol *= 1 + (traits.merchant.vars()[1] / 100);
+                }
+                let fathom = fathomCheck('goblin');
+                if (fathom > 0){
+                    imprt_vol *= 1 + (traits.merchant.vars(1)[1] / 100 * fathom);
                 }
                 if (astroSign === 'capricorn'){
                     imprt_vol *= 1 + (astroVal('capricorn')[0] / 100);
@@ -2788,6 +2838,9 @@ function fastLoop(){
         if (global.race['optimistic']){
             m_min += traits.optimistic.vars()[1];
         }
+        if (geckoFathom > 0){
+            m_min += Math.round(traits.optimistic.vars(1)[1] * geckoFathom);
+        }
         if (global.race['truepath']){
             m_min -= 25;
         }
@@ -3129,6 +3182,9 @@ function fastLoop(){
             let hunting = 0;
             if (global.tech['military']){
                 hunting = (global.race['herbivore'] && !global.race['carnivore']) || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
+                if (global.race['unfathomable']){
+                    hunting *= 0.66;
+                }
             }
 
             let biodome = 0;
@@ -3168,6 +3224,10 @@ function fastLoop(){
             }
             if (global.race['sticky']){
                 consume *= 1 - (traits.sticky.vars()[0] / 100);
+            }
+            let pingFathom = fathomCheck('pinguicula');
+            if (pingFathom > 0){
+                consume *= 1 - (traits.sticky.vars(1)[0] / 100 * pingFathom);
             }
             if (global.race['photosynth']){
                 switch(global.city.calendar.weather){
@@ -3260,6 +3320,10 @@ function fastLoop(){
                     let threshold = 1.25;
                     if (global.race['slow_digestion']){
                         threshold += traits.slow_digestion.vars()[0];
+                    }
+                    let fathom = fathomCheck('slitheryn');
+                    if (fathom > 0){
+                        threshold += traits.slow_digestion.vars(1)[0] * fathom;
                     }
                     if (global.race['humpback']){
                         threshold += traits.humpback.vars()[0];
@@ -3561,7 +3625,12 @@ function fastLoop(){
             }
 
             let professors_base = workerScale(global.civic.professor.workers,'professor');
-            professors_base *= global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact;
+            let prof_impact = global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact;
+            let fathom = fathomCheck('elven');
+            if (fathom > 0){
+                prof_impact += traits.studious.vars(1)[0] / 100 * fathom;
+            }
+            professors_base *= prof_impact
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
             professors_base *= racialTrait(workerScale(global.civic.professor.workers,'professor'),'science');
             if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
@@ -3756,6 +3825,10 @@ function fastLoop(){
                 if (global.race['toxic']){
                     delta *= 1 + (traits.toxic.vars()[0] / 100);
                 }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    delta *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
+                }
                 if (global.civic.govern.type === 'corpocracy'){
                     delta *= 1 + (govEffect.corpocracy()[1] / 100);
                 }
@@ -3805,6 +3878,10 @@ function fastLoop(){
                 let factory_output = workDone * f_rate.Furs.output[assembly] * eff;
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
+                }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
@@ -3865,6 +3942,10 @@ function fastLoop(){
                 
                 if (global.race['toxic']){
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
+                }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
                 }
                 if (global.tech['alloy']){
                     factory_output *= 1.37;
@@ -3939,6 +4020,10 @@ function fastLoop(){
                 let factory_output = workDone * f_rate.Polymer.output[assembly] * eff;
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[0] / 100);
+                }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    factory_output *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
                 }
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
@@ -4019,6 +4104,10 @@ function fastLoop(){
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[1] / 100);
                 }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    factory_output *= 1 + (traits.toxic.vars(1)[1] / 100 * fathom);
+                }
                 if (global.tech['polymer'] >= 2){
                     factory_output *= 1.42;
                 }
@@ -4088,6 +4177,10 @@ function fastLoop(){
                 let factory_output = workDone * f_rate.Stanene.output[assembly] * eff;
                 if (global.race['toxic']) {
                     factory_output *= 1 + (traits.toxic.vars()[1] / 100);
+                }
+                let fathom = fathomCheck('shroomi');
+                if (fathom > 0){
+                    factory_output *= 1 + (traits.toxic.vars(1)[1] / 100 * fathom);
                 }
                 if (global.civic.govern.type === 'corpocracy'){
                     factory_output *= 1 + (govEffect.corpocracy()[4] / 100);
@@ -4426,6 +4519,12 @@ function fastLoop(){
                 iron_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
                 iridium_smelter *= 1 - (traits.pyrophobia.vars()[0] / 100);
             }
+            let salFathom = fathomCheck('salamander');
+            if (salFathom > 0){
+                iron_smelter *= 1.2 * salFathom;
+                iridium_smelter *= 1.2 * salFathom;
+            }
+
             if (iridium_smelter < 1){ iridium_smelter = 1; }
 
             if (global.race['evil']){
@@ -5256,6 +5355,10 @@ function fastLoop(){
             if (global.race['tough']){
                 miner_base *= 1 + (traits.tough.vars()[0] / 100);
             }
+            let ogreFathom = fathomCheck('ogre');
+            if (ogreFathom > 0){
+                miner_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
+            }
             if (global.race['industrious']){
                 let bonus = 1 + (traits.industrious.vars()[0] * global.race['industrious'] / 100);
                 miner_base *= bonus;
@@ -5621,6 +5724,10 @@ function fastLoop(){
             coal_base *= global.civic.coal_miner.impact;
             if (global.race['tough']){
                 coal_base *= 1 + (traits.tough.vars()[0] / 100);
+            }
+            let ogreFathom = fathomCheck('ogre');
+            if (ogreFathom > 0){
+                coal_base *= 1 + (traits.tough.vars(1)[0] / 100 * ogreFathom);
             }
             if (global.race['resilient']){
                 let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
@@ -6732,6 +6839,10 @@ function fastLoop(){
         // Crafting
         if (global.tech['foundry']){
             let craft_costs = global.race['resourceful'] ? (1 - traits.resourceful.vars()[0] / 100) : 1;
+            let arraakFathom = fathomCheck('arraak');
+            if (arraakFathom > 0){
+                craft_costs - traits.resourceful.vars(1)[0] / 100 * arraakFathom;
+            }
             let crafting_costs = craftCost();
             let crafting_usage = {};
 
@@ -6882,6 +6993,10 @@ function fastLoop(){
         global.civic.garrison.rate = rate * time_multiplier;
         if (global.race['brute']){
             global.civic.garrison.rate += traits.brute.vars()[1] / 40 * time_multiplier;
+        }
+        let fathom = fathomCheck('orc');
+        if (fathom > 0){
+            global.civic.garrison.rate += traits.brute.vars(1)[1] / 40 * fathom * time_multiplier;
         }
         global.civic.garrison.progress += global.civic.garrison.rate;
         if (global.civic.garrison.progress >= 100){
@@ -7061,6 +7176,7 @@ function midLoop(){
             quarry_worker: -1,
             crystal_miner: -1,
             scavenger: -1,
+            torturer: 0,
             miner: 0,
             coal_miner: 0,
             craftsman: 0,
@@ -7205,6 +7321,27 @@ function midLoop(){
         };
 
         caps[global.race.species] = 0;
+
+        if (global.race['unfathomable'] && global.city['captive_housing']){
+            let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+            let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
+            if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
+
+            let usedCap = 0;
+            if (global.city.hasOwnProperty('surfaceDwellers')){
+                for (let i = 0; i < global.city.surfaceDwellers.length; i++){
+                    let mindbreak = global.city.captive_housing[`race${i}`];
+                    let jailed = global.city.captive_housing[`jailrace${i}`];
+                    usedCap += mindbreak + jailed;
+                }
+            }
+
+            let catchVar = Math.round(40 / traits.unfathomable.vars()[0]);
+            if (usedCap < global.city.captive_housing.raceCap && Math.rand(0,(catchVar * usedCap) - hunt) <= 0){
+                let k = Math.rand(0,global.city.surfaceDwellers.length);
+                global.city.captive_housing[`jailrace${k}`]++;
+            }
+        }
 
         if (global.city['nanite_factory']){
             let gain = global.city.nanite_factory.count * spatialReasoning(2500);
@@ -7858,6 +7995,10 @@ function midLoop(){
             if (global.race['studious']){
                 shelving *= 1 + (traits.studious.vars()[1] / 100);
             }
+            let fathom = fathomCheck('elven');
+            if (fathom > 0){
+                shelving *= 1 + (traits.studious.vars(1)[1] / 100 * fathom);
+            }
             if (global.tech['science'] && global.tech['science'] >= 8){
                 shelving *= 1.4;
             }
@@ -8354,6 +8495,10 @@ function midLoop(){
         if (global.tauceti['mining_pit']){
             lCaps['pit_miner'] += jobScale(support_on['mining_pit'] * (global.tech['isolation'] ? 6 : 8));
             caps['Materials'] += support_on['mining_pit'] * 1000000;
+        }
+
+        if (global.civic.torturer.display && global.tech['unfathomable'] && global.tech.unfathomable >= 2){
+            lCaps['torturer'] = global.city.captive_housing.count;
         }
 
         if (global.race['universe'] === 'magic' && global.race['witch_hunter']){
@@ -8871,6 +9016,11 @@ function midLoop(){
         }
 
         let espEnd = global.race['truepath'] ? 5 : 3;
+        let spyCatchMod = global.race['blurry'] ? 2 : 0;
+        let yetiFathom = fathomCheck('yeti');
+        if (yetiFathom >= 0.25){
+            spyCatchMod += yetiFathom >= 0.5 ? 2 : 1;
+        }
         for (let i=0; i<espEnd; i++){
             if (global.civic.foreign[`gov${i}`].trn > 0){
                 global.civic.foreign[`gov${i}`].trn--;
@@ -8883,7 +9033,7 @@ function midLoop(){
                 if (global.civic.foreign[`gov${i}`].sab === 0){
                     switch (global.civic.foreign[`gov${i}`].act){
                         case 'influence':
-                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 6 : 4)) === 0){
+                            if (Math.floor(seededRandom(0,4 + spyCatchMod)) === 0){
                                 spyCaught(i);
                             }
                             else {
@@ -8899,7 +9049,7 @@ function midLoop(){
                             }
                             break;
                         case 'sabotage':
-                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 5 : 3)) === 0){
+                            if (Math.floor(seededRandom(0,3 + spyCatchMod)) === 0){
                                 spyCaught(i);
                             }
                             else {
@@ -8915,7 +9065,7 @@ function midLoop(){
                             }
                             break;
                         case 'incite':
-                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 3 : 2)) === 0){
+                            if (Math.floor(seededRandom(0,2 + Math.floor(spyCatchMod / 2))) === 0){
                                 spyCaught(i);
                             }
                             else {
@@ -9862,6 +10012,7 @@ function longLoop(){
         // Soldier Healing
         if (global.civic.garrison.wounded > 0){
             let healed = global.race['regenerative'] ? traits.regenerative.vars()[0] : 1;
+
             let hc = global.city['hospital'] ? global.city.hospital.count : 0;
             if (global.race['orbit_decayed'] && global.race['truepath']){
                 hc = Math.min(support_on['operating_base'],p_on['operating_base']);
@@ -9893,7 +10044,10 @@ function longLoop(){
             if (painVal){
                 hc *= 1 + (painVal / 100);
             }
-
+            let fathom = fathomCheck('troll');
+            if (fathom > 0){
+                hc += Math.round(20 * traits.regenerative.vars(1)[0] * fathom);
+            }
             let max_bound = 20;
             if (global.race['slow_regen']){
                 max_bound *= 1 + (traits.slow_regen.vars()[0] / 100);
@@ -10951,6 +11105,10 @@ function resourceAlt(){
 
 function spyCaught(i){
     let escape = global.race['elusive'] || Math.floor(seededRandom(0,3)) === 0 ? true : false;
+    let fathom = fathomCheck('satyr');
+    if (fathom > 0 && Math.floor(seededRandom(0,100)) <= fathom * 100){
+        escape = true;
+    }
     if (!escape && global.civic.foreign[`gov${i}`].spy > 0){
         global.civic.foreign[`gov${i}`].spy -= 1;
     }

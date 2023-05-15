@@ -364,7 +364,7 @@ const techs = {
         id: 'tech-captive_housing',
         title: loc('tech_captive_housing'),
         desc: loc('tech_captive_housing'),
-        category: 'housing',
+        category: 'eldritch',
         era: 'civilized',
         reqs: { housing: 1 },
         grant: ['unfathomable',1],
@@ -381,6 +381,26 @@ const techs = {
                     race2: 0, jailrace2: 0,
                     raceCap: 0, cattleCap: 0,
                 };
+                return true;
+            }
+            return false;
+        }
+    },
+    torture: {
+        id: 'tech-torture',
+        title: loc('tech_torture'),
+        desc: loc('tech_torture'),
+        category: 'eldritch',
+        era: 'civilized',
+        reqs: { unfathomable: 1 },
+        grant: ['unfathomable',2],
+        cost: {
+            Knowledge(){ return 25; }
+        },
+        effect: loc('tech_torture_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.civic.torturer.display = true;
                 return true;
             }
             return false;

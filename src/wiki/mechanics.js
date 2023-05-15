@@ -137,7 +137,7 @@ export function mechanicsPage(content){
     { // Stacking Multipliers
         let multipliers = infoBoxBuilder(mainContent,{ name: 'multipliers', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 1, h_level: 2 });
 
-        let prod = infoBoxBuilder(multipliers,{ name: 'multipliers_prod', template: 'mechanics', label: loc('wiki_mechanics_multipliers_prod'), paragraphs: 4, break: [3,4], h_level: false,
+        let prod = infoBoxBuilder(multipliers,{ name: 'multipliers_prod', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 4, break: [3,4], h_level: false,
             para_data: {
                 3: [loc('wiki_mechanics_multipliers_struct'),loc('wiki_mechanics_multipliers_bonus')],
             },

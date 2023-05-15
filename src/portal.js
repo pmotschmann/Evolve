@@ -1,7 +1,7 @@
 import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races } from './races.js';
+import { traits, races, fathomCheck } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
@@ -566,6 +566,10 @@ const fortressModules = {
             support(){ return 1; },
             effect(){
                 let holy = global.race['holy'] ? 1 + (traits.holy.vars()[1] / 100) : 1;
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    holy *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
+                }
                 let rating = Math.round(holy * armyRating(jobScale(1),'hellArmy',0));
                 return `<div>${loc('portal_guard_post_effect1',[rating])}</div><div class="has-text-caution">${loc('portal_guard_post_effect2',[jobScale(1),$(this)[0].powered()])}</div>`;
             },
@@ -1019,6 +1023,10 @@ const fortressModules = {
                 let security = 100;
                 if (global.race['holy']){
                     security *= 1 + (traits.holy.vars()[1] / 100);
+                }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    security *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
                 let min = global.tech.hell_gun >= 2 ? 65 : 40;
                 let max = global.tech.hell_gun >= 2 ? 100 : 60;
@@ -2295,6 +2303,10 @@ export function bloodwar(){
     if (global.race['armored']){
         pat_armor += traits.armored.vars()[1];
     }
+    let torFathom = fathomCheck('tortoisan');
+    if (torFathom > 0){
+        pat_armor += Math.floor(traits.armored.vars(1)[1] * torFathom);
+    }
     if (global.race['scales']){
         pat_armor += traits.scales.vars()[2];
     }
@@ -2362,6 +2374,11 @@ export function bloodwar(){
 
     if (global.race['ghostly']){
         gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars()[2]) / 100));
+    }
+
+    let wendFathom = fathomCheck('wendigo');
+    if (wendFathom > 0){
+        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars(1)[2]) / 100 * wendFathom));
     }
 
     if (gem_chance < 12){
@@ -2580,6 +2597,10 @@ export function bloodwar(){
         }
         if (global.race['blurry']){
             divisor *= 1 + (traits.blurry.vars()[0] / 100);
+        }
+        let fathom = fathomCheck('yeti');
+        if (fathom > 0){
+            divisor *= 1 + (traits.blurry.vars(1)[0] / 100 * fathom);
         }
         if (global.race['instinct']){
             divisor *= 1 + (traits.instinct.vars()[0] / 100);
@@ -2813,6 +2834,10 @@ export function hellSupression(area, val){
                 if (global.race['holy']){
                     aRating *= 1 + (traits.holy.vars()[1] / 100);
                 }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    aRating *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
+                }
                 let supress = (aRating + arc) / 5000;
                 return {
                     supress: supress > 1 ? 1 : supress,
@@ -2825,6 +2850,10 @@ export function hellSupression(area, val){
                 let turret = (p_on['gate_turret'] || 0) * 100;
                 if (global.race['holy']){
                     turret *= 1 + (traits.holy.vars()[1] / 100);
+                }
+                let unicornFathom = fathomCheck('unicorn');
+                if (unicornFathom > 0){
+                    turret *= 1 + (traits.holy.vars(1)[1] / 100 * unicornFathom);
                 }
                 let supress = (gSup.rating + turret) / 7500;
                 return {

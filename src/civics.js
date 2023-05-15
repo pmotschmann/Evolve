@@ -2,7 +2,7 @@ import { global, seededRandom, keyMultiplier, sizeApproximation } from './vars.j
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
-import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
+import { races, racialTrait, traits, planetTraits, biomes, fathomCheck } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
 import { drawTech } from  './actions.js';
 import { jobScale } from './jobs.js';
@@ -383,6 +383,10 @@ function drawGovModal(){
                     if (global.race['lawless']){
                         time = Math.round(time / (100 - traits.lawless.vars()[0]));
                     }
+                    let fathom = fathomCheck('tuskin');
+                    if (fathom > 0){
+                        time = Math.round(time / (100 - traits.lawless.vars(1)[0] * fathom));
+                    }
                     let aristoVal = govActive('aristocrat',0);
                     if (aristoVal){
                         time = Math.round(time * (1 - (aristoVal / 100)));
@@ -735,7 +739,14 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
+                    if (global.race['befuddle']){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
+                    }
+                    let fathom = fathomCheck('dryad');
+                    if (fathom > 0){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
+                    }
+                    global.civic.foreign[`gov${g}`].sab = timer;
                     global.civic.foreign[`gov${g}`].act = 'influence';
                 }
             }
@@ -744,7 +755,14 @@ function spyAction(sa,g){
             {
                 if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
+                    if (global.race['befuddle']){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
+                    }
+                    let fathom = fathomCheck('dryad');
+                    if (fathom > 0){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
+                    }
+                    global.civic.foreign[`gov${g}`].sab = timer;
                     global.civic.foreign[`gov${g}`].act = 'sabotage';
                 }
             }
@@ -754,7 +772,14 @@ function spyAction(sa,g){
                 if (g >= 3){ break; }
                 else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
-                    global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
+                    if (global.race['befuddle']){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
+                    }
+                    let fathom = fathomCheck('dryad');
+                    if (fathom > 0){
+                        timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
+                    }
+                    global.civic.foreign[`gov${g}`].sab = timer;
                     global.civic.foreign[`gov${g}`].act = 'incite';
                 }
             }
@@ -817,7 +842,14 @@ function drawEspModal(gov){
                 if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
+                        if (global.race['befuddle']){
+                            timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
+                        }
+                        let fathom = fathomCheck('dryad');
+                        if (fathom > 0){
+                            timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
+                        }
+                        global.civic.foreign[`gov${g}`].sab = timer;
                         global.civic.foreign[`gov${g}`].act = 'annex';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
@@ -832,7 +864,14 @@ function drawEspModal(gov){
                     if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab === 0){
                         global.resource.Money.amount -= price;
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
-                        global.civic.foreign[`gov${g}`].sab = global.race['befuddle'] ? Math.round(timer * (1 - traits.befuddle.vars()[0] / 100)) : timer;
+                        if (global.race['befuddle']){
+                            timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
+                        }
+                        let fathom = fathomCheck('dryad');
+                        if (fathom > 0){
+                            timer = Math.round(timer * (1 - traits.befuddle.vars(1)[0] / 100 * fathom));
+                        }
+                        global.civic.foreign[`gov${g}`].sab = timer;
                         global.civic.foreign[`gov${g}`].act = 'purchase';
                         vBind({el: '#espModal'},'destroy');
                         $('.modal-background').click();
@@ -1024,6 +1063,10 @@ function mercCost(){
     }
     if (global.race['brute']){
         cost *= 1 - (traits.brute.vars()[0] / 100);
+    }
+    let fathom = fathomCheck('orc');
+    if (fathom > 0){
+        cost += 1 - (traits.brute.vars(1)[0] / 100 * fathom);
     }
     if (global.race['inflation']){
         cost *= 1 + (global.race.inflation / 500);
@@ -1501,7 +1544,12 @@ function war_campaign(gov){
         }
         if (global.race['armored']){
             let armored = 1 - (traits.armored.vars()[0] / 100);
-            armor += Math.floor(death *armored);
+            armor += Math.floor(death * armored);
+        }
+        let fathom = fathomCheck('tortoisan');
+        if (fathom > 0){
+            let armored = 1 - (traits.armored.vars(1)[0] / 100 * fathom);
+            armor += Math.floor(death * armored);
         }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
@@ -1829,6 +1877,11 @@ function war_campaign(gov){
             let armored = traits.armored.vars()[0] / 100;
             armor += Math.floor(death * armored);
         }
+        let fathom = fathomCheck('tortoisan');
+        if (fathom > 0){
+            let armored = traits.armored.vars(1)[0] / 100 * fathom;
+            armor += Math.floor(death * armored);
+        }
         if (global.civic.garrison.raid > wounded){
             death -= armor;
         }
@@ -1967,22 +2020,41 @@ export function armyRating(val,type,wound){
     }
 
     let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
-    if (global.tech['military'] && global.tech.military > 1 && global.race['sniper']){
+    if (global.tech['military'] && global.tech.military > 1){
         weapon_tech -= global.tech.military >= 11 ? 2 : 1;
-        weapon_tech *= 1 + (traits.sniper.vars()[0] / 100 * weapon_tech);
+        if (global.race['sniper']){
+            weapon_tech *= 1 + (traits.sniper.vars()[0] / 100 * weapon_tech);
+        }
+        let fathom = fathomCheck('centaur');
+        if (fathom > 0){
+            weapon_tech *= 1 + (traits.sniper.vars(1)[0] / 100 * weapon_tech * fathom);
+        }
         weapon_tech += global.tech.military >= 11 ? 2 : 1;
     }
-    let adjusted_val = global.race['rage'] ? (val + (wounded * traits.rage.vars()[1] / 100)) : (val - (wounded / 2));
+    let rhinoFathom = fathomCheck('rhinotaur');
+    let adjusted_val = val - (wounded / 2);
+    if (global.race['rage'] || rhinoFathom > 0){
+        let rageVal = global.race['rage'] ? (wounded * traits.rage.vars()[1] / 100) : 0;
+        let fathomVal = rhinoFathom > 0 ? (wounded * traits.rage.vars(1)[1] / 100 * rhinoFathom) : 0;
+        adjusted_val = val + rageVal + fathomVal;
+    }
     let army = global.tech['military'] ? adjusted_val * weapon_tech : adjusted_val;
     if (type === 'army' || type === 'hellArmy'){
         if (global.race['rage']){
             army *= 1 + (traits.rage.vars()[0] / 100 * (global.civic.garrison.wounded || 0));
+        }
+        if (rhinoFathom > 0){
+            army *= 1 + (traits.rage.vars(1)[0] / 100 * rhinoFathom * (global.civic.garrison.wounded || 0));
         }
         if (global.race['puny']){
             army *= 1 - (traits.puny.vars()[0] / 100);
         }
         if (global.race['claws']){
             army *= 1 + (traits.claws.vars()[0] / 100);
+        }
+        let scorpidFathom = fathomCheck('scorpid');
+        if (scorpidFathom > 0){
+            army *= 1 + (traits.claws.vars(1)[0] / 100 * scorpidFathom);
         }
         if (global.race['chameleon']){
             army *= 1 + (traits.chameleon.vars()[0] / 100);
@@ -1993,11 +2065,23 @@ export function armyRating(val,type,wound){
         if (global.race['apex_predator']){
             army *= 1 + (traits.apex_predator.vars()[0] / 100);
         }
+        let sharkinFathom = fathomCheck('sharkin');
+        if (sharkinFathom > 0){
+            army *= 1 + (traits.apex_predator.vars(1)[0] / 100 * sharkinFathom);
+        }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars()[0] / 100);
         }
+        let balorgFathom = fathomCheck('balorg');
+        if (balorgFathom > 0){
+            army *= 1 + (traits.fiery.vars(1)[0] / 100 * balorgFathom);
+        }
         if (global.race['sticky']){
             army *= 1 + (traits.sticky.vars()[1] / 100);
+        }
+        let pingFathom = fathomCheck('pinguicula');
+        if (pingFathom > 0){
+            army *= 1 + (traits.sticky.vars(1)[1] / 100 * pingFathom);
         }
         if (global.race['pathetic']){
             army *= 1 - (traits.pathetic.vars()[0] / 100);
@@ -2010,6 +2094,10 @@ export function armyRating(val,type,wound){
         }
         if (global.race['holy'] && type === 'hellArmy'){
             army *= 1 + (traits.holy.vars()[0] / 100);
+        }
+        let unicornFathom = fathomCheck('unicorn');
+        if (unicornFathom > 0 && type === 'hellArmy'){
+            army *= 1 + (traits.holy.vars(1)[0] / 100 * unicornFathom);
         }
         if (global.race['banana'] && type === 'hellArmy'){
             army *= 0.8;
@@ -2037,6 +2125,10 @@ export function armyRating(val,type,wound){
         if (global.race['tracker']){
             army *= 1 + (traits.tracker.vars()[0] / 100);
         }
+        let wolvenFathom = fathomCheck('wolven');
+        if (wolvenFathom > 0){
+            army *= 1 + (traits.tracker.vars(1)[0] / 100 * wolvenFathom);
+        }
         if (global.race['beast']){
             let rate = global.city.calendar.wind === 1 ? traits.beast.vars()[1] : traits.beast.vars()[0];
             army *= 1 + (rate / 100);
@@ -2044,8 +2136,16 @@ export function armyRating(val,type,wound){
         if (global.race['apex_predator']){
             army *= 1 + (traits.apex_predator.vars()[1] / 100);
         }
+        let sharkinFathom = fathomCheck('sharkin');
+        if (sharkinFathom > 0){
+            army *= 1 + (traits.apex_predator.vars(1)[1] / 100 * sharkinFathom);
+        }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars()[1] / 100);
+        }
+        let balorgFathom = fathomCheck('balorg');
+        if (balorgFathom > 0){
+            army *= 1 + (traits.fiery.vars(1)[1] / 100 * balorgFathom);
         }
         if (global.race['fragrant']){
             army *= 1 - (traits.fragrant.vars()[0] / 100);

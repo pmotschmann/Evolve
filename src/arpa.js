@@ -1,7 +1,7 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
-import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
+import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
 import { renderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
@@ -1611,8 +1611,16 @@ export function arpaAdjustCosts(costs,offset,wiki){
 function creativeAdjust(costs,offset,wiki){
     if ((wiki && wiki.creative) || (!wiki && global.race['creative'])){
         var newCosts = {};
+        let fathom = fathomCheck('human');
         Object.keys(costs).forEach(function (res){
-            newCosts[res] = function(){ return costs[res](offset,wiki) * (1 - traits.creative.vars()[1] / 100); }
+            newCosts[res] = function(){
+                let cost = costs[res](offset, wiki);
+                cost *= (1 - traits.creative.vars()[1] / 100);
+                if (fathom > 0){
+                    cost *= 1 - (traits.smart.vars(1)[0] / 100 * fathom);
+                }
+                return cost;
+            }
         });
         return newCosts;
     }

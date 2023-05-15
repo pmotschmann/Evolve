@@ -997,18 +997,18 @@ export const traits = {
         type: 'genus',
         val: 15,
         vars(r){
-            // [???]
+            // [Mind Break Modifer]
             switch (r || global.race.psychic || 1){
                 case 0.25:
-                    return [1];
+                    return [0.35];
                 case 0.5:
-                    return [1];
+                    return [0.65];
                 case 1:
                     return [1];
                 case 2:
-                    return [1];
+                    return [1.25];
                 case 3:
-                    return [1];
+                    return [1.5];
             }
         },
     },
@@ -1060,18 +1060,18 @@ export const traits = {
         type: 'genus',
         val: 10,
         vars(r){
-            // [Crazy Culture]
+            // [Catch Modifer]
             switch (r || global.race.unfathomable || 1){
                 case 0.25:
-                    return [1];
+                    return [0.5];
                 case 0.5:
-                    return [1];
+                    return [0.65];
                 case 1:
-                    return [2];
+                    return [0.8];
                 case 2:
-                    return [2];
+                    return [0.9];
                 case 3:
-                    return [3];
+                    return [1];
             }
         },
     },
@@ -1371,7 +1371,7 @@ export const traits = {
         type: 'major',
         val: 4,
         vars(r){
-            // [Armor Bonus, Wounded Bonus]
+            // [Rage Bonus, Wounded Bonus]
             switch (r || global.race.rage || 1){
                 case 0.25:
                     return [0.3,20];
@@ -4537,7 +4537,11 @@ export function racialTrait(workers,type){
         }
     }
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
-        modifier *= 1.2;
+        modifier *= 1 + (traits.humpback.vars()[0] / 100);
+    }
+    let kamelFathom = fathomCheck('kamel');
+    if (kamelFathom > 0){
+        modifier *= 1 + (traits.humpback.vars(1)[0] / 100 * kamelFathom);
     }
     if (global.city.ptrait.includes('magnetic') && type === 'miner'){
         modifier *= planetTraits.magnetic.vars()[2];
@@ -4550,6 +4554,10 @@ export function racialTrait(workers,type){
     }
     if (global.race['toxic'] && type === 'factory'){
         modifier *= 1 + (traits.toxic.vars()[2] / 100);
+    }
+    let shroomiFathom = fathomCheck('shroomi');
+    if (shroomiFathom > 0){
+        modifier *= 1 + (traits.toxic.vars(1)[2] / 100 * shroomiFathom);
     }
     if (global.race['hardy'] && type === 'factory'){
         modifier *= 1 + (traits.hardy.vars()[0] * global.race['hardy'] / 100);
@@ -5420,6 +5428,21 @@ export function setTraitRank(trait,opts){
         return true;
     }
     return false;
+}
+
+export function fathomCheck(race){
+    if (global.race['unfathomable'] && global.city['surfaceDwellers'] && global.city.surfaceDwellers.includes(race) && global.city['captive_housing']){
+        let idx = global.city.surfaceDwellers.indexOf(race);
+        let active = global.city.captive_housing[`race${idx}`];
+        if (active > 100){ active = 100; }
+        if (active > global.civic.torturer.workers){
+            let unsupervised = active - global.civic.torturer.workers;
+            active -= Math.ceil(unsupervised / 2);
+        }
+        let rank = (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0) / 5;
+        return active / 100 * rank;
+    }
+    return 0;
 }
 
 export function traitSkin(type,trait){

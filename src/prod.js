@@ -1,5 +1,5 @@
 import { global, p_on } from './vars.js';
-import { biomes, traits } from './races.js';
+import { biomes, traits, fathomCheck } from './races.js';
 import { govRelationFactor } from './civics.js';
 import { jobScale } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -332,6 +332,10 @@ export function production(id,val){
             }
             if (global.race['tough']){
                 mats *= 1 + (traits.tough.vars()[0] / 100);
+            }
+            let fathom = fathomCheck('ogre');
+            if (fathom > 0){
+                mats *= 1 + (traits.tough.vars(1)[0] / 100 * fathom);
             }
             if (global.tech['tau_pit_mining']){
                 mats *= 1.18;

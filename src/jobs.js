@@ -163,6 +163,9 @@ export const job_desc = {
         }
         return desc;
     },
+    torturer: function(){
+        return loc('job_torturer_desc');
+    },
     miner: function(){
         if (global.tech['mining'] >= 3){
             return global.race['sappy'] && global.tech['alumina'] ? loc('job_miner_desc2_amber') : loc('job_miner_desc2');
@@ -245,8 +248,12 @@ export const job_desc = {
         return desc;
     },
     professor: function(){
-        let professor_impact = +workerScale(global.civic.professor.impact,'professor').toFixed(2);
-        let impact = +(global.race['studious'] ? professor_impact + traits.studious.vars()[0] : professor_impact).toFixed(2);
+        let professor_impact = +workerScale(global.civic.professor.impact,'professor');
+        let impact = +(global.race['studious'] ? professor_impact + traits.studious.vars()[0] : professor_impact);
+        let fathom = fathomCheck('elven');
+        if (fathom > 0){
+            impact += traits.studious.vars(1)[0] / 100 * fathom;
+        }
         if (global.tech['science'] && global.tech['science'] >= 3){
             impact += global.city.library.count * 0.01;
         }
@@ -320,6 +327,7 @@ export function defineJobs(define){
     loadJob('quarry_worker',define,1,5);
     loadJob('crystal_miner',define,0.1,5);
     loadJob('scavenger',define,0.12,5);
+    loadJob('torturer',define,1,3,'advanced');
     loadJob('miner',define,1,4,'advanced');
     loadJob('coal_miner',define,0.2,4,'advanced');
     loadJob('craftsman',define,1,5,'advanced');
