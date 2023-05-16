@@ -3062,11 +3062,10 @@ function fastLoop(){
                     let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
                     if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
 
-                    if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap){
+                    if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap && hunt > 0){
                         hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
-                        if (hunt > 0){
-                            global.city.captive_housing.cattleCatch += hunt * time_multiplier;
-                        }
+                        if (hunt < 0){ hunt = 0.01; }
+                        global.city.captive_housing.cattleCatch += hunt * time_multiplier;
                         if (global.city.captive_housing.cattleCatch >= global.city.captive_housing.cattle ** 2){
                             global.city.captive_housing.cattle++;
                             global.city.captive_housing.cattleCatch = 0;
@@ -7328,11 +7327,17 @@ function midLoop(){
             if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
 
             let usedCap = 0;
+            let thralls = 0;
+            let imprisoned = [];
             if (global.city.hasOwnProperty('surfaceDwellers')){
                 for (let i = 0; i < global.city.surfaceDwellers.length; i++){
                     let mindbreak = global.city.captive_housing[`race${i}`];
                     let jailed = global.city.captive_housing[`jailrace${i}`];
                     usedCap += mindbreak + jailed;
+                    thralls += mindbreak;
+                    if (jailed > 0){
+                        imprisoned.push(i);
+                    }
                 }
             }
 
@@ -7340,6 +7345,14 @@ function midLoop(){
             if (usedCap < global.city.captive_housing.raceCap && Math.rand(0,(catchVar * usedCap) - hunt) <= 0){
                 let k = Math.rand(0,global.city.surfaceDwellers.length);
                 global.city.captive_housing[`jailrace${k}`]++;
+            }
+
+            if (global.tech['unfathomable'] && global.tech.unfathomable >= 2 && global.civic.torturer.workers > 0 && imprisoned.length > 0){
+                if (Math.rand(0,Math.ceil((thralls+1) ** 1.45)) < global.civic.torturer.workers){
+                    let k = imprisoned[Math.rand(0,imprisoned.length)];
+                    global.city.captive_housing[`jailrace${k}`]--;
+                    global.city.captive_housing[`race${k}`]++;
+                }
             }
         }
 

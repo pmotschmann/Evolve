@@ -4276,6 +4276,25 @@ export const races = {
         fanaticism: 'swift',
         basic(){ return false; }
     },
+    shoggoth: {
+        name: loc('race_shoggoth'),
+        desc: loc('race_shoggoth_desc'),
+        type: 'eldritch',
+        home: loc('race_shoggoth_home'),
+        entity: loc('race_shoggoth_entity'),
+        traits: {
+            
+        },
+        solar: {
+            red: loc('race_shoggoth_solar_red'),
+            hell: loc('race_shoggoth_solar_hell'),
+            gas: loc('race_shoggoth_solar_gas'),
+            gas_moon: loc('race_shoggoth_solar_gas_moon'),
+            dwarf: loc('race_shoggoth_solar_dwarf'),
+        },
+        fanaticism: '???',
+        basic(){ return false; }
+    },
     junker: {
         name: altRace('junker') ? loc('race_ghoul') : loc('race_junker'),
         desc: altRace('junker') ? loc('race_ghoul_desc') : loc('race_junker_desc'),
@@ -4497,6 +4516,11 @@ export function racialTrait(workers,type){
             let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
             modifier *= 1 + (1 - (mod ** (workers - breakpoint)));
         }
+    }
+    let antidFathom = fathomCheck('antid');
+    if (antidFathom > 0){
+        let mod = type === 'army' || type === 'hellArmy' ? 0.99 : (global.race['high_pop'] ? 0.985 : 0.98);
+        modifier *= 1 + (1 - (mod ** (workers * antidFathom / 4))) / 2;
     }
     if (global.race['cold_blooded'] && type !== 'army' && type !== 'hellArmy' && type !== 'factory' && type !== 'science'){
         switch(global.city.calendar.temp){

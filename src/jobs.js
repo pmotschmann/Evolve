@@ -1,7 +1,7 @@
 import { global, keyMultiplier, p_on, support_on } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races, traits, biomes, planetTraits } from './races.js';
+import { racialTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
