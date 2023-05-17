@@ -367,6 +367,7 @@ const techs = {
         category: 'eldritch',
         era: 'civilized',
         reqs: { housing: 1 },
+        trait: ['unfathomable'],
         grant: ['unfathomable',1],
         cost: {
             Knowledge(){ return 12; }
@@ -393,6 +394,7 @@ const techs = {
         category: 'eldritch',
         era: 'civilized',
         reqs: { unfathomable: 1 },
+        trait: ['unfathomable'],
         grant: ['unfathomable',2],
         cost: {
             Knowledge(){ return 25; }
