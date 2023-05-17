@@ -13,6 +13,7 @@ const changeList = [
             `Fixed Magocracy Crystal bonus.`,
             `Reduced Crystal cost of Alchemy.`,
             `Fixed Humpback trait rank scaling.`,
+            `Infiltrator can now steal Alien Biotech on Truepath.`,
         ]
     },
     {

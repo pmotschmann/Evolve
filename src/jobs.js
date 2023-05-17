@@ -248,25 +248,23 @@ export const job_desc = {
         return desc;
     },
     professor: function(){
-        let professor_impact = +workerScale(global.civic.professor.impact,'professor');
-        let impact = +(global.race['studious'] ? professor_impact + traits.studious.vars()[0] : professor_impact);
+        let professor = +workerScale(1,'professor');
+        let impact = +(global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact);
         let fathom = fathomCheck('elven');
         if (fathom > 0){
-            impact += traits.studious.vars(1)[0] / 100 * fathom;
+            impact += traits.studious.vars(1)[0] * fathom;
         }
-        if (global.tech['science'] && global.tech['science'] >= 3){
-            impact += global.city.library.count * 0.01;
-        }
-        impact *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
-        impact *= racialTrait(global.civic.professor.workers,'science');
+        professor *= impact;
+        professor *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
+        professor *= racialTrait(global.civic.professor.workers,'science');
         if (global.tech['anthropology'] && global.tech['anthropology'] >= 3){
-            impact *= 1 + (global.city.temple.count * 0.05);
+            professor *= 1 + (global.city.temple.count * 0.05);
         }
         if (global.civic.govern.type === 'theocracy'){
-            impact *= 0.75;
+            professor *= 0.75;
         }
-        impact = +impact.toFixed(2);
-        return loc('job_professor_desc',[impact]);
+        professor = +professor.toFixed(2);
+        return loc('job_professor_desc',[professor]);
     },
     scientist: function(){
         let impact = +workerScale(global.civic.scientist.impact,'scientist').toFixed(2);

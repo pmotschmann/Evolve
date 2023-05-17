@@ -4400,7 +4400,7 @@ function genus_condition(r,t){
     return ((global.tech[t] && global.tech[t] === r) || (global.evolution['gselect'])) && f < 100;
 }
 
-export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano','ghast','custom'];
+export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano','ghast','shoggoth','custom'];
 //export const raceList = ['human','orc','elven','troll','ogre','cyclops','kobold','goblin','gnome','cath','wolven','vulpine','centaur','rhinotaur','capybara','bearkin','porkenari','hedgeoken','tortoisan','gecko','slitheryn','arraak','pterodacti','dracnid','sporgar','shroomi','moldling','mantis','scorpid','antid','entish','cacti','pinguicula','sharkin','octigoran','dryad','satyr','phoenix','salamander','yeti','wendigo','tuskin','kamel','imp','balorg','seraph','unicorn','synth','nano'];
 raceList.forEach(race => actions.evolution[race] = {
     id: `evolution-${race}`,

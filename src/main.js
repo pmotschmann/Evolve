@@ -804,6 +804,27 @@ function fastLoop(){
             global_multiplier *= 1 + (bonus / 100);
         }
     }
+    if (global.race['unfathomable'] && global.city['surfaceDwellers'] && global.city['captive_housing']){
+        let thralls = 0;
+        let rank = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0;
+        if (global.city.hasOwnProperty('surfaceDwellers')){
+            for (let i = 0; i < global.city.surfaceDwellers.length; i++){
+                thralls += global.city.captive_housing[`race${i}`];
+            }
+            if (thralls > global.civic.torturer.workers * rank / 2){
+                let unsupervised = thralls - (global.civic.torturer.workers * rank / 2);
+                thralls -= Math.ceil(unsupervised / 3);
+            }
+        }
+        if (thralls > 0){
+            let bonus = (thralls * traits.unfathomable.vars()[1] * rank / 5);
+            if (global.race['psychic']){
+                bonus *= 1 + (traits.psychic.vars()[1] / 100);
+            }
+            breakdown.p['Global'][loc('trait_unfathomable_bd')] = bonus+'%';
+            global_multiplier *= 1 + (bonus / 100);
+        }
+    }
     if (global.city.ptrait.includes('mellow')){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
         global_multiplier *= planetTraits.mellow.vars()[2];
@@ -3061,10 +3082,11 @@ function fastLoop(){
                     let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                     let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
                     if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
+                    let minHunt = hunt * 0.005;
 
                     if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap && hunt > 0){
                         hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
-                        if (hunt < 0){ hunt = 0.01; }
+                        if (hunt < minHunt){ hunt = minHunt; }
                         global.city.captive_housing.cattleCatch += hunt * time_multiplier;
                         if (global.city.captive_housing.cattleCatch >= global.city.captive_housing.cattle ** 2){
                             global.city.captive_housing.cattle++;
@@ -3312,7 +3334,7 @@ function fastLoop(){
             if (!modRes('Food', delta * time_multiplier)){
                 if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1){
                     global.resource[global.race.species].amount--;
-                    modRes('Food', 10000 * traits.anthropophagite.vars()[0] * time_multiplier);
+                    modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                 }
                 else {
                     fed = false;
@@ -3627,7 +3649,7 @@ function fastLoop(){
             let prof_impact = global.race['studious'] ? global.civic.professor.impact + traits.studious.vars()[0] : global.civic.professor.impact;
             let fathom = fathomCheck('elven');
             if (fathom > 0){
-                prof_impact += traits.studious.vars(1)[0] / 100 * fathom;
+                prof_impact += traits.studious.vars(1)[0] * fathom;
             }
             professors_base *= prof_impact
             professors_base *= global.race['pompous'] ? (1 - traits.pompous.vars()[0] / 100) : 1;
@@ -5031,6 +5053,10 @@ function fastLoop(){
                 if (global.race['high_pop']){
                     stone_base = highPopAdjust(stone_base);
                 }
+                let cactiFathom = fathomCheck('cacti');
+                if (cactiFathom > 0){
+                    stone_base *= 1 + (0.32 * cactiFathom);
+                }
                 stone_bd[flib('name')] = stone_base + 'v';
                 if (global.city.hasOwnProperty('basic_housing')){
                     let grove = global.city.basic_housing.count * 0.025;
@@ -5056,6 +5082,10 @@ function fastLoop(){
         else {
             let stone_base = workerScale(global.civic.quarry_worker.workers,'quarry_worker');
             stone_base *= racialTrait(stone_base,'miner');
+            let cactiFathom = fathomCheck('cacti');
+            if (cactiFathom > 0){
+                stone_base *= 1 + (0.32 * cactiFathom);
+            }
             if (global.race['servants']){ stone_base += global.race.servants.jobs.quarry_worker; }
             stone_base *= global.civic.quarry_worker.impact;
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -7348,7 +7378,7 @@ function midLoop(){
             }
 
             if (global.tech['unfathomable'] && global.tech.unfathomable >= 2 && global.civic.torturer.workers > 0 && imprisoned.length > 0){
-                if (Math.rand(0,Math.ceil((thralls+1) ** 1.45)) < global.civic.torturer.workers){
+                if (Math.rand(0,Math.ceil((thralls+1) ** 1.45)) < (global.civic.torturer.workers / 2) * (1 + traits.psychic.vars()[0])){
                     let k = imprisoned[Math.rand(0,imprisoned.length)];
                     global.city.captive_housing[`jailrace${k}`]--;
                     global.city.captive_housing[`race${k}`]++;
@@ -10050,6 +10080,10 @@ function longLoop(){
             if (global.race['cannibalize'] && global.city['s_alter'] && global.city.s_alter.regen > 0){
                 hc >= 20 ? hc *= (1 + traits.cannibalize.vars()[0] / 100) : hc += Math.floor(traits.cannibalize.vars()[0] / 5);
             }
+            let mantisFathom = fathomCheck('mantis');
+            if (mantisFathom > 0){
+                hc >= 20 ? hc *= (1 + traits.cannibalize.vars(1)[0] / 100 * mantisFathom) : hc += Math.floor(traits.cannibalize.vars(1)[0] / 5 * mantisFathom);
+            }
             if (global.race['high_pop']){
                 hc *= traits.high_pop.vars()[2]
             }
@@ -10701,6 +10735,11 @@ function longLoop(){
                     drawTech();
                     loadFoundry();
                 }
+                if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['kuiper'] && !global.tech['biotech']){
+                    messageQueue(loc(tech_source,[loc('tech_alien_biotech')]),'info',false,['progress']);
+                    global.tech['biotech'] = 1;
+                    drawTech();
+                }
             }
             else {
                 if (global.resource.Knowledge.max >= (actions.tech.shields.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 13){
@@ -10741,6 +10780,123 @@ function longLoop(){
                     messageQueue(loc(tech_source,[loc('tech_infernium_fuel')]),'info',false,['progress']);
                     global.tech.smelting = 8;
                     defineIndustry();
+                    drawTech();
+                }
+            }
+        }
+
+        let moldFathom = fathomCheck('moldling');
+        if (moldFathom > 0){
+            let tech_source = `trait_infiltrator_thrall`;
+            let know_adjust = traits.infiltrator.vars(1)[0] / 100 * moldFathom;
+            if (moldFathom >= 0.02 && global.resource.Knowledge.max >= (actions.tech.smelting.cost.Knowledge() * know_adjust) && checkTechRequirements('smelting',false) && !global.tech['smelting']){
+                messageQueue(loc(tech_source,[loc('tech_smelting')]),'info',false,['progress']);
+                global.tech['smelting'] = 1;
+                global.city['smelter'] = {
+                    count: 0,
+                    cap: 0,
+                    Wood: 0,
+                    Coal: 0,
+                    Oil: 0,
+                    Star: 0,
+                    StarCap: 0,
+                    Inferno: 0,
+                    Iron: 0,
+                    Steel: 0,
+                    Iridium: 0
+                };
+                if (global.race['steelen']){
+                    global.tech['smelting'] = 2;
+                }
+                drawTech();
+            }
+            if (moldFathom >= 0.04 && global.resource.Knowledge.max >= (actions.tech.dynamite.cost.Knowledge() * know_adjust) && checkTechRequirements('dynamite',false) && global.tech['explosives'] && global.tech.explosives === 1){
+                messageQueue(loc(tech_source,[loc('tech_dynamite')]),'info',false,['progress']);
+                global.tech.explosives = 2;
+                drawTech();
+            }
+            if (moldFathom >= 0.8 && global.resource.Knowledge.max >= (actions.tech.portland_cement.cost.Knowledge() * know_adjust) && checkTechRequirements('portland_cement',false) && global.tech['cement'] && global.tech.cement === 3){
+                messageQueue(loc(tech_source,[loc('tech_portland_cement')]),'info',false,['progress']);
+                global.tech.cement = 4;
+                drawTech();
+            }
+            if (moldFathom >= 0.12 && global.resource.Knowledge.max >= (actions.tech.oxygen_converter.cost.Knowledge() * know_adjust) && checkTechRequirements('oxygen_converter',false) && global.tech['smelting'] && global.tech.smelting === 4){
+                messageQueue(loc(tech_source,[loc('tech_oxygen_converter')]),'info',false,['progress']);
+                global.tech.smelting = 5;
+                drawTech();
+            }
+            if (moldFathom >= 0.15 && global.resource.Knowledge.max >= (actions.tech.machinery.cost.Knowledge() * know_adjust) && checkTechRequirements('machinery',false) && global.tech['foundry'] && global.tech.foundry === 6){
+                messageQueue(loc(tech_source,[loc('tech_machinery')]),'info',false,['progress']);
+                global.tech.foundry = 7;
+                drawTech();
+            }
+            if (moldFathom >= 0.20 && global.resource.Knowledge.max >= (actions.tech.uranium_storage.cost.Knowledge() * know_adjust) && checkTechRequirements('uranium_storage',false) && global.tech['uranium'] && global.tech.uranium === 1){
+                messageQueue(loc(tech_source,[loc('tech_uranium_storage')]),'info',false,['progress']);
+                global.tech.uranium = 1;
+                drawTech();
+            }
+            if (moldFathom >= 0.25 && global.resource.Knowledge.max >= (actions.tech.synthetic_fur.cost.Knowledge() * know_adjust) && checkTechRequirements('synthetic_fur',false) && !global.tech['synthetic_fur']){
+                messageQueue(loc(tech_source,[actions.tech.synthetic_fur.title()]),'info',false,['progress']);
+                global.tech['synthetic_fur'] = 1;
+                drawTech();
+            }
+            if (moldFathom >= 0.35 && global.resource.Knowledge.max >= (actions.tech.rover.cost.Knowledge() * know_adjust) && checkTechRequirements('rover',false) && global.tech['space_explore'] && global.tech.space_explore === 1){
+                messageQueue(loc(tech_source,[loc('tech_rover')]),'info',false,['progress']);
+                global.tech.space_explore = 2;
+                global.settings.space.moon = true;
+                global.space['moon_base'] = {
+                    count: 0,
+                    on: 0,
+                    support: 0,
+                    s_max: 0
+                };
+                drawTech();
+            }
+            let late_tech_source = `trait_infiltrator_thrall_alt`;
+            if (moldFathom >= 0.4 && global.resource.Knowledge.max >= (actions.tech.starcharts.cost.Knowledge() * know_adjust) && checkTechRequirements('starcharts',false) && global.tech['space_explore'] && global.tech.space_explore === 3){
+                messageQueue(loc(late_tech_source,[loc('tech_starcharts')]),'info',false,['progress']);
+                global.tech.space_explore = 4;
+                drawTech();
+            }
+            if (moldFathom >= 0.5 && global.resource.Knowledge.max >= (actions.tech.nano_tubes.cost.Knowledge() * know_adjust) && checkTechRequirements('nano_tubes',false) && !global.tech['nano']){
+                messageQueue(loc(late_tech_source,[loc('tech_nano_tubes')]),'info',false,['progress']);
+                global.tech['nano'] = 1;
+                global.resource.Nano_Tube.display = true;
+                drawTech();
+            }
+            if (global.race['truepath']){
+                if (moldFathom >= 0.65 && global.resource.Knowledge.max >= (actions.tech.stanene_tp.cost.Knowledge() * know_adjust) && checkTechRequirements('stanene_tp',false) && !global.tech['stanene']){
+                    messageQueue(loc(late_tech_source,[loc('tech_stanene')]),'info',false,['progress']);
+                    global.tech['stanene'] = 1;
+                    global.resource.Stanene.display = true;
+                    drawTech();
+                }
+                if (moldFathom >= 0.8 && global.resource.Knowledge.max >= (actions.tech.anitgrav_bunk.cost.Knowledge() * know_adjust) && checkTechRequirements('anitgrav_bunk',false) && global.tech['marines'] && global.tech.marines === 1){
+                    messageQueue(loc(late_tech_source,[loc('tech_anitgrav_bunk')]),'info',false,['progress']);
+                    global.tech.marines = 2;
+                    drawTech();
+                }
+            }
+            else {
+                if (moldFathom >= 0.65 && global.resource.Knowledge.max >= (actions.tech.stanene.cost.Knowledge() * know_adjust) && checkTechRequirements('stanene',false) && !global.tech['stanene']){
+                    messageQueue(loc(late_tech_source,[loc('tech_stanene')]),'info',false,['progress']);
+                    global.tech['stanene'] = 1;
+                    global.resource.Stanene.display = true;
+                    drawTech();
+                }
+                if (moldFathom >= 0.78 && global.resource.Knowledge.max >= (actions.tech.hydroponics.cost.Knowledge() * know_adjust) && checkTechRequirements('hydroponics',false) && global.tech['mars'] && global.tech.mars === 5){
+                    messageQueue(loc(late_tech_source,[loc('tech_hydroponics')]),'info',false,['progress']);
+                    global.tech.mars = 6;
+                    drawTech();
+                }
+                if (moldFathom >= 0.92 && global.resource.Knowledge.max >= (actions.tech.orichalcum_panels.cost.Knowledge() * know_adjust) && checkTechRequirements('orichalcum_panels',false) && global.tech['swarm'] && global.tech.swarm === 5){
+                    messageQueue(loc(late_tech_source,[loc('tech_orichalcum_panels')]),'info',false,['progress']);
+                    global.tech.swarm = 6;
+                    drawTech();
+                }
+                if (moldFathom >= 1 && global.resource.Knowledge.max >= (actions.tech.cybernetics.cost.Knowledge() * know_adjust) && checkTechRequirements('cybernetics',false) && global.tech['high_tech'] && global.tech.high_tech === 17){
+                    messageQueue(loc(late_tech_source,[loc('tech_cybernetics')]),'info',false,['progress']);
+                    global.tech.high_tech = 18;
                     drawTech();
                 }
             }

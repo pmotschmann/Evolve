@@ -1767,6 +1767,22 @@ function kindlingAdjust(costs, offset, wiki){
         });
         return newCosts;
     }
+    else if (global.race['unfathomable'] && global.city['captive_housing']){
+        let fathom = fathomCheck('entish');
+        if (fathom > 0){
+            var newCosts = {};
+            let adjustRate = 1 - (0.4 * fathom);
+            Object.keys(costs).forEach(function (res){
+                if (res === 'Lumber' && res === 'Plywood'){
+                    newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                }
+                else {
+                    newCosts[res] = function(){ return costs[res](offset, wiki); }
+                }
+            });
+            return newCosts;
+        }
+    }
     return costs;
 }
 
@@ -2627,6 +2643,7 @@ const valAdjust = {
     blood_thirst: true,
     selenophobia: true,
     hooved: true,
+    anthropophagite: true,
 };
 
 function getTraitVals(trait,rank){
@@ -2655,6 +2672,9 @@ function getTraitVals(trait,rank){
         }
         else if (trait === 'hooved'){
             vals.unshift(hoovedRename());
+        }
+        else if (trait === 'anthropophagite'){
+            vals = [vals[0] * 10000];
         }
         else if (!valAdjust[trait]){
             vals = [];

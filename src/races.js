@@ -995,20 +995,20 @@ export const traits = {
         name: loc('trait_psychic_name'),
         desc: loc('trait_psychic'),
         type: 'genus',
-        val: 15,
+        val: 10,
         vars(r){
-            // [Mind Break Modifer]
+            // [Mind Break Modifer, Thrall Modifer]
             switch (r || global.race.psychic || 1){
                 case 0.25:
-                    return [0.35];
+                    return [0.35,5];
                 case 0.5:
-                    return [0.65];
+                    return [0.65,10];
                 case 1:
-                    return [1];
+                    return [1,15];
                 case 2:
-                    return [1.25];
+                    return [1.25,20];
                 case 3:
-                    return [1.5];
+                    return [1.5,25];
             }
         },
     },
@@ -1058,20 +1058,20 @@ export const traits = {
         name: loc('trait_unfathomable_name'),
         desc: loc('trait_unfathomable'),
         type: 'genus',
-        val: 10,
+        val: 15,
         vars(r){
-            // [Catch Modifer]
+            // [Catch Modifer, Thrall Effectiveness]
             switch (r || global.race.unfathomable || 1){
                 case 0.25:
-                    return [0.5];
+                    return [0.5,0.05];
                 case 0.5:
-                    return [0.65];
+                    return [0.65,0.08];
                 case 1:
-                    return [0.8];
+                    return [0.8,0.1];
                 case 2:
-                    return [0.9];
+                    return [0.9,0.12];
                 case 3:
-                    return [1];
+                    return [1,0.13];
             }
         },
     },
@@ -3107,15 +3107,35 @@ export const traits = {
         vars(r){
             switch (r || global.race.anthropophagite || 1){
                 case 0.25:
-                    return [0.5];
+                    return [0.4];
                 case 0.5:
-                    return [0.75];
+                    return [0.65];
                 case 1:
                     return [1];
                 case 2:
                     return [1.5];
                 case 3:
                     return [2];
+            }
+        }
+    },
+    living_tool: {
+        name: loc('trait_living_tool_name'),
+        desc: loc('trait_living_tool'),
+        type: 'major',
+        val: 10,
+        vars(r){
+            switch (r || global.race.living_tool || 1){
+                case 0.25:
+                    return [1];
+                case 0.5:
+                    return [1];
+                case 1:
+                    return [1];
+                case 2:
+                    return [1];
+                case 3:
+                    return [1];
             }
         }
     },
@@ -3821,7 +3841,7 @@ export const races = {
             dwarf: loc('race_sporgar_solar_dwarf'),
         },
         fanaticism: 'infectious',
-        basic(){ return true; }
+        basic(){ return false; }
     },
     shroomi: {
         name: loc('race_shroomi'),
@@ -4283,7 +4303,9 @@ export const races = {
         home: loc('race_shoggoth_home'),
         entity: loc('race_shoggoth_entity'),
         traits: {
-            
+            living_tool: 1,
+            large: 3,
+            strong: 0.5
         },
         solar: {
             red: loc('race_shoggoth_solar_red'),
@@ -4558,6 +4580,21 @@ export function racialTrait(workers,type){
         }
         if (type === 'science' && global.city.s_alter.mind > 0){
             modifier *= 1 + (traits.cannibalize.vars()[0] / 100);
+        }
+    }
+    let mantisFathom = fathomCheck('mantis');
+    if (mantisFathom > 0){
+        if (type === 'miner'){
+            modifier *= 1 + (traits.cannibalize.vars(1)[0] / 100 * mantisFathom);
+        }
+        if (type === 'lumberjack'){
+            modifier *= 1 + (traits.cannibalize.vars(1)[0] / 100 * mantisFathom);
+        }
+        if ((type === 'army' || type === 'hellArmy')){
+            modifier *= 1 + (traits.cannibalize.vars(1)[0] / 100 * mantisFathom);
+        }
+        if (type === 'science'){
+            modifier *= 1 + (traits.cannibalize.vars(1)[0] / 100 * mantisFathom);
         }
     }
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
@@ -5461,7 +5498,7 @@ export function fathomCheck(race){
         if (active > 100){ active = 100; }
         if (active > global.civic.torturer.workers){
             let unsupervised = active - global.civic.torturer.workers;
-            active -= Math.ceil(unsupervised / 2);
+            active -= Math.ceil(unsupervised / 3);
         }
         let rank = (global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0) / 5;
         return active / 100 * rank;
