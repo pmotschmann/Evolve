@@ -2,11 +2,11 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck, } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
-import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect } from './civics.js';
+import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
@@ -3079,10 +3079,11 @@ function fastLoop(){
                 }
 
                 if (global.race['unfathomable'] && global.city['captive_housing']){
-                    let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                    let strength = weaponTechModifer();
                     let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
-                    if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
-                    let minHunt = hunt * 0.005;
+                    hunt *= racialTrait(hunt,'hunting');
+                    if (global.race['servants']){ hunt += global.race.servants.jobs.hunter * strength; }
+                    let minHunt = hunt * 0.008;
 
                     if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap && hunt > 0){
                         hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
@@ -3107,15 +3108,13 @@ function fastLoop(){
                 }
 
                 if (global.race['carnivore'] || global.race['soul_eater']){
-                    let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                    let strength = weaponTechModifer();
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
+                    food_hunt *= racialTrait(food_hunt,'hunting');
                     if (global.race['servants']){ food_hunt += global.race.servants.jobs.hunter; }
                     food_hunt *= strength * (global.race['carnivore'] ? 2 : 0.5);
                     if (global.race['ghostly']){
                         food_hunt *= 1 + (traits.ghostly.vars()[0] / 100);
-                    }
-                    if (global.city.biome === 'savanna'){
-                        food_hunt *= biomes.savanna.vars()[1];
                     }
                     food_bd[loc('job_hunter')] = food_hunt + 'v';
 
@@ -3203,9 +3202,6 @@ function fastLoop(){
             let hunting = 0;
             if (global.tech['military']){
                 hunting = (global.race['herbivore'] && !global.race['carnivore']) || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
-                if (global.race['unfathomable']){
-                    hunting *= 0.66;
-                }
             }
 
             let biodome = 0;
@@ -3566,8 +3562,9 @@ function fastLoop(){
         let fur_bd = {};
         if (global.resource.Furs.display){
             if (global.race['evil'] || global.race['artifical'] || global.race['unfathomable']){
-                let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                let weapons = weaponTechModifer();
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
+                hunters *= racialTrait(hunters,'hunting');
                 if (global.race['servants']){ hunters += jobScale(global.race.servants.jobs.hunter); }
                 hunters *= weapons / 20;
                 if (global.city.biome === 'savanna'){
@@ -4927,11 +4924,9 @@ function fastLoop(){
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
                 let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
+                hunters *= racialTrait(hunters,'hunting');
                 if (global.race['servants']){ hunters += jobScale(global.race.servants.jobs.hunter); }
                 hunters *= weapons / 2;
-                if (global.city.biome === 'savanna'){
-                    hunters *= biomes.savanna.vars()[1];
-                }
                 if (global.race['high_pop']){
                     hunters = highPopAdjust(hunters);
                 }
@@ -7354,7 +7349,8 @@ function midLoop(){
         if (global.race['unfathomable'] && global.city['captive_housing']){
             let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
             let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
-            if (global.race['servants']){ hunt += global.race.servants.jobs.hunter; }
+            hunt *= racialTrait(hunt,'hunting');
+            if (global.race['servants']){ hunt += global.race.servants.jobs.hunter * strength; }
 
             let usedCap = 0;
             let thralls = 0;

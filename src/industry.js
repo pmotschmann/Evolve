@@ -1146,6 +1146,9 @@ function loadPylon(parent,bind){
     else if (global.race['cataclysm']){
         ritualList = ['science','factory','army','hunting','crafting'];
     }
+    else if (global.race['unfathomable']){
+        ritualList = ['miner','lumberjack','science','factory','army','hunting','crafting'];
+    }
     else {
         ritualList = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
     }

@@ -62,7 +62,7 @@ function infoForFeature(planetFeatures, content) {
         let modifiers = $(`<div class="propList"></div>`);
         if (planetFeature['vars'] && planetFeature['wiki']) {
             for (let i=0; i<planetFeature.vars().length; i++){
-                let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : 'decimal');
+                let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : (planetFeature.wiki[i] === '-A' ? 'inverted-decimal' : 'decimal'));
                 modifiers.append($(`<div class="has-text-label">${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars()[i], type)])}</div>`));
             }
         }
@@ -79,9 +79,14 @@ function infoForFeature(planetFeatures, content) {
 
 export function formatBonusNumber(num, style) {
     let modRes = num - 1 * (style === 'percent' || style === 'inverted' ? 1 : 0);
-    if (style === 'inverted'){
+    if (style === 'inverted' || style === 'inverted-decimal'){
         modRes *= -1;
-        style = 'percent';
+        if (style === 'inverted'){
+            style = 'percent';
+        }
+        else {
+            style = 'decimal';
+        }
     }
     let modResText = (modRes >= 0 ? '+' : '') + modRes.toLocaleString(global.settings.locale, { style: style, maximumFractionDigits: 2 });
     let textColor = modRes >= 0 ? 'success' : 'danger';

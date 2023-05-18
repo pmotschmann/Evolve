@@ -2644,6 +2644,8 @@ const valAdjust = {
     selenophobia: true,
     hooved: true,
     anthropophagite: true,
+    unfathomable: false,
+    darkness: false,
 };
 
 function getTraitVals(trait,rank){

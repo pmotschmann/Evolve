@@ -2006,6 +2006,22 @@ function lootModify(val,gov){
     return Math.floor(loot * global.civic.foreign[`gov${gov}`].eco / 100);
 }
 
+export function weaponTechModifer(){
+    let weapon_tech = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+    if (global.tech['military'] && global.tech.military > 1){
+        weapon_tech -= global.tech.military >= 11 ? 2 : 1;
+        if (global.race['sniper']){
+            weapon_tech *= 1 + (traits.sniper.vars()[0] / 100 * weapon_tech);
+        }
+        let fathom = fathomCheck('centaur');
+        if (fathom > 0){
+            weapon_tech *= 1 + (traits.sniper.vars(1)[0] / 100 * weapon_tech * fathom);
+        }
+        weapon_tech += global.tech.military >= 11 ? 2 : 1;
+    }
+    return weapon_tech;
+}
+
 export function armyRating(val,type,wound){
     if (!global.civic.hasOwnProperty('garrison')){
         return 1;
@@ -2019,18 +2035,7 @@ export function armyRating(val,type,wound){
         wounded = val - (global.civic.garrison.workers - global.civic.garrison.wounded);
     }
 
-    let weapon_tech = global.tech['military'] && global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military;
-    if (global.tech['military'] && global.tech.military > 1){
-        weapon_tech -= global.tech.military >= 11 ? 2 : 1;
-        if (global.race['sniper']){
-            weapon_tech *= 1 + (traits.sniper.vars()[0] / 100 * weapon_tech);
-        }
-        let fathom = fathomCheck('centaur');
-        if (fathom > 0){
-            weapon_tech *= 1 + (traits.sniper.vars(1)[0] / 100 * weapon_tech * fathom);
-        }
-        weapon_tech += global.tech.military >= 11 ? 2 : 1;
-    }
+    let weapon_tech = weaponTechModifer();
     let rhinoFathom = fathomCheck('rhinotaur');
     let adjusted_val = val - (wounded / 2);
     if (global.race['rage'] || rhinoFathom > 0){
@@ -2121,43 +2126,9 @@ export function armyRating(val,type,wound){
             }
         }
     }
-    else if (type === 'hunting'){
-        if (global.race['tracker']){
-            army *= 1 + (traits.tracker.vars()[0] / 100);
-        }
-        let wolvenFathom = fathomCheck('wolven');
-        if (wolvenFathom > 0){
-            army *= 1 + (traits.tracker.vars(1)[0] / 100 * wolvenFathom);
-        }
-        if (global.race['beast']){
-            let rate = global.city.calendar.wind === 1 ? traits.beast.vars()[1] : traits.beast.vars()[0];
-            army *= 1 + (rate / 100);
-        }
-        if (global.race['apex_predator']){
-            army *= 1 + (traits.apex_predator.vars()[1] / 100);
-        }
-        let sharkinFathom = fathomCheck('sharkin');
-        if (sharkinFathom > 0){
-            army *= 1 + (traits.apex_predator.vars(1)[1] / 100 * sharkinFathom);
-        }
-        if (global.race['fiery']){
-            army *= 1 + (traits.fiery.vars()[1] / 100);
-        }
-        let balorgFathom = fathomCheck('balorg');
-        if (balorgFathom > 0){
-            army *= 1 + (traits.fiery.vars(1)[1] / 100 * balorgFathom);
-        }
-        if (global.race['fragrant']){
-            army *= 1 - (traits.fragrant.vars()[0] / 100);
-        }
-        if (global.city.ptrait.includes('rage')){
-            army *= planetTraits.rage.vars()[1];
-        }
-        if (global.race['cunning']){
-            army *= 1 + (traits.cunning.vars()[0] * global.race['cunning'] / 100);
-        }
-        if (global.city.biome === 'savanna'){
-            army *= biomes.savanna.vars()[1];
+    if (type === 'hunting'){
+        if (global.race['unfathomable']){
+            army *= 0.66;
         }
     }
     if (global.race['rejuvenated']){

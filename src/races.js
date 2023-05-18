@@ -997,18 +997,18 @@ export const traits = {
         type: 'genus',
         val: 10,
         vars(r){
-            // [Mind Break Modifer, Thrall Modifer]
+            // [Mind Break Modifer, Thrall Modifer, Awesomeness Modifier]
             switch (r || global.race.psychic || 1){
                 case 0.25:
-                    return [0.35,5];
+                    return [0.35,5,1];
                 case 0.5:
-                    return [0.65,10];
+                    return [0.65,10,1];
                 case 1:
-                    return [1,15];
+                    return [1,15,1];
                 case 2:
-                    return [1.25,20];
+                    return [1.25,20,1];
                 case 3:
-                    return [1.5,25];
+                    return [1.5,25,1];
             }
         },
     },
@@ -4601,7 +4601,7 @@ export function racialTrait(workers,type){
         modifier *= 1 + (traits.humpback.vars()[0] / 100);
     }
     let kamelFathom = fathomCheck('kamel');
-    if (kamelFathom > 0){
+    if (kamelFathom > 0 && (type === 'miner' || type === 'lumberjack')){
         modifier *= 1 + (traits.humpback.vars(1)[0] / 100 * kamelFathom);
     }
     if (global.city.ptrait.includes('magnetic') && type === 'miner'){
@@ -4617,7 +4617,7 @@ export function racialTrait(workers,type){
         modifier *= 1 + (traits.toxic.vars()[2] / 100);
     }
     let shroomiFathom = fathomCheck('shroomi');
-    if (shroomiFathom > 0){
+    if (shroomiFathom > 0 && type === 'factory'){
         modifier *= 1 + (traits.toxic.vars(1)[2] / 100 * shroomiFathom);
     }
     if (global.race['hardy'] && type === 'factory'){
@@ -4631,6 +4631,48 @@ export function racialTrait(workers,type){
     }
     if (global.civic.govern.type === 'democracy'){
         modifier *= 1 - (govEffect.democracy()[1] / 100);
+    }
+    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
+        modifier *= 1.25;
+    }
+    if (type === 'hunting'){
+        if (global.race['tracker']){
+            modifier *= 1 + (traits.tracker.vars()[0] / 100);
+        }
+        let wolvenFathom = fathomCheck('wolven');
+        if (wolvenFathom > 0){
+            modifier *= 1 + (traits.tracker.vars(1)[0] / 100 * wolvenFathom);
+        }
+        if (global.race['beast']){
+            let rate = global.city.calendar.wind === 1 ? traits.beast.vars()[1] : traits.beast.vars()[0];
+            modifier *= 1 + (rate / 100);
+        }
+        if (global.race['apex_predator']){
+            modifier *= 1 + (traits.apex_predator.vars()[1] / 100);
+        }
+        let sharkinFathom = fathomCheck('sharkin');
+        if (sharkinFathom > 0){
+            modifier *= 1 + (traits.apex_predator.vars(1)[1] / 100 * sharkinFathom);
+        }
+        if (global.race['fiery']){
+            modifier *= 1 + (traits.fiery.vars()[1] / 100);
+        }
+        let balorgFathom = fathomCheck('balorg');
+        if (balorgFathom > 0){
+            modifier *= 1 + (traits.fiery.vars(1)[1] / 100 * balorgFathom);
+        }
+        if (global.race['fragrant']){
+            modifier *= 1 - (traits.fragrant.vars()[0] / 100);
+        }
+        if (global.city.ptrait.includes('rage')){
+            modifier *= planetTraits.rage.vars()[1];
+        }
+        if (global.race['cunning']){
+            modifier *= 1 + (traits.cunning.vars()[0] * global.race['cunning'] / 100);
+        }
+        if (global.city.biome === 'savanna'){
+            modifier *= biomes.savanna.vars()[1];
+        }
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){
@@ -4654,9 +4696,6 @@ export function racialTrait(workers,type){
                 modifier *= 1 + (boost / (boost + 75));
             }
         }
-    }
-    if (global.tech['cyber_worker'] && (type === 'lumberjack' || type === 'miner')){
-        modifier *= 1.25;
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
@@ -4890,7 +4929,6 @@ function adjustFood() {
             delete power_generated[loc('city_mill_title2')];
         }
     }
-
 
     let jobEnabled = [], jobDisabled = [];
     if (!global.race['orbit_decayed'] && farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
@@ -5676,7 +5714,7 @@ export const planetTraits = {
         vars(){
             return global.race['rejuvenated'] ? [0.18] : [0.25];
         }, // [Ozone Penalty]
-        wiki: ['%']
+        wiki: ['-A']
     },
     magnetic: {
         label: loc('planet_magnetic'),
