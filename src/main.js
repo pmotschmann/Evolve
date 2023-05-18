@@ -817,7 +817,7 @@ function fastLoop(){
             }
         }
         if (thralls > 0){
-            let bonus = (thralls * traits.unfathomable.vars()[1] * rank / 5);
+            let bonus = (thralls * traits.unfathomable.vars()[2] * rank / 5);
             if (global.race['psychic']){
                 bonus *= 1 + (traits.psychic.vars()[1] / 100);
             }
@@ -7367,7 +7367,7 @@ function midLoop(){
                 }
             }
 
-            let catchVar = Math.round(40 / traits.unfathomable.vars()[0]);
+            let catchVar = Math.round(40 / traits.unfathomable.vars()[1]);
             if (usedCap < global.city.captive_housing.raceCap && Math.rand(0,(catchVar * usedCap) - hunt) <= 0){
                 let k = Math.rand(0,global.city.surfaceDwellers.length);
                 global.city.captive_housing[`jailrace${k}`]++;

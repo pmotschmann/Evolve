@@ -1060,18 +1060,18 @@ export const traits = {
         type: 'genus',
         val: 15,
         vars(r){
-            // [Catch Modifer, Thrall Effectiveness]
+            // [Thrall Races, Catch Modifer, Thrall Effectiveness]
             switch (r || global.race.unfathomable || 1){
                 case 0.25:
-                    return [0.5,0.05];
+                    return [1,0.5,0.05];
                 case 0.5:
-                    return [0.65,0.08];
+                    return [1,0.65,0.08];
                 case 1:
-                    return [0.8,0.1];
+                    return [2,0.8,0.1];
                 case 2:
-                    return [0.9,0.12];
+                    return [2,0.9,0.12];
                 case 3:
-                    return [1,0.13];
+                    return [3,0.13];
             }
         },
     },
