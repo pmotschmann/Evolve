@@ -5791,8 +5791,9 @@ export function renderPsychicPowers(){
         return;
     }
     let parent = $(`#psychicPowers`);
+    clearElement(parent);
 
-    if (global.race['psychic']){
+    if (global.race['psychic'] && global.tech['psychic']){
         psychicBoost(parent);
         psychicKill(parent);
     }
@@ -5830,7 +5831,7 @@ function psychicBoost(parent){
         },
         filters: {
             boost(r){
-                return loc(`psychic_boost`,[global.resource[r].name,75]);
+                return loc(`psychic_boost`,[global.resource[r] ? global.resource[r].name : 'N/A',75]);
             },
             boostTime(){
                 return global.race.psychicPowers.boostTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.boostTime]) : '';

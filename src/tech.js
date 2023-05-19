@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
-import { races, checkAltPurgatory } from './races.js';
+import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
 import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
@@ -415,6 +415,7 @@ const techs = {
         category: 'eldritch',
         era: 'civilized',
         reqs: { housing: 1 },
+        condition(){ return global.settings.showCivic; },
         trait: ['psychic'],
         grant: ['psychic',1],
         cost: {
@@ -425,10 +426,13 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.resource.Energy.display = true;
                 global.settings.showPsychic = true;
-                global.race['psychicPowers'] = { boost: { r: 'none' }, boostTime: 0 };
+                global.race['psychicPowers'] = { boost: { r: 'Food' }, boostTime: 0 };
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     spear: {
@@ -1639,6 +1643,7 @@ const techs = {
         },
         post(){
             defineIndustry();
+            renderPsychicPowers();
         }
     },
     blast_furnace: {
@@ -1869,6 +1874,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     coal_mining: {
@@ -1893,6 +1901,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     storage: {
@@ -4241,6 +4252,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     electronics: {
@@ -5303,6 +5317,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     uranium_storage: {
@@ -5600,6 +5617,7 @@ const techs = {
         },
         post(){
             defineIndustry();
+            renderPsychicPowers();
         }
     },
     fluidized_bed_reactor: {
@@ -5666,6 +5684,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     stanene: {
@@ -5692,6 +5713,7 @@ const techs = {
         },
         post(){
             defineIndustry();
+            renderPsychicPowers();
         }
     },
     nano_tubes: {
@@ -5718,6 +5740,7 @@ const techs = {
         },
         post(){
             defineIndustry();
+            renderPsychicPowers();
         }
     },
     scarletite: {
@@ -5754,6 +5777,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     pillars: {
@@ -9015,6 +9041,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     mega_manufacturing: {
@@ -10108,6 +10137,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     gateway_depot: {
@@ -10329,7 +10361,10 @@ const techs = {
             }
             return false;
         },
-        flair: loc('tech_mana_flair')
+        flair: loc('tech_mana_flair'),
+        post(){
+            renderPsychicPowers();
+        }
     },
     ley_lines: {
         id: 'tech-ley_lines',
@@ -11260,6 +11295,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            renderPsychicPowers();
         }
     },
     anitgrav_bunk: {
@@ -11517,6 +11555,7 @@ const techs = {
         },
         post(){
             defineIndustry();
+            renderPsychicPowers();
         }
     },
     graphene_tp: {
