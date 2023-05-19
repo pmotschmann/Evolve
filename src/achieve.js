@@ -2613,6 +2613,9 @@ export function drawStats(){
     if (global.stats.sac > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_sacrificed")}</span> {{ s.sac | format }}</div>`);
     }
+    if (global.stats.murders > 0){
+        stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_murders")}</span> {{ s.murders | format }}</div>`);
+    }
     if (global.resource.hasOwnProperty('Thermite') && global.resource.Thermite.amount > 0){
         stats.append(`<div><span class="has-text-warning">${loc("achieve_stats_thermite")}</span> {{ r.Thermite.amount | res }}</div>`);
     }

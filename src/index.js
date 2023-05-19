@@ -7,7 +7,7 @@ import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
-import { races, shapeShift } from './races.js';
+import { races, shapeShift, renderPsychicPowers } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
@@ -465,6 +465,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_shipyard' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_psychic' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_psychic' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivic`,
@@ -484,6 +490,7 @@ export function loadTab(tab){
                                 clearElement($(`#military`));
                                 clearElement($(`#mechLab`));
                                 clearElement($(`#dwarfShipYard`));
+                                clearElement($(`#psychicPowers`));
                                 switch (tab){
                                     case 0:
                                         {
@@ -528,6 +535,11 @@ export function loadTab(tab){
                                             drawShipYard();
                                         }
                                         break;
+                                    case 6:
+                                        if (global.race['psychic'] && global.tech['psychic'] && global.race.species !== 'protoplasm'){
+                                            renderPsychicPowers();
+                                        }
+                                        break;
                                 }
                             }
                             return tab;
@@ -557,6 +569,9 @@ export function loadTab(tab){
                     drawMechLab();
                     if (global.race['truepath']){
                         drawShipYard();
+                    }
+                    if (global.race['psychic'] && global.tech['psychic']){
+                        renderPsychicPowers();
                     }
                 }
                 if (global.race['shapeshifter']){

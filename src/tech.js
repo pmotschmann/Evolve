@@ -408,6 +408,29 @@ const techs = {
             return false;
         }
     },
+    psychic_energy: {
+        id: 'tech-psychic_energy',
+        title: loc('tech_psychic_energy'),
+        desc: loc('tech_psychic_energy'),
+        category: 'eldritch',
+        era: 'civilized',
+        reqs: { housing: 1 },
+        trait: ['psychic'],
+        grant: ['psychic',1],
+        cost: {
+            Knowledge(){ return 15; }
+        },
+        effect: loc('tech_psychic_energy_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Energy.display = true;
+                global.settings.showPsychic = true;
+                global.race['psychicPowers'] = { boost: { r: 'none' }, boostTime: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
     spear: {
         id: 'tech-spear',
         title: loc('tech_spear'),

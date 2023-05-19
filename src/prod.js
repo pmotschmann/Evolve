@@ -478,5 +478,12 @@ export function production(id,val){
         {
             return 0.01;
         }
+        case 'psychic_boost':
+        {
+            if (global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boostTime > 0){
+                return global.race.psychicPowers.boost.r === val ? 1.5 : 1;
+            }
+            return 1;
+        }
     }
 }

@@ -1170,7 +1170,7 @@ if (convertVersion(global['version']) < 103002){
 
 global['version'] = '1.3.7';
 delete global['revision'];
-global['beta'] = 9;
+global['beta'] = 10;
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1432,7 +1432,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
         'aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
-        'cattle','tcattle'
+        'cattle','tcattle','murders','tmurders'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2150,7 +2150,7 @@ function setRegionStates(reset){
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showOuter',
-            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa'
+            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic'
         ],
         space: [
             'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',

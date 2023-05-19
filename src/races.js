@@ -2,8 +2,8 @@ import { global, seededRandom, save, webWorker, power_generated } from './vars.j
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween, randomKey } from './functions.js';
-import { setResourceName } from './resources.js';
+import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween, randomKey, modRes } from './functions.js';
+import { setResourceName, atomic_mass } from './resources.js';
 import { highPopAdjust } from './prod.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
@@ -997,18 +997,18 @@ export const traits = {
         type: 'genus',
         val: 10,
         vars(r){
-            // [Mind Break Modifer, Thrall Modifer, Awesomeness Modifier]
+            // [Mind Break Modifer, Thrall Modifer, Recharge Rate]
             switch (r || global.race.psychic || 1){
                 case 0.25:
-                    return [0.35,5,1];
+                    return [0.35,5,0.01];
                 case 0.5:
-                    return [0.65,10,1];
+                    return [0.65,10,0.025];
                 case 1:
-                    return [1,15,1];
+                    return [1,15,0.05];
                 case 2:
-                    return [1.25,20,1];
+                    return [1.25,20,0.075];
                 case 3:
-                    return [1.5,25,1];
+                    return [1.5,25,0.1];
             }
         },
     },
@@ -5784,4 +5784,93 @@ export function basicRace(){
     let basicList = Object.keys(races).filter(function(r){ return races[r].basic() });
     let key = randomKey(basicList);
     return basicList[key];
+}
+
+export function renderPsychicPowers(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 6)){
+        return;
+    }
+    let parent = $(`#psychicPowers`);
+
+    if (global.race['psychic']){
+        psychicBoost(parent);
+        psychicKill(parent);
+    }
+}
+
+function psychicBoost(parent){
+    let container = $(`<div id="psychicBoost" class="industry"></div>`);
+    parent.append(container);
+
+    container.append($(`<div class="header">${loc('psychic_boost_title')} <span v-html="$options.filters.boostTime()"></span></div>`));
+
+    let content = $(`<div></div>`);
+    container.append(content);
+    
+    let scrollMenu = ``;
+    Object.keys(atomic_mass).forEach(function(res){
+        if (global.resource[res].display){
+            scrollMenu += `<b-radio-button v-model="r" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
+        }
+    });
+    content.append(`<div id="psyhscrolltarget" class="left hscroll"><b-field class="buttonList">${scrollMenu}</b-field></div>`); 
+
+    container.append(`<div><b-button v-html="$options.filters.boost(r)" @click="boostVal()"></b-button></div>`);
+
+    vBind({
+        el: `#psychicBoost`,
+        data: global.race.psychicPowers.boost,
+        methods: {
+            boostVal(){
+                if (global.resource.Energy.amount >= 75){
+                    global.resource.Energy.amount -= 75;
+                    global.race.psychicPowers.boostTime = 300;
+                }
+            }
+        },
+        filters: {
+            boost(r){
+                return loc(`psychic_boost`,[global.resource[r].name,75]);
+            },
+            boostTime(){
+                return global.race.psychicPowers.boostTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.boostTime]) : '';
+            }
+        }
+    });
+
+    const scrollContainer = document.getElementById('psyhscrolltarget');
+    scrollContainer.addEventListener("wheel", (evt) => {
+        evt.preventDefault();
+        scrollContainer.scrollLeft += evt.deltaY;
+    });
+}
+
+function psychicKill(parent){
+    let container = $(`<div id="psychicKill" class="industry"></div>`);
+    parent.append(container);
+
+    container.append($(`<div class="header">${loc('psychic_murder_title')}</div>`));
+    container.append(`<div><b-button v-html="$options.filters.kill()" @click="murder()"></b-button></div>`);
+
+    vBind({
+        el: `#psychicKill`,
+        data: {},
+        methods: {
+            murder(){
+                if (global.resource.Energy.amount >= 10 && global.resource[global.race.species].amount >= 1){
+                    global.resource.Energy.amount -= 10;
+                    global.resource[global.race.species].amount--;
+                    global.stats.murders++;
+                    if (global.race['anthropophagite']){
+                        modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
+                    }
+                }
+            }
+        },
+        filters: {
+            kill(){
+                return loc(`psychic_murder`,[10]);
+            }
+        }
+    });
 }

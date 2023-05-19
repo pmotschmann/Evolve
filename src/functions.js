@@ -2314,6 +2314,8 @@ export function updateResetStats(){
     global.stats.sac = 0;
     global.stats.tcattle += global.stats.cattle;
     global.stats.cattle = 0;
+    global.stats.tmurders += global.stats.murders;
+    global.stats.murders = 0;
 }
 
 export function deepClone(obj){
