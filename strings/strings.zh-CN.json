@@ -8169,7 +8169,7 @@
   "wiki_mechanics_genome_decay_para1_note1": "(50000000 / (1 + %0))",
   "wiki_mechanics_genome_decay_para2": "如果以最快的速度进行基因突变/源代码修改，大概需要现实中 %0 个月才能开始生效。",
   "wiki_mechanics_genome_decay_para3": "%0生效后，本周目游戏中%1的产量加成会随着时间推移逐渐降低到 %2。",
-  "wiki_mechanics_genome_decay_para4": "此时您可以进行%0研究，解锁%1，从而减少%2的惩罚，使%3的产量加成更慢达到 %4。基因组衰退在轨道衰变挑战、大灾变剧情模式和孤独幸存者剧情模式下无法生效。",
+  "wiki_mechanics_genome_decay_para4": "此时您可以进行%0研究，解锁%1，从而减少%2的惩罚，使%3的产量加成更慢达到 %4。基因组衰退在轨道衰变挑战、大灾变剧情模式、孤独幸存者剧情模式和智械黎明剧情模式下接种疫苗之后无法生效。",
   "wiki_mechanics_crispr_mutation": "CRISPR突变",
   "wiki_mechanics_crispr_mutation_para1": "%0的%1系列升级使您可以花费%2移除特质，或是获得同种群其他种族的特质。",
   "wiki_mechanics_crispr_mutation_para2": "所有操作只对本周目游戏生效，不影响后续游戏。",
