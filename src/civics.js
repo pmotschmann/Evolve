@@ -2125,6 +2125,9 @@ export function armyRating(val,type,wound){
                 army += 4;
             }
         }
+        if (global.race['psychicPowers'] && global.race.psychicPowers['assaultTime'] && global.race.psychicPowers.assaultTime > 0){
+            army *= 1.5;
+        }
     }
     if (type === 'hunting'){
         if (global.race['unfathomable']){

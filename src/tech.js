@@ -435,6 +435,31 @@ const techs = {
             renderPsychicPowers();
         }
     },
+    psychic_attack: {
+        id: 'tech-psychic_attack',
+        title: loc('tech_psychic_attack'),
+        desc: loc('tech_psychic_attack'),
+        category: 'eldritch',
+        era: 'civilized',
+        reqs: { psychic: 1, military: 1 },
+        condition(){ return global.stats.murders >= 10; },
+        trait: ['psychic'],
+        grant: ['psychic',2],
+        cost: {
+            Knowledge(){ return 100; }
+        },
+        effect: loc('tech_psychic_attack_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.race.psychicPowers['assaultTime'] = 0;
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderPsychicPowers();
+        }
+    },
     spear: {
         id: 'tech-spear',
         title: loc('tech_spear'),

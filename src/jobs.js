@@ -26,7 +26,7 @@ export const job_desc = {
             desc = loc(global.race['evil'] ? 'job_evil_hunter_desc' : 'job_not_evil_hunter_desc',[global.resource.Food.name,global.resource.Lumber.name,global.resource.Furs.name]);
         }
         if (global.civic.d_job === 'hunter' && !servant){
-            desc = desc + ' ' + loc('job_default',[loc('job_hunter')]);
+            desc = desc + ' ' + loc('job_default',[global.race['unfathomable'] ? loc('job_raider') : loc('job_hunter')]);
         }
         return desc;
     },
@@ -380,7 +380,10 @@ export function jobScale(num){
 
 export function setJobName(job){
     let job_name = '';
-    if (global.race.universe === 'magic' && job === 'scientist'){
+    if (global.race['unfathomable'] && job === 'hunter'){
+        job_name = loc('job_raider');
+    }
+    else if (global.race.universe === 'magic' && job === 'scientist'){
         job_name = loc('job_wizard');
     }
     else if (global.race['truepath'] && job === 'colonist'){

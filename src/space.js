@@ -5435,26 +5435,26 @@ export function piracy(region,rating,raw){
 }
 
 function xeno_race(){
-    while (typeof global.galaxy['alien1'] === 'undefined'){
-        let key = randomKey(races);
-        if (key !== 'protoplasm' && key !== global.race.species && races[key].type !== 'demonic'){
-            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
-                global.galaxy['alien1'] = {
-                    id: key
-                };
-            }
-        }
+    let skip = ['protoplasm',global.race.species];
+    if (global.city.hasOwnProperty('surfaceDwellers')){
+        skip.push(...global.city.surfaceDwellers);
     }
-    while (typeof global.galaxy['alien2'] === 'undefined'){
-        let key = randomKey(races);
-        if (key !== 'protoplasm' && key !== global.race.species && key !== global.galaxy.alien1.id && races[key].type !== 'angelic'){
-            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
-                global.galaxy['alien2'] = {
-                    id: key
-                };
-            }
-        }
+    if (!global.custom.hasOwnProperty('race0')){
+        skip.push('custom');
     }
+    
+    let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
+    let key1 = randomKey(list);
+    global.galaxy['alien1'] = {
+        id: key1
+    };
+    skip.push(key1);
+
+    list = Object.keys(races).filter(function(r){ return !['angelic'].includes(races[r].type) && !skip.includes(r) });
+    let key2 = randomKey(list);
+    global.galaxy['alien2'] = {
+        id: key2
+    };
 }
 
 export function gatewayStorage(){

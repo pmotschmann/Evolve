@@ -3063,7 +3063,7 @@ export const traits = {
         name: loc('trait_dark_dweller_name'),
         desc: loc('trait_dark_dweller'),
         type: 'major',
-        val: -10,
+        val: -3,
         vars(r){
             switch (r || global.race.dark_dweller || 1){
                 case 0.25:
@@ -4673,6 +4673,9 @@ export function racialTrait(workers,type){
         if (global.city.biome === 'savanna'){
             modifier *= biomes.savanna.vars()[1];
         }
+        if (global.race['dark_dweller'] && global.city.calendar.weather === 2){
+            modifier *= 1 - traits.dark_dweller.vars()[0] / 100;
+        }
     }
     if (global.race.universe === 'magic'){
         if (type === 'science'){
@@ -5797,6 +5800,9 @@ export function renderPsychicPowers(){
     if (global.race['psychic'] && global.tech['psychic']){
         psychicBoost(parent);
         psychicKill(parent);
+        if (global.tech.psychic >= 2){
+            psychicAssault(parent);
+        }
     }
 }
 
@@ -5872,6 +5878,35 @@ function psychicKill(parent){
         filters: {
             kill(){
                 return loc(`psychic_murder`,[10]);
+            }
+        }
+    });
+}
+
+function psychicAssault(parent){
+    let container = $(`<div id="psychicAssault" class="industry"></div>`);
+    parent.append(container);
+
+    container.append($(`<div class="header">${loc('psychic_assault_title')} <span v-html="$options.filters.boostTime()"></span></div>`));
+    container.append(`<div><b-button v-html="$options.filters.boost()" @click="boostVal()"></b-button></div>`);
+
+    vBind({
+        el: `#psychicAssault`,
+        data: {},
+        methods: {
+            boostVal(){
+                if (global.resource.Energy.amount >= 45){
+                    global.resource.Energy.amount -= 45;
+                    global.race.psychicPowers.assaultTime = 300;
+                }
+            }
+        },
+        filters: {
+            boost(){
+                return loc(`psychic_boost`,[loc(`psychic_attack`),45]);
+            },
+            boostTime(){
+                return global.race.psychicPowers.assaultTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.assaultTime]) : '';
             }
         }
     });
