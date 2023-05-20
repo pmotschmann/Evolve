@@ -3127,15 +3127,15 @@ export const traits = {
         vars(r){
             switch (r || global.race.living_tool || 1){
                 case 0.25:
-                    return [1];
+                    return [0.65];
                 case 0.5:
-                    return [1];
+                    return [0.8];
                 case 1:
                     return [1];
                 case 2:
-                    return [1];
+                    return [1.1];
                 case 3:
-                    return [1];
+                    return [1.2];
             }
         }
     },
@@ -4515,7 +4515,12 @@ export function racialTrait(workers,type){
         modifier *= 1.1;
     }
     if (type === 'lumberjack' && global.race['evil'] && !global.race['soul_eater']){
-        modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
+        if (global.race['living_tool']){
+            modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.3 : 0);
+        }
+        else {
+            modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
+        }
     }
     if (global.race['powered'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
         modifier *= 1 + (traits.powered.vars()[1] / 100);
@@ -4700,8 +4705,8 @@ export function racialTrait(workers,type){
             }
         }
     }
-    if (global.race['high_pop']){
-        modifier = highPopAdjust(modifier);
+    if (global.race['living_tool'] && type === 'miner'){
+        modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
     }
     return modifier;
 }
@@ -5803,6 +5808,9 @@ export function renderPsychicPowers(){
         if (global.tech.psychic >= 2){
             psychicAssault(parent);
         }
+        if (global.tech.psychic >= 3 && global.tech['unfathomable']){
+            psychicMindBreak(parent);
+        }
     }
 }
 
@@ -5872,6 +5880,9 @@ function psychicKill(parent){
                     if (global.race['anthropophagite']){
                         modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                     }
+                    if (global.stats.murders === 10){
+                        renderPsychicPowers();
+                    }
                 }
             }
         },
@@ -5907,6 +5918,46 @@ function psychicAssault(parent){
             },
             boostTime(){
                 return global.race.psychicPowers.assaultTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.assaultTime]) : '';
+            }
+        }
+    });
+}
+
+function psychicMindBreak(parent){
+    let container = $(`<div id="psychicMindBreak" class="industry"></div>`);
+    parent.append(container);
+
+    container.append($(`<div class="header">${loc('psychic_mind_break')}</div>`));
+    container.append(`<div><b-button v-html="$options.filters.break()" @click="breakMind()"></b-button></div>`);
+
+    vBind({
+        el: `#psychicMindBreak`,
+        data: {},
+        methods: {
+            breakMind(){
+                if (global.resource.Energy.amount >= 100 && global.tech['unfathomable']){
+                    let imprisoned = [];
+                    if (global.city.hasOwnProperty('surfaceDwellers')){
+                        for (let i = 0; i < global.city.surfaceDwellers.length; i++){
+                            let jailed = global.city.captive_housing[`jailrace${i}`];
+                            if (jailed > 0){
+                                imprisoned.push(i);
+                            }
+                        }
+                    }
+
+                    if (imprisoned.length > 0){
+                        let k = imprisoned[Math.rand(0,imprisoned.length)];
+                        global.city.captive_housing[`jailrace${k}`]--;
+                        global.city.captive_housing[`race${k}`]++;
+                        global.resource.Energy.amount -= 100;
+                    }
+                }
+            }
+        },
+        filters: {
+            break(){
+                return loc(`psychic_mind_break_button`,[100]);
             }
         }
     });

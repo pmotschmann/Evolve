@@ -642,7 +642,12 @@ export function farmerValue(farm,servant){
     if (farm){
         farming += global.tech['agriculture'] && global.tech.agriculture >= 2 ? 1.15 : 0.65;
     }
-    farming *= (global.tech['hoe'] && global.tech['hoe'] > 0 ? global.tech['hoe'] * (1/3) : 0) + 1;
+    if (global.race['living_tool']){
+        farming *= (global.tech['science'] && global.tech.science > 0 ? global.tech.science / 5 : 0) + 1;
+    }
+    else {
+        farming *= (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0) + 1;
+    }
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
     farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
     farming *= global.city.biome === 'ashland' ? biomes.ashland.vars()[0] : 1;

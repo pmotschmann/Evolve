@@ -4982,7 +4982,12 @@ function fastLoop(){
                 lumber_base *= global.city.biome === 'swamp' ? biomes.swamp.vars()[2] : 1;
                 lumber_base *= global.city.biome === 'taiga' ? biomes.taiga.vars()[0] : 1;
                 lumber_base *= global.civic.lumberjack.impact;
-                lumber_base *= (global.tech['axe'] && global.tech['axe'] > 1 ? (global.tech['axe'] - 1) * 0.35 : 0) + 1;
+                if (global.race['living_tool']){
+                    lumber_base *= traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.25 : 0) + 1;
+                }
+                else {
+                    lumber_base *= (global.tech['axe'] && global.tech.axe > 1 ? (global.tech.axe - 1) * 0.35 : 0) + 1;
+                }
                 lumber_base *= production('psychic_boost','Lumber');
 
                 let sawmills = 1;
@@ -5080,6 +5085,15 @@ function fastLoop(){
             if (global.race['servants']){ stone_base += global.race.servants.jobs.quarry_worker; }
             stone_base *= global.civic.quarry_worker.impact * production('psychic_boost','Stone');
             stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
+
+            if (global.race['living_tool']){
+                // buffed twice with racial trait on purpose
+                stone_base *= traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.18 : 0) + 1;
+            }
+            else {
+                stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
+            }
+
             if (global.city.biome === 'desert'){
                 stone_base *= biomes.desert.vars()[0];
             }
@@ -5381,7 +5395,9 @@ function fastLoop(){
             if (global.city.ptrait.includes('permafrost')){
                 miner_base *= planetTraits.permafrost.vars()[0];
             }
-            miner_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.15 : 0) + 1;
+            if (!global.race['living_tool']){
+                miner_base *= traits.living_tool.vars()[0] * (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
+            }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 miner_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
@@ -5740,7 +5756,6 @@ function fastLoop(){
                 let bonus = 1 + (traits.resilient.vars()[0] * global.race['resilient'] / 100);
                 coal_base *= bonus;
             }
-            coal_base *= (global.tech['pickaxe'] && global.tech['pickaxe'] > 0 ? global.tech['pickaxe'] * 0.12 : 0) + 1;
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 coal_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
             }
@@ -7386,7 +7401,7 @@ function midLoop(){
         }
         if (global.city['captive_housing']){
             let houses = global.city.captive_housing.count;
-            global.city.captive_housing.raceCap = houses * 2;
+            global.city.captive_housing.raceCap = houses * (global.tech['unfathomable'] && global.tech.unfathomable >= 3 ? 3 : 2);
             global.city.captive_housing.cattleCap = houses * 5;
         }
         if (global.city['farm']){

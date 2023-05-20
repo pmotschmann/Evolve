@@ -408,6 +408,29 @@ const techs = {
             return false;
         }
     },
+    thrall_quarters: {
+        id: 'tech-thrall_quarters',
+        title: loc('tech_thrall_quarters'),
+        desc: loc('tech_thrall_quarters'),
+        category: 'eldritch',
+        era: 'civilized',
+        reqs: { unfathomable: 2, high_tech: 6 },
+        trait: ['unfathomable'],
+        grant: ['unfathomable',3],
+        cost: {
+            Knowledge(){ return 95000; },
+            Cement(){ return 50000; },
+            Wrought_Iron(){ return 12500; }
+        },
+        effect: loc('tech_thrall_quarters_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.civic.torturer.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
     psychic_energy: {
         id: 'tech-psychic_energy',
         title: loc('tech_psychic_energy'),
@@ -452,6 +475,29 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.race.psychicPowers['assaultTime'] = 0;
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderPsychicPowers();
+        }
+    },
+    mind_break: {
+        id: 'tech-mind_break',
+        title: loc('tech_mind_break'),
+        desc: loc('tech_mind_break'),
+        category: 'eldritch',
+        era: 'civilized',
+        reqs: { psychic: 2, high_tech: 1 },
+        trait: ['psychic'],
+        grant: ['psychic',3],
+        cost: {
+            Knowledge(){ return 7000; }
+        },
+        effect: loc('tech_mind_break_effect'),
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -5864,6 +5910,7 @@ const techs = {
         reqs: { reclaimer: 1, mining: 2 },
         grant: ['reclaimer',2],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -5888,6 +5935,7 @@ const techs = {
         reqs: { reclaimer: 2, mining: 3 },
         grant: ['reclaimer',3],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -5912,6 +5960,7 @@ const techs = {
         reqs: { reclaimer: 3, smelting: 2 },
         grant: ['reclaimer',4],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -5936,6 +5985,7 @@ const techs = {
         reqs: { reclaimer: 4, high_tech: 3 },
         grant: ['reclaimer',5],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -5960,6 +6010,7 @@ const techs = {
         reqs: { reclaimer: 5, high_tech: 4 },
         grant: ['reclaimer',6],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -5984,6 +6035,7 @@ const techs = {
         reqs: { reclaimer: 6, space: 3 },
         grant: ['reclaimer',7],
         trait: ['evil'],
+        not_trait: ['living_tool'],
         condition(){
             return global.race['kindling_kindred'] || global.race['smoldering'] ? false : global.race.species === 'wendigo' ? true : global.race['soul_eater'] ? false : true;
         },
@@ -6054,6 +6106,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 1, mining: 2 },
+        not_trait: ['living_tool'],
         grant: ['axe',2],
         cost: {
             Knowledge(){ return 540; },
@@ -6119,6 +6172,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'civilized',
         reqs: { axe: 2, mining: 3 },
+        not_trait: ['living_tool'],
         grant: ['axe',3],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6139,6 +6193,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'discovery',
         reqs: { axe: 3, smelting: 2 },
+        not_trait: ['living_tool'],
         grant: ['axe',4],
         cost: {
             Knowledge(){ return 9000; },
@@ -6159,6 +6214,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'industrialized',
         reqs: { axe: 4, high_tech: 3 },
+        not_trait: ['living_tool'],
         grant: ['axe',5],
         cost: {
             Knowledge(){ return 38000; },
@@ -6179,6 +6235,7 @@ const techs = {
         category: 'lumber_gathering',
         era: 'interstellar',
         reqs: { axe: 5, alpha: 2 },
+        not_trait: ['living_tool'],
         grant: ['axe',6],
         cost: {
             Knowledge(){ return 560000; },
@@ -6201,7 +6258,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm','sappy'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',1],
         cost: {
             Knowledge(){ return 540; },
@@ -6222,7 +6279,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'civilized',
         reqs: { hammer: 1, mining: 3 },
-        not_trait: ['cataclysm','sappy'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1350 : 2700; },
@@ -6243,7 +6300,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'discovery',
         reqs: { hammer: 2, smelting: 2 },
-        not_trait: ['cataclysm','sappy'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',3],
         cost: {
             Knowledge(){ return 7200; },
@@ -6264,7 +6321,7 @@ const techs = {
         category: 'stone_gathering',
         era: 'industrialized',
         reqs: { hammer: 3, high_tech: 3 },
-        not_trait: ['cataclysm','sappy'],
+        not_trait: ['cataclysm','sappy','living_tool'],
         grant: ['hammer',4],
         cost: {
             Knowledge(){ return 40000; },
@@ -6285,7 +6342,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { mining: 2 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','living_tool'],
         grant: ['pickaxe',1],
         cost: {
             Knowledge(){ return 675; },
@@ -6306,7 +6363,7 @@ const techs = {
         category: 'mining',
         era: 'civilized',
         reqs: { pickaxe: 1, mining: 3 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','living_tool'],
         grant: ['pickaxe',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1600 : 3200; },
@@ -6327,6 +6384,7 @@ const techs = {
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 2, smelting: 2},
+        not_trait: ['living_tool'],
         grant: ['pickaxe',3],
         cost: {
             Knowledge(){ return 9000; },
@@ -6347,6 +6405,7 @@ const techs = {
         category: 'mining',
         era: 'discovery',
         reqs: { pickaxe: 3, high_tech: 2},
+        not_trait: ['living_tool'],
         grant: ['pickaxe',4],
         cost: {
             Knowledge(){ return 22500; },
@@ -6367,6 +6426,7 @@ const techs = {
         category: 'mining',
         era: 'globalized',
         reqs: { pickaxe: 4, high_tech: 4},
+        not_trait: ['living_tool'],
         grant: ['pickaxe',5],
         cost: {
             Knowledge(){ return 67500; },
@@ -6388,6 +6448,7 @@ const techs = {
         category: 'mining',
         era: 'interstellar',
         reqs: { pickaxe: 5, alpha: 2},
+        not_trait: ['living_tool'],
         grant: ['pickaxe',6],
         cost: {
             Knowledge(){ return 535000; },
@@ -6408,7 +6469,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { mining: 2, agriculture: 1 },
-        not_trait: ['cataclysm'],
+        not_trait: ['cataclysm','living_tool'],
         grant: ['hoe',1],
         cost: {
             Knowledge(){ return 720; },
@@ -6429,6 +6490,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { hoe: 1, mining: 3, agriculture: 1 },
+        not_trait: ['living_tool'],
         grant: ['hoe',2],
         cost: {
             Knowledge(){ return global.city.ptrait.includes('unstable') ? 1800 : 3600; },
@@ -6449,6 +6511,7 @@ const techs = {
         category: 'agriculture',
         era: 'discovery',
         reqs: { hoe: 2, smelting: 2, agriculture: 1 },
+        not_trait: ['living_tool'],
         grant: ['hoe',3],
         cost: {
             Knowledge(){ return 12600; },
@@ -6469,6 +6532,7 @@ const techs = {
         category: 'agriculture',
         era: 'industrialized',
         reqs: { hoe: 3, high_tech: 3, agriculture: 1 },
+        not_trait: ['living_tool'],
         grant: ['hoe',4],
         cost: {
             Knowledge(){ return 44000; },
@@ -6489,6 +6553,7 @@ const techs = {
         category: 'agriculture',
         era: 'interstellar',
         reqs: { hoe: 4, alpha: 2 },
+        not_trait: ['living_tool'],
         grant: ['hoe',5],
         cost: {
             Knowledge(){ return 530000; },

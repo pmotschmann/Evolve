@@ -2648,6 +2648,7 @@ const valAdjust = {
     anthropophagite: true,
     unfathomable: false,
     darkness: false,
+    living_tool: false,
 };
 
 function getTraitVals(trait,rank){
