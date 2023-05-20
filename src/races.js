@@ -5019,7 +5019,7 @@ export function cleanAddTrait(trait){
                 global.city['surfaceDwellers'] = [];
             }
             while (global.city.surfaceDwellers.length < traits.unfathomable.vars()[0]){
-                global.city.surfaceDwellers.push(basicRace());
+                global.city.surfaceDwellers.push(basicRace(global.city.surfaceDwellers));
             }
             if (global.city.surfaceDwellers.length > traits.unfathomable.vars()[0]){
                 global.city.surfaceDwellers.length = traits.unfathomable.vars()[0];
@@ -5780,8 +5780,9 @@ function foxColor(){
     return loc(`color_red`);
 }
 
-export function basicRace(){
-    let basicList = Object.keys(races).filter(function(r){ return races[r].basic() });
+export function basicRace(skip){
+    skip = skip || [];
+    let basicList = Object.keys(races).filter(function(r){ return races[r].basic() && !skip.includes(r) });
     let key = randomKey(basicList);
     return basicList[key];
 }

@@ -7364,7 +7364,7 @@ function sentience(){
     if (global.race.unfathomable){
         global.city['surfaceDwellers'] = [];
         while (global.city.surfaceDwellers.length < traits.unfathomable.vars()[0]){
-            global.city.surfaceDwellers.push(basicRace());
+            global.city.surfaceDwellers.push(basicRace(global.city.surfaceDwellers));
         }
     }
 

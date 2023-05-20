@@ -3093,7 +3093,7 @@ function fastLoop(){
                             global.city.captive_housing.cattle++;
                             global.city.captive_housing.cattleCatch = 0;
                         }
-                        if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.99){
+                        if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.01){
                             global.city.captive_housing.cattle--;
                             global.resource.Food.amount += 1000;
                             global.stats.cattle++;
