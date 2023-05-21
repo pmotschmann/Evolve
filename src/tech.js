@@ -931,7 +931,7 @@ const techs = {
         era: 'globalized',
         reqs: { high_tech: 4 },
         condition(){
-            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater']) ? true : false;
+            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || global.race['unfathomable']) ? true : false;
         },
         not_trait: ['herbivore'],
         grant: ['wind_plant',1],

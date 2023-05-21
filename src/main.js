@@ -3101,7 +3101,7 @@ function fastLoop(){
                     if (global.race['ghostly']){
                         food_hunt *= 1 + (traits.ghostly.vars()[0] / 100);
                     }
-                    foot_hunt *= production('psychic_boost','Food');
+                    food_hunt *= production('psychic_boost','Food');
                     breakdown.p['Food'][loc(global.race['unfathomable'] ? 'job_raider' : 'job_hunter')] = food_hunt + 'v';
 
                     if (global.race['carnivore'] && global.city['lodge'] && food_hunt > 0){
