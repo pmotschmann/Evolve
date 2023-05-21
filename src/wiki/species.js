@@ -59,7 +59,7 @@ export function racesPage(content){
         let info = $(`<div id="${race}" class="infoBox"></div>`);
         content.append(info);
 
-        info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span class="has-text-caution">${loc(`genelab_genus_${races[race].type}`)}</span></div>`);
+        info.append(`<div class="type"><h2 class="has-text-warning">${races[race].name}</h2><span id="genus${race}" class="has-text-caution">${loc(`genelab_genus_${races[race].type}`)}</span></div>`);
         info.append(`<div class="desc">${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()}</div>`);
 
         let traitList = [];
@@ -86,6 +86,8 @@ export function racesPage(content){
         }
         info.append(genes);
         list.push(race);
+
+        popover(`genus${race}`,$(`<div>${loc(`genelab_genus_${races[race].type}_desc`)}</div>`),{ wide: true, classes: 'w25' });
 
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i].t}`;

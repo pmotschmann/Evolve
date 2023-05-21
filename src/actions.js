@@ -13,7 +13,7 @@ import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
-import { govActive, removeTask, defineGovernor } from './governor.js';
+import { govActive, removeTask, defineGovernor, gov_tasks } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
 
@@ -6094,6 +6094,10 @@ export function powerOnNewStruct(c_action,extra){
 
         if (global.city.hasOwnProperty('powered') && power >= c_action.powered()){
             global[parts[0]][parts[1]].on++;
+            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+                global.city.power -= c_action.powered();
+                gov_tasks.replicate.task();
+            }
             if (extra && typeof extra === 'function'){
                 return extra(c_action);
             }

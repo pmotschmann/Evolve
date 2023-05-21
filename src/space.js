@@ -6755,7 +6755,7 @@ export function ascendLab(wiki){
     Object.keys(genus_traits).forEach(function (type){
         if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
             popover(`celestialLabgenusSelection${type}`, function(){
-                let desc = $(`<div></div>`);
+                let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);

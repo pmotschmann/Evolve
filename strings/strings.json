@@ -7512,7 +7512,7 @@
   "wiki_trait_effect_linked": "Quantum level is increased by %0% per citizen. Linked effect degrades above %1%.",
   "wiki_trait_effect_deconstructor": "Convert resources into Nanites at %0% efficiency.",
   "wiki_trait_effect_shapeshifter": "Ability to assume genus properties from other genus. Positive traits are assumed at rank %0, while negative traits are assumed at rank %1.",
-  "wiki_trait_effect_psychic": "Mind Break +%0%. Thrall effectiveness +%1%.",
+  "wiki_trait_effect_psychic": "Energy Regen +%2. Mind Break +%0%. Thrall effectiveness +%1%.",
   "wiki_trait_effect_unfathomable": "Your culture is nightmarish and incomprehensible to outsiders.",
   "wiki_trait_effect_darkness": "Sunny days have a chance to be replaced with cloudy.",
   "wiki_trait_effect_tormented": "Morale above 100% is greatly reduced by %0%.",
