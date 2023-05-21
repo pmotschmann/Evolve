@@ -9236,7 +9236,7 @@
   "wiki_planet_dense1": "矿工工作压力 %0",
   "wiki_planet_dense2": "地面、近太空、外太空阶段的燃料成本 %0",
   "wiki_planet_unstable_trait": "部分地面建筑成本增加铁。部分与铁相关的研究知识消耗减少。",
-  "wiki_planet_unstable_event": "建造世界对撞机之后，可能会发生特大地震。",
+  "wiki_planet_unstable_event": "建造世界对撞机并为其通电后，可能会发生特大地震。",
   "wiki_planet_permafrost0": "矿工产量 %0",
   "wiki_planet_permafrost1": "大学的知识上限 %0",
   "wiki_planet_permafrost_trait": "无法出现在生物群系为火山，灰幕或地狱的星球上。",
