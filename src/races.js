@@ -4314,7 +4314,7 @@ export const races = {
             gas_moon: loc('race_shoggoth_solar_gas_moon'),
             dwarf: loc('race_shoggoth_solar_dwarf'),
         },
-        fanaticism: '???',
+        fanaticism: 'living_tool',
         basic(){ return false; }
     },
     junker: {

@@ -6077,8 +6077,8 @@ const techs = {
     },
     stone_axe: {
         id: 'tech-stone_axe',
-        title: loc('tech_stone_axe'),
-        desc: loc('tech_stone_axe_desc'),
+        title(){ return loc('tech_stone_axe'); },
+        desc(){ return loc('tech_stone_axe_desc'); },
         category: 'lumber_gathering',
         reqs: { primitive: 3 },
         era: 'civilized',
@@ -6089,7 +6089,10 @@ const techs = {
             Lumber(){ return 20; },
             Stone(){ return 20; }
         },
-        effect(){ return global.race['sappy'] ? loc('tech_amber_axe_effect') : loc('tech_stone_axe_effect'); },
+        effect(){
+            if (global.race['living_tool']){ return loc(`tech_basic_livingtools`); }
+            return global.race['sappy'] ? loc('tech_amber_axe_effect') : loc('tech_stone_axe_effect');
+        },
         action(){
             if (payCosts($(this)[0])){
                 global.civic.lumberjack.display = true;

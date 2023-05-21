@@ -484,6 +484,9 @@ popover('topBarPlanet',
             let geo_traits = planetGeology(global.city.geology);
 
             let challenges = '';
+            if (global.race['truepath']){
+                challenges = challenges + `<div>${loc('evo_challenge_truepath_recap')}</div>`;
+            }
             if (global.race['junker']){
                 challenges = challenges + `<div>${loc('evo_challenge_junker_desc')} ${loc('evo_challenge_junker_conditions')}</div>`;
             }
@@ -3632,8 +3635,9 @@ function fastLoop(){
             let stealable = ['Lumber','Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
             stealable.forEach(function(res){
                 if (global.resource[res].display){
-                    let raid = hunters * production('psychic_boost',res) * tradeRatio[res] / 3;
-                    if (res === 'Crystal'){ raid /= 2; }
+                    let raid = hunters * production('psychic_boost',res) * tradeRatio[res] / 4;
+                    if (['Crystal','Uranium'].includes(res)){ raid *= 0.25; }
+                    else if (['Alloy','Polymer','Iridium'].includes(res)){ raid *= 0.65; }
                     breakdown.p[res][loc(global.race['unfathomable'] ? 'job_raider' : 'job_hunter')] = raid  + 'v';
                     if (raid > 0){
                         breakdown.p[res][`ᄂ${loc('quarantine')}+99`] = ((q_multiplier - 1) * 100) + '%';
