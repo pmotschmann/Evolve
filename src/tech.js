@@ -7864,6 +7864,7 @@ const techs = {
         category: 'religion',
         era: 'discovery',
         reqs: { fanaticism: 2 },
+        not_trait: ['terrifying'],
         grant: ['fanaticism',3],
         cost: {
             Knowledge(){ return 10000; }
@@ -7882,7 +7883,10 @@ const techs = {
         desc: loc('tech_zealotry'),
         category: 'religion',
         era: 'discovery',
-        reqs: { fanaticism: 3 },
+        reqs: { fanaticism: 2 },
+        condition(){
+            return (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3) || global.race['terrifying'] ? true : false;
+        },
         grant: ['fanaticism',4],
         cost: {
             Knowledge(){ return 25000; }
