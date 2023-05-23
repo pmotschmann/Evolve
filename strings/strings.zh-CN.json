@@ -530,7 +530,7 @@
   "job_priest": "牧师",
   "job_priest_desc": "牧师能提升寺庙的加成。",
   "job_priest_desc2": "牧师能提升寺庙和通灵塔的加成。",
-  "job_priest_desc3": "牧师们能产生少量的法力。",
+  "job_priest_desc3": "牧师们还可以产生少量的法力。",
   "job_professor": "教授",
   "job_professor_desc": "教授可以帮助教化市民，产生知识，每位教授每秒生产 %0 知识。",
   "job_scientist": "科学家",
