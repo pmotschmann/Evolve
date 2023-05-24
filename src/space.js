@@ -5446,14 +5446,14 @@ function xeno_race(){
     let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
     let key1 = randomKey(list);
     global.galaxy['alien1'] = {
-        id: key1
+        id: list[key1]
     };
     skip.push(key1);
 
     list = Object.keys(races).filter(function(r){ return !['angelic'].includes(races[r].type) && !skip.includes(r) });
     let key2 = randomKey(list);
     global.galaxy['alien2'] = {
-        id: key2
+        id: list[key2]
     };
 }
 
