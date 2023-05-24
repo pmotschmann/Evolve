@@ -378,9 +378,11 @@ export function challengesPage(content){
         }
 
         {   // Witch Hunter
-            let witch = infoBoxBuilder(modes,{ name: 'modes_witchhunter', template: 'challenges', paragraphs: 3, break: [4], h_level: 2,
+            let witch = infoBoxBuilder(modes,{ name: 'modes_witchhunter', template: 'challenges', paragraphs: 7, break: [4], h_level: 2,
                 para_data: {
-                    1: [loc(`evo_challenge_witch_hunter`)]
+                    1: [loc(`evo_challenge_witch_hunter`)],
+                    4: [`300%`,`150%`,`75%`],
+                    7: [100]
                 }
             });
             addAchievements(witch,false,['soul_sponge','nightmare']);

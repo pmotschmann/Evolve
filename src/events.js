@@ -283,7 +283,7 @@ export const events = {
             return pillaged(`gov3`,true);
         }
     },
-    witch_hunt: {
+    witch_hunt_crusade: {
         reqs: {
             tech: 'magic',
         },
@@ -661,6 +661,21 @@ export const events = {
     shooting_star: basicEvent('shooting_star','primitive'),
     tumbleweed: basicEvent('tumbleweed','primitive'),
     flashmob: basicEvent('flashmob','high_tech'),
+    witch_hunt: {
+        reqs: {
+            tech: 'magic',
+        },
+        type: 'minor',
+        condition(){
+            return global.race['witch_hunter'] && global.resource.Sus.amount >= 50 && global.civic.scientist.workers > 0 ? true : false;
+        },
+        effect(){
+            global.resource[global.race.species].amount--;
+            global.civic.scientist.workers--;
+            global.civic.scientist.assigned--;
+            return loc(`witch_hunter_witch_hunt`);
+        }
+    },
     heatwave: {
         reqs: {
             tech: 'primitive',

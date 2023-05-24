@@ -8946,7 +8946,7 @@ function midLoop(){
                 breakdown.c[res][loc('resource_Containers_plural')] = container+'v';
             }
             global.resource[res].max = caps[res];
-            if (global.resource[res].amount > global.resource[res].max){
+            if (global.resource[res].amount > global.resource[res].max && res != 'Sus'){
                 global.resource[res].amount = global.resource[res].max;
             }
             else if (global.resource[res].amount < 0){
@@ -11087,6 +11087,21 @@ function longLoop(){
             }
             else {
                 global.m_event.t--;
+            }
+        }
+
+        if (global.race['witch_hunter'] && global.resource.Sus.amount >= 100){
+            let odds = 300 - global.resource.Sus.amount;
+            if (odds < 1){ odds = 1; }
+            if (Math.rand(0,odds) === 0){
+                events['witch_hunt_crusade'].effect();
+            }
+        }
+        else if (global.race['witch_hunter'] && global.resource.Sus.amount >= 50 && global.civic.scientist.workers > 0){
+            let odds = 250 - global.resource.Sus.amount * 2;
+            if (odds < 1){ odds = 1; }
+            if (Math.rand(0,odds) === 0){
+                events['witch_hunt'].effect();
             }
         }
     }
