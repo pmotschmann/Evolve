@@ -7855,6 +7855,12 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['terrifying']){
+                global.tech['fanaticism'] = 3;
+                drawTech();
+            }
         }
     },
     missionary: {
@@ -7864,6 +7870,7 @@ const techs = {
         category: 'religion',
         era: 'discovery',
         reqs: { fanaticism: 2 },
+        not_trait: ['terrifying'],
         grant: ['fanaticism',3],
         cost: {
             Knowledge(){ return 10000; }
