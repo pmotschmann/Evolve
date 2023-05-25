@@ -925,8 +925,8 @@ const techs = {
     },
     wind_plant: {
         id: 'tech-wind_plant',
-        title: loc('tech_windmill'),
-        desc: loc('tech_windmill'),
+        title(){ return global.race['unfathomable'] ? loc('tech_watermill') : loc('tech_windmill'); },
+        desc(){ return global.race['unfathomable'] ? loc('tech_watermill') : loc('tech_windmill'); },
         category: 'power_generation',
         era: 'globalized',
         reqs: { high_tech: 4 },
@@ -938,7 +938,7 @@ const techs = {
         cost: {
             Knowledge(){ return 66000; }
         },
-        effect: loc('tech_wind_plant_effect'),
+        effect(){ return global.race['unfathomable'] ? loc('tech_watermill_effect') : loc('tech_wind_plant_effect'); },
         action(){
             if (payCosts($(this)[0])){
                 checkAltPurgatory('city','windmill','mill',{ count: 0, on: 0 });

@@ -1721,6 +1721,7 @@ const tauCetiModules = {
                 return pop;
             }
         },
+        captive_housing: buildTemplate(`captive_housing`,'tauceti'),
         pylon: {
             id: 'tauceti-pylon',
             title: loc('tau_home_pylon'),

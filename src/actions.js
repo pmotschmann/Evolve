@@ -1759,51 +1759,7 @@ export const actions = {
                 return false;
             }
         },
-        captive_housing: {
-            id: 'city-captive_housing',
-            title: loc('city_captive_housing'),
-            desc: loc('city_captive_housing_desc'),
-            category: 'residential',
-            reqs: { unfathomable: 1 },
-            trait: ['unfathomable'],
-            cost: {
-                Money(offset){ return costMultiplier('captive_housing', offset, 40, 1.35); },
-                Lumber(offset){ return costMultiplier('captive_housing', offset, 30, 1.35); },
-                Stone(offset){ return costMultiplier('captive_housing', offset, 18, 1.35); },
-            },
-            effect(){
-                let desc = ``;
-                desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
-
-                let usedCap = 0;
-                if (global.city.hasOwnProperty('surfaceDwellers')){
-                    for (let i = 0; i < global.city.surfaceDwellers.length; i++){
-                        let r = global.city.surfaceDwellers[i];
-                        let mindbreak = global.city.captive_housing[`race${i}`];
-                        let jailed = global.city.captive_housing[`jailrace${i}`];
-                        usedCap += mindbreak + jailed;
-                        desc += `<div>${loc(`city_captive_housing_broken`,[races[r].name,mindbreak])}</div>`;
-                        desc += `<div>${loc(`city_captive_housing_untrained`,[races[r].name,jailed])}</div>`;
-                    }
-                }
-
-                desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,global.city.captive_housing.raceCap])}</div>`;
-                if (global.tech['unfathomable'] && global.tech.unfathomable >= 2){
-                    desc += `<div>${loc(`plus_max_resource`,[1,loc('job_torturer')])}</div>`;
-                }
-                return desc;
-            },
-            action(){
-                if (payCosts($(this)[0])){
-                    global.city.captive_housing.count++;
-                    let houses = global.city.captive_housing.count;
-                    global.city.captive_housing.raceCap = houses * 2;
-                    global.city.captive_housing.cattleCap = houses * 5;
-                    return true;
-                }
-                return false;
-            }
-        },
+        captive_housing: buildTemplate(`captive_housing`,'city'),
         farm: {
             id: 'city-farm',
             title: loc('city_farm'),
@@ -1903,7 +1859,7 @@ export const actions = {
             desc(){
                 let bonus = global.tech['agriculture'] >= 5 ? 5 : 3;
                 if (global.tech['agriculture'] >= 6){
-                    let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
+                    let power = $(this)[0].powered() * -1;
                     return loc('city_mill_desc2',[bonus,power]);
                 }
                 else {
@@ -1941,11 +1897,10 @@ export const actions = {
         windmill: {
             id: 'city-windmill',
             title(){
-                return loc('city_mill_title2');
+                return global.race['unfathomable'] ? loc('tech_watermill') : loc('city_mill_title2');
             },
             desc(){
-                let power = powerModifier(global.race['environmentalist'] ? 1.5 : 1);
-                return loc('city_windmill_desc',[power]);
+                return global.race['unfathomable'] ? loc('tech_watermill') : loc('city_mill_title2');
             },
             wiki: false,
             category: 'utility',
@@ -1958,6 +1913,10 @@ export const actions = {
                 Lumber(offset){ return costMultiplier('windmill', offset, 600, 1.33); },
                 Iron(offset){ return costMultiplier('windmill', offset, 150, 1.33); },
                 Cement(offset){ return costMultiplier('windmill', offset, 125, 1.33); },
+            },
+            effect(){
+                let power = $(this)[0].powered() * -1;
+                return `<div>${loc('space_dwarf_reactor_effect1',[power])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -4326,6 +4285,57 @@ export function buildTemplate(key, region){
             };
             return tKey(action,tName,region);
         }
+        case 'captive_housing':
+        {
+            let action = {
+                id: `${region}-captive_housing`,
+                title: loc('city_captive_housing'),
+                desc: loc('city_captive_housing_desc'),
+                category: 'residential',
+                reqs: { unfathomable: 1 },
+                trait: ['unfathomable'],
+                region: 'city',
+                cost: {
+                    Money(offset){ return costMultiplier('captive_housing', offset, 40, 1.35); },
+                    Lumber(offset){ return costMultiplier('captive_housing', offset, 30, 1.35); },
+                    Stone(offset){ return costMultiplier('captive_housing', offset, 18, 1.35); },
+                },
+                effect(){
+                    let desc = ``;
+                    desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
+
+                    let usedCap = 0;
+                    if (global.city.hasOwnProperty('surfaceDwellers')){
+                        for (let i = 0; i < global.city.surfaceDwellers.length; i++){
+                            let r = global.city.surfaceDwellers[i];
+                            let mindbreak = global.city.captive_housing[`race${i}`];
+                            let jailed = global.city.captive_housing[`jailrace${i}`];
+                            usedCap += mindbreak + jailed;
+                            desc += `<div>${loc(`city_captive_housing_broken`,[races[r].name,mindbreak])}</div>`;
+                            desc += `<div>${loc(`city_captive_housing_untrained`,[races[r].name,jailed])}</div>`;
+                        }
+                    }
+
+                    desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,global.city.captive_housing.raceCap])}</div>`;
+                    if (global.tech['unfathomable'] && global.tech.unfathomable >= 2){
+                        desc += `<div>${loc(`plus_max_resource`,[1,loc('job_torturer')])}</div>`;
+                    }
+                    return desc;
+                },
+                action(){
+                    if (payCosts($(this)[0])){
+                        global.city.captive_housing.count++;
+                        let houses = global.city.captive_housing.count;
+                        global.city.captive_housing.raceCap = houses * 2;
+                        global.city.captive_housing.cattleCap = houses * 5;
+                        return true;
+                    }
+                    return false;
+                }
+            };
+            return tKey(action,tName,region);
+        }
+
         case 'horseshoe':
         {
             let action = {

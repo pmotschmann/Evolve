@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.7`,
-        date: `5/20/2023`,
+        date: `5/26/2023`,
         changes: [
             `Added Magic universe exclusive challenge: Witch Hunter.`,
             `Reduced Encrypted Data cost of Data Analysis, Advanced Medkits, Automated Warehousing, Elerium Extraction, and Drone Warfare techs.`,

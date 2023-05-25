@@ -514,6 +514,7 @@ const spaceProjects = {
                 return false;
             }
         },
+        captive_housing: buildTemplate(`captive_housing`,'space'),
         terraformer: {
             id: 'space-terraformer',
             title: loc('space_terraformer'),
