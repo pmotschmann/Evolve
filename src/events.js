@@ -1,4 +1,4 @@
-import { global, seededRandom, p_on, support_on } from './vars.js';
+import { global, seededRandom, p_on, support_on, sizeApproximation } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, fathomCheck } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
@@ -931,10 +931,10 @@ function pillaged(gov,serious){
                 if (remain < 0){ remain = 0; }
                 global.resource[res].amount = remain;
                 if (res === 'Money'){
-                    stolen.push(`$${loss}`);
+                    stolen.push(`$${sizeApproximation(loss)}`);
                 }
                 else {
-                    stolen.push(`${loss} ${global.resource[res].name}`);
+                    stolen.push(`${sizeApproximation(loss)} ${global.resource[res].name}`);
                 }
             }
         });

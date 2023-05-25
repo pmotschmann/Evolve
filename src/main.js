@@ -8554,7 +8554,7 @@ function midLoop(){
                     wiz /= 2;
                 }
                 bd_Sus[loc('job_wizard')] = wiz+'v';
-                sus += wiz;
+                sus += highPopAdjust(wiz);
             }
 
             if (global.city['coal_power'] && !global.race['environmentalist']){
@@ -8598,7 +8598,7 @@ function midLoop(){
                         ritual /= 4;
                     }
                     
-                    ritual -= global.civic.priest.workers;
+                    ritual -= highPopAdjust(global.civic.priest.workers);
                     if (ritual < 0){
                         ritual = 0;
                     }
@@ -11094,14 +11094,16 @@ function longLoop(){
             let odds = 300 - global.resource.Sus.amount;
             if (odds < 1){ odds = 1; }
             if (Math.rand(0,odds) === 0){
-                events['witch_hunt_crusade'].effect();
+                let msg = events['witch_hunt_crusade'].effect();
+                messageQueue(msg,'caution',false,['events','major_events']);
             }
         }
-        else if (global.race['witch_hunter'] && global.resource.Sus.amount >= 50 && global.civic.scientist.workers > 0){
+        if (global.race['witch_hunter'] && global.resource.Sus.amount >= 50 && global.civic.scientist.workers > 0){
             let odds = 250 - global.resource.Sus.amount * 2;
-            if (odds < 1){ odds = 1; }
+            if (odds < 50){ odds = 50; }
             if (Math.rand(0,odds) === 0){
-                events['witch_hunt'].effect();
+                let msg = events['witch_hunt'].effect();
+                messageQueue(msg,false,false,['events','minor_events']);
             }
         }
     }
