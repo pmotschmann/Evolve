@@ -8559,8 +8559,9 @@ function midLoop(){
                 if (global.civic.govern.type === 'magocracy'){
                     wiz /= 2;
                 }
+                wiz = highPopAdjust(wiz);
                 bd_Sus[loc('job_wizard')] = wiz+'v';
-                sus += highPopAdjust(wiz);
+                sus += wiz;
             }
 
             if (global.city['coal_power'] && !global.race['environmentalist']){
