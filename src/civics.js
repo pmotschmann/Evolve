@@ -2074,6 +2074,9 @@ export function armyRating(val,type,wound){
         if (sharkinFathom > 0){
             army *= 1 + (traits.apex_predator.vars(1)[0] / 100 * sharkinFathom);
         }
+        if (global.race['swift']){
+            army *= 1 + (traits.swift.vars()[0] / 100);
+        }
         if (global.race['fiery']){
             army *= 1 + (traits.fiery.vars()[0] / 100);
         }

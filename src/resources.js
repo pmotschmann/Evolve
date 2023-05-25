@@ -429,6 +429,13 @@ export const craftingRatio = (function(){
                     auto: 1 + ((global.genes.crafty - 1) * 0.5)
                 });
             }
+            if (global.race['living_tool']){
+                crafting.general.multi.push({
+                    name: loc(`trait_living_tool_name`),
+                    manual: 1,
+                    auto: 1 + (traits.living_tool.vars()[1] / 100)
+                });
+            }
             if (global.stats.achieve['lamentis'] && global.stats.achieve.lamentis.l >= 1){
                 crafting.general.multi.push({
                     name: loc(`evo_challenge_orbit_decay`),

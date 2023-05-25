@@ -354,6 +354,9 @@ export function workerScale(num,job){
     if (global.race['strong'] && ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
         num *= traits.strong.vars()[1];
     }
+    if ((global.race['swift'] || global.race['living_tool']) && ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
+        num *= traits.strong.vars(0.25)[1];
+    }
     if (global.race['lone_survivor']){
         if (['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].includes(job)){
             num *= 80;

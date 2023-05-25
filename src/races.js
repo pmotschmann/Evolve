@@ -1071,7 +1071,7 @@ export const traits = {
                 case 2:
                     return [2,0.9,0.12];
                 case 3:
-                    return [3,0.13];
+                    return [3,1,0.13];
             }
         },
     },
@@ -3085,17 +3085,18 @@ export const traits = {
         type: 'major',
         val: 10,
         vars(r){
+            // [Combat Bonus, Thrall Catch Bonus]
             switch (r || global.race.swift || 1){
                 case 0.25:
-                    return [1];
+                    return [35,15];
                 case 0.5:
-                    return [1];
+                    return [55,30];
                 case 1:
-                    return [1];
+                    return [75,45];
                 case 2:
-                    return [1];
+                    return [85,55];
                 case 3:
-                    return [1];
+                    return [90,65];
             }
         }
     },
@@ -3123,19 +3124,41 @@ export const traits = {
         name: loc('trait_living_tool_name'),
         desc: loc('trait_living_tool'),
         type: 'major',
-        val: 10,
+        val: 12,
         vars(r){
+            // [Tool Factor, Crafting Factor]
             switch (r || global.race.living_tool || 1){
                 case 0.25:
-                    return [0.65];
+                    return [0.65,5];
                 case 0.5:
-                    return [0.8];
+                    return [0.8,12];
                 case 1:
-                    return [1];
+                    return [1,25];
                 case 2:
-                    return [1.1];
+                    return [1.1,35];
                 case 3:
-                    return [1.2];
+                    return [1.2,42];
+            }
+        }
+    },
+    bloated: {
+        name: loc('trait_bloated_name'),
+        desc: loc('trait_bloated'),
+        type: 'major',
+        val: -10,
+        vars(r){
+            // [Costs are higher]
+            switch (r || global.race.bloated || 1){
+                case 0.25:
+                    return [25];
+                case 0.5:
+                    return [20];
+                case 1:
+                    return [15];
+                case 2:
+                    return [10];
+                case 3:
+                    return [5];
             }
         }
     },
@@ -4283,8 +4306,7 @@ export const races = {
         traits: {
             dark_dweller: 1,
             swift: 1,
-            anthropophagite: 1,
-            strong: 0.25
+            anthropophagite: 1
         },
         solar: {
             red: loc('race_ghast_solar_red'),
@@ -4304,8 +4326,7 @@ export const races = {
         entity: loc('race_shoggoth_entity'),
         traits: {
             living_tool: 1,
-            large: 3,
-            strong: 0.5
+            bloated: 1
         },
         solar: {
             red: loc('race_shoggoth_solar_red'),

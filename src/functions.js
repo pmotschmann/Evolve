@@ -1580,6 +1580,7 @@ export function adjustCosts(c_action, offset, wiki){
         });
         return newCosts;
     }
+    costs = bloatAdjust(costs, offset, wiki);
     costs = truthAdjust(costs, c_action, offset, wiki);
     costs = loneAdjust(costs, offset, wiki);
     costs = inflationAdjust(costs, offset, wiki);
@@ -1592,6 +1593,23 @@ export function adjustCosts(c_action, offset, wiki){
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
     return craftAdjust(costs, offset, wiki);
+}
+
+function bloatAdjust(costs, offset, wiki){
+    if (global.race['bloated']){
+        let adjustRate = 1 + (traits.bloated.vars()[0] / 100);
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Food','Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Alloy','Polymer','Iridium'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 
 function loneAdjust(costs, offset, wiki){
