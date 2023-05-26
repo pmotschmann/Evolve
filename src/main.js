@@ -5090,11 +5090,10 @@ function fastLoop(){
             }
             if (global.race['servants']){ stone_base += global.race.servants.jobs.quarry_worker; }
             stone_base *= global.civic.quarry_worker.impact * production('psychic_boost','Stone');
-            stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
 
             if (global.race['living_tool']){
                 // buffed twice with racial trait on purpose
-                stone_base *= traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.18 : 0) + 1;
+                stone_base *= traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.06 : 0) + 1;
             }
             else {
                 stone_base *= (global.tech['hammer'] && global.tech['hammer'] > 0 ? global.tech['hammer'] * 0.4 : 0) + 1;
@@ -5402,7 +5401,7 @@ function fastLoop(){
                 miner_base *= planetTraits.permafrost.vars()[0];
             }
             if (!global.race['living_tool']){
-                miner_base *= traits.living_tool.vars()[0] * (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
+                miner_base *= (global.tech['pickaxe'] && global.tech.pickaxe > 0 ? global.tech.pickaxe * 0.15 : 0) + 1;
             }
             if (global.tech['explosives'] && global.tech['explosives'] >= 2){
                 miner_base *= global.tech['explosives'] >= 3 ? 1.4 : 1.25;
