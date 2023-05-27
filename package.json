@@ -8,12 +8,10 @@
     "less": "lessc -x src/evolve.less evolve/evolve.css",
     "dev": "npx webpack --config webpack.evolve.dev.js",
     "evolve": "npx webpack --config webpack.evolve.prod.js",
-    "build": "npx webpack --config webpack.evolve.prod.js && npx webpack --config webpack.wiki.prod.js",
-    "build-dev": "npx webpack --config webpack.evolve.dev.js && npx webpack --config webpack.wiki.dev.js",
-    "wiki-dev": "npx webpack --config webpack.wiki.dev.js",
-    "wiki": "npx webpack --config webpack.wiki.prod.js",
     "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
-    "serve": "servehere -c"
+    "serve": "servehere -c",
+    "build": "node buildEvolve.js",
+    "wikix": "node buildWiki.js"
   },
   "repository": {
     "type": "git",
@@ -36,6 +34,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "esbuild": "0.17.19",
     "node": "^16.1.0",
     "npmcli": "^1.2.2"
   }
