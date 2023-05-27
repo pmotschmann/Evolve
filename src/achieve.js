@@ -1575,6 +1575,19 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_soul_sponge_name`)}</span>`])
         ]
     },
+    nightmare: {
+        name: loc(`achieve_nightmare_name`),
+        desc(){
+            return loc("achieve_perks_nightmare");
+        },
+        active(){
+            return global.stats.achieve['nightmare'] && global.stats.achieve.nightmare.mg >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_nightmare_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_nightmare_name`)}</span>`])
+        ]
+    },
     gladiator: {
         name: loc(`achieve_gladiator_name`),
         desc(wiki){

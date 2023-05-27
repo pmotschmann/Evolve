@@ -3063,7 +3063,7 @@ function fastLoop(){
                     }
                 }
 
-                if (global.race['unfathomable'] && global.city['captive_housing']){
+                if (global.race['unfathomable'] && global.city['captive_housing'] && !global.race['soul_eater']){
                     let strength = weaponTechModifer();
                     let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
                     hunt *= racialTrait(hunt,'hunting');
@@ -3143,11 +3143,22 @@ function fastLoop(){
 
                     if (global.city['farm']){
                         let farmers = workerScale(global.civic.farmer.workers,'farmer');
-                        if (global.race['servants']){ farmers += jobScale(global.race.servants.jobs.farmer); }
                         let farmhands = 0;
                         if (farmers > jobScale(global.city.farm.count)){
                             farmhands = farmers - jobScale(global.city.farm.count);
                             farmers = jobScale(global.city.farm.count);
+                        }
+                        let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
+
+                        if (global.race['servants']){
+                            let servants = jobScale(global.race.servants.jobs.farmer);
+                            let servehands = 0;
+                            let open = jobScale(global.city.farm.count) - farmers;
+                            if (servants > open){
+                                servehands = servants - open;
+                                servants = open;
+                            }
+                            food += (servants * farmerValue(true,true)) + (servehands * farmerValue(false,true));
                         }
 
                         let mill_multiplier = 1;
@@ -3156,8 +3167,6 @@ function fastLoop(){
                             let working = global.city['mill'].count - global.city['mill'].on;
                             mill_multiplier += (working * mill_bonus);
                         }
-
-                        let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
 
                         breakdown.p['Food'][loc('job_farmer')] = (food) + 'v';
                         food_base += (food * virgo * weather_multiplier * mill_multiplier * q_multiplier * production('psychic_boost','Food'));
