@@ -995,18 +995,21 @@ export function eventList(type){
                             isOk = false;
                         }
                         break;
+
                     case 'high_tax_rate':
-                        if (global.civic.taxes.tax_rate <= [events[event].reqs[req]]){
+                        // there are currently no events with the high_tax_rate requirement
+                        if (global.civic.taxes.tax_rate <= events[event].reqs[req]){
                             isOk = false;
                         }
                         break;
                     case 'low_morale':
-                        if (global.city.morale.current >= [events[event].reqs[req]]){
+                        if (global.city.morale.current >= events[event].reqs[req]){
                             isOk = false;
                         }
                         break;
                     case 'biome':
-                        if (global.city.biome !== [events[event].reqs[req]]){
+                        // there are currently no events with the biome requirement
+                        if (global.city.biome !== events[event].reqs[req]){
                             isOk = false;
                         }
                         break;
