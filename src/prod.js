@@ -485,5 +485,12 @@ export function production(id,val){
             }
             return 1;
         }
+        case 'psychic_cash':
+        {
+            if (global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers['cash'] && global.race.psychicPowers.cash > 0){
+                return 1.5;
+            }
+            return 1;
+        }
     }
 }

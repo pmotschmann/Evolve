@@ -4302,7 +4302,9 @@ export function buildTemplate(key, region){
                 },
                 effect(){
                     let desc = ``;
-                    desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
+                    if (!global.race['artifical'] && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater']){
+                        desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
+                    }
 
                     let usedCap = 0;
                     if (global.city.hasOwnProperty('surfaceDwellers')){
@@ -4326,7 +4328,7 @@ export function buildTemplate(key, region){
                     if (payCosts($(this)[0])){
                         global.city.captive_housing.count++;
                         let houses = global.city.captive_housing.count;
-                        global.city.captive_housing.raceCap = houses * 2;
+                        global.city.captive_housing.raceCap = houses * (global.tech['unfathomable'] && global.tech.unfathomable >= 3 ? 3 : 2);
                         global.city.captive_housing.cattleCap = houses * 5;
                         return true;
                     }

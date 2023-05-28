@@ -5,7 +5,7 @@ import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaT
 import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
-import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
+import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes } from './space.js';
@@ -1264,7 +1264,6 @@ function fastLoop(){
             stress -= army_stress;
         }
 
-        let res_bd = {};
         breakdown.p.consume.Money[loc('trade')] = 0;
 
         // trade routes
@@ -3062,37 +3061,7 @@ function fastLoop(){
                         food_base += food_compost;
                     }
                 }
-
-                if (global.race['unfathomable'] && global.city['captive_housing'] && !global.race['soul_eater']){
-                    let strength = weaponTechModifer();
-                    let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
-                    hunt *= racialTrait(hunt,'hunting');
-                    if (global.race['servants']){ hunt += global.race.servants.jobs.hunter * strength; }
-                    let minHunt = hunt * 0.008;
-
-                    if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap && hunt > 0){
-                        hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
-                        if (hunt < minHunt){ hunt = minHunt; }
-                        global.city.captive_housing.cattleCatch += hunt * time_multiplier;
-                        if (global.city.captive_housing.cattleCatch >= global.city.captive_housing.cattle ** 2){
-                            global.city.captive_housing.cattle++;
-                            global.city.captive_housing.cattleCatch = 0;
-                        }
-                        if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.01){
-                            global.city.captive_housing.cattle--;
-                            global.resource.Food.amount += 1000;
-                            global.stats.cattle++;
-                        }
-                    }
-
-                    if (global.city.captive_housing.cattle > 0){
-                        let food = global.city.captive_housing.cattle / 3 * production('psychic_boost','Food');
-                        breakdown.p['Food'][loc('city_captive_housing_cattle_bd')] = food + 'v';
-                        food_base += food;
-                    }
-                }
-
-                if (global.race['carnivore'] || global.race['soul_eater']){
+                else if (global.race['carnivore'] || global.race['soul_eater']){
                     let strength = weaponTechModifer();
                     let food_hunt = workerScale(global.civic.hunter.workers,'hunter');
                     food_hunt *= racialTrait(food_hunt,'hunting');
@@ -3116,7 +3085,37 @@ function fastLoop(){
                     }
                     food_base += food_hunt;
                 }
-                if (global.city['farm'] || global.race['forager']) {
+                else if (global.race['unfathomable']){
+                    if (global.city['captive_housing']){
+                        let strength = weaponTechModifer();
+                        let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
+                        hunt *= racialTrait(hunt,'hunting');
+                        if (global.race['servants']){ hunt += global.race.servants.jobs.hunter * strength; }
+                        let minHunt = hunt * 0.008;
+
+                        if (global.city.captive_housing.cattle < global.city.captive_housing.cattleCap && hunt > 0){
+                            hunt -= Math.round(global.city.captive_housing.cattle ** 1.25);
+                            if (hunt < minHunt){ hunt = minHunt; }
+                            global.city.captive_housing.cattleCatch += hunt * time_multiplier;
+                            if (global.city.captive_housing.cattleCatch >= global.city.captive_housing.cattle ** 2){
+                                global.city.captive_housing.cattle++;
+                                global.city.captive_housing.cattleCatch = 0;
+                            }
+                            if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.01){
+                                global.city.captive_housing.cattle--;
+                                global.resource.Food.amount += 1000;
+                                global.stats.cattle++;
+                            }
+                        }
+
+                        if (global.city.captive_housing.cattle > 0){
+                            let food = global.city.captive_housing.cattle / 3 * production('psychic_boost','Food');
+                            breakdown.p['Food'][loc('city_captive_housing_cattle_bd')] = food + 'v';
+                            food_base += food;
+                        }
+                    }
+                }
+                else if (global.city['farm'] || global.race['forager']) {
                     let weather_multiplier = 1;
                     if (!global.race['submerged']){
                         if (global.city.calendar.temp === 0){
@@ -3868,27 +3867,9 @@ function fastLoop(){
                 modRes('Furs', -(fur_cost * time_multiplier));
 
                 let demand = global.resource[global.race.species].amount * f_rate.Lux.demand[assembly] * eff;
-                let delta = workDone * demand * tauBonus;
-                if (global.race['toxic']){
-                    delta *= 1 + (traits.toxic.vars()[0] / 100);
-                }
-                let fathom = fathomCheck('shroomi');
-                if (fathom > 0){
-                    delta *= 1 + (traits.toxic.vars(1)[0] / 100 * fathom);
-                }
-                if (global.civic.govern.type === 'corpocracy'){
-                    delta *= 1 + (govEffect.corpocracy()[1] / 100);
-                }
-                if (global.civic.govern.type === 'socialist'){
-                    delta *= 1 - (govEffect.socialist()[3] / 100);
-                }
-                if (global.stats.achieve['iron_will'] && global.stats.achieve.iron_will.l >= 2){
-                    delta *= 1.1;
-                }
-                if (global.race['inflation']){
-                    delta *= 1 + (global.race.inflation / 1250);
-                }
+                demand = luxGoodPrice(demand);
 
+                let delta = workDone * demand * tauBonus;
                 FactoryMoney = delta * hunger;
 
                 if (global.race['discharge'] && global.race['discharge'] > 0){
@@ -6617,6 +6598,7 @@ function fastLoop(){
             if (global.tech['isolation']){
                 income_base *= 15;
             }
+            income_base *= production('psychic_cash');
 
             if (fed){
                 if (global.tech['banking'] && global.tech['banking'] >= 2){
@@ -6743,6 +6725,7 @@ function fastLoop(){
                     cash *= 1 + (workerScale(global.civic.banker.workers,'banker') * 0.05)
                 }
             }
+            cash *= production('psychic_cash');
             let racVal = govActive('racketeer',1);
             if (racVal){
                 cash *= 1 + (racVal / 100);
@@ -6784,6 +6767,7 @@ function fastLoop(){
             if (astroSign === 'aquarius'){
                 tourism *= 1 + (astroVal('aquarius')[0] / 100);
             }
+            tourism *= production('psychic_cash');
             breakdown.p['Money'][loc('tech_tourism')] = Math.round(tourism) + 'v';
             if (astroSign === 'aquarius'){
                 breakdown.p['Money'][`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
@@ -6809,11 +6793,10 @@ function fastLoop(){
             else if (global.civic.govern.type === 'socialist'){
                 revenue *= 1 - (govEffect.socialist()[3] / 100);
             }
-            if (astroSign === 'aquarius'){
-                revenue *= 1 + (astroVal('aquarius')[0] / 100);
-            }
+            revenue *= production('psychic_cash');
             breakdown.p['Money'][loc('tech_cultural_center')] = Math.round(revenue) + 'v';
             if (astroSign === 'aquarius'){
+                revenue *= 1 + (astroVal('aquarius')[0] / 100);
                 revenue[`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
             }
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
@@ -7385,6 +7368,12 @@ function midLoop(){
                 global.race.psychicPowers.assaultTime--;
                 if (global.race.psychicPowers.assaultTime < 0 || global.race.psychicPowers.assaultTime > 300){
                     global.race.psychicPowers.assaultTime = 0;
+                }
+            }
+            if (global.race['psychicPowers'] && global.race.psychicPowers['cash'] && global.race.psychicPowers.cash > 0){
+                global.race.psychicPowers.cash--;
+                if (global.race.psychicPowers.cash < 0 || global.race.psychicPowers.cash > 300){
+                    global.race.psychicPowers.cash = 0;
                 }
             }
         }

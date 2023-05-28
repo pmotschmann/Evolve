@@ -5,7 +5,7 @@ import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, production } from './prod.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -1858,6 +1858,7 @@ export function tradeSellPrice(res){
         let wariness = (global.resource.Sus.amount - 50) / 52;
         price *= 1 - wariness;
     }
+    price *= production('psychic_cash');
     price = +(price).toFixed(1);
     return price;
 }
