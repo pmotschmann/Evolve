@@ -815,7 +815,7 @@ function fastLoop(){
                 bonus *= 1 + (traits.scavenger.vars()[1] / 100);
             }
             if (global.city.ptrait.includes('trashed')){
-                bonus *= 1 + (planetTraits.trashed.vars()[1] / 100);
+                bonus *= planetTraits.trashed.vars()[1];
             }
             if (global.race['high_pop']){
                 bonus = highPopAdjust(bonus);
@@ -2869,6 +2869,9 @@ function fastLoop(){
             else {
                 global.city['tormented'] = 0;
             }
+        }
+        else {
+            delete global.city['tormented'];
         }
 
         global.city.morale.potential = +(morale).toFixed(1);
