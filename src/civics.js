@@ -2129,7 +2129,7 @@ export function armyRating(val,type,wound){
             }
         }
         if (global.race['psychicPowers'] && global.race.psychicPowers['assaultTime'] && global.race.psychicPowers.assaultTime > 0){
-            army *= 1.5;
+            army *= 1 + (traits.psychic.vars()[3] / 100)
         }
     }
     if (type === 'hunting'){

@@ -996,18 +996,18 @@ export const traits = {
         type: 'genus',
         val: 10,
         vars(r){
-            // [Mind Break Modifer, Thrall Modifer, Recharge Rate]
+            // [Mind Break Modifer, Thrall Modifer, Recharge Rate, Effect Strength]
             switch (r || global.race.psychic || 1){
                 case 0.25:
-                    return [0.35,5,0.01];
+                    return [0.35,5,0.01,20];
                 case 0.5:
-                    return [0.65,10,0.025];
+                    return [0.65,10,0.025,30];
                 case 1:
-                    return [1,15,0.05];
+                    return [1,15,0.05,40];
                 case 2:
-                    return [1.25,20,0.075];
+                    return [1.25,20,0.075,50];
                 case 3:
-                    return [1.5,25,0.1];
+                    return [1.5,25,0.1,60];
             }
         },
     },
@@ -5917,7 +5917,7 @@ function psychicBoost(parent){
 
     popover('psychicBoost',
         function(){
-            return loc(`psychic_boost_desc`,[50]);
+            return loc(`psychic_boost_desc`,[traits.psychic.vars()[3]]);
         },{
             elm: '#psychicBoost > div > button'
         }
@@ -5995,7 +5995,7 @@ function psychicAssault(parent){
 
     popover('psychicAssault',
         function(){
-            return loc(`psychic_assault_desc`,[50]);
+            return loc(`psychic_assault_desc`,[traits.psychic.vars()[3]]);
         },{
             elm: '#psychicAssault > div > button'
         }
@@ -6032,7 +6032,7 @@ function psychicFinance(parent){
 
     popover('psychicFinance',
         function(){
-            return loc(`psychic_profit_desc`,[50]);
+            return loc(`psychic_profit_desc`,[traits.psychic.vars()[3]]);
         },{
             elm: '#psychicFinance > div > button'
         }
