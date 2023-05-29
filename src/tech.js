@@ -677,6 +677,11 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.tech['s_lodge']){
+                global.tech['hunting'] = 2;
+            }
         }
     },
     lodge: {
@@ -687,6 +692,7 @@ const techs = {
         category: 'agriculture',
         era: 'civilized',
         reqs: { hunting: 1, housing: 1, currency: 1 },
+        condition(){ return global.tech['s_lodge'] ? false : true; },
         grant: ['hunting',2],
         cost: {
             Knowledge(){ return 180; }
