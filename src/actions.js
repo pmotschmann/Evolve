@@ -4303,7 +4303,9 @@ export function buildTemplate(key, region){
                 effect(){
                     let desc = ``;
                     if (!global.race['artifical'] && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater']){
-                        desc += `<div>${loc(`city_captive_housing_cattle`,[global.city.captive_housing.cattle,global.city.captive_housing.cattleCap])}</div>`;
+                        let cattle = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.cattle : 0;
+                        let cattleCap = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.cattleCap : 0;
+                        desc += `<div>${loc(`city_captive_housing_cattle`,[cattle,cattleCap])}</div>`;
                     }
 
                     let usedCap = 0;
@@ -4318,7 +4320,8 @@ export function buildTemplate(key, region){
                         }
                     }
 
-                    desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,global.city.captive_housing.raceCap])}</div>`;
+                    let raceCap = global.city.hasOwnProperty('captive_housing') ? global.city.captive_housing.raceCap : 0;
+                    desc += `<div>${loc(`city_captive_housing_capacity`,[usedCap,raceCap])}</div>`;
                     if (global.tech['unfathomable'] && global.tech.unfathomable >= 2){
                         desc += `<div>${loc(`plus_max_resource`,[1,loc('job_torturer')])}</div>`;
                     }
