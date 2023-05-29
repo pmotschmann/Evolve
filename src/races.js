@@ -2,7 +2,7 @@ import { global, seededRandom, save, webWorker, power_generated } from './vars.j
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
 import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, removeFromQueue, removeFromRQueue, calc_mastery, getEaster, getHalloween, randomKey, modRes, popover } from './functions.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
@@ -5181,15 +5181,21 @@ export function cleanAddTrait(trait){
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
-                webWorker.w.terminate();
+                gameLoop('stop');
+                gameLoop('start');
             }
-            window.location.reload();
+            else {
+                window.location.reload();
+            }
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
-                webWorker.w.terminate();
+                gameLoop('stop');
+                gameLoop('start');
             }
-            window.location.reload();
+            else {
+                window.location.reload();
+            }
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
@@ -5371,15 +5377,21 @@ export function cleanRemoveTrait(trait,rank){
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
-                webWorker.w.terminate();
+                gameLoop('stop');
+                gameLoop('start');
             }
-            window.location.reload();
+            else {
+                window.location.reload();
+            }
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
-                webWorker.w.terminate();
+                gameLoop('stop');
+                gameLoop('start');
             }
-            window.location.reload();
+            else {
+                window.location.reload();
+            }
         case 'calm':
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
@@ -5849,10 +5861,10 @@ export function renderPsychicPowers(){
             psychicFinance(parent);
         }
         if (global.tech['psychicthrall'] && global.tech['unfathomable'] && global.race['unfathomable']){
-            psychicMindBreak(parent);
             if (global.tech.psychicthrall >= 2){
                 psychicCapture(parent);
             }
+            psychicMindBreak(parent);
         }
     }
 }
@@ -5889,7 +5901,7 @@ function psychicBoost(parent){
         },
         filters: {
             boost(r){
-                return loc(`psychic_boost`,[global.resource[r] ? global.resource[r].name : 'N/A',75]);
+                return loc(`psychic_boost_button`,[global.resource[r] ? global.resource[r].name : 'N/A',75]);
             },
             boostTime(){
                 return global.race.psychicPowers.boostTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.boostTime]) : '';
@@ -5939,7 +5951,7 @@ function psychicKill(parent){
         },
         filters: {
             kill(){
-                return loc(`psychic_murder`,[10]);
+                return loc(`psychic_murder_button`,[10]);
             }
         }
     });
@@ -5973,7 +5985,7 @@ function psychicAssault(parent){
         },
         filters: {
             boost(){
-                return loc(`psychic_boost`,[loc(`psychic_attack`),45]);
+                return loc(`psychic_boost_button`,[loc(`psychic_attack`),45]);
             },
             boostTime(){
                 return global.race.psychicPowers.assaultTime > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.assaultTime]) : '';
@@ -6010,7 +6022,7 @@ function psychicFinance(parent){
         },
         filters: {
             boost(){
-                return loc(`psychic_boost`,[loc(`psychic_profit`),65]);
+                return loc(`psychic_boost_button`,[loc(`psychic_profit`),65]);
             },
             boostTime(){
                 return global.race.psychicPowers.cash > 0 ? loc(`psychic_boost_time`,[global.race.psychicPowers.cash]) : '';
@@ -6031,7 +6043,7 @@ function psychicMindBreak(parent){
     let container = $(`<div id="psychicMindBreak" class="industry"></div>`);
     parent.append(container);
 
-    container.append($(`<div class="header">${loc('psychic_mind_break')}</div>`));
+    container.append($(`<div class="header">${loc('psychic_mind_break_title')}</div>`));
     container.append(`<div><b-button v-html="$options.filters.break()" @click="breakMind()"></b-button></div>`);
 
     vBind({

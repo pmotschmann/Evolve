@@ -6892,6 +6892,7 @@ export function terraformLab(wiki){
             let type = 's';
             if (global.custom.planet[uni][type]){
                 planet = deepClone(global.custom.planet[uni][type]);
+                planet.orbit = global.city.calendar.orbit;
                 geoList.forEach(function (res){
                     if (planet.geology.hasOwnProperty(res)){
                         planet.geology[res] *= 100;
