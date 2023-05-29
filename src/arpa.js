@@ -1617,7 +1617,7 @@ function creativeAdjust(costs,offset,wiki){
                 let cost = costs[res](offset, wiki);
                 cost *= (1 - traits.creative.vars()[1] / 100);
                 if (fathom > 0){
-                    cost *= 1 - (traits.smart.vars(1)[0] / 100 * fathom);
+                    cost *= 1 - (traits.creative.vars(1)[1] / 100 * fathom);
                 }
                 return cost;
             }
