@@ -35,7 +35,9 @@ const universeExclusives = {
     microbang: ['micro'],
     pw_apocalypse: ['magic'],
     pass: ['magic'],
-    fullmetal: ['magic']
+    fullmetal: ['magic'],
+    soul_sponge: ['magic'],
+    nightmare: ['magic']
 };
 
 const achieveDescData = {
