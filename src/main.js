@@ -1226,11 +1226,14 @@ function fastLoop(){
             divisor *= planetTraits.mellow.vars()[0];
         }
 
-        if (global.race['playful'] && global.civic.hunter.display){
-            let val = traits.playful.vars()[0];
-            let fathom = fathomCheck('vulpine');
-            if (fathom > 0){
-                val += traits.playful.vars(1)[0] * fathom;
+        let vulFathom = fathomCheck('vulpine');
+        if (global.civic.hunter.display && (global.race['playful'] || vulFathom > 0)){
+            let val = 0;
+            if (vulFathom > 0){
+                val += traits.playful.vars(1)[0] * vulFathom;
+            }
+            if (global.race['playful']){
+                val += traits.playful.vars()[0];
             }
             morale += global.civic.hunter.workers * val;
             global.city.morale.unemployed = global.civic.hunter.workers * val;

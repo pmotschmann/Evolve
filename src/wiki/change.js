@@ -14,7 +14,7 @@ const changeList = [
             `Reduced Crystal cost of Alchemy.`,
             `Fixed Humpback trait rank scaling.`,
             `Infiltrator can now steal Alien Biotech on Truepath.`,
-            `Fixed brownout issue with using Replicator Gov task when construting a new powered building.`,
+            `Fixed brownout issue with using Replicator Gov task when constructing a new powered building.`,
             `Fixed rejuvenated trashed planet bonus.`,
             `Fixed orbit period on reterraformed planets.`,
         ]
