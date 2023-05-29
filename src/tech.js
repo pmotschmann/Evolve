@@ -465,7 +465,7 @@ const techs = {
         category: 'eldritch',
         era: 'civilized',
         reqs: { psychic: 1, military: 1 },
-        condition(){ return global.stats.murders >= 10; },
+        condition(){ return global.stats.psykill >= 10; },
         trait: ['psychic'],
         grant: ['psychic',2],
         cost: {

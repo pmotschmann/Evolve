@@ -3327,6 +3327,7 @@ function fastLoop(){
                 if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1){
                     global.resource[global.race.species].amount--;
                     modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
+                    global.stats.murders++;
                 }
                 else {
                     fed = false;
@@ -3354,6 +3355,12 @@ function fastLoop(){
                         }
                     }
                 }
+            }
+
+            if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1 && Math.rand(0,400) === 0){
+                global.resource[global.race.species].amount--;
+                modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
+                global.stats.murders++;
             }
         }
 

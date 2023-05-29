@@ -5939,11 +5939,11 @@ function psychicKill(parent){
                 if (global.resource.Energy.amount >= 10 && global.resource[global.race.species].amount >= 1){
                     global.resource.Energy.amount -= 10;
                     global.resource[global.race.species].amount--;
-                    global.stats.murders++;
+                    global.stats.psykill++;
                     if (global.race['anthropophagite']){
                         modRes('Food', 10000 * traits.anthropophagite.vars()[0]);
                     }
-                    if (global.stats.murders === 10){
+                    if (global.stats.psykill === 10){
                         renderPsychicPowers();
                     }
                 }

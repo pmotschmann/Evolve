@@ -2337,6 +2337,8 @@ export function updateResetStats(){
     global.stats.cattle = 0;
     global.stats.tmurders += global.stats.murders;
     global.stats.murders = 0;
+    global.stats.tpsykill += global.stats.psykill;
+    global.stats.psykill = 0;
 }
 
 export function deepClone(obj){
@@ -2813,6 +2815,9 @@ const traitExtra = {
     ],
     flier: [
         loc(`wiki_trait_effect_flier_ex1`)
+    ],
+    unfathomable: [
+        loc(`wiki_trait_effect_unfathomable_ex1`)
     ]
 };
 
