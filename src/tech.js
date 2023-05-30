@@ -4886,7 +4886,7 @@ const techs = {
         grant: ['corrupt',2],
         trait: ['witch_hunter'],
         cost: {
-            Mana(){ return global.race['no_plasmid'] ? 50000 : 10000; },
+            Mana(){ return global.race['no_plasmid'] ? 10000 : 50000; },
             Knowledge(){ return 18500000; },
             Corrupt_Gem(){ return 1; }
         },
@@ -10970,7 +10970,7 @@ const techs = {
             return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
         },
         cost: {
-            Mana(){ return global.race['no_plasmid'] ? 25000 : 6000; },
+            Mana(){ return global.race['no_plasmid'] ? 6000 : 25000; },
             Knowledge(){ return 20000000; }
         },
         effect(){ return loc('tech_improved_concealment_effect'); },
@@ -10993,7 +10993,7 @@ const techs = {
             return global.race['universe'] === 'magic' && global.race['witch_hunter'] ? true : false;
         },
         cost: {
-            Mana(){ return global.race['no_plasmid'] ? 60000 : 12000; },
+            Mana(){ return global.race['no_plasmid'] ? 12000 : 60000; },
             Knowledge(){ return 60000000; },
             Demonic_Essence(){ return 1; }
         },
