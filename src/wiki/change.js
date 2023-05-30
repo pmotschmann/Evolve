@@ -4,7 +4,7 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.7`,
-        revision: `c`,
+        revision: `a`,
         date: `5/30/2023`,
         changes: [
             `Fixed issue with drawing the same alien species twice in intergalactic content.`,
