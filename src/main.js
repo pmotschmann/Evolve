@@ -8661,7 +8661,7 @@ function midLoop(){
             sus += mtech;
 
             if (!global.tech['roguemagic']){
-                bd_Sus[loc('overt')] = (sus*5)+'v';
+                bd_Sus[loc('overt')] = (sus*5-sus)+'v';
                 sus *= 5;
             }
 
