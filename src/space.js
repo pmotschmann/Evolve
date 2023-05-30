@@ -5449,7 +5449,7 @@ function xeno_race(){
     global.galaxy['alien1'] = {
         id: list[key1]
     };
-    skip.push(key1);
+    skip.push(list[key1]);
 
     list = Object.keys(races).filter(function(r){ return !['angelic'].includes(races[r].type) && !skip.includes(r) });
     let key2 = randomKey(list);

@@ -4,6 +4,15 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.7`,
+        revision: `c`,
+        date: `5/30/2023`,
+        changes: [
+            `Fixed issue with drawing the same alien species twice in intergalactic content.`,
+            `Adjusted Mana costs for some research techs in Witch Hunter.`,
+        ]
+    },
+    {
+        version: `1.3.7`,
         date: `5/29/2023`,
         changes: [
             `Added Magic universe exclusive challenge: Witch Hunter.`,
