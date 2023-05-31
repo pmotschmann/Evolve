@@ -2817,7 +2817,8 @@ const traitExtra = {
         loc(`wiki_trait_effect_flier_ex1`)
     ],
     unfathomable: [
-        loc(`wiki_trait_effect_unfathomable_ex1`)
+        loc(`wiki_trait_effect_unfathomable_ex1`),
+        loc(`wiki_trait_effect_unfathomable_ex2`)
     ]
 };
 

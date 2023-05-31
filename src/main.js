@@ -4630,6 +4630,9 @@ function fastLoop(){
                 if (dirtVal){
                     steel_smelter *= 1 + (dirtVal / 100);
                 }
+                if (salFathom > 0){
+                    steel_smelter *= 1.2 * salFathom;
+                }
 
                 let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel');
                 if (global.race['pyrophobia']){

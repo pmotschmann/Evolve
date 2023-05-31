@@ -7,6 +7,7 @@ import { races, traits, planetTraits } from './../races.js';
 import { atomic_mass } from './../resources.js';
 import { universe_types } from './../space.js';
 import { swissKnife } from './../tech.js';
+import { actions } from './../actions.js';
 import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
@@ -962,6 +963,93 @@ export function mechanicsPage(content){
             }
         });
         sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
+    }
+
+    { // Thralls
+        let thralls = infoBoxBuilder(mainContent,{ name: 'thralls', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 9, break: [4,8], h_level: 2,
+            para_data: {
+                1: [loc('trait_unfathomable_name')],
+                5: [100,100],
+                8: [1],
+            },
+            data_link: {
+                1: ['wiki.html#traits-species-genus_unfathomable'],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_cath', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_cath`),3],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_pterodacti', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_pterodacti`),3],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_entish', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_entish`),`40%`],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_cacti', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_cacti`),`32%`],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_moldling', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 3, break: [3], h_level: false,
+            para_data: {
+                1: [loc(`race_moldling`)],
+                2: [
+                    [
+                        `<span class="has-text-warning">${loc('tech_smelting')}</span>`, `<span class="has-text-warning">${loc('tech_dynamite')}</span>`, `<span class="has-text-warning">${loc('tech_portland_cement')}</span>`, `<span class="has-text-warning">${loc('tech_oxygen_converter')}</span>`,
+                        `<span class="has-text-warning">${loc('tech_machinery')}</span>`, `<span class="has-text-warning">${loc('tech_uranium_storage')}</span>`, `<span class="has-text-warning">${actions.tech.synthetic_fur.title()}</span>`, `<span class="has-text-warning">${loc('tech_rover')}</span>`,
+                        `<span class="has-text-warning">${loc('tech_starcharts')}</span>`, `<span class="has-text-warning">${loc('tech_nano_tubes')}</span>`, `<span class="has-text-warning">${loc('tech_stanene')}</span>`, `<span class="has-text-warning">${loc('tech_hydroponics')}</span>`,
+                        `<span class="has-text-warning">${loc('tech_orichalcum_panels')}</span>`, `<span class="has-text-warning">${loc('tech_cybernetics')}</span>`
+                    ].join(', ')
+                ],
+            }
+            ,
+            data_color: {
+                2: [false]
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_sharkin', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_sharkin`)],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_satyr', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_satyr`)],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_phoenix', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_phoenix`),'0.25'],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_salamander', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_salamander`),'20%'],
+            }
+        });
+
+        infoBoxBuilder(thralls,{ name: 'thralls_unicorn', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
+            para_data: {
+                1: [loc(`race_unicorn`),1],
+            }
+        });
+
+        sideMenu('add',`mechanics-gameplay`,`thralls`,loc('wiki_mechanics_thralls'));
     }
 }
 
