@@ -4728,6 +4728,9 @@ export function racialTrait(workers,type){
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
     }
+    if (global.race['high_pop']){
+        modifier = highPopAdjust(modifier);
+    }
     return modifier;
 }
 
