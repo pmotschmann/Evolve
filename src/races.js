@@ -7,6 +7,7 @@ import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
+import { highPopAdjust } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
 
 const date = new Date();
