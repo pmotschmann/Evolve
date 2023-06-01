@@ -480,7 +480,7 @@ export function production(id,val){
         }
         case 'psychic_boost':
         {
-            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boost.r === val){
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boost.r === val && global.race.psychicPowers.hasOwnProperty('boostTime')){
                 let boost = 0;
                 if (global.race.psychicPowers.boostTime > 0){
                     boost += traits.psychic.vars()[3] / 100;
@@ -495,7 +495,7 @@ export function production(id,val){
         }
         case 'psychic_cash':
         {
-            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers['cash']){
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.hasOwnProperty('cash')){
                 let boost = 0;
                 if (global.race.psychicPowers.cash > 0){
                     boost += traits.psychic.vars()[3] / 100;

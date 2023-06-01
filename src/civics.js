@@ -2128,7 +2128,7 @@ export function armyRating(val,type,wound){
                 army += 4;
             }
         }
-        if (global.tech['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers['assaultTime']){
+        if (global.tech['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.hasOwnProperty('assaultTime')){
             let boost = 0;
             if (global.race.psychicPowers.assaultTime > 0){
                 boost += traits.psychic.vars()[3] / 100;
