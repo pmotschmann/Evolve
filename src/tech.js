@@ -507,6 +507,53 @@ const techs = {
             renderPsychicPowers();
         }
     },
+    psychic_channeling: {
+        id: 'tech-psychic_channeling',
+        title: loc('tech_psychic_channeling'),
+        desc: loc('tech_psychic_channeling'),
+        category: 'eldritch',
+        era: 'deep_space',
+        reqs: { psychic: 3, high_tech: 10 },
+        trait: ['psychic'],
+        grant: ['psychic',4],
+        cost: {
+            Knowledge(){ return 360000; }
+        },
+        effect: loc('tech_psychic_channeling_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.race.psychicPowers['channel'] = { cash: 0, assault: 0, boost: 0 };
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderPsychicPowers();
+        }
+    },
+    psychic_efficiency: {
+        id: 'tech-psychic_efficiency',
+        title: loc('tech_psychic_efficiency'),
+        desc: loc('tech_psychic_efficiency'),
+        category: 'eldritch',
+        era: 'intergalactic',
+        reqs: { psychic: 4, high_tech: 16 },
+        trait: ['psychic'],
+        grant: ['psychic',5],
+        cost: {
+            Knowledge(){ return 5250000; }
+        },
+        effect: loc('tech_psychic_efficiency_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        },
+        post(){
+            renderPsychicPowers();
+        }
+    },
     mind_break: {
         id: 'tech-mind_break',
         title: loc('tech_mind_break'),

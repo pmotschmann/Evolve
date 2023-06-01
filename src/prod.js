@@ -480,15 +480,31 @@ export function production(id,val){
         }
         case 'psychic_boost':
         {
-            if (global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boostTime > 0){
-                return global.race.psychicPowers.boost.r === val ? (1 + (traits.psychic.vars()[3] / 100)) : 1;
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boost.r === val){
+                let boost = 0;
+                if (global.race.psychicPowers.boostTime > 0){
+                    boost += traits.psychic.vars()[3] / 100;
+                }
+                if (global.tech.psychic >= 4 && global.race.psychicPowers['channel']){
+                    let rank = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0;
+                    boost += +(traits.psychic.vars()[3] / 50000 * rank * global.race.psychicPowers.channel.boost).toFixed(3);
+                }
+                return 1 + boost;
             }
             return 1;
         }
         case 'psychic_cash':
         {
-            if (global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers['cash'] && global.race.psychicPowers.cash > 0){
-                return 1 + (traits.psychic.vars()[3] / 100);
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers['cash']){
+                let boost = 0;
+                if (global.race.psychicPowers.cash > 0){
+                    boost += traits.psychic.vars()[3] / 100;
+                }
+                if (global.tech.psychic >= 4 && global.race.psychicPowers['channel']){
+                    let rank = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0;
+                    boost += +(traits.psychic.vars()[3] / 50000 * rank * global.race.psychicPowers.channel.cash).toFixed(3);
+                }
+                return 1 + boost;
             }
             return 1;
         }

@@ -863,7 +863,7 @@ function fastLoop(){
                 heat += (global.city['hot'] - 100) * traits.smoldering.vars()[2];
             }
             else {
-                heat = global.city['hot'] * traits.smoldering.vars()[1];
+                heat += global.city['hot'] * traits.smoldering.vars()[1];
             }
         }
         if (phoenixFathom > 0){
@@ -872,7 +872,7 @@ function fastLoop(){
                 heat += (global.city['hot'] - 100) * traits.smoldering.vars(0.25)[2] * phoenixFathom;
             }
             else {
-                heat = global.city['hot'] * traits.smoldering.vars(0.25)[1] * phoenixFathom;
+                heat += global.city['hot'] * traits.smoldering.vars(0.25)[1] * phoenixFathom;
             }
         }
         breakdown.p['Global'][loc('trait_smoldering_name')] = `${heat}%`;
@@ -7239,6 +7239,18 @@ function midLoop(){
             caps['Stone'] += rank * 60;
         }
 
+        if (global.race.hasOwnProperty('psychicPowers') && global.race.psychicPowers.hasOwnProperty('channel')){
+            caps['Energy'] -= global.race.psychicPowers.channel.boost;
+            caps['Energy'] -= global.race.psychicPowers.channel.assault;
+            caps['Energy'] -= global.race.psychicPowers.channel.cash;
+            if (caps['Energy'] < 0){
+                caps['Energy'] = 100;
+                global.race.psychicPowers.channel.boost = 0;
+                global.race.psychicPowers.channel.assault = 0;
+                global.race.psychicPowers.channel.cash = 0;
+            }
+        }
+
         var bd_Money = { [loc('base')]: caps['Money']+'v' };
         var bd_Citizen = {};
         var bd_Slave = {};
@@ -7376,19 +7388,19 @@ function midLoop(){
         if (global.race['psychic']){
             if (global.race['psychicPowers'] && global.race.psychicPowers.boostTime > 0){
                 global.race.psychicPowers.boostTime--;
-                if (global.race.psychicPowers.boostTime < 0 || global.race.psychicPowers.boostTime > 300){
+                if (global.race.psychicPowers.boostTime < 0 || global.race.psychicPowers.boostTime > 360){
                     global.race.psychicPowers.boostTime = 0;
                 }
             }
             if (global.race['psychicPowers'] && global.race.psychicPowers['assaultTime'] && global.race.psychicPowers.assaultTime > 0){
                 global.race.psychicPowers.assaultTime--;
-                if (global.race.psychicPowers.assaultTime < 0 || global.race.psychicPowers.assaultTime > 300){
+                if (global.race.psychicPowers.assaultTime < 0 || global.race.psychicPowers.assaultTime > 360){
                     global.race.psychicPowers.assaultTime = 0;
                 }
             }
             if (global.race['psychicPowers'] && global.race.psychicPowers['cash'] && global.race.psychicPowers.cash > 0){
                 global.race.psychicPowers.cash--;
-                if (global.race.psychicPowers.cash < 0 || global.race.psychicPowers.cash > 300){
+                if (global.race.psychicPowers.cash < 0 || global.race.psychicPowers.cash > 360){
                     global.race.psychicPowers.cash = 0;
                 }
             }
