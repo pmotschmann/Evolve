@@ -7538,7 +7538,7 @@
   "wiki_trait_effect_shapeshifter": "다른 종족의 부 특성을 가져올 수 있습니다. 긍정적인 특성은 %0 등급으로 가져오고, 부정적인 특성은 %1 등급으로 가져옵니다.",
   "wiki_trait_effect_psychic": "Energy Regen +%2. Psychic Effect Power +%3%. Mind Break +%0%. Thrall effectiveness +%1%.",
   "wiki_trait_effect_unfathomable": "이 종족의 문화는 악몽과 같고, 그때문에 외부인들이 전혀 이해할 수 없습니다.",
-  "wiki_trait_effect_unfathomable_ex1": 이 종족에게는 '습격자'라고 불리는 사냥꾼과 같은 직업이 있습니다. 습격자들은 자원, 사람, 가축을 훔치기 위해 지상 세계를 습격합니다. 이때 잡힌 지상세계 거주자는 배정된 하수인의 종류에 따라 각기 다른 보너스를 주는 하수인으로 변환될 수 있습니다.",
+  "wiki_trait_effect_unfathomable_ex1": "이 종족에게는 '습격자'라고 불리는 사냥꾼과 같은 직업이 있습니다. 습격자들은 자원, 사람, 가축을 훔치기 위해 지상 세계를 습격합니다. 이때 잡힌 지상세계 거주자는 배정된 하수인의 종류에 따라 각기 다른 보너스를 주는 하수인으로 변환될 수 있습니다.",
   "wiki_trait_effect_unfathomable_ex2": "Thrall bonuses are related to the thrall species and most often are a derivative of their fanatic trait and will stack with the real trait.",
   "wiki_trait_effect_darkness": "맑은 날씨가 흐린 날씨로 갑작스럽게 바뀔 수 있습니다.",
   "wiki_trait_effect_tormented": "행복도가 100% 이상일 때, 행복도가 %0%만큼 감소합니다.",
