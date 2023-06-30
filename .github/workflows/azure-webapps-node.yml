@@ -49,7 +49,7 @@ jobs:
         npm run dev
         npm run wiki
         npm run wiki-dev
-        npm run serve
+       
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
