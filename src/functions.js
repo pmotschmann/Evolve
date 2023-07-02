@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -118,54 +118,46 @@ export function gameLoop(act){
                     clearInterval(intervals['mid_loop']);
                     clearInterval(intervals['long_loop']);
                 }
-                if (global.settings.at > 0){
-                    global.settings.at = atrack.t;
-                }
                 webWorker.s = false;
             }
             break;
         case 'start':
             {
-                let main_timer = 250;
-                let mid_timer = 1000;
-                let long_timer = 5000;
-                if (global.race['slow']){
-                    let slow = 1 + (traits.slow.vars()[0] / 100);
-                    main_timer = Math.floor(main_timer * slow);
-                    mid_timer = Math.floor(mid_timer * slow);
-                    long_timer = Math.floor(long_timer * slow);
-                }
-                if (global.race['hyper']){
-                    let fast = 1 - (traits.hyper.vars()[0] / 100);
-                    main_timer = Math.floor(main_timer * fast);
-                    mid_timer = Math.floor(mid_timer * fast);
-                    long_timer = Math.floor(long_timer * fast);
-                }
-                webWorker.mt = main_timer;
+                webWorker.resetTimers()
+                global.settings.gameSpeed = 1;
 
                 calcATime();
+                if (global.settings.at > 0){
+                    global.settings.gameSpeed *= global.settings.atMultiplier;
+                }
+                if (global.race['slow']){
+                    const slow = 1 - (traits.slow.vars()[0] / 100);
+                    global.settings.gameSpeed *= slow;
+                }
+                if (global.race['hyper']){
+                    const fast = 1 + (traits.hyper.vars()[0] / 100);
+                    global.settings.gameSpeed *= fast;
+                }
 
-                if (atrack.t > 0){
-                    main_timer = Math.ceil(main_timer * 0.5);
-                    mid_timer = Math.ceil(mid_timer * 0.5);
-                    long_timer = Math.ceil(long_timer * 0.5);
+                for (let key in webWorker.timers) {
+                    webWorker.timers[key] /= global.settings.gameSpeed;
                 }
 
                 if (webWorker.w){
-                    webWorker.w.postMessage({ loop: 'short', period: main_timer });
-                    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
-                    webWorker.w.postMessage({ loop: 'long', period: long_timer });
+                    webWorker.w.postMessage({ loop: 'short', period: webWorker.timers.main });
+                    webWorker.w.postMessage({ loop: 'mid', period: webWorker.timers.mid });
+                    webWorker.w.postMessage({ loop: 'long', period: webWorker.timers.long });
                 }
                 else {
                     intervals['main_loop'] = setInterval(function(){
                         fastLoop();
-                    }, main_timer);
+                    }, webWorker.timers.main);
                     intervals['mid_loop'] = setInterval(function(){
                         midLoop();
-                    }, mid_timer);
+                    }, webWorker.timers.mid);
                     intervals['long_loop'] = setInterval(function(){
                         longLoop();
-                    }, long_timer);
+                    }, webWorker.timers.long);
                 }
 
                 webWorker.s = true;
@@ -174,19 +166,14 @@ export function gameLoop(act){
 }
 
 function calcATime(){
-    let dt = Date.now();
-    let timeDiff = dt - global.stats.current;
-    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
-        if (global.settings.at > 11520){
-            global.settings.at = 0;
-        }
-        if (timeDiff >= 120000){
-            global.settings.at += Math.floor(timeDiff / 3333);
-        }
-        if (global.settings.at > 11520){
-            global.settings.at = 11520;
-        }
-        atrack.t = global.settings.at;
+    if (!global.stats.hasOwnProperty("current")) return;
+
+    const dt = Date.now();
+    const timeDiff = dt - global.stats.current;
+    if (timeDiff >= 120000){
+        const newATime = global.settings.at + (timeDiff * 2/3);
+        const maxATime = 8*60*60*1000; // milliseconds
+        global.settings.at = Math.min(newATime, maxATime);
     }
 }
 

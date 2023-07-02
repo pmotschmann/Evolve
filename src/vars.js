@@ -42,7 +42,6 @@ export var spire_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export var universe_level = 0;
-export var atrack = {t:0};
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
@@ -1664,6 +1663,9 @@ $('html').addClass(global.settings.theme);
 if (!global.settings['at']){
     global.settings['at'] = 0;
 }
+if (!global.settings['atMultiplier']){
+    global.settings['atMultiplier'] = 2;
+}
 
 if (!global.city['morale']){
     global.city['morale'] = {
@@ -2131,7 +2133,14 @@ window.soft_reset = function reset(source){
     window.location.reload();
 }
 
-export var webWorker = { w: false, s: false, mt: 250 };
+export var webWorker = {
+    w: false,
+    s: false,
+    timers: {},
+    resetTimers() {
+        this.timers = {main: 250, mid: 1000, long: 5000}
+    }
+}
 export var intervals = {};
 
 export function clearSavedMessages(){

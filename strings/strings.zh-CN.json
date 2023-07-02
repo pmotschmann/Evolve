@@ -130,7 +130,7 @@
   "key_mappings": "键盘映射",
   "tab_mappings": "面板映射",
   "multiplier": "%0倍率",
-  "accelerated_time": "加速（2倍速）时间剩余",
+  "accelerated_time": "加速时间剩余",
   "c_cat": "建筑分类",
   "t_cat": "科研分类",
   "q_key": "队列快捷键",
