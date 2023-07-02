@@ -451,8 +451,8 @@ function loadJob(job, define, impact, stress, color){
     $(servant ? '#servants' : '#jobs').append(civ_container);
 
     if (job !== 'crew'){
-        var sub = $(`<span role="button" aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></span>`);
-        var add = $(`<span role="button" aria-label="${loc('add')} ${global['civic'][job].name}" class="add has-text-success" @click="add"><span>&raquo;</span></span>`);
+        var sub = $(`<button aria-label="${loc('remove')} ${global['civic'][job].name}" class="sub has-text-danger" @click="sub"><span>&laquo;</span></button>`);
+        var add = $(`<button aria-label="${loc('add')} ${global['civic'][job].name}" class="add has-text-success" @click="add"><span>&raquo;</span></button>`);
         controls.append(sub);
         controls.append(add);
     }
@@ -718,8 +718,8 @@ export function loadFoundry(servants){
                 resource.append(controls);
                 element.append(resource);
 
-                let sub = $(`<span role="button" aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></span>`);
-                let add = $(`<span role="button" aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></span>`);
+                let sub = $(`<button aria-label="remove ${res} craftsman" class="sub has-text-danger" @click="sub('${res}')"><span>&laquo;</span></button>`);
+                let add = $(`<button aria-label="add ${res} craftsman" class="add has-text-success" @click="add('${res}')"><span>&raquo;</span></button>`);
 
                 controls.append(sub);
                 controls.append(add);

@@ -987,8 +987,8 @@ function taxRates(govern){
     tax_rates.append(label);
     
     var tax_level = $('<span class="current" v-html="$options.filters.tax_level(tax_rate)"></span>');
-    var sub = $(`<span role="button" aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</span>`);
-    var add = $(`<span role="button" aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</span>`);
+    var sub = $(`<button aria-label="decrease taxes" class="sub has-text-success" @click="sub">&laquo;</button>`);
+    var add = $(`<button aria-label="increase taxes" class="add has-text-danger" @click="add">&raquo;</button>`);
     tax_rates.append(sub);
     tax_rates.append(tax_level);
     tax_rates.append(add);
@@ -1139,8 +1139,8 @@ export function buildGarrison(garrison,full){
         wrap.append(tactics);
             
         var strategy = $('<span class="current tactic">{{ g.tactic | tactics }}</span>');
-        var last = $('<span role="button" aria-label="easier campaign" class="sub" @click="last">&laquo;</span>');
-        var next = $('<span role="button" aria-label="harder campaign" class="add" @click="next">&raquo;</span>');
+        var last = $('<button aria-label="easier campaign" class="sub" @click="last">&laquo;</button>');
+        var next = $('<button aria-label="harder campaign" class="add" @click="next">&raquo;</button>');
         tactics.append(last);
         tactics.append(strategy);
         tactics.append(next);
@@ -1149,8 +1149,8 @@ export function buildGarrison(garrison,full){
         wrap.append(battalion);
             
         var armysize = $('<span class="current bat">{{ g.raid }}</span>');
-        var alast = $('<span role="button" aria-label="remove soldiers from campaign" class="sub" @click="aLast">&laquo;</span>');
-        var anext = $('<span role="button" aria-label="add soldiers to campaign" class="add" @click="aNext">&raquo;</span>');
+        var alast = $('<button aria-label="remove soldiers from campaign" class="sub" @click="aLast">&laquo;</button>');
+        var anext = $('<button aria-label="add soldiers to campaign" class="add" @click="aNext">&raquo;</button>');
         battalion.append(alast);
         battalion.append(armysize);
         battalion.append(anext);
