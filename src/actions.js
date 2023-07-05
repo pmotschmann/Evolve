@@ -975,7 +975,7 @@ export const actions = {
                             }
                         });
                     }
-                    
+
                     if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
                         if (active_gift === `g2019`){
                             if (global['special'] && global.special['gift']){
@@ -996,12 +996,12 @@ export const actions = {
                         else {
                             if (global['special'] && global.special['gift']){
                                 delete global.special.gift[active_gift];
-                                
+
                                 let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
                                 let mad = global.stats.hasOwnProperty('mad') ? global.stats.mad : 0;
                                 let bioseed = global.stats.hasOwnProperty('bioseed') ? global.stats.bioseed : 0;
                                 let cataclysm = global.stats.hasOwnProperty('cataclysm') ? global.stats.cataclysm : 0;
-        
+
                                 let plasmid = 100 + resets + mad;
                                 let phage = bioseed + cataclysm;
                                 let gift = [];
@@ -1027,7 +1027,7 @@ export const actions = {
                                     global.stats.phage += phage;
                                     gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
                                 }
-        
+
                                 if (global.stats.hasOwnProperty('achieve')){
                                     let universe = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l : 0;
                                     universe += global.stats.achieve['heavy'] ? global.stats.achieve['heavy'].l : 0;
@@ -1035,15 +1035,15 @@ export const actions = {
                                     universe += global.stats.achieve['eviltwin'] ? global.stats.achieve['eviltwin'].l : 0;
                                     universe += global.stats.achieve['microbang'] ? global.stats.achieve['microbang'].l : 0;
                                     universe += global.stats.achieve['pw_apocalypse'] ? global.stats.achieve['pw_apocalypse'].l : 0;
-        
+
                                     let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
                                     let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
                                     let ai = global.stats.achieve['obsolete'] ? global.stats.achieve['obsolete'].l : 0;
-        
+
                                     if (universe > 30){ universe = 30; }
                                     if (ascended > 5){ ascended = 5; }
                                     if (descend > 5){ descend = 5; }
-                                    
+
                                     if (universe > 0){
                                         let dark = +(universe / 7.5).toFixed(2);
                                         global.prestige.Dark.count += dark;
@@ -1196,7 +1196,7 @@ export const actions = {
                 }
                 else {
                     return loc(`city_gather`,[global.resource.Stone.name]);
-                }                
+                }
             },
             desc(){
                 let gain = $(this)[0].val(false);
@@ -1205,7 +1205,7 @@ export const actions = {
                 }
                 else {
                     return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
-                }                
+                }
             },
             category: 'outskirts',
             reqs: { primitive: 2 },
@@ -1247,7 +1247,7 @@ export const actions = {
                 }
                 else {
                     return loc(`city_gather`,[global.resource.Chrysotile.name]);
-                }                
+                }
             },
             desc(){
                 let gain = $(this)[0].val(false);
@@ -1256,7 +1256,7 @@ export const actions = {
                 }
                 else {
                     return loc('city_stone_desc',[gain,global.resource.Chrysotile.name]);
-                }                
+                }
             },
             category: 'outskirts',
             reqs: { primitive: 2 },
@@ -4131,7 +4131,7 @@ export function buildTemplate(key, region){
             else {
                 a['trait'] = [k];
             }
-            
+
         }
         else if (r === 'tauceti'){
             a.reqs['isolation'] = 1;
@@ -4494,7 +4494,7 @@ if (Object.keys(global.stats.synth).length > 1){
         queue_complete(){ return global.tech['evo'] && global.tech.evo === 8 ? 1 : 0; }
     });
 }
-            
+
 const challengeList = {
     'plasmid': 'no_plasmid',
     'mastery': 'weak_mastery',
@@ -4689,7 +4689,7 @@ function challengeEffect(c){
             }
             else {
                 return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
-            }   
+            }
         }
         default:
             return loc(`evo_challenge_${c}_effect`);
@@ -5408,7 +5408,7 @@ export function setAction(c_action,action,type,old,prediction){
         }
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action" v-on:mouseenter="mouse_enter" v-on:mouseleave="mouse_leave"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -5558,6 +5558,19 @@ export function setAction(c_action,action,type,old,prediction){
             },
             repairMax(){
                 return c_action.repair();
+            },
+            mouse_enter () {
+                const title = this.title;
+                $('.buildList .queued span[class^="res-"]').each(function () {
+                    if (this.innerText === title) {
+                        $(this).addClass('hl-ex');
+                    }
+                });
+            },
+            mouse_leave () {
+                $('.buildList .queued span.hl-ex').each(function () {
+                    $(this).removeClass('hl-ex');
+                });
             }
         },
         filters: {
@@ -5572,8 +5585,8 @@ export function setAction(c_action,action,type,old,prediction){
             p_off(p,id){
                 let value = global[action][type].count - p;
                 if (
-                    (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
-                    (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
+                    (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) ||
+                    (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) ||
                     (id === 'tauceti-tauceti_casino' && global.tech['isolation'])
                 ){
                     let egg = easterEgg(5,12);
@@ -5585,7 +5598,7 @@ export function setAction(c_action,action,type,old,prediction){
             },
             p_on(p,id){
                 if (
-                    (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
+                    (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) ||
                     ((global.race['cataclysm'] || global.race['orbit_decayed']) && id === 'space-exotic_lab') ||
                     (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab')
                 ){
@@ -6289,7 +6302,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     bres = bres || false;
-    
+
     let touch = false;
     if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
         touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
@@ -7156,18 +7169,18 @@ export function updateQueueNames(both, items){
                 if (deepScan.includes(currItem.action)){
                     let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
                         if (actions[currItem.action][region][currItem.type] && scan){
-                            global.queue.queue[i].label = 
-                                typeof actions[currItem.action][region][currItem.type].title === 'string' ? 
-                                actions[currItem.action][region][currItem.type].title : 
+                            global.queue.queue[i].label =
+                                typeof actions[currItem.action][region][currItem.type].title === 'string' ?
+                                actions[currItem.action][region][currItem.type].title :
                                 actions[currItem.action][region][currItem.type].title();
                             scan = false;
                         }
                     });
                 }
                 else if (actions[currItem.action][currItem.type]){
-                    global.queue.queue[i].label = 
-                        typeof actions[currItem.action][currItem.type].title === 'string' ? 
-                        actions[currItem.action][currItem.type].title : 
+                    global.queue.queue[i].label =
+                        typeof actions[currItem.action][currItem.type].title === 'string' ?
+                        actions[currItem.action][currItem.type].title :
                         actions[currItem.action][currItem.type].title();
                 }
             }
@@ -7175,9 +7188,9 @@ export function updateQueueNames(both, items){
     }
     if (both && global.tech['r_queue'] && global.r_queue.display){
         for (let i=0; i<global.r_queue.queue.length; i++){
-            global.r_queue.queue[i].label = 
-                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ? 
-                actions.tech[global.r_queue.queue[i].type].title : 
+            global.r_queue.queue[i].label =
+                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ?
+                actions.tech[global.r_queue.queue[i].type].title :
                 actions.tech[global.r_queue.queue[i].type].title();
         }
     }
@@ -7418,7 +7431,7 @@ function sentience(){
     global.civic.govern.type = 'anarchy';
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
-    
+
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;
@@ -7442,7 +7455,7 @@ function sentience(){
     Object.keys(global.genes.minor).forEach(function (trait){
         global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
-    
+
     let tempMTOrder = [];
     global.settings.mtorder.forEach(function(trait){
        if (global.genes.minor[trait] || trait === 'mastery'){
@@ -7485,7 +7498,7 @@ function sentience(){
         global.civic.foreign.gov0.mil = Math.round(global.civic.foreign.gov0.mil * 1.5);
         global.civic.foreign.gov1.mil = Math.round(global.civic.foreign.gov1.mil * 1.4);
         global.civic.foreign.gov2.mil = Math.round(global.civic.foreign.gov2.mil * 1.25);
-    
+
         global.civic.foreign['gov3'] = {
             unrest: 0,
             hstl: Math.floor(seededRandom(20,40)),
@@ -7596,7 +7609,7 @@ function sentience(){
             global.race['fox_color'] = 'red';
         }
     }
-    
+
     calcPillar(true);
 
     if (global.blood['aware']){
@@ -7634,7 +7647,7 @@ function sentience(){
     if (global.race['deconstructor']){
         global.resource.Nanite.display = true;
         global.city['nanite_factory'] = { count: 1,
-            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
+            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0,
             Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
             Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
             Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
@@ -7773,7 +7786,7 @@ function simulation(){
             global.race.ascended = false;
             global.race.gods = 'none';
             global.race.old_gods = 'none';
-            
+
             ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
                 global.prestige[res] = { count: Number(global.race.simConfig[res]) };
             });
@@ -7790,7 +7803,7 @@ function exitSim(){
         global.pillars = deepClone(global.sim.pillars);
         global.race = deepClone(global.sim.race);
         delete global['sim'];
-        
+
         global.race.species = 'protoplasm';
         delete global.race['simulation'];
 
