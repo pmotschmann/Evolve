@@ -118,6 +118,8 @@
   "settings14": "Do not enforce research queue order",
   "settings15": "How the Building Queue manages merging similar items in the queue. It can merge similar items if they're nearby each other in the queue, regardless of where they are in the queue, or never merge them at all.",
   "settings16": "Enable Experimental Touch Device enhancements",
+  "settings17": "Only allow building structures when enough resources to pay fuel/crafting/trade costs will be left over.",
+  "keep_resource_buffer": "Keep Resource Buffer",
   "enable_reset": "Enable Reset Buttons",
   "reset_warn": "Warning: This completely resets all your progress and cannot be undone. This is NOT a prestige mechanic; you are wiping out your game data. Keep this button disabled.",
   "reset_soft": "Soft Reset Game",
