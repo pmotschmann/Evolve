@@ -1785,11 +1785,12 @@ function genetics(){
             filters: {
                 timer(val){
                     if (global.arpa.sequence.on && global.arpa.sequence.labs > 0){
+                        const time = val / (global.settings.gameSpeed * global.arpa.sequence.labs);
                         if (global.arpa.sequence.boost){
-                            return timeFormat(val / (global.arpa.sequence.labs * 2));
+                            return timeFormat(time / 2);
                         }
                         else {
-                            return timeFormat(val / global.arpa.sequence.labs);
+                            return timeFormat(time);
                         }
                     }
                     else {

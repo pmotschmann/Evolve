@@ -975,7 +975,7 @@ export const gov_tasks = {
                 let min = global.tech['world_control'] ? 3 : 0;
                 for (let i=min; i<max; i++){
                     let cost = govCivics('s_cost',i);
-                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
+                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn <= 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
                         govCivics('t_spy',i);
                     }
                 }
@@ -998,7 +998,7 @@ export const gov_tasks = {
                 let range = global.race['truepath'] && global.tech['rival'] ? [0,1,2,3] : [0,1,2];
                 if (global.tech['world_control']){ range = [3]; }
                 range.forEach(function(gov){
-                    if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
+                    if (global.civic.foreign[`gov${gov}`].sab <= 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
                         global.race.governor.config.spyop[`gov${gov}`].every(function (mission){
                             switch (mission){
                                 case 'influence':

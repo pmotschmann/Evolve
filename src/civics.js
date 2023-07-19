@@ -436,8 +436,8 @@ export function foreignGov(){
 
             let actions = $(`<div></div>`);
             actions.append($(`<button :label="battleAssessment(${i})" class="button gaction attack" @click="campaign(${i})"><span v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy">${loc('civics_garrison_attack')}</span><span v-show="f${i}.occ || f${i}.anx || f${i}.buy">${loc('civics_garrison_unoccupy')}</span></button>`));
-            actions.append($(`<span class="tspy inline"><button :label="spyDesc(${i})" v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn === 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ f${i}.trn }}</span></button></span>`));
-            actions.append($(`<span class="sspy inline"><button :label="espDesc()" v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab === 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ f${i}.sab }}</span></button></span>`));
+            actions.append($(`<span class="tspy inline"><button :label="spyDesc(${i})" v-show="t.spy >= 1 && !f${i}.occ && !f${i}.anx && !f${i}.buy" :disabled="spy_disabled(${i})" class="button gaction" @click="spy(${i})"><span v-show="f${i}.trn <= 0">${loc('tech_spy')}: {{ f${i}.spy }}</span><span v-show="f${i}.trn > 0">${loc('civics_train')}: {{ Math.ceil(f${i}.trn / s.gameSpeed) }}</span></button></span>`));
+            actions.append($(`<span class="sspy inline"><button :label="espDesc()" v-show="t.spy >= 2 && !f${i}.occ && !f${i}.anx && !f${i}.buy && f${i}.spy >= 1" :disabled="f${i}.sab > 0" class="button gaction" @click="trigModal(${i})"><span v-show="f${i}.sab <= 0">${loc('tech_espionage')}</span><span v-show="f${i}.sab > 0">{{ f${i}.act | sab }}: {{ Math.ceil(f${i}.sab / s.gameSpeed) }}</span></button></span>`));
             gov.append(actions);
 
             gov.append($(`<div v-show="!f${i}.occ && !f${i}.anx && !f${i}.buy"><span class="has-text-advanced glabel">${loc('civics_gov_mil_rate')}:</span> <span class="glevel">{{ f${i}.mil | military(${i}) }}<span class="has-text-warning" v-show="f${i}.spy >= 2"> ({{ f${i}.mil }})</span></span></div>`));
@@ -450,7 +450,8 @@ export function foreignGov(){
             f0: global.civic.foreign[`gov0`],
             f1: global.civic.foreign[`gov1`],
             f2: global.civic.foreign[`gov2`],
-            t: global.tech
+            t: global.tech,
+            s: global.settings
         };
         if (global.race['truepath']){
             bindData['f3'] = global.civic.foreign[`gov3`];
@@ -700,7 +701,7 @@ function spyCost(i){
 }
 
 function trainSpy(i){
-    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn === 0){
+    if (global.tech['spy'] && global.civic.foreign[`gov${i}`].trn <= 0){
         let cost = spyCost(i)
         if (global.resource.Money.amount >= cost){
             global.resource.Money.amount -= cost;
@@ -737,7 +738,7 @@ function spyAction(sa,g){
     switch (sa){
         case 'influence':
             {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab <= 0){
                     let timer = global.tech['spy'] >= 4 ? 200 : 300;
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
@@ -753,7 +754,7 @@ function spyAction(sa,g){
             break;
         case 'sabotage':
             {
-                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
+                if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab <= 0){
                     let timer = global.tech['spy'] >= 4 ? 400 : 600;
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
@@ -770,7 +771,7 @@ function spyAction(sa,g){
         case 'incite':
             {
                 if (g >= 3){ break; }
-                else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
+                else if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab <= 0){
                     let timer = global.tech['spy'] >= 4 ? 600 : 900;
                     if (global.race['befuddle']){
                         timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
@@ -840,7 +841,7 @@ function drawEspModal(gov){
             annex(g){
                 if (g >= 3){ return; }
                 if (global.civic.foreign[`gov${gov}`].hstl <= 50 && global.civic.foreign[`gov${gov}`].unrest >= 50 && global.city.morale.current >= (200 + global.civic.foreign[`gov${gov}`].hstl - global.civic.foreign[`gov${gov}`].unrest)){
-                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab === 0){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 1 && global.civic.foreign[`gov${g}`].sab <= 0){
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
                         if (global.race['befuddle']){
                             timer = Math.round(timer * (1 - traits.befuddle.vars()[0] / 100));
@@ -861,7 +862,7 @@ function drawEspModal(gov){
                 if (g >= 3){ return; }
                 let price = govPrice(g);
                 if (price <= global.resource.Money.amount){
-                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab === 0){
+                    if (global.tech['spy'] && global.tech['spy'] >= 2 && global.civic.foreign[`gov${g}`].spy >= 3 && global.civic.foreign[`gov${g}`].sab <= 0){
                         global.resource.Money.amount -= price;
                         let timer = global.tech['spy'] >= 4 ? 150 : 300;
                         if (global.race['befuddle']){
