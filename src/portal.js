@@ -1970,7 +1970,7 @@ export function buildFortress(parent,full){
     let wallStatus = $('<div></div>');
     fort.append(wallStatus);
 
-    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`))
+    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ Math.ceil(f.walls) }}%</span></span>`))
 
     let station = $(`<div></div>`);
     fort.append(station);
@@ -2543,7 +2543,7 @@ export function bloodwar(){
             if (siege > 0){
                 damage++;
                 global.portal.fortress.walls--;
-                if (global.portal.fortress.walls === 0){
+                if (global.portal.fortress.walls <= 0){
                     siege_report.destroyed = true;
                     destroyed = true;
                     break;
