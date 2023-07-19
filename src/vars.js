@@ -31,7 +31,9 @@ export var global = {
 export var tmp_vars = {};
 export var breakdown = {
     c: {},
-    p: {}
+    p: {
+        consume: {}
+    }
 };
 export var power_generated = {};
 export var p_on = {};
@@ -1789,6 +1791,10 @@ if (global.city['foundry'] && !global.city.foundry['Scarletite']){
 }
 if (global.city['foundry'] && !global.city.foundry['Quantium']){
     global.city.foundry['Quantium'] = 0;
+}
+
+if (!global.settings['keepResourceBuffer']){
+    global.settings['keepResourceBuffer'] = false;
 }
 
 if (!global.settings['arpa']){

@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, breakdown, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
@@ -6690,9 +6690,14 @@ export function checkCosts(costs){
             if (testCost === 0){
                 return;
             }
+            if(global.settings.keepResourceBuffer){
+                for (let consumer in breakdown.p.consume[res]){
+                    testCost += Math.max(0, -(breakdown.p.consume[res][consumer]))
+                }
+            }
             let f_res = res === 'Species' ? global.race.species : res;
             let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
-            if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
+            if (testCost > Number(global.resource[f_res].amount) || fail_max){
                 test = false;
                 return;
             }

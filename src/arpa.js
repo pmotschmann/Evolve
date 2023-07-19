@@ -1,4 +1,4 @@
-import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
+import { global, keyMultiplier, breakdown, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, clearPopper, flib, fibonacci, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue, arpaTimeCheck, deepClone } from './functions.js';
 import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin, fathomCheck } from './races.js';
@@ -1595,6 +1595,11 @@ function checkArpaCosts(costs){
     var test = true;
     Object.keys(costs).forEach(function (res){
         var testCost = Number(costs[res]()) / 100;
+        if(global.settings.keepResourceBuffer){
+            for (let consumer in breakdown.p.consume[res]){
+                testCost += Math.max(0, -(breakdown.p.consume[res][consumer]))
+            }
+        }
         if (testCost > Number(global['resource'][res].amount)) {
             test = false;
             return false;

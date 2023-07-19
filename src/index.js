@@ -201,7 +201,7 @@ export function mainVue(){
         }
     });
 
-    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16'].forEach(function(k){
+    ['1','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17'].forEach(function(k){
         popover(`settings${k}`, function(){
                 return loc(`settings${k}`);
             },
@@ -1303,6 +1303,7 @@ export function index(){
         <b-switch class="setting" v-model="s.qKey"><span class="settings6" aria-label="${loc('settings6')}">{{ 'q_key' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.qAny"><span class="settings7" aria-label="${loc('settings7')}">{{ 'q_any' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.qAny_res"><span class="settings14" aria-label="${loc('settings14')}">{{ 'q_any_res' | label }}</span></b-switch>
+        <b-switch class="setting" v-model="s.keepResourceBuffer"><span class="settings17" aria-label="${loc('settings17')}">{{ 'keep_resource_buffer' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.sPackOn" @input="stringPackOn"><span class="settings13" aria-label="${loc('settings13')}">{{ 's_pack_on' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.expose"><span class="settings8" aria-label="${loc('settings8')}">{{ 'expose' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.tabLoad" @input="toggleTabLoad"><span class="settings11" aria-label="${loc('settings11')}">{{ 'tabLoad' | label }}</span></b-switch>
