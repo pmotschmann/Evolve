@@ -7360,6 +7360,7 @@
   "wiki_trait_effect_linked": "每位市民使量子水平 +%0%。该效果在达到 %1% 以后增长大幅放缓。",
   "wiki_trait_effect_deconstructor": "将资源转化为纳米体，转化效率为 %0%。",
   "wiki_trait_effect_shapeshifter": "您可以获得其他种群的种群特质，正面特质级别为 %0，负面特质级别为 %1。",
+  "wiki_trait_effect_psychic": "灵能产量 +%2，灵能效果 +%3%，摧毁心智效率 +%0%，奴仆效率 +%1%。",
   "wiki_trait_effect_darkness": "晴天天气会随机转为多云。",
   "wiki_trait_effect_tormented": "士气大于 100% 时减少为 %0%。",
   "wiki_trait_effect_swift": "战斗评级 +%0%，捕获奴仆难度 -%1%。",
