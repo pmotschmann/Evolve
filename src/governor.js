@@ -1103,10 +1103,11 @@ export const gov_tasks = {
                 if (craft > 0){ craft = 0; }
 
                 if (global.race.governor.config.trash[res] || global.interstellar.mass_ejector.hasOwnProperty(res) && global.resource[res].display && global.resource[res].max > 0 && global.interstellar.mass_ejector[res] + global.resource[res].diff > 0 && global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1){
-                    let set = (global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) || (global.race.governor.config.trash[res] && !global.race.governor.config.trash[res].s)
-                        ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
-                        : 0;
-                    
+                    let set = 0;
+                    if ((global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) || (global.race.governor.config.trash[res] && !global.race.governor.config.trash[res].s)) {
+                        const diff = Math.floor(global.resource[res].diff / global.settings.gameSpeed);
+                        set = global.interstellar.mass_ejector[res] + diff;
+                    }
                     if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res].v && global.race.governor.config.trash[res].s){
                         set = Math.abs(global.race.governor.config.trash[res].v);
                     }
