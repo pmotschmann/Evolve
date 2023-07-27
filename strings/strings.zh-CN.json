@@ -7265,7 +7265,7 @@
   "wiki_trait_effect_hooved_ex2": "%0--%6 -> %1--%7 -> %2--%8 -> %3--%9 -> %4--%10 -> %5",
   "wiki_trait_effect_hooved_ex3": "如果达到对应数量后还未解锁下一种材料，则仍然会使用当前材料，但价格会更快地增长。",
   "wiki_trait_effect_hooved_ex4": "注意：开局获得的 %0 个%1不计入总数。",
-  "wiki_trait_effect_hooved_ex5": "若%0资源不存在，则初始材料变为%1。该特质名称随本周目游戏使用的种族而变化。",
+  "wiki_trait_effect_hooved_ex5": "若%0资源不存在，则初始材料变为%1。该特质名称和所使用的材料名称随本周目游戏使用的种族而变化。",
   "wiki_trait_effect_rage": "伤兵战斗评级不再下降，反而 +%1%，每名伤兵使士兵战斗评级 +%0%。",
   "wiki_trait_effect_heavy": "燃料成本 +%0%，部分材料成本 +%1%。",
   "wiki_trait_effect_heavy_ex1": "（%0、%1和%2成本增加）",
