@@ -8176,7 +8176,7 @@
   "wiki_mechanics_religion_para11": "如果您已经拥有了该特质，该特质的级别将会提升 1 级；如果您拥有的特质级别已经达到上限，则改为随机选取一个次要特质升 %0 级。",
   "wiki_mechanics_religion_para12": "研究%0后，教授可以提升寺庙的效果。",
   "wiki_mechanics_religion_para13": "研究%0后，寺庙可以增加贸易路线。",
-  "wiki_mechanics_religion_para14": "研究%0后，寺庙可以增加士兵战斗评级。",
+  "wiki_mechanics_religion_para14": "研究%0后，寺庙可以增加士兵战斗评级。（如果拥有 [可怖] 特质，则 传教士 和 狂热行为 这两个研究将不会出现）",
   "wiki_mechanics_religion_para15": "通常推荐在短时间的周目选择%0科技树，后续研究为：%0、%1、%2和%3。",
   "wiki_mechanics_religion_para16": "研究%0后，寺庙的效果将提升。",
   "wiki_mechanics_religion_para17": "研究%0后，寺庙可以增加图书馆的知识上限。",
