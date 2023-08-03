@@ -325,7 +325,7 @@ const fortressModules = {
                 let desc = `<div>${loc('portal_soul_forge_effect',[global.resource.Soul_Gem.name])}</div>`;
                 let count = (wiki || 0) + (global.portal.hasOwnProperty('soul_forge') ? global.portal.soul_forge.count : 0);
                 if (count >= 1){
-                    let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+                    let cap = global.tech.hell_pit >= 6 ? 100000 : 200000;
                     if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
                         cap *= 0.97 ** p_on['soul_attractor'];
                     }
@@ -2369,7 +2369,7 @@ export function bloodwar(){
     }
     
     if (global.tech['portal'] >= 4 && p_on['attractor']){
-        gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
+        gem_chance = Math.round(gem_chance * (0.1 ** p_on['attractor']));
     }
 
     if (global.race['ghostly']){
