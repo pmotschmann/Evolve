@@ -1496,7 +1496,11 @@ export function calcPrestige(type,inputs){
     else {
         gains.plasmid = inputs.plas;
     }
+    //garfu double gains
+    gains.plasmid *= 2;
+
     gains.phage = gains.plasmid > 0 ? challenge_multiplier(Math.floor(Math.log2(gains.plasmid) * Math.E * phage_mult),type,false,inputs) : 0;
+    gains.phage *= 2;
 
     if (type === 'bigbang'){
         let exotic = inputs.exotic;
@@ -1517,7 +1521,7 @@ export function calcPrestige(type,inputs){
         new_dark = challenge_multiplier(new_dark,'vacuum',3,inputs);
         gains.dark = new_dark;
     }
-
+    gains.dark *= 2;
 
     if (['ascend','descend','terraform'].includes(type)){
         let harmony = 1;
@@ -1545,7 +1549,9 @@ export function calcPrestige(type,inputs){
                 default:
                     break;
             }
+            gains.harmony *= 2;
             gains.harmony = parseFloat(harmony.toFixed(2));
+
         }
         else if (type === 'descend'){
             let artifact = universe === 'micro' ? 1 : harmony;
@@ -1562,6 +1568,7 @@ export function calcPrestige(type,inputs){
                 }
             });
             gains.artifact = artifact;
+            gains.artifact *= 2;
         }
     }
 
