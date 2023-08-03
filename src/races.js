@@ -321,15 +321,15 @@ export const traits = {
             // [Planet Creep, Space Creep]
             switch (r || global.race.small || 1){
                 case 0.25:
-                    return [0.0025,0.0015];
+                    return [0.0050,0.0030];
                 case 0.5:
-                    return [0.005,0.0025];
+                    return [0.01,0.0050];
                 case 1:
-                    return [0.01,0.005];
+                    return [0.015,0.010];
                 case 2:
-                    return [0.0125,0.006];
+                    return [0.02,0.012];
                 case 3:
-                    return [0.015,0.0075];
+                    return [0.025,0.015];
             }
         },
     },
