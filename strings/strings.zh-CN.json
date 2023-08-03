@@ -7269,7 +7269,7 @@
   "wiki_trait_effect_rage": "伤兵战斗评级不再下降，反而 +%1%，每名伤兵使士兵战斗评级 +%0%。",
   "wiki_trait_effect_heavy": "燃料成本 +%0%，部分材料成本 +%1%。",
   "wiki_trait_effect_heavy_ex1": "（%0、%1和%2成本增加）",
-  "wiki_trait_effect_gnawer": "每位市民每秒消耗 %0 木材。",
+  "wiki_trait_effect_gnawer": "每位市民或士兵每秒消耗 %0 木材（若木材资源不存在则改为石头）。",
   "wiki_trait_effect_calm": "修禅可获得产量加成。每个冥想室提供 %0 禅冥想空间上限。",
   "wiki_trait_effect_herbivore": "狩猎无法获得食物（特质级别无影响）。",
   "wiki_trait_effect_instinct": "%1% 死亡士兵变为伤兵。勘探者死亡率 -%0%，仙女座星云任务的舰船损失减半，且舰船可以更好地降低海盗威胁度。",
