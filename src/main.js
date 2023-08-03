@@ -9329,7 +9329,7 @@ function midLoop(){
             global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 2 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
-                global.arpa.sequence.max = 50000 * (1 + (global.race.mutation ** 2));
+                global.arpa.sequence.max = 1000 * (1 + (global.race.mutation ** 2));
                 if (global.race['adaptable']){
                     let adapt = 1 - (traits.adaptable.vars()[0] / 100);
                     global.arpa.sequence.max = Math.floor(global.arpa.sequence.max * adapt);
