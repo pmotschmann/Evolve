@@ -7746,7 +7746,7 @@
   "wiki_tech_mythology": "每个寺庙使图书馆的知识上限 +5%。",
   "wiki_tech_archaeology": "每个寺庙使教授的知识基础产量 +5%。",
   "wiki_tech_merchandising": "每个寺庙使税收收入 +2.5%。",
-  "wiki_tech_merchandising_tp": "每 25 个市民使寺庙资金收入 +$2。",
+  "wiki_tech_merchandising_tp": "每 25 位市民使寺庙资金收入 +$2。",
   "wiki_tech_space_manufacturing": "您可以在%0上建造工厂了。",
   "wiki_tech_hydroponics": "每个生物穹顶（或水仙花园、信号塔）使生活区对市民上限的加成由 +0.05 提升到 +0.1。",
   "wiki_tech_space_sourced": "每艘供能的铁采矿船使蜂群工厂的成本 -5%，效果叠乘。",
