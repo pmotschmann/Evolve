@@ -2672,7 +2672,7 @@ export function bloodwar(){
         global.portal.fortress.pity++;
     }
 
-    if (global.stats.dkills >= 1000000 && global.tech['gateway'] && !global.tech['hell_pit']){
+    if (global.stats.dkills >= 1000 && global.tech['gateway'] && !global.tech['hell_pit']){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
         messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);
@@ -2730,7 +2730,7 @@ export function bloodwar(){
             }
         }
 
-        let cap = global.tech.hell_pit >= 6 ? 750000 : 1000000;
+        let cap = global.tech.hell_pit >= 6 ? 100000 : 200000;
         if (global.tech.hell_pit >= 7 && p_on['soul_attractor'] > 0){
             cap *= 0.97 ** p_on['soul_attractor'];
         }
