@@ -1940,7 +1940,7 @@ export const traits = {
         name: loc('trait_kindling_kindred_name'),
         desc: loc('trait_kindling_kindred'),
         type: 'major',
-        val: 8,
+        val: -50,
         vars(r){
             switch (r || global.race.kindling_kindred || 1){
                 case 0.25:
@@ -2758,15 +2758,15 @@ export const traits = {
             // [Planet Creep, Space Creep]
             switch (r || global.race.compact || 1){
                 case 0.25:
-                    return [0.005,0.003];
+                    return [0.010,0.006];
                 case 0.5:
-                    return [0.01,0.005];
+                    return [0.02,0.01];
                 case 1:
-                    return [0.015,0.0075];
+                    return [0.03,0.015];
                 case 2:
-                    return [0.018,0.0085];
+                    return [0.036,0.017];
                 case 3:
-                    return [0.02,0.009];
+                    return [0.04,0.018];
             }
         }
     },
