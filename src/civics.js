@@ -1261,7 +1261,7 @@ export function buildGarrison(garrison,full){
                 return eventActive('fool',2021) ? garrisonSize() - w : w;
             },
             trainTime(r,p){
-                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
+                return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 12));
             }
         }
     });
