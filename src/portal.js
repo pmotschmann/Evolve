@@ -2465,6 +2465,7 @@ export function bloodwar(){
                             patrol_report.gem++;
                             day_report.stats.gems.patrols++;
                             global.resource.Soul_Gem.amount++;
+                            global.resource.Soul_Gem.amount++;
                             global.portal.fortress.pity = 0;
                             if (!global.resource.Soul_Gem.display){
                                 global.resource.Soul_Gem.display = true;
