@@ -155,7 +155,7 @@ export const arpaProjects = {
         grant: 'monuments',
         effect(){
             let gasVal = govActive('gaslighter',2);
-            let mcap = gasVal ? 2 - gasVal: 2;
+            let mcap = gasVal ? 4 - gasVal: 4;
             return loc('arpa_projects_monument_effect1',[mcap]);
         },
         cost: {

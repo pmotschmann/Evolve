@@ -2825,7 +2825,7 @@ function fastLoop(){
 
         if (global.tech['monuments']){
             let gasVal = govActive('gaslighter',2);
-            let mcap = gasVal ? (2 - gasVal) : 2;
+            let mcap = gasVal ? (4 - gasVal) : 4;
             moraleCap += global.tech['monuments'] * mcap;
         }
 
@@ -3737,7 +3737,7 @@ function fastLoop(){
             if (global.arpa['sequence'] && global.arpa.sequence.on && global.arpa.sequence.time > 0){
                 let gene_cost = 50 + (global.race.mutation * 10);
                 if (global.arpa.sequence.boost){
-                    gene_cost *= 4;
+                    gene_cost *= 1;
                 }
                 if (gene_cost * time_multiplier <= global.resource.Knowledge.amount){
                     gene_consume = gene_cost;
@@ -9326,10 +9326,10 @@ function midLoop(){
                 labs += planetTraits.toxic.vars()[0];
             }
             global.arpa.sequence.labs = labs;
-            global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 20 : labs;
+            global.arpa.sequence.time -= global.arpa.sequence.boost ? labs * 10 : labs;
             global.arpa.sequence.progress = global.arpa.sequence.max - global.arpa.sequence.time;
             if (global.arpa.sequence.time <= 0){
-                global.arpa.sequence.max = 500 * (1 + (global.race.mutation ** 2));
+                global.arpa.sequence.max = 1000 * (1 + (global.race.mutation ** 2));
                 if (global.race['adaptable']){
                     let adapt = 1 - (traits.adaptable.vars()[0] / 100);
                     global.arpa.sequence.max = Math.floor(global.arpa.sequence.max * adapt);
