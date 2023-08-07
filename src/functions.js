@@ -127,7 +127,7 @@ export function gameLoop(act){
         case 'start':
             {
                 let main_timer = 20;
-                let mid_timer = 500;
+                let mid_timer = 200;
                 let long_timer = 2500;
                 if (global.race['slow']){
                     let slow = 1 + (traits.slow.vars()[0] / 100);

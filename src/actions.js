@@ -1906,7 +1906,7 @@ export const actions = {
             category: 'utility',
             reqs: { wind_plant: 1 },
             not_trait: ['cataclysm','lone_survivor'],
-            powered(){ return global.race['environmentalist'] ? -1.5 : -1; },
+            powered(){ return global.race['environmentalist'] ? -3 : -2; },
             power_reqs: { false: 1 },
             cost: {
                 Money(offset){ return costMultiplier('windmill', offset, 1000, 1.31); },
@@ -1915,7 +1915,7 @@ export const actions = {
                 Cement(offset){ return costMultiplier('windmill', offset, 125, 1.33); },
             },
             effect(){
-                let power = $(this)[0].powered() * -1;
+                let power = $(this)[0].powered() * -2;
                 return `<div>${loc('space_dwarf_reactor_effect1',[power])}</div>`;
             },
             action(){
@@ -3662,8 +3662,8 @@ export const actions = {
             },
             powered(){
                 let power = global.race['environmentalist']
-                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -5 : -4
-                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5;
+                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5
+                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -7 : -6;
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
