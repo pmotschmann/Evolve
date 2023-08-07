@@ -7004,5 +7004,6 @@ function terraformScore(planet,wiki){
     if (ts > 3){
         pts -= (ts - 3) ** 2;
     }
+    pts *= 3;
     return pts;
 }
