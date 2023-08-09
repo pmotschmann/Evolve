@@ -1984,8 +1984,9 @@ function genetics(){
         };
 
         let mPhageCost = function(t){
-            let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
-            if (t === 'mastery'){ cost *= 2; }
+            let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 2 : 2);
+            //if (t === 'mastery'){ cost *= 2; }
+            cost = cost/2; 
             return loc('arpa_phage_buy',[traitSkin('name',t),sizeApproximation(cost),loc(`resource_Phage_name`)]);
         };
 
@@ -2031,8 +2032,10 @@ function genetics(){
                     let can_purchase = true;
                     let redraw = false;
                     while (curr_iteration < iterations && can_purchase){
-                        let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 4 : 4);
-                        if (t === 'mastery'){ cost *= 2; }
+                        //garfu lowered phage cost of minor trait upgrades
+                        let cost = fibonacci(global.genes.minor[t] ? global.genes.minor[t] + 2 : 2);
+                        cost = cost/2; 
+                        //if (t === 'mastery'){ cost *= 2; }
                         if (global.prestige.Phage.count >= cost){
                             global.prestige.Phage.count -= cost;
                             global.genes.minor[t] ? global.genes.minor[t]++ : global.genes.minor[t] = 1;
