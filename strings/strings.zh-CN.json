@@ -5935,7 +5935,7 @@
   "space_gas_mining_title": "氦-3收集器",
   "space_gas_mining_desc": "氦-3大气收集器",
   "space_gas_mining_effect1": "氦-3 +%0/s",
-  "space_gas_storage_title": "星系燃料库",
+  "space_gas_storage_title": "%0星系燃料库",
   "space_gas_storage_desc": "储存燃料的轨道仓库",
   "space_gas_star_dock_title": "星际船坞",
   "space_gas_star_dock_desc_req": "只能建造一个",
