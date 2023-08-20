@@ -4187,7 +4187,7 @@ export function buildTemplate(key, region){
                 wiki: false,
                 reqs: { mining: 3 },
                 condition(){
-                    return eventActive(`firework`) && (global.tech['cement'] || global.race['flier']);
+                    return eventActive(`firework`) && global[region].firework && (global.tech['cement'] || global.race['flier']);
                 },
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
