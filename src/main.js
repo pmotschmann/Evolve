@@ -9892,6 +9892,11 @@ function midLoop(){
         let min = rem * 5;
         let max = totHeight - (5 * rem);
 
+        if ($(`#buildQueue`).get(0).scrollHeight > $(`#buildQueue`).get(0).clientHeight) {
+            // The build queue has a scroll-bar.
+            buildHeight++;
+        }
+
         if (msgHeight < min) {
             if (buildHeight > min){
                 buildHeight -= (min - msgHeight);
