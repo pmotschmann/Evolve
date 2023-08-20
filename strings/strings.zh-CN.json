@@ -7544,7 +7544,7 @@
   "wiki_trait_effect_dumb": "知识成本 +%0%。",
   "wiki_trait_effect_tough": "矿工和煤矿工人产量 +%0%。",
   "wiki_trait_effect_nearsighted": "图书馆的知识上限 -%0%。",
-  "wiki_trait_effect_intelligent": "每有一位教授，就使全局产量 +%0%，每有一位科学家，就使全局产量 +%1%。",
+  "wiki_trait_effect_intelligent": "每有一位教授，就使全局产量 +%0%；每有一位科学家（或法师），就使全局产量 +%1%。",
   "wiki_trait_effect_regenerative": "每次治愈伤兵时变为治愈 %0 名伤兵。",
   "wiki_trait_effect_gluttony": "食物消耗 +%0%。",
   "wiki_trait_effect_slow": "游戏速度 -%0%。",
