@@ -1063,7 +1063,7 @@
   "city_assembly_effect": "建造一个%0",
   "city_assembly_effect_warn": "需要更多住房",
   "city_garrison": "军营",
-  "city_garrison_flier": "哨塔",
+  "city_garrison_flier": "瞭望塔",
   "city_garrison_desc": "增加士兵上限",
   "city_hospital": "医院",
   "city_hospital_desc": "治愈伤兵",
