@@ -81,7 +81,7 @@ export const actions = {
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
-                if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+                if (global.tech['evo'] && global.tech.evo >= 2){
                     rna++;
                 }
                 return loc('evo_organelles_effect',[rna]);
@@ -101,10 +101,10 @@ export const actions = {
             condition(){ return global.evolution.hasOwnProperty('nucleus') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('nucleus',38, global.tech['evo'] && global.tech.evo >= 4 ? 16 : 32, offset ); },
-                DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4  ? 12 : 16, offset ); }
+                DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4 ? 12 : 16, offset ); }
             },
             effect(){
-                let dna = (global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0) ? 2 : 1;
+                let dna = (global.tech['evo'] && global.tech.evo >= 5) ? 2 : 1;
                 return loc('evo_nucleus_effect',[dna]);
             },
             action(){
@@ -4187,7 +4187,7 @@ export function buildTemplate(key, region){
                 wiki: false,
                 reqs: { mining: 3 },
                 condition(){
-                    return eventActive(`firework`) && (global.tech['cement'] || global.race['flier']);
+                    return eventActive(`firework`) && global[region].firework && (global.tech['cement'] || global.race['flier']);
                 },
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
