@@ -2205,7 +2205,7 @@ export function trickOrTreatBind(id,trick){
 }
 
 function single_emblem(achieve,size,icon,iconName,fool,uAffix){
-    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}<span class="sr-only">${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}</span></svg></p>` : '';
 }
 
 export function format_emblem(achieve,size,baseIcon,fool,universe){
