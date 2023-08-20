@@ -7,6 +7,7 @@ const changeList = [
         date: `8/20/2023`,
         changes: [
             `Pressing the same tab key multiple times will now cycle the subtabs.`,
+            `Reduced Mana costs of Improved Concealment, Study Corrupt Gem, & Outerplane Summon in Witch Hunter for non-gold star players.`,
             `Fixed Bilateral Symmetry DNA bonus.`,
             `Updated Korean and Chinese langs.`,
             `Screen Reader improvement for achievements display.`
