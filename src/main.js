@@ -77,10 +77,8 @@ $(document).keydown(function(e){
             if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
                 if (global.settings.civTabs !== quickMap[k]) {
                     global.settings.civTabs = quickMap[k];
-                    if (!global.settings.tabLoad){
-                        loadTab(global.settings.civTabs);
-                    }
-                } else {
+                }
+                else {
                     let s = global.settings;
                     let tabName = null;
                     let tabList = null;
@@ -127,6 +125,9 @@ $(document).keydown(function(e){
                             break;
                         }
                     }
+                }
+                if (!global.settings.tabLoad){
+                    loadTab(global.settings.civTabs);
                 }
             }
         });
