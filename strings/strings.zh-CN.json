@@ -2914,7 +2914,7 @@
   "achieve_unlock_achieve_icon": "恭喜！新解锁成就图标：%0！",
   "achieve_unlock_achieve_icon_upgrade": "恭喜！成就图标升级：%0！",
   "achieve_draw_achieve_earned": "成就已解锁：%0 个（总共 %1 个成就）",
-  "achieve_stats_overall": "历史汇总（翻译组留言：水平有限，用爱发电，如有翻译问题或建议，请入QQ群：758788976。）",
+  "achieve_stats_overall": "历史汇总（翻译组留言：水平有限，用爱发电，如有翻译问题或建议，请入QQ群：758788976，或在官方仓库的 Issue #915 提出建议。）",
   "achieve_stats_plasmid_earned": "质粒获得：　　　　　",
   "achieve_stats_antiplasmid_earned": "反质粒获得：　　　　",
   "achieve_stats_phage_earned": "噬菌体获得：　　　　",
