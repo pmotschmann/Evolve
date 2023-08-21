@@ -6734,7 +6734,7 @@
   "hell_report_log_soul_forge": "灵魂锻炉守卫者在陨石坑附近击杀了 %0 只恶魔。",
   "hell_report_log_soul_craft": "灵魂锻炉收集了足够多的灵魂，制造了 1 块%0。",
   "hell_analysis_total": "本周目统计",
-  "hell_analysis_period": "报告时间段统计",
+  "hell_analysis_period": "观测时间段统计",
   "hell_analysis_period_reset": "重置统计",
   "hell_analysis_expanded": "更精确的数值",
   "hell_analysis_average": "显示平均值",
