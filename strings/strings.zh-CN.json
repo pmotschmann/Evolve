@@ -9735,7 +9735,7 @@
   "wiki_events_inspiration_para1": "知识产量翻倍，时间在 %0 秒至 %1 秒范围之间随机取值。",
   "wiki_events_motivation": "激励",
   "wiki_events_motivation_para1": "您的卓越领导力激励了群众，士气暂时提升，时间在 %0 秒至 %1 秒范围之间随机取值。",
-  "wiki_events_motivation_para2": "激励的初始效果在 %0 至 %1 范围之间随机取值，该效果随着时间的推移而逐渐减少。",
+  "wiki_events_motivation_para2": "激励的初始效果在 %0 至 %1 范围之间随机取值，该效果随着时间的推移而衰减。",
   "wiki_events_motivation_para3": "士气上限将增加激励效果的一半。",
   "wiki_events_fire": "大火",
   "wiki_events_fire_para1": "因失火损失了木材，数量在 %0 至 %1 范围之间随机取值。",
