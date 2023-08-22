@@ -2821,7 +2821,7 @@
   "star_dock_probe": "星际探测器",
   "star_dock_probe_desc": "星际探测器",
   "star_dock_probe_effect": "播种重置时，每有一个星际探测器，就使能探测到的宜居星球数量 +1。",
-  "star_dock_geck_effect": "使用G.E.C.K.来改良一个备选星球。注意：在同一个星球上使用多个套件，可能会带来不稳定的结果。",
+  "star_dock_geck_effect": "使用全球生态系统建设套件来改善一个备选星球。注意：在同一个星球上使用多个套件，可能会带来不稳定的结果。",
   "star_dock_seeder": "生命播种飞船",
   "star_dock_seeder_desc1": "需完成 100 段分项工程",
   "star_dock_seeder_desc2": "飞船建造进度：已完成",
