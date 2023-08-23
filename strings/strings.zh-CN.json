@@ -1955,7 +1955,7 @@
   "tech_ascension": "飞升",
   "tech_ascension_effect": "科学家们表示他们已经破解了宇宙的秘密，从此可以脱离肉体的束缚，以纯能量的形式存在。但这仍需进一步测试。",
   "tech_terraforming": "星球重塑",
-  "tech_terraforming_effect": "行星规模的重塑相当激进，它可以将一个不太好的星球转变成一个宜居星球。您可以利用获取的外星知识，将%0改造成一个宜居星球，就像那不复存在的家园那样。",
+  "tech_terraforming_effect": "行星规模的重塑相当激进，它可以将一个不太好的星球转变成一个宜居星球。您可以利用获取的外星知识，将%0改造成您的那个不复存在的家园。",
   "tech_cement_processing": "水泥加工",
   "tech_cement_processing_effect": "AI核心运行特殊的子程序后，水泥的制造过程获得了优化，解锁AI中枢要塞对水泥厂产量的提升。",
   "tech_adamantite_processing": "精金加工",
