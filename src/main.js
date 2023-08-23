@@ -9713,6 +9713,7 @@ function midLoop(){
         let time = 0;
         let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
         let arpa = false;
+        const arpa_projects = {};
         for (let i=0; i<global.queue.queue.length; i++){
             if (global.settings.qAny){
                 spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
@@ -9734,8 +9735,14 @@ function midLoop(){
             }
 
             if (struct.action === 'arpa'){
-                let remain = (100 - global.arpa[struct.type].complete) / 100;
-                let t_time = arpaTimeCheck(t_action, remain, spent);
+                let remaining_segments;
+                if (!global.settings.qAny && arpa_projects[struct.type]) {
+                    remaining_segments = 1;
+                } else {
+                    remaining_segments = (100 - global.arpa[struct.type].complete) / 100;
+                    arpa_projects[struct.type] = true
+                }
+                let t_time = arpaTimeCheck(t_action, remaining_segments, spent);
                 struct['bres'] = false;
                 if (t_time >= 0){
                     time += t_time;
