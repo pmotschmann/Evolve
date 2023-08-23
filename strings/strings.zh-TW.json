@@ -6789,7 +6789,7 @@
   "outer_shipyard_weapon_laser_desc": "激光武器向目標發射連續的激光流，能耗巨大，但精度很高。",
   "outer_shipyard_weapon_p_laser": "脈衝激光發射器",
   "outer_shipyard_weapon_p_laser_desc": "脈衝激光武器如重機槍一樣發射激光，比傳統激光武器更高效。",
-  "outer_shipyard_weapon_plasma": "等離子光束髮射器",
+  "outer_shipyard_weapon_plasma": "等離子光束發射器",
   "outer_shipyard_weapon_plasma_desc": "等離子光束在遠距離的效果不如激光型武器，但其破壞性更大。",
   "outer_shipyard_weapon_phaser": "相位移裝置",
   "outer_shipyard_weapon_phaser_desc": "相位移裝置是一款更具破壞性的脈衝武器，但能耗更大。",
