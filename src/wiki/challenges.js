@@ -93,7 +93,7 @@ export function challengesPage(content){
         {   // Junk Gene
             let crispr = infoBoxBuilder(genes,{ name: 'genes_crispr', template: 'challenges', paragraphs: 2, h_level: 2,
                 para_data: {
-                    1: [loc(`evo_challenge_crispr`),loc(`wiki_challenges_gene`),loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_creep'),`1/5`]
+                    1: [loc(`evo_challenge_crispr`),loc(`wiki_challenges_gene`),loc('tab_arpa_crispr'),loc('wiki_arpa_crispr_creep'),`4/5`]
                 },
                 data_link: {
                     1: [false,false,false,'wiki.html#crispr-prestige-genetic_memory']

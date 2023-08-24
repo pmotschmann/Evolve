@@ -1940,7 +1940,7 @@ export const traits = {
         name: loc('trait_kindling_kindred_name'),
         desc: loc('trait_kindling_kindred'),
         type: 'major',
-        val: -50,
+        val: -100,
         vars(r){
             switch (r || global.race.kindling_kindred || 1){
                 case 0.25:

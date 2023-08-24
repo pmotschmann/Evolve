@@ -23,7 +23,8 @@ export const gmen = {
         title: [loc('governor_criminal_t1'),loc('governor_criminal_t2'),{ m: loc('governor_criminal_t3m'), f: loc('governor_criminal_t3f') }],
         traits: {
             noquestions: 1,
-            racketeer: 1
+            racketeer: 1,
+            athleticism: 1
         }
     },
     entrepreneur: {
@@ -118,7 +119,8 @@ export const gov_traits = {
     racketeer: {
         name: loc(`gov_trait_racketeer`),
         effect(){ return loc(`gov_trait_racketeer_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1]]); },
-        vars(){ return [20,35]; },
+        //garfu reduced $ penalty
+        vars(){ return [5,35]; },
     },
     dealmaker: {
         name: loc(`gov_trait_dealmaker`),
@@ -1043,7 +1045,8 @@ export const gov_tasks = {
                 slaveCost *= 1 + (extraVal / 100);
             }
             if ( $(this)[0].req() && global.resource.Money.amount >= slaveCost && (global.resource.Money.diff >= slaveCost || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
-                let max = global.city.slave_pen.count * 4;
+                //garfu raise slave replenishment from gov
+                let max = global.city.slave_pen.count * 5;
                 if (max > global.city.slave_pen.slaves){
                     actions.city.slave_market.action();
                 }

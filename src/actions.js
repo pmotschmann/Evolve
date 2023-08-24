@@ -1348,9 +1348,10 @@ export const actions = {
             cost: {
                 Money(){ return 25000; },
             },
-            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.city.slave_pen.slaves : 0; },
+            //garfu 5 slaves per slave pen
+            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 5 - global.city.slave_pen.slaves : 0; },
             action(){
-                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.city.slave_pen.slaves){
+                if (global.city['slave_pen'] && global.city.slave_pen.count * 5 > global.city.slave_pen.slaves){
                     if (payCosts($(this)[0])){
                         global.city.slave_pen.slaves++;
                         global.resource.Slave.amount = global.city.slave_pen.slaves;
@@ -1512,11 +1513,12 @@ export const actions = {
             reqs: { housing: 2 },
             not_trait: ['cataclysm','lone_survivor'],
             cost: {
-                Money(offset){ return costMultiplier('cottage', offset, 900, 1.15); },
-                Plywood(offset){ return costMultiplier('cottage', offset, 25, 1.25); },
-                Brick(offset){ return costMultiplier('cottage', offset, 20, 1.25); },
-                Wrought_Iron(offset){ return costMultiplier('cottage', offset, 15, 1.25); },
-                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('cottage', offset, 5, 1.25) : 0; },
+                //garfu less cost and multi for cottage
+                Money(offset){ return costMultiplier('cottage', offset, 450, 1.15); },
+                Plywood(offset){ return costMultiplier('cottage', offset, 15, 1.20); },
+                Brick(offset){ return costMultiplier('cottage', offset, 5, 1.20); },
+                Wrought_Iron(offset){ return costMultiplier('cottage', offset, 5, 1.20); },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('cottage', offset, 5, 1.20) : 0; },
                 Horseshoe(){ return global.race['hooved'] ? 2 : 0; }
             },
             effect(){
@@ -1707,14 +1709,15 @@ export const actions = {
             reqs: { slaves: 1 },
             not_trait: ['cataclysm','lone_survivor'],
             cost: {
-                Money(offset){ return costMultiplier('slave_pen', offset, 250, 1.32); },
-                Lumber(offset){ return costMultiplier('slave_pen', offset, 100, 1.36); },
-                Stone(offset){ return costMultiplier('slave_pen', offset, 75, 1.36); },
-                Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.36); },
-                Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('slave_pen', offset, 4, 1.36) : 0; },
+                //garfu lowered slave pen scaling
+                Money(offset){ return costMultiplier('slave_pen', offset, 250, 1.25); },
+                Lumber(offset){ return costMultiplier('slave_pen', offset, 100, 1.25); },
+                Stone(offset){ return costMultiplier('slave_pen', offset, 75, 1.25); },
+                Copper(offset){ return costMultiplier('slave_pen', offset, 10, 1.25); },
+                Nanite(offset){ return global.race['deconstructor'] ? costMultiplier('slave_pen', offset, 4, 1.25) : 0; },
             },
             effect(){
-                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
+                let max = global.city['slave_pen'] ? global.city.slave_pen.count * 5 : 5;
                 let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
                 return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
@@ -1723,7 +1726,7 @@ export const actions = {
                     global.city['slave_pen'].count++;
                     global.resource.Slave.display = true;
                     global.resource.Slave.amount = global.city.slave_pen.slaves;
-                    global.resource.Slave.max = global.city.slave_pen.count * 4;
+                    global.resource.Slave.max = global.city.slave_pen.count * 5;
                     return true;
                 }
                 return false;
@@ -3415,12 +3418,13 @@ export const actions = {
             reqs: { science: 2 },
             not_trait: ['cataclysm','lone_survivor'],
             cost: {
-                Money(offset){ return costMultiplier('library', offset, 45, 1.2); },
-                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('library', offset, 2, 1.2) : 0; },
-                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('library', offset, 4, 1.2) : 0; },
-                Furs(offset){ return costMultiplier('library', offset, 22, 1.2); },
-                Plywood(offset){ return costMultiplier('library', offset, 20, 1.2); },
-                Brick(offset){ return costMultiplier('library', offset, 15, 1.2); }
+                //garfu adjust library multi
+                Money(offset){ return costMultiplier('library', offset, 45, 1.15); },
+                Crystal(offset){ return global.race.universe === 'magic' ? costMultiplier('library', offset, 2, 1.15) : 0; },
+                Iron(offset){ return global.city.ptrait.includes('unstable') ? costMultiplier('library', offset, 4, 1.15) : 0; },
+                Furs(offset){ return costMultiplier('library', offset, 22, 1.15); },
+                Plywood(offset){ return costMultiplier('library', offset, 20, 1.15); },
+                Brick(offset){ return costMultiplier('library', offset, 15, 1.15); }
             },
             effect(){
                 let gain = 125;
@@ -3662,8 +3666,8 @@ export const actions = {
             },
             powered(){
                 let power = global.race['environmentalist']
-                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -6 : -5
-                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -7 : -6;
+                    ? global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -7 : -6
+                    : global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 1 ? -8 : -7;
                 let dirt = govActive('dirty_jobs',1);
                 if (dirt){ power -= dirt; }
                 return powerModifier(power);
@@ -3715,19 +3719,19 @@ export const actions = {
                 let power = 0;
                 if (global.race['environmentalist']){
                     if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        let base = global.city.calendar.wind === 1 ? -7 : -5;
+                        let base = global.city.calendar.wind === 1 ? -8 : -6;
                         power = global.stats.achieve['dissipated'].l >= 5 ? (base - 2) : (base - 1);
                     }
                     else {
-                        power = global.city.calendar.wind === 1 ? -7 : -5;
+                        power = global.city.calendar.wind === 1 ? -8 : -6;
                     }
                 }
                 else {
                     if (global.stats.achieve['dissipated'] && global.stats.achieve['dissipated'].l >= 3){
-                        power = global.stats.achieve['dissipated'].l >= 5 ? -8 : -7;
+                        power = global.stats.achieve['dissipated'].l >= 5 ? -9 : -8;
                     }
                     else {
-                        power = -6;
+                        power = -7;
                     }
                 }
                 let dirt = govActive('dirty_jobs',1);
@@ -3763,7 +3767,7 @@ export const actions = {
                 let consume = 0.1;
                 return `<span>+${-($(this)[0].powered())}MW.</span> <span class="has-text-caution">${loc('city_fission_power_effect',[consume])}</span>`;
             },
-            powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -18 : -14); },
+            powered(){ return powerModifier(global.tech['uranium'] >= 4 ? -20 : -16); },
             p_fuel(){ return { r: 'Uranium', a: 0.1 }; },
             action(){
                 if (payCosts($(this)[0])){

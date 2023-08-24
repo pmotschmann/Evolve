@@ -3464,20 +3464,20 @@ export function mechCost(size,infernal){
             break;
         case 'medium':
             {
-                cost = infernal ? 450000 : 180000;
-                soul = infernal ? 100 : 4;
+                cost = infernal ? 225000 : 90000;
+                soul = infernal ? 50 : 2;
             }
             break;
         case 'large':
             {
-                cost = infernal ? 925000 : 375000;
-                soul = infernal ? 500 : 20;
+                cost = infernal ? 500000 : 175000;
+                soul = infernal ? 75 : 10;
             }
             break;
         case 'titan':
             {
-                cost = infernal ? 1500000 : 750000;
-                soul = infernal ? 1500 : 75;
+                cost = infernal ? 750000 : 325000;
+                soul = infernal ? 150 : 75;
             }
             break;
         case 'collector':
@@ -4406,6 +4406,8 @@ export function mechCollect(mech){
         rating *= statusEffect(mech,effect);
     });
     rating *= terrainRating(mech,terrainFactor,effects);
+    //garfu higher collector rating
+    rating *= 2;
     return rating;
 }
 
@@ -4431,7 +4433,7 @@ export function mechRating(mech,boss){
     }
 
     if (mech.hasOwnProperty('infernal') && mech.infernal && global.blood['prepared'] && global.blood.prepared >= 3){
-        rating *= 1.25;
+        rating *= 2.00;
     }
 
     if (boss){

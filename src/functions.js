@@ -1290,8 +1290,8 @@ export const calcPillar = (function(){
                     active++;
                 }
             });
-            bonus = [
-                1 + (active / 100), // Production
+            bonus = [ 
+                1 + (active * 2 / 100), // Production //garfu added more prod
                 1 + (active * 2 / 100) // Storage
             ];
         }
