@@ -7545,6 +7545,7 @@
   "wiki_trait_effect_bloated": "基础资源成本 +%0%。",
   "wiki_trait_effect_unfathomable": "您的文明如此恐怖以至于无法被其他种族所理解。",
   "wiki_trait_effect_unfathomable_ex1": "您可以雇佣一类特殊的猎人，被称为劫掠者。劫掠者可以从地表世界掠夺资源、人口、以及牲畜。被捕获的囚徒可被转化为奴仆，根据奴仆种族的不同，会产生各类加成。",
+  "wiki_trait_effect_unfathomable_ex2": "奴仆加成因种族而异，和主要特质（即狂热信仰/神化先祖获得的特质）相关，并且可以和其他特质的加成一同生效。",
   "wiki_trait_effect_ooze": "所有工人产量 -%0%，神学相关加成 -%1%，精通效果 -%2%。",
   "wiki_trait_effect_soul_eater": "灵魂取代食物出现。",
   "wiki_trait_effect_untapped": "该种族的基因组拥有无限潜力。",
