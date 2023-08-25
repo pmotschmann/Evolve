@@ -5483,7 +5483,7 @@
   "gov_trait_pragmatist_effect": "建筑队列上限 +%0%，知识成本 +%1%。",
   "gov_trait_dirty_jobs": "脏活累活",
   "gov_trait_dirty_jobs_desc": "专业人士知道如何搞定脏活累活。",
-  "gov_trait_dirty_jobs_effect": "煤电厂、石油发电厂、燃料库、工厂、纳米机器人工厂、冶炼厂、矿井、煤矿和石油井架的成本蠕变 -%0。煤电厂和石油发电厂的基础发电量 +%1MW。矿工、冶炼厂和石油井架的产量 +%2%。",
+  "gov_trait_dirty_jobs_effect": "煤电厂、石油发电厂、燃料库、工厂、纳米机器人工厂、冶炼厂、矿井、煤矿和石油井架的成本蠕变 -%0。煤电厂和石油发电厂的基础发电量 +%1MW。矿工、冶炼厂和石油井架产量 +%2%。",
   "gov_trait_extravagant": "豪华奢靡",
   "gov_trait_extravagant_desc": "更好的品位，更高的价格。",
   "gov_trait_extravagant_effect": "资金成本 +%0%，大厦（电力 -%2MW，市民上限 +%3）取代%1出现。",
