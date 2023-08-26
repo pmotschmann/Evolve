@@ -5805,7 +5805,7 @@
   "space_red_tower_desc": "太空交通控制塔",
   "space_terraformer": "大气重塑设施",
   "space_terraformer_effect": "逐渐地重塑大气，使种族更适宜生存。",
-  "space_terraformer_effect2": "为它通电后可以开始重塑星球。",
+  "space_terraformer_effect2": "为大气重塑设施供能后，可以开始重塑星球。",
   "space_terraformer_effect3": "对自定义星球进行定制",
   "space_terraform": "重塑星球",
   "space_terraform_effect": "将这个星球重塑成您想要的模样，甚至可以使其他种族更适宜生存。",
