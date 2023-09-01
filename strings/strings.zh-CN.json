@@ -8047,7 +8047,7 @@
   "wiki_tech_womling_farming1": "沃姆林农场供养的沃姆林数量 +4。",
   "wiki_tech_womling_farming2": "每个沃姆林农民产生的食物数量 +2。",
   "wiki_tech_womling_housing": "沃姆林村庄的人口 +1。",
-  "wiki_tech_womling_recycling": "每有 1 级沃姆林科技等级，天仓五建造各种建筑所需的锻造物数量就减少2%，效果互相叠乘，在孤独幸存者剧情模式中或研究了隔离协议后，该数值变为3%。",
+  "wiki_tech_womling_recycling": "每有 1 级沃姆林科技等级，天仓五建造各种建筑所需的锻造物数量就减少2%（在孤独幸存者剧情模式中或研究了隔离协议后，该数值变为3%），效果互相叠乘。",
   "wiki_tech_adv_belt_mining": "略微减少提取船的铁/铝和铱/中子产量，但解锁奥利哈刚/超铀的生产。",
   "wiki_tech_isolation_protocol1": "关闭空间跃迁之门，在本周目游戏中永久性切断与天仓五之外世界的任何联系。",
   "wiki_tech_isolation_protocol2": "天仓五的各种建筑将增加新功能，并获得一定加强，以弥补切断联系带来的损失。",
