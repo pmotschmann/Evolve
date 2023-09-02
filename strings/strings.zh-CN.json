@@ -7395,7 +7395,7 @@
   "wiki_trait_effect_cold_blooded": "农民、伐木工人、石工、回收者、水晶矿工、矿工和煤矿工人：寒冷或下雨时产量 -%0%，炎热或晴天时产量 +%1%。",
   "wiki_trait_effect_scales": "战斗胜利时，士兵战死数量 -%0, 战斗失败时，士兵战死数量 -%1，地狱维度巡逻队护甲 +%2。",
   "wiki_trait_effect_flier": "粘土取代石头和水泥出现，粘土资源成本 -%0%。贸易站的贸易路线 +%1。",
-  "wiki_trait_effect_flier_ex1": "水泥以原始水泥消耗的 1.75 倍转化为粘土，然后再受到上面减少粘土消耗的影响。",
+  "wiki_trait_effect_flier_ex1": "水泥按原材料消耗的 1.75 倍转化为粘土，随后受到上述减少粘土消耗的影响。",
   "wiki_trait_effect_hollow_bones": "锻造物消耗 -%0%。",
   "wiki_trait_effect_sky_lover": "挖矿类工作压力 +%0%。",
   "wiki_trait_effect_rigid": "锻造物产量 -%0%。",
