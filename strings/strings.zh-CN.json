@@ -946,7 +946,7 @@
   "evo_challenge_orbit_decay": "轨道衰变",
   "evo_challenge_orbit_decay_desc": "月球轨道正在处于衰变状态。",
   "evo_challenge_orbit_decay_impacted": "月球撞上了%0，因而同归于尽了。",
-  "evo_challenge_orbit_decay_effect": "母星的月球轨道正在处于衰变状态，将于%0天后发生撞击。",
+  "evo_challenge_orbit_decay_effect": "您的母星中，月球轨道正在处于衰变状态，将于%0天后发生撞击。",
   "evo_challenge_orbit_decay_flair": "你的月亮已如风中残烛……",
   "evo_challenge_orbit_decay_conditions": "活下去，并枝繁叶茂。",
   "evo_challenge_orbit_decay_impact": "月球将于%0天后撞击您的家园。",
