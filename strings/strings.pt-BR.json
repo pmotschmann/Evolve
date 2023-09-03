@@ -314,6 +314,7 @@
   "manual_crafting_hover_bonus": "+%0% %1 Construído",
   "manual_crafting_hover_craft": "Construído:",
   "manual_crafting_hover_use": "Usado:",
+  "event_cat": "Um gato preto cruzou seu caminho.",
   "event_dna": "Algumas moléculas de DNA se replicaram. Você ganhou %0 DNA.",
   "event_rna": "Um meteoro impactou o planeta, trazendo novo material genético com sigo. Ganhou %0 RNA.",
   "event_inspiration": "Seus cientistas se inspiraram. A geração de conhecimento dobrou temporariamente.",
