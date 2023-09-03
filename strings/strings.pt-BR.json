@@ -514,6 +514,7 @@
   "city_gift_msg": "Você recebeu %0 %1 de presente!",
   "city_egg_msg": "Você encontrou %0 %1!",
   "city_trick_msg": "Você encontrou alguns doces, ganhou %0 %1!",
+  "city_gather": "Coletar %0",
   "city_ghost_msg": "Você assustou um fantasma; ele deixou para trás %0 %1!",
   "city_food": "Coletar Comida",
   "city_food_desc": "Colher e preservar comida",
