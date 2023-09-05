@@ -1178,7 +1178,7 @@
   "city_pylon": "마나 신전",
   "city_conceal_ward": "Concealing Ward",
   "city_conceal_ward_effect": "Reduces Suspicion by %0%.",
-  "city_graveyard": "공동묘지",
+  "city_graveyard": "매립지",
   "city_graveyard_desc": "뼈 생산량 증가",
   "city_graveyard_effect": "뼈 획득량 +%0%",
   "city_lumber_yard": "벌목장",
