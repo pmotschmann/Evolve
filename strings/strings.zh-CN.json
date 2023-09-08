@@ -1870,7 +1870,7 @@
   "tech_sages": "大法师",
   "tech_sages_effect": "大法师拥有特殊的实验室，他们可以揭示宇宙的奥秘。解锁法师塔。",
   "tech_electricity": "电力",
-  "tech_electricity_effect": "发现电力；这次不需要风筝了。解锁煤电厂（或法力引擎）。",
+  "tech_electricity_effect": "发现电力；这次不需要风筝了。解锁煤电厂（或法力引擎、水电站）。",
   "tech_electricity_msg": "电力是伟大的发明；未来的发展不可估量。",
   "tech_industrialization": "工业化",
   "tech_industrialization_effect": "进行工业革命，带来各种新技术的发展。解锁钛和工厂。",
