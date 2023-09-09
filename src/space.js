@@ -1656,7 +1656,7 @@ const spaceProjects = {
             cost: {
                 Money(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 1500000 : 0; },
                 Steel(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 500000 : 0; },
-                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(10000,false,wiki)) : 0; },
+                Helium_3(offset,wiki){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? Math.round(fuel_adjust(global.race['gravity_well'] ? 25000 : 10000,false,wiki)) : 0; },
                 Nano_Tube(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 250000 : 0; },
                 Mythril(offset){ return ((offset || 0) + (global.space.hasOwnProperty('star_dock') ? global.space.star_dock.count : 0)) === 0 ? 10000 : 0; },
             },
@@ -6162,6 +6162,9 @@ export function fuel_adjust(fuel,drain,wiki){
     }
     if (global.race['heavy']){
         fuel *= 1 + (traits.heavy.vars()[0] / 100);
+    }
+    if (global.race['gravity_well']){
+        fuel *= 1.35 + (9.65 * darkEffect('heavy'));
     }
     if (eventActive('launch_day')){
         fuel *= 0.95;

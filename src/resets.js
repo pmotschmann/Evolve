@@ -120,6 +120,9 @@ export function bioseed(){
     });
     unlockAchieve(`genus_${genus}`);
     
+    if (global.race['gravity_well']){
+        unlockAchieve(`escape_velocity`);
+    }
     if (global.race['truepath']){
         unlockAchieve(`exodus`);
     }

@@ -7,7 +7,7 @@ import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
 
 const date = new Date();
@@ -4516,7 +4516,7 @@ function customRace(){
 }
 
 /*
-types: farmer, miner, lumberjack, science, factory, army, hunting
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
 */
 export function racialTrait(workers,type){
     let modifier = 1;
@@ -4731,6 +4731,20 @@ export function racialTrait(workers,type){
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
+    }
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
+        modifier = teamster(modifier);
+    }
+    return modifier;
+}
+
+/*
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
+*/
+export function servantTrait(workers,type){
+    let modifier = 1;
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger'].includes(type)){
+        modifier = teamster(modifier);
     }
     return modifier;
 }
