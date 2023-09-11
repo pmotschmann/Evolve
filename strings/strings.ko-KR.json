@@ -1673,7 +1673,7 @@
   "tech_adamantite_containers_effect": "컨테이너에 %0 판을 추가하면 최대 저장 공간이 늘어납니다.",
   "tech_aerogel_containers_effect": "컨테이너를 %0로 만들면 매우 가벼우면서도 단단합니다.",
   "tech_mega_manufacturing": "메가 공장",
-  "tech_mega_manufacturing_effect": "생산 라인 2개를 가지고 있는 공장입니다.",
+  "tech_mega_manufacturing_effect": "고급 로봇공학으로 운영되는 첨단기술 공장은 필요한 것은 무엇이든 대량 생산할 수 있습니다.",
   "tech_luxury_condo": "호화 콘도",
   "tech_luxury_condo_effect": "가장 비싼 자원을 활용한 콘도입니다.",
   "tech_bolognium_containers_effect": "%0의 마법적인 성질을 이용하여 컨테이너의 저장공간을 늘릴 수 있습니다.",
