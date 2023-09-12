@@ -7501,7 +7501,7 @@
   "wiki_trait_effect_pessimistic": "工作压力 +%0。",
   "wiki_trait_effect_hoarder": "银行资金上限 +%0%。",
   "wiki_trait_effect_solitary": "第一级住房成本蠕变 -%0，第二级住房成本蠕变 +%1。",
-  "wiki_trait_effect_kindling_kindred": "木材（或骨头）及胶合板（或骸骨织物）资源被去除；正常情况下需要这些资源进行建造的建筑改为建造成本 +%0%。构建板条箱的材料由胶合板改为石头（或琥珀、粘土）。",
+  "wiki_trait_effect_kindling_kindred": "木材、胶合板、骨头、骸骨织物等资源都被去除；正常情况下，需要这些资源进行建造的建筑，改为建造成本 +%0%。构建板条箱的材料由胶合板改为石头（或琥珀、粘土）。",
   "wiki_trait_effect_pyrophobia": "冶炼厂产量 -%0%。",
   "wiki_trait_effect_hyper": "游戏速度 +%0%。",
   "wiki_trait_effect_skittish": "雷雨天时士气 -%0%。",
