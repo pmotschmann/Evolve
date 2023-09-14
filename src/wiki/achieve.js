@@ -371,7 +371,7 @@ function featDesc(feat,showFlair){
             });
         }
         let checked = `<div class="flexed wide">`;    
-        Object.keys(races).sort((a,b) => races[a].name.localeCompare(races[b].name)).forEach(function (key){
+        Object.keys(races).sort((a,b) => (races[a].name || 'Zombie').localeCompare(races[b].name)).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
                 if (species[key] && species[key] >= 1){
                     checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;

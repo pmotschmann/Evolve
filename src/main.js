@@ -896,7 +896,7 @@ function fastLoop(){
         }
     }
     if (global.city.ptrait.includes('mellow')){
-        breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
+        breakdown.p['Global'][loc('planet_mellow_bd')] = '-' + (100 - (planetTraits.mellow.vars()[2] * 100)) + '%';
         global_multiplier *= planetTraits.mellow.vars()[2];
     }
     if (global.city.ptrait.includes('ozone') && global.city['sun']){
@@ -3092,7 +3092,7 @@ function fastLoop(){
                 if (global.race['detritivore']){
                     if (global.city['compost']){
                         let operating = global.city.compost.on;
-                        if (!global.race['kindling_kindred']){
+                        if (!global.race['kindling_kindred'] && !global.race['smoldering']){
                             let lumberIncrement = 0.5;
                             let lumber_cost = operating * lumberIncrement;
 
@@ -4600,8 +4600,8 @@ function fastLoop(){
             }
             let salFathom = fathomCheck('salamander');
             if (salFathom > 0){
-                iron_smelter *= 1.2 * salFathom;
-                iridium_smelter *= 1.2 * salFathom;
+                iron_smelter *= 1 + (0.2 * salFathom);
+                iridium_smelter *= 1 + (0.2 * salFathom);
             }
 
             if (iridium_smelter < 1){ iridium_smelter = 1; }
@@ -4681,7 +4681,7 @@ function fastLoop(){
                     steel_smelter *= 1 + (dirtVal / 100);
                 }
                 if (salFathom > 0){
-                    steel_smelter *= 1.2 * salFathom;
+                    steel_smelter *= 1 + (0.2 * salFathom);
                 }
 
                 let smelter_output = steel_smelter * steel_base * production('psychic_boost','Steel');
@@ -5689,7 +5689,7 @@ function fastLoop(){
                     delta *= 1 + (refinery / 100);
 
                     breakdown.p['Aluminium'][`${global.race['cataclysm'] || global.race['orbit_decayed'] ? loc('space_red_mine_title') : loc('job_miner')}+2`] = base + 'v';
-                    if (global.race['cataclysm'] || global.race['orbit_decayed'] && base > 0 && zigVal > 0){
+                    if ((global.race['cataclysm'] || global.race['orbit_decayed']) && base > 0 && zigVal > 0){
                         delta *= zigVal;
                         breakdown.p['Aluminium'][`ᄂ${loc('space_red_ziggurat_title')}`] = ((zigVal - 1) * 100) + '%';
                     }

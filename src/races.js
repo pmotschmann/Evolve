@@ -5071,7 +5071,7 @@ export function cleanAddTrait(trait){
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
-                global.civic.d_job = 'unemployed';
+                global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
@@ -5191,6 +5191,7 @@ export function cleanAddTrait(trait){
             else {
                 window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
@@ -5200,6 +5201,7 @@ export function cleanAddTrait(trait){
             else {
                 window.location.reload();
             }
+            break;
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
@@ -5387,6 +5389,7 @@ export function cleanRemoveTrait(trait,rank){
             else {
                 window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
@@ -5396,6 +5399,7 @@ export function cleanRemoveTrait(trait,rank){
             else {
                 window.location.reload();
             }
+            break;
         case 'calm':
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;

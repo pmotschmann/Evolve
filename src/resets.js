@@ -612,6 +612,9 @@ export function descension(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+    }
     clearSavedMessages();
 
     tagEvent('reset',{

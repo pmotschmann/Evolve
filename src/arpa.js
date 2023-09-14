@@ -609,7 +609,7 @@ export const genePool = {
         grant: ['plasma',2],
         cost: { Plasmid(){ return 165; } },
         action(){
-            if (payCrispr('mitosis')){
+            if (payCrispr('metaphase')){
                 return true;
             }
             return false;
