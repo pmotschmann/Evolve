@@ -5516,7 +5516,7 @@
   "gov_trait_extravagant_effect": "资金成本 +%0%，大厦（电力 -%2MW，市民上限 +%3）取代%1出现。",
   "gov_trait_aristocrat": "贵族",
   "gov_trait_aristocrat_desc": "背景高贵有它的好处，但与民众脱节是其弊端。",
-  "gov_trait_aristocrat_effect": "改革政府体制的冷却时间 -%0%。税率上限 +%1%。如果士气不足，触发税收抵制的税率阈值 -%2%。",
+  "gov_trait_aristocrat_effect": "改革政府体制的冷却时间 -%0%。税率上限 +%1%（如果拥有 [清高] 特质则不生效）。如果士气不足，触发税收抵制的税率阈值 -%2%。",
   "gov_trait_gaslighter": "把妹达人",
   "gov_trait_gaslighter_desc": "谎言重复一千遍总有人会相信。",
   "gov_trait_gaslighter_effect": "通电的%1士气 +%0%。VR中心士气 +%2%。纪念碑士气上限 -%3%。",
