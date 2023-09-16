@@ -1837,7 +1837,7 @@ export const actions = {
                 generated *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
                 generated = +(generated).toFixed(2);
                 let store = BHStorageMulti(spatialReasoning(200));
-                let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
                 return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
             },
             switchable(){ return true; },
@@ -6918,7 +6918,7 @@ export function orbitDecayed(){
             }
             if (global.race['casting']){
                 Object.keys(global.race.casting).forEach(function (c){
-                    global.race.casting[0] = 0;
+                    global.race.casting[c] = 0;
                 });
             }
         }
@@ -8074,7 +8074,6 @@ function cataclysm(){
         global.resource.Copper.display = true;
         global.resource.Iron.display = true;
         global.resource.Aluminium.display = true;
-        global.resource.Cement.display = true;
         global.resource.Coal.display = true;
         global.resource.Oil.display = true;
         global.resource.Uranium.display = true;
@@ -8091,6 +8090,11 @@ function cataclysm(){
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
+        if (!global.race['flier']){
+            global.resource.Cement.display = true;
+            global.resource.Cement.max = 75000;
+            global.resource.Cement.amount = 75000;
+        }
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
@@ -8130,8 +8134,6 @@ function cataclysm(){
         global.resource.Steel.amount = 75000;
         global.resource.Aluminium.max = 75000;
         global.resource.Aluminium.amount = 75000;
-        global.resource.Cement.max = 75000;
-        global.resource.Cement.amount = 75000;
         global.resource.Titanium.max = 75000;
         global.resource.Titanium.amount = 75000;
         global.resource.Coal.max = 10000;

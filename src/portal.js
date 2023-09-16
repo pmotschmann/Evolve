@@ -2378,7 +2378,7 @@ export function bloodwar(){
 
     let wendFathom = fathomCheck('wendigo');
     if (wendFathom > 0){
-        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars(1)[2]) / 100 * wendFathom));
+        gem_chance = Math.round(gem_chance * ((100 - (traits.ghostly.vars(1)[2] * wendFathom)) / 100));
     }
 
     if (gem_chance < 12){
