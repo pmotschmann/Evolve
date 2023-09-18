@@ -5516,7 +5516,6 @@ const structDefinitions = {
     processing: { count: 0, on: 0 },
     habitat: { count: 0, on: 0 },
     fusion: { count: 0, on: 0 },
-    laboratory: { count: 0, on: 0 },
     exchange: { count: 0, on: 0 },
     warehouse: { count: 0 },
     xfer_station: { count: 0, on: 0 },

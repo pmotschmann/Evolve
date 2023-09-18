@@ -738,6 +738,7 @@ function fastLoop(){
             }
         });
     }
+
     const date = new Date();
     const astroSign = astrologySign();
     breakdown.p['Global'] = {};
