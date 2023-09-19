@@ -1655,7 +1655,6 @@ export const traits = {
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
-        vars(r){ return [4]; },
         vars(r){
             switch (r || global.race.regenerative || 1){
                 case 0.25:

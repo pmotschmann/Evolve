@@ -1688,7 +1688,6 @@ const tauCetiModules = {
             title(){
                 return housingLabel('small');
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
