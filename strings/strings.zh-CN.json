@@ -7502,7 +7502,7 @@
   "wiki_trait_effect_kindling_kindred": "木材、胶合板、骨头、骸骨织物等资源都被去除；正常情况下，需要这些资源进行建造的建筑，改为建造成本 +%0%。构建板条箱的材料由胶合板改为石头（或琥珀、粘土）。",
   "wiki_trait_effect_pyrophobia": "冶炼厂产量 -%0%。",
   "wiki_trait_effect_hyper": "游戏速度 +%0%。",
-  "wiki_trait_effect_skittish": "雷雨天时士气 -%0%。",
+  "wiki_trait_effect_skittish": "暴风雨天气时，士气 -%0%。",
   "wiki_trait_effect_sticky": "食物消耗 -%0%，战斗评级 +%1%。",
   "wiki_trait_effect_fragrant": "狩猎产量 -%0%。",
   "wiki_trait_effect_infectious": "战斗时有机会获得新市民。根据战役规模不同，最多有 %0/%1/%2/%3/%4 名敌军士兵被感染转化为市民。",
