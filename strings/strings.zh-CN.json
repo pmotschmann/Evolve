@@ -1674,7 +1674,7 @@
   "tech_containers": "%0集装箱",
   "tech_steel_containers_desc": "%0集装箱的储量更大一些",
   "tech_steel_containers_effect": "耐用的%0制集装箱显然强于廉价木质板条箱，解锁集装箱港口。",
-  "tech_steel_containers_alt_effect": "耐用的%0制集装箱显然强于廉价%0板条箱，解锁集装箱港口。",
+  "tech_steel_containers_alt_effect": "耐用的%1制集装箱显然强于廉价%0板条箱，解锁集装箱港口。",
   "tech_gantry_crane": "门式起重机",
   "tech_gantry_crane_desc": "集装箱港口上增设门式起重机",
   "tech_gantry_crane_effect": "给集装箱港口配备门式起重机，使每个集装箱港口的集装箱上限由 10 提升到 20。",
