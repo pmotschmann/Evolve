@@ -11302,7 +11302,7 @@ function diffCalc(res,period){
     let el = $(`#res${res} .diff`);
     if (global.race['decay']){
         if (global.resource[res].diff < 0){
-            if (global.resource[res].diff >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
+            if (global.resource[res].diff / global.settings.gameSpeed >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
                 if (!el.hasClass('has-text-warning')){
                     el.removeClass('has-text-danger');
                     el.addClass('has-text-warning');
