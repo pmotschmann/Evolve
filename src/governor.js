@@ -975,7 +975,7 @@ export const gov_tasks = {
                 let min = global.tech['world_control'] ? 3 : 0;
                 for (let i=min; i<max; i++){
                     let cost = govCivics('s_cost',i);
-                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn === 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
+                    if (!global.civic.foreign[`gov${i}`].anx && !global.civic.foreign[`gov${i}`].buy && !global.civic.foreign[`gov${i}`].occ && global.civic.foreign[`gov${i}`].trn <= 0 && global.resource.Money.amount >= cost && (global.resource.Money.diff >= cost || global.resource.Money.amount + global.resource.Money.diff >= cashCap)){
                         govCivics('t_spy',i);
                     }
                 }
@@ -998,7 +998,7 @@ export const gov_tasks = {
                 let range = global.race['truepath'] && global.tech['rival'] ? [0,1,2,3] : [0,1,2];
                 if (global.tech['world_control']){ range = [3]; }
                 range.forEach(function(gov){
-                    if (global.civic.foreign[`gov${gov}`].sab === 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
+                    if (global.civic.foreign[`gov${gov}`].sab <= 0 && global.civic.foreign[`gov${gov}`].spy > 0 && !global.civic.foreign[`gov${gov}`].anx && !global.civic.foreign[`gov${gov}`].buy && !global.civic.foreign[`gov${gov}`].occ){
                         global.race.governor.config.spyop[`gov${gov}`].every(function (mission){
                             switch (mission){
                                 case 'influence':
@@ -1103,10 +1103,11 @@ export const gov_tasks = {
                 if (craft > 0){ craft = 0; }
 
                 if (global.race.governor.config.trash[res] || global.interstellar.mass_ejector.hasOwnProperty(res) && global.resource[res].display && global.resource[res].max > 0 && global.interstellar.mass_ejector[res] + global.resource[res].diff > 0 && global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1){
-                    let set = (global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) || (global.race.governor.config.trash[res] && !global.race.governor.config.trash[res].s)
-                        ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
-                        : 0;
-                    
+                    let set = 0;
+                    if ((global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) || (global.race.governor.config.trash[res] && !global.race.governor.config.trash[res].s)) {
+                        const diff = Math.floor(global.resource[res].diff / global.settings.gameSpeed);
+                        set = global.interstellar.mass_ejector[res] + diff;
+                    }
                     if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res].v && global.race.governor.config.trash[res].s){
                         set = Math.abs(global.race.governor.config.trash[res].v);
                     }

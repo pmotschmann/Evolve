@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
@@ -486,13 +486,8 @@ vBind({
             return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
         },
         remain(at){
-            let minutes = Math.ceil(at * 2.5 / 60);
-            if (minutes > 0){
-                let hours = Math.floor(minutes / 60);
-                minutes -= hours * 60;
-                return `${hours}:${minutes.toString().padStart(2,'0')}`;
-            }
-            return;
+            const f = timeFormat(at / 1000)
+            return `${global.settings.atMultiplier}x Speed [${f}]`
         }
     }
 });
@@ -1033,7 +1028,7 @@ function fastLoop(){
         breakdown.p[res] = {};
     });
 
-    var time_multiplier = 0.25;
+    var time_multiplier = webWorker.timers.main * global.settings.gameSpeed / 1000;
 
     if (global.race.species === 'protoplasm'){
         // Early Evolution Game
@@ -1934,7 +1929,7 @@ function fastLoop(){
         if (global.space['m_relay']){
             if (p_on['m_relay']){
                 if (global.space.m_relay.charged < 10000){
-                    global.space.m_relay.charged++;
+                    global.space.m_relay.charged += 4 * time_multiplier;
                 }
             }
             else {
@@ -3420,12 +3415,15 @@ function fastLoop(){
         // Fortress Repair
         if (global.portal['fortress'] && global.portal.fortress.walls < 100){
             if (modRes('Stone', -(200 * time_multiplier))){
-                global.portal.fortress.repair++;
+                global.portal.fortress.repair += 4 * time_multiplier;
                 breakdown.p.consume.Stone[loc('portal_fortress_name')] = -200;
             }
             if (global.portal.fortress.repair >= actions.portal.prtl_fortress.info.repair()){
                 global.portal.fortress.repair = 0;
-                global.portal.fortress.walls++;
+                global.portal.fortress.walls += 4 * time_multiplier;
+                if (global.portal.fortress.walls > 100) {
+                    global.portal.fortress.walls = 100;
+                }
             }
         }
 
@@ -3603,7 +3601,7 @@ function fastLoop(){
 
         if (global.race['emfield']){
             if (global.race['discharge'] && global.race['discharge'] > 0){
-                global.race.discharge--;
+                global.race.discharge -= 4 * time_multiplier;
             }
             else {
                 global.race.emfield++;
@@ -7075,7 +7073,7 @@ function fastLoop(){
             if (!$('#portal-carport .count').hasClass('has-text-alert')){
                 $('#portal-carport .count').addClass('has-text-alert');
             }
-            global.portal.carport.repair++;
+            global.portal.carport.repair += 4 * time_multiplier;
             if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair()){
                 global.portal.carport.repair = 0;
                 global.portal.carport.damaged--;
@@ -7091,7 +7089,7 @@ function fastLoop(){
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
         if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
-            diffCalc(res,webWorker.mt);
+            diffCalc(res, webWorker.timers.main);
         }
     });
 
@@ -9137,14 +9135,14 @@ function midLoop(){
         }
         for (let i=0; i<espEnd; i++){
             if (global.civic.foreign[`gov${i}`].trn > 0){
-                global.civic.foreign[`gov${i}`].trn--;
-                if (global.civic.foreign[`gov${i}`].trn === 0){
+                global.civic.foreign[`gov${i}`].trn -= webWorker.timers.mid * global.settings.gameSpeed / 1000;
+                if (global.civic.foreign[`gov${i}`].trn <= 0){
                     global.civic.foreign[`gov${i}`].spy++;
                 }
             }
             if (global.civic.foreign[`gov${i}`].sab > 0){
-                global.civic.foreign[`gov${i}`].sab--;
-                if (global.civic.foreign[`gov${i}`].sab === 0){
+                global.civic.foreign[`gov${i}`].sab -= webWorker.timers.mid * global.settings.gameSpeed / 1000;
+                if (global.civic.foreign[`gov${i}`].sab <= 0){
                     switch (global.civic.foreign[`gov${i}`].act){
                         case 'influence':
                             if (Math.floor(seededRandom(0,4 + spyCatchMod)) === 0){
@@ -11233,10 +11231,9 @@ function longLoop(){
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');
     }
-    if (atrack.t > 0){
-        atrack.t--;
-        global.settings.at--;
-        if (global.settings.at <= 0 || atrack.t <= 0){
+    if (global.settings.at > 0){
+        global.settings.at -= webWorker.timers.long * (global.settings.atMultiplier - 1);
+        if (global.settings.at <= 0){
             global.settings.at = 0;
             gameLoop('stop');
             gameLoop('start');
@@ -11292,28 +11289,20 @@ function q_check(load){
 }
 
 function diffCalc(res,period){
-    let sec = 1000;
-    if (global.race['slow']){
-        let slow = 1 + (traits.slow.vars()[0] / 100);
-        sec = Math.floor(sec * slow);
-    }
-    if (global.race['hyper']){
-        let fast = 1 - (traits.hyper.vars()[0] / 100);
-        sec = Math.floor(sec * fast);
-    }
+    const periods = 1000 / period
 
-    global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
+    global.resource[res].diff = +(global.resource[res].delta * periods).toFixed(2);
     global.resource[res].delta = 0;
 
     if (global.resource[res].hasOwnProperty('gen') && global.resource[res].hasOwnProperty('gen_d')){
-        global.resource[res].gen = +(global.resource[res].gen_d / (period / sec)).toFixed(2);
+        global.resource[res].gen = +(global.resource[res].gen_d * periods).toFixed(2);
         global.resource[res].gen_d = 0;
     }
 
     let el = $(`#res${res} .diff`);
     if (global.race['decay']){
         if (global.resource[res].diff < 0){
-            if (global.resource[res].diff >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
+            if (global.resource[res].diff / global.settings.gameSpeed >= breakdown.p.consume[res][loc('evo_challenge_decay')]){
                 if (!el.hasClass('has-text-warning')){
                     el.removeClass('has-text-danger');
                     el.addClass('has-text-warning');

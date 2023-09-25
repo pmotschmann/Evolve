@@ -129,7 +129,7 @@
   "key_mappings": "단축키 설정",
   "tab_mappings": "탭 매핑",
   "multiplier": "%0X 배수",
-  "accelerated_time": "잔여 가속 (2x) 시간",
+  "accelerated_time": "잔여 가속 시간",
   "c_cat": "건물 분류",
   "t_cat": "기술 카테고리 표시",
   "q_key": "대기열 키",
