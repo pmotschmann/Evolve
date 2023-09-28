@@ -7063,7 +7063,7 @@
   "universe_evil_effect": "这个宇宙乾坤颠倒，黑白不分，善恶不辨，是非不明。这个宇宙的“邪恶”真的还算是邪恶吗？",
   "universe_micro": "微型宇宙",
   "universe_micro_desc": "这个宇宙中的一切都很小。",
-  "universe_micro_effect": "这个宇宙中的一切都更便宜，但威望资源获取数量 -%0%，无法解锁大部分壮举和特权，且只有微型宇宙专属成就可计入通用精通。",
+  "universe_micro_effect": "这个宇宙中的一切都更便宜，但威望资源获取数量 -%0%，无法解锁大部分壮举和特权，且只有微型宇宙专属成就属于普通成就。",
   "universe_magic": "魔法宇宙",
   "universe_magic_desc": "这个宇宙中真的有魔法存在。",
   "universe_magic_effect": "这个宇宙中真的有魔法存在，你可以像对待其他资源一样获取法力并加以利用。",
