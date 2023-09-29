@@ -9840,7 +9840,7 @@
   "wiki_events_scandal_condition_para1": "该事件只在总督为%0时发生。",
   "wiki_events_spy": "间谍被抓捕",
   "wiki_events_spy_para1": "随机失去一名间谍。",
-  "wiki_events_spy_condition_para1": "该事件只在拥有间谍，且还未统一时发生。",
+  "wiki_events_spy_condition_para1": "该事件只在拥有间谍、未统一，且未拥有 [难以捉摸] 特质时发生。",
   "wiki_events_mine_collapse": "矿井塌方",
   "wiki_events_mine_collapse_para1": "1 名矿工死于矿井塌方。",
   "wiki_events_mine_collapse_condition_para1": "该事件在有工人进行矿工工作时发生。",
