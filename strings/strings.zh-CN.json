@@ -884,7 +884,7 @@
   "evo_challenge_mastery": "弱精通效果",
   "evo_challenge_mastery_effect": "精通效果削弱为正常的 10%。",
   "evo_challenge_trade": "关闭手动交易",
-  "evo_challenge_trade_effect": "禁止手动交易，但可以正常使用贸易路线。",
+  "evo_challenge_trade_effect": "禁止手动交易。（但您可以正常使用贸易路线）",
   "evo_challenge_craft": "关闭手动锻造",
   "evo_challenge_craft_effect": "禁止手动制作锻造物。",
   "evo_challenge_crispr": "垃圾基因",
