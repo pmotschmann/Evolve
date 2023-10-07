@@ -5984,7 +5984,7 @@
   "space_electrolysis_use": "%1 -%0/s，电力 -%2MW",
   "space_hydrogen_plant_title": "氢气发电厂",
   "space_hydrogen_plant_req": "需要电解工厂",
-  "space_hydrogen_plant_effect": "需要 %0 %1",
+  "space_hydrogen_plant_effect": "需要 %0 个%1",
   "space_habitat_req": "需要%0支持、%1和%2",
   "space_storehouse_title": "卫星仓库",
   "space_sam_title": "地对空导弹基地",
