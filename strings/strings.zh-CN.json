@@ -6177,7 +6177,7 @@
   "galaxy_control": "%1区域由%0控制。",
   "galaxy_ship_rating": "舰队评级：%0",
   "galaxy_crew_fuel": "需要船员和%0",
-  "galaxy_armada": "我方战力评级",
+  "galaxy_armada": "我方舰队评级",
   "galaxy_piracy": "海盗",
   "galaxy_piracy_msg": "%0海盗找上门了；在各个区域部署舰队以应对海盗威胁。",
   "galaxy_piracy_threat": "%0威胁度：",
