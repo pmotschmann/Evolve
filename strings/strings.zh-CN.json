@@ -6329,7 +6329,7 @@
   "portal_soul_forge_title": "灵魂锻炉",
   "portal_soul_forge_desc": "收集死亡恶魔的灵魂",
   "portal_soul_forge_effect": "把死亡恶魔的灵魂融合成%0。",
-  "portal_soul_forge_effect2": "%0 / %1 恶魔灵魂",
+  "portal_soul_forge_effect2": "恶魔灵魂：%0 / %1",
   "portal_soul_forge_soldiers": "驻扎士兵需求 %0",
   "portal_gun_emplacement_title": "自动炮台",
   "portal_gun_emplacement_desc": "减少灵魂锻炉的士兵需求",
