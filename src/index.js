@@ -1172,6 +1172,7 @@ export function index(){
         {i: 'floppy',       f: 'digital_ascension', r: 2 },
         {i: 'slime',        f: 'slime_lord',        r: 2 },
         {i: 'lightning',    f: 'annihilation',      r: 2 },
+        {i: 'robot',        f: 'existential_risk',  r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },
         {i: 'clover',       f: 'leprechaun',        r: 1 },
         {i: 'bunny',        f: 'easter',            r: 1 },

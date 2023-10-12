@@ -1973,6 +1973,8 @@ export function svgIcons(icon){
             return `<g transform="translate(0 -1036.4)">
             <path style="stroke-linejoin:round;stroke:#ffbf00;stroke-width:.25;" d="m3.4724 8.5186 3.0305-7.0711h6.9448l-5.0192 5.0823h4.1353l-8.1128 9.0914 2.0834-7.1342z" transform="translate(0 1036.4)"/>
           </g>`;
+        case 'robot':
+            return `<path d="M5,7A1,1,0,0,0,4,8V22a1,1,0,0,0,1,1H19a1,1,0,0,0,1-1V8a1,1,0,0,0-1-1H13V4.723a2,2,0,1,0-2,0V7ZM18,9V21H6V9ZM7,13a1,1,0,0,1,1-1h2a1,1,0,0,1,0,2H8A1,1,0,0,1,7,13Zm6,0a1,1,0,0,1,1-1h2a1,1,0,0,1,0,2H14A1,1,0,0,1,13,13ZM1,14V12a1,1,0,0,1,2,0v2a1,1,0,0,1-2,0Zm22-2v2a1,1,0,0,1-2,0V12a1,1,0,0,1,2,0ZM7,18a1,1,0,0,1,1-1h8a1,1,0,0,1,0,2H8A1,1,0,0,1,7,18Z"/>`
     }
 }
 
@@ -2048,6 +2050,8 @@ export function svgViewBox(icon){
             return `0 0 552 495`;
         case 'lightning':
             return `0 0 16 16`;
+        case 'robot':
+            return `0 0 24 24`;
     }
 }
 
@@ -2080,6 +2084,8 @@ export function getBaseIcon(name,type){
                 return 'slime';
             case 'annihilation':
                 return 'lightning';
+            case 'existential_risk':
+                return 'robot';
             case 'friday':
                 return 'mask';
             case 'valentine':
