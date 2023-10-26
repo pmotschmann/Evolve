@@ -9808,7 +9808,7 @@
   "wiki_events_pillage_para4": "士兵可能会因此受伤，伤兵可能会死亡。",
   "wiki_events_pillage_para5": "该事件只在与某个周边国家的%0低于 %1 且未占领或统一时发生。",
   "wiki_events_pillage_para6": "每个周边国家的事件发生概率单独计算，如果有多个周边国家满足条件，则该事件发生概率将增加。",
-  "wiki_events_pillage_condition_para1": "该事件只在进入%0剧情模式时发生。",
+  "wiki_events_pillage_condition_para1": "该事件只在进入%0剧情模式或猎巫行动挑战模式时发生。",
   "wiki_events_quake": "特大地震",
   "wiki_events_quake_para1": "一场特大地震袭击了母星，解锁大灾变重置。",
   "wiki_events_quake_condition_para1": "该事件只在地震星球上发生。",
