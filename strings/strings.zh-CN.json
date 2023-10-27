@@ -6343,7 +6343,7 @@
   "portal_soul_attractor_effect": "每天吸引 %0 至 %1 个游荡的灵魂进入灵魂锻炉。",
   "portal_soul_attractor_effect2": "灵魂锻炉的灵魂需求数量 -%0%。",
   "portal_soul_capacitor_title": "灵魂电容器",
-  "portal_soul_capacitor_desc": "积累灵魂锻炉收集来的灵魂能量。",
+  "portal_soul_capacitor_desc": "存储灵魂锻炉收集来的灵魂能量。",
   "portal_soul_capacitor_effect": "灵魂能量: %0",
   "portal_soul_capacitor_effect2": "灵魂能量上限: %0",
   "portal_soul_capacitor_effect3": "灵魂能量上限 +%0",
