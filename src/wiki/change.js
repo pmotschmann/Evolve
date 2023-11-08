@@ -2,6 +2,13 @@ import {} from './../vars.js';
 import { clearElement } from './../functions.js';
 
 const changeList = [
+    /*{
+        version: ``,
+        date: ``,
+        changes:[
+            `Updated Brazilian Portuguese lang.`,
+            ``
+    },*/
     {
         version: `1.3.9`,
         date: `8/20/2023`,
