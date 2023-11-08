@@ -8,6 +8,7 @@ const changeList = [
         changes:[
             `Updated Brazilian Portuguese lang.`,
             ``
+        ]
     },*/
     {
         version: `1.3.9`,
