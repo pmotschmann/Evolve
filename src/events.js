@@ -682,10 +682,17 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 2){
-                return true;
+            // No planet or already hot
+            if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 2){
+                return false;
             }
-            return false;
+            // Winter on tundra or taiga biome is always cold
+            // Eden is idyllic, so normally cannot be hot except in summer. For heat wave, allow in spring, summer, or autumn.
+            if (global.city.calendar.season === 3 && ['tundra','taiga','eden'].includes(global.city.biome)){
+                return false;
+            }
+            // Always allow heat wave on other biomes, even during winter
+            return true;
         },
         effect(){
             global.city.calendar.temp = 2;
@@ -699,10 +706,21 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 0){
-                return true;
+            // No planet or already cold
+            if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 0){
+                return false;
             }
-            return false;
+            // Hellscape is never cold (except allow on custom planet hellscape with permafrost)
+            if (global.city.biome === 'hellscape' && !global.city.ptrait.includes('permafrost')){
+                return false;
+            }
+            // Summer on volcanic or ashland biome is always hot
+            // Eden is idyllic, so normally cannot be cold except in winter. For cold snap, allow in autumn, winter, or spring.
+            if (global.city.calendar.season === 1 && ['ashland','volcanic','eden'].includes(global.city.biome)){
+                return false;
+            }
+            // Always allow cold snap on other biomes, even during summer
+            return true;
         },
         effect(){
             global.city.calendar.temp = 0;
