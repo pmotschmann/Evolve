@@ -609,7 +609,7 @@ export const genePool = {
         grant: ['plasma',2],
         cost: { Plasmid(){ return 165; } },
         action(){
-            if (payCrispr('mitosis')){
+            if (payCrispr('metaphase')){
                 return true;
             }
             return false;
@@ -2324,7 +2324,7 @@ function addProject(parent,project){
                     buildArpa(pro,num,true);
                 },
                 srDesc(){
-                    return srSpeak(arpaProjects[project].desc);
+                    return srSpeak(typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc());
                 },
                 srLevel(){
                     return srSpeak(arpaProjects[project].effect());

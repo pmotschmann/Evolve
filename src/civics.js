@@ -952,8 +952,8 @@ function adjustTax(a,n){
                 let cap = taxCap(false);
                 if (global.race['noble']){
                     global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
-                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
+                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1])){
+                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1];
                     }
                 }
                 else if (global.civic.taxes.tax_rate < cap){
@@ -1979,6 +1979,9 @@ function lootModify(val,gov){
     }
     if (global.race.universe === 'evil'){
         loot *= darkEffect('evil');
+    }
+    if (global.race['gravity_well']){
+        loot *= 0.25 + (0.75 * darkEffect('heavy'));
     }
 
     switch(global.civic.garrison.tactic){

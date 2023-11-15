@@ -1,7 +1,7 @@
 import { global, keyMultiplier, p_on, support_on } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
-import { racialTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
+import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
 import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
@@ -160,6 +160,13 @@ export const job_desc = {
         let desc = loc('job_scavenger_desc',[races[global.race.species].home,scavenger]);
         if (global.civic.d_job === 'scavenger' && !servant){
             desc = desc + ' ' + loc('job_default',[loc('job_scavenger')]);
+        }
+        return desc;
+    },
+    teamster: function(servant){
+        let desc = loc('job_teamster_desc',[teamsterCap()]);
+        if (global.civic.d_job === 'teamster' && !servant){
+            desc = desc + ' ' + loc('job_default',[loc('job_teamster')]);
         }
         return desc;
     },
@@ -325,6 +332,7 @@ export function defineJobs(define){
     loadJob('quarry_worker',define,1,5);
     loadJob('crystal_miner',define,0.1,5);
     loadJob('scavenger',define,0.12,5);
+    loadJob('teamster',define,1,global.tech['teamster'] ? 6 : 4);
     loadJob('torturer',define,1,3,'advanced');
     loadJob('miner',define,1,4,'advanced');
     loadJob('coal_miner',define,0.2,4,'advanced');
@@ -640,6 +648,19 @@ export function loadServants(){
     }
 }
 
+export function teamsterCap(){
+    let transport = 0;
+    if (global.race['gravity_well']){
+        transport = global.tech['transport'] ? global.tech.transport : 0;
+        transport = Math.round(global.race.teamster / transport * 1.5);
+    }
+    if (global.tech['railway']){
+        transport -= global.tech['railway'] * 2;
+    }
+    if (transport < 0){ transport = 0; }
+    return transport;
+}
+
 export function farmerValue(farm,servant){
     let farming = global.civic.farmer.impact;
     if (farm){
@@ -657,7 +678,10 @@ export function farmerValue(farm,servant){
     farming *= global.city.biome === 'volcanic' ? biomes.volcanic.vars()[0] : 1;
     farming *= global.city.biome === 'hellscape' ? biomes.hellscape.vars()[0] : 1;
     farming *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
-    if (!servant){
+    if (servant){
+        farming *= servantTrait(global.race.servants.jobs.farmer,'farmer');
+    }
+    else {
         farming *= racialTrait(global.civic.farmer.workers,'farmer');
     }
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;

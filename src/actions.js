@@ -7,7 +7,7 @@ import { defineResources, galacticTrade, spatialReasoning, resource_values, init
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
@@ -1456,7 +1456,6 @@ export const actions = {
             title(){
                 return basicHousingLabel();
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
@@ -1837,7 +1836,7 @@ export const actions = {
                 generated *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
                 generated = +(generated).toFixed(2);
                 let store = BHStorageMulti(spatialReasoning(200));
-                let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
                 return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
             },
             switchable(){ return true; },
@@ -3936,7 +3935,9 @@ export const actions = {
             },
             reqs: { genesis: 6 },
             queue_complete(){ return 0; },
-            cost: {},
+            cost: {
+                Helium_3(offset,wiki){ return +fuel_adjust(125000,false,wiki).toFixed(0); }
+            },
             effect(){
                 let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
@@ -4025,7 +4026,7 @@ export function setChallengeScreen(){
         //global.evolution['nonstandard'] = { count: 0 };
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        //global.evolution['gravity_well'] = { count: 0 };
+        global.evolution['gravity_well'] = { count: 0 };
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         global.evolution['witch_hunter'] = { count: 0 };
@@ -4087,7 +4088,7 @@ export function setChallengeScreen(){
         //addAction('evolution','nonstandard');
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        //addAction('evolution','gravity_well');
+        addAction('evolution','gravity_well');
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
@@ -4550,7 +4551,7 @@ const advancedChallengeList = {
     'sludge': {t: 'c', e: 'extinct_sludge' },
     'orbit_decay': {t: 'c', e: 'lamentis' },
     //'nonstandard': {t: 'c', e: 'anathema' },
-    //'gravity_well': {t: 'c', e: '???' },
+    'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
     //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
@@ -6916,7 +6917,7 @@ export function orbitDecayed(){
             }
             if (global.race['casting']){
                 Object.keys(global.race.casting).forEach(function (c){
-                    global.race.casting[0] = 0;
+                    global.race.casting[c] = 0;
                 });
             }
         }
@@ -8072,7 +8073,6 @@ function cataclysm(){
         global.resource.Copper.display = true;
         global.resource.Iron.display = true;
         global.resource.Aluminium.display = true;
-        global.resource.Cement.display = true;
         global.resource.Coal.display = true;
         global.resource.Oil.display = true;
         global.resource.Uranium.display = true;
@@ -8089,6 +8089,11 @@ function cataclysm(){
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
+        if (!global.race['flier']){
+            global.resource.Cement.display = true;
+            global.resource.Cement.max = 75000;
+            global.resource.Cement.amount = 75000;
+        }
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
@@ -8128,8 +8133,6 @@ function cataclysm(){
         global.resource.Steel.amount = 75000;
         global.resource.Aluminium.max = 75000;
         global.resource.Aluminium.amount = 75000;
-        global.resource.Cement.max = 75000;
-        global.resource.Cement.amount = 75000;
         global.resource.Titanium.max = 75000;
         global.resource.Titanium.amount = 75000;
         global.resource.Coal.max = 10000;

@@ -373,7 +373,7 @@ function featDesc(feat,showFlair){
         let checked = `<div class="flexed wide">`;    
         Object.keys(races).sort(function(a,b){
             if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
-                return races[a].name.localeCompare(races[b].name);
+                return (races[a].name || 'Zombie').localeCompare(races[b].name);
             }
             else {
                 return 0;

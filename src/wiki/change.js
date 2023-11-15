@@ -3,6 +3,14 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.10`,
+        date: `9/9/2023`,
+        changes: [
+            `Added Gravity Well challenge mode.`,
+            `Prepping the Bioseed ship for launch now has a Helium-3 cost.`
+        ]
+    },
+    {
         version: `1.3.9`,
         date: `8/20/2023`,
         changes: [
