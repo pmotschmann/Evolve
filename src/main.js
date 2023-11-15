@@ -360,6 +360,11 @@ popover('morale',
             obj.popper.append(`<p class="modal_bd"><span>${loc(`event_motivation_bd`)}</span> <span class="has-text-success"> +${boost}%</span></p>`);
         }
 
+        if (global.race['pet']){
+            total += 1;
+            obj.popper.append(`<p class="modal_bd"><span>${loc(`event_pet_${global.race.pet.type}_owner`)}</span> <span class="has-text-success"> +${1}%</span></p>`);
+        }
+
         if (global.civic['homeless']){
             let homeless = global.civic.homeless / 2;
             total -= homeless;
@@ -1263,6 +1268,10 @@ function fastLoop(){
         if (global.race['motivated']){
             let boost = Math.ceil(global.race['motivated'] ** 0.4);
             morale += boost;
+        }
+
+        if (global.race['pet']){
+            morale += 1;
         }
 
         let stress = 0;

@@ -858,6 +858,25 @@ export const events = {
         let rumor = Math.rand(0,10);
         return loc(`event_rumor_type${rumor}`);
     }),
+    pet: {
+        reqs: {
+            tech: 'primitive',
+        },
+        type: 'minor',
+        effect(){
+            if (global.race['pet']){
+                let interaction = Math.rand(0,10);
+                return loc(`event_${global.race.pet.type}_interaction${interaction}`,[global.race.pet.name]);
+            }
+            else {
+                global.race['pet'] = {
+                    type: Math.rand(0,2) === 0 ? 'cat' : 'dog',
+                    name: Math.rand(0,10)
+                };
+                return loc(`event_pet_${global.race.pet.type}`,[loc(`event_cat_name${global.race.pet.name}`)]);
+            }
+        }
+    },
 };
 
 function basicEvent(title,tech,func,cond){
