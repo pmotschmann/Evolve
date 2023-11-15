@@ -4784,7 +4784,7 @@ function drawHellAnalysis(){
                     return loc('hell_analysis_start',[start.year, start.day]);
                 },
                 dropdownLabel(open){
-                    return open ? '⮝' : '⮟';
+                    return open ? '▲' : '▼';
                 }
             }
         });
