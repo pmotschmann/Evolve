@@ -7,7 +7,10 @@ const changeList = [
         date: `9/9/2023`,
         changes: [
             `Added Gravity Well challenge mode.`,
-            `Prepping the Bioseed ship for launch now has a Helium-3 cost.`
+            `Prepping the Bioseed ship for launch now has a Helium-3 cost.`,
+            `Added new pet minor event`,
+            `Added support for Polish language.`,
+            `Various UI improvements.`
         ]
     },
     {
