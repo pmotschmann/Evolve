@@ -1221,7 +1221,7 @@ const fortressModules = {
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 4 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bireme', offset, 190000000, 1.24, 'portal'); },
@@ -1257,7 +1257,7 @@ const fortressModules = {
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 5 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
@@ -1387,7 +1387,7 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return global.portal.hasOwnProperty('port') && global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support(){ return -1; },
             effect(){
                 let port_value = 10000;
@@ -1423,7 +1423,7 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support(){ return -1; },
             effect(){
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
@@ -1603,7 +1603,7 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support(){ return -1; },
             special: true,
             sAction(){

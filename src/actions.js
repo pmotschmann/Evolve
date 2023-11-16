@@ -3090,7 +3090,7 @@ export const actions = {
                 }
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['tourist_center'].count++;
