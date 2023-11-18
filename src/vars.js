@@ -1660,6 +1660,7 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
 }
 
 $('html').addClass(global.settings.theme);
+$('html').addClass(global.settings.queuestyle);
 
 if (!global.settings['at']){
     global.settings['at'] = 0;
