@@ -4760,7 +4760,9 @@ div.bigbang {
 .listqueuestyle .main .bldQueue,
 .listqueuestyle .main .bldQueue.right,
 .numberedlistqueuestyle .main .bldQueue,
-.numberedlistqueuestyle .main .bldQueue.right {
+.numberedlistqueuestyle .main .bldQueue.right,
+.bulletlistqueuestyle .main .bldQueue,
+.bulletlistqueuestyle .main .bldQueue.right {
 
     li {
         margin: 0.25rem 0;
@@ -4776,6 +4778,15 @@ div.bigbang {
 .numberedlistqueuestyle .main .bldQueue.right {
     li {
         list-style-type: numeric;
+        list-style-position: inside;
+    }
+}
+
+.bulletlistqueuestyle .main .bldQueue,
+.bulletlistqueuestyle .main .bldQueue.right {
+    li {
+        list-style-type: disc;
+        list-style-position: inside;
     }
 }
 

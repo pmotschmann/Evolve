@@ -276,7 +276,7 @@ function tabLabel(lbl){
 }
 
 function updateQueueStyle(){
-    ['standardqueuestyle', 'listqueuestyle', 'numberedlistqueuestyle']
+    ['standardqueuestyle', 'listqueuestyle', 'bulletlistqueuestyle', 'numberedlistqueuestyle']
         .map(qstyle => {
             if (global.settings.queuestyle === qstyle) {
                 $('html').addClass(qstyle);
@@ -1289,6 +1289,7 @@ export function index(){
                 </button>
                 <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>

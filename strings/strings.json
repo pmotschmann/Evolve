@@ -98,6 +98,7 @@
   "queuestyle": "Queue style",
   "standardqueuestyle": "Standard queue",
   "listqueuestyle": "List queue",
+  "bulletlistqueuestyle": "Bullet list queue",
   "numberedlistqueuestyle": "Numbered list queue",
   "add": "Add",
   "remove": "Remove",
