@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "less": "lessc -x src/evolve.less evolve/evolve.css",
+    "less": "lessc src/evolve.less evolve/evolve-unminified.css && csso -i evolve/evolve-unminified.css -o evolve/evolve.css && rm evolve/evolve-unminified.css",
     "dev": "npx webpack --config webpack.evolve.dev.js",
     "evolve": "npx webpack --config webpack.evolve.prod.js",
     "build": "npx webpack --config webpack.evolve.prod.js && npx webpack --config webpack.wiki.prod.js",
@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/pmotschmann/Evolve#readme",
   "devDependencies": {
+    "csso-cli": "^4.0.2",
     "ini": "^1.3.8",
     "less": "^3.13.0",
     "servehere": "^1.7.0",
