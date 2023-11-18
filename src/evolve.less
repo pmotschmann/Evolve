@@ -2541,6 +2541,19 @@ a {
         }
     }
 
+    div.buildQueueAsRows.bldQueue,
+    div.buildQueueAsRows.bldQueue.right {
+
+        li {
+            margin: 0.25rem 0;
+            display: list-item;
+        }
+
+        li:not(:last-child) .queued:after {
+            content: ""
+        }
+    }
+
     .resQueue {
         h2 {
             border-bottom: solid .0625rem;
