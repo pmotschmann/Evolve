@@ -48,10 +48,10 @@ export function mainVue(){
                 };
                 const date = new Date();
                 const year = date.getFullYear();
-                const month = (date.getMonth() + 1);
-                const day = date.getDate();
-                const hour = date.getHours();
-                const minute = date.getMinutes();
+                const month = (date.getMonth() + 1).toFixed(0).padStart(2, '0');
+                const day = date.getDate().toFixed(0).padStart(2, '0');
+                const hour = date.getHours().toFixed(0).padStart(2, '0');
+                const minute = date.getMinutes().toFixed(0).padStart(2, '0');
                 downloadToFile(window.exportGame(), `evolve-${year}-${month}-${day}-${hour}-${minute}.txt`, 'text/plain');
             },
             importStringFile(){ 
