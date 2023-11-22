@@ -126,7 +126,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('war_droid','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -154,7 +154,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('repair_droid','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -188,7 +188,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('war_drone','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -219,7 +219,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('sensor_drone','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -244,7 +244,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('attractor','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1035,7 +1035,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('gate_turret','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1068,7 +1068,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('infernite_mine','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1208,7 +1208,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('cooling_tower','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1222,6 +1222,7 @@ const fortressModules = {
             },
             reqs: { hell_lake: 4 },
             powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bireme', offset, 190000000, 1.24, 'portal'); },
@@ -1242,9 +1243,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('bireme','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.bireme.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1258,6 +1257,7 @@ const fortressModules = {
             },
             reqs: { hell_lake: 5 },
             powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
@@ -1288,9 +1288,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('transport','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.transport.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
@@ -1370,7 +1368,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('purifier','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1388,6 +1386,7 @@ const fortressModules = {
                 Supply(offset){ return global.portal.hasOwnProperty('port') && global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
             powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             effect(){
                 let port_value = 10000;
@@ -1399,9 +1398,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('port','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.port.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
                         global.portal['base_camp'] = { count: 0, on: 0 };
@@ -1424,6 +1421,7 @@ const fortressModules = {
                 Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, spireCreep(1.2), 'portal'); },
             },
             powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             effect(){
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
@@ -1431,9 +1429,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('base_camp','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.base_camp.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
                         global.portal['bridge'] = { count: 0 };
@@ -1604,6 +1600,7 @@ const fortressModules = {
                 Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
             },
             powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             special: true,
             sAction(){
@@ -1622,8 +1619,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('mechbay','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.mechbay.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.portal.mechbay.max += 25;
                     }
                     global.settings.showMechLab = true;
