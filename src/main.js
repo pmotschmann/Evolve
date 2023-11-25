@@ -858,7 +858,7 @@ function fastLoop(){
         global_multiplier *= 1 + (bonus / 100);
     }
     if (global.race['slaver'] && global.city['slave_pen'] && global.city['slave_pen']){
-        let bonus = (global.city.slave_pen.slaves * traits.slaver.vars()[0]);
+        let bonus = (global.resource.Slave.amount * traits.slaver.vars()[0]);
         breakdown.p['Global'][loc('trait_slaver_bd')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
     }
@@ -7875,8 +7875,8 @@ function midLoop(){
             caps['Slave'] = global.city.slave_pen.count * 4;
             bd_Slave[loc('city_slave_pen')] = global.city.slave_pen.count * 4 + 'v';
 
-            if (caps['Slave'] < global.city.slave_pen.slaves){
-                global.city.slave_pen.slaves = caps['Slave'];
+            if (caps['Slave'] < global.resource.Slave.amount){
+                global.resource.Slave.amount = caps['Slave'];
             }
         }
         if (global.race['calm'] && global.city['meditation']) {

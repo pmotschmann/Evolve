@@ -1348,12 +1348,11 @@ export const actions = {
             cost: {
                 Money(){ return 25000; },
             },
-            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.city.slave_pen.slaves : 0; },
+            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.resource.Slave.amount : 0; },
             action(){
-                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.city.slave_pen.slaves){
+                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.resource.Slave.amount){
                     if (payCosts($(this)[0])){
-                        global.city.slave_pen.slaves++;
-                        global.resource.Slave.amount = global.city.slave_pen.slaves;
+                        global.resource.Slave.amount++;
                         return true;
                     }
                 }
@@ -1714,14 +1713,13 @@ export const actions = {
             },
             effect(){
                 let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
-                let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
+                let slaves = global.city['slave_pen'] ? global.resource.Slave.amount : 0;
                 return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['slave_pen'].count++;
                     global.resource.Slave.display = true;
-                    global.resource.Slave.amount = global.city.slave_pen.slaves;
                     global.resource.Slave.max = global.city.slave_pen.count * 4;
                     return true;
                 }

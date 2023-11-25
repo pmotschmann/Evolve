@@ -913,9 +913,8 @@ function slaveLoss(type,string){
         },
         type: type,
         effect(){
-            if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
-                global.city.slave_pen.slaves--;
-                global.resource.Slave.amount = global.city.slave_pen.slaves;
+            if (global.city['slave_pen'] && global.resource.Slave.amount > 0){
+                global.resource.Slave.amount--;
                 return loc(`event_slave_${string}`);
             }
             else {
