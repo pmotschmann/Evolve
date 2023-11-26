@@ -10985,7 +10985,7 @@ function midLoop(){
             global.race.casting.total = total;
         }
 
-        if (global.tech['r_queue'] && global.r_queue.display){
+        if (global.tech.r_queue && global.r_queue.display) {
             let idx = -1;
             let c_action = false;
             let stop = false;
@@ -10994,8 +10994,6 @@ function midLoop(){
             for (let i=0; i<global.r_queue.queue.length; i++){
                 let struct = global.r_queue.queue[i];
                 let t_action = actions[struct.action][struct.type];
-                time = global.settings.qAny_res ? 0 : time;
-                untime = global.settings.qAny_res ? 0 : untime;
 
                 if (t_action['grant'] && global.tech[t_action.grant[0]] && global.tech[t_action.grant[0]] >= t_action.grant[1]){
                     global.r_queue.queue.splice(i,1);
@@ -11006,7 +11004,60 @@ function midLoop(){
                     if (checkAffordable(t_action,true)){
                         global.r_queue.queue[i].cna = false;
                         let reqMet = checkTechRequirements(struct.type,false);
-                        let t_time = global.settings.qAny_res ? timeCheck(t_action) : timeCheck(t_action, spent, false, reqMet);
+
+                        if (global.settings.qAny_res) {
+                            spent = { t: {t: 0, rt: 0}, r: {}, rr: {}, id: {}};
+
+                            if (global.r_queue.queue.length > 1) {
+                                const getAction = function (id) {
+                                    const struct = global.r_queue.queue[id];
+                                    return actions[struct.action][struct.type];
+                                };
+
+                                const queueItemsProcessed = [];
+                                const spentClone = function () {
+                                    return JSON.parse(JSON.stringify(spent));
+                                };
+
+                                while (queueItemsProcessed.length < global.r_queue.queue.length) {
+                                    const otherItemsTimes = {};
+                                    for (let j = 0; j < global.r_queue.queue.length; j++) {
+                                        if (i === j) { continue; }
+                                        if (queueItemsProcessed.includes(j)) { continue; }
+                                        otherItemsTimes[j] = timeCheck(getAction(j), spentClone(), false, reqMet);
+                                    }
+
+                                    if (!Object.keys(otherItemsTimes).length) {
+                                        break;
+                                    }
+
+                                    const thisItemTime = timeCheck(t_action, spentClone(), false, reqMet);
+                                    const fastestItem = Object.keys(otherItemsTimes).reduce(function (acc, id) {
+                                        const time = otherItemsTimes[id];
+                                        if (time > thisItemTime) { return acc; }
+                                        id = parseInt(id, 10);
+                                        if (time === thisItemTime && id > i) { return acc; }
+                                        if (acc.id === -1 || time < acc.time) {
+                                            return { id, time };
+                                        }
+                                        return acc;
+                                    }, { id: -1 });
+
+                                    if (fastestItem.id === -1) {
+                                        break;
+                                    }
+
+                                    timeCheck(getAction(fastestItem.id), spent, false, reqMet);
+                                    queueItemsProcessed.push(fastestItem.id);
+                                }
+                            }
+
+                            time = spent.t.t;
+                            untime = spent.t.t;
+                        }
+
+                        const t_time = timeCheck(t_action, spent, false, reqMet);
+
                         if (t_time >= 0){
                             if (!stop && checkAffordable(t_action) && reqMet){
                                 c_action = t_action;
@@ -11086,7 +11137,7 @@ function midLoop(){
         checkAchievements();
     }
 
-    if (global.tech['queue'] && global.queue.display){
+    if (global.tech.queue && global.queue.display) {
         let idx = -1;
         let c_action = false;
         let stop = false;
@@ -11094,21 +11145,16 @@ function midLoop(){
         let time = 0;
         let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
         let arpa = false;
-        for (let i=0; i<global.queue.queue.length; i++){
-            if (global.settings.qAny){
-                spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
-                time = 0;
-            }
-            let struct = global.queue.queue[i];
 
-            let t_action = false;
-            if (struct.action === 'tp-ship'){
-                let raw = shipCosts(struct.type);
-                let costs = {};
+        const getAction = function (id) {
+            const struct = global.queue.queue[id];
+            if (struct.action === 'tp-ship') {
+                const raw = shipCosts(struct.type);
+                const costs = {};
                 Object.keys(raw).forEach(function(res){
-                    costs[res] = function(){ return raw[res]; }
+                    costs[res] = function () { return raw[res]; };
                 });
-                t_action = { 
+                return {
                     id: struct.id,
                     cost: costs,
                     type: 'tp-ship',
@@ -11116,9 +11162,14 @@ function midLoop(){
                     doNotAdjustCost: true,
                 };
             }
-            else if (struct.action === 'hell-mech'){
-                let costs = mechCost(struct.type.size,struct.type.infernal,true);
-                t_action = { 
+
+            if (struct.action === 'hell-mech'){
+                const raw = mechCost(struct.type.size,struct.type.infernal,true);
+                const costs = {};
+                Object.keys(raw).forEach(function(res){
+                    costs[res] = function () { return raw[res]; };
+                });
+                return {
                     id: struct.id,
                     cost: costs,
                     type: 'hell-mech',
@@ -11126,16 +11177,65 @@ function midLoop(){
                     doNotAdjustCost: true,
                 };
             }
-            else if (deepScan.includes(struct.action)){
-                for (let region in actions[struct.action]) {
+
+            if (deepScan.includes(struct.action)){
+                for (const region in actions[struct.action]) {
                     if (actions[struct.action][region][struct.type]){
-                        t_action = actions[struct.action][region][struct.type];
-                        break;
+                        return actions[struct.action][region][struct.type];
                     }
                 }
             }
-            else {
-                t_action = actions[struct.action][struct.type];
+
+            return actions[struct.action][struct.type];
+        };
+
+        for (let i = 0; i < global.queue.queue.length; i++) {
+            const struct = global.queue.queue[i];
+            const t_action = getAction(i);
+
+            if (global.settings.qAny) {
+                spent = {t: {t: 0, rt: 0}, r: {}, rr: {}, id: {}};
+
+                if (global.queue.queue.length > 1) {
+                    const queueItemsProcessed = [];
+                    const spentClone = function () {
+                        return JSON.parse(JSON.stringify(spent));
+                    };
+
+                    while (queueItemsProcessed.length < global.queue.queue.length) {
+                        const otherItemsTimes = {};
+                        for (let j = 0; j < global.queue.queue.length; j++) {
+                            if (i === j) { continue; }
+                            if (queueItemsProcessed.includes(j)) { continue; }
+                            otherItemsTimes[j] = timeCheck(getAction(j), spentClone());
+                        }
+
+                        if (!Object.keys(otherItemsTimes).length) {
+                            break;
+                        }
+
+                        const thisItemTime = timeCheck(t_action, spentClone());
+                        const fastestItem = Object.keys(otherItemsTimes).reduce(function (acc, id) {
+                            const time = otherItemsTimes[id];
+                            if (time > thisItemTime) { return acc; }
+                            id = parseInt(id, 10);
+                            if (time === thisItemTime && id > i) { return acc; }
+                            if (acc.id === -1 || time < acc.time) {
+                                return { id, time };
+                            }
+                            return acc;
+                        }, { id: -1 });
+
+                        if (fastestItem.id === -1) {
+                            break;
+                        }
+
+                        timeCheck(getAction(fastestItem.id), spent);
+                        queueItemsProcessed.push(fastestItem.id);
+                    }
+                }
+
+                time = spent.t.t;
             }
 
             if (struct.action === 'arpa'){
