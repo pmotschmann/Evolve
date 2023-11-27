@@ -8,7 +8,7 @@
     "less": "lessc src/evolve.less evolve/evolve-unminified.css && csso -i evolve/evolve-unminified.css -o evolve/evolve.css && rm evolve/evolve-unminified.css",
     "build": "node buildEvolve.js",
     "wiki": "node buildWiki.js",
-    "wiki-less": "lessc -x src/wiki/wiki.less wiki/wiki.css",
+    "wiki-less": "lessc src/wiki.less wiki/wiki-unminified.css && csso -i wiki/wiki-unminified.css -o wiki/wiki.css && rm wiki/wiki-unminified.css",
     "serve": "servehere -c"
   },
   "repository": {
