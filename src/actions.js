@@ -2222,10 +2222,10 @@ export const actions = {
                     cap *= 2;
                 }
                 if (global.tech['trade'] && global.tech['trade'] >= 3){
-                    return `<div>${loc('plus_max_resource',[cap,loc('resource_Crates_name')])}</div><div>${loc('city_trade_effect',[1])}</div>`;
+                    return `<div>${loc('plus_max_crates',[cap])}</div><div>${loc('city_trade_effect',[1])}</div>`;
                 }
                 else {
-                    return loc('plus_max_resource',[cap,loc('resource_Crates_name')]);
+                    return loc('plus_max_crates',[cap]);
                 }
             },
             action(){
@@ -2287,7 +2287,7 @@ export const actions = {
                 if (global.tech['particles'] && global.tech['particles'] >= 2){
                     cap *= 2;
                 }
-                return loc('plus_max_resource',[cap,loc('resource_Containers_name')]);
+                return loc('plus_max_containers',[cap]);
             },
             action(){
                 if (payCosts($(this)[0])){
