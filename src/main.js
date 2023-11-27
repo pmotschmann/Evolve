@@ -11116,7 +11116,7 @@ function longLoop(){
         let moldFathom = fathomCheck('moldling');
         if (moldFathom > 0){
             let tech_source = `trait_infiltrator_thrall`;
-            let know_adjust = traits.infiltrator.vars(1)[0] / 100 * moldFathom;
+            let know_adjust = 1 - (100 - traits.infiltrator.vars(1)[0]) * moldFathom / 100;
             if (moldFathom >= 0.02 && global.resource.Knowledge.max >= (actions.tech.smelting.cost.Knowledge() * know_adjust) && checkTechRequirements('smelting',false) && !global.tech['smelting']){
                 messageQueue(loc(tech_source,[loc('tech_smelting')]),'info',false,['progress']);
                 global.tech['smelting'] = 1;
@@ -11143,7 +11143,7 @@ function longLoop(){
                 global.tech.explosives = 2;
                 drawTech();
             }
-            if (moldFathom >= 0.8 && global.resource.Knowledge.max >= (actions.tech.portland_cement.cost.Knowledge() * know_adjust) && checkTechRequirements('portland_cement',false) && global.tech['cement'] && global.tech.cement === 3){
+            if (moldFathom >= 0.08 && global.resource.Knowledge.max >= (actions.tech.portland_cement.cost.Knowledge() * know_adjust) && checkTechRequirements('portland_cement',false) && global.tech['cement'] && global.tech.cement === 3){
                 messageQueue(loc(tech_source,[loc('tech_portland_cement')]),'info',false,['progress']);
                 global.tech.cement = 4;
                 drawTech();

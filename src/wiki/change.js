@@ -9,7 +9,7 @@ const changeList = [
             `Added Gravity Well challenge mode.`,
             `Prepping the Bioseed ship for launch now has a Helium-3 cost.`,
             `Added new pet minor event`,
-            `Added support for Polish language provided by Wiedźmin.`,
+            `Polish language translation by Wiedźmin.`,
             `Various UI improvements.`
         ]
     },
