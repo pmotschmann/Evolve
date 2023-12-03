@@ -6,6 +6,7 @@ import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
+import { jobScale } from './jobs.js';
 
 export const gmen = {
     soldier: {
@@ -192,7 +193,7 @@ export const gov_traits = {
     athleticism: {
         name: loc(`gov_trait_athleticism`),
         effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2],wardenLabel()]); },
-        vars(){ return [1.5,2,4]; },
+        vars(){ return [1.5,jobScale(2),4]; },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
