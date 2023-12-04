@@ -169,7 +169,7 @@ export const gov_traits = {
     extravagant: {
         name: loc(`gov_trait_extravagant`),
         effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [10,1.25,jobScale(5)]; },
+        vars(){ return [10,1.25,jobScale(6)]; },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
