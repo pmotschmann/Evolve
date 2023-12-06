@@ -807,6 +807,18 @@ export function checkAchievements(){
     }
 }
 
+export function checkAdept(){
+    let rank = 0;
+    ['whitehole','eviltwin','canceled','heavy','pw_apocalypse'].forEach(function(x){
+        if (global.stats.achieve[x]){
+            rank = Math.max(global.stats.achieve[x].l, rank);
+        }
+    });
+
+    rank = global.stats.feat['adept'] ? Math.min(rank, global.stats.feat['adept']) : 0;
+    return rank;
+}
+
 function checkBigAchievement(frag, name, num, level){
     if (!global.stats.achieve[name] || global.stats.achieve[name].l < level){
         let total = 0;
@@ -2465,13 +2477,13 @@ export const perkList = {
     adept: {
         name: loc(`perk_adept`),
         desc(wiki){
-            let rank = global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']) : 1;
+            let rank = checkAdept() || 1;
             let res = wiki ? "100/200/300/400/500" : rank * 100;
             let cap = wiki ? "60/120/180/240/300" : rank * 60;
             return loc("achieve_perks_adept",[res,cap]);
         },
         active(){
-            return global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? true : false;
+            return checkAdept() > 0;
         },
         notes: [
             loc(`wiki_perks_progress_note1`,[50,loc(`wiki_resets_blackhole`)]),
