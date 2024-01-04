@@ -173,7 +173,7 @@ export function gameLoop(act){
     }
 }
 
-function calcATime(){
+export function calcATime(){
     let dt = Date.now();
     let timeDiff = dt - global.stats.current;
     if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
