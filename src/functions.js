@@ -143,7 +143,7 @@ export function gameLoop(act){
                 }
                 webWorker.mt = main_timer;
 
-                calcATime();
+                addATime(Date.now());
 
                 if (atrack.t > 0){
                     main_timer = Math.ceil(main_timer * 0.5);
@@ -175,32 +175,38 @@ export function gameLoop(act){
 
 // Adds accelerated time if enough time has passed since `global.stats.current`. Returns true if there was accelerated
 // time added. If the parameter is true, it will only add the time if a threshold of 120s has been reached.
-export function calcATime(onlyIfSufficientTimeDiff){
-    let dt = Date.now();
-    let timeDiff = dt - global.stats.current;
-    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || !onlyIfSufficientTimeDiff && global.settings.at > 0)){
+export function addATime(date){
+    // The second case is used for the initialization of atrack.t.
+    if (exceededATimeThreshold(date) || global.stats.hasOwnProperty('current') && global.settings.at > 0){
+        let timeDiff = date - global.stats.current;
+        // Removing any accelerated time if the value is larger than the cap.
         if (global.settings.at > 11520){
             global.settings.at = 0;
         }
+        // Accelerated time is added only if it is over the threshold.
         if (timeDiff >= 120000){
             global.settings.at += Math.floor(timeDiff / 3333);
         }
+        // Accelerated time is capped at 8*60*60/2.5 game days.
         if (global.settings.at > 11520){
             global.settings.at = 11520;
         }
         atrack.t = global.settings.at;
-        return true;
-    } else {
-        return false;
+        // Updating the current date so that it won't be counted twice (e.g., when unpausing).
+        global.stats.current = date;
     }
+}
+
+// Takes the current Date.now, returns whether the minimum threshold to count accelerated time has passed.
+export function exceededATimeThreshold(date){
+    return global.stats.hasOwnProperty('current') && date - global.stats.current >= 120000;
 }
 
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    calcATime();
-    global.stats['current'] = Date.now();
+    addATime(Date.now());
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
