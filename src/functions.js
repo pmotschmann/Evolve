@@ -173,10 +173,12 @@ export function gameLoop(act){
     }
 }
 
-export function calcATime(){
+// Adds accelerated time if enough time has passed since `global.stats.current`. Returns true if there was accelerated
+// time added. If the parameter is true, it will only add the time if a threshold of 120s has been reached.
+export function calcATime(onlyIfSufficientTimeDiff){
     let dt = Date.now();
     let timeDiff = dt - global.stats.current;
-    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
+    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || !onlyIfSufficientTimeDiff && global.settings.at > 0)){
         if (global.settings.at > 11520){
             global.settings.at = 0;
         }
@@ -187,6 +189,9 @@ export function calcATime(){
             global.settings.at = 11520;
         }
         atrack.t = global.settings.at;
+        return true;
+    } else {
+        return false;
     }
 }
 

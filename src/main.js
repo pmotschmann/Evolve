@@ -11468,8 +11468,14 @@ function longLoop(){
 
     // Checking if a substantial amount of time elapsed since last longLoop, indicating system suspension,
     // hibernation or something similar (the threshold is 120s and is checked within calcATime).
-    // If a substantial amount of time elapsed, accelerated time is appropriately increased.
-    calcATime();
+    if (calcATime(true)){
+        // If a substantial amount of time elapsed, accelerated time is appropriately increased in `calcATime`.
+        // We then restart the loop to update the refresh rate, unless paused.
+        if (!global.settings.pause){
+            gameLoop('stop');
+            gameLoop('start');
+        }
+    }
 
     // Save game state
     global.stats['current'] = Date.now();
