@@ -6863,7 +6863,7 @@ function fastLoop(){
             breakdown.p['Money'][loc('tech_cultural_center')] = Math.round(revenue) + 'v';
             if (astroSign === 'aquarius'){
                 revenue *= 1 + (astroVal('aquarius')[0] / 100);
-                revenue[`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
+                breakdown.p['Money'][`ᄂ${loc('sign_aquarius')}`] = astroVal('aquarius')[0] + '%';
             }
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += revenue * global_multiplier * hunger;
