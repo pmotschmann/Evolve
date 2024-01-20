@@ -11495,18 +11495,19 @@ function longLoop(){
         drawAchieve();
     }
 
+    const currentTimestamp = date.valueOf();
     // Checking if a substantial amount of time elapsed since last longLoop, indicating system suspension,
     // hibernation or something similar (the threshold is the same as for counting accelerated time during pause).
     let restartNeeded = false;
-    if (!global.settings.pause && exceededATimeThreshold(date)){
-        // Adding accelerated time based on last current time which is updated in longLoop below.
-        addATime(date);
+    if (!global.settings.pause && exceededATimeThreshold(currentTimestamp)){
+        // Adding accelerated time based on last current time which is updated below.
+        addATime(currentTimestamp);
         // The restart is needed to update the duration of the loop interval.
         restartNeeded = true;
     }
 
     // Save game state
-    global.stats['current'] = date;
+    global.stats['current'] = currentTimestamp;
     if (!global.race.hasOwnProperty('geck')){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     }
