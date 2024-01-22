@@ -1427,7 +1427,7 @@
   "tech_aphrodisiac_desc": "인구 성장과 증가 방안 연구",
   "tech_aphrodisiac_effect": "인구 성장을 돕는 물질 개발",
   "tech_fertility_clinic": "난임 치료",
-  "tech_fertility_clinic_effect": "병원에 난임 관련 과를 도입합니다. 병원이 인구 성장 효과를 제공하게 됩니다.",
+  "tech_fertility_clinic_effect": "병원에 난임 관련 과를 도입합니다. 인구 성장율을 올립니다.",
   "tech_captive_housing": "Captive Housing",
   "tech_captive_housing_effect": "Houses captives abducted from the surface.",
   "tech_torture": "Torment",
