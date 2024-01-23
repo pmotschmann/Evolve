@@ -47,7 +47,12 @@ export function mainVue(){
                     URL.revokeObjectURL(a.href);
                 };
                 const date = new Date();
-                downloadToFile(window.exportGame(), `evolve-${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}-${date.getHours()}-${date.getMinutes()}.txt`, 'text/plain');
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toFixed(0).padStart(2, '0');
+                const day = date.getDate().toFixed(0).padStart(2, '0');
+                const hour = date.getHours().toFixed(0).padStart(2, '0');
+                const minute = date.getMinutes().toFixed(0).padStart(2, '0');
+                downloadToFile(window.exportGame(), `evolve-${year}-${month}-${day}-${hour}-${minute}.txt`, 'text/plain');
             },
             importStringFile(){ 
                 let file = document.getElementById("stringPackFile").files[0];
