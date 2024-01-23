@@ -10,6 +10,7 @@ const changeList = [
             `Prepping the Bioseed ship for launch now has a Helium-3 cost.`,
             `Added new pet minor event`,
             `Polish language translation by Wiedźmin.`,
+            `German language translation by FutterSillo.`,
             `Various UI improvements.`
         ]
     },
