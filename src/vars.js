@@ -1659,6 +1659,10 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
     }
 }
 
+if (!global.settings['queuestyle']){
+    global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
 $('html').addClass(global.settings.theme);
 $('html').addClass(global.settings.queuestyle);
 
