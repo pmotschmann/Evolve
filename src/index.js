@@ -143,6 +143,10 @@ export function mainVue(){
             numNotation(notation){
                 global.settings.affix = notation;
             },
+            setQueueStyle(style){
+                global.settings.queuestyle = style;
+                updateQueueStyle();
+            },
             icon(icon){
                 global.settings.icon = icon;
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -274,6 +278,17 @@ function tabLabel(lbl){
         default:
             return loc(lbl);
     }
+}
+
+function updateQueueStyle(){
+    ['standardqueuestyle', 'listqueuestyle', 'bulletlistqueuestyle', 'numberedlistqueuestyle']
+        .map(qstyle => {
+            if (global.settings.queuestyle === qstyle) {
+                $('html').addClass(qstyle);
+            } else {
+                $('html').removeClass(qstyle);
+            }
+        });
 }
 
 export function initTabs(){
@@ -1248,6 +1263,7 @@ export function index(){
                 <b-dropdown-item v-on:click="setTheme('dracula')">{{ 'theme_dracula' | label }}</b-dropdown-item>
                 ${hideEgg}
             </b-dropdown>
+
             <span>{{ 'units' | label }} </span>
             <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
@@ -1268,6 +1284,18 @@ export function index(){
                 </button>
                 <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ 'star' | label }}</b-dropdown-item>
                 ${iconlist}
+            </b-dropdown>
+
+            <span>{{ 'queuestyle' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.queuestyle | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
             </b-dropdown>
         </div>
         <div id="localization" class="localization">
