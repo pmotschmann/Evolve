@@ -3936,7 +3936,7 @@ export const actions = {
             reqs: { genesis: 6 },
             queue_complete(){ return 0; },
             cost: {
-                Helium_3(offset,wiki){ return +fuel_adjust(125000,false,wiki).toFixed(0); }
+                Helium_3(offset,wiki){ return +fuel_adjust(global.race['gravity_well'] ? 150000 : 75000,false,wiki).toFixed(0); }
             },
             effect(){
                 let gains = calcPrestige('bioseed');

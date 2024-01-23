@@ -1588,6 +1588,20 @@ export const perkList = {
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_nightmare_name`)}</span>`])
         ]
     },
+    escape_velocity: {
+        name: loc(`achieve_escape_velocity_name`),
+        desc(wiki){
+            let ev = wiki ? "2/4/6/8/10" : global.stats.achieve['escape_velocity'] ? global.stats.achieve.escape_velocity.h * 2 : 2;
+            return loc("achieve_perks_escape_velocity",[ev]);
+        },
+        active(){
+            return global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity.h >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`])
+        ]
+    },
     gladiator: {
         name: loc(`achieve_gladiator_name`),
         desc(wiki){
