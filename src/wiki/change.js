@@ -4,14 +4,14 @@ import { clearElement } from './../functions.js';
 const changeList = [
     {
         version: `1.3.10`,
-        date: `1/22/2024`,
+        date: `1/23/2024`,
         changes: [
             `Added Gravity Well challenge mode.`,
             `Prepping the Bioseed ship for launch now has a Helium-3 cost.`,
             `Added new pet minor event`,
             `Polish language translation by Wiedźmin.`,
             `German language translation by FutterSillo.`,
-            `Various UI improvements.`
+            `Various UI improvements and language updates.`
         ]
     },
     {
