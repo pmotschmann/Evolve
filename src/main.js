@@ -6981,7 +6981,7 @@ function fastLoop(){
             rawCash += cash * global_multiplier * hunger;
         }
 
-        if (global.city['tourist_center']){
+        if (global.city['tourist_center'] && global.city['tourist_center'].on){
             let tourism = 0;
             let amp = global.tech['monument'] && global.tech.monument >= 3 && p_on['s_gate'] ? 3 : 1;
             if (global.city['amphitheatre']){
