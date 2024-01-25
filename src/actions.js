@@ -3945,12 +3945,15 @@ export const actions = {
                 return `<div>${label}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
-                global.tech['genesis'] = 7;
-                clearPopper(`starDock-prep_ship`);
-                clearElement($('#modalBox'));
-                let c_action = actions.space.spc_gas.star_dock;
-                drawModal(c_action,'star_dock');
-                return true;
+                if (payCosts($(this)[0])) {
+                    global.tech['genesis'] = 7;
+                    clearPopper(`starDock-prep_ship`);
+                    clearElement($('#modalBox'));
+                    let c_action = actions.space.spc_gas.star_dock;
+                    drawModal(c_action,'star_dock');
+                    return true;
+                }
+                return false;
             },
         },
         launch_ship: {
