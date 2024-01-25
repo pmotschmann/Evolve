@@ -1168,7 +1168,7 @@ if (convertVersion(global['version']) < 103002){
     }
 }
 
-global['version'] = '1.3.9';
+global['version'] = '1.3.10';
 delete global['revision'];
 delete global['beta'];
 
@@ -1659,7 +1659,12 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
     }
 }
 
+if (!global.settings['queuestyle']){
+    global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
 $('html').addClass(global.settings.theme);
+$('html').addClass(global.settings.queuestyle);
 
 if (!global.settings['at']){
     global.settings['at'] = 0;
