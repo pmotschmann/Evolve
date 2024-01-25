@@ -6257,7 +6257,7 @@
   "galaxy_scavenger_find": "당신의 스캐빈저가 외계인의 데이터베이스를 찾아냈습니다. 이제 이 데이터베이스를 연구해야 합니다.",
   "galaxy_chthonian": "크소니언",
   "galaxy_chthonian_desc": "크소니언 항성계의 이름은 지금까지 발견된 유일한 크소니언 행성이 있어 붙여진 이름입니다. 행성에서 이상수치가 발생되고 있으며, %0가 의해 항성계를 강력하게 지키고 있습니다.",
-  "galaxy_chthonian_mission_result": "You have weakened the enemy forces enough to allow entry into the system.",
+  "galaxy_chthonian_mission_result": "성계에 진입할 수 있을 만큼 충분히 적군을 약화시켰습니다.",
   "galaxy_chthonian_mission_result_losses": "우주선 손실: %0.",
   "galaxy_minelayer": "기뢰부설선",
   "galaxy_excavator": "굴착기",
