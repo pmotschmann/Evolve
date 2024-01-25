@@ -6156,7 +6156,7 @@
   "galaxy_armada": "함대",
   "galaxy_piracy": "해적",
   "galaxy_piracy_msg": "%0 해적이 당신의 작전을 포착했습니다. 위협에 대응하기 위해 구역마다 보안을 보강해야 합니다.",
-  "galaxy_piracy_threat": "%0 위험:",
+  "galaxy_piracy_threat": "%0 위협:",
   "galaxy_piracy_none": "없음",
   "galaxy_piracy_vlow": "매우 낮음",
   "galaxy_piracy_low": "낮음",
