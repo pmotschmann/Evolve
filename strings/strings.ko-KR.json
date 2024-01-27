@@ -7463,7 +7463,7 @@
   "wiki_trait_effect_intelligent": "교수의 지식 생산량이 %0% 증가하고, 과학자의 지식 생산량이 %1% 증가합니다.",
   "wiki_trait_effect_regenerative": "부상병의 치료 속도가 %0배더 빠릅니다.",
   "wiki_trait_effect_gluttony": "음식 소비량이 %0% 증가합니다.",
-  "wiki_trait_effect_slow": "게임 속도가 10% 감소합니다.",
+  "wiki_trait_effect_slow": "게임 속도가 %0% 감소합니다.",
   "wiki_trait_effect_armored": "군사의 사망률이 %0% 감소하고, 지옥 순찰대의 방어력이 %1 추가됩니다.",
   "wiki_trait_effect_optimistic": "스트레스가 %0 포인트 감소하고, 최소 행복도가 %1% 증가합니다.",
   "wiki_trait_effect_chameleon": "병영 군사수가 1명 감소하지만, 전투력이 %0% 증가하며, 지옥 순찰대가 습격당할 확률이 %1% 감소합니다. 이 효과는 교묘함 특성과 중복되지 않습니다.",
