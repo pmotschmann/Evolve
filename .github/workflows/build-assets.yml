@@ -1,0 +1,34 @@
+name: Build static assets
+
+on:
+  push:
+
+jobs:
+  build-assets:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }}
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - run: npm run build
+    - run: npm run less
+    - run: npm run wiki
+    - run: npm run wiki-less
+
+    - uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: Update compiled assets
