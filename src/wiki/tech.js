@@ -3826,6 +3826,86 @@ const specialRequirements = {
                 }
             ]
         }
+    ],
+    wheel: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    wagon: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    steam_engine: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    combustion_engine: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    hover_cart: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    osha: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    blackmarket: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
+    ],
+    pipelines: [
+        {
+            category: 'challenge',
+            subreqs: [
+                {
+                    name: 'gravity_well'
+                }
+            ]
+        }
     ]
 };
 

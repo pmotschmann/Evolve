@@ -1,7 +1,7 @@
 import { global, p_on } from './vars.js';
 import { biomes, traits, fathomCheck } from './races.js';
 import { govRelationFactor } from './civics.js';
-import { jobScale } from './jobs.js';
+import { jobScale, teamsterCap } from './jobs.js';
 import { hellSupression } from './portal.js';
 import { flib } from './functions.js';
 import { govActive } from './governor.js';
@@ -9,6 +9,15 @@ import { govActive } from './governor.js';
 export function highPopAdjust(v){
     if (global.race['high_pop']){
         v *= traits.high_pop.vars()[1] / 100;
+    }
+    return v;
+}
+
+export function teamster(v){
+    if (global.race['gravity_well'] && global.race['teamster'] && global.race.teamster > 0){
+        let cap = teamsterCap();
+        let teamster = global.civic.teamster.workers > cap ? cap : global.civic.teamster.workers;
+        v *= teamster / cap;
     }
     return v;
 }

@@ -7,14 +7,14 @@ import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
 
 const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
-export const neg_roll_traits = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
+export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized'];
 
 export function altRace(race,set){
     if (global.settings.boring){
@@ -1655,7 +1655,6 @@ export const traits = {
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
-        vars(r){ return [4]; },
         vars(r){
             switch (r || global.race.regenerative || 1){
                 case 0.25:
@@ -4516,7 +4515,7 @@ function customRace(){
 }
 
 /*
-types: farmer, miner, lumberjack, science, factory, army, hunting
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
 */
 export function racialTrait(workers,type){
     let modifier = 1;
@@ -4731,6 +4730,20 @@ export function racialTrait(workers,type){
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
+    }
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
+        modifier = teamster(modifier);
+    }
+    return modifier;
+}
+
+/*
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
+*/
+export function servantTrait(workers,type){
+    let modifier = 1;
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger'].includes(type)){
+        modifier = teamster(modifier);
     }
     return modifier;
 }
@@ -5071,7 +5084,7 @@ export function cleanAddTrait(trait){
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
-                global.civic.d_job = 'unemployed';
+                global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
@@ -5191,6 +5204,7 @@ export function cleanAddTrait(trait){
             else {
                 window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
@@ -5200,6 +5214,7 @@ export function cleanAddTrait(trait){
             else {
                 window.location.reload();
             }
+            break;
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
@@ -5387,6 +5402,7 @@ export function cleanRemoveTrait(trait,rank){
             else {
                 window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
             if (webWorker.w){
@@ -5396,6 +5412,7 @@ export function cleanRemoveTrait(trait,rank){
             else {
                 window.location.reload();
             }
+            break;
         case 'calm':
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;
