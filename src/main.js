@@ -974,9 +974,8 @@ function fastLoop(){
     let capyFathom = fathomCheck('capybara');
     if (capyFathom > 0 || (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display)){
         let rawZen = global.resource.Zen.amount;
-        let fathom = fathomCheck('capybara');
-        if (fathom > 0){
-            rawZen += Math.round(fathom * 500);
+        if (capyFathom > 0){
+            rawZen += Math.round(capyFathom * 500);
         }
         let zen = rawZen / (rawZen + 5000);
         breakdown.p['Global'][loc('trait_calm_bd')] = `+${(zen * 100).toFixed(2)}%`;
