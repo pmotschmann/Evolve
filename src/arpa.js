@@ -1610,7 +1610,7 @@ export function arpaAdjustCosts(costs,offset,wiki){
 
 function creativeAdjust(costs,offset,wiki){
     let fathom = fathomCheck('human');
-    if ((wiki && wiki.creative) || (!wiki && global.race['creative']) || (!wiki && fathom > 0){
+    if ((wiki && wiki.creative) || (!wiki && global.race['creative']) || (!wiki && fathom > 0)){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             newCosts[res] = function(){
@@ -1629,15 +1629,19 @@ function creativeAdjust(costs,offset,wiki){
     return costs;
 }
 
-function costMultiplier(project,offset,base,mutiplier,wiki){
+function costMultiplier(project,offset,base,multiplier,wiki){
     var rank = global.arpa[project] ? global.arpa[project].rank : 0;
     if (((wiki && wiki.creative) || (!wiki && global.race['creative'])) && project !== 'syphon'){
-        mutiplier -= traits.creative.vars()[0];
+        multiplier -= traits.creative.vars()[0];
+    }
+    let fathom = fathomCheck('human');
+    if(fathom > 0){
+        multiplier -= traits.creative.vars(1)[0];
     }
     if (offset){
         rank += offset;
     }
-    return Math.round((mutiplier ** rank) * base);
+    return Math.round((multiplier ** rank) * base);
 }
 
 function physics(){
