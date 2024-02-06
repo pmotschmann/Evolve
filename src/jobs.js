@@ -891,16 +891,15 @@ export function loadFoundry(servants){
                     total.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
                     let craft_cost = craftCost();
                     for (let i=0; i<craft_cost[res].length; i++){
-                        let cost = craft_cost[res][i].a * global.city.foundry[res] * speed / 140
                         let craftCost = 1;
-                        if(global.race["resourceful"]){
+                        if(global.race['resourceful']){
                             craftCost -= traits.resourceful.vars()[0] / 100
                         }
-                        let fathom = fathomCheck("arraak");
+                        let fathom = fathomCheck('arraak');
                         if(fathom > 0){
                             craftCost -= traits.resourceful.vars(1)[0] / 100 * fathom;
                         }
-                        cost = +(cost * craftCost).toFixed(2);
+                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * craftCost * speed / 140).toFixed(2);
                         total.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
 
