@@ -296,7 +296,7 @@ popover('morale',
             let type = global.city.morale.stress > 0 ? 'success' : 'danger';
             obj.popper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${+(global.city.morale.stress).toFixed(1)}%</span></p>`);
         }
-        
+
         let total = 100 + global.city.morale.unemployed + global.city.morale.stress;
         Object.keys(global.city.morale).forEach(function (morale){
             if (!['current','unemployed','stress','season','cap','potential'].includes(morale) && global.city.morale[morale] !== 0){
