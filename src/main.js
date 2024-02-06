@@ -296,8 +296,7 @@ popover('morale',
             let type = global.city.morale.stress > 0 ? 'success' : 'danger';
             obj.popper.append(`<p class="modal_bd"><span>${loc('morale_stress')}</span> <span class="has-text-${type}"> ${+(global.city.morale.stress).toFixed(1)}%</span></p>`);
         }
-
-        let total = 100 + global.city.morale.unemployed + global.city.morale.stress;
+        let total = 1000 + global.city.morale.unemployed + global.city.morale.stress;
         Object.keys(global.city.morale).forEach(function (morale){
             if (!['current','unemployed','stress','season','cap','potential'].includes(morale) && global.city.morale[morale] !== 0){
                 total += global.city.morale[morale];
@@ -730,7 +729,6 @@ if (window.Worker){
     }, false);
 }
 gameLoop('start');
-
 resourceAlt();
 
 var firstRun = true;
@@ -7088,7 +7086,7 @@ function fastLoop(){
             let craft_costs = global.race['resourceful'] ? (1 - traits.resourceful.vars()[0] / 100) : 1;
             let arraakFathom = fathomCheck('arraak');
             if (arraakFathom > 0){
-                craft_costs - traits.resourceful.vars(1)[0] / 100 * arraakFathom;
+                craft_costs -= traits.resourceful.vars(1)[0] / 100 * arraakFathom;
             }
             let crafting_costs = craftCost();
             let crafting_usage = {};
