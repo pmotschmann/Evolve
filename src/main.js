@@ -29,7 +29,8 @@ import {
     powerGrid,
     deepClone,
     addATime,
-    exceededATimeThreshold
+    exceededATimeThreshold,
+    loopTimers
 } from './functions.js';
 import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
@@ -520,7 +521,7 @@ vBind({
             return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
         },
         remain(at){
-            let minutes = Math.ceil(at * 2.5 / 60);
+            let minutes = Math.ceil(at * loopTimers().longTimer / 60000);
             if (minutes > 0){
                 let hours = Math.floor(minutes / 60);
                 minutes -= hours * 60;

@@ -158,7 +158,7 @@ export function gameLoop(act){
 // Computes the relative to default duration of a single loop (common for all three loop types).
 // Note that these values are not tied to the time_multiplier from fastLoop - the relative speed of time in the game
 // is controlled by loop lengths.
-function loopTimers(){
+export function loopTimers(){
     // Here come any speed modifiers not related to accelerated time.
     let modifier = 1.0;
     if (global.race['slow']){
