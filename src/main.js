@@ -1,37 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import {
-    gameLoop,
-    vBind,
-    popover,
-    clearPopper,
-    flib,
-    tagEvent,
-    timeCheck,
-    arpaTimeCheck,
-    timeFormat,
-    powerModifier,
-    modRes,
-    initMessageQueue,
-    messageQueue,
-    calc_mastery,
-    calcPillar,
-    darkEffect,
-    calcQueueMax,
-    calcRQueueMax,
-    buildQueue,
-    shrineBonusActive,
-    getShrineBonus,
-    eventActive,
-    easterEggBind,
-    trickOrTreatBind,
-    powerGrid,
-    deepClone,
-    addATime,
-    exceededATimeThreshold,
-    loopTimers
-} from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers } from './functions.js';
 import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
