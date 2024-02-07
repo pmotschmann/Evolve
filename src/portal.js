@@ -651,7 +651,7 @@ const fortressModules = {
                             global.civic[global.civic.d_job].workers -= hired;
                             global.civic.archaeologist.workers += hired;
                         }
-                    }  
+                    }
                     return true;
                 }
                 return false;
@@ -773,7 +773,7 @@ const fortressModules = {
             powered(){
                 let power = 20;
                 if (p_on.hasOwnProperty('hell_forge')){
-                    power += p_on['hell_forge'] * 10; 
+                    power += p_on['hell_forge'] * 10;
                 }
                 return powerModifier(-(power));
             },
@@ -1521,7 +1521,7 @@ const fortressModules = {
                     else if (global.tech.hell_spire === 7){
                         global.tech.hell_spire = 8;
                         renderFortress();
-                        messageQueue(loc('portal_sphinx_answer_msg'),'info',false,['progress','hell']);  
+                        messageQueue(loc('portal_sphinx_answer_msg'),'info',false,['progress','hell']);
                         return true;
                     }
                 }
@@ -1549,7 +1549,7 @@ const fortressModules = {
                         global.tech['sphinx_bribe'] = 1;
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
-                        messageQueue(loc('portal_sphinx_bribe_msg'),'info',false,['progress','hell']);                        
+                        messageQueue(loc('portal_sphinx_bribe_msg'),'info',false,['progress','hell']);
                         return true;
                     }
                 }
@@ -1655,7 +1655,7 @@ const fortressModules = {
                 }
                 let progress = global.portal.hasOwnProperty('spire') ? `<span class="has-text-warning">${+(global.portal.spire.progress).toFixed(3)}%</span>` : '0%';
                 let leftSide = `<div>${loc('portal_spire_effect',[floor])}</div><div>${loc('portal_spire_type',[terrain])}</div>${status}<div>${loc('portal_spire_progress',[progress])}</div>`;
-                
+
                 let boss = global.portal.hasOwnProperty('spire') ? global.portal.spire.boss : 'crazed';
                 let threat = `<div>${loc('portal_spire_mob',[`<span class="has-text-danger">${loc(`portal_mech_boss_${boss}`)}</span>`])}</div>`;
 
@@ -1780,7 +1780,7 @@ export const towerSize = (function(){
                 if (global.pillars[pillar]){
                     size -= 12;
                 }
-            });            
+            });
         }
         return size;
     }
@@ -1821,7 +1821,7 @@ export function renderFortress(){
         let show = region.replace("prtl_","");
         if (global.settings.portal[`${show}`]){
             let name = typeof fortressModules[region].info.name === 'string' ? fortressModules[region].info.name : fortressModules[region].info.name();
-            
+
             let property = ``;
             if (fortressModules[region].info.hasOwnProperty('prop')){
                 property = fortressModules[region].info.prop();
@@ -1860,7 +1860,7 @@ export function renderFortress(){
 
             if (region === 'prtl_fortress'){
                 buildFortress(parent,true);
-            } 
+            }
 
             Object.keys(fortressModules[region]).forEach(function (tech){
                 if (tech !== 'info' && checkRequirements(fortressModules,region,tech)){
@@ -1955,7 +1955,7 @@ export function buildFortress(parent,full){
         }
         fort.append(`<div><h3 class="has-text-warning">${loc('portal_fortress_name')}</h3><button class="button observe right" @click="observation">${loc('hell_observation_button')}</button></div>`);
     }
-    
+
 
     let status = $('<div></div>');
     fort.append(status);
@@ -1974,12 +1974,12 @@ export function buildFortress(parent,full){
 
     let station = $(`<div></div>`);
     fort.append(station);
-    
+
     station.append($(`<span>${loc('fortress_army')}</span>`));
     station.append($('<span role="button" aria-label="remove soldiers from the fortress" class="sub has-text-danger" @click="aLast"><span>&laquo;</span></span>'));
     station.append($('<span class="current armyLabel">{{ f.garrison | patrolling }}</span>'));
     station.append($('<span role="button" aria-label="add soldiers to the fortress" class="add has-text-success" @click="aNext"><span>&raquo;</span></span>'));
-    
+
     station.append($(`<span>${loc('fortress_patrol')}</span>`));
     station.append($('<span role="button" aria-label="reduce number of patrols" class="sub has-text-danger" @click="patDec"><span>&laquo;</span></span>'));
     station.append($('<span class="current patLabel">{{ f.patrols }}</span>'));
@@ -2325,7 +2325,7 @@ export function bloodwar(){
         pat_armor += traits.scales.vars()[2];
     }
 
-    let forgeOperating = false;                    
+    let forgeOperating = false;
     if (p_on['soul_forge']){
         let troops = global.portal.fortress.garrison - (global.portal.fortress.patrols * global.portal.fortress.patrol_size);
         let forge = soulForgeSoldiers();
@@ -2381,7 +2381,7 @@ export function bloodwar(){
         }
         gem_chance -= Math.round(Math.log2(de) * 2);
     }
-    
+
     if (global.tech['portal'] >= 4 && p_on['attractor']){
         gem_chance = Math.round(gem_chance * (0.948 ** p_on['attractor']));
     }
@@ -2489,7 +2489,7 @@ export function bloodwar(){
                     }
                 }
             }
-                
+
             day_report.stats.kills.patrols += patrol_report.kills;
             day_report.stats.wounded += patrol_report.wounded;
             day_report.stats.died += patrol_report.died;
@@ -2567,7 +2567,7 @@ export function bloodwar(){
         siege_report.damage = damage;
         siege_report.kills = killed;
         day_report.stats.kills.sieges = killed;
-        
+
         if (destroyed){
             messageQueue(loc('fortress_lost'),false,false,['hell']);
             siege_report.surveyors = global.civic.hell_surveyor.workers;
@@ -2678,7 +2678,7 @@ export function bloodwar(){
                 }
                 day_report.surveyor_finds[i+1] = surv_report;
             }
-        } 
+        }
     }
 
     if (!has_drop && global.portal.fortress.pity < 10000){
@@ -2753,7 +2753,7 @@ export function bloodwar(){
             let c_max = 10 - p_on['soul_attractor'] > 0 ? 10 - p_on['soul_attractor'] : 1;
             if (global.tech.high_tech >= 16 && !global.tech['corrupt'] && Math.rand(0,c_max + 1) === 0){
                 day_report.soul_forge.corrupt = true;
-                global.resource.Corrupt_Gem.amount++;                  
+                global.resource.Corrupt_Gem.amount++;
                 global.resource.Corrupt_Gem.display = true;
                 messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
                 global.tech['corrupt'] = 1;
@@ -2792,7 +2792,7 @@ export function bloodwar(){
             }
         }
     }
-    
+
     global.portal.observe.stats.total.days++;
     global.portal.observe.stats.period.days++;
     Object.keys(day_report.stats).forEach(function(stat){
@@ -2814,9 +2814,9 @@ export function bloodwar(){
         hell_reports[`year-${global.city.calendar.year}`] = {};
     }
     hell_reports[`year-${global.city.calendar.year}`][`day-${global.city.calendar.day}`] = day_report;
-    
+
     purgeReports();
-    
+
     Object.keys(global.portal.observe.graphs).forEach(function (id){
         if (!!document.getElementById(global.portal.observe.graphs[id].chartID)){
             let newData = [];
@@ -3507,7 +3507,7 @@ export function mechCost(size,infernal){
 function bossResists(boss){
     let weak = `laser`;
     let resist = `laser`;
-    
+
     Object.keys(monsters[boss].weapon).forEach(function(weapon){
         if (monsters[boss].weapon[weapon] > monsters[boss].weapon[weak]){
             weak = weapon;
@@ -3991,7 +3991,7 @@ export function genSpireFloor(){
         global.portal.spire.status = {};
         let effects = ['freeze','hot','corrosive','humid','windy','hilly','mountain','radioactive','quake','dust','river','tar','steam','flooded','fog','rain','hail','chasm','dark','gravity'];
         assignValidStatus(effects[Math.floor(seededRandom(0,effects.length))]);
-        
+
         if (global.portal.spire.count >= 25 && global.portal.spire.count <= 100){
             let odds = 105 - global.portal.spire.count;
             if (Math.floor(seededRandom(0,odds) <= 5)){
@@ -4521,10 +4521,10 @@ export function drawHellObservations(startup){
     }
     let info = $('#mTabObserve');
     clearElement(info);
-    
+
     let observe = $(`<div id="hellObservations"></div>`);
     info.append(observe);
-    
+
     observe.append(`<b-tabs id="hellTabs" class="resTabs" v-model="s.hellTabs" :animated="s.animated" @input="swapTab">
         <b-tab-item id="h_Report">
             <template slot="header">
@@ -4537,7 +4537,7 @@ export function drawHellObservations(startup){
             </template>
         </b-tab-item>
     </b-tabs>`);
-    
+
     vBind({
         el: `#hellObservations`,
         data: {
@@ -4561,7 +4561,7 @@ export function drawHellObservations(startup){
             }
         }
     });
-    
+
     if (!global.settings.tabLoad){
         switch (global.settings.hellTabs){
             case 0:
@@ -4591,12 +4591,12 @@ function drawHellAnalysis(){
     stats.append(analysis);
     let breakdown = $(`<div class="hellAnalysis"></div>`);
     analysis.append(breakdown);
-    
+
     let totalAnal = $(`<div id="hellAnalysisTotal" class="analysisColumn"></div>`);
     let partialAnal = $(`<div id="hellAnalysisPeriod" class="analysisColumn"></div>`);
     breakdown.append(totalAnal);
     breakdown.append(partialAnal);
-    
+
     bd_settings.append(`
         <div>
             <h2 class="has-text-warning">${loc('tab_settings')}</h2>
@@ -4614,7 +4614,7 @@ function drawHellAnalysis(){
             <b-radio v-model="s.display" native-value="days">${loc('hell_analysis_time_days')}</b-radio>
         </div>
     `);
-    
+
     vBind({
         el: '#hellAnalysis',
         data: {
@@ -4622,14 +4622,14 @@ function drawHellAnalysis(){
             r: global.race
         }
     });
-    
+
     let expandedLocaleNum = function(num,sigFigs){
         num = num.toFixed(sigFigs);
         let whole = Math.floor(num);
         let decimals = (+(num - whole).toFixed(sigFigs)).toString().substring(1);
         return whole.toLocaleString() + decimals;
     };
-    
+
     let calcAverage = function(num,gameDays,units){
         if (num){
             if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
@@ -4661,14 +4661,14 @@ function drawHellAnalysis(){
         }
         return loc('hell_analysis_time_average',[num,loc(`hell_analysis_time_${units}_abbr`)])
     };
-    
+
     let drawStats = function(id,type){
         if (!id){
             return;
         }
         let elem = $(`#${id}`)
         clearElement(elem);
-        
+
         elem.append(`
             <div><h2 class="has-text-warning">${loc('hell_analysis_' + type)}</h2>${type === 'period' ? '<h2 id="resetHellObservation" class="text-button has-text-danger" @click="resetObservations()">{{ | resetLabel }}</h2>' : ''}</div>
             <div><h2 class="has-text-alert">{{ st.${type}.start | startLabel }}</h2></div>
@@ -4697,7 +4697,7 @@ function drawHellAnalysis(){
             <div><h2>{{ st.${type}.surveyors, 'surveyors', s.average | generic }}</h2></div>
             <div><h2>{{ st.${type}.sieges, 'sieges', s.average | generic }}</h2></div>
         `);
-    
+
         vBind({
             el: `#${id}`,
             data: {
@@ -4791,14 +4791,14 @@ function drawHellAnalysis(){
     }
     drawStats('hellAnalysisTotal','total');
     drawStats('hellAnalysisPeriod','period');
-    
+
     stats = ($(`#hellAnalysis`));
     let graphs = $(`<div></div>`);
     stats.append(graphs);
     graphs.append(`<div><h2 id="hellGraphCreator" class="text-button has-text-success" @click="createGraph()">${loc('hell_graph_create')}</h2></div>`);
     let graphArea = $(`<div id="hellGraphingArea" class="graphingArea"></div>`);
     graphs.append(graphArea);
-    
+
     vBind({
         el: '#hellGraphCreator',
         methods: {
@@ -4833,7 +4833,7 @@ function drawHellAnalysis(){
                             show: false,
                             message: ''
                         }
-                        
+
                         creator.append(`
                             <div><h2 class="has-text-warning">${loc('hell_graph_name')}</h2> <b-input v-model="s.name" :input="nameUpdate(s.name)"></b-input></div>
                         `)
@@ -4847,9 +4847,9 @@ function drawHellAnalysis(){
                                 </div>
                             </div>
                         `);
-                        
+
                         let dataRegion = $(`<div id="graphDataSelection"></div>`);
-                        creator.append(dataRegion); 
+                        creator.append(dataRegion);
                         dataRegion.append(`<div><h2 class="has-text-warning">${loc('hell_graph_data')}</h2></div>`);
                         Object.keys(global.portal.observe.stats).forEach(function(dataSet){
                             ['kills','gems'].forEach(function(group){
@@ -4869,7 +4869,7 @@ function drawHellAnalysis(){
                                 </div>
                             </div>
                         `);
-                        
+
                         vBind({
                             el: `#specialModal`,
                             data: {
@@ -4934,7 +4934,7 @@ function drawHellAnalysis(){
             }
         }
     });
-    
+
     //Draw existing graphs.
     Object.keys(global.portal.observe.graphs).forEach(function(id){
         drawGraph(graphArea,global.portal.observe.graphs[id]);
@@ -4961,7 +4961,7 @@ function drawGraph(info,graphInfo){
     if (hell_graphs[id]){
         hell_graphs[id].graph.destroy();
     }
-    
+
     let chartCont = $(`<div id="graph-${id}-container" class="graphContainer"></div>`);
     info.append(chartCont);
     chartCont.append(`<div id="graph-${id}-controls" class="graphControls">
@@ -4975,7 +4975,7 @@ function drawGraph(info,graphInfo){
     </div>`);
     let graph = $(`<div class="graph"></div>`);
     chartCont.append(graph);
-    
+
     vBind({
         el: `#graph-${id}-controls`,
         methods: {
@@ -4988,10 +4988,10 @@ function drawGraph(info,graphInfo){
             }
         }
     });
-    
+
     let newChart = $(`<canvas id="${graphInfo.chartID}"></canvas>`);
     graph.append(newChart);
-    
+
     hell_graphs[id] = {
         data: graphInfo.data
     };
@@ -5040,9 +5040,9 @@ function drawHellReports(){
         return;
     }
     purgeReports();
-    
+
     let list = ``;
-    
+
     let info = ($(`#h_Report`));
     let reports = $(`<div id="hellReport" class="hellReports"></div>`);
     info.append(reports);
@@ -5057,7 +5057,7 @@ function drawHellReports(){
     let reportList = $(`<div id="hellReportList"></div>`);
     reportListSection.append(reportList);
     reports.append($(`<div id="hellReportDisplay" class="reportDisplay is-vertical vscroll"></div>`));
-    
+
     let recentDay = { year: 0, day: 0 };
     if (Object.keys(hell_reports).length){
         recentDay.year = Object.keys(hell_reports)[0].split('-')[1];
@@ -5070,10 +5070,15 @@ function drawHellReports(){
             startYear = Object.keys(hell_reports)[0].split('-')[1];
             startDay = Object.keys(hell_reports[`year-${recentDay.year}`])[0].split('-')[1];
         }
+        let reportYear = '';
         for (startYear; startYear<global.city.calendar.year; startYear++){
+            reportYear = hell_reports[`year-${startYear}`];
+            if (! reportYear) continue;
             for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+                const reportDay = reportYear[`day-${startDay}`];
+                if (! reportDay) continue;
                 list = `
-                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? '<span class="has-text-advanced">&#9830</span>' : ''}</div>
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${reportDay.foundGem ? '<span class="has-text-advanced">&#9830</span>' : ''}</div>
                 ` + list;
             }
             startDay = 1;
@@ -5081,12 +5086,12 @@ function drawHellReports(){
         //Remaining days in current year.
         for (startDay; startDay<global.city.calendar.day; startDay++){
             list = `
-                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">&#9830</span>` : ''}</div>
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${reportYear[`day-${startDay}`].foundGem ? `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">&#9830</span>` : ''}</div>
             ` + list;
         }
         recentDay.year = startYear;
         recentDay.day = startDay;
-        
+
         let reportList = ($(`#hellReportList`));
         clearElement(reportList);
         reportList.append(list);
@@ -5242,7 +5247,7 @@ function drawHellReports(){
                 info.append(displayText);
             });
         }
-    
+
         vBind({
             el: '#hellReportDisplay',
             data: {
