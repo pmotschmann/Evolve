@@ -1634,10 +1634,6 @@ function costMultiplier(project,offset,base,multiplier,wiki){
     if (((wiki && wiki.creative) || (!wiki && global.race['creative'])) && project !== 'syphon'){
         multiplier -= traits.creative.vars()[0];
     }
-    let fathom = fathomCheck('human');
-    if(fathom > 0){
-        multiplier -= traits.creative.vars(1)[0];
-    }
     if (offset){
         rank += offset;
     }
