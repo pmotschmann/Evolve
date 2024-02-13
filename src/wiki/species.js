@@ -3,6 +3,7 @@ import { loc } from './../locale.js';
 import { clearElement, popover, getEaster, getTraitDesc } from './../functions.js';
 import { races, traits, genus_traits, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
+import { actions } from './../actions.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
 export function speciesPage(zone){
@@ -47,6 +48,32 @@ export function customPage(content) {
     ascendLab(lab);
 }
 
+const evolutionPath = {
+    angelic: ['phagocytosis', 'mammals', 'celestial'],
+    aquatic: ['phagocytosis', 'aquatic'],
+    avian: ['phagocytosis', 'eggshell', 'endothermic'],
+    carnivore: ['phagocytosis', 'mammals', 'animalism', 'carnivore'],
+    demonic: ['phagocytosis', 'mammals', 'demonic'],
+    eldritch: ['phagocytosis', 'eldritch'],
+    fey: ['phagocytosis', 'fey'],
+    fungi: ['chitin'],
+    giant: ['phagocytosis', 'mammals', 'gigantism'],
+    heat: ['phagocytosis', 'heat'],
+    herbivore: ['phagocytosis', 'mammals', 'animalism', 'herbivore'],
+    humanoid: ['phagocytosis', 'mammals', 'humanoid'],
+    insectoid: ['phagocytosis', 'athropods'],
+    plant: ['chloroplasts'],
+    polar: ['phagocytosis', 'polar'],
+    reptilian: ['phagocytosis', 'eggshell', 'ectothermic'],
+    sand: ['phagocytosis', 'sand'],
+    small: ['phagocytosis', 'mammals', 'dwarfism'],
+    synthetic: ['exterminate'],
+};
+
+Object.keys(evolutionPath).forEach(function (key) {
+    evolutionPath[key] = evolutionPath[key].map(function (s) { return typeof actions.evolution[s].title === 'function' ? actions.evolution[s].title() : actions.evolution[s].title; }).join(' -> ');
+});
+
 export function racesPage(content){
     content = sideMenu('create',content);
 
@@ -87,7 +114,7 @@ export function racesPage(content){
         info.append(genes);
         list.push(race);
 
-        popover(`genus${race}`,$(`<div>${loc(`genelab_genus_${races[race].type}_desc`)}</div>`),{ wide: true, classes: 'w25' });
+        popover(`genus${race}`,$(`<div>${loc(`genelab_genus_${races[race].type}_desc`)}<br><br>${evolutionPath[races[race].type]}</div>`),{ wide: true, classes: 'w25' });
 
         for (let i=0; i<traitList.length; i++){
             let id = `raceTrait${race}${traitList[i].t}`;

@@ -96,5 +96,7 @@ export const locales = {
     'ko-KR': '한국어',
     'cs-CZ': 'Čeština',
     'ru-RU': 'Русский',
+    'pl-PL': 'Polski',
+    'de-DE': 'Deutsch',
     'im-PL': 'Igpay-Atinlay'
 };

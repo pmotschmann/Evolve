@@ -4,7 +4,7 @@ import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
-import { armyRating, govCivics } from './civics.js';
+import { armyRating, govCivics, garrisonSize } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { production } from './prod.js';
@@ -1970,7 +1970,7 @@ export function buildFortress(parent,full){
     let wallStatus = $('<div></div>');
     fort.append(wallStatus);
 
-    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`))
+    wallStatus.append($(`<span class="has-text-warning" :aria-label="defense()">${loc('fortress_wall')} <span :class="wall()">{{ f.walls }}%</span></span>`));
 
     let station = $(`<div></div>`);
     fort.append(station);
@@ -1991,6 +1991,14 @@ export function buildFortress(parent,full){
     station.append($('<span role="button" aria-label="increase size of each patrol" class="add has-text-success" @click="patSizeInc"><span>&raquo;</span></span>'));
 
     station.append($(`<span class="hireLabel"><button v-show="g.mercs" class="button merc" @click="hire" :aria-label="hireLabel()">${loc('civics_garrison_hire_mercenary')}</button></span>`));
+
+    var bunks = $('<div class="bunks"></div>');
+    station.append(bunks);
+    bunks.append($(`<span class="has-text-warning">${loc('civics_garrison')}: </span>`));
+    let soldier_title = global.tech['world_control'] && !global.race['truepath'] ? loc('civics_garrison_peacekeepers') : loc('civics_garrison_soldiers');
+    bunks.append($(`<span><span class="soldier">${soldier_title}</span> <span v-html="$options.filters.stationed(g.workers)"></span> / <span>{{ g.max | s_max }} | <span></span>`));
+    bunks.append($(`<span v-show="g.crew > 0"><span class="crew">${loc('civics_garrison_crew')}</span> <span>{{ g.crew }} | </span></span>`));
+    bunks.append($(`<span><span class="wounded">${loc('civics_garrison_wounded')}</span> <span>{{ g.wounded }}</span></span>`));
 
     let color = global.settings.theme === 'light' ? ` type="is-light"` : ` type="is-dark"`;
     let reports = $(`<div></div>`);
@@ -2190,6 +2198,12 @@ export function buildFortress(parent,full){
             },
             trainTime(r,p){
                 return r === 0 ? timeFormat(-1) : timeFormat((100 - p) / (r * 4));
+            },
+            stationed(){
+                return garrisonSize();
+            },
+            s_max(v){
+                return garrisonSize(true);
             }
         }
     });
@@ -2378,7 +2392,7 @@ export function bloodwar(){
 
     let wendFathom = fathomCheck('wendigo');
     if (wendFathom > 0){
-        gem_chance = Math.round(gem_chance * ((100 - traits.ghostly.vars(1)[2]) / 100 * wendFathom));
+        gem_chance = Math.round(gem_chance * ((100 - (traits.ghostly.vars(1)[2] * wendFathom)) / 100));
     }
 
     if (gem_chance < 12){
@@ -4770,7 +4784,7 @@ function drawHellAnalysis(){
                     return loc('hell_analysis_start',[start.year, start.day]);
                 },
                 dropdownLabel(open){
-                    return open ? '⮝' : '⮟';
+                    return open ? '▲' : '▼';
                 }
             }
         });
