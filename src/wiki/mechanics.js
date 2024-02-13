@@ -264,7 +264,7 @@ export function mechanicsPage(content){
     }
 
     { // Spies
-        let spy = infoBoxBuilder(mainContent,{ name: 'spy', template: 'mechanics', label: loc('wiki_mechanics_spy'), paragraphs: 8, break: [3,4,5,6,7], h_level: 2,
+        let spy = infoBoxBuilder(mainContent,{ name: 'spy', template: 'mechanics', label: loc('wiki_mechanics_spy'), paragraphs: 9, break: [3,4,5,6,7,9], h_level: 2,
             para_data: {
                 1: [loc('tech_spy')],
                 4: [1,loc('civics_gov_relations'),loc('civics_gov_mil_rate')],

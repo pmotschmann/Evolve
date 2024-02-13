@@ -3031,6 +3031,10 @@ a {
         .training .observe {
             bottom: .25rem;
         }
+
+        .bunks {
+            margin: 0.25rem 0 0.125rem;
+        }
     }
 
     .garrison {
@@ -4754,6 +4758,39 @@ div.bigbang {
     .create {
         margin-top: 1rem;
         text-align: center;
+    }
+}
+
+.listqueuestyle .main .bldQueue,
+.listqueuestyle .main .bldQueue.right,
+.numberedlistqueuestyle .main .bldQueue,
+.numberedlistqueuestyle .main .bldQueue.right,
+.bulletlistqueuestyle .main .bldQueue,
+.bulletlistqueuestyle .main .bldQueue.right {
+
+    li {
+        margin: 0.25rem 0;
+        display: list-item;
+    }
+
+    li:not(:last-child) .queued:after {
+        content: ""
+    }
+}
+
+.numberedlistqueuestyle .main .bldQueue,
+.numberedlistqueuestyle .main .bldQueue.right {
+    li {
+        list-style-type: numeric;
+        list-style-position: inside;
+    }
+}
+
+.bulletlistqueuestyle .main .bldQueue,
+.bulletlistqueuestyle .main .bldQueue.right {
+    li {
+        list-style-type: disc;
+        list-style-position: inside;
     }
 }
 

@@ -5,7 +5,7 @@ import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
 import { govActive } from './governor.js';
 import { govEffect } from './civics.js';
-import { highPopAdjust, production } from './prod.js';
+import { highPopAdjust, production, teamster } from './prod.js';
 import { loc } from './locale.js';
 
 export const resource_values = {
@@ -477,6 +477,13 @@ export const craftingRatio = (function(){
                     name: loc(`mastery`),
                     manual: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100)),
                     auto: 1 + (calc_mastery() / (global.race['weak_mastery'] ? 50 : 100))
+                });
+            }
+            if (global.race['gravity_well']){
+                crafting.general.multi.push({
+                    name: loc(`evo_challenge_gravity_well`),
+                    manual: teamster(1),
+                    auto: teamster(1)
                 });
             }
         }

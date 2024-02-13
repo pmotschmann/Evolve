@@ -1688,7 +1688,6 @@ const tauCetiModules = {
             title(){
                 return housingLabel('small');
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
@@ -4835,7 +4834,7 @@ export const spacePlanetStats = {
     spc_neptune: { dist: 30.08, orbit: 60152, size: 1 },
     spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true },
-    spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
+    spc_eris: { dist: 68, orbit: 204060, size: 0.5 },
     tauceti: { dist: 752568.8, orbit: -2, size: 2 },
 };
 
@@ -5171,7 +5170,6 @@ export function loneSurvivor(){
                 hunting: 0,
                 crafting: 0,
                 total: 0,
-                crafting: 0
             };
         }
 

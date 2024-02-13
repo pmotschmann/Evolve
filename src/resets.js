@@ -120,6 +120,9 @@ export function bioseed(){
     });
     unlockAchieve(`genus_${genus}`);
     
+    if (global.race['gravity_well']){
+        unlockAchieve(`escape_velocity`);
+    }
     if (global.race['truepath']){
         unlockAchieve(`exodus`);
     }
@@ -611,6 +614,9 @@ export function ascend(){
 export function descension(){
     if (webWorker.w){
         webWorker.w.terminate();
+    }
+    if (!global['sim']){
+        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
     }
     clearSavedMessages();
 
