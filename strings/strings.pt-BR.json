@@ -1720,7 +1720,7 @@
   "tech_adamantite_crates_effect": "Infundir suas caixas com adamantita as tornará muito mais fortes, aumentando a carga máxima por caixa.",
   "tech_graphene_crates_effect": "Ao adicionar grafeno em suas caixas, você pode torná-las super fortes, aumentando ainda mais sua capacidade de carga útil.",
   "tech_bolognium_crates_effect": "Caixas infundidas com bolonhio podem armazenar mais objetos de valor do que nunca",
-  "tech_containers": "Contêineres %0",
+  "tech_containers": "Contêineres de %0",
   "tech_steel_containers_desc": "Projeta melhores contêineres feitos de %0",
   "tech_steel_containers_effect": "Contêineres de %0 duráveis ​​são uma alternativa viável para caixas de madeira baratas.",
   "tech_steel_containers_alt_effect": "Contêineres de %1 duráveis são uma alternativa viável para caixas de %0 baratas.",
