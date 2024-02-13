@@ -20,6 +20,8 @@ jobs:
         uses: actions/configure-pages@v3
 
       - run: |
+          sed -i -e 's_src="src/main.js"_src="evolve/main.js"_' index.html
+          sed -i -e 's_src="src/wiki/wiki.js"_src="wiki/wiki.js"_' wiki.html
           rm -rf .gitattributes .gitignore .github/ buildEvolve.js buildWiki.js
           rm -rf package-lock.json package.json README.md LICENSE
           rm -rf node_modules/ src/
