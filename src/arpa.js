@@ -1609,7 +1609,7 @@ export function arpaAdjustCosts(costs,offset,wiki){
 }
 
 function creativeAdjust(costs,offset,wiki){
-    if ((wiki && wiki.creative) || (!wiki && global.race['creative']) || (!wiki && fathom > 0)){
+    if ((wiki && wiki.creative) || (!wiki && global.race['creative'])){
         var newCosts = {};
         let fathom = fathomCheck('human');
         Object.keys(costs).forEach(function (res){
