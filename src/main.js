@@ -1279,8 +1279,9 @@ function fastLoop(){
         let divisor = 5;
         global.city.morale.unemployed = 0;
         if (!global.city.ptrait.includes('mellow')){
-            morale -= global.civic.unemployed.workers;
-            global.city.morale.unemployed = -(global.civic.unemployed.workers);
+            let unemployed = global.civic.unemployed.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1);
+            morale -= unemployed;
+            global.city.morale.unemployed = -(unemployed);
         }
         else {
             divisor *= planetTraits.mellow.vars()[0];
