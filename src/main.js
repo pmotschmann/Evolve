@@ -975,8 +975,9 @@ function fastLoop(){
     let capyFathom = fathomCheck('capybara');
     if (capyFathom > 0 || (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display)){
         let rawZen = global.resource.Zen.amount;
-        if (capyFathom > 0){
-            rawZen += Math.round(capyFathom * 500);
+        let fathom = fathomCheck('capybara');
+        if (fathom > 0){
+            rawZen += Math.round(fathom * 500);
         }
         let zen = rawZen / (rawZen + 5000);
         breakdown.p['Global'][loc('trait_calm_bd')] = `+${(zen * 100).toFixed(2)}%`;
@@ -7086,7 +7087,7 @@ function fastLoop(){
             let craft_costs = global.race['resourceful'] ? (1 - traits.resourceful.vars()[0] / 100) : 1;
             let arraakFathom = fathomCheck('arraak');
             if (arraakFathom > 0){
-                craft_costs -= traits.resourceful.vars(1)[0] / 100 * arraakFathom;
+                craft_costs - traits.resourceful.vars(1)[0] / 100 * arraakFathom;
             }
             let crafting_costs = craftCost();
             let crafting_usage = {};
