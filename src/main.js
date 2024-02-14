@@ -3960,7 +3960,6 @@ function fastLoop(){
             });
 
             let assembly = global.tech['factory'] || 0;
-            let tauBonus = global.tech['isolation'] ? 1 + ((support_on['colony'] || 0) * 0.5) : 1;
 
             if (global.city.factory['Lux'] && global.city.factory['Lux'] > 0){
                 let fur_cost = global.city.factory.Lux * f_rate.Lux.fur[assembly] * eff;
@@ -3974,10 +3973,10 @@ function fastLoop(){
                 breakdown.p.consume.Furs[loc('city_factory')] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
 
-                let demand = global.resource[global.race.species].amount * f_rate.Lux.demand[assembly] * eff;
+                let demand = highPopAdjust(global.resource[global.race.species].amount) * f_rate.Lux.demand[assembly] * eff;
                 demand = luxGoodPrice(demand);
 
-                let delta = workDone * demand * tauBonus;
+                let delta = workDone * demand;
                 if (global.race['gravity_well']){ delta = teamster(delta); }
                 FactoryMoney = delta * hunger;
 
