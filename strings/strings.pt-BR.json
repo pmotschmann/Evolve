@@ -124,7 +124,7 @@
   "settings15": "Modo como a Fila de Construção gere a fusão de itens semelhantes na fila. Pode fundir itens semelhantes se estiverem próximos uns dos outros na fila, independentemente do local da fila, ou nunca os fundir totalmente.",
   "settings16": "Habilitar o aprimoramento do Dispositivo Touch Experimental",
   "enable_reset": "Liberar Botões de Reset",
-  "reset_warn": "Atenção: Isso redefine completamente todo o seu progresso e não pode ser desfeito. Esta NÃO é uma mecânica de prestígio; você está apagando os dados do jogo. Mantenha esse botão desativado.",
+  "reset_warn": "Atenção: Isso redefine completamente todo o seu progresso e não pode ser desfeito. Esta NÃO é uma mecânica de prestígio; ao continuar, você estará apagando os dados do jogo. Mantenha esse botão desativado.",
   "reset_soft": "Soft Reset",
   "reset_hard": "Hard Reset",
   "pause": "Pausar Jogo",
