@@ -3,6 +3,20 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.11`,
+        date: `2/??/2024`,
+        changes: [
+            `Community fixes:`,
+            `New Power settings.`,
+            `Fixed loot bug with Gravity Well and Dark Energy.`,
+            `Fixed pet names in pet events.`,
+            `Fixed issue with Aquarius sign and Tourist Centers.`,
+            `Fixed bugs with Arraak and Human thralls.`,
+            `Many bug fixes related to High Population trait`,
+            `Many language updates.`
+        ]
+    },
+    {
         version: `1.3.10`,
         date: `1/23/2024`,
         changes: [
