@@ -6847,7 +6847,8 @@ const techs = {
         effect: loc('tech_slave_pens_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['slave_pen'] = { count: 0, slaves: 0 };
+                global.city['slave_pen'] = { count: 0 };
+                global.resource.Slave.amount = 0;
                 return true;
             }
             return false;

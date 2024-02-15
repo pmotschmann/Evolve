@@ -1776,14 +1776,13 @@ function war_campaign(gov){
 
         if (global.race['slaver'] && global.city['slave_pen']){
             let max = global.city.slave_pen.count * 4;
-            if (max > global.city.slave_pen.slaves){
+            if (max > global.resource.Slave.amount){
                 let slaves = Math.floor(seededRandom(0,global.civic.garrison.tactic + 2,true));
-                if (slaves + global.city.slave_pen.slaves > max){
-                    slaves = max - global.city.slave_pen.slaves;
+                if (slaves + global.resource.Slave.amount > max){
+                    slaves = max - global.resource.Slave.amount;
                 }
                 if (slaves > 0){
-                    global.city.slave_pen.slaves += slaves;
-                    global.resource.Slave.amount = global.city.slave_pen.slaves;
+                    global.resource.Slave.amount += slaves;
                     messageQueue(loc('civics_garrison_capture',[slaves]),'success',false,['combat']);
                 }
             }
