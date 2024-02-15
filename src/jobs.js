@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, support_on } from './vars.js';
+import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
@@ -689,16 +689,28 @@ export function craftsmanCap(res){
 }
 
 export function limitCraftsmen(res){
-    if (global.city.foundry[res]){
-        let cap = craftsmanCap(res);
-        if (cap < global.city.foundry[res]){
-            let diff = global.city.foundry[res] - cap;
-            global.civic.craftsman.workers -= diff;
-            global.city.foundry.crafting -= diff;
-            global.city.foundry[res] -= diff;
+    // Remember previous crafter limits and refresh UI later on if they change
+    if (!tmp_vars.hasOwnProperty('craftsman_cap')){
+        tmp_vars.craftsman_cap = {};
+    }
 
-            loadFoundry();
-        }
+    let cap = craftsmanCap(res);
+    let refresh = false;
+    if (cap < global.city.foundry[res]){
+        let diff = global.city.foundry[res] - cap;
+        global.civic.craftsman.workers -= diff;
+        global.city.foundry.crafting -= diff;
+        global.city.foundry[res] -= diff;
+        refresh = true;
+    }
+    else if (tmp_vars['craftsman_cap'].hasOwnProperty(res) && cap != tmp_vars['craftsman_cap'][res]){
+        refresh = true;
+    }
+    tmp_vars['craftsman_cap'][res] = cap;
+
+    // Refresh UI when the cap changes due to power balancing
+    if (refresh){
+        loadFoundry();
     }
 }
 
