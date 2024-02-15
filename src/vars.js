@@ -1393,7 +1393,7 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 if (!global.settings['locale']){
-    global.settings['locale'] = 'en-us';
+    global.settings['locale'] = 'en-US';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
