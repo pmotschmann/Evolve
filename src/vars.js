@@ -1168,7 +1168,7 @@ if (convertVersion(global['version']) < 103002){
     }
 }
 
-if (convertVersion(global['version']) < 103010){
+if (convertVersion(global['version']) < 103011){
     if (global.city.hasOwnProperty('slave_pen') && global.city.slave_pen.hasOwnProperty('slaves')){
         global.resource.Slave.amount = global.city.slave_pen.slaves;
         delete global.city.slave_pen.slaves;
