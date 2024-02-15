@@ -10195,9 +10195,20 @@ function midLoop(){
         let min = rem * 5;
         let max = totHeight - (5 * rem);
 
-        if ($(`#buildQueue`).get(0).scrollHeight > $(`#buildQueue`).get(0).clientHeight) {
+        const buildQueueElement = $(`#buildQueue`).get(0);
+        if (buildQueueElement.scrollHeight > buildQueueElement.clientHeight) {
             // The build queue has a scroll-bar.
             buildHeight++;
+        } else {
+            let minHeight = rem;
+            buildQueueElement.childNodes.forEach(function (e) {
+                minHeight += e.clientHeight || 0;
+            });
+
+            if (buildQueueElement.clientHeight > minHeight) {
+                // The build queue is larger than it needs to be.
+                buildHeight = Math.min(buildHeight, minHeight);
+            }
         }
 
         if (msgHeight < min) {
