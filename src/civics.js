@@ -381,11 +381,11 @@ function drawGovModal(){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
                     if (global.race['lawless']){
-                        time = Math.round(time / (100 - traits.lawless.vars()[0]));
+                        time = Math.round(time * ((100 - traits.lawless.vars()[0]) / 100));
                     }
                     let fathom = fathomCheck('tuskin');
                     if (fathom > 0){
-                        time = Math.round(time / (100 - traits.lawless.vars(1)[0] * fathom));
+                        time = Math.round(time * ((100 - traits.lawless.vars(1)[0] * fathom) / 100));
                     }
                     let aristoVal = govActive('aristocrat',0);
                     if (aristoVal){
@@ -1543,12 +1543,12 @@ function war_campaign(gov){
             armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
         }
         if (global.race['armored']){
-            let armored = 1 - (traits.armored.vars()[0] / 100);
+            let armored = traits.armored.vars()[0] / 100;
             armor += Math.floor(death * armored);
         }
         let fathom = fathomCheck('tortoisan');
         if (fathom > 0){
-            let armored = 1 - (traits.armored.vars(1)[0] / 100 * fathom);
+            let armored = traits.armored.vars(1)[0] / 100 * fathom;
             armor += Math.floor(death * armored);
         }
         if (global.civic.garrison.raid > wounded){

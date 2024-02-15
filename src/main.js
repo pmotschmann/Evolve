@@ -1278,8 +1278,9 @@ function fastLoop(){
         let divisor = 5;
         global.city.morale.unemployed = 0;
         if (!global.city.ptrait.includes('mellow')){
-            morale -= global.civic.unemployed.workers;
-            global.city.morale.unemployed = -(global.civic.unemployed.workers);
+            let unemployed = global.civic.unemployed.workers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1);
+            morale -= unemployed;
+            global.city.morale.unemployed = -(unemployed);
         }
         else {
             divisor *= planetTraits.mellow.vars()[0];
@@ -3079,6 +3080,9 @@ function fastLoop(){
             let res = global.race['kindling_kindred'] || global.race['smoldering'] ? 'Stone' : 'Lumber';
             if (global.resource[res].display){
                 let pop = global.resource[global.race.species].amount + global.civic.garrison.workers;
+                if(global.race['high_pop']){
+                    pop /= traits.high_pop.vars()[0];
+                }
                 let res_cost = pop * traits.gnawer.vars()[0];
                 breakdown.p.consume[res][loc('trait_gnawer_bd')] = -(res_cost);
                 modRes(res, -(res_cost * time_multiplier));
@@ -3158,8 +3162,8 @@ function fastLoop(){
                 else if (global.race['unfathomable']){
                     if (global.city['captive_housing']){
                         let strength = weaponTechModifer();
-                        let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
-                        hunt *= racialTrait(hunt,'hunting');
+                        let hunt = workerScale(global.civic.hunter.workers,'hunter')
+                        hunt *= racialTrait(hunt,'hunting') * strength;
                         if (global.race['servants']){
                             let serve_hunt = global.race.servants.jobs.hunter * strength;
                             serve_hunt *= servantTrait(global.race.servants.jobs.hunter,'hunting');
@@ -3228,9 +3232,9 @@ function fastLoop(){
                         let food = (farmers * farmerValue(true)) + (farmhands * farmerValue(false));
 
                         if (global.race['servants']){
-                            let servants = jobScale(global.race.servants.jobs.farmer);
+                            let servants = global.race.servants.jobs.farmer;
                             let servehands = 0;
-                            let open = jobScale(global.city.farm.count) - farmers;
+                            let open = global.city.farm.count - (farmers / (global.race['high_pop'] ? traits.high_pop.vars()[0] : 1));
                             if (servants > open){
                                 servehands = servants - open;
                                 servants = open;
@@ -3274,6 +3278,7 @@ function fastLoop(){
             let hunting = 0;
             if (global.tech['military']){
                 hunting = (global.race['herbivore'] && !global.race['carnivore']) || global.race['artifical'] ? 0 : armyRating(garrisonSize(),'hunting') / 3;
+                hunting *= production('psychic_boost','Food');
             }
 
             let biodome = 0;
@@ -3656,14 +3661,13 @@ function fastLoop(){
                     serve *= servantTrait(global.race.servants.jobs.forager,'hunting');
                     hunters += serve;
                 }
-
+                if (global.city.biome === 'oceanic'){
+                    hunters *= biomes.oceanic.vars()[2];
+                }
+                else if (global.city.biome === 'tundra'){
+                    hunters *= biomes.tundra.vars()[0];
+                }
                 hunters *= weapons / 20;
-                if (global.city.biome === 'savanna'){
-                    hunters *= biomes.savanna.vars()[1];
-                }
-                if (global.race['high_pop']){
-                    hunters = highPopAdjust(hunters);
-                }
                 hunters *= production('psychic_boost','Furs');
                 breakdown.p['Furs'][loc(global.race['unfathomable'] ? 'job_raider' : 'job_hunter')] = hunters  + 'v';
                 if (hunters > 0){
@@ -3740,13 +3744,10 @@ function fastLoop(){
             if (global.race['servants']){
                 let serve = jobScale(global.race.servants.jobs.hunter);
                 serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
-                hunters += serve;
+                hunters += highPopAdjust(serve);
             }
 
             hunters *= weapons / 20;
-            if (global.race['high_pop']){
-                hunters = highPopAdjust(hunters);
-            }
 
             let stealable = ['Lumber','Chrysotile','Stone','Crystal','Copper','Iron','Aluminium','Cement','Coal','Oil','Uranium','Steel','Titanium','Alloy','Polymer','Iridium'];
             stealable.forEach(function(res){
@@ -5053,20 +5054,17 @@ function fastLoop(){
                 }
             }
             else if (global.race['soul_eater'] && global.race.species !== 'wendigo' && global.race['evil']){
-                let weapons = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
+                let weapons = weaponTechModifer();
                 let hunters = workerScale(global.civic.hunter.workers,'hunter');
                 hunters *= racialTrait(hunters,'hunting');
 
                 if (global.race['servants']){
                     let serve = jobScale(global.race.servants.jobs.hunter);
                     serve *= servantTrait(global.race.servants.jobs.hunter,'hunting');
-                    hunters += serve;
+                    hunters += highPopAdjust(serve);
                 }
 
                 hunters *= weapons / 2;
-                if (global.race['high_pop']){
-                    hunters = highPopAdjust(hunters);
-                }
                 hunters *= production('psychic_boost','Lumber');
 
                 let soldiers = armyRating(garrisonSize(),'hunting') / 3;
@@ -5783,7 +5781,10 @@ function fastLoop(){
                 modRes('Iron', delta * time_multiplier);
 
                 if (global.tech['titanium'] && global.tech['titanium'] >= 2){
-                    let labor_base = support_on['iron_ship'] ? (highPopAdjust(workerScale(global.civic.miner.workers,'miner')) / 4) + (support_on['iron_ship'] / 2) : (workerScale(global.civic.miner.workers,'miner') / 4);
+                    let labor_base = highPopAdjust(workerScale(global.civic.miner.workers,'miner')) / 4;
+                    if(support_on['iron_ship']){
+                        labor_base += support_on['iron_ship'] / 2;
+                    }
                     let iron = labor_base * iron_smelter * 0.1;
                     delta = iron * global_multiplier;
                     if (star_forge > 0){
@@ -7583,9 +7584,9 @@ function midLoop(){
         caps[global.race.species] = 0;
 
         if (global.race['unfathomable'] && global.city['captive_housing']){
-            let strength = global.tech['military'] ? (global.tech.military >= 5 ? global.tech.military - 1 : global.tech.military) : 1;
-            let hunt = workerScale(global.civic.hunter.workers,'hunter') * strength;
-            hunt *= racialTrait(hunt,'hunting');
+            let strength = weaponTechModifer();
+            let hunt = workerScale(global.civic.hunter.workers,'hunter')
+            hunt *= racialTrait(hunt,'hunting') * strength;
             if (global.race['swift']){
                 hunt *= 1 + (traits.swift.vars()[1] / 100);
             }

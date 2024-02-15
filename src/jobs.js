@@ -667,10 +667,10 @@ export function farmerValue(farm,servant){
         farming += global.tech['agriculture'] && global.tech.agriculture >= 2 ? 1.15 : 0.65;
     }
     if (global.race['living_tool'] && !servant){
-        farming *= (global.tech['science'] && global.tech.science > 0 ? global.tech.science / 5 : 0) + 1;
+        farming *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science / 5 : 0);
     }
     else {
-        farming *= (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0) + 1;
+        farming *= 1 + (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0);
     }
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
     farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
@@ -686,9 +686,6 @@ export function farmerValue(farm,servant){
     }
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
     farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
-    if (servant){
-        farming *= jobScale(1);
-    }
     return farming;
 }
 
