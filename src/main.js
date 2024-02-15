@@ -1,7 +1,7 @@
 import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
-import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
+import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone, addATime, exceededATimeThreshold, loopTimers } from './functions.js';
 import { races, traits, racialTrait, servantTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
@@ -491,7 +491,7 @@ vBind({
             return universe === 'standard' || universe === 'bigbang' ? '' : universe_types[universe].name;
         },
         remain(at){
-            let minutes = Math.ceil(at * 2.5 / 60);
+            let minutes = Math.ceil(at * loopTimers().longTimer / 60000);
             if (minutes > 0){
                 let hours = Math.floor(minutes / 60);
                 minutes -= hours * 60;
@@ -11467,8 +11467,19 @@ function longLoop(){
         drawAchieve();
     }
 
+    const currentTimestamp = date.valueOf();
+    // Checking if a substantial amount of time elapsed since last longLoop, indicating system suspension,
+    // hibernation or something similar (the threshold is the same as for counting accelerated time during pause).
+    let restartNeeded = false;
+    if (!global.settings.pause && exceededATimeThreshold(currentTimestamp)){
+        // Adding accelerated time based on last current time which is updated below.
+        addATime(currentTimestamp);
+        // The restart is needed to update the duration of the loop interval.
+        restartNeeded = true;
+    }
+
     // Save game state
-    global.stats['current'] = Date.now();
+    global.stats['current'] = currentTimestamp;
     if (!global.race.hasOwnProperty('geck')){
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
     }
@@ -11486,14 +11497,19 @@ function longLoop(){
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');
     }
+
     if (atrack.t > 0){
         atrack.t--;
         global.settings.at--;
         if (global.settings.at <= 0 || atrack.t <= 0){
             global.settings.at = 0;
-            gameLoop('stop');
-            gameLoop('start');
+            restartNeeded = true;
         }
+    }
+
+    if (restartNeeded){
+        gameLoop('stop');
+        gameLoop('start');
     }
 }
 
