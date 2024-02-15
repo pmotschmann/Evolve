@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, sp
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
@@ -748,15 +748,7 @@ const fortressModules = {
                 loadFoundry();
             },
             postPower(on){
-                if (!on){
-                    if (global.portal.hell_forge.on < global.city.foundry.Scarletite){
-                        let diff = global.city.foundry.Scarletite - global.portal.hell_forge.on;
-                        global.civic.craftsman.workers -= diff;
-                        global.city.foundry.crafting -= diff;
-                        global.city.foundry.Scarletite -= diff;
-                    }
-                }
-                loadFoundry();
+                limitCraftsmen('Scarletite');
             }
         },
         inferno_power: {

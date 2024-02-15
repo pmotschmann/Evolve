@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
-import { jobScale, job_desc, loadFoundry } from './jobs.js';
+import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel } from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName } from './space.js';
@@ -719,6 +719,12 @@ const outerTruth = {
                     return true;
                 }
                 return false;
+            },
+            post(){
+                loadFoundry();
+            },
+            postPower(on){
+                limitCraftsmen('Quantium');
             }
         },
         operating_base: {
@@ -2227,6 +2233,10 @@ const tauCetiModules = {
                     messageQueue(loc('tau_plague4',[loc('tab_tauceti')]),'info',false,['progress']);
                     drawTech();
                 }
+                loadFoundry();
+            },
+            postPower(on){
+                limitCraftsmen('Quantium');
             }
         },
         tauceti_casino: {
