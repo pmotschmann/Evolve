@@ -1981,7 +1981,7 @@ function lootModify(val,gov){
         loot *= darkEffect('evil');
     }
     if (global.race['gravity_well']){
-        loot *= 0.25 + (0.75 * darkEffect('heavy'));
+        loot *= 1 - (0.75 * darkEffect('heavy'));
     }
 
     switch(global.civic.garrison.tactic){

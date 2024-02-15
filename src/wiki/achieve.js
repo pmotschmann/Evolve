@@ -37,7 +37,8 @@ const universeExclusives = {
     pass: ['magic'],
     fullmetal: ['magic'],
     soul_sponge: ['magic'],
-    nightmare: ['magic']
+    nightmare: ['magic'],
+    escape_velocity: ['heavy']
 };
 
 const achieveDescData = {
