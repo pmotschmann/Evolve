@@ -930,8 +930,7 @@ const techs = {
         reqs: { housing: 1, currency: 1 },
         grant: ['s_lodge',1],
         condition(){
-            return (((global.race.species === 'wendigo' || global.race['detritivore']) && !global.race['carnivore'] && !global.race['herbivore'])
-              || (global.race['carnivore'] && global.race['soul_eater']) || global.race['artifical'] || global.race['unfathomable']) ? true : false;
+            return (global.race['carnivore'] || global.race['detritivore'] || global.race['artifical'] || global.race['soul_eater'] || global.race['unfathomable']) ? true : false;
         },
         cost: {
             Knowledge(){ return global.race['artifical'] ? 10000 : 180; }
