@@ -5,7 +5,7 @@ import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from 
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
@@ -3088,7 +3088,7 @@ export const actions = {
                 }
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['tourist_center'].count++;
@@ -6124,23 +6124,45 @@ function buildPlanet(aspect,opt,args){
     }
 }
 
+// Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
 export function powerOnNewStruct(c_action,extra){
     let parts = c_action.id.split('-');
-    if (global.hasOwnProperty(parts[0]) && global[parts[0]].hasOwnProperty(parts[1]) && c_action.hasOwnProperty('powered')){
+    if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
+        return false;
+    }
+
+    // Electricity: production is negative, consumption is positive
+    let need_p = c_action.hasOwnProperty('powered') && c_action.powered() > 0;
+    let can_p = !need_p;
+    let gov_replicator = global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0;
+    if (need_p && global.city.hasOwnProperty('powered')){
         let power = global.city.power;
-        if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+        if (gov_replicator){
             power += global.race.replicator.pow;
         }
+        can_p = c_action.powered() <= power;
+    }
 
-        if (global.city.hasOwnProperty('powered') && power >= c_action.powered()){
-            global[parts[0]][parts[1]].on++;
-            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
-                global.city.power -= c_action.powered();
+    // Support: production is positive, consumption is negative
+    let need_s = c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0;
+    let can_s = !need_s;
+    if (need_s){
+        let grids = gridDefs();
+        let s_r = grids[c_action.s_type].r;
+        let s_rs = grids[c_action.s_type].rs;
+        can_s = global[s_r][s_rs].support - c_action.support() <= global[s_r][s_rs].s_max;
+    }
+
+    if (can_p && can_s || global.settings.alwaysPower){
+        global[parts[0]][parts[1]].on++;
+        if (need_p){
+            global.city.power -= c_action.powered();
+            if (gov_replicator){
                 gov_tasks.replicate.task();
             }
-            if (extra && typeof extra === 'function'){
-                return extra(c_action);
-            }
+        }
+        if (extra && typeof extra === 'function'){
+            return extra(c_action);
         }
         return true;
     }

@@ -1422,6 +1422,9 @@ if (typeof global.settings.sPackMsg === 'undefined'){
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
 }
+if (typeof global.settings.alwaysPower === 'undefined'){
+    global.settings['alwaysPower'] = false;
+}
 if (typeof global.settings.tabLoad === 'undefined'){
     global.settings['tabLoad'] = false;
 }
