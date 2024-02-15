@@ -6,6 +6,7 @@ import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
+import { jobScale } from './jobs.js';
 
 export const gmen = {
     soldier: {
@@ -167,8 +168,8 @@ export const gov_traits = {
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]+5]); },
-        vars(){ return [10,1.25,1]; },
+        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
+        vars(){ return [10,1.25,jobScale(6)]; },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
@@ -192,7 +193,7 @@ export const gov_traits = {
     athleticism: {
         name: loc(`gov_trait_athleticism`),
         effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2],wardenLabel()]); },
-        vars(){ return [1.5,2,4]; },
+        vars(){ return [1.5,jobScale(2),4]; },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
@@ -1044,7 +1045,7 @@ export const gov_tasks = {
             }
             if ( $(this)[0].req() && global.resource.Money.amount >= slaveCost && (global.resource.Money.diff >= slaveCost || global.resource.Money.amount + global.resource.Money.diff >= cashCap) ){
                 let max = global.city.slave_pen.count * 4;
-                if (max > global.city.slave_pen.slaves){
+                if (max > global.resource.Slave.amount){
                     actions.city.slave_market.action();
                 }
             }

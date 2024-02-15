@@ -381,11 +381,11 @@ function drawGovModal(){
                         time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
                     }
                     if (global.race['lawless']){
-                        time = Math.round(time / (100 - traits.lawless.vars()[0]));
+                        time = Math.round(time * ((100 - traits.lawless.vars()[0]) / 100));
                     }
                     let fathom = fathomCheck('tuskin');
                     if (fathom > 0){
-                        time = Math.round(time / (100 - traits.lawless.vars(1)[0] * fathom));
+                        time = Math.round(time * ((100 - traits.lawless.vars(1)[0] * fathom) / 100));
                     }
                     let aristoVal = govActive('aristocrat',0);
                     if (aristoVal){
@@ -952,8 +952,8 @@ function adjustTax(a,n){
                 let cap = taxCap(false);
                 if (global.race['noble']){
                     global.civic.taxes.tax_rate += inc;
-                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? 40 : 20)){
-                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? 40 : 20;
+                    if (global.civic.taxes.tax_rate > (global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1])){
+                        global.civic.taxes.tax_rate = global.civic.govern.type === 'oligarchy' ? traits.noble.vars()[1] + 20 : traits.noble.vars()[1];
                     }
                 }
                 else if (global.civic.taxes.tax_rate < cap){
@@ -1543,12 +1543,12 @@ function war_campaign(gov){
             armor += Math.floor(seededRandom(0, armor * traits.high_pop.vars()[0],true));
         }
         if (global.race['armored']){
-            let armored = 1 - (traits.armored.vars()[0] / 100);
+            let armored = traits.armored.vars()[0] / 100;
             armor += Math.floor(death * armored);
         }
         let fathom = fathomCheck('tortoisan');
         if (fathom > 0){
-            let armored = 1 - (traits.armored.vars(1)[0] / 100 * fathom);
+            let armored = traits.armored.vars(1)[0] / 100 * fathom;
             armor += Math.floor(death * armored);
         }
         if (global.civic.garrison.raid > wounded){
@@ -1776,14 +1776,13 @@ function war_campaign(gov){
 
         if (global.race['slaver'] && global.city['slave_pen']){
             let max = global.city.slave_pen.count * 4;
-            if (max > global.city.slave_pen.slaves){
+            if (max > global.resource.Slave.amount){
                 let slaves = Math.floor(seededRandom(0,global.civic.garrison.tactic + 2,true));
-                if (slaves + global.city.slave_pen.slaves > max){
-                    slaves = max - global.city.slave_pen.slaves;
+                if (slaves + global.resource.Slave.amount > max){
+                    slaves = max - global.resource.Slave.amount;
                 }
                 if (slaves > 0){
-                    global.city.slave_pen.slaves += slaves;
-                    global.resource.Slave.amount = global.city.slave_pen.slaves;
+                    global.resource.Slave.amount += slaves;
                     messageQueue(loc('civics_garrison_capture',[slaves]),'success',false,['combat']);
                 }
             }
@@ -1979,6 +1978,9 @@ function lootModify(val,gov){
     }
     if (global.race.universe === 'evil'){
         loot *= darkEffect('evil');
+    }
+    if (global.race['gravity_well']){
+        loot *= 1 - (0.75 * darkEffect('heavy'));
     }
 
     switch(global.civic.garrison.tactic){

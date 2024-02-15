@@ -178,15 +178,15 @@ const outerTruth = {
                 let gain = jobScale(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
             support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: 500 }]; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.titan_quarters.count++;
                     global.civic.titan_colonist.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.titan_quarters.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += jobScale(1);
                         if (global.civic[global.civic.d_job].workers > 0){
                             let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
@@ -227,16 +227,15 @@ const outerTruth = {
                 let aluminium = +(alum_val).toFixed(3);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special(){ return true; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.titan_mine.count++;
                     global.resource.Adamantite.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.titan_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -381,15 +380,15 @@ const outerTruth = {
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.space.g_factory.count++;
                     global.resource.Graphene.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.g_factory.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         if (global.race['kindling_kindred'] || global.race['smoldering']){
                             global.space.g_factory.Oil++;
                         }
@@ -462,15 +461,14 @@ const outerTruth = {
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support_fuel(){ return { r: 'Cipher', a: 0.06 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.decoder.count++;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.decoder.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -670,14 +668,13 @@ const outerTruth = {
                 let water = +(production('water_freighter')).toFixed(2);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.water_freighter.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.water_freighter.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -710,14 +707,13 @@ const outerTruth = {
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
             powered(){ return powerCostMod(12); },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.zero_g_lab.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.zero_g_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -749,14 +745,13 @@ const outerTruth = {
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
             powered(){ return powerCostMod(10); },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.operating_base.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.operating_base.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -914,7 +909,7 @@ const outerTruth = {
                 Neutronium(offset){ return spaceCostMultiplier('lander', offset, 10000, 1.15); },
                 Nano_Tube(offset){ return spaceCostMultiplier('lander', offset, 158000, 1.15); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             effect(wiki){
                 let oil = +fuel_adjust(50,true,wiki).toFixed(2);
                 let data = ``;
@@ -1223,14 +1218,13 @@ const outerTruth = {
                 }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
+            s_type: 'eris',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.shock_trooper.count++;
-                    if (global.space.drone_control.support < global.space.drone_control.s_max){
-                        global.space.shock_trooper.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1259,14 +1253,13 @@ const outerTruth = {
                 }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
+            s_type: 'eris',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.tank.count++;
-                    if (global.space.drone_control.support < global.space.drone_control.s_max){
-                        global.space.tank.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1662,15 +1655,14 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -2; },
             support_fuel(){ return { r: 'Food', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -2 : 75) : 1000 }; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.colony.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1688,7 +1680,6 @@ const tauCetiModules = {
             title(){
                 return housingLabel('small');
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
@@ -1875,14 +1866,13 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_pit.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.mining_pit.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2162,14 +2152,13 @@ const tauCetiModules = {
                 return desc;
             },
             special: true,
+            s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_factory.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.tau_factory.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2218,14 +2207,13 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 2 : 8) : 35); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.infectious_disease_lab.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.infectious_disease_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2550,14 +2538,13 @@ const tauCetiModules = {
                 }
                 return val;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.overseer.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.overseer.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2584,14 +2571,13 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_village.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_village.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2621,14 +2607,13 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_farm.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_farm.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2664,15 +2649,14 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_mine.count++;
                     global.resource.Unobtainium.display = true;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2727,14 +2711,13 @@ const tauCetiModules = {
                 }
                 return val;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_fun.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_fun.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2761,14 +2744,13 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_lab.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3125,7 +3107,7 @@ const tauCetiModules = {
             },
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 15 : 250 }; },
             support(){ return 1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -3155,14 +3137,15 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
+            s_type: 'tau_roid',
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 12 : 75 }; },
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_ship.count++;
-                    global.tauceti.mining_ship.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3187,13 +3170,14 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
+            s_type: 'tau_roid',
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 14 : 90 }; },
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.whaling_ship.count++;
-                    global.tauceti.whaling_ship.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -4835,7 +4819,7 @@ export const spacePlanetStats = {
     spc_neptune: { dist: 30.08, orbit: 60152, size: 1 },
     spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true },
-    spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
+    spc_eris: { dist: 68, orbit: 204060, size: 0.5 },
     tauceti: { dist: 752568.8, orbit: -2, size: 2 },
 };
 
@@ -5171,7 +5155,6 @@ export function loneSurvivor(){
                 hunting: 0,
                 crafting: 0,
                 total: 0,
-                crafting: 0
             };
         }
 

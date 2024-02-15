@@ -1178,6 +1178,22 @@ function minorEventsPage(content){
         }, section);
         sideMenu('add',`minor-events`,`rumor`,loc('wiki_events_rumor'));
     }
+
+    {   // Pet
+        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2 });
+        infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`tech_club`)]
+            }
+        }, section);
+        infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_pet'), h_level: 2, 
+            examples: [
+                loc(`event_pet_cat`,[loc(`event_cat_name3`)]),
+                loc(`event_pet_dog`,[loc(`event_dog_name0`)])
+            ]
+        }, section);
+        sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'));
+    }
 }
 
 function progressEventsPage(content){

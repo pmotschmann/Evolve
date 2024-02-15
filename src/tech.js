@@ -98,6 +98,7 @@ const techs = {
         category: 'science',
         era: 'primitive',
         reqs: { primitive: 2 },
+        condition(){ return !global.race['gravity_well'] || (global.race['gravity_well'] && global.tech['transport']) ? true : false; },
         grant: ['primitive',3],
         cost: {
             Lumber(){ return 8; },
@@ -125,6 +126,172 @@ const techs = {
                     global.resource.Zen.display = true;
                     global.city['meditation'] = { count: 0 };
                 }
+                return true;
+            }
+            return false;
+        }
+    },
+    wheel: {
+        id: 'tech-wheel',
+        title(){ return loc('tech_wheel'); },
+        desc(){ return loc('tech_wheel_desc'); },
+        category: 'transport',
+        era: 'primitive',
+        reqs: { primitive: 2 },
+        grant: ['transport',1],
+        trait: ['gravity_well'],
+        cost: {
+            Lumber(){ return 50; },
+            Stone(){ return 25; }
+        },
+        effect(){ return loc('tech_wheel_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.civic.teamster.display = true;
+                return true;
+            }
+            return false;
+        }
+    },
+    wagon: {
+        id: 'tech-wagon',
+        title(){ return loc('tech_wagon'); },
+        desc(){ return loc('tech_wagon'); },
+        category: 'transport',
+        era: 'civilized',
+        reqs: { transport: 1 },
+        condition(){
+            return global.tech['farm'] || global.tech['s_lodge'] || (global.tech['hunting'] && global.tech.hunting >= 2) ? true : false;
+        },
+        grant: ['transport',2],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 195; }
+        },
+        effect(){ return loc('tech_wagon_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    steam_engine: {
+        id: 'tech-steam_engine',
+        title(){ return loc('tech_steam_engine'); },
+        desc(){ return loc('tech_steam_engine'); },
+        category: 'transport',
+        era: 'discovery',
+        reqs: { transport: 2, smelting: 3 },
+        grant: ['transport',3],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 14345; }
+        },
+        effect(){ return loc('tech_steam_engine_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    combustion_engine: {
+        id: 'tech-combustion_engine',
+        title(){ return loc('tech_combustion_engine'); },
+        desc(){ return loc('tech_combustion_engine'); },
+        category: 'transport',
+        era: 'industrialized',
+        reqs: { transport: 3, oil: 3 },
+        grant: ['transport',4],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 46777; }
+        },
+        effect(){ return loc('tech_combustion_engine_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    hover_cart: {
+        id: 'tech-hover_cart',
+        title(){ return loc('tech_hover_cart'); },
+        desc(){ return loc('tech_hover_cart'); },
+        category: 'transport',
+        era: 'deep_space',
+        reqs: { transport: 4, elerium: 1 },
+        grant: ['transport',5],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 284000; }
+        },
+        effect(){ return loc('tech_hover_cart_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    osha: {
+        id: 'tech-osha',
+        title(){ return loc('tech_osha'); },
+        desc(){ return loc('tech_osha'); },
+        category: 'transport',
+        era: 'industrialized',
+        reqs: { transport: 3, high_tech: 3 },
+        grant: ['teamster',1],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 28262; }
+        },
+        effect(){ return loc('tech_osha_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.civic.teamster.stress = 6;
+                return true;
+            }
+            return false;
+        }
+    },
+    blackmarket: {
+        id: 'tech-blackmarket',
+        title(){ return loc('tech_blackmarket'); },
+        desc(){ return loc('tech_blackmarket'); },
+        category: 'transport',
+        era: 'industrialized',
+        reqs: { teamster: 1, currency: 5 },
+        grant: ['teamster',2],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 40666; }
+        },
+        effect(){ return loc('tech_blackmarket_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    pipelines: {
+        id: 'tech-pipelines',
+        title(){ return loc('tech_pipelines'); },
+        desc(){ return loc('tech_pipelines'); },
+        category: 'transport',
+        era: 'globalized',
+        reqs: { teamster: 2, high_tech: 6 },
+        grant: ['teamster',3],
+        trait: ['gravity_well'],
+        cost: {
+            Knowledge(){ return 95000; }
+        },
+        effect(){ return loc('tech_pipelines_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
                 return true;
             }
             return false;
@@ -1449,7 +1616,6 @@ const techs = {
         cost: {
             Knowledge(){ return 7920; }
         },
-        effect: loc('tech_magic_effect'),
         effect(){ return global.race.universe === 'magic' ? loc('tech_illusionist_effect') : loc('tech_magic_effect'); },
         action(){
             if (payCosts($(this)[0])){
@@ -4853,9 +5019,6 @@ const techs = {
             return `<div>${loc('tech_demonic_infusion_effect')}</div><div class="has-text-special">${loc('tech_demonic_infusion_effect2',[calcPrestige('descend').artifact])}</div>`;
         },
         action(){
-            if (!global['sim']){
-                save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
-            }
             if (payCosts($(this)[0])){
                 descension();
             }
@@ -4962,27 +5125,6 @@ const techs = {
         effect(){ return loc('tech_soul_binding_effect'); },
         action(){
             if (payCosts($(this)[0])){
-                return true;
-            }
-            return false;
-        }
-    },
-    soul_capacitor: {
-        id: 'tech-soul_capacitor',
-        title: loc('tech_soul_capacitor'),
-        desc: loc('tech_soul_capacitor'),
-        category: 'hell_dimension',
-        era: 'intergalactic',
-        reqs: { forbidden: 1 },
-        grant: ['forbidden',2],
-        trait: ['witch_hunter'],
-        cost: {
-            Knowledge(){ return 19500000; }
-        },
-        effect(){ return loc('tech_soul_capacitor_effect'); },
-        action(){
-            if (payCosts($(this)[0])){
-                global.portal['soul_capacitor'] = { count: 0, on: 0, energy: 0, ecap: 0 };
                 return true;
             }
             return false;
@@ -6705,7 +6847,8 @@ const techs = {
         effect: loc('tech_slave_pens_effect'),
         action(){
             if (payCosts($(this)[0])){
-                global.city['slave_pen'] = { count: 0, slaves: 0 };
+                global.city['slave_pen'] = { count: 0 };
+                global.resource.Slave.amount = 0;
                 return true;
             }
             return false;
@@ -6998,7 +7141,6 @@ const techs = {
             Knowledge(){ return 33750; },
             Oil(){ return 1500; }
         },
-        effect: loc('tech_machine_gun_effect'),
         effect(){ return global.race.universe === 'magic' ? loc('tech_fire_mage_effect') : loc('tech_machine_gun_effect'); },
         action(){
             if (payCosts($(this)[0])){
@@ -11058,7 +11200,6 @@ const techs = {
         desc: loc('tech_dark_bomb'),
         category: 'hell_dimension',
         era: 'dimensional',
-        reqs: {},
         reqs: { hell_spire: 10, b_stone: 2, waygate: 2, sphinx_bribe: 1 },
         condition(){
             let affix = universeAffix();

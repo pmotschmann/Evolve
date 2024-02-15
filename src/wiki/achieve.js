@@ -37,7 +37,8 @@ const universeExclusives = {
     pass: ['magic'],
     fullmetal: ['magic'],
     soul_sponge: ['magic'],
-    nightmare: ['magic']
+    nightmare: ['magic'],
+    escape_velocity: ['heavy']
 };
 
 const achieveDescData = {
@@ -371,7 +372,14 @@ function featDesc(feat,showFlair){
             });
         }
         let checked = `<div class="flexed wide">`;    
-        Object.keys(races).sort((a,b) => races[a].name.localeCompare(races[b].name)).forEach(function (key){
+        Object.keys(races).sort(function(a,b){
+            if (races[a].hasOwnProperty('name') && races[b].hasOwnProperty('name')){
+                return (races[a].name || 'Zombie').localeCompare(races[b].name);
+            }
+            else {
+                return 0;
+            }
+        }).forEach(function (key){
             if (key !== 'protoplasm' && (key !== 'custom' || (key === 'custom' && global.stats.achieve['ascended']))){
                 if (species[key] && species[key] >= 1){
                     checked = checked + `<span class="wide iclr${species[key]}">${races[key].name}</span>`;
