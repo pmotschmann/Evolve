@@ -168,8 +168,8 @@ export const gov_traits = {
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]]); },
-        vars(){ return [10,1.25,jobScale(6)]; },
+        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],jobScale($(this)[0].vars()[2]+5)]); },
+        vars(){ return [10,1.25,1]; },
     },
     aristocrat: {
         name: loc(`gov_trait_aristocrat`),
@@ -192,8 +192,8 @@ export const gov_traits = {
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
-        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2],wardenLabel()]); },
-        vars(){ return [1.5,jobScale(2),4]; },
+        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],jobScale($(this)[0].vars()[1]),$(this)[0].vars()[2],wardenLabel()]); },
+        vars(){ return [1.5,2,4]; },
     },
     nopain: {
         name: loc(`gov_trait_nopain`),
