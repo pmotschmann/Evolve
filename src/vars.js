@@ -201,6 +201,12 @@ if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
     });
 }
 
+if (convertVersion(global['version']) < 4010){
+    if (global.stats['achieve'] && global.stats.achieve['doomed']){
+        global.stats['portals'] = 1;
+    }
+}
+
 if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
     global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
 }
@@ -456,6 +462,12 @@ if (convertVersion(global['version']) < 8003){
 if (convertVersion(global['version']) < 8017){
     if (global.city['garrison']){
         global.city.garrison['on'] = global.city['garrison'].count;
+    }
+}
+
+if (convertVersion(global['version']) < 9000){
+    if (global.settings && global.settings.showCity){
+        global.settings.showCiv = global.settings.showCity;
     }
 }
 
@@ -1381,7 +1393,7 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 if (!global.settings['locale']){
-    global.settings['locale'] = 'en-us';
+    global.settings['locale'] = 'en-US';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
