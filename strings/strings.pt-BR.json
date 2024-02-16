@@ -7545,7 +7545,7 @@
   "wiki_trait_effect_hard_of_hearing": "-%0% Conhecimento da Universidade.",
   "wiki_trait_effect_resourceful": "-%0% Custos de elaboração.",
   "wiki_trait_effect_selenophobia": "A fase da lua afeta a produtividade. Varia de -%0% durante a lua cheia a +4% durante a lua nova.",
-  "wiki_trait_effect_leathery": "O impacto negativo do mau tempo no moral é reduzido.",
+  "wiki_trait_effect_leathery": "O impacto negativo do mau tempo no moral é reduzido de 5 para %0.",
   "wiki_trait_effect_pessimistic": "Estresse aumentado em %0 pontos.",
   "wiki_trait_effect_hoarder": "+%0% armazenamento do banco.",
   "wiki_trait_effect_solitary": "-%0 aumento de custo da Moradia Básica, +%1 aumento de custo da Moradia Média.",
