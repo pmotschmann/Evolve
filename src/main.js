@@ -6831,6 +6831,7 @@ function fastLoop(){
 
         // Income
         let rawCash = FactoryMoney ? FactoryMoney * global_multiplier : 0;
+        if (FactoryMoney && global.race['discharge'] && global.race['discharge'] > 0){rawCash *= 0.5;}
         if (global.tech['currency'] >= 1){
             let income_base = global.resource[global.race.species].amount + global.civic.garrison.workers - global.civic.unemployed.workers;
             if (global.race['high_pop']){
@@ -6887,6 +6888,7 @@ function fastLoop(){
                     let merchsales = global.resource[global.race.species].amount * global.city.temple.count * 0.08;
                     breakdown.p['Money'][loc('city_temple')] = (merchsales) + 'v';
                     modRes('Money', +(merchsales * global_multiplier * time_multiplier).toFixed(2));
+                    rawCash += merchsales * global_multiplier;
                 }
                 else {
                     temple_mult += (global.race['cataclysm'] || global.race['orbit_decayed'] ? (global.space['ziggurat'] ? global.space.ziggurat.count : 0) : global.city.temple.count) * 0.025;
@@ -6935,6 +6937,7 @@ function fastLoop(){
             breakdown.p['Money'][loc('tau_red_womlings')] = base + 'v';
             breakdown.p['Money'][`ᄂ${loc('tech_cultural_center')}`] = ((culture - 1) * 100) + '%';
             modRes('Money', +(delta * time_multiplier).toFixed(2));
+            rawCash += delta;
         }
 
         if (global.tech['gambling'] && (p_on['casino'] || p_on['spc_casino'] || p_on['tauceti_casino'])){
