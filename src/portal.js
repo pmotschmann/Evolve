@@ -95,6 +95,7 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('carport','portal');
                     global.civic.hell_surveyor.display = true;
+                    global.civic.hell_surveyor.max += jobScale(1);
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
@@ -646,11 +647,12 @@ const fortressModules = {
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
                     if (powerOnNewStruct($(this)[0])){
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - jobScale(2) < 0 ? global.civic[global.civic.d_job].workers : jobScale(2);
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.archaeologist.workers += hired;
-                        }
+                        let hiredMax = jobScale(2);
+                        global.civic.archaeologist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.archaeologist.workers += hired;
                     }  
                     return true;
                 }

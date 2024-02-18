@@ -188,11 +188,13 @@ const outerTruth = {
                     global.civic.titan_colonist.display = true;
                     if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += jobScale(1);
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.titan_colonist.workers += hired;
-                        }
+
+                        let hiredMax = jobScale(1);
+                        global.civic.titan_colonist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.titan_colonist.workers += hired;
                     }
                     return true;
                 }
@@ -1556,12 +1558,13 @@ const tauCetiModules = {
                         global.tauceti.orbital_station.on++;
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
-                        let jRequest = jobScale(4);
-                        if (global.civic[global.civic.d_job].workers < jRequest){
-                            jRequest = global.civic[global.civic.d_job].workers;
-                        }
-                        global.civic.pit_miner.workers += jRequest;
-                        global.civic[global.civic.d_job].workers -= jRequest;
+
+                        let hiredMax = jobScale(4);
+                        global.civic.pit_miner.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.pit_miner.workers += hired;
                     }
                     if (global.settings.tabLoad){
                         drawShips();

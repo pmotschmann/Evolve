@@ -655,11 +655,13 @@ const spaceProjects = {
                     global.civic.colonist.display = true;
                     if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += jobScale(1);
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.colonist.workers += hired;
-                        }
+
+                        let hiredMax = jobScale(1);
+                        global.civic.colonist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.colonist.workers += hired;
                     }
                     return true;
                 }
@@ -1069,7 +1071,7 @@ const spaceProjects = {
                     global.city.university.count++;
                     global.space.red_university.count = global.city.university.count;
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city.university.count;
+                    global.civic.professor.max = jobScale(global.city.university.count);
                     return true;
                 }
                 return false;
@@ -1184,6 +1186,7 @@ const spaceProjects = {
                     incrementStruct('ziggurat');
                     if (global.genes['ancients'] && global.genes['ancients'] >= 4){
                         global.civic.priest.display = true;
+                        global.civic.priest.max += jobScale(1);
                     }
                     if (global.race['cataclysm']){
                         unlockAchieve('iron_will',false,1);
@@ -1868,14 +1871,12 @@ const spaceProjects = {
                         global.tech['asteroid'] = 3;
                     }
                     if (powerOnNewStruct($(this)[0])){
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = jobScale(3);
-                            if (global.civic[global.civic.d_job].workers - hired < 0){
-                                hired = global.civic[global.civic.d_job].workers;
-                            }
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.space_miner.workers += hired;
-                        }
+                        let hiredMax = jobScale(3);
+                        global.civic.space_miner.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.space_miner.workers += hired;
                     }
                     if (global.race['orbit_decay'] && global.race.orbit_decay > global.stats.days + 1000){
                         global.race.orbit_decay = global.stats.days + 1000;
@@ -2540,6 +2541,10 @@ const interstellarProjects = {
                     incrementStruct('laboratory','interstellar');
                     if (powerOnNewStruct($(this)[0])){
                         global.resource.Knowledge.max += 10000;
+                        if (global.tech.science >= 16){
+                            global.civic.scientist.display = true;
+                            global.civic.scientist.max += jobScale(1);
+                        }
                     }
                     return true;
                 }
@@ -3338,6 +3343,7 @@ const interstellarProjects = {
                 if (payCosts($(this)[0])){
                     incrementStruct('stellar_forge','interstellar');
                     if (powerOnNewStruct($(this)[0])){
+                        global.civic.craftsman.max += jobScale(2);
                         if (global.tech['star_forge'] >= 2){
                             global.city.smelter.cap += 2;
                             global.city.smelter.Star += 2;
@@ -4793,7 +4799,12 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('resort','galaxy');
-                    powerOnNewStruct($(this)[0]);
+                    if (powerOnNewStruct($(this)[0])){
+                        if (!global.race['joyless']){
+                            global.civic.entertainer.max += jobScale(2);
+                            global.civic.entertainer.display = true;
+                        }
+                    }
                     return true;
                 }
                 return false;
