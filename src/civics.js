@@ -1053,7 +1053,7 @@ export function govCivics(f,v){
     }
 }
 
-function mercCost(){
+export function mercCost(){
     let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
     if (cost > 25000){
         cost = 25000;

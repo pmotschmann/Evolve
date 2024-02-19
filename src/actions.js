@@ -1987,7 +1987,7 @@ export const actions = {
                     if (global.race['chameleon']){
                         gain -= global.city.garrison.count;
                     }
-                    global.civic['garrison'].max += gain;
+                    global.civic['garrison'].max += jobScale(gain);
                     global.city['garrison'].count++;
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -3125,7 +3125,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['amphitheatre'].count++;
-                    global.civic.entertainer.max += jobScale(1);
+                    let athVal2 = govActive('athleticism',1);
+                    global.civic.entertainer.max += jobScale(athVal2 ? athVal2 : 1);
                     global.civic.entertainer.display = true;
                     return true;
                 }
@@ -3198,6 +3199,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                         global.civic.priest.display = true;
+                        global.civic.priest.max += jobScale(1);
                     }
                     global.city['temple'].count++;
                     return true;
@@ -3395,7 +3397,7 @@ export const actions = {
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city.university.count;
+                    global.civic.professor.max = jobScale(global.city.university.count);
                     return true;
                 }
                 return false;
@@ -3573,7 +3575,7 @@ export const actions = {
                     let gain = 1000;
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
-                    global.civic.scientist.max = global.city.wardenclyffe.count;
+                    global.civic.scientist.max += jobScale(1);
                     if (powerOnNewStruct($(this)[0])){
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
@@ -8184,16 +8186,16 @@ function cataclysm(){
         if (!global.race['flier']){
             global.tech['cement'] = 5;
             global.civic.cement_worker.display = true;
-            global.civic.cement_worker.max = 1;
-            global.civic.cement_worker.workers = 1;
+            global.civic.cement_worker.max = jobScale(1);
+            global.civic.cement_worker.workers = jobScale(1);
         }
 
-        global.civic.colonist.max = 4;
-        global.civic.colonist.workers = 4;
-        global.civic.space_miner.max = 3;
-        global.civic.space_miner.workers = 2;
-        global.civic.professor.max = 1;
-        global.civic.professor.workers = 1;
+        global.civic.colonist.max = jobScale(4);
+        global.civic.colonist.workers = jobScale(4);
+        global.civic.space_miner.max = jobScale(3);
+        global.civic.space_miner.workers = jobScale(2);
+        global.civic.professor.max = jobScale(1);
+        global.civic.professor.workers = jobScale(1);
 
         global.city.calendar.day++;
         global.city.market.active = true;
