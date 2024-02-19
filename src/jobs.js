@@ -696,7 +696,7 @@ export function limitCraftsmen(res){
 
     let cap = craftsmanCap(res);
     let refresh = false;
-    if (cap < global.city.foundry[res]){
+    if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty(res) && cap < global.city.foundry[res]){
         let diff = global.city.foundry[res] - cap;
         global.civic.craftsman.workers -= diff;
         global.city.foundry.crafting -= diff;
