@@ -9,6 +9,7 @@ export var global = {
     space: {},
     interstellar: {},
     portal: {},
+    eden: {},
     tauceti: {},
     civic: {},
     race: {},
@@ -1361,6 +1362,10 @@ if (!global['galaxy']){
     global['galaxy'] = {};
 }
 
+if (!global['eden']){
+    global['eden'] = {};
+}
+
 if (global.interstellar['mass_ejector'] && !global.interstellar.mass_ejector['Bolognium']){
     global.interstellar.mass_ejector['Bolognium'] = 0;
 }
@@ -1895,6 +1900,7 @@ if (!global.race['purgatory']){
         city: {},
         space: {},
         portal: {},
+        eden: {},
         tech: {},
     };
 }
@@ -2176,7 +2182,7 @@ function setRegionStates(reset){
         base: [
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
-            'showGenetics','showSpace','showDeep','showGalactic','showPortal','showOuter',
+            'showGenetics','showSpace','showDeep','showGalactic','showPortal','showEden','showOuter',
             'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic'
         ],
         space: [
@@ -2185,6 +2191,7 @@ function setRegionStates(reset){
             'alien1','alien2','chthonian','titan','enceladus','triton','eris','kuiper'
         ],
         portal: ['fortress','badlands','pit','ruins','gate','lake','spire'],
+        eden: ['asphodel','elysium','isle','palace'],
         tau: ['home','red','roid','gas','gas2','star']
     };
     
@@ -2229,6 +2236,7 @@ export function clearStates(){
     global.interstellar = {};
     global.galaxy = {};
     global.portal = {};
+    global.eden = {};
     global.starDock = {};
     global.tauceti = {};
     global.civic = { new: 0 };

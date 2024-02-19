@@ -369,6 +369,12 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="eden" :visible="s.showEden">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_eden' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_eden' | label }}</span>
+                        </template>
+                    </b-tab-item>
                     <b-tab-item id="outerSol" :visible="s.showOuter">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'outer_local_space' | label }}</h2>

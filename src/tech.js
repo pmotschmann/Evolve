@@ -5008,6 +5008,9 @@ const techs = {
         category: 'hell_dimension',
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
+        condition(){
+            return global.resource.Demonic_Essence.count >= 1 ? true : false;
+        },
         grant: ['waygate',4],
         not_trait: ['witch_hunter'],
         cost: {
@@ -5021,6 +5024,35 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 descension();
+            }
+            return false;
+        }
+    },
+    purify_essence: {
+        id: 'tech-purify_essence',
+        title: loc('tech_purify_essence'),
+        desc: loc('tech_purify_essence'),
+        category: 'hell_dimension',
+        era: 'dimensional',
+        reqs: { hell_spire: 100, b_stone: 2, waygate: 3, eden: 1 },
+        condition(){
+            return global.resource.Demonic_Essence.count >= 1 ? true : false;
+        },
+        grant: ['eden',2],
+        not_trait: ['witch_hunter'],
+        cost: {
+            Knowledge(){ return 60000000; },
+            Demonic_Essence(){ return 1; }
+        },
+        effect(){
+            return `<div>${loc('tech_purify_essence_effect')}</div><div class="has-text-special">${loc('tech_purify_essence_warn')}</div>`;
+        },
+        action(){
+            if (payCosts($(this)[0])){
+                global.resource.Demonic_Essence.display = false;
+                global.resource.Demonic_Essence.amount = 0;
+                global.resource.Blessed_Essence.display = true;
+                global.resource.Blessed_Essence.amount = 0;
             }
             return false;
         }

@@ -9761,6 +9761,11 @@ function midLoop(){
             }
             updateMechbay();
 
+            if (global.tech.hell_spire >= 100 && !global.tech['eden']){
+                messageQueue(loc('eden_purify_well_msg'),'info',false,['progress']);
+                global.tech['eden'] = 1;
+            }
+
             let progress = 0;
             for (let i = 0; i < global.portal.mechbay.active; i++) {
                 let mech = global.portal.mechbay.mechs[i];
