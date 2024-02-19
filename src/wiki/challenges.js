@@ -402,13 +402,13 @@ export function challengesPage(content){
         }
 
         {   // Gravity Well
-            let witch = infoBoxBuilder(modes,{ name: 'modes_gravity_well', template: 'challenges', paragraphs: 6, break: [4], h_level: 2,
+            let gravity = infoBoxBuilder(modes,{ name: 'modes_gravity_well', template: 'challenges', paragraphs: 6, break: [4], h_level: 2,
                 para_data: {
                     1: [loc(`evo_challenge_gravity_well`)],
                 }
             });
-            addAchievements(witch,false,['escape_velocity']);
-            addRequirements(witch,[
+            addAchievements(gravity,false,['escape_velocity']);
+            addRequirements(gravity,[
                 {
                     text: `wiki_challenges_reqs_reset`,
                     subreqs: [
