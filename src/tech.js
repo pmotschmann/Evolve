@@ -161,7 +161,7 @@ const techs = {
         era: 'civilized',
         reqs: { transport: 1 },
         condition(){
-            return global.tech['farm'] || global.tech['s_lodge'] || (global.tech['hunting'] && global.tech.hunting >= 2) ? true : false;
+            return global.tech['farm'] || global.tech['s_lodge'] || (global.tech['hunting'] && global.tech.hunting >= 2) || (global.race['soul_eater'] && !global.race.species === 'wendigo' && global.tech.housing >= 1 && global.tech.currency >= 1) ? true : false;
         },
         grant: ['transport',2],
         trait: ['gravity_well'],
