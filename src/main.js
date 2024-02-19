@@ -3975,10 +3975,10 @@ function fastLoop(){
                 breakdown.p.consume.Furs[loc('city_factory')] = -(fur_cost);
                 modRes('Furs', -(fur_cost * time_multiplier));
 
-                let demand = global.resource[global.race.species].amount * f_rate.Lux.demand[assembly] * eff;
+                let demand = highPopAdjust(global.resource[global.race.species].amount) * f_rate.Lux.demand[assembly] * eff;
                 demand = luxGoodPrice(demand);
 
-                let delta = workDone * demand * tauBonus;
+                let delta = workDone * demand;
                 if (global.race['gravity_well']){ delta = teamster(delta); }
                 FactoryMoney = delta * hunger;
 
