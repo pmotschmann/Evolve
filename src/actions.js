@@ -9,6 +9,7 @@ import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
+import { edenicTech, renderEdenic } from './edenic.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
@@ -3979,7 +3980,8 @@ export const actions = {
         },
     },
     portal: fortressTech(),
-    tauceti: tauCetiTech()
+    tauceti: tauCetiTech(),
+    eden: edenicTech(),
 };
 
 export function setChallengeScreen(){
@@ -5169,6 +5171,7 @@ export function gainTech(action){
     renderSpace();
     renderFortress();
     renderTauCeti();
+    renderEdenic();
 }
 
 export function drawCity(){
@@ -5790,6 +5793,7 @@ export function postBuild(c_action,action,type){
             renderSpace();
             renderFortress();
             renderTauCeti();
+            renderEdenic();
         }
     }
     if (c_action['post']){

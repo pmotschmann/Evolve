@@ -5009,7 +5009,7 @@ const techs = {
         era: 'dimensional',
         reqs: { hell_spire: 10, b_stone: 2, waygate: 3 },
         condition(){
-            return global.resource.Demonic_Essence.count >= 1 ? true : false;
+            return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
         grant: ['waygate',4],
         not_trait: ['witch_hunter'],
@@ -5033,15 +5033,16 @@ const techs = {
         title: loc('tech_purify_essence'),
         desc: loc('tech_purify_essence'),
         category: 'hell_dimension',
-        era: 'dimensional',
-        reqs: { hell_spire: 100, b_stone: 2, waygate: 3, eden: 1 },
+        era: 'existential',
+        reqs: { b_stone: 2, waygate: 3, edenic: 1 },
         condition(){
-            return global.resource.Demonic_Essence.count >= 1 ? true : false;
+            return global.resource.Demonic_Essence.amount >= 1 ? true : false;
         },
-        grant: ['eden',2],
+        grant: ['edenic',2],
         not_trait: ['witch_hunter'],
         cost: {
             Knowledge(){ return 60000000; },
+            Artifact(){ return 1; },
             Demonic_Essence(){ return 1; }
         },
         effect(){
@@ -5052,7 +5053,8 @@ const techs = {
                 global.resource.Demonic_Essence.display = false;
                 global.resource.Demonic_Essence.amount = 0;
                 global.resource.Blessed_Essence.display = true;
-                global.resource.Blessed_Essence.amount = 0;
+                global.resource.Blessed_Essence.amount = 1;
+                return true;
             }
             return false;
         }
@@ -11235,7 +11237,7 @@ const techs = {
         reqs: { hell_spire: 10, b_stone: 2, waygate: 2, sphinx_bribe: 1 },
         condition(){
             let affix = universeAffix();
-            if (global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr') && global.stats.spire[affix].dlstr > 0){
+            if (global.tech.hasOwnProperty('waygate') && global.tech.waygate === 2 && global.stats.spire.hasOwnProperty(affix) && global.stats.spire[affix].hasOwnProperty('dlstr') && global.stats.spire[affix].dlstr > 0){
                 return true;
             }
             return false;
@@ -13945,7 +13947,7 @@ export function swissKnife(cheeseOnly,cheeseList){
 }
 
 export const techPath = {
-    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional'],
+    standard: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'interstellar', 'intergalactic', 'dimensional','existential'],
     truepath: ['primitive', 'discovery', 'civilized', 'industrialized', 'globalized', 'early_space', 'deep_space', 'solar', 'tauceti'],
 };
 

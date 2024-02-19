@@ -10,6 +10,7 @@ import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { descension } from './resets.js';
+import { renderEdenic } from './edenic.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
 
@@ -1692,6 +1693,9 @@ const fortressModules = {
                 }
             },
             reqs: { waygate: 1 },
+            condition(){
+                return global.tech['edenic'] && global.tech.edenic >= 2 ? false : true;
+            },
             queue_size: 1,
             queue_complete(){ return global.tech.waygate >= 2 ? 0 : 10 - global.portal.waygate.count; },
             cost: {
@@ -1749,7 +1753,48 @@ const fortressModules = {
                 return false;
             }
         },
-
+        edenic_gate:{
+            id: 'portal-edenic_gate',
+            title(wiki){
+                return `<div>${loc(global.tech['edenic'] && global.tech.edenic >= 3 ? 'portal_edenic_gate_title' : 'portal_waygate_title')}</div>`;
+            },
+            desc(wiki){
+                return $(this)[0].title();
+            },
+            reqs: { waygate: 3, edenic: 2 },
+            queue_size: 1,
+            queue_complete(){ return global.tech.edenic >= 3 ? 0 : 1; },
+            cost: {
+                Money(o){
+                    return global.tech['edenic'] && global.tech.edenic < 3 ? 10000000000 : 0;
+                },
+                Supply(o){
+                    return global.tech['edenic'] && global.tech.edenic < 3 ? 1000000 : 0;
+                },
+                Blessed_Essence(o){
+                    return global.tech['edenic'] && global.tech.edenic < 3 ? 1 : 0;
+                },
+            },
+            effect(wiki){
+                if (global.tech['edenic'] && global.tech.edenic <= 2){
+                    return `<div>${loc('portal_edenic_gate_effect')}</div>`;
+                }
+                else {
+                    return `<div>${loc('portal_edenic_gate_effect_complete')}</div>`;
+                }
+            },
+            action(){
+                if (global.tech['edenic'] && global.tech.edenic === 2 && payCosts($(this)[0])){
+                    global.tech.edenic = 3;
+                    global.settings.showEden = true;
+                    global.settings.eden.asphodel = true;
+                    renderFortress();
+                    renderEdenic();
+                    return true;
+                }
+                return false;
+            }
+        },
     }
 };
 

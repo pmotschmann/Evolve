@@ -11,6 +11,7 @@ import { races, shapeShift, renderPsychicPowers } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
 import { renderSpace, ascendLab, terraformLab } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
+import { renderEdenic } from './edenic.js';
 import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
@@ -369,12 +370,6 @@ export function loadTab(tab){
                             <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
                         </template>
                     </b-tab-item>
-                    <b-tab-item id="eden" :visible="s.showEden">
-                        <template slot="header">
-                            <h2 class="is-sr-only">{{ 'tab_eden' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_eden' | label }}</span>
-                        </template>
-                    </b-tab-item>
                     <b-tab-item id="outerSol" :visible="s.showOuter">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'outer_local_space' | label }}</h2>
@@ -385,6 +380,12 @@ export function loadTab(tab){
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_tauceti' | label }}</h2>
                             <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
+                        </template>
+                    </b-tab-item>
+                    <b-tab-item id="eden" :visible="s.showEden">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_eden' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_eden' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -403,6 +404,7 @@ export function loadTab(tab){
                                 clearElement($(`#portal`));
                                 clearElement($(`#outerSol`));
                                 clearElement($(`#tauCeti`));
+                                clearElement($(`#eden`));
                                 switch (tab){
                                     case 0:
                                         drawCity();
@@ -418,6 +420,9 @@ export function loadTab(tab){
                                         break;
                                     case 6:
                                         renderTauCeti();
+                                        break;
+                                    case 7:
+                                        renderEdenic();
                                         break;
                                 }
                             }
@@ -435,6 +440,7 @@ export function loadTab(tab){
                     renderSpace();
                     renderFortress();
                     renderTauCeti();
+                    renderEdenic();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){

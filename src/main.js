@@ -9761,9 +9761,9 @@ function midLoop(){
             }
             updateMechbay();
 
-            if (global.tech.hell_spire >= 100 && !global.tech['eden']){
-                messageQueue(loc('eden_purify_well_msg'),'info',false,['progress']);
-                global.tech['eden'] = 1;
+            if (global.portal.hasOwnProperty('spire') && global.portal.spire.count >= 50 && !global.tech['edenic'] && Object.keys(global.pillars).length >= 10){
+                messageQueue(loc('eden_purify_well_msg',[50]),'info',false,['progress']);
+                global.tech['edenic'] = 1;
             }
 
             let progress = 0;
