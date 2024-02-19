@@ -1385,6 +1385,87 @@ export function challenge_multiplier(value,type,decimals,inputs){
     }
 }
 
+export function getResetConstants(type, inputs){
+    if (!inputs) { inputs = {}; }
+    let rc = {
+        pop_divisor: 999,
+        k_inc: 1000000,
+        k_mult: 100,
+        phage_mult: 0,
+        plasmid_cap: 150,
+    }
+
+    switch (type){
+        case 'mad':
+            rc.pop_divisor = 3;
+            rc.k_inc = 100000;
+            rc.k_mult = 1.1;
+            rc.plasmid_cap = 150;
+            if (inputs.synth){
+                rc.pop_divisor = 5;
+                rc.k_inc = 125000;
+                rc.plasmid_cap = 100;
+            }
+            break;
+        case 'cataclysm':
+        case 'bioseed':
+            rc.pop_divisor = 3;
+            rc.k_inc = 50000;
+            rc.k_mult = 1.015;
+            rc.phage_mult = 1;
+            rc.plasmid_cap = 400;
+            break;
+        case 'ai':
+            rc.pop_divisor = 2.5;
+            rc.k_inc = 45000;
+            rc.k_mult = 1.014;
+            rc.phage_mult = 2;
+            rc.plasmid_cap = 600;
+            break;
+        case 'vacuum':
+        case 'bigbang':
+            rc.pop_divisor = 2.2;
+            rc.k_inc = 40000;
+            rc.k_mult = 1.012;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 800;
+            break;
+        case 'ascend':
+        case 'terraform':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 30000;
+            rc.k_mult = 1.008;
+            rc.phage_mult = 4;
+            rc.plasmid_cap = 2000;
+            break;
+        case 'matrix':
+            rc.pop_divisor = 1.5;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.01;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'retired':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.006;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'eden':
+            rc.pop_divisor = 1;
+            rc.k_inc = 18000;
+            rc.k_mult = 1.004;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 1800;
+            break;
+        default:
+            rc.unknown = true;
+            break;
+    }
+    return rc;
+}
+
 export function calcPrestige(type,inputs){
     let gains = {
         plasmid: 0,
@@ -1396,6 +1477,7 @@ export function calcPrestige(type,inputs){
     };
 
     if (!inputs) { inputs = {}; }
+    if (inputs.synth !== undefined) inputs.synth = races[global.race.species].type === 'synthetic';
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
@@ -1424,77 +1506,13 @@ export function calcPrestige(type,inputs){
         }
     }
 
-    let pop_divisor = 999;
-    let k_inc = 1000000;
-    let k_mult = 100;
-    let phage_mult = 0;
-    let plasmid_cap = 150;
+    let rc = getResetConstants(type, inputs);
+    let pop_divisor = rc.pop_divisor;
+    let k_inc = rc.k_inc;
+    let k_mult = rc.k_mult;
+    let phage_mult = rc.phage_mult;
+    let plasmid_cap = rc.plasmid_cap;
 
-    switch (type){
-        case 'mad':
-            pop_divisor = 3;
-            k_inc = 100000;
-            k_mult = 1.1;
-            plasmid_cap = 150;
-            if (inputs.synth !== undefined ? inputs.synth : races[global.race.species].type === 'synthetic'){
-                pop_divisor = 5;
-                k_inc = 125000;
-                plasmid_cap = 100;
-            }
-            break;
-        case 'cataclysm':
-        case 'bioseed':
-            pop_divisor = 3;
-            k_inc = 50000;
-            k_mult = 1.015;
-            phage_mult = 1;
-            plasmid_cap = 400;
-            break;
-        case 'ai':
-            pop_divisor = 2.5;
-            k_inc = 45000;
-            k_mult = 1.014;
-            phage_mult = 2;
-            plasmid_cap = 600;
-            break;
-        case 'vacuum':
-        case 'bigbang':
-            pop_divisor = 2.2;
-            k_inc = 40000;
-            k_mult = 1.012;
-            phage_mult = 2.5;
-            plasmid_cap = 800;
-            break;
-        case 'ascend':
-        case 'terraform':
-            pop_divisor = 1.15;
-            k_inc = 30000;
-            k_mult = 1.008;
-            phage_mult = 4;
-            plasmid_cap = 2000;
-            break;
-        case 'matrix':
-            pop_divisor = 1.5;
-            k_inc = 32000;
-            k_mult = 1.01;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'retire':
-            pop_divisor = 1.15;
-            k_inc = 32000;
-            k_mult = 1.006;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'eden':
-            pop_divisor = 1;
-            k_inc = 18000;
-            k_mult = 1.004;
-            phage_mult = 2.5;
-            plasmid_cap = 1800;
-            break;
-    }
 
     if (challenge !== undefined){
         plasmid_cap = Math.floor(plasmid_cap * (1 + (challenge + (inputs.tp ? 1 : 0)) / 8));

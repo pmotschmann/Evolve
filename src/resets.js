@@ -970,7 +970,7 @@ export function retirement(){
     clearSavedMessages();
 
     tagEvent('reset',{
-        'end': 'retire'
+        'end': 'retired'
     });
 
     let god = global.race.species;
@@ -981,7 +981,7 @@ export function retirement(){
     let atmo = global.city.ptrait;
     let geo = global.city.geology;
 
-    let gains = calcPrestige('retire');
+    let gains = calcPrestige('retired');
 
     unlockAchieve(`biome_${biome}`);
     atmo.forEach(function(a){
