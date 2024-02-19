@@ -1,7 +1,7 @@
 import { global } from './../vars.js';
 import { universeAffix, alevel } from './../achieve.js';
 import { loc } from './../locale.js';
-import { vBind, challenge_multiplier, calcPrestige, darkEffect } from './../functions.js';
+import { vBind, challenge_multiplier, getResetConstants, calcPrestige, darkEffect } from './../functions.js';
 import { jobScale } from './../jobs.js';
 import { races, traits } from './../races.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
@@ -168,6 +168,10 @@ export function prestigeCalc(info,resource,extraType,resetType){
         case 'cataclysm':
         case 'vacuum':
         case 'terraform':
+        case 'ai':
+        case 'matrix':
+        case 'retired':
+        case 'eden':
             title += loc('wiki_resets_' + resetType) + " ";
             break;
         case 'bigbang':
@@ -178,9 +182,6 @@ export function prestigeCalc(info,resource,extraType,resetType){
             break;
         case 'descend':
             title += loc('wiki_resets_infusion') + " ";
-            break;
-        case 'ai':
-            title += loc('wiki_resets_ai') + " ";
             break;
         default:
             break;
@@ -245,7 +246,8 @@ export function prestigeCalc(info,resource,extraType,resetType){
         micro: { val: false, use: false },
         high_pop: { val: undefined, use: false },
         synth: { val: false, use: false },
-        tp: { val: false, use: false, enabled: true }
+        tp: { val: false, use: false, enabled: true },
+        wiki: true // flag to mark this query as coming from wiki
     };
     let universes = {
         standard: { use: true },
@@ -264,7 +266,10 @@ export function prestigeCalc(info,resource,extraType,resetType){
         terraform: { use: true },
         ascend: { use: true },
         descend: { use: false },
-        ai: { use: true }
+        ai: { use: true },
+        matrix: { use: true },
+        retired: { use: true },
+        eden: { use: true }
     };
     let showEval = { vis: false };
     let plasExtra = { capVis: false, overflowVis: false, totalVis: false, capVal: undefined, overflow: undefined, rawGains: undefined };
@@ -402,6 +407,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 <b-dropdown-item v-show="r.ascend.use" v-on:click="pickReset('ascend')">{{ 'ascend' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.descend.use" v-on:click="pickReset('descend')">{{ 'descend' | resetLabel }}</b-dropdown-item>
                 <b-dropdown-item v-show="r.ai.use" v-on:click="pickReset('ai')">{{ 'ai' | resetLabel }}</b-dropdown-item>
+                <b-dropdown-item v-show="r.matrix.use" v-on:click="pickReset('matrix')">{{ 'matrix' | resetLabel }}</b-dropdown-item>
+                <b-dropdown-item v-show="r.retired.use" v-on:click="pickReset('retired')">{{ 'retired' | resetLabel }}</b-dropdown-item>
+                <b-dropdown-item v-show="r.eden.use" v-on:click="pickReset('eden')">{{ 'eden' | resetLabel }}</b-dropdown-item>
             </b-dropdown></div>
             <div class="calcInput" v-show="i.uni.use"><span>${loc('wiki_calc_universe')}</span> <b-dropdown hoverable>
                 <button class="button is-primary" slot="trigger">
@@ -611,133 +619,34 @@ export function prestigeCalc(info,resource,extraType,resetType){
                 return rank ? traits.high_pop.vars(rank)[0] : 1;
             },
             popDivisor(type,synth){
-                switch (type){
-                    case 'mad':
-                        if (synth){
-                            return 5;
-                        }
-                    case 'cataclysm':
-                    case 'bioseed':
-                        return 3;
-                    case 'ai':
-                        return 2.5;
-                    case 'vacuum':
-                    case 'bigbang':
-                        return 2.2;
-                    case 'ascend':
-                    case 'terraform':
-                        return 1.15;
-                    default:
-                        return loc('wiki_calc_pop_divisor');
-                }
+                let rc = getResetConstants(inputs.reset.val, inputs)
+                if (rc.unknown) return loc('wiki_calc_pop_divisor');
+                return rc.pop_divisor;
             },
             knowMulti(type){
-                switch (type){
-                    case 'mad':
-                        return 1.1;
-                    case 'cataclysm':
-                    case 'bioseed':
-                        return 1.015;
-                    case 'ai':
-                        return 1.014;
-                    case 'vacuum':
-                    case 'bigbang':
-                        return 1.012;
-                    case 'ascend':
-                    case 'terraform':
-                        return 1.008;
-                    default:
-                        return loc('wiki_calc_know_multi');
-                }
+                let rc = getResetConstants(inputs.reset.val, inputs)
+                if (rc.unknown) return loc('wiki_calc_know_multi');
+                return rc.k_mult;
             },
             knowInc(type,synth){
-                switch (type){
-                    case 'mad':
-                        if (synth){
-                            return 125000;
-                        }
-                        return 100000;
-                    case 'cataclysm':
-                    case 'bioseed':
-                        return 50000;
-                    case 'ai':
-                        return 45000;
-                    case 'vacuum':
-                    case 'bigbang':
-                        return 40000;
-                    case 'ascend':
-                    case 'terraform':
-                        return 30000;
-                    default:
-                        return loc('wiki_calc_know_inc');
-                }
+                let rc = getResetConstants(inputs.reset.val, inputs)
+                if (rc.unknown) return loc('wiki_calc_know_inc');
+                return rc.k_inc;
             },
             phageMulti(type){
-                switch (type){
-                    case 'cataclysm':
-                    case 'bioseed':
-                        return 1;
-                    case 'ai':
-                        return 2;
-                    case 'vacuum':
-                    case 'bigbang':
-                        return 2.5;
-                    case 'ascend':
-                    case 'terraform':
-                        return 4;
-                    default:
-                        return loc('wiki_calc_phage_multi');
-                }
+                let rc = getResetConstants(inputs.reset.val, inputs)
+                if (rc.unknown) return loc('wiki_calc_phage_multi');
+                return rc.phage_mult;
             },
             plasmidCap(type,synth){
-                switch (type){
-                    case 'mad':
-                        if (synth){
-                            return 100;
-                        }
-                        return 150;
-                    case 'cataclysm':
-                    case 'bioseed':
-                        return 400;
-                    case 'ai':
-                        return 600;
-                    case 'vacuum':
-                    case 'bigbang':
-                        return 800;
-                    case 'ascend':
-                    case 'terraform':
-                        return 2000;
-                    default:
-                        return loc('wiki_calc_plasmid_cap');
-                }
+                let rc = getResetConstants(inputs.reset.val, inputs)
+                if (rc.unknown) return loc('wiki_calc_plasmid_cap');
+                return rc.plasmid_cap;
             },
             plasmidCapCalc(){
                 plasExtra.capVis = inputs.reset.val && inputs.genes.val !== undefined;
                 if (plasExtra.capVis){
-                    let cap = 0;
-                    switch (inputs.reset.val){
-                        case 'mad':
-                            cap = 150;
-                            if (inputs.synth.val){
-                                cap = 100;
-                            }
-                            break;
-                        case 'cataclysm':
-                        case 'bioseed':
-                            cap = 400;
-                            break;
-                        case 'ai':
-                            cap = 600;
-                            break;
-                        case 'vacuum':
-                        case 'bigbang':
-                            cap = 800;
-                            break;
-                        case 'ascend':
-                        case 'terraform':
-                            cap = 2000;
-                            break;
-                    }
+                    let cap = getResetConstants(inputs.reset.val, inputs).plasmid_cap;
                     cap *= (1 + ((inputs.genes.val + 1 - (inputs.tp.val ? 0 : 1)) / 8));
                     plasExtra.capVal = Math.floor(cap);
                     return cap;
@@ -821,6 +730,9 @@ export function prestigeCalc(info,resource,extraType,resetType){
                     case 'vacuum':
                     case 'ai':
                     case 'terraform':
+                    case 'matrix':
+                    case 'retired':
+                    case 'eden':
                         return loc('wiki_resets_' + lbl);
                     case 'bigbang':
                         return loc('wiki_resets_blackhole');

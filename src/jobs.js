@@ -1,4 +1,4 @@
-import { global, keyMultiplier, p_on, support_on } from './vars.js';
+import { global, keyMultiplier, p_on, support_on, tmp_vars } from './vars.js';
 import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, servantTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
@@ -661,16 +661,69 @@ export function teamsterCap(){
     return transport;
 }
 
+export function craftsmanCap(res){
+    switch (res){
+        case 'Scarletite':
+            if (global.portal.hasOwnProperty('hell_forge')){
+                let cap = Math.min(global.portal.hell_forge.on, p_on['hell_forge']);
+                return jobScale(cap);
+            }
+            return 0;
+
+        case 'Quantium':
+            let cap = 0;
+            if (global.tech['isolation']){
+                if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
+                    cap = Math.min(global.tauceti.infectious_disease_lab.on, support_on['infectious_disease_lab'], p_on['infectious_disease_lab']);
+                }
+            }
+            else if (global.space.hasOwnProperty('zero_g_lab')){
+                cap = Math.min(global.space.zero_g_lab.on, support_on['zero_g_lab'], p_on['zero_g_lab']);
+            }
+            return jobScale(cap || 0);
+
+        // This function isn't used to limit normal craftsmen
+        default:
+            return Number.MAX_SAFE_INTEGER;
+    }
+}
+
+export function limitCraftsmen(res){
+    // Remember previous crafter limits and refresh UI later on if they change
+    if (!tmp_vars.hasOwnProperty('craftsman_cap')){
+        tmp_vars.craftsman_cap = {};
+    }
+
+    let cap = craftsmanCap(res);
+    let refresh = false;
+    if (global.city.hasOwnProperty('foundry') && global.city.foundry.hasOwnProperty(res) && cap < global.city.foundry[res]){
+        let diff = global.city.foundry[res] - cap;
+        global.civic.craftsman.workers -= diff;
+        global.city.foundry.crafting -= diff;
+        global.city.foundry[res] -= diff;
+        refresh = true;
+    }
+    else if (tmp_vars['craftsman_cap'].hasOwnProperty(res) && cap != tmp_vars['craftsman_cap'][res]){
+        refresh = true;
+    }
+    tmp_vars['craftsman_cap'][res] = cap;
+
+    // Refresh UI when the cap changes due to power balancing
+    if (refresh){
+        loadFoundry();
+    }
+}
+
 export function farmerValue(farm,servant){
     let farming = global.civic.farmer.impact;
     if (farm){
         farming += global.tech['agriculture'] && global.tech.agriculture >= 2 ? 1.15 : 0.65;
     }
     if (global.race['living_tool'] && !servant){
-        farming *= (global.tech['science'] && global.tech.science > 0 ? global.tech.science / 5 : 0) + 1;
+        farming *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science / 5 : 0);
     }
     else {
-        farming *= (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0) + 1;
+        farming *= 1 + (global.tech['hoe'] && global.tech.hoe > 0 ? global.tech.hoe / 3 : 0);
     }
     farming *= global.city.biome === 'grassland' ? biomes.grassland.vars()[0] : 1;
     farming *= global.city.biome === 'savanna' ? biomes.savanna.vars()[0] : 1;
@@ -686,9 +739,6 @@ export function farmerValue(farm,servant){
     }
     farming *= global.tech['agriculture'] >= 7 ? 1.1 : 1;
     farming *= global.race['low_light'] ? (1 - traits.low_light.vars()[0] / 100) : 1;
-    if (servant){
-        farming *= jobScale(1);
-    }
     return farming;
 }
 
@@ -771,17 +821,8 @@ export function loadFoundry(servants){
                 add(res){
                     let keyMult = keyMultiplier();
                     let tMax = -1;
-                    if (res === 'Scarletite'){
-                        tMax = (p_on['hell_forge'] || 0);
-                        if (global.race['high_pop']){
-                            tMax *= traits.high_pop.vars()[0];
-                        }
-                    }
-                    else if (res === 'Quantium'){
-                        tMax = (global.tech['isolation'] ? Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']) || 0 : Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
-                        if (global.race['high_pop']){
-                            tMax *= traits.high_pop.vars()[0];
-                        }
+                    if (res === 'Scarletite' || res === 'Quantium'){
+                        tMax = craftsmanCap(res);
                     }
                     for (let i=0; i<keyMult; i++){
                         if (servants){
@@ -859,18 +900,10 @@ export function loadFoundry(servants){
             },
             filters: {
                 maxScar(v){
-                    let cap = (p_on['hell_forge'] || 0);
-                    if (global.race['high_pop']){
-                        cap *= traits.high_pop.vars()[0];
-                    }
-                    return cap;
+                    return craftsmanCap('Scarletite');
                 },
                 maxQuantium(v){
-                    let cap = global.tech['isolation'] ? (Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']) || 0) : (Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
-                    if (global.race['high_pop']){
-                        cap *= traits.high_pop.vars()[0];
-                    }
-                    return cap;
+                    return craftsmanCap('Quantium');
                 }
             }
         });
@@ -891,7 +924,15 @@ export function loadFoundry(servants){
                     total.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
                     let craft_cost = craftCost();
                     for (let i=0; i<craft_cost[res].length; i++){
-                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
+                        let craftCost = 1;
+                        if(global.race['resourceful']){
+                            craftCost -= traits.resourceful.vars()[0] / 100
+                        }
+                        let fathom = fathomCheck('arraak');
+                        if(fathom > 0){
+                            craftCost -= traits.resourceful.vars(1)[0] / 100 * fathom;
+                        }
+                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * craftCost * speed / 140).toFixed(2);
                         total.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
 

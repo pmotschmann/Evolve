@@ -1,11 +1,11 @@
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
-import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
+import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
@@ -1348,12 +1348,11 @@ export const actions = {
             cost: {
                 Money(){ return 25000; },
             },
-            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.city.slave_pen.slaves : 0; },
+            queue_complete(){ return global.city['slave_pen'] ? global.city.slave_pen.count * 4 - global.resource.Slave.amount : 0; },
             action(){
-                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.city.slave_pen.slaves){
+                if (global.city['slave_pen'] && global.city.slave_pen.count * 4 > global.resource.Slave.amount){
                     if (payCosts($(this)[0])){
-                        global.city.slave_pen.slaves++;
-                        global.resource.Slave.amount = global.city.slave_pen.slaves;
+                        global.resource.Slave.amount++;
                         return true;
                     }
                 }
@@ -1714,14 +1713,13 @@ export const actions = {
             },
             effect(){
                 let max = global.city['slave_pen'] ? global.city.slave_pen.count * 4 : 4;
-                let slaves = global.city['slave_pen'] ? global.city.slave_pen.slaves : 0;
+                let slaves = global.city['slave_pen'] ? global.resource.Slave.amount : 0;
                 return `<div>${loc('city_slave_pen_effect',[4])}</div><div>${loc('city_slave_pen_effect2',[slaves,max])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['slave_pen'].count++;
                     global.resource.Slave.display = true;
-                    global.resource.Slave.amount = global.city.slave_pen.slaves;
                     global.resource.Slave.max = global.city.slave_pen.count * 4;
                     return true;
                 }
@@ -1989,7 +1987,7 @@ export const actions = {
                     if (global.race['chameleon']){
                         gain -= global.city.garrison.count;
                     }
-                    global.civic['garrison'].max += gain;
+                    global.civic['garrison'].max += jobScale(gain);
                     global.city['garrison'].count++;
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -3090,7 +3088,7 @@ export const actions = {
                 }
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['tourist_center'].count++;
@@ -3127,7 +3125,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['amphitheatre'].count++;
-                    global.civic.entertainer.max += jobScale(1);
+                    let athVal2 = govActive('athleticism',1);
+                    global.civic.entertainer.max += jobScale(athVal2 ? athVal2 : 1);
                     global.civic.entertainer.display = true;
                     return true;
                 }
@@ -3200,6 +3199,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                         global.civic.priest.display = true;
+                        global.civic.priest.max += jobScale(1);
                     }
                     global.city['temple'].count++;
                     return true;
@@ -3397,7 +3397,7 @@ export const actions = {
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city.university.count;
+                    global.civic.professor.max = jobScale(global.city.university.count);
                     return true;
                 }
                 return false;
@@ -3575,7 +3575,7 @@ export const actions = {
                     let gain = 1000;
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
-                    global.civic.scientist.max = global.city.wardenclyffe.count;
+                    global.civic.scientist.max += jobScale(1);
                     if (powerOnNewStruct($(this)[0])){
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
@@ -3945,12 +3945,15 @@ export const actions = {
                 return `<div>${label}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
-                global.tech['genesis'] = 7;
-                clearPopper(`starDock-prep_ship`);
-                clearElement($('#modalBox'));
-                let c_action = actions.space.spc_gas.star_dock;
-                drawModal(c_action,'star_dock');
-                return true;
+                if (payCosts($(this)[0])) {
+                    global.tech['genesis'] = 7;
+                    clearPopper(`starDock-prep_ship`);
+                    clearElement($('#modalBox'));
+                    let c_action = actions.space.spc_gas.star_dock;
+                    drawModal(c_action,'star_dock');
+                    return true;
+                }
+                return false;
             },
         },
         launch_ship: {
@@ -5409,7 +5412,7 @@ export function setAction(c_action,action,type,old,prediction){
         }
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -6123,23 +6126,45 @@ function buildPlanet(aspect,opt,args){
     }
 }
 
+// Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
 export function powerOnNewStruct(c_action,extra){
     let parts = c_action.id.split('-');
-    if (global.hasOwnProperty(parts[0]) && global[parts[0]].hasOwnProperty(parts[1]) && c_action.hasOwnProperty('powered')){
+    if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
+        return false;
+    }
+
+    // Electricity: production is negative, consumption is positive
+    let need_p = c_action.hasOwnProperty('powered') && c_action.powered() > 0;
+    let can_p = !need_p;
+    let gov_replicator = global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0;
+    if (need_p && global.city.hasOwnProperty('powered')){
         let power = global.city.power;
-        if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+        if (gov_replicator){
             power += global.race.replicator.pow;
         }
+        can_p = c_action.powered() <= power;
+    }
 
-        if (global.city.hasOwnProperty('powered') && power >= c_action.powered()){
-            global[parts[0]][parts[1]].on++;
-            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
-                global.city.power -= c_action.powered();
+    // Support: production is positive, consumption is negative
+    let need_s = c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0;
+    let can_s = !need_s;
+    if (need_s){
+        let grids = gridDefs();
+        let s_r = grids[c_action.s_type].r;
+        let s_rs = grids[c_action.s_type].rs;
+        can_s = global[s_r][s_rs].support - c_action.support() <= global[s_r][s_rs].s_max;
+    }
+
+    if (can_p && can_s || global.settings.alwaysPower){
+        global[parts[0]][parts[1]].on++;
+        if (need_p){
+            global.city.power -= c_action.powered();
+            if (gov_replicator){
                 gov_tasks.replicate.task();
             }
-            if (extra && typeof extra === 'function'){
-                return extra(c_action);
-            }
+        }
+        if (extra && typeof extra === 'function'){
+            return extra(c_action);
         }
         return true;
     }
@@ -7662,8 +7687,8 @@ function sentience(){
         'challenge': alevel() - 1
     });
 
-    if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
-        let rank = Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']);
+    if (global.stats.feat['adept']){
+        let rank = checkAdept();
         global.resource.Food.amount += rank * 100;
         global.resource.Stone.max += rank * 60;
         global.resource.Stone.amount += rank * 100;
@@ -8161,16 +8186,16 @@ function cataclysm(){
         if (!global.race['flier']){
             global.tech['cement'] = 5;
             global.civic.cement_worker.display = true;
-            global.civic.cement_worker.max = 1;
-            global.civic.cement_worker.workers = 1;
+            global.civic.cement_worker.max = jobScale(1);
+            global.civic.cement_worker.workers = jobScale(1);
         }
 
-        global.civic.colonist.max = 4;
-        global.civic.colonist.workers = 4;
-        global.civic.space_miner.max = 3;
-        global.civic.space_miner.workers = 2;
-        global.civic.professor.max = 1;
-        global.civic.professor.workers = 1;
+        global.civic.colonist.max = jobScale(4);
+        global.civic.colonist.workers = jobScale(4);
+        global.civic.space_miner.max = jobScale(3);
+        global.civic.space_miner.workers = jobScale(2);
+        global.civic.professor.max = jobScale(1);
+        global.civic.professor.workers = jobScale(1);
 
         global.city.calendar.day++;
         global.city.market.active = true;

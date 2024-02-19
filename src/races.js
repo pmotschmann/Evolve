@@ -5119,7 +5119,7 @@ export function cleanAddTrait(trait){
         case 'slaver':
             checkPurgatory('tech','slaves');
             if (global.tech['slaves'] >= 1) {
-                checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+                checkPurgatory('city','slave_pen',{ count: 0 });
                 if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
                     global.resource.Slave.display = true;
                 }
