@@ -3,8 +3,8 @@ import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, sp
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
-import { armyRating, govCivics, garrisonSize } from './civics.js';
+import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
+import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { production } from './prod.js';
@@ -95,6 +95,7 @@ const fortressModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('carport','portal');
                     global.civic.hell_surveyor.display = true;
+                    global.civic.hell_surveyor.max += jobScale(1);
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
@@ -126,7 +127,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('war_droid','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -154,7 +155,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('repair_droid','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -188,7 +189,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('war_drone','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -219,7 +220,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('sensor_drone','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -244,7 +245,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('attractor','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -646,11 +647,12 @@ const fortressModules = {
                     incrementStruct('archaeology','portal');
                     global.civic.archaeologist.display = true;
                     if (powerOnNewStruct($(this)[0])){
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - jobScale(2) < 0 ? global.civic[global.civic.d_job].workers : jobScale(2);
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.archaeologist.workers += hired;
-                        }
+                        let hiredMax = jobScale(2);
+                        global.civic.archaeologist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.archaeologist.workers += hired;
                     }  
                     return true;
                 }
@@ -746,15 +748,7 @@ const fortressModules = {
                 loadFoundry();
             },
             postPower(on){
-                if (!on){
-                    if (global.portal.hell_forge.on < global.city.foundry.Scarletite){
-                        let diff = global.city.foundry.Scarletite - global.portal.hell_forge.on;
-                        global.civic.craftsman.workers -= diff;
-                        global.city.foundry.crafting -= diff;
-                        global.city.foundry.Scarletite -= diff;
-                    }
-                }
-                loadFoundry();
+                limitCraftsmen('Scarletite');
             }
         },
         inferno_power: {
@@ -1035,7 +1029,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('gate_turret','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1068,7 +1062,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('infernite_mine','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1208,7 +1202,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('cooling_tower','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1221,7 +1215,8 @@ const fortressModules = {
                 return `<div>${loc('portal_bireme_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 4 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('bireme', offset, 190000000, 1.24, 'portal'); },
@@ -1242,9 +1237,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('bireme','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.bireme.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1257,7 +1250,8 @@ const fortressModules = {
                 return `<div>${loc('portal_transport_title')}</div><div class="has-text-special">${loc('space_support',[loc('lake')])}</div>`;
             },
             reqs: { hell_lake: 5 },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'lake',
             support(){ return -1; },
             cost: {
                 Money(offset){ return spaceCostMultiplier('transport', offset, 300000000, 1.22, 'portal'); },
@@ -1288,9 +1282,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('transport','portal');
-                    if (global.portal.harbour.support < global.portal.harbour.s_max){
-                        global.portal.transport.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
@@ -1370,7 +1362,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('purifier','portal');
-                    powerOnNewStruct($(this)[0])
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1387,7 +1379,8 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('port', offset, 135000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return global.portal.hasOwnProperty('port') && global.portal.port.count === 0 ? 100 : spaceCostMultiplier('port', offset, 6250, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             effect(){
                 let port_value = 10000;
@@ -1399,9 +1392,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('port','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.port.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
                         global.portal['base_camp'] = { count: 0, on: 0 };
@@ -1423,7 +1414,8 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('base_camp', offset, 425000000, spireCreep(1.2), 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('base_camp', offset, 50000, spireCreep(1.2), 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             effect(){
                 return `<div class="has-text-caution">${loc('portal_port_effect1',[$(this)[0].support()])}</div><div>${loc('portal_base_camp_effect',[40])}</div>`;
@@ -1431,9 +1423,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('base_camp','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.base_camp.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     if (global.tech.hell_spire === 4){
                         global.tech.hell_spire = 5;
                         global.portal['bridge'] = { count: 0 };
@@ -1603,7 +1593,8 @@ const fortressModules = {
                 Money(offset){ return spaceCostMultiplier('mechbay', offset, 100000000, 1.2, 'portal'); },
                 Supply(offset){ return spaceCostMultiplier('mechbay', offset, 250000, 1.2, 'portal'); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
+            s_type: 'spire',
             support(){ return -1; },
             special: true,
             sAction(){
@@ -1622,8 +1613,7 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('mechbay','portal');
-                    if (global.portal.purifier.support < global.portal.purifier.s_max){
-                        global.portal.mechbay.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.portal.mechbay.max += 25;
                     }
                     global.settings.showMechLab = true;
@@ -2124,17 +2114,7 @@ export function buildFortress(parent,full){
                 let repeats = keyMultiplier();
                 let canBuy = true;
                 while (canBuy && repeats > 0){
-                    let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
-                    if (cost > 25000){
-                        cost = 25000;
-                    }
-                    if (global.civic.garrison.m_use > 0){
-                        cost *= 1.1 ** global.civic.garrison.m_use;
-                    }
-                    if (global.race['brute']){
-                        cost = cost / 2;
-                    }
-                    cost = Math.round(cost);
+                    let cost = mercCost();
                     if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
                         global.resource.Money.amount -= cost;
                         global.civic['garrison'].workers++;
