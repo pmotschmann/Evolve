@@ -5267,7 +5267,7 @@
   "civics_servants_msg1": "A ferret-like creature has joined you, ready to serve your empire.",
   "civics_servants_msg2": "%0 ferret-like creatures have joined you and are ready to serve your empire.",
   "civics_skilled_servants": "Skilled Servants",
-  "civics_skilled_servants_desc": "Completely devoted to you, these servants can work any basic job and do not require any upkeep.",
+  "civics_skilled_servants_desc": "Completely devoted to you, these servants can work any basic job or non-special craftsman job, and do not require any upkeep.",
   "governor_appoint": "Appoint",
   "governor_candidate": "Candidate",
   "governor_background": "Background",
