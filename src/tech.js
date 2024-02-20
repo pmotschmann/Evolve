@@ -13900,6 +13900,28 @@ const techs = {
             }
             return false;
         }
+    },
+    asphodel_flowers: {
+        id: 'tech-asphodel_flowers',
+        title: loc('tech_asphodel_flowers'),
+        desc: loc('tech_asphodel_flowers'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { edenic: 4 },
+        grant: ['asphodel',1],
+        cost: {
+            Knowledge(){ return 61000000; }
+        },
+        effect(){ return loc('tech_asphodel_flowers_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                messageQueue(loc('tech_asphodel_flowers_msg'),'info',false,['progress']);
+                global.eden['asphodel_harvester'] = { count: 0, on: 0 };
+                global.resource.Asphodel_Powder.display = true;
+                return true;
+            }
+            return false;
+        }
     }
 };
 

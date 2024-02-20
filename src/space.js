@@ -5336,6 +5336,9 @@ export function convertSpaceSector(part){
     else if (part.substr(0,4) === 'tau_'){
         space = 'tauceti';
     }
+    else if (part.substr(0,5) === 'eden_'){
+        space = 'eden';
+    }
     return space;
 }
 

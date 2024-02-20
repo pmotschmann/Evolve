@@ -40,6 +40,7 @@ export const resource_values = {
     Bolognium: 9000,
     Vitreloy: 10200,
     Orichalcum: 99000,
+    Asphodel_Powder: 249000,
     Horseshoe: 0,
     Nanite: 0,
     Genes: 0,
@@ -117,6 +118,7 @@ export const atomic_mass = {
     Unobtainium: 168.59,
     Vitreloy: 41.08,
     Orichalcum: 237.8,
+    Asphodel_Powder: 0.01,
     Water: 18.01,
     Plywood: 7.666,
     Brick: 20.009,
@@ -683,6 +685,7 @@ export function defineResources(wiki){
     loadResource('Bolognium',wiki,0,1,false,true,'advanced');
     loadResource('Vitreloy',wiki,0,1,false,true,'advanced');
     loadResource('Orichalcum',wiki,0,1,false,true,'advanced');
+    loadResource('Asphodel_Powder',wiki,0,1,false,false,'advanced');
     loadResource('Unobtainium',wiki,0,1,false,false,'advanced');
     loadResource('Materials',wiki,0,1,false,false,'advanced');
     loadResource('Horseshoe',wiki,-2,0,false,false,'advanced');

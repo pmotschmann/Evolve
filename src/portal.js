@@ -1788,6 +1788,9 @@ const fortressModules = {
                     global.tech.edenic = 3;
                     global.settings.showEden = true;
                     global.settings.eden.asphodel = true;
+                    global.settings.spaceTabs = 7;
+                    global.resource.Blessed_Essence.display = false;
+                    global.eden['encampment'] = { count: 0, on: 0, support: 0, s_max: 0 };
                     renderFortress();
                     renderEdenic();
                     return true;

@@ -1027,7 +1027,7 @@ function fastLoop(){
         'Money','Knowledge','Food','Lumber','Stone','Chrysotile','Crystal','Furs','Copper','Iron',
         'Cement','Coal','Oil','Uranium','Aluminium','Steel','Titanium','Alloy','Polymer','Iridium',
         'Helium_3','Water','Deuterium','Neutronium','Adamantite','Infernite','Elerium','Nano_Tube',
-        'Graphene','Stanene','Bolognium','Vitreloy','Orichalcum','Unobtainium','Quantium',
+        'Graphene','Stanene','Bolognium','Vitreloy','Orichalcum','Asphodel_Powder','Unobtainium','Quantium',
         'Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave','Scarletite',
         'Cipher','Nanite','Mana'
     ];
@@ -2018,6 +2018,7 @@ function fastLoop(){
             { a: 'tauceti', r: 'tau_home', s: 'orbital_station', g: 'tau_home' },
             { a: 'tauceti', r: 'tau_red', s: 'orbital_platform', g: 'tau_red' },
             { a: 'tauceti', r: 'tau_roid', s: 'patrol_ship', g: 'tau_roid', oc: true },
+            { a: 'eden', r: 'eden_asphodel', s: 'encampment', g: 'asphodel' },
         ].forEach(function(sup){
             sup['r2'] = sup['r2'] || sup.r;
             if (global[sup.a][sup.s] && global[sup.a][sup.s].count > 0){
@@ -7412,6 +7413,7 @@ function midLoop(){
             Bolognium: 0,
             Vitreloy: 0,
             Orichalcum: 0,
+            Asphodel_Powder: 0,
             Unobtainium: 0,
             Cipher: 0,
             Nanite: 0,
@@ -7532,6 +7534,7 @@ function midLoop(){
         var bd_Bolognium = { [loc('base')]: caps['Bolognium']+'v' };
         var bd_Vitreloy = { [loc('base')]: caps['Vitreloy']+'v' };
         var bd_Orichalcum = { [loc('base')]: caps['Orichalcum']+'v' };
+        var bd_Asphodel_Powder = { [loc('base')]: caps['Asphodel_Powder']+'v' };
         var bd_Unobtainium = { [loc('base')]: caps['Unobtainium']+'v' };
         var bd_Cipher = { [loc('base')]: caps['Cipher']+'v' };
         var bd_Nanite = { [loc('base')]: caps['Nanite']+'v' };
@@ -7578,6 +7581,7 @@ function midLoop(){
             Bolognium: bd_Bolognium,
             Vitreloy: bd_Vitreloy,
             Orichalcum: bd_Orichalcum,
+            Asphodel_Powder: bd_Asphodel_Powder,
             Unobtainium: bd_Unobtainium,
             Nanite: bd_Nanite,
             Cipher: bd_Cipher,
@@ -8743,6 +8747,13 @@ function midLoop(){
             caps['Knowledge'] += gain;
             bd_Knowledge[loc('galaxy_scavenger')] = gain+'v';
         }
+
+        if (global.eden['encampment']){
+            let powder = global.eden.encampment.count * spatialReasoning(250);
+            caps['Asphodel_Powder'] += powder;
+            breakdown.c.Asphodel_Powder[loc('eden_encampment_title')] = powder+'v';
+        }
+
         breakdown['t_route'] = {};
         global.city.market.mtrade = 0;
         if (global.race['banana']){

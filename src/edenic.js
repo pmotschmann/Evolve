@@ -1,19 +1,77 @@
 import { global, seededRandom, keyMultiplier, p_on, quantum_level, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige } from './functions.js';
-import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { traits, races, fathomCheck } from './races.js';
+import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
 import { defineResources, spatialReasoning } from './resources.js';
-import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
-import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
-import { checkRequirements} from './space.js';
+import { checkRequirements, incrementStruct} from './space.js';
 import { loc } from './locale.js';
 
 const edenicModules = {
     eden_asphodel: {
         info: {
             name: loc('eden_asphodel_name'),
-            desc: loc('eden_asphodel_desc'),
+            desc(){ return `${loc('eden_asphodel_desc')} ${loc('eden_asohodel_desc_peaceful')}`; },
+            support: 'encampment'
+        },
+        survery_meadows: {
+            id: 'eden-survery_meadows',
+            title(){
+                return loc('eden_survery_meadows_title');
+            },
+            desc(){
+                return $(this)[0].title();
+            },
+            reqs: { edenic: 3 },
+            grant: ['edenic',4],
+            queue_complete(){ return global.tech.edenic >= 4 ? 0 : 1; },
+            cost: {
+                Oil(offset,wiki){ return 10000000; }
+            },
+            effect(){
+                return loc('eden_survery_meadows_effect');
+            },
+            action(){
+                if (payCosts($(this)[0])){
+                    messageQueue(loc('eden_survery_meadows_action'),'info',false,['progress']);
+                    return true;
+                }
+                return false;
+            }
+        },
+        encampment: {
+            id: 'eden-encampment',
+            title: loc('eden_encampment_title'),
+            desc(){ return `<div>${loc('eden_encampment_title')}</div><div class="has-text-special">${loc('requires_power')}</div>`; },
+            reqs: { edenic: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('encampment', offset, 1590000000, 1.235, 'eden'); },
+                Lumber(offset){ return spaceCostMultiplier('encampment', offset, 860000000, 1.235, 'eden'); },
+            },
+            effect(){
+                let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
+                
+                if (global.tech.hasOwnProperty('asphodel') && global.tech.asphodel >= 1){
+                    let powder = spatialReasoning(250);
+                    desc += `<div>${loc('plus_max_resource',[powder,loc('resource_Asphodel_Powder_name')])}</div>`;
+                }
+
+                desc += `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+
+                return desc;
+            },
+            support(){ return 10; },
+            powered(){ return powerCostMod(616); },
+            powerBalancer(){
+                return [{ s: global.eden.encampment.s_max - global.eden.encampment.support }];
+            },
+            refresh: true,
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('encampment','eden');
+                    global['resource']['Asphodel_Powder'].max += spatialReasoning(250);
+                    return true;
+                }
+                return false;
+            }
         },
     },
     eden_elysium: {

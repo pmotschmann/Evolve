@@ -28,6 +28,9 @@ export function renderStructurePage(zone,path){
         case 'hell':
             hellPage(content);
             break;
+        case 'edenic':
+            edenPage(content);
+            break;
         case 'tauceti':
             taucetiPage(content);
             break;
@@ -51,6 +54,7 @@ const extraInformation = {
     interstellar: {},
     intergalactic: {},
     hell: {},
+    eden: {},
     tauceti: {},
 };
 
@@ -228,6 +232,10 @@ function addCalcInputs(parent,key,section,region,path){
         case 'hell':
             action = actions.portal[region][key];
             inputs.real_owned = global.portal[key] ? global.portal[key].count : 0;
+            break;
+        case 'eden':
+            action = actions.eden[region][key];
+            inputs.real_owned = global.eden[key] ? global.eden[key].count : 0;
             break;
         case 'tauceti':
             action = actions.tauceti[region][key];
@@ -512,6 +520,26 @@ function hellPage(content){
                 addCalcInputs(info,struct,'hell',region);
                 sideMenu('add',`hell-structures`,id[1],typeof actions.portal[region][struct].title === 'function' ? actions.portal[region][struct].title() : actions.portal[region][struct].title);
                 popover(`pop${actions.portal[region][struct].id}`,$(`<div>${desc}</div>`));
+            }
+        });
+    });
+}
+
+function edenPage(content){
+    Object.keys(actions.eden).forEach(function (region){        
+        let name = typeof actions.eden[region].info.name === 'string' ? actions.eden[region].info.name : actions.eden[region].info.name();
+        let desc = typeof actions.eden[region].info.desc === 'string' ? actions.eden[region].info.desc : actions.eden[region].info.desc();
+
+        Object.keys(actions.eden[region]).forEach(function (struct){
+            if (struct !== 'info' && (!actions.eden[region][struct].hasOwnProperty('wiki') || actions.eden[region][struct].wiki)){
+                let id = actions.eden[region][struct].id.split('-');
+                let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
+                content.append(info);
+                actionDesc(info, actions.eden[region][struct],`<span id="pop${actions.eden[region][struct].id}">${name}</span>`, true);
+                addInfomration(info,'eden',struct);
+                addCalcInputs(info,struct,'eden',region);
+                sideMenu('add',`eden-structures`,id[1],typeof actions.eden[region][struct].title === 'function' ? actions.eden[region][struct].title() : actions.eden[region][struct].title);
+                popover(`pop${actions.eden[region][struct].id}`,$(`<div>${desc}</div>`));
             }
         });
     });

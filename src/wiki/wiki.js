@@ -84,7 +84,8 @@ function initPage(){
                 { key: 'space' },
                 { key: 'interstellar' },
                 { key: 'intergalactic' },
-                { key: 'hell' }
+                { key: 'hell' },
+                { key: 'edenic' }
             ]
         },
         {
