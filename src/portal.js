@@ -1,4 +1,4 @@
-import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
+import { global, seededRandom, keyMultiplier, p_on, support_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
@@ -2729,6 +2729,14 @@ export function bloodwar(){
             soulCapacitor(souls);
         }
 
+        if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
+            let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attact, 250 + attact);
+            global.portal.soul_forge.kills += souls;
+            day_report.ghost_trappers = souls;
+            soulCapacitor(souls);
+        }
+
         if (forgeOperating && global.tech['hell_gun'] && p_on['gun_emplacement']){
             day_report.gun_emplacements = {};
             let gunKills = 0;
@@ -5234,6 +5242,9 @@ function drawHellReports(){
         }
         if (curr_report.soul_attractors){
             info.append(`<p>${loc('hell_report_log_soul_attractors',[curr_report.soul_attractors])}</p>`);
+        }
+        if (curr_report.ghost_trappers){
+            info.append(`<p>${loc('hell_report_log_ghost_trappers',[curr_report.ghost_trappers])}</p>`);
         }
         if (curr_report.gun_emplacements){
             Object.keys(curr_report.gun_emplacements).forEach(function(num){

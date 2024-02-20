@@ -13922,6 +13922,27 @@ const techs = {
             }
             return false;
         }
+    },
+    ghost_traps: {
+        id: 'tech-ghost_traps',
+        title: loc('tech_ghost_traps'),
+        desc: loc('tech_ghost_traps'),
+        category: 'edenic',
+        era: 'existential',
+        reqs: { asphodel: 1 },
+        grant: ['asphodel',2],
+        cost: {
+            Knowledge(){ return 61250000; },
+            Asphodel_Powder(){ return 2500; },
+        },
+        effect(){ return loc('tech_ghost_traps_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['ectoplasm_processor'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
     }
 };
 

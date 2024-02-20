@@ -517,5 +517,9 @@ export function production(id,val){
             }
             return 1;
         }
+        case 'asphodel_harvester':
+        {
+            return 0.075;
+        }
     }
 }

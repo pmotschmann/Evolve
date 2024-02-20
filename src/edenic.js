@@ -1,8 +1,10 @@
 import { global, seededRandom, keyMultiplier, p_on, quantum_level, sizeApproximation } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier } from './functions.js';
-import { defineResources, spatialReasoning } from './resources.js';
+import { spatialReasoning } from './resources.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct} from './space.js';
+import { jobScale } from './jobs.js';
+import { production } from './prod.js';
 import { loc } from './locale.js';
 
 const edenicModules = {
@@ -68,6 +70,55 @@ const edenicModules = {
                 if (payCosts($(this)[0])){
                     incrementStruct('encampment','eden');
                     global['resource']['Asphodel_Powder'].max += spatialReasoning(250);
+                    return true;
+                }
+                return false;
+            }
+        },
+        asphodel_harvester: {
+            id: 'eden-asphodel_harvester',
+            title: loc('eden_asphodel_harvester_title'),
+            desc: `<div>${loc('eden_asphodel_harvester_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 1 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 34280000, 1.24, 'eden'); },
+            },
+            effect(){
+                let powder = +(production('asphodel_harvester','powder')).toFixed(3);
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('produce',[powder, global.resource.Asphodel_Powder.name])}</div>`;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('asphodel_harvester','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            }
+        },
+        ectoplasm_processor: {
+            id: 'eden-ectoplasm_processor',
+            title: loc('eden_ectoplasm_processor_title'),
+            desc: `<div>${loc('eden_ectoplasm_processor_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 2 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 22650000, 1.24, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 1000, 1.24, 'eden'); },
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('eden_ectoplasm_processor_effect',[jobScale(5)])}</div>`;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('ectoplasm_processor','eden');
+                    powerOnNewStruct($(this)[0]);
+                    global.civic.ghost_trapper.display = true;
                     return true;
                 }
                 return false;

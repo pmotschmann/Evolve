@@ -311,6 +311,12 @@ export const job_desc = {
         let know = Math.round(value * supress);
         return loc('job_archaeologist_desc',[know.toLocaleString()]);
     },
+    ghost_trapper(){
+        let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+        let min = 150 + attact;
+        let max = 250 + attact;
+        return loc('job_ghost_trapper_desc',[loc('portal_soul_forge_title'),global.resource.Soul_Gem.name,min,max]);
+    },
     pit_miner(){
         return loc('job_pit_miner_desc',[loc('tau_planet',[races[global.race.species].home])]);
     },
@@ -348,6 +354,7 @@ export function defineJobs(define){
     loadJob('space_miner',define,1,5,'advanced');
     loadJob('hell_surveyor',define,1,1,'advanced');
     loadJob('archaeologist',define,1,1,'advanced');
+    loadJob('ghost_trapper',define,1,3,'advanced');
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define && !global.race['start_cataclysm']){

@@ -6545,6 +6545,15 @@ function fastLoop(){
             modRes('Bolognium', delta * time_multiplier);
         }
 
+        if (global.eden['asphodel_harvester'] && support_on['asphodel_harvester']){
+            let powder_base = support_on['asphodel_harvester'] * production('asphodel_harvester','powder');
+            powder_base *= production('psychic_boost','Asphodel_Powder');
+            let delta = powder_base * hunger * global_multiplier;
+
+            breakdown.p['Asphodel_Powder'][loc('eden_asphodel_harvester_title')] = powder_base + 'v';
+            modRes('Asphodel_Powder', delta * time_multiplier);
+        }
+
         // Pit Miner
         if (global.civic.pit_miner.display){
             if (tauEnabled()){
@@ -7205,6 +7214,17 @@ function fastLoop(){
             });
         }
 
+        if (global.resource.Asphodel_Powder.display){
+            if (global.resource.Asphodel_Powder.amount > 0){
+                let decay = +((global.resource.Asphodel_Powder.amount) * 0.0045).toFixed(3);
+                modRes('Asphodel_Powder', -(decay * time_multiplier));
+                breakdown.p.consume.Asphodel_Powder[loc('evo_challenge_decay')] = -(decay);
+            }
+            else {
+                delete breakdown.p.consume.Asphodel_Powder[loc('evo_challenge_decay')];
+            }
+        }
+
         if (firstRun){
             if (global.tech['piracy']){
                 renderSpace();
@@ -7446,6 +7466,7 @@ function midLoop(){
             space_miner: 0,
             hell_surveyor: 0,
             archaeologist: 0,
+            ghost_trapper: 0,
             pit_miner: 0,
             crew: 0
         };
@@ -8702,6 +8723,9 @@ function midLoop(){
         }
         if (p_on['archaeology']){
             lCaps['archaeologist'] += jobScale(p_on['archaeology'] * 2);
+        }
+        if (support_on['ectoplasm_processor']){
+            lCaps['ghost_trapper'] += jobScale(support_on['ectoplasm_processor'] * 5);
         }
         if (p_on['nexus']){
             let helium_gain = p_on['nexus'] * spatialReasoning(4000);
