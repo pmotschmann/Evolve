@@ -2880,9 +2880,6 @@ export const spatialReasoning = (function(){
                     if (global.race['no_plasmid']){
                         raw = Math.min(global.race.p_mutation, plasmids);
                     }
-                    else if (global.race['nerfed']){
-                        raw = Math.floor(plasmids / (global.race.universe === 'antimatter' ? 2 : 5));
-                    }
                     plasmids = Math.round(raw * (global.race['nerfed'] ? 0.5 : 1));
                 }
                 if (!type || (type && type === 'phage')){
