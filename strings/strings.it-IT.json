@@ -57,7 +57,7 @@
   "requires_power_support": "Richiede %0 Supporto ed Energia",
   "requires_power_support_combo": "Richiede %0 Supporto e %1",
   "requires_res": "Richiede %0",
-  "requires_segmemts": "Richiede %0 Segmenti",
+  "requires_segments": "Richiede %0 Segmenti",
   "requires_Soldati": "Richiede Soldati",
   "requires_Sicurezza": "Richiede Sicurezza",
   "locale": "Localizzazione",

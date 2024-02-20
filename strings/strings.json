@@ -57,7 +57,7 @@
   "requires_power_support": "Requires %0 Support and Power",
   "requires_power_support_combo": "Requires %0 Support and %1",
   "requires_res": "Requires %0",
-  "requires_segmemts": "Requires %0 segments",
+  "requires_segments": "Requires %0 segments",
   "requires_soldiers": "Requires Soldiers",
   "requires_security": "Requires Security",
   "locale": "Locale",
