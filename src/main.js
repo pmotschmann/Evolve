@@ -8677,6 +8677,21 @@ function midLoop(){
                 lCaps['scientist'] += jobScale(support_on['exotic_lab']);
             }
         }
+
+        if (support_on['research_station']){
+            let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let sci = 200 + attact;
+            if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
+                sci *= 1 + p_on['symposium'];
+            }
+            if (global.race['high_pop']){
+                sci = highPopAdjust(sci);
+            }
+            let gain = support_on['research_station'] * global.civic.ghost_trapper.workers * sci;
+            caps['Knowledge'] += gain;
+            bd_Knowledge[loc('eden_research_station_title')] = gain+'v';
+        }
+
         if (global.tech['isolation'] && support_on['infectious_disease_lab']){
             lCaps['professor'] += jobScale(support_on['infectious_disease_lab'] * 2);
             lCaps['scientist'] += jobScale(support_on['infectious_disease_lab']);
@@ -10010,7 +10025,7 @@ function midLoop(){
         let idx = -1;
         let c_action = false;
         let stop = false;
-        let deepScan = ['space','interstellar','galaxy','portal','tauceti'];
+        let deepScan = ['space','interstellar','galaxy','portal','tauceti','eden'];
         let time = 0;
         let spent = { t: {t:0,rt:0}, r: {}, rr: {}, id: {}};
         let arpa = false;

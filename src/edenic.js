@@ -47,6 +47,8 @@ const edenicModules = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('encampment', offset, 1590000000, 1.235, 'eden'); },
                 Lumber(offset){ return spaceCostMultiplier('encampment', offset, 860000000, 1.235, 'eden'); },
+                Iron(offset){ return spaceCostMultiplier('encampment', offset, 190000000, 1.235, 'eden'); },
+                Coal(offset){ return spaceCostMultiplier('encampment', offset, 23500000, 1.235, 'eden'); },
             },
             effect(){
                 let desc = `<div>${loc('eden_encampment_effect',[$(this)[0].support()])}</div>`;
@@ -69,6 +71,7 @@ const edenicModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('encampment','eden');
+                    powerOnNewStruct($(this)[0]);
                     global['resource']['Asphodel_Powder'].max += spatialReasoning(250);
                     return true;
                 }
@@ -82,6 +85,9 @@ const edenicModules = {
             reqs: { asphodel: 1 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 34280000, 1.24, 'eden'); },
+                Aluminium(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 22288800, 1.24, 'eden'); },
+                Infernite(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 666999, 1.24, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('asphodel_harvester', offset, 2, 1.18, 'eden'); },
             },
             effect(){
                 let powder = +(production('asphodel_harvester','powder')).toFixed(3);
@@ -106,6 +112,8 @@ const edenicModules = {
             reqs: { asphodel: 2 },
             cost: {
                 Money(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 22650000, 1.24, 'eden'); },
+                Titanium(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 15000000, 1.24, 'eden'); },
+                Stanene(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 18000000, 1.24, 'eden'); },
                 Asphodel_Powder(offset){ return spaceCostMultiplier('ectoplasm_processor', offset, 1000, 1.24, 'eden'); },
             },
             effect(){
@@ -122,8 +130,40 @@ const edenicModules = {
                     return true;
                 }
                 return false;
-            }
+            },
+            flair(){ return loc('eden_ectoplasm_processor_flair'); }
         },
+        research_station: {
+            id: 'eden-research_station',
+            title: loc('eden_research_station_title'),
+            desc: `<div>${loc('eden_research_station_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 3 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('research_station', offset, 39185000, 1.24, 'eden'); },
+                Cement(offset){ return spaceCostMultiplier('research_station', offset, 100000000, 1.24, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('research_station', offset, 1250, 1.24, 'eden'); },
+                Soul_Gem(offset){ return spaceCostMultiplier('research_station', offset, 10, 1.12, 'eden'); },
+            },
+            effect(){
+                let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
+                let souls = 200 + attact;
+                if (global.tech['science'] && global.tech.science >= 22 && p_on['embassy'] && p_on['symposium']){
+                    souls *= 1 + p_on['symposium'];
+                }
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('eden_research_station_effect',[souls, loc('job_ghost_trapper')])}</div>`;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return 0; },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('research_station','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
+        }
     },
     eden_elysium: {
         info: {

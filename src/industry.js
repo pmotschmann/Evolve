@@ -1395,7 +1395,9 @@ function loadReplicator(parent,bind){
         if (bind){
         let values = ``;
             Object.keys(atomic_mass).forEach(function(res){
-                values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
+                if (res !== 'Asphodel_Powder'){
+                    values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
+                }
             });
 
             content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
@@ -1407,7 +1409,7 @@ function loadReplicator(parent,bind){
         else {
             let scrollMenu = ``;
             Object.keys(atomic_mass).forEach(function(res){
-                if (global.resource[res].display){
+                if (global.resource[res].display && res !== 'Asphodel_Powder'){
                     scrollMenu += `<b-radio-button v-model="res" native-value="${res}">${global.resource[res].name}</b-radio-button>`;
                 }
             });

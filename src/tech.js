@@ -13943,6 +13943,47 @@ const techs = {
             }
             return false;
         }
+    },
+    research_station: {
+        id: 'tech-research_station',
+        title: loc('tech_research_station'),
+        desc: loc('tech_research_station'),
+        category: 'science',
+        era: 'existential',
+        reqs: { asphodel: 2 },
+        grant: ['asphodel',3],
+        cost: {
+            Knowledge(){ return 61650000; },
+            Asphodel_Powder(){ return 5000; },
+        },
+        effect(){ return loc('tech_research_station_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['research_station'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
+    spirit_box: {
+        id: 'tech-spirit_box',
+        title: loc('tech_spirit_box'),
+        desc: loc('tech_spirit_box'),
+        category: 'science',
+        era: 'existential',
+        reqs: { asphodel: 3, science: 21 },
+        grant: ['science',22],
+        cost: {
+            Knowledge(){ return 62750000; },
+            Asphodel_Powder(){ return 10000; },
+        },
+        effect(){ return loc('tech_spirit_box_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
     }
 };
 
