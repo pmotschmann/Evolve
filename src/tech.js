@@ -10618,6 +10618,26 @@ const techs = {
             return false;
         }
     },
+    soul_bait: {
+        id: 'tech-soul_bait',
+        title: loc('tech_soul_bait'),
+        desc: loc('tech_soul_bait'),
+        category: 'hell_dimension',
+        era: 'existential',
+        reqs: { hell_pit: 7, asphodel: 3 },
+        grant: ['hell_pit',8],
+        cost: {
+            Knowledge(){ return 65000000; },
+            Asphodel_Powder(){ return 10000; }
+        },
+        effect(){ return loc('tech_soul_bait_effect',[global.resource.Asphodel_Powder.name, loc('arpa_blood_attract_title')]); },
+        action(){
+            if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
     gun_emplacement: {
         id: 'tech-gun_emplacement',
         title: loc('portal_gun_emplacement_title'),
@@ -13984,7 +14004,28 @@ const techs = {
             }
             return false;
         }
-    }
+    },
+    soul_engine: {
+        id: 'tech-soul_engine',
+        title: loc('tech_soul_engine'),
+        desc: loc('tech_soul_engine'),
+        category: 'power_generation',
+        era: 'existential',
+        reqs: { asphodel: 3 },
+        grant: ['asphodel',4],
+        cost: {
+            Knowledge(){ return 70000000; },
+            Asphodel_Powder(){ return 12500; },
+        },
+        effect(){ return loc('tech_soul_engine_effect'); },
+        action(){
+            if (payCosts($(this)[0])){
+                global.eden['soul_engine'] = { count: 0, on: 0 };
+                return true;
+            }
+            return false;
+        }
+    },
 };
 
 function uniteEffect(){

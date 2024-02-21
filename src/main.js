@@ -215,6 +215,9 @@ if (global.city['mass_driver']){
 if (global.portal['turret']){
     p_on['turret'] = global.portal.turret.on;
 }
+if (global.interstellar['starport']){
+    p_on['starport'] = global.interstellar.starport.on;
+}
 if (global.interstellar['fusion']){
     int_on['fusion'] = global.interstellar.fusion.on;
 }
@@ -233,6 +236,19 @@ if (global.space['fob']){
 }
 if (global.tauceti['fusion_generator']){
     p_on['fusion_generator'] = global.tauceti.fusion_generator.on;
+}
+if (global.eden['encampment']){
+    p_on['encampment'] = global.eden.encampment.on;
+}
+if (global.eden['soul_engine']){
+    p_on['soul_engine'] = global.eden.soul_engine.on;
+    support_on['soul_engine'] = global.eden.soul_engine.on;
+}
+if (global.eden['ectoplasm_processor']){
+    support_on['ectoplasm_processor'] = global.eden.ectoplasm_processor.on;
+}
+if (global.eden['research_station']){
+    support_on['research_station'] = global.eden.research_station.on;
 }
 
 defineJobs(true);
@@ -1715,6 +1731,13 @@ function fastLoop(){
             max_power += power;
             power_grid -= power;
             power_generated[loc('portal_inferno_power_title')] = -(power);
+        }
+
+        if (global.eden['soul_engine'] && global.tech['asphodel'] && global.tech.asphodel >= 4){
+            let power = (support_on['soul_engine'] || 0) * actions.eden.eden_asphodel.soul_engine.powered();
+            max_power += power;
+            power_grid -= power;
+            power_generated[loc('eden_soul_engine_title')] = -(power);
         }
 
         if (global.space['swarm_satellite'] && global.space['swarm_control']){
@@ -9642,7 +9665,7 @@ function midLoop(){
             }
         });
 
-        let spc_locations = ['space','interstellar','galaxy','portal','tauceti'];
+        let spc_locations = ['space','interstellar','galaxy','portal','tauceti','eden'];
         for (let i=0; i<spc_locations.length; i++){
             let location = spc_locations[i];
             Object.keys(actions[location]).forEach(function (region){

@@ -393,8 +393,9 @@ const fortressModules = {
             },
             effect(){
                 let link = global.tech.hell_pit >= 7 ? `<div>${loc('portal_soul_attractor_effect2',[3])}</div>` : ``;
-                let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-                return `<div>${loc('portal_soul_attractor_effect',[40 + attact, 120 + attact])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
+                let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+                if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
+                return `<div>${loc('portal_soul_attractor_effect',[40 + attract, 120 + attract])}</div>${link}<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
             action(){
                 if (payCosts($(this)[0])){
@@ -2722,16 +2723,17 @@ export function bloodwar(){
 
     if (global.tech['hell_pit']){
         if (forgeOperating && global.tech.hell_pit >= 5 && p_on['soul_attractor']){
-            let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = p_on['soul_attractor'] * Math.rand(40 + attact, 120 + attact);
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            if (global.tech['hell_pit'] && global.tech.hell_pit >= 8){ attract *= 2; }
+            let souls = p_on['soul_attractor'] * Math.rand(40 + attract, 120 + attract);
             global.portal.soul_forge.kills += souls;
             day_report.soul_attractors = souls;
             soulCapacitor(souls);
         }
 
         if (forgeOperating && global.tech['asphodel'] && global.tech.asphodel >= 2 && support_on['ectoplasm_processor']){
-            let attact = global.blood['attract'] ? global.blood.attract * 5 : 0;
-            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attact, 250 + attact);
+            let attract = global.blood['attract'] ? global.blood.attract * 5 : 0;
+            let souls = global.civic.ghost_trapper.workers * Math.rand(150 + attract, 250 + attract);
             global.portal.soul_forge.kills += souls;
             day_report.ghost_trappers = souls;
             soulCapacitor(souls);
@@ -5164,6 +5166,25 @@ function drawHellReports(){
 
         info.append(`<div><h2 class="has-text-info">${loc('hell_report_log_report',[year,day])}</h2></div>`);
         info.append(`<p class="has-text-danger">${loc('hell_report_log_start',[curr_report.start])}</p>`);
+
+        if (curr_report.soul_attractors){
+            info.append(`<p>${loc('hell_report_log_soul_attractors',[curr_report.soul_attractors])}</p>`);
+        }
+        if (curr_report.ghost_trappers){
+            info.append(`<p>${loc('hell_report_log_ghost_trappers',[curr_report.ghost_trappers])}</p>`);
+        }
+        if (curr_report.soul_forge){
+            let displayText = $(`<p></p>`);
+            displayText.append(`<span>${loc('hell_report_log_soul_forge',[curr_report.soul_forge.kills])}</span>`);
+            if (curr_report.soul_forge.gem){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
+            }
+            if (curr_report.soul_forge.gem_craft){
+                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
+            }
+            info.append(displayText);
+        }
+
         if (curr_report.drones){
             Object.keys(curr_report.drones).forEach(function(num){
                 let drone = curr_report.drones[num];
@@ -5240,12 +5261,6 @@ function drawHellReports(){
         if (curr_report.surveyors){
             info.append(`<p class="has-text-danger">${curr_report.surveyors > 1 ? loc('hell_report_log_surveyors_plural',[curr_report.surveyors]) : loc('hell_report_log_surveyors')}</p>`);
         }
-        if (curr_report.soul_attractors){
-            info.append(`<p>${loc('hell_report_log_soul_attractors',[curr_report.soul_attractors])}</p>`);
-        }
-        if (curr_report.ghost_trappers){
-            info.append(`<p>${loc('hell_report_log_ghost_trappers',[curr_report.ghost_trappers])}</p>`);
-        }
         if (curr_report.gun_emplacements){
             Object.keys(curr_report.gun_emplacements).forEach(function(num){
                 let displayText = $(`<p></p>`);
@@ -5257,17 +5272,6 @@ function drawHellReports(){
                 }
                 info.append(displayText);
             });
-        }
-        if (curr_report.soul_forge){
-            let displayText = $(`<p></p>`);
-            displayText.append(`<span>${loc('hell_report_log_soul_forge',[curr_report.soul_forge.kills])}</span>`);
-            if (curr_report.soul_forge.gem){
-                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_find',[global.resource.Soul_Gem.name,1])}</span>`);
-            }
-            if (curr_report.soul_forge.gem_craft){
-                displayText.append(`<span class="has-text-success">${loc('hell_report_log_soul_craft',[curr_report.soul_forge.corrupt ? loc('resource_Corrupt_Gem_name') : global.resource.Soul_Gem.name])}</span>`);
-            }
-            info.append(displayText);
         }
         if (curr_report.gate_turrets){
             Object.keys(curr_report.gate_turrets).forEach(function(num){

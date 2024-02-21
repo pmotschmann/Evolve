@@ -327,7 +327,7 @@ export function powerGrid(type,reset){
             power_structs = ['tau_roid:mining_ship','tau_roid:whaling_ship'];
             break;
         case 'asphodel':
-            power_structs = ['eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station'];
+            power_structs = ['eden_asphodel:soul_engine','eden_asphodel:asphodel_harvester','eden_asphodel:ectoplasm_processor','eden_asphodel:research_station'];
             break;
     }
 

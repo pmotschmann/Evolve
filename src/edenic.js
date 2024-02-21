@@ -163,6 +163,32 @@ const edenicModules = {
                 }
                 return false;
             },
+        },
+        soul_engine: {
+            id: 'eden-soul_engine',
+            title: loc('eden_soul_engine_title'),
+            desc: `<div>${loc('eden_soul_engine_title')}</div><div class="has-text-special">${loc('space_support',[loc('eden_asphodel_name')])}</div>`,
+            reqs: { asphodel: 4 },
+            cost: {
+                Money(offset){ return spaceCostMultiplier('soul_engine', offset, 98312500, 1.235, 'eden'); },
+                Neutronium(offset){ return spaceCostMultiplier('soul_engine', offset, 4500000, 1.235, 'eden'); },
+                Orichalcum(offset){ return spaceCostMultiplier('soul_engine', offset, 37500000, 1.235, 'eden'); },
+                Asphodel_Powder(offset){ return spaceCostMultiplier('soul_engine', offset, 3450, 1.235, 'eden'); }
+            },
+            effect(){
+                return `<div class="has-text-caution">${loc('space_used_support',[loc('eden_asphodel_name')])}</div><div>${loc('space_dwarf_reactor_effect1',[-($(this)[0].powered())])}</div>`;
+            },
+            s_type: 'asphodel',
+            support(){ return -1; },
+            powered(){ return powerModifier(-375); },
+            action(){
+                if (payCosts($(this)[0])){
+                    incrementStruct('soul_engine','eden');
+                    powerOnNewStruct($(this)[0]);
+                    return true;
+                }
+                return false;
+            },
         }
     },
     eden_elysium: {
@@ -187,6 +213,10 @@ const edenicModules = {
 
 export function edenicTech(){
     return edenicModules;
+}
+
+export function checkEdenRequirements(region,tech){
+    return checkRequirements(edenicModules,region,tech);
 }
 
 export function renderEdenic(){

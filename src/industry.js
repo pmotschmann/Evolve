@@ -6,6 +6,7 @@ import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
 import { checkRequirements, checkSpaceRequirements, convertSpaceSector, planetName } from './space.js';
 import { fortressTech } from './portal.js';
+import { edenicTech } from './edenic.js';
 import { checkPathRequirements } from './truepath.js';
 import { production } from './prod.js';
 
@@ -1533,6 +1534,9 @@ export function gridEnabled(c_action,region,p0,p1){
             break;
         case 'tauceti':
             isOk = checkPathRequirements(region,p0,p1);
+            break;
+        case 'eden':
+            isOk = checkRequirements(edenicTech(),p0,p1);
             break;
         default:
             isOk = p0 === 'spc_moon' && global.race['orbit_decayed'] ? false : checkSpaceRequirements(region,p0,p1);
