@@ -3,6 +3,9 @@
 .*
 update.*.json
 strings/last-strings.json
-node_modules/*
+node_modules/
 docs
-dist
+/evolve/evolve.css
+/evolve/main.js
+/wiki/wiki.css
+/wiki/wiki.js
