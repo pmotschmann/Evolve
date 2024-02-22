@@ -1036,6 +1036,9 @@ const fortressModules = {
                 }
                 return false;
             },
+            post(){
+                vBind({el: `#srprtl_gate`},'update');
+            },
             postPower(){
                 vBind({el: `#srprtl_gate`},'update');
             }
