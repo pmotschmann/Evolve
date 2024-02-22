@@ -57,7 +57,7 @@
   "requires_power_support": "%0 보급과 전력 필요",
   "requires_power_support_combo": "%0 보급과 %1 필요",
   "requires_res": "%0 필요",
-  "requires_segmemts": "%0부분으로 구성",
+  "requires_segments": "%0부분으로 구성",
   "requires_soldiers": "군사 필요",
   "requires_security": "보안 필요",
   "locale": "언어",

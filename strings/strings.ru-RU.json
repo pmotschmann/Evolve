@@ -54,7 +54,7 @@
   "requires_power_support": "Требуются модули на планете %0, а также Энергия",
   "requires_power_support_combo": "Требуются модули на планете %0, а также %1",
   "requires_res": "Требуется %0",
-  "requires_segmemts": "Нужно %0 сегментов",
+  "requires_segments": "Нужно %0 сегментов",
   "requires_soldiers": "Нужны Солдаты",
   "requires_security": "Нужна Охрана",
   "locale": "Язык",

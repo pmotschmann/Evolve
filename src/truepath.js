@@ -481,7 +481,7 @@ const outerTruth = {
             title: loc('space_ai_core'),
             desc(wiki){
                 if (!global.space.hasOwnProperty('ai_core') || global.space.ai_core.count < 100 || wiki){
-                    return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                    return `<div>${loc('space_ai_core')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.space.hasOwnProperty('ai_core') && global.space.ai_core.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('space_ai_core')}</div>`;
@@ -1309,7 +1309,7 @@ const tauCetiModules = {
             title: loc('tau_star_ringworld'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ringworld') || global.tauceti.ringworld.count < 1000 || wiki){
-                    return `<div>${loc('tau_star_ringworld')}</div><div class="has-text-special">${loc('requires_segmemts',[1000])}</div>`;
+                    return `<div>${loc('tau_star_ringworld')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
                 }
                 else {
                     return `<div>${loc('tau_star_ringworld')}</div>`;
@@ -1950,7 +1950,7 @@ const tauCetiModules = {
             title: loc('tau_jump_gate'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('jump_gate') || global.tauceti.jump_gate.count < 100 || wiki){
-                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('tau_jump_gate')}</div>`;
@@ -3337,7 +3337,7 @@ const tauCetiModules = {
             title: loc('tech_matrioshka_brain'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('matrioshka_brain') || global.tauceti.matrioshka_brain.count < 1000 || wiki){
-                    return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segmemts',[1000])}</div>`;
+                    return `<div>${loc('tech_matrioshka_brain')}</div><div class="has-text-special">${loc('requires_segments',[1000])}</div>`;
                 }
                 else {
                     return `<div>${loc('tech_matrioshka_brain')}</div>`;
@@ -3384,7 +3384,7 @@ const tauCetiModules = {
             title: loc('tech_ignition_device'),
             desc(wiki){
                 if (!global.tauceti.hasOwnProperty('ignition_device') || global.tauceti.ignition_device.count < 10 || wiki){
-                    return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('tech_ignition_device')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('tech_ignition_device')}</div>`;

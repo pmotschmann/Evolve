@@ -57,7 +57,7 @@
   "requires_power_support": "Benötigt %0 Unterstützung und Strom",
   "requires_power_support_combo": "Benötigt %0 Unterstützung und %1",
   "requires_res": "Benötigt %0",
-  "requires_segmemts": "Benötigt %0 Segmente",
+  "requires_segments": "Benötigt %0 Segmente",
   "requires_soldiers": "Benötigt Soldaten",
   "requires_security": "Benötigt Sicherheit",
   "locale": "Sprache",

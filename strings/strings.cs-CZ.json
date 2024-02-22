@@ -38,7 +38,7 @@
   "requires_power": "Vyžaduje napájení",
   "requires_power_combo": "Vyžaduje napájení a %0",
   "requires_res": "Vyžaduje %0",
-  "requires_segmemts": "Vyžaduje %0 segmentů",
+  "requires_segments": "Vyžaduje %0 segmentů",
   "locale": "Locale",
   "banker_name": "Bankéř",
   "citizen": "Obyvatel",

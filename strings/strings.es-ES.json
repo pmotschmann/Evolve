@@ -37,7 +37,7 @@
   "requires_power": "Requiere energía",
   "requires_power_combo": "Requiere energía y %0",
   "requires_res": "Requiere %0",
-  "requires_segmemts": "Requiere %0 segmentos",
+  "requires_segments": "Requiere %0 segmentos",
   "locale": "Idioma",
   "banker_name": "Banquero",
   "citizen": "Ciudadano",

@@ -54,7 +54,7 @@
   "requires_power_support": "Equiresray %0 Upportsay andway Owerpay",
   "requires_power_support_combo": "Equiresray %0 Upportsay andway %1",
   "requires_res": "Equiresray %0",
-  "requires_segmemts": "Equiresray %0 egmentssay",
+  "requires_segments": "Equiresray %0 egmentssay",
   "requires_soldiers": "Equiresray Oldierssay",
   "requires_security": "Equiresray Ecuritysay",
   "locale": "Ocalelay",
