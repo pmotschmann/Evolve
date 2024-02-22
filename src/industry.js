@@ -7,7 +7,7 @@ import { atomic_mass } from './resources.js';
 import { checkRequirements, checkSpaceRequirements, convertSpaceSector, planetName } from './space.js';
 import { fortressTech } from './portal.js';
 import { checkPathRequirements } from './truepath.js';
-import { production } from './prod.js';
+import { highPopAdjust, production } from './prod.js';
 
 export function loadIndustry(industry,parent,bind){
     switch (industry){
@@ -678,7 +678,7 @@ function loadFactory(parent,bind){
         let assembly = global.tech['factory'] ? true : false;
         switch(type){
             case 'Lux':{
-                let demand = +(global.resource[global.race.species].amount * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
+                let demand = +(highPopAdjust(global.resource[global.race.species].amount) * (assembly ? f_rate.Lux.demand[global.tech['factory']] : f_rate.Lux.demand[0]));
                 demand = luxGoodPrice(demand).toFixed(2);
                 let fur = assembly ? f_rate.Lux.fur[global.tech['factory']] : f_rate.Lux.fur[0];
                 return loc('modal_factory_lux_label',[fur,global.resource.Furs.name,demand]);
