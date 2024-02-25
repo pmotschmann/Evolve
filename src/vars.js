@@ -201,6 +201,12 @@ if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
     });
 }
 
+if (convertVersion(global['version']) < 4010){
+    if (global.stats['achieve'] && global.stats.achieve['doomed']){
+        global.stats['portals'] = 1;
+    }
+}
+
 if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
     global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
 }
@@ -456,6 +462,12 @@ if (convertVersion(global['version']) < 8003){
 if (convertVersion(global['version']) < 8017){
     if (global.city['garrison']){
         global.city.garrison['on'] = global.city['garrison'].count;
+    }
+}
+
+if (convertVersion(global['version']) < 9000){
+    if (global.settings && global.settings.showCity){
+        global.settings.showCiv = global.settings.showCity;
     }
 }
 
@@ -1168,8 +1180,15 @@ if (convertVersion(global['version']) < 103002){
     }
 }
 
-global['version'] = '1.3.10';
-delete global['revision'];
+if (convertVersion(global['version']) < 103011){
+    if (global.city.hasOwnProperty('slave_pen') && global.city.slave_pen.hasOwnProperty('slaves')){
+        global.resource.Slave.amount = global.city.slave_pen.slaves;
+        delete global.city.slave_pen.slaves;
+    }
+}
+
+global['version'] = '1.3.11';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -1374,7 +1393,7 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 if (!global.settings['locale']){
-    global.settings['locale'] = 'en-us';
+    global.settings['locale'] = 'en-US';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
@@ -1414,6 +1433,9 @@ if (typeof global.settings.sPackMsg === 'undefined'){
 }
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
+}
+if (typeof global.settings.alwaysPower === 'undefined'){
+    global.settings['alwaysPower'] = false;
 }
 if (typeof global.settings.tabLoad === 'undefined'){
     global.settings['tabLoad'] = false;

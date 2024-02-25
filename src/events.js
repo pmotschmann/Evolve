@@ -866,14 +866,14 @@ export const events = {
         effect(){
             if (global.race['pet']){
                 let interaction = Math.rand(0,10);
-                return loc(`event_${global.race.pet.type}_interaction${interaction}`,[global.race.pet.name]);
+                return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
             else {
                 global.race['pet'] = {
                     type: Math.rand(0,2) === 0 ? 'cat' : 'dog',
                     name: Math.rand(0,10)
                 };
-                return loc(`event_pet_${global.race.pet.type}`,[loc(`event_cat_name${global.race.pet.name}`)]);
+                return loc(`event_pet_${global.race.pet.type}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
             }
         }
     },
@@ -913,9 +913,8 @@ function slaveLoss(type,string){
         },
         type: type,
         effect(){
-            if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
-                global.city.slave_pen.slaves--;
-                global.resource.Slave.amount = global.city.slave_pen.slaves;
+            if (global.city['slave_pen'] && global.resource.Slave.amount > 0){
+                global.resource.Slave.amount--;
                 return loc(`event_slave_${string}`);
             }
             else {
