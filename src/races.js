@@ -4623,11 +4623,11 @@ export function racialTrait(workers,type){
         }
     }
     if (global.race['humpback'] && (type === 'miner' || type === 'lumberjack')){
-        modifier *= 1 + (traits.humpback.vars()[0] / 100);
+        modifier *= 1 + (traits.humpback.vars()[1] / 100);
     }
     let kamelFathom = fathomCheck('kamel');
     if (kamelFathom > 0 && (type === 'miner' || type === 'lumberjack')){
-        modifier *= 1 + (traits.humpback.vars(1)[0] / 100 * kamelFathom);
+        modifier *= 1 + (traits.humpback.vars(1)[1] / 100 * kamelFathom);
     }
     if (global.city.ptrait.includes('magnetic') && type === 'miner'){
         modifier *= planetTraits.magnetic.vars()[2];
