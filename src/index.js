@@ -54,7 +54,7 @@ export function mainVue(){
                 const minute = date.getMinutes().toFixed(0).padStart(2, '0');
                 downloadToFile(window.exportGame(), `evolve-${year}-${month}-${day}-${hour}-${minute}.txt`, 'text/plain');
             },
-            importStringFile(){ 
+            importStringFile(){
                 let file = document.getElementById("stringPackFile").files[0];
                 if (file) {
                     let reader = new FileReader();
@@ -68,7 +68,7 @@ export function mainVue(){
                             global.settings.sPackMsg = loc(`string_pack_error`,[fileName]);
                             return;
                         }
-                       
+
                         global.settings.sPackMsg = loc(`string_pack_using`,[fileName]);
                         save.setItem('string_pack_name',fileName); save.setItem('string_pack',LZString.compressToUTF16(evt.target.result));
                         if (global.settings.sPackOn){
@@ -79,7 +79,7 @@ export function mainVue(){
                             }
                             window.location.reload();
                         }
-                       
+
                     }
                     reader.onerror = function (evt) {
                         console.error("error reading file");
@@ -146,6 +146,9 @@ export function mainVue(){
             setQueueStyle(style){
                 global.settings.queuestyle = style;
                 updateQueueStyle();
+            },
+            setQueueResize(mode) {
+                global.settings.q_resize = mode;
             },
             icon(icon){
                 global.settings.icon = icon;
@@ -741,15 +744,15 @@ export function loadTab(tab){
                             $('#market').append(market_item);
                             marketItem(`#market-${name}`,market_item,name,color,true);
                         }
-                    
+
                         if (atomic_mass[name]){
                             loadEjector(name,color);
                         }
-                    
+
                         if (supplyValue[name]){
                             loadSupply(name,color);
                         }
-                    
+
                         if (tradeRatio[name] && global.race.universe === 'magic'){
                             global['resource'][name]['basic'] = tradable;
                             loadAlchemy(name,color,tradable);
@@ -966,7 +969,7 @@ export function index(){
 
                         var body = $('<div id="specialModal" class="modalBody vscroll"></div>');
                         $('#modalBox').append(body);
-                        
+
                         let catVis = $(`
                             <div>
                                 <div>
@@ -993,18 +996,18 @@ export function index(){
                         body.append(catVis);
                         body.append(catMax);
                         body.append(catSave);
-                        
+
                         let visSet = ``;
                         let maxSet = ``;
                         let saveSet = ``;
-                        
+
                         let maxInputs = {};
                         let saveInputs = {};
                         message_filters.forEach(function (filter){
                             visSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-checkbox class="patrol" v-model="s.${filter}.vis" :disabled="checkDisabled('${filter}',s.${filter}.vis)" :input="check('${filter}')"></b-checkbox></div>`;
                             maxSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="maxVal('${filter}')" min="1" v-model="mi.${filter}" :controls="false"></b-numberinput></div>`;
                             saveSet += `<div class="msgInput" v-show="s.${filter}.unlocked"><span>${loc('message_log_' + filter)}</span> <b-numberinput :input="saveVal('${filter}')" min="0" :max="s.${filter}.max" v-model="si.${filter}" :controls="false"></b-numberinput></div>`;
-                            
+
                             maxInputs[filter] = global.settings.msgFilters[filter].max;
                             saveInputs[filter] = global.settings.msgFilters[filter].save;
                         });
@@ -1021,8 +1024,8 @@ export function index(){
                                 <button class="button" @click="applySave()">${loc('message_log_settings_apply')}</button>
                             </div>
                         `);
-                        
-                        
+
+
                         vBind({
                             el: `#specialModal`,
                             data: {
@@ -1059,7 +1062,7 @@ export function index(){
                                             totVis++;
                                         }
                                     });
-                                    
+
                                     return totVis === 1;
                                 },
                                 maxVal(filter){
@@ -1285,18 +1288,6 @@ export function index(){
                 <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ 'star' | label }}</b-dropdown-item>
                 ${iconlist}
             </b-dropdown>
-
-            <span>{{ 'queuestyle' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.queuestyle | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
-            </b-dropdown>
         </div>
         <div id="localization" class="localization">
             <span>{{ 'locale' | label }} </span>
@@ -1318,6 +1309,20 @@ export function index(){
                 <b-dropdown-item v-on:click="font('large_log')">{{ 'large_log' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
             </b-dropdown>
+        </div>
+
+        <div class="queue">
+            <span>{{ 'queuestyle' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.queuestyle | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
+            </b-dropdown>
 
             <span class="settings15" aria-label="${loc('settings15')}">{{ 'q_merge' | label }} </span>
             <b-dropdown hoverable>
@@ -1329,7 +1334,20 @@ export function index(){
                 <b-dropdown-item v-on:click="q_merge('merge_nearby')">{{ 'merge_nearby' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="q_merge('merge_all')">{{ 'merge_all' | label }}</b-dropdown-item>
             </b-dropdown>
+
+            <span>{{ 'q_resize' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ 'q_resize_' + s.q_resize | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="setQueueResize('auto')">{{ 'q_resize_auto' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('grow')">{{ 'q_resize_grow' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('shrink')">{{ 'q_resize_shrink' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('manual')">{{ 'q_resize_manual' | label }}</b-dropdown-item>
+            </b-dropdown>
         </div>
+
         <b-switch class="setting" v-model="s.pause" @input="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ 'pause' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.mKeys"><span class="settings1" aria-label="${loc('settings1')}">{{ 'm_keys' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ 'c_cat' | label }}</span></b-switch>
