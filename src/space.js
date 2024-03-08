@@ -3628,9 +3628,7 @@ const interstellarProjects = {
                         if (global.interstellar.stargate.count >= 200){
                             global.tech['stargate'] = 4;
                             global.interstellar['s_gate'] = { count: 1, on: 0 };
-                            if (global.city.power >= interstellarProjects.int_blackhole.s_gate.powered()){
-                                global.interstellar['s_gate'].on++;
-                            }
+                            powerOnNewStruct($(interstellarProjects.int_blackhole.s_gate)[0]);
                             deepSpace();
                             clearPopper();
                         }
