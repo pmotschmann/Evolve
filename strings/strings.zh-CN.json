@@ -5809,7 +5809,7 @@
   "psychic_boost_time": "持续时间: %0",
   "psychic_murder_title": "谋杀一位市民",
   "psychic_murder_desc": "无情地谋杀一位市民。",
-  "psychic_murder_button": "谋杀市民，能量 -%1",
+  "psychic_murder_button": "谋杀市民，能量 -%0",
   "psychic_assault_title": "提升战斗力",
   "psychic_assault_desc": "军队战斗评级 +%0%。",
   "psychic_attack": "战斗力",
