@@ -7621,7 +7621,7 @@
   "wiki_trait_effect_swift": "战斗评级 +%0%，捕获奴役难度 -%1%。",
   "wiki_trait_effect_dark_dweller": "晴天时，狩猎产量 -%0%。",
   "wiki_trait_effect_anthropophagite": "如果食物资源过少，市民将通过献祭同族来获取食物。每献祭一位市民，获得%0个食物。",
-  "wiki_trait_effect_living_tool": "您可以通过身体的形变来制作工具，而无需研发基础工具。科学相关研究的效率提升。",
+  "wiki_trait_effect_living_tool": "您无需研发基础工具，可以通过身体的形变来达到相同目的。效果会随着科技的进步而提升。",
   "wiki_trait_effect_bloated": "基础资源成本 +%0%。",
   "wiki_trait_effect_unfathomable": "您的文明如此恐怖以至于无法被其他种族所理解。",
   "wiki_trait_effect_unfathomable_ex1": "您可以雇佣一类特殊的猎人，被称为劫掠者。劫掠者可以从地表世界掠夺资源、人口、以及牲畜。被捕获的囚徒可被转化为奴役，根据奴役种族的不同，会产生各类加成。",
