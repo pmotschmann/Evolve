@@ -1814,7 +1814,7 @@ const tauCetiModules = {
                 return desc;
             },
             support(){ return 1; },
-            powered(){ return powerModifier(global.tech['isolation'] ? 1 : 4); },
+            powered(){ return powerCostMod(global.tech['isolation'] ? 1 : 4); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_farm.count++;
