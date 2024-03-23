@@ -3859,7 +3859,12 @@ function fastLoop(){
             delta *= library_mult * lab_mult;
 
             breakdown.p['Knowledge'][loc('job_professor')] = professors_base + 'v';
-            breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
+            if (global.race.universe === 'magic'){
+                breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
+            }
+            else {
+                breakdown.p['Knowledge'][loc('job_wizard')] = scientist_base + 'v';
+            }
             breakdown.p['Knowledge'][loc('tau_red_womlings')] = womling + 'v';
             breakdown.p['Knowledge'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Knowledge'][global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
