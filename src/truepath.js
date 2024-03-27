@@ -3686,7 +3686,7 @@ export function drawShipYard(){
                 values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${k}','${v}')" class="${k} a${idx}" data-val="${v}" v-show="avail('${k}','${idx}','${v}')">${loc(`outer_shipyard_${k}_${v}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`outer_shipyard_${k}`)}: {{ b.${k} | lbl('${k}') }}</span>
                 </button>${values}
@@ -4417,7 +4417,7 @@ function drawShips(){
 
         let location = ship.location === 'tauceti' ? loc('tech_era_tauceti') : typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
 
-        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover']" aria-role="list" scrollable position="is-bottom-left">
+        let dispatch = `<b-dropdown id="ship${i}loc" :triggers="['hover', 'click']" aria-role="list" scrollable position="is-bottom-left">
             <button class="button is-info" slot="trigger">
                 <span>${location}</span>
             </button>${values}
