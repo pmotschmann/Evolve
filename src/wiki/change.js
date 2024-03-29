@@ -3,6 +3,43 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.11`,
+        date: `2/19/2024`,
+        changes: [
+            `Community fixes:`,
+            `New Power settings.`,
+            `Fixed loot bug with Gravity Well and Dark Energy.`,
+            `Fixed pet names in pet events.`,
+            `Fixed issue with Aquarius sign and Tourist Centers.`,
+            `Fixed bugs with Arraak and Human thralls.`,
+            `Many bug fixes related to High Population trait.`,
+            `Many language updates.`
+        ]
+    },
+    {
+        version: `1.3.10`,
+        date: `1/23/2024`,
+        changes: [
+            `Added Gravity Well challenge mode.`,
+            `Prepping the Bioseed ship for launch now has a Helium-3 cost.`,
+            `Added new pet minor event`,
+            `Polish language translation by Wiedźmin.`,
+            `German language translation by FutterSillo.`,
+            `Various UI improvements and language updates.`
+        ]
+    },
+    {
+        version: `1.3.9`,
+        date: `8/20/2023`,
+        changes: [
+            `Pressing the same tab key multiple times will now cycle the subtabs.`,
+            `Reduced Mana costs of Improved Concealment, Study Corrupt Gem, & Outerplane Summon in Witch Hunter for non-gold star players.`,
+            `Fixed Bilateral Symmetry DNA bonus.`,
+            `Updated Korean and Chinese langs.`,
+            `Screen Reader improvement for achievements display.`
+        ]
+    },
+    {
         version: `1.3.8`,
         revision: `a`,
         date: `6/1/2023`,

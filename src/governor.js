@@ -6,6 +6,7 @@ import { govCivics, govTitle } from './civics.js';
 import { crateGovHook, atomic_mass } from './resources.js';
 import { checkHellRequirements, mechSize, mechCost } from './portal.js';
 import { loc } from './locale.js';
+import { jobScale } from './jobs.js';
 
 export const gmen = {
     soldier: {
@@ -169,7 +170,7 @@ export const gov_traits = {
     },
     extravagant: {
         name: loc(`gov_trait_extravagant`),
-        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],$(this)[0].vars()[2]+5]); },
+        effect(){ return loc(`gov_trait_extravagant_effect`,[$(this)[0].vars()[0],housingLabel('large',true),$(this)[0].vars()[1],jobScale($(this)[0].vars()[2]+5)]); },
         vars(){ return [10,1.25,1]; },
     },
     aristocrat: {
@@ -193,7 +194,7 @@ export const gov_traits = {
     },
     athleticism: {
         name: loc(`gov_trait_athleticism`),
-        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],$(this)[0].vars()[1],$(this)[0].vars()[2],wardenLabel()]); },
+        effect(){ return loc(`gov_trait_athleticism_effect`,[$(this)[0].vars()[0],jobScale($(this)[0].vars()[1]),$(this)[0].vars()[2],wardenLabel()]); },
         vars(){ return [1.5,2,4]; },
     },
     nopain: {
@@ -258,7 +259,7 @@ function genGovernor(setSize){
         }
         governors.push({ bg: bg, t: title, n: name });
     }
-    
+
     return governors;
 }
 
@@ -457,7 +458,7 @@ export function drawnGovernOffice(){
                 global.race.governor.config.spyop[gov] = gov === 'gov3' ? ['influence','sabotage'] : ['sabotage','incite','influence'];
             });
         }
-        
+
         let contain = $(`<div class="tConfig" v-show="showTask('spyop')"><div class="has-text-warning">${loc(`gov_task_spyop`)}</div></div>`);
         options.append(contain);
         Object.keys(global.civic.foreign).forEach(function (gov){
@@ -558,7 +559,7 @@ export function drawnGovernOffice(){
 
     vBind({
         el: '#govOffice',
-        data: { 
+        data: {
             t: global.race.governor.tasks,
             c: global.race.governor.config,
             r: global.resource
@@ -641,7 +642,7 @@ export function drawnGovernOffice(){
     {
         elm: `#govOffice .bg`,
     });
-    
+
     Object.keys(global.civic.foreign).forEach(function (gov){
         dragSpyopList(gov);
     });
@@ -851,7 +852,7 @@ export const gov_tasks = {
                         }
                     }
                 });
-                
+
                 crateSet = active !== 0 ? Math.floor(crates / active) : 0;
                 containerSet = active !== 0 ? Math.floor(containers / active): 0;
                 crates -= Math.floor(crateSet * active);
@@ -1109,7 +1110,7 @@ export const gov_tasks = {
                     let set = (global.resource[res].amount + trade - craft >= global.resource[res].max * 0.999 - 1) || (global.race.governor.config.trash[res] && !global.race.governor.config.trash[res].s)
                         ? Math.floor(global.interstellar.mass_ejector[res] + global.resource[res].diff)
                         : 0;
-                    
+
                     if (global.race.governor.config.trash[res] && set < global.race.governor.config.trash[res].v && global.race.governor.config.trash[res].s){
                         set = Math.abs(global.race.governor.config.trash[res].v);
                     }

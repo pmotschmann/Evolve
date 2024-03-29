@@ -39,7 +39,7 @@ const achieve_list = {
     ],
     universe: [
         'vigilante','squished','double_density','cross','macro','marble','heavyweight','whitehole','heavy','canceled',
-        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare'
+        'eviltwin','microbang','pw_apocalypse','fullmetal','pass','soul_sponge','nightmare','escape_velocity'
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
@@ -805,6 +805,18 @@ export function checkAchievements(){
             }
         }
     }
+}
+
+export function checkAdept(){
+    let rank = 0;
+    ['whitehole','eviltwin','canceled','heavy','pw_apocalypse'].forEach(function(x){
+        if (global.stats.achieve[x]){
+            rank = Math.max(global.stats.achieve[x].l, rank);
+        }
+    });
+
+    rank = global.stats.feat['adept'] ? Math.min(rank, global.stats.feat['adept']) : 0;
+    return rank;
 }
 
 function checkBigAchievement(frag, name, num, level){
@@ -1587,6 +1599,20 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_nightmare_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_nightmare_name`)}</span>`])
+        ]
+    },
+    escape_velocity: {
+        name: loc(`achieve_escape_velocity_name`),
+        desc(wiki){
+            let ev = wiki ? "2/4/6/8/10" : global.stats.achieve['escape_velocity'] ? global.stats.achieve.escape_velocity.h * 2 : 2;
+            return loc("achieve_perks_escape_velocity",[ev]);
+        },
+        active(){
+            return global.stats.achieve['escape_velocity'] && global.stats.achieve.escape_velocity.h >= 1 ? true : false;
+        },
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`])
         ]
     },
     gladiator: {
@@ -2466,13 +2492,13 @@ export const perkList = {
     adept: {
         name: loc(`perk_adept`),
         desc(wiki){
-            let rank = global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']) : 1;
+            let rank = checkAdept() || 1;
             let res = wiki ? "100/200/300/400/500" : rank * 100;
             let cap = wiki ? "60/120/180/240/300" : rank * 60;
             return loc("achieve_perks_adept",[res,cap]);
         },
         active(){
-            return global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0 ? true : false;
+            return checkAdept() > 0;
         },
         notes: [
             loc(`wiki_perks_progress_note1`,[50,loc(`wiki_resets_blackhole`)]),

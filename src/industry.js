@@ -1145,35 +1145,32 @@ function loadPylon(parent,bind){
     let spellTypes = $('<div class="pylon wrap"></div>');
     parent.append(spellTypes);
 
-    let ritualList = [];
-    if (global.race['orbit_decayed']){
-        ritualList = ['miner','science','factory','army','hunting','crafting'];
+    let ritualList = ['science','army','hunting'];
+
+    if (!global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical'] && !global.race['unfathomable'] && !global.race['cataclysm'] && !global.race['orbit_decayed']) {
+        ritualList.push('farmer');
     }
-    else if (global.race['cataclysm']){
-        ritualList = ['science','factory','army','hunting','crafting'];
+    if (!global.race['cataclysm']) {
+        ritualList.push('miner');
     }
-    else if (global.race['unfathomable']){
-        ritualList = ['miner','lumberjack','science','factory','army','hunting','crafting'];
+    if (!global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil'] && !global.race['cataclysm'] && !global.race['orbit_decayed']) {
+        ritualList.push('lumberjack');
     }
-    else {
-        ritualList = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    if (!global.race['flier']) {
+        ritualList.push('factory');
+    }
+    if (global.tech.magic >= 4) {
+        ritualList.push('crafting');
     }
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ritualList.forEach(function (spell){
-            if (
-                (spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') ||
-                (spell === 'farmer' && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']) ||
-                (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']) ||
-                (spell === 'crafting' && global.tech.magic >= 4)
-                ){
-                let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
-                let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
-                let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
-                spellTypes.append(sub);
-                spellTypes.append(cast);
-                spellTypes.append(add);
-            }
+            let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
+            let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
+            let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
+            spellTypes.append(sub);
+            spellTypes.append(cast);
+            spellTypes.append(add);
         });
     }
 

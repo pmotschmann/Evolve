@@ -1,13 +1,13 @@
 import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
-import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
+import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
-import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
+import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy, fuel_adjust } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
@@ -39,7 +39,7 @@ export const actions = {
             id: 'evolution-dna',
             title: loc('evo_dna_title'),
             desc: loc('evo_dna_desc'),
-            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display && !global.race['evoFinalMenu']; },
+            condition(){ return global.resource.hasOwnProperty('DNA') && global.resource.DNA.display && global.resource.DNA.amount < global.resource.DNA.max && !global.race['evoFinalMenu']; },
             cost: { RNA(){ return 2; } },
             action(){
                 if (global['resource']['RNA'].amount >= 2 && global['resource']['DNA'].amount < global['resource']['DNA'].max){
@@ -81,7 +81,7 @@ export const actions = {
             },
             effect(){
                 let rna = global.race['rapid_mutation'] ? 2 : 1;
-                if (global.evolution['sexual_reproduction'] && global.evolution['sexual_reproduction'].count > 0){
+                if (global.tech['evo'] && global.tech.evo >= 2){
                     rna++;
                 }
                 return loc('evo_organelles_effect',[rna]);
@@ -101,10 +101,10 @@ export const actions = {
             condition(){ return global.evolution.hasOwnProperty('nucleus') && !global.race['evoFinalMenu']; },
             cost: {
                 RNA(offset){ return evolveCosts('nucleus',38, global.tech['evo'] && global.tech.evo >= 4 ? 16 : 32, offset ); },
-                DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4  ? 12 : 16, offset ); }
+                DNA(offset){ return evolveCosts('nucleus',18, global.tech['evo'] && global.tech.evo >= 4 ? 12 : 16, offset ); }
             },
             effect(){
-                let dna = (global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0) ? 2 : 1;
+                let dna = (global.tech['evo'] && global.tech.evo >= 5) ? 2 : 1;
                 return loc('evo_nucleus_effect',[dna]);
             },
             action(){
@@ -975,7 +975,7 @@ export const actions = {
                             }
                         });
                     }
-                    
+
                     if (date.getMonth() !== 11 || (date.getMonth() === 11 && (date.getDate() <= 16 || date.getDate() >= 25))){
                         if (active_gift === `g2019`){
                             if (global['special'] && global.special['gift']){
@@ -996,12 +996,12 @@ export const actions = {
                         else {
                             if (global['special'] && global.special['gift']){
                                 delete global.special.gift[active_gift];
-                                
+
                                 let resets = global.stats.hasOwnProperty('reset') ? global.stats.reset : 0;
                                 let mad = global.stats.hasOwnProperty('mad') ? global.stats.mad : 0;
                                 let bioseed = global.stats.hasOwnProperty('bioseed') ? global.stats.bioseed : 0;
                                 let cataclysm = global.stats.hasOwnProperty('cataclysm') ? global.stats.cataclysm : 0;
-        
+
                                 let plasmid = 100 + resets + mad;
                                 let phage = bioseed + cataclysm;
                                 let gift = [];
@@ -1027,7 +1027,7 @@ export const actions = {
                                     global.stats.phage += phage;
                                     gift.push(`${phage.toLocaleString()} ${loc(`resource_Phage_name`)}`);
                                 }
-        
+
                                 if (global.stats.hasOwnProperty('achieve')){
                                     let universe = global.stats.achieve['whitehole'] ? global.stats.achieve['whitehole'].l : 0;
                                     universe += global.stats.achieve['heavy'] ? global.stats.achieve['heavy'].l : 0;
@@ -1035,15 +1035,15 @@ export const actions = {
                                     universe += global.stats.achieve['eviltwin'] ? global.stats.achieve['eviltwin'].l : 0;
                                     universe += global.stats.achieve['microbang'] ? global.stats.achieve['microbang'].l : 0;
                                     universe += global.stats.achieve['pw_apocalypse'] ? global.stats.achieve['pw_apocalypse'].l : 0;
-        
+
                                     let ascended = global.stats.achieve['ascended'] ? global.stats.achieve['ascended'].l : 0;
                                     let descend = global.stats.achieve['corrupted'] ? global.stats.achieve['corrupted'].l : 0;
                                     let ai = global.stats.achieve['obsolete'] ? global.stats.achieve['obsolete'].l : 0;
-        
+
                                     if (universe > 30){ universe = 30; }
                                     if (ascended > 5){ ascended = 5; }
                                     if (descend > 5){ descend = 5; }
-                                    
+
                                     if (universe > 0){
                                         let dark = +(universe / 7.5).toFixed(2);
                                         global.prestige.Dark.count += dark;
@@ -1196,7 +1196,7 @@ export const actions = {
                 }
                 else {
                     return loc(`city_gather`,[global.resource.Stone.name]);
-                }                
+                }
             },
             desc(){
                 let gain = $(this)[0].val(false);
@@ -1205,7 +1205,7 @@ export const actions = {
                 }
                 else {
                     return loc(global.race['sappy'] ? 'city_amber_desc' : 'city_stone_desc',[gain,global.resource.Stone.name]);
-                }                
+                }
             },
             category: 'outskirts',
             reqs: { primitive: 2 },
@@ -1247,7 +1247,7 @@ export const actions = {
                 }
                 else {
                     return loc(`city_gather`,[global.resource.Chrysotile.name]);
-                }                
+                }
             },
             desc(){
                 let gain = $(this)[0].val(false);
@@ -1256,7 +1256,7 @@ export const actions = {
                 }
                 else {
                     return loc('city_stone_desc',[gain,global.resource.Chrysotile.name]);
-                }                
+                }
             },
             category: 'outskirts',
             reqs: { primitive: 2 },
@@ -1353,8 +1353,7 @@ export const actions = {
             action(){
                 if (global.city['slave_pen'] && global.city.slave_pen.count * 5 > global.city.slave_pen.slaves){
                     if (payCosts($(this)[0])){
-                        global.city.slave_pen.slaves++;
-                        global.resource.Slave.amount = global.city.slave_pen.slaves;
+                        global.resource.Slave.amount++;
                         return true;
                     }
                 }
@@ -1457,7 +1456,6 @@ export const actions = {
             title(){
                 return basicHousingLabel();
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
@@ -1840,7 +1838,7 @@ export const actions = {
                 generated *= global.city.ptrait.includes('trashed') ? planetTraits.trashed.vars()[0] : 1;
                 generated = +(generated).toFixed(2);
                 let store = BHStorageMulti(spatialReasoning(200));
-                let wood = global.race['kindling_kindred'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
+                let wood = global.race['kindling_kindred'] || global.race['smoldering'] ? `` : `<div class="has-text-caution">${loc('city_compost_heap_effect2',[0.5,global.resource.Lumber.name])}</div>`;
                 return `<div>${loc('city_compost_heap_effect',[generated])}</div><div>${loc('city_compost_heap_effect3',[store])}</div>${wood}`;
             },
             switchable(){ return true; },
@@ -1993,7 +1991,7 @@ export const actions = {
                     if (global.race['chameleon']){
                         gain -= global.city.garrison.count;
                     }
-                    global.civic['garrison'].max += gain;
+                    global.civic['garrison'].max += jobScale(gain);
                     global.city['garrison'].count++;
                     global.city['garrison'].on++;
                     global.resource.Furs.display = true;
@@ -3094,7 +3092,7 @@ export const actions = {
                 }
                 return `<div class="has-text-caution">${loc('city_tourist_center_effect1',[global.resource.Food.name])}</div><div>${loc('city_tourist_center_effect2',[amp,actions.city.amphitheatre.title()])}</div><div>${loc('city_tourist_center_effect3',[cas])}</div><div>${loc('city_tourist_center_effect4',[mon])}</div>${post}${pious}`;
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.city['tourist_center'].count++;
@@ -3131,7 +3129,8 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     global.city['amphitheatre'].count++;
-                    global.civic.entertainer.max += jobScale(1);
+                    let athVal2 = govActive('athleticism',1);
+                    global.civic.entertainer.max += jobScale(athVal2 ? athVal2 : 1);
                     global.civic.entertainer.display = true;
                     return true;
                 }
@@ -3204,6 +3203,7 @@ export const actions = {
                 if (payCosts($(this)[0])){
                     if (global.genes['ancients'] && global.genes['ancients'] >= 2){
                         global.civic.priest.display = true;
+                        global.civic.priest.max += jobScale(1);
                     }
                     global.city['temple'].count++;
                     return true;
@@ -3401,7 +3401,7 @@ export const actions = {
                     global['resource']['Knowledge'].max += gain;
                     global.city.university.count++;
                     global.civic.professor.display = true;
-                    global.civic.professor.max = global.city.university.count;
+                    global.civic.professor.max = jobScale(global.city.university.count);
                     return true;
                 }
                 return false;
@@ -3580,7 +3580,7 @@ export const actions = {
                     let gain = 1000;
                     global.city.wardenclyffe.count++;
                     global.civic.scientist.display = true;
-                    global.civic.scientist.max = global.city.wardenclyffe.count;
+                    global.civic.scientist.max += jobScale(1);
                     if (powerOnNewStruct($(this)[0])){
                         gain = global.tech['science'] >= 7 ? 2500 : 2000;
                     }
@@ -3940,7 +3940,9 @@ export const actions = {
             },
             reqs: { genesis: 6 },
             queue_complete(){ return 0; },
-            cost: {},
+            cost: {
+                Helium_3(offset,wiki){ return +fuel_adjust(global.race['gravity_well'] ? 150000 : 75000,false,wiki).toFixed(0); }
+            },
             effect(){
                 let gains = calcPrestige('bioseed');
                 let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
@@ -3948,12 +3950,15 @@ export const actions = {
                 return `<div>${label}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`;
             },
             action(){
-                global.tech['genesis'] = 7;
-                clearPopper(`starDock-prep_ship`);
-                clearElement($('#modalBox'));
-                let c_action = actions.space.spc_gas.star_dock;
-                drawModal(c_action,'star_dock');
-                return true;
+                if (payCosts($(this)[0])) {
+                    global.tech['genesis'] = 7;
+                    clearPopper(`starDock-prep_ship`);
+                    clearElement($('#modalBox'));
+                    let c_action = actions.space.spc_gas.star_dock;
+                    drawModal(c_action,'star_dock');
+                    return true;
+                }
+                return false;
             },
         },
         launch_ship: {
@@ -4029,7 +4034,7 @@ export function setChallengeScreen(){
         //global.evolution['nonstandard'] = { count: 0 };
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        //global.evolution['gravity_well'] = { count: 0 };
+        global.evolution['gravity_well'] = { count: 0 };
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         global.evolution['witch_hunter'] = { count: 0 };
@@ -4091,7 +4096,7 @@ export function setChallengeScreen(){
         //addAction('evolution','nonstandard');
     }
     if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
-        //addAction('evolution','gravity_well');
+        addAction('evolution','gravity_well');
     }
     if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
         addAction('evolution','witch_hunter');
@@ -4135,7 +4140,7 @@ export function buildTemplate(key, region){
             else {
                 a['trait'] = [k];
             }
-            
+
         }
         else if (r === 'tauceti'){
             a.reqs['isolation'] = 1;
@@ -4191,7 +4196,7 @@ export function buildTemplate(key, region){
                 wiki: false,
                 reqs: { mining: 3 },
                 condition(){
-                    return eventActive(`firework`) && (global.tech['cement'] || global.race['flier']);
+                    return eventActive(`firework`) && global[region].firework && (global.tech['cement'] || global.race['flier']);
                 },
                 cost: {
                     Money(){ return global[region].firework.count === 0 ? 50000 : 0; },
@@ -4498,7 +4503,7 @@ if (Object.keys(global.stats.synth).length > 1){
         queue_complete(){ return global.tech['evo'] && global.tech.evo === 8 ? 1 : 0; }
     });
 }
-            
+
 const challengeList = {
     'plasmid': 'no_plasmid',
     'mastery': 'weak_mastery',
@@ -4554,7 +4559,7 @@ const advancedChallengeList = {
     'sludge': {t: 'c', e: 'extinct_sludge' },
     'orbit_decay': {t: 'c', e: 'lamentis' },
     //'nonstandard': {t: 'c', e: 'anathema' },
-    //'gravity_well': {t: 'c', e: '???' },
+    'gravity_well': {t: 'c', e: 'escape_velocity' },
     'witch_hunter': {t: 'c', e: 'soul_sponge' },
     //'warlord': {t: 'c', e: 'what_is_best' },
     //'storage_wars': {t: 'c', e: '???' },
@@ -4693,7 +4698,7 @@ function challengeEffect(c){
             }
             else {
                 return `<div>${loc('evo_challenge_cataclysm_effect')}</div><div class="has-text-danger">${loc('evo_challenge_scenario_warn')}</div>`;
-            }   
+            }
         }
         default:
             return loc(`evo_challenge_${c}_effect`);
@@ -5412,7 +5417,7 @@ export function setAction(c_action,action,type,old,prediction){
         }
         if (prediction){ clss = ' precog'; }
         let active = c_action['highlight'] ? (c_action.highlight() ? `<span class="is-sr-only">${loc('active')}</span>` : `<span class="is-sr-only">${loc('not_active')}</span>`) : '';
-        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
+        element = $(`<a class="button is-dark${cst}${clss}"${data} v-on:click="action"><span class="aTitle" v-html="$options.filters.title(title)"></span>${active}</a><a role="button" v-on:click="describe" class="is-sr-only">{{ title }} description</a>`);
     }
     parent.append(element);
 
@@ -5576,8 +5581,8 @@ export function setAction(c_action,action,type,old,prediction){
             p_off(p,id){
                 let value = global[action][type].count - p;
                 if (
-                    (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
-                    (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) || 
+                    (id === 'city-casino' && !global.race['cataclysm'] && !global.race['orbit_decayed']) ||
+                    (id === 'space-spc_casino' && (global.race['cataclysm'] || global.race['orbit_decayed'])) ||
                     (id === 'tauceti-tauceti_casino' && global.tech['isolation'])
                 ){
                     let egg = easterEgg(5,12);
@@ -5589,7 +5594,7 @@ export function setAction(c_action,action,type,old,prediction){
             },
             p_on(p,id){
                 if (
-                    (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) || 
+                    (id === 'city-biolab' && !global.race['cataclysm'] && !global.race['orbit_decayed']) ||
                     ((global.race['cataclysm'] || global.race['orbit_decayed']) && id === 'space-exotic_lab') ||
                     (global.tech['isolation'] && id === 'tauceti-infectious_disease_lab')
                 ){
@@ -6126,23 +6131,45 @@ function buildPlanet(aspect,opt,args){
     }
 }
 
+// Returns true when side effects associated with the new structure being powered on should occur. Can return false even when alwaysPowered is enabled.
 export function powerOnNewStruct(c_action,extra){
     let parts = c_action.id.split('-');
-    if (global.hasOwnProperty(parts[0]) && global[parts[0]].hasOwnProperty(parts[1]) && c_action.hasOwnProperty('powered')){
+    if (!global.hasOwnProperty(parts[0]) || !global[parts[0]].hasOwnProperty(parts[1])){
+        return false;
+    }
+
+    // Electricity: production is negative, consumption is positive
+    let need_p = c_action.hasOwnProperty('powered') && c_action.powered() > 0;
+    let can_p = !need_p;
+    let gov_replicator = global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0;
+    if (need_p && global.city.hasOwnProperty('powered')){
         let power = global.city.power;
-        if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
+        if (gov_replicator){
             power += global.race.replicator.pow;
         }
+        can_p = c_action.powered() <= power;
+    }
 
-        if (global.city.hasOwnProperty('powered') && power >= c_action.powered()){
-            global[parts[0]][parts[1]].on++;
-            if (global.race.hasOwnProperty('governor') && global.race.governor.hasOwnProperty('tasks') && global.race.hasOwnProperty('replicator') && Object.values(global.race.governor.tasks).includes('replicate') && global.race.governor.config.replicate.pow.on && global.race.replicator.pow > 0){
-                global.city.power -= c_action.powered();
+    // Support: production is positive, consumption is negative
+    let need_s = c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0;
+    let can_s = !need_s;
+    if (need_s){
+        let grids = gridDefs();
+        let s_r = grids[c_action.s_type].r;
+        let s_rs = grids[c_action.s_type].rs;
+        can_s = global[s_r][s_rs].support - c_action.support() <= global[s_r][s_rs].s_max;
+    }
+
+    if (can_p && can_s || global.settings.alwaysPower){
+        global[parts[0]][parts[1]].on++;
+        if (need_p){
+            global.city.power -= c_action.powered();
+            if (gov_replicator){
                 gov_tasks.replicate.task();
             }
-            if (extra && typeof extra === 'function'){
-                return extra(c_action);
-            }
+        }
+        if (extra && typeof extra === 'function'){
+            return extra(c_action);
         }
         return true;
     }
@@ -6293,7 +6320,7 @@ export function actionDesc(parent,c_action,obj,old,action,a_type,bres){
     clearElement(parent);
     var desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc();
     bres = bres || false;
-    
+
     let touch = false;
     if (action && a_type && 'ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/) && global.settings.touch ? true : false){
         touch = $(`<a id="touchButton" class="button is-dark touchButton">${c_action.hasOwnProperty('touchlabel') ? c_action.touchlabel : loc('construct')}</a>`);
@@ -6920,7 +6947,7 @@ export function orbitDecayed(){
             }
             if (global.race['casting']){
                 Object.keys(global.race.casting).forEach(function (c){
-                    global.race.casting[0] = 0;
+                    global.race.casting[c] = 0;
                 });
             }
         }
@@ -7160,18 +7187,18 @@ export function updateQueueNames(both, items){
                 if (deepScan.includes(currItem.action)){
                     let scan = true; Object.keys(actions[currItem.action]).forEach(function (region){
                         if (actions[currItem.action][region][currItem.type] && scan){
-                            global.queue.queue[i].label = 
-                                typeof actions[currItem.action][region][currItem.type].title === 'string' ? 
-                                actions[currItem.action][region][currItem.type].title : 
+                            global.queue.queue[i].label =
+                                typeof actions[currItem.action][region][currItem.type].title === 'string' ?
+                                actions[currItem.action][region][currItem.type].title :
                                 actions[currItem.action][region][currItem.type].title();
                             scan = false;
                         }
                     });
                 }
                 else if (actions[currItem.action][currItem.type]){
-                    global.queue.queue[i].label = 
-                        typeof actions[currItem.action][currItem.type].title === 'string' ? 
-                        actions[currItem.action][currItem.type].title : 
+                    global.queue.queue[i].label =
+                        typeof actions[currItem.action][currItem.type].title === 'string' ?
+                        actions[currItem.action][currItem.type].title :
                         actions[currItem.action][currItem.type].title();
                 }
             }
@@ -7179,9 +7206,9 @@ export function updateQueueNames(both, items){
     }
     if (both && global.tech['r_queue'] && global.r_queue.display){
         for (let i=0; i<global.r_queue.queue.length; i++){
-            global.r_queue.queue[i].label = 
-                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ? 
-                actions.tech[global.r_queue.queue[i].type].title : 
+            global.r_queue.queue[i].label =
+                typeof actions.tech[global.r_queue.queue[i].type].title === 'string' ?
+                actions.tech[global.r_queue.queue[i].type].title :
                 actions.tech[global.r_queue.queue[i].type].title();
         }
     }
@@ -7422,7 +7449,7 @@ function sentience(){
     global.civic.govern.type = 'anarchy';
     global.civic.govern.rev = 0;
     global.civic.govern.fr = 0;
-    
+
     if (global.genes['queue']){
         global.tech['queue'] = 1;
         global.tech['r_queue'] = 1;
@@ -7446,7 +7473,7 @@ function sentience(){
     Object.keys(global.genes.minor).forEach(function (trait){
         global.race[trait] = trait === 'mastery' ? global.genes.minor[trait] : global.genes.minor[trait] * 2;
     });
-    
+
     let tempMTOrder = [];
     global.settings.mtorder.forEach(function(trait){
        if (global.genes.minor[trait] || trait === 'mastery'){
@@ -7489,7 +7516,7 @@ function sentience(){
         global.civic.foreign.gov0.mil = Math.round(global.civic.foreign.gov0.mil * 1.5);
         global.civic.foreign.gov1.mil = Math.round(global.civic.foreign.gov1.mil * 1.4);
         global.civic.foreign.gov2.mil = Math.round(global.civic.foreign.gov2.mil * 1.25);
-    
+
         global.civic.foreign['gov3'] = {
             unrest: 0,
             hstl: Math.floor(seededRandom(20,40)),
@@ -7600,7 +7627,7 @@ function sentience(){
             global.race['fox_color'] = 'red';
         }
     }
-    
+
     calcPillar(true);
 
     if (global.blood['aware']){
@@ -7638,7 +7665,7 @@ function sentience(){
     if (global.race['deconstructor']){
         global.resource.Nanite.display = true;
         global.city['nanite_factory'] = { count: 1,
-            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0, 
+            Lumber: 0, Chrysotile: 0, Stone: 0, Crystal: 0,
             Furs: 0, Copper: 0, Iron: 0, Aluminium: 0,
             Cement: 0, Coal: 0, Oil: 0, Uranium: 0,
             Steel: 0, Titanium: 0, Alloy: 0, Polymer: 0,
@@ -7665,8 +7692,8 @@ function sentience(){
         'challenge': alevel() - 1
     });
 
-    if (global.stats.feat['adept'] && global.stats.achieve['whitehole'] && global.stats.achieve.whitehole.l > 0){
-        let rank = Math.min(global.stats.achieve.whitehole.l,global.stats.feat['adept']);
+    if (global.stats.feat['adept']){
+        let rank = checkAdept();
         global.resource.Food.amount += rank * 100;
         global.resource.Stone.max += rank * 60;
         global.resource.Stone.amount += rank * 100;
@@ -7777,7 +7804,7 @@ function simulation(){
             global.race.ascended = false;
             global.race.gods = 'none';
             global.race.old_gods = 'none';
-            
+
             ['Plasmid','AntiPlasmid','Phage','Dark','Harmony','AICore','Artifact','Blood_Stone'].forEach(function (res){
                 global.prestige[res] = { count: Number(global.race.simConfig[res]) };
             });
@@ -7794,7 +7821,7 @@ function exitSim(){
         global.pillars = deepClone(global.sim.pillars);
         global.race = deepClone(global.sim.race);
         delete global['sim'];
-        
+
         global.race.species = 'protoplasm';
         delete global.race['simulation'];
 
@@ -8076,7 +8103,6 @@ function cataclysm(){
         global.resource.Copper.display = true;
         global.resource.Iron.display = true;
         global.resource.Aluminium.display = true;
-        global.resource.Cement.display = true;
         global.resource.Coal.display = true;
         global.resource.Oil.display = true;
         global.resource.Uranium.display = true;
@@ -8093,6 +8119,11 @@ function cataclysm(){
         global.resource.Crates.display = true;
         global.resource.Containers.display = true;
 
+        if (!global.race['flier']){
+            global.resource.Cement.display = true;
+            global.resource.Cement.max = 75000;
+            global.resource.Cement.amount = 75000;
+        }
         if (!global.race['kindling_kindred'] && !global.race['smoldering']){
             global.resource.Lumber.display = true;
             global.resource.Plywood.display = true;
@@ -8132,8 +8163,6 @@ function cataclysm(){
         global.resource.Steel.amount = 75000;
         global.resource.Aluminium.max = 75000;
         global.resource.Aluminium.amount = 75000;
-        global.resource.Cement.max = 75000;
-        global.resource.Cement.amount = 75000;
         global.resource.Titanium.max = 75000;
         global.resource.Titanium.amount = 75000;
         global.resource.Coal.max = 10000;
@@ -8162,16 +8191,16 @@ function cataclysm(){
         if (!global.race['flier']){
             global.tech['cement'] = 5;
             global.civic.cement_worker.display = true;
-            global.civic.cement_worker.max = 1;
-            global.civic.cement_worker.workers = 1;
+            global.civic.cement_worker.max = jobScale(1);
+            global.civic.cement_worker.workers = jobScale(1);
         }
 
-        global.civic.colonist.max = 4;
-        global.civic.colonist.workers = 4;
-        global.civic.space_miner.max = 3;
-        global.civic.space_miner.workers = 2;
-        global.civic.professor.max = 1;
-        global.civic.professor.workers = 1;
+        global.civic.colonist.max = jobScale(4);
+        global.civic.colonist.workers = jobScale(4);
+        global.civic.space_miner.max = jobScale(3);
+        global.civic.space_miner.workers = jobScale(2);
+        global.civic.professor.max = jobScale(1);
+        global.civic.professor.workers = jobScale(1);
 
         global.city.calendar.day++;
         global.city.market.active = true;

@@ -142,30 +142,28 @@ export function gameLoop(act){
                     long_timer = Math.floor(long_timer * fast);
                 }
                 webWorker.mt = main_timer;
+                addATime(Date.now());
 
-                calcATime();
+                const timers = loopTimers();
 
-                if (atrack.t > 0){
-                    main_timer = Math.ceil(main_timer * 0.5);
-                    mid_timer = Math.ceil(mid_timer * 0.5);
-                    long_timer = Math.ceil(long_timer * 0.5);
-                }
+                // Used to calculate resource increase.
+                webWorker.mt = timers.webWorkerMainTimer;
 
                 if (webWorker.w){
-                    webWorker.w.postMessage({ loop: 'short', period: main_timer });
-                    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
-                    webWorker.w.postMessage({ loop: 'long', period: long_timer });
+                    webWorker.w.postMessage({ loop: 'short', period: timers.mainTimer });
+                    webWorker.w.postMessage({ loop: 'mid', period: timers.midTimer });
+                    webWorker.w.postMessage({ loop: 'long', period: timers.longTimer });
                 }
                 else {
                     intervals['main_loop'] = setInterval(function(){
                         fastLoop();
-                    }, main_timer);
+                    }, timers.mainTimer);
                     intervals['mid_loop'] = setInterval(function(){
                         midLoop();
-                    }, mid_timer);
+                    }, timers.midTimer);
                     intervals['long_loop'] = setInterval(function(){
                         longLoop();
-                    }, long_timer);
+                    }, timers.longTimer);
                 }
 
                 webWorker.s = true;
@@ -173,29 +171,77 @@ export function gameLoop(act){
     }
 }
 
-function calcATime(){
-    let dt = Date.now();
-    let timeDiff = dt - global.stats.current;
-    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
+// Computes the relative to default duration of a single loop (common for all three loop types).
+// Note that these values are not tied to the time_multiplier from fastLoop - the relative speed of time in the game
+// is controlled by loop lengths.
+export function loopTimers(){
+    // Here come any speed modifiers not related to accelerated time.
+    let modifier = 1.0;
+    if (global.race['slow']){
+        modifier *= 1 + (traits.slow.vars()[0] / 100);
+    }
+    if (global.race['hyper']){
+        modifier *= 1 - (traits.hyper.vars()[0] / 100);
+    }
+
+    // Main loop takes 250ms without any modifiers.
+    const webWorkerMainTimer = Math.floor(250 * modifier);
+    // Mid loop takes 1000ms without any modifiers.
+    const baseMidTimer = 4 * webWorkerMainTimer;
+    // Long loop (game day) takes 5000ms without any modifiers.
+    const baseLongTimer = 20 * webWorkerMainTimer;
+    // The constant by which the time is accelerated when atrack.t > 0.
+    const timeAccelerationFactor = 2;
+
+    const aTimeMultiplier = atrack.t > 0 ? 1 / timeAccelerationFactor : 1;
+    return {
+        webWorkerMainTimer,
+        mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
+        midTimer: Math.ceil(baseMidTimer * aTimeMultiplier),
+        longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
+        baseLongTimer,
+        timeAccelerationFactor,
+    };
+}
+
+// Adds accelerated time if enough time has passed since `global.stats.current`. Returns true if there was accelerated
+// time added. If the parameter is true, it will only add the time if a threshold of 120s has been reached.
+export function addATime(currentTimestamp){
+    // The second case is used for the initialization of atrack.t.
+    if (exceededATimeThreshold(currentTimestamp) || global.stats.hasOwnProperty('current') && global.settings.at > 0){
+        let timeDiff = currentTimestamp - global.stats.current;
+        // Removing any accelerated time if the value is larger than the cap.
         if (global.settings.at > 11520){
             global.settings.at = 0;
         }
+        // Accelerated time is added only if it is over the threshold.
         if (timeDiff >= 120000){
-            global.settings.at += Math.floor(timeDiff / 3333);
+            const timers = loopTimers();
+            const gameDayDuration = timers.baseLongTimer;
+            // The number of days during which the time is accelerated (at) should take as long as 2 / 3 of paused time.
+            // at * gameDayDuration / timeAccelerationFactor = 2 / 3 * timeDiff
+            global.settings.at += Math.floor(2 / 3 * timeDiff * timers.timeAccelerationFactor / gameDayDuration);
         }
+        // Accelerated time is capped at 8*60*60/2.5 game days.
         if (global.settings.at > 11520){
             global.settings.at = 11520;
         }
         atrack.t = global.settings.at;
+        // Updating the current date so that it won't be counted twice (e.g., when unpausing).
+        global.stats.current = currentTimestamp;
     }
+}
+
+// Takes the current Date.now, returns whether the minimum threshold to count accelerated time has passed.
+export function exceededATimeThreshold(currentTimestamp){
+    return global.stats.hasOwnProperty('current') && currentTimestamp - global.stats.current >= 120000;
 }
 
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    calcATime();
-    global.stats['current'] = Date.now();
+    addATime(Date.now());
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
@@ -420,6 +466,11 @@ export function buildQueue(){
         <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
         <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
     `));
+
+    if (global.settings.queuestyle) {
+        $('#buildQueue').addClass(global.settings.queuestyle);
+
+    }
 
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
@@ -1290,7 +1341,7 @@ export const calcPillar = (function(){
                     active++;
                 }
             });
-            bonus = [ 
+            bonus = [
                 1 + (active * 2 / 100), // Production //garfu added more prod
                 1 + (active * 2 / 100) // Storage
             ];
@@ -1302,7 +1353,7 @@ export const calcPillar = (function(){
 export function challenge_multiplier(value,type,decimals,inputs){
     decimals = decimals || 0;
     inputs = inputs || {};
-    
+
     let challenge_level = inputs.genes;
     if (challenge_level === undefined){
         challenge_level = alevel() - 1;
@@ -1350,6 +1401,87 @@ export function challenge_multiplier(value,type,decimals,inputs){
     }
 }
 
+export function getResetConstants(type, inputs){
+    if (!inputs) { inputs = {}; }
+    let rc = {
+        pop_divisor: 999,
+        k_inc: 1000000,
+        k_mult: 100,
+        phage_mult: 0,
+        plasmid_cap: 150,
+    }
+
+    switch (type){
+        case 'mad':
+            rc.pop_divisor = 3;
+            rc.k_inc = 100000;
+            rc.k_mult = 1.1;
+            rc.plasmid_cap = 150;
+            if (inputs.synth){
+                rc.pop_divisor = 5;
+                rc.k_inc = 125000;
+                rc.plasmid_cap = 100;
+            }
+            break;
+        case 'cataclysm':
+        case 'bioseed':
+            rc.pop_divisor = 3;
+            rc.k_inc = 50000;
+            rc.k_mult = 1.015;
+            rc.phage_mult = 1;
+            rc.plasmid_cap = 400;
+            break;
+        case 'ai':
+            rc.pop_divisor = 2.5;
+            rc.k_inc = 45000;
+            rc.k_mult = 1.014;
+            rc.phage_mult = 2;
+            rc.plasmid_cap = 600;
+            break;
+        case 'vacuum':
+        case 'bigbang':
+            rc.pop_divisor = 2.2;
+            rc.k_inc = 40000;
+            rc.k_mult = 1.012;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 800;
+            break;
+        case 'ascend':
+        case 'terraform':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 30000;
+            rc.k_mult = 1.008;
+            rc.phage_mult = 4;
+            rc.plasmid_cap = 2000;
+            break;
+        case 'matrix':
+            rc.pop_divisor = 1.5;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.01;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'retired':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.006;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'eden':
+            rc.pop_divisor = 1;
+            rc.k_inc = 18000;
+            rc.k_mult = 1.004;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 1800;
+            break;
+        default:
+            rc.unknown = true;
+            break;
+    }
+    return rc;
+}
+
 export function calcPrestige(type,inputs){
     let gains = {
         plasmid: 0,
@@ -1361,6 +1493,7 @@ export function calcPrestige(type,inputs){
     };
 
     if (!inputs) { inputs = {}; }
+    if (inputs.synth !== undefined) inputs.synth = races[global.race.species].type === 'synthetic';
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
@@ -1389,77 +1522,13 @@ export function calcPrestige(type,inputs){
         }
     }
 
-    let pop_divisor = 999;
-    let k_inc = 1000000;
-    let k_mult = 100;
-    let phage_mult = 0;
-    let plasmid_cap = 150;
+    let rc = getResetConstants(type, inputs);
+    let pop_divisor = rc.pop_divisor;
+    let k_inc = rc.k_inc;
+    let k_mult = rc.k_mult;
+    let phage_mult = rc.phage_mult;
+    let plasmid_cap = rc.plasmid_cap;
 
-    switch (type){
-        case 'mad':
-            pop_divisor = 3;
-            k_inc = 100000;
-            k_mult = 1.1;
-            plasmid_cap = 150;
-            if (inputs.synth !== undefined ? inputs.synth : races[global.race.species].type === 'synthetic'){
-                pop_divisor = 5;
-                k_inc = 125000;
-                plasmid_cap = 100;
-            }
-            break;
-        case 'cataclysm':
-        case 'bioseed':
-            pop_divisor = 3;
-            k_inc = 50000;
-            k_mult = 1.015;
-            phage_mult = 1;
-            plasmid_cap = 400;
-            break;
-        case 'ai':
-            pop_divisor = 2.5;
-            k_inc = 45000;
-            k_mult = 1.014;
-            phage_mult = 2;
-            plasmid_cap = 600;
-            break;
-        case 'vacuum':
-        case 'bigbang':
-            pop_divisor = 2.2;
-            k_inc = 40000;
-            k_mult = 1.012;
-            phage_mult = 2.5;
-            plasmid_cap = 800;
-            break;
-        case 'ascend':
-        case 'terraform':
-            pop_divisor = 1.15;
-            k_inc = 30000;
-            k_mult = 1.008;
-            phage_mult = 4;
-            plasmid_cap = 2000;
-            break;
-        case 'matrix':
-            pop_divisor = 1.5;
-            k_inc = 32000;
-            k_mult = 1.01;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'retire':
-            pop_divisor = 1.15;
-            k_inc = 32000;
-            k_mult = 1.006;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'eden':
-            pop_divisor = 1;
-            k_inc = 18000;
-            k_mult = 1.004;
-            phage_mult = 2.5;
-            plasmid_cap = 1800;
-            break;
-    }
 
     if (challenge !== undefined){
         plasmid_cap = Math.floor(plasmid_cap * (1 + (challenge + (inputs.tp ? 1 : 0)) / 8));
@@ -2212,7 +2281,7 @@ export function trickOrTreatBind(id,trick){
 }
 
 function single_emblem(achieve,size,icon,iconName,fool,uAffix){
-    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg><span class="is-sr-only">${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}</span></p>` : '';
 }
 
 export function format_emblem(achieve,size,baseIcon,fool,universe){
@@ -2394,7 +2463,7 @@ export function flib(func,val,val2){
             return races[global.race.species].name;
         }
         case 'curve':
-        {   
+        {
             let exp = val2 || 1.5;
             return 1-((1-(val))**exp);
         }

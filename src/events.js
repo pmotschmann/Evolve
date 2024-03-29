@@ -682,10 +682,17 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 2){
-                return true;
+            // No planet or already hot
+            if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 2){
+                return false;
             }
-            return false;
+            // Winter on tundra or taiga biome is always cold
+            // Eden is idyllic, so normally cannot be hot except in summer. For heat wave, allow in spring, summer, or autumn.
+            if (global.city.calendar.season === 3 && ['tundra','taiga','eden'].includes(global.city.biome)){
+                return false;
+            }
+            // Always allow heat wave on other biomes, even during winter
+            return true;
         },
         effect(){
             global.city.calendar.temp = 2;
@@ -699,10 +706,21 @@ export const events = {
         },
         type: 'minor',
         condition(){
-            if (!global.race['cataclysm'] && !global.race['orbit_decayed'] && global.city.calendar.temp !== 0){
-                return true;
+            // No planet or already cold
+            if (global.race['cataclysm'] || global.race['orbit_decayed'] || global.city.calendar.temp === 0){
+                return false;
             }
-            return false;
+            // Hellscape is never cold (except allow on custom planet hellscape with permafrost)
+            if (global.city.biome === 'hellscape' && !global.city.ptrait.includes('permafrost')){
+                return false;
+            }
+            // Summer on volcanic or ashland biome is always hot
+            // Eden is idyllic, so normally cannot be cold except in winter. For cold snap, allow in autumn, winter, or spring.
+            if (global.city.calendar.season === 1 && ['ashland','volcanic','eden'].includes(global.city.biome)){
+                return false;
+            }
+            // Always allow cold snap on other biomes, even during summer
+            return true;
         },
         effect(){
             global.city.calendar.temp = 0;
@@ -840,6 +858,25 @@ export const events = {
         let rumor = Math.rand(0,10);
         return loc(`event_rumor_type${rumor}`);
     }),
+    pet: {
+        reqs: {
+            tech: 'primitive',
+        },
+        type: 'minor',
+        effect(){
+            if (global.race['pet']){
+                let interaction = Math.rand(0,10);
+                return loc(`event_${global.race.pet.type}_interaction${interaction}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
+            }
+            else {
+                global.race['pet'] = {
+                    type: Math.rand(0,2) === 0 ? 'cat' : 'dog',
+                    name: Math.rand(0,10)
+                };
+                return loc(`event_pet_${global.race.pet.type}`,[loc(`event_${global.race.pet.type}_name${global.race.pet.name}`)]);
+            }
+        }
+    },
 };
 
 function basicEvent(title,tech,func,cond){
@@ -876,9 +913,8 @@ function slaveLoss(type,string){
         },
         type: type,
         effect(){
-            if (global.city['slave_pen'] && global.city.slave_pen.slaves > 0){
-                global.city.slave_pen.slaves--;
-                global.resource.Slave.amount = global.city.slave_pen.slaves;
+            if (global.city['slave_pen'] && global.resource.Slave.amount > 0){
+                global.resource.Slave.amount--;
                 return loc(`event_slave_${string}`);
             }
             else {

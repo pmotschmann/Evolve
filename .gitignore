@@ -1,5 +1,6 @@
 *~
 *#
+.*
 update.*.json
 strings/last-strings.json
 node_modules/*
@@ -7,3 +8,4 @@ docs
 evolve/main.js
 wiki/wiki.js
 
+dist
