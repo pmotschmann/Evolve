@@ -1817,7 +1817,7 @@ export function containerItem(mount,market_item,name,color){
                 return v;
             },
             cCnt(ct,res){
-                if ((res === 'Food' && !global.race['artifical']) || (global.race['artifical'] && res === 'Coal')){
+                if ((res === 'Food' && !global.race['artifical']) || (global.race['artifical'] && res === 'Coal') || res === 'Souls){
                     let egg = easterEgg(13,10);
                     if (ct === 10 && egg.length > 0){
                         return '1'+egg;
