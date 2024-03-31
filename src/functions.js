@@ -2607,14 +2607,17 @@ export function getEaster(){
         easter.solveDate[0]++;
     }
 
-    const isAfterBeginning = date.getMonth() > easter.date[0] || (date.getMonth() === easter.date[0] && date.getDate() >= easter.date[1]);
-    const isBeforeEnd = date.getMonth() < easter.endDate[0] || (date.getMonth() === easter.endDate[0] && date.getDate() <= easter.endDate[1]);
+    let cur_day = date.getDate();
+    let cur_month = date.getMonth();
+
+    const isAfterBeginning = cur_month > easter.date[0] || (cur_month === easter.date[0] && cur_day >= easter.date[1]);
+    const isBeforeEnd = cur_month < easter.endDate[0] || (cur_month === easter.endDate[0] && cur_day <= easter.endDate[1]);
     if (isAfterBeginning && isBeforeEnd){
         easter.active = true;
-        if (date.getMonth() >= easter.hintDate[0] && date.getDate() >= easter.hintDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.hintDate[0] && cur_day >= easter.hintDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.hint = true;
         }
-        if (date.getMonth() >= easter.solveDate[0] && date.getDate() >= easter.solveDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.solveDate[0] && cur_day >= easter.solveDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.solve = true;
         }
     }
