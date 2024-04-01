@@ -2561,12 +2561,13 @@ export function getEaster(){
         global.special.egg[year]['egg18'] = false;
     }
 
+    // `month` is the 1-12 month when easter ends, `day` the 1-31 day it begins. Easter event has constant number of days.
 	let f = Math.floor,
 		// Golden Number - 1
 		G = year % 19,
 		C = f(year / 100),
 		// related to Epact
-		H = (C - f(C / 4) - f((8 * C + 13)/25) + 19 * G + 15) % 30,
+		H = (C - f(C / 4) - f((8 * C + 13)/25) + 19 * G + 15) % 30,
 		// number of days from 21 March to the Paschal full moon
 		I = H - f(H/28) * (1 - f(29/(H + 1)) * f((21-G)/11)),
 		// weekday for the Paschal full moon
@@ -2606,12 +2607,17 @@ export function getEaster(){
         easter.solveDate[0]++;
     }
 
-    if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+    let cur_day = date.getDate();
+    let cur_month = date.getMonth();
+
+    const isAfterBeginning = cur_month > easter.date[0] || (cur_month === easter.date[0] && cur_day >= easter.date[1]);
+    const isBeforeEnd = cur_month < easter.endDate[0] || (cur_month === easter.endDate[0] && cur_day <= easter.endDate[1]);
+    if (isAfterBeginning && isBeforeEnd){
         easter.active = true;
-        if (date.getMonth() >= easter.hintDate[0] && date.getDate() >= easter.hintDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.hintDate[0] && cur_day >= easter.hintDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.hint = true;
         }
-        if (date.getMonth() >= easter.solveDate[0] && date.getDate() >= easter.solveDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.solveDate[0] && cur_day >= easter.solveDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.solve = true;
         }
     }
