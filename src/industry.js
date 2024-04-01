@@ -1398,7 +1398,7 @@ function loadReplicator(parent,bind){
                 values += `<b-dropdown-item aria-role="listitem" v-on:click="setVal('${res}')" data-val="${res}" v-show="avail('${res}')">${global.resource[res].name}</b-dropdown-item>`;
             });
 
-            content.append(`<div><b-dropdown :triggers="['hover']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
+            content.append(`<div><b-dropdown :triggers="['hover', 'click']" aria-role="list" :scrollable="true" :max-height="200" class="dropList">
                 <button class="button is-info" slot="trigger">
                     <span>{{ res | resName }}</span>
                 </button>${values}
