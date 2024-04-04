@@ -45,7 +45,7 @@ const achieveDescData = {
     trade: [750,50]
 };
 
-function achievePage(universe, filter){
+export function achievePage(universe, filter){
     let content = $(`#content`);
     clearElement(content);
     
@@ -135,7 +135,7 @@ function achievePage(universe, filter){
     });
 }
 
-function featPage(){
+export function featPage(){
     let content = $(`#content`);
     clearElement(content);
 
