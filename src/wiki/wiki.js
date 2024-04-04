@@ -14,6 +14,7 @@ import { prestigePage } from './prestige.js';
 import { eventsPage } from './events.js';
 import { arpaPage } from './arpa.js';
 import { changeLog } from './change.js';
+import { search } from './search.js';
 
 $('body').empty();
 initPage();
@@ -143,6 +144,9 @@ function initPage(){
         },
         {
             key: 'changelog',
+        },
+        {
+            key: 'search',
         }
     ];
 
@@ -266,6 +270,11 @@ function menuDispatch(main,sub,frag){
 
         case 'changelog':
             changeLog();
+            window.location.hash = `#${main}`;
+            break;
+        
+        case 'search':
+            search();
             window.location.hash = `#${main}`;
             break;
     }
