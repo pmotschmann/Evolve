@@ -10164,19 +10164,6 @@
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
   "wiki_achievements_completed": "Completed",
-  "wiki_search_search": "Search",
-  "wiki_search_faq": "FAQ",
-  "wiki_search_gameplay": "Gameplay",
-  "wiki_search_prestige": "Prestige",
-  "wiki_search_events": "Events",
-  "wiki_search_species": "Species",
-  "wiki_search_structures": "Structures",
-  "wiki_search_tech": "Tech",
-  "wiki_search_truepath-structures": "Truepath Structures",
-  "wiki_search_truepath-tech": "Truepath Tech",
-  "wiki_search_arpa": "A.R.P.A.",
-  "wiki_search_achievements": "Achievements",
-  "wiki_search_changelog": "Changelog",
   "wiki_search_placeholder": "No results found.",
-  "wiki_search_faq_para1": "%0"
+  "wiki_search_regex_support": "RegEx Supported"
 }

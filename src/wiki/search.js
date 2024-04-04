@@ -21,10 +21,11 @@ import { projectsPage } from './projects.js';
 import { crisprPage } from './crispr.js';
 import { bloodPage } from './blood.js';
 import { achievePage, featPage } from './achieve.js';
-
+import { changeList } from './change.js';
 
 let content;
 let fakecontent;
+let earlyExit = false;
 const pages = [
     [faqPage, false, "faq", undefined],
     [basicsPage, false, "gameplay", "basics"],
@@ -79,14 +80,15 @@ const pages = [
     [bloodPage, true, "arpa", "blood"],
     [achievePage, false, "achievements", "achievements"],
     [featPage, false, "achievements", "feats"],
+    [changeList, false, "changelog", "changelog"]
 ];
 let sections = {
     faq: [], gameplay: [], prestige: [], events: [], species: [], structures: [],
-    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: []
+    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: [], changelog: []
 };
 let index = {
     faq: [], gameplay: [], prestige: [], events: [], species: [], structures: [],
-    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: []
+    tech: [], tp_structures: [], tp_tech: [], arpa: [], achievements: [], changelog: []
 };
 function indexPage(page){
     if(pages[page][1]){
@@ -98,7 +100,7 @@ function indexPage(page){
         if(pages[page][0] === faqPage){
             faqPage();
             let v = $(".question h2");
-            for(let i = 0; i < v.length; i++) index["faq"].push([v[i].innerText, `wiki.html#faq`]);
+            for(let i = 0; i < v.length; i++) index["faq"].push([v[i].innerText, `wiki.html#question-faq-${v[i].id}`]);
         } else if(pages[page][0] === basicsPage){
             basicsPage(fakecontent);
             let v = $(".header.has-text-warning");
@@ -137,17 +139,33 @@ function indexPage(page){
             featPage();
             let v = $(".achievement .achieve");
             for(let i = 0; i < v.length; i++) index[pages[page][2]].push([v[i].innerText, "wiki.html#feats-achievements", pages[page][3]]);
+        } else if(pages[page][0] === changeList){
+            for(let i = 0; i < changeList.length; i++){
+                index["changelog"].push([changeList[i].version, `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                index["changelog"].push([changeList[i].date, `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                for(let k = 0; k < changeList[i].changes.length; k++){
+                    index["changelog"].push([changeList[i].changes[k], `wiki.html#version-changelog-${changeList[i].version.replaceAll('.', '_')}`, changeList[i].version]);
+                }
+            }
         }
         fakecontent.empty();
     }
+}
+export function cancelSearchIndexing(){
+    earlyExit = true;
 }
 function indexWiki(){
     for(const k of Object.keys(index)) index[k] = [];
     content.attr("id", "");
     content.append(`<span id="content" class="temp-indexer" style="display: none"></span>`);
     fakecontent = $("#content");
-
+    earlyExit = false;
     async function nonLockingLoop(indexingIndex = 0){
+        if(earlyExit){
+            fakecontent.remove();
+            content.attr("id", "content");
+            return;
+        }
         if(indexingIndex < pages.length){
             setTimeout(() => {
                 indexPage(indexingIndex);
@@ -164,9 +182,11 @@ function indexWiki(){
 function processSearch(input){
     for(const k of Object.keys(sections)) sections[k] = [];
     if(input.val().length){
+        let expression = new RegExp(input.val(), "gi");
+        
         for(const k of Object.keys(index)){
             for(let i = 0; i < index[k].length; i++){
-                if(index[k][i][0].match(new RegExp(input.val(), "gi")) !== null){
+                if(index[k][i][0].match(expression) !== null){
                     sections[k].push(index[k][i]);
                 }
             }
@@ -186,9 +206,17 @@ function updateResults(){
                 if(v[2] !== undefined){
                     if(!headers.includes(v[2])){
                         headers.push(v[2]);
-                        element.append(`<div class="infoBox" id="${v[2]}"><h1>${loc("wiki_menu_" + (v[2].includes("tp_") ? v[2].substring(3) : v[2].includes("tech_") ? v[2].substring(5) : v[2]))}</h1></div>`);
+                        if((v[2].match(/\./gi) || []).length > 1){
+                            element.append(`<div class="infoBox" id="changelog-entry-${v[2].replaceAll('.', '_')}"><h1>v${v[2]}</h1></div>`);
+                        } else {
+                            element.append(`<div class="infoBox" id="${v[2]}"><h1>${loc("wiki_menu_" + (v[2].includes("tp_") ? v[2].substring(3) : v[2].includes("tech_") ? v[2].substring(5) : v[2]))}</h1></div>`);
+                        }
                     }
-                    $(`#${v[2]}`).append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                    if((v[2].match(/\./gi) || []).length > 1){
+                        $(`#changelog-entry-${v[2].replaceAll('.', '_')}`).append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                    } else {
+                        $(`#${v[2]}`).append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
+                    }
                 } else {
                     element.append(`<p><a href="${v[1]}" class="has-text-red" target="_blank">${v[0]}</a></p>`);
                 }
@@ -202,18 +230,18 @@ export function search(){
     content.append(
         `
         <div class="infoBox">
-            ${loc('wiki_search_search')}
+            ${loc('wiki_menu_search')}
             <div class="control is-clearfix">
-                <input id="searchInput" class="input" autocomplete="on" type="text"/>
+                <input id="searchInput" class="input" placeholder="${loc('wiki_search_regex_support')}"type="text"/>
             </div>
         </div>
         `
     );
+    let input = $("#searchInput");
+    input.parent().on('input', ':text', _ => processSearch(input));
+    indexWiki();
     for(const k of Object.keys(sections)){
         content.append(`<div class="infoBox"><h1 style="padding-bottom: 5px">${loc('wiki_menu_' + k)}</h1><div id="${"searchResult-" + k}"></div></div>`);
     }
     updateResults(content);
-    let input = $("#searchInput");
-    input.parent().on('input', ':text', _ => processSearch(input));
-    indexWiki();
 }
