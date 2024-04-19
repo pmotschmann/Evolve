@@ -1294,7 +1294,7 @@
   "city_wharf_effect": "贸易盈利 +1%",
   "city_tourist_center": "游客中心",
   "city_tourist_center_desc": "赚取旅游业收入",
-  "city_tourist_center_effect1": "每游客中心 -50 %0/s",
+  "city_tourist_center_effect1": "%0 -50/s",
   "city_tourist_center_effect2": "每%1 +$%0/s",
   "city_tourist_center_effect3": "每赌场 +$%0/s",
   "city_tourist_center_effect4": "每纪念碑 +$%0/s",
