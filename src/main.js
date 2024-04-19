@@ -2639,22 +2639,24 @@ function fastLoop(){
 
                 if (global[area][ship] && global[area][ship].hasOwnProperty('on')){
                     if (actions[area][region][ship].ship['civ'] && global[area][ship].hasOwnProperty('crew')){
+                        // Civilian ships can only be crewed at a rate of 1 ship (per type) per fast tick
+                        let civPerShip = actions[area][region][ship].ship.civ();
                         if (global[area][ship].crew < 0){
                             global[area][ship].crew = 0;
                         }
-                        if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ()){
+                        if (global[area][ship]['crew'] < global[area][ship].on * civPerShip){
                             if (total < global.resource[global.race.species].amount){
-                                if (global.civic[global.civic.d_job].workers > actions[area][region][ship].ship.civ()){
-                                    global.civic[global.civic.d_job].workers -= actions[area][region][ship].ship.civ();
-                                    global.civic.crew.workers += actions[area][region][ship].ship.civ();
-                                    global[area][ship]['crew'] += actions[area][region][ship].ship.civ();
+                                if (global.civic[global.civic.d_job].workers >= civPerShip){
+                                    global.civic[global.civic.d_job].workers -= civPerShip;
+                                    global.civic.crew.workers += civPerShip;
+                                    global[area][ship]['crew'] += civPerShip;
                                 }
                             }
                         }
-                        if (global[area][ship]['crew'] > global[area][ship].on * actions[area][region][ship].ship.civ()){
-                            global.civic[global.civic.d_job].workers += actions[area][region][ship].ship.civ();
-                            global.civic.crew.workers -= actions[area][region][ship].ship.civ();
-                            global[area][ship]['crew'] -= actions[area][region][ship].ship.civ();
+                        else if (global[area][ship]['crew'] > global[area][ship].on * civPerShip){
+                            global.civic[global.civic.d_job].workers += civPerShip;
+                            global.civic.crew.workers -= civPerShip;
+                            global[area][ship]['crew'] -= civPerShip;
                         }
                         global.civic.crew.assigned = global.civic.crew.workers;
                         crew_civ += global[area][ship]['crew'];
@@ -2662,8 +2664,10 @@ function fastLoop(){
                     }
 
                     if (actions[area][region][ship].ship['mil'] && global[area][ship].hasOwnProperty('mil')){
-                        if (global[area][ship]['mil'] !== global[area][ship].on * actions[area][region][ship].ship.mil()){
-                            global[area][ship]['mil'] = global[area][ship].on * actions[area][region][ship].ship.mil();
+                        // All military ships can be crewed instantly
+                        let milPerShip = actions[area][region][ship].ship.mil();
+                        if (global[area][ship]['mil'] !== global[area][ship].on * milPerShip){
+                            global[area][ship]['mil'] = global[area][ship].on * milPerShip;
                         }
                         if (global.civic.garrison.workers - global.portal.fortress.garrison < 0){
                             let underflow = global.civic.garrison.workers - global.portal.fortress.garrison;
