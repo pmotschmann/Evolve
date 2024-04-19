@@ -2771,7 +2771,7 @@
   "tech_vax_warning": "You can only pick one vaccination strategy.",
   "tech_cloning": "Cloning Facility",
   "tech_cloning_effect": "Your cure may have accidentally caused mass sterility. Invest in cloning to keep your population up.",
-  "tech_cloning_effect_s": "Your cure may have accidentally caused newly construted citizens to malfuction. Invest in copying existing citizens to keep your population up.",
+  "tech_cloning_effect_s": "Your cure may have accidentally caused newly constructed citizens to malfuction. Invest in copying existing citizens to keep your population up.",
   "tech_clone_degradation": "Clone Degradation",
   "tech_clone_degradation_effect": "Now that Cloning is your primary method of reproduction, you need to study the effects of making copies of copies.",
   "tech_clone_degradation_msg": "It seems that making copies of copies will eventually become unviable; you need to find an alternative solution.",
