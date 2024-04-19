@@ -6952,7 +6952,7 @@
   "tau_home_disease_lab_vax": "接种进度：%0%",
   "tau_home_cloning": "克隆设施",
   "tau_home_cloning_desc": "克隆%0",
-  "tau_home_cloning_effect": "克隆一个%0",
+  "tau_home_cloning_effect": "克隆%0",
   "tau_home_cultureal_effect1": "每%2 -%0 %1/s",
   "tau_home_cultureal_effect2": "%1资金收入 +%0%",
   "tau_home_cultureal_effect3": "每生活区销售%1收入 +$%0",
