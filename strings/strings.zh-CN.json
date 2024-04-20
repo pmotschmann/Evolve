@@ -1188,7 +1188,7 @@
   "city_captive_housing_desc": "从地表世界抓来的奴役住所",
   "city_captive_housing_cattle": "奴役：%0/%1",
   "city_captive_housing_untrained": "未驯服的%0：%1",
-  "city_captive_housing_broken": "已驯服的%0: %1",
+  "city_captive_housing_broken": "已驯服的%0：%1",
   "city_captive_housing_capacity": "牢狱容量: %0/%1",
   "city_captive_housing_cattle_bd": "奴役",
   "city_farm": "农场",
