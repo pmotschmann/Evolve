@@ -1,7 +1,7 @@
 import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
 import { races, traits } from './races.js';
-import { spatialReasoning } from './resources.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry, limitCraftsmen } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
@@ -790,6 +790,9 @@ const outerTruth = {
                     global.space.munitions_depot.count++;
                     global.resource.Crates.max += 25;
                     global.resource.Containers.max += 25;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -1672,6 +1675,9 @@ const tauCetiModules = {
                 if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
                     powerOnNewStruct($(this)[0]);
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -2121,6 +2127,14 @@ const tauCetiModules = {
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.repository.count++;
+
+                    let containers = 250;
+                    global.resource.Crates.max += containers;
+                    global.resource.Containers.max += containers;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
+
                     let multiplier = tpStorageMultiplier('repository');
                     for (const res of $(this)[0].res()){
                         if (global.resource[res].display){

@@ -2,7 +2,7 @@ import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
-import { spatialReasoning, defineResources } from './resources.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
@@ -838,6 +838,16 @@ const spaceProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('garage');
+
+                    let containers = global.tech['particles'] >= 4 ? 20 + global.tech['supercollider'] : 20;
+                    if (global.tech['world_control'] || global.race['cataclysm'] || global.race['orbit_decayed']){
+                        containers += 10;
+                    }
+                    global.resource.Containers.max += containers;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
+
                     let multiplier = $(this)[0].multiplier(false);
                     let h_multiplier = $(this)[0].multiplier(true);
                     for (const res of $(this)[0].res()){
@@ -2913,6 +2923,13 @@ const interstellarProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('cargo_yard','interstellar');
+
+                    let vol = 50;
+                    global.resource.Crates.max += vol;
+                    global.resource.Containers.max += vol;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -3523,14 +3540,15 @@ const interstellarProjects = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.interstellar.mass_ejector.count === 0){
-                        messageQueue(loc('interstellar_mass_ejector_msg'),'info',false,['progress']);
-                    }
-                    global.settings.showEjector = true;
                     incrementStruct('mass_ejector','interstellar');
                     powerOnNewStruct($(this)[0]);
-                    clearElement($('#resources'));
-                    defineResources();
+
+                    if (global.interstellar.mass_ejector.count === 1){
+                        messageQueue(loc('interstellar_mass_ejector_msg'),'info',false,['progress']);
+                        global.settings.showEjector = true;
+                        defineGovernor();
+                    }
+                    drawResourceTab('ejector');
                     return true;
                 }
                 return false;
@@ -4481,6 +4499,14 @@ const galaxyProjects = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('gateway_depot','galaxy');
+
+                    let containers = global.tech['world_control'] ? 150 : 100;
+                    global.resource.Crates.max += containers;
+                    global.resource.Containers.max += containers;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
+
                     let multiplier = gatewayStorage();
                     global['resource']['Uranium'].max += (spatialReasoning(3000 * multiplier));
                     global['resource']['Nano_Tube'].max += (spatialReasoning(250000 * multiplier));
@@ -4603,8 +4629,6 @@ const galaxyProjects = {
                         global.tech['xeno'] = 5;
                         global.galaxy['freighter'] = { count: 0, on: 0, crew: 0 };
                         global.galaxy['trade'] = { max: 0, cur: 0, f0: 0, f1: 0, f2: 0, f3: 0, f4: 0, f5: 0, f6: 0, f7: 0, f8: 0 };
-                        clearElement($('#resources'));
-                        defineResources();
                         messageQueue(loc('galaxy_embassy_complete',[races[global.galaxy.alien1.id].name,races[global.galaxy.alien2.id].name]),'info',false,['progress']);
                     }
                     return true;
