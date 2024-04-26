@@ -760,7 +760,7 @@ export const gov_tasks = {
                     let mat = global.race['kindling_kindred'] || global.race['smoldering'] ? (global.race['smoldering'] ? 'Chrysotile' : 'Stone') : 'Plywood';
                     let cost = global.race['kindling_kindred'] || global.race['smoldering'] ? 200 : 10;
                     let reserve = global.race.governor.config.storage.crt;
-                    if (global.resource[mat].amount + cost > reserve){
+                    if (global.resource[mat].amount > reserve + cost){
                         let build = Math.floor((global.resource[mat].amount - reserve) / cost);
                         crateGovHook('crate',build);
                     }
@@ -768,7 +768,7 @@ export const gov_tasks = {
                 if (checkCityRequirements('warehouse') && global.resource.Containers.display && global.resource.Containers.amount < global.resource.Containers.max){
                     let cost = 125;
                     let reserve = global.race.governor.config.storage.cnt;
-                    if (global.resource.Steel.amount + cost > reserve){
+                    if (global.resource.Steel.amount > reserve + cost){
                         let build = Math.floor((global.resource.Steel.amount - reserve) / cost);
                         crateGovHook('container',build);
                     }
