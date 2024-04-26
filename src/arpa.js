@@ -1757,14 +1757,12 @@ function genetics(){
                 },
                 novo(){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global.resource.Knowledge.amount >= 200000){
-                            global.resource.Knowledge.amount -= 200000;
-                            global.resource.Genes.amount++;
-                        }
-                        else {
-                            break;
-                        }
+                    let cost = 200000;
+                    if (global.resource.Knowledge.amount >= cost){
+                        let maxNovo = Math.floor(global.resource.Knowledge.amount / cost);
+                        let actualNovo = Math.min(keyMult, maxNovo);
+                        global.resource.Knowledge.amount -= cost * actualNovo;
+                        global.resource.Genes.amount += actualNovo;
                     }
                 },
                 novoLabel(){

@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery, faithBonus, templePlasmidBonus } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -4703,37 +4703,8 @@ function challengeEffect(c){
 export function templeEffect(){
     let desc;
     if (global.race.universe === 'antimatter' || global.race['no_plasmid']){
-        let faith = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 1.6 : 1;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            let indoc = workerScale(global.civic.professor.workers,'professor') * (global.race.universe === 'antimatter' ? 0.02 : 0.04);
-            if (global.race['high_pop']){
-                indoc = highPopAdjust(indoc);
-            }
-            faith += +(indoc).toFixed(2);
-        }
-        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 5 ? 0.015 : (global.genes['ancients'] >= 3 ? 0.0125 : 0.01);
-            if (global.race['high_pop']){
-                priest_bonus = highPopAdjust(priest_bonus);
-            }
-            faith += priest_bonus * workerScale(global.civic.priest.workers,'priest');
-        }
-        if (global.race.universe === 'antimatter'){
-            faith /= 2;
-        }
-        if (global.race['spiritual']){
-            faith *= 1 + (traits.spiritual.vars()[0] / 100);
-        }
-        let fathom = fathomCheck('seraph');
-        if (fathom > 0){
-            faith *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
-        }
-        if (global.civic.govern.type === 'theocracy'){
-            faith *= 1 + (govEffect.theocracy()[0] / 100);
-        }
-        if (global.race['ooze']){
-            faith *= 1 - (traits.ooze.vars()[1] / 100);
-        }
+        let faith = faithBonus(100); // 1 temple portion of faith, multiplied by 100 for a percentage display
+
         faith = +(faith).toFixed(3);
         desc = `<div>${loc('city_temple_effect1',[faith])}</div>`;
         if (global.race.universe === 'antimatter'){
@@ -4749,37 +4720,8 @@ export function templeEffect(){
         }
     }
     else {
-        let plasmid = global.tech['anthropology'] && global.tech['anthropology'] >= 1 ? 8 : 5;
-        if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 2){
-            let indoc = workerScale(global.civic.professor.workers,'professor') * 0.2;
-            if (global.race['high_pop']){
-                indoc = highPopAdjust(indoc);
-            }
-            plasmid += +(indoc).toFixed(1);
-        }
-        if (global.genes['ancients'] && global.genes['ancients'] >= 2 && global.civic.priest.display){
-            let priest_bonus = global.genes['ancients'] >= 5 ? 0.15 : (global.genes['ancients'] >= 3 ? 0.125 : 0.1);
-            if (global.race['high_pop']){
-                priest_bonus = highPopAdjust(priest_bonus);
-            }
-            plasmid += priest_bonus * workerScale(global.civic.priest.workers,'priest');
-        }
-        if (global.race['spiritual']){
-            plasmid *= 1 + (traits.spiritual.vars()[0] / 100);
-        }
-        let fathom = fathomCheck('seraph');
-        if (fathom > 0){
-            plasmid *= 1 + (traits.spiritual.vars(1)[0] / 100 * fathom);
-        }
-        if (global.civic.govern.type === 'theocracy'){
-            plasmid *= 1 + (govEffect.theocracy()[0] / 100);
-        }
-        if (global.race['ooze']){
-            plasmid *= 1 - (traits.ooze.vars()[1] / 100);
-        }
-        if (global.race['orbit_decayed'] && global.race['truepath']){
-            plasmid *= 0.1;
-        }
+        let plasmid = templePlasmidBonus(100); // 1 temple portion of plasmids bonus, multiplied by 100 for a percentage display
+
         plasmid = +(plasmid).toFixed(3);
         desc = `<div>${loc('city_temple_effect2',[plasmid])}</div>`;
     }
