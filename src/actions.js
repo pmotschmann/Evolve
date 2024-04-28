@@ -5619,9 +5619,15 @@ export function setAction(c_action,action,type,old,prediction){
     popover(id,function(){ return undefined; },{
         in: function(obj){
             actionDesc(obj.popper,c_action,global[action][type],old,action,type);
+            $(`[id^=q${id}]`).each(function(){
+                $(this).addClass('hl-cna');
+            });
         },
         out: function(){
             vBind({el: `#popTimer`},'destroy');
+            $(`[id^=q${id}]`).each(function(){
+                $(this).removeClass('hl-cna');
+            });
         },
         attach: action === 'starDock' ? 'body .modal' : '#main',
         wide: c_action['wide']
