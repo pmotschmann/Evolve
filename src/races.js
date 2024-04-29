@@ -4822,6 +4822,7 @@ function purgeLumber(){
     setPurgatory('tech','saw');
     global.civic.lumberjack.display = false;
     global.civic.lumberjack.workers = 0;
+    global.civic.lumberjack.assigned = 0;
     if (global.civic.d_job === 'lumberjack') {
         global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
     }
@@ -5010,6 +5011,7 @@ function adjustFood() {
             }
             global.civic[jobEnabled[0]].workers += global.civic[job].workers;
             global.civic[job].workers = 0;
+            global.civic[job].assigned = 0;
             global.civic[job].display = false;
         }
     });
@@ -5079,6 +5081,7 @@ export function cleanAddTrait(trait){
             global.resource.Cement.display = false;
             global.civic.cement_worker.display = false;
             global.civic.cement_worker.workers = 0;
+            global.civic.cement_worker.assigned = 0;
             setPurgatory('tech','cement');
             setPurgatory('city','cement_plant');
             break;
@@ -5088,6 +5091,7 @@ export function cleanAddTrait(trait){
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
+            global.civic.quarry_worker.assigned = 0;
             setResourceName('Stone');
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');

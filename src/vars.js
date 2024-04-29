@@ -678,6 +678,7 @@ if (convertVersion(global['version']) < 100023){
             delete global.tech['axe']; delete global.tech['reclaimer']; delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             if (global.civic.d_job === 'lumberjack') { global.civic.d_job = 'unemployed'; }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.lumberjack;
