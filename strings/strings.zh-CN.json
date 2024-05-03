@@ -1318,7 +1318,7 @@
   "city_temple_effect4": "税收收入 +2.5%",
   "city_temple_effect5": "反质粒储量上限加成 +%0%",
   "city_temple_effect6": "牧师上限 +%0",
-  "city_temple_effect_tp": "每 %1 位市民 +$%0",
+  "city_temple_effect_tp": "每 %1 位市民 +$%0/s",
   "city_shrine": "圣地",
   "city_shrine_desc": "独角兽圣地",
   "city_shrine_effect": "每个圣地的加成与建造时的月相有关",
