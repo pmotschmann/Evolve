@@ -57,7 +57,7 @@
   "requires_power_support": "Wymaga Wsparcia %0 i Prądu",
   "requires_power_support_combo": "Wymaga Wsparcia %0 i %1",
   "requires_res": "Wymaga: %0",
-  "requires_segmemts": "Wymaga %0 Segmentów",
+  "requires_segments": "Wymaga %0 Segmentów",
   "requires_soldiers": "Wymaga Żołnierzy",
   "requires_security": "Wymaga Ochrony",
   "locale": "Język",

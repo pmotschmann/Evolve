@@ -450,7 +450,7 @@ const fortressModules = {
             title: loc('portal_absorption_chamber_title'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('absorption_chamber') || global.portal.absorption_chamber.count < 100 || wiki){
-                    return `<div>${loc('portal_absorption_chamber_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('portal_absorption_chamber_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_absorption_chamber_title')}</div>`;
@@ -895,7 +895,7 @@ const fortressModules = {
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('west_tower') || global.portal.west_tower.count < size || wiki){
-                    return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                    return `<div>${loc('portal_west_tower')}</div><div class="has-text-special">${loc('requires_segments',[size])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_west_tower')}</div>`;
@@ -950,7 +950,7 @@ const fortressModules = {
             desc(wiki){
                 let size = towerSize();
                 if (!global.portal.hasOwnProperty('east_tower') || global.portal.east_tower.count < size || wiki){
-                    return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segmemts',[size])}</div>`;
+                    return `<div>${loc('portal_east_tower')}</div><div class="has-text-special">${loc('requires_segments',[size])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_east_tower')}</div>`;
@@ -1440,7 +1440,7 @@ const fortressModules = {
             title: loc('portal_bridge_title'),
             desc(wiki){
                 if (!global.portal.hasOwnProperty('bridge') || global.portal.bridge.count < 10 || wiki){
-                    return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('portal_bridge_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_bridge_title')}</div>`;
@@ -1685,7 +1685,7 @@ const fortressModules = {
             title: loc('portal_waygate_title'),
             desc(wiki){
                 if (!global.portal.hasOwnProperty('waygate') || (global.tech['waygate'] && global.tech.waygate < 2) || wiki){
-                    return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segmemts',[10])}</div>`;
+                    return `<div>${loc('portal_waygate_title')}</div><div class="has-text-special">${loc('requires_segments',[10])}</div>`;
                 }
                 else {
                     return `<div>${loc('portal_waygate_title')}</div>`;
