@@ -2874,7 +2874,8 @@ const techs = {
         },
         post(){
             calcRQueueMax();
-            if (global.settings.tabLoad){
+            // Research queue is always visible on the research tab, so sub-tab check is intentionally excluded
+            if (global.settings.tabLoad || global.settings.civTabs === 3){
                 $(`#resQueue`).removeAttr('style');
             }
         }

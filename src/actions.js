@@ -7435,6 +7435,7 @@ function sentience(){
             global.settings.msgFilters.research_queue.unlocked = true;
             global.settings.msgFilters.research_queue.vis = true;
         }
+        // No need to check for civTab setting because it was set to another tab above
         if (global.settings.tabLoad){
             $(`#resQueue`).removeAttr('style');
         }
