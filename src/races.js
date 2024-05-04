@@ -5,7 +5,7 @@ import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
-import { govActive, removeTask } from './governor.js';
+import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
@@ -5123,6 +5123,9 @@ export function cleanAddTrait(trait){
                 if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
                     global.resource.Slave.display = true;
                 }
+                if (global.tech['slaves'] >= 2) {
+                    defineGovernor();
+                }
             }
             break;
         case 'cannibalize':
@@ -5136,6 +5139,7 @@ export function cleanAddTrait(trait){
                     mine: 0,
                     harvest: 0,
                 };
+                defineGovernor();
             }
             break;
         case 'magnificent':
@@ -5194,6 +5198,7 @@ export function cleanAddTrait(trait){
             if (!global.race.hasOwnProperty('shoecnt')){
                 global.race['shoecnt'] = 0;
             }
+            defineGovernor();
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -5371,6 +5376,7 @@ export function cleanRemoveTrait(trait,rank){
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
             removeTask('slave');
+            defineGovernor();
             break;
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
@@ -5378,6 +5384,7 @@ export function cleanRemoveTrait(trait,rank){
             setPurgatory('tech','sacrifice');
             delete global.city['s_alter'];
             removeTask('sacrifice');
+            defineGovernor();
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
@@ -5392,6 +5399,7 @@ export function cleanRemoveTrait(trait,rank){
             removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
             removeTask('horseshoe');
+            defineGovernor();
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

@@ -4,7 +4,7 @@ import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, message
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
-import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
+import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
@@ -2874,7 +2874,8 @@ const techs = {
         },
         post(){
             calcRQueueMax();
-            if (global.settings.tabLoad){
+            // Research queue is always visible on the research tab, so sub-tab check is intentionally excluded
+            if (global.settings.tabLoad || global.settings.civTabs === 3){
                 $(`#resQueue`).removeAttr('style');
             }
         }
@@ -3097,6 +3098,7 @@ const techs = {
         },
         post(){
             vBind({el: '#foreign'},'update');
+            defineGovernor();
         }
     },
     espionage: {
@@ -3123,6 +3125,7 @@ const techs = {
         },
         post(){
             vBind({el: '#foreign'},'update');
+            defineGovernor();
         }
     },
     spy_training: {
@@ -3244,6 +3247,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     large_trades: {
@@ -4487,6 +4493,11 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['terrifying']){
+                defineGovernor();
+            }
         }
     },
     electricity: {
@@ -6872,6 +6883,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     ceremonial_dagger: {
@@ -6975,6 +6989,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     signing_bonus: {
@@ -10946,11 +10963,7 @@ const techs = {
             return false;
         },
         post(){
-            clearElement($('#resources'));
-            defineResources();
-            if (global.settings.tabLoad){
-                drawResourceTab('alchemy');
-            }
+            drawResourceTab('alchemy');
         }
     },
     transmutation: {
@@ -10975,10 +10988,6 @@ const techs = {
                 return true;
             }
             return false;
-        },
-        post(){
-            clearElement($('#resources'));
-            defineResources();
         }
     },
     secret_society: {
@@ -13434,6 +13443,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineGovernor();
         }
     },
     clone_degradation: {

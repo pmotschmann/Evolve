@@ -278,6 +278,9 @@ export function govern(){
 }
 
 export function defineGovernor(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 0)){
+        return;
+    }
     if (global.genes['governor'] && global.tech['governor']){
         clearElement($('#r_govern1'));
         if (global.race.hasOwnProperty('governor') && !global.race.governor.hasOwnProperty('candidates')){
