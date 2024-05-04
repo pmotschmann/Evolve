@@ -6890,7 +6890,7 @@
   "outer_shipyard_power_fission": "核裂变",
   "outer_shipyard_power_fission_desc": "核裂变反应堆消耗铀，输出巨大。",
   "outer_shipyard_power_fusion": "核聚变",
-  "outer_shipyard_power_fusion_desc": "核聚变反应堆消耗氦-3，输出更为高效和清洁，。",
+  "outer_shipyard_power_fusion_desc": "核聚变反应堆消耗氦-3，输出更为高效和清洁。",
   "outer_shipyard_power_elerium": "超铀",
   "outer_shipyard_power_elerium_desc": "超铀反应堆消耗超铀，输出无与伦比。",
   "outer_shipyard_armor": "船体材料",
