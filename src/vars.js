@@ -1956,7 +1956,7 @@ function convertVersion(version){
 }
 
 export function resizeGame(){
-    if ($(window).width() >= 1400 && $('#msgQueue:not(.right)')){
+    if ($(window).width() >= 1200 && $('#msgQueue:not(.right)')){
         let build = $('#buildQueue').detach();
         build.addClass('right');
         build.removeClass('has-text-info');
@@ -1972,7 +1972,7 @@ export function resizeGame(){
         $('#mainColumn').addClass('is-half');
 
     }
-    else if ($(window).width() < 1400 && $('#msgQueue').hasClass('right')){
+    else if ($(window).width() < 1200 && $('#msgQueue').hasClass('right')){
         let build = $('#buildQueue').detach();
         build.removeClass('right');
         build.addClass('has-text-info');
