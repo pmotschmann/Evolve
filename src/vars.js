@@ -1685,6 +1685,10 @@ if (!global.settings['queuestyle']){
     global.settings['queuestyle'] = 'standardqueuestyle';
 }
 
+if (!global.settings['q_resize']){
+    global.settings.q_resize = 'auto';
+}
+
 $('html').addClass(global.settings.theme);
 $('html').addClass(global.settings.queuestyle);
 

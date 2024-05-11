@@ -147,6 +147,9 @@ export function mainVue(){
                 global.settings.queuestyle = style;
                 updateQueueStyle();
             },
+            setQueueResize(mode) {
+                global.settings.q_resize = mode;
+            },
             icon(icon){
                 global.settings.icon = icon;
                 save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -1285,18 +1288,6 @@ export function index(){
                 <b-dropdown-item v-on:click="icon('star')">${drawIcon('star',16,irank)} {{ 'star' | label }}</b-dropdown-item>
                 ${iconlist}
             </b-dropdown>
-
-            <span>{{ 'queuestyle' | label }} </span>
-            <b-dropdown hoverable>
-                <button class="button is-primary" slot="trigger">
-                    <span>{{ s.queuestyle | label }}</span>
-                    <i class="fas fa-sort-down"></i>
-                </button>
-                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
-                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
-            </b-dropdown>
         </div>
         <div id="localization" class="localization">
             <span>{{ 'locale' | label }} </span>
@@ -1318,6 +1309,20 @@ export function index(){
                 <b-dropdown-item v-on:click="font('large_log')">{{ 'large_log' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="font('large_all')">{{ 'large_all' | label }}</b-dropdown-item>
             </b-dropdown>
+        </div>
+
+        <div class="queue">
+            <span>{{ 'queuestyle' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ s.queuestyle | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="setQueueStyle('standardqueuestyle')">{{ 'standardqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('listqueuestyle')">{{ 'listqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('bulletlistqueuestyle')">{{ 'bulletlistqueuestyle' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueStyle('numberedlistqueuestyle')">{{ 'numberedlistqueuestyle' | label }}</b-dropdown-item>
+            </b-dropdown>
 
             <span class="settings15" aria-label="${loc('settings15')}">{{ 'q_merge' | label }} </span>
             <b-dropdown hoverable>
@@ -1329,7 +1334,20 @@ export function index(){
                 <b-dropdown-item v-on:click="q_merge('merge_nearby')">{{ 'merge_nearby' | label }}</b-dropdown-item>
                 <b-dropdown-item v-on:click="q_merge('merge_all')">{{ 'merge_all' | label }}</b-dropdown-item>
             </b-dropdown>
+
+            <span>{{ 'q_resize' | label }} </span>
+            <b-dropdown hoverable>
+                <button class="button is-primary" slot="trigger">
+                    <span>{{ 'q_resize_' + s.q_resize | label }}</span>
+                    <i class="fas fa-sort-down"></i>
+                </button>
+                <b-dropdown-item v-on:click="setQueueResize('auto')">{{ 'q_resize_auto' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('grow')">{{ 'q_resize_grow' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('shrink')">{{ 'q_resize_shrink' | label }}</b-dropdown-item>
+                <b-dropdown-item v-on:click="setQueueResize('manual')">{{ 'q_resize_manual' | label }}</b-dropdown-item>
+            </b-dropdown>
         </div>
+
         <b-switch class="setting" v-model="s.pause" @input="unpause"><span class="settings12" aria-label="${loc('settings12')}">{{ 'pause' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.mKeys"><span class="settings1" aria-label="${loc('settings1')}">{{ 'm_keys' | label }}</span></b-switch>
         <b-switch class="setting" v-model="s.cLabels"><span class="settings5" aria-label="${loc('settings5')}">{{ 'c_cat' | label }}</span></b-switch>
