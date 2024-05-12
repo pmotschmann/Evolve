@@ -1187,9 +1187,9 @@ if (convertVersion(global['version']) < 103011){
     }
 }
 
-global['version'] = '1.3.11';
+global['version'] = '1.3.12';
 delete global['revision'];
-global['beta'] = 3;
+delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
     global.prestige = {};
@@ -1484,6 +1484,15 @@ export function setupStats(){
     }
     if (!global.stats.hasOwnProperty('banana')){
         global.stats['banana'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
+    if (!global.stats.hasOwnProperty('endless_hunger')){
+        global.stats['endless_hunger'] = {
             b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
             b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 

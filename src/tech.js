@@ -48,8 +48,8 @@ const techs = {
             return global.race['soul_eater'] && !global.race['evil'] ? false : true;
         },
         cost: {
-            Food(){ return global.race['evil'] && !global.race['smoldering'] ? 0 : 10; },
-            Lumber(){ return global.race['evil'] && !global.race['smoldering'] ? 10 : 0; }
+            Food(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 0 : 10; },
+            Lumber(){ return global.race['evil'] && !global.race['smoldering'] || global.race['fasting'] ? 10 : 0; }
         },
         action(){
             if (payCosts($(this)[0])){
@@ -1101,6 +1101,7 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 1 },
         grant: ['agriculture',2],
+        not_trait: ['fasting'],
         cost: {
             Knowledge(){ return 55; }
         },
@@ -1361,6 +1362,27 @@ const techs = {
         effect: loc('tech_master_craftsman_effect'),
         action(){
             if (payCosts($(this)[0])){
+                return true;
+            }
+            return false;
+        }
+    },
+    banquet:{
+        id: 'tech-banquet',
+        title: loc('tech_banquet'),
+        desc: loc('tech_banquet'),
+        category: 'special',
+        era: 'discovery',
+        reqs: { high_tech: 2 },
+        grant: ['banquet',1],
+        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 1 && !global.race['fasting'] ? true : false; },
+        cost: {
+            Knowledge(){ return 18500; }
+        },
+        effect: loc('tech_banquet_effect'),
+        action(){
+            if (payCosts($(this)[0])){
+                global.city['banquet'] = { count: 0, on: 0, strength:0 };
                 return true;
             }
             return false;

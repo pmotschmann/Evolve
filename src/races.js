@@ -4717,7 +4717,7 @@ export function racialTrait(workers,type){
         }
         if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
             let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
-            if (global.race['witch_hunter']){
+            if (global.race['witch_hunter']){R
                 modifier *= 1 + (boost / (boost + 75) * 2.5);
             }
             else {
@@ -4733,6 +4733,9 @@ export function racialTrait(workers,type){
     }
     if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
         modifier = teamster(modifier);
+    }
+    if(global.stats.achieve['endless_hunger'] && global.city.banquet && global.city.banquet.count >= 3 && global.city.banquet.strength && (type === 'army' || type === 'hellArmy')){
+        modifier *= 1 + (global.city.banquet.strength ** 0.65);
     }
     return modifier;
 }
@@ -5459,6 +5462,10 @@ export function cleanRemoveTrait(trait,rank){
         case 'ooze':
             delete global.race['gross_enabled'];
             calc_mastery(true);
+            break;
+        case 'atropy':
+        case 'angry':
+            delete global.race['furious_enabled'];
             break;
         default:
             break;

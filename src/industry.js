@@ -751,6 +751,9 @@ export function luxGoodPrice(demand){
     if (global.tech['isolation']){
         demand *= 1 + ((support_on['colony'] || 0) * 0.5);
     }
+    if(global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 4 && global.city.banquet && global.city.banquet.count >= 4 && global.city.banquet.strength){
+        demand *= 1 + (global.city.banquet.strength ** 0.7);
+    }
     demand *= production('psychic_cash');
     return demand;
 }

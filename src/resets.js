@@ -647,6 +647,9 @@ export function descension(){
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
     }
+    if(global.race['fasting'] && global.race['furious_enabled']){
+        unlockFeat('furious');
+    }
 
     let gains = calcPrestige('descend');
     global.prestige.Artifact.count += gains.artifact;
