@@ -5620,7 +5620,7 @@
   "govern_autocracy_effect": "Stress is %0% higher, but military power is %1% stronger. Warmonger penalty is disabled.",
   "govern_democracy": "Democracy",
   "govern_democracy_desc": "Democracy is a form of government where all the people collectively make decisions together. This is popular with the people but makes getting anything done tedious.",
-  "govern_democracy_effect": "Entertainers are %0% more effective, but worker production is %1% lower.",
+  "govern_democracy_effect": "Entertainers are %0% more effective, but worker production and compat rating are %1% lower.",
   "govern_oligarchy": "Oligarchy",
   "govern_oligarchy_desc": "Oligarchy is a form of government where the elite rule as a council. A handful of powerful families control everything and make all the major decisions.",
   "govern_oligarchy_effect": "Tax revenue is %0% lower, but taxes can be set %1% higher, high tax morale penalty is lower, and people are less likely to riot.",
