@@ -554,20 +554,17 @@ export function challengesPage(content){
             let fasting = infoBoxBuilder(scenarios,{ name: 'scenarios_fasting', template: 'challenges', paragraphs: 5, break: [1,2,3,4,5], h_level: 2,
             /*
                 "wiki_challenges_scenarios_fasting": "Fasting",
-                "wiki_challenges_scenarios_fasting_para1": "In the %0 %1. Your citizens can't eat food and will perpetually starve.",
-                "wiki_challenges_scenarios_fasting_para2": "%0 income is stuck at %1 and can not be increased.",
-                "wiki_challenges_scenarios_fasting_para3": "Starvation works differently, citizens starve depending on how many you have. Use %0 to lower starvation and improve population growth.",
-                "wiki_challenges_scenarios_fasting_para4": "Certain buildings like %0 can not be used due to a lack of food.",
-                "wiki_challenges_scenarios_fasting_para5": "This %0 is completed upon finishing all %1 tasks.",*/
+                "wiki_challenges_scenarios_fasting_para4": "Combat rating is lowered by %0. And the starvation penalty is worse.",
+                */
                 para_data: {
                     1: [loc(`evo_challenge_fasting`),loc(`wiki_challenges_scenario`)],
                     2: [loc(`resource_Food_name`),0],
                     3: [loc(`job_meditator`)],
-                    4: [loc(`city_tourist_center`)],
-                    5: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
+                    5: [loc(`city_tourist_center`)],
+                    6: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
                 },
                 data_link: {
-                    5: [false, 'wiki.html#perks-prestige-endless_hunger']
+                    6: [false, 'wiki.html#perks-prestige-endless_hunger']
                 }
             });
             addAchievements(fasting,false,['endless_hunger']);

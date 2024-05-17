@@ -1375,7 +1375,8 @@ const techs = {
         era: 'discovery',
         reqs: { high_tech: 2 },
         grant: ['banquet',1],
-        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 1 && !global.race['fasting'] ? true : false; },
+        not_trait:['fasting'],
+        condition(){ return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false; },
         cost: {
             Knowledge(){ return 18500; }
         },

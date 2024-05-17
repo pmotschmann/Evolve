@@ -4728,14 +4728,14 @@ export function racialTrait(workers,type){
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
     }
+    if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3 && (type === 'army' || type === 'hellArmy')){
+        modifier *= 1 + (global.city.banquet.strength ** 0.65);
+    }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
     }
     if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
         modifier = teamster(modifier);
-    }
-    if(global.stats.achieve['endless_hunger'] && global.city.banquet && global.city.banquet.count >= 3 && global.city.banquet.strength && (type === 'army' || type === 'hellArmy')){
-        modifier *= 1 + (global.city.banquet.strength ** 0.65);
     }
     return modifier;
 }
@@ -5462,10 +5462,6 @@ export function cleanRemoveTrait(trait,rank){
         case 'ooze':
             delete global.race['gross_enabled'];
             calc_mastery(true);
-            break;
-        case 'atropy':
-        case 'angry':
-            delete global.race['furious_enabled'];
             break;
         default:
             break;

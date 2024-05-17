@@ -647,8 +647,8 @@ export function descension(){
     if (global.race['ooze'] && global.race.species === 'sludge'){
         unlockFeat('slime_lord');
     }
-    if(global.race['fasting'] && global.race['furious_enabled']){
-        unlockFeat('furious');
+    if(global.race['fasting'] && global.stats.starved <= 0){
+        unlockFeat('immortal');
     }
 
     let gains = calcPrestige('descend');

@@ -638,7 +638,7 @@ export function tagEvent(event, data){
 }
 
 export function modRes(res,val,notrack,buffer){
-    if(res === 'food' && global.race['fasting']){
+    if(res === 'Food' && global.race['fasting']){
         global.resource[res].amount = 0;
         return false;
     }

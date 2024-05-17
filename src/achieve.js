@@ -256,10 +256,10 @@ export const feats = {
         desc: loc("feat_fool_desc"),
         flair: loc("feat_fool_flair")
     },
-    furious:{
-        name: loc("feat_furious_name"),
-        desc: loc("feat_furious_desc"),
-        flair: loc("feat_furious_flair")
+    immortal:{
+        name: loc("feat_immortal_name"),
+        desc: loc("feat_immortal_desc"),
+        flair: loc("feat_immortal_flair")
     }
 }
 
@@ -567,8 +567,17 @@ export function checkAchievements(){
     }
 
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
-        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && piracy('gxy_chthonian') === 1){
+        let chtonian = piracy('gxy_chthonian');
+        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chtonian === 1){
             unlockAchieve('neutralized');
+        }
+        if(global.race['fasting'] && chtonian === 1){
+        if (global.tech.hasOwnProperty('stock_exchange') && global.tech.stock_exchange >= 80){
+            global.stats.endless_hunger.b3[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.endless_hunger.b3.l = true;
+            }
+        }
         }
     }
 
@@ -710,6 +719,12 @@ export function checkAchievements(){
 
     if (global.race['fasting']){
         let affix = universeAffix();
+        if (global.tech.hasOwnProperty('stock_exchange') && global.tech.stock_exchange >= 80){
+            global.stats.endless_hunger.b2[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.endless_hunger.b2.l = true;
+            }
+        }
         if (global.resource[global.race.species].amount >= 1200){
             global.stats.endless_hunger.b4[affix] = true;
             if (affix !== 'm' && affix !== 'l'){
@@ -1694,7 +1709,7 @@ export const perkList = {
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_endless_hunger_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_task`,[`<span class="has-text-caution">${loc(`achieve_endless_hunger_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[1,`<span class="has-text-${global.stats.endless_hunger.b1.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}</span>`]),
-            loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.endless_hunger.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.endless_hunger.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`,[80])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.endless_hunger.b3.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`)}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.endless_hunger.b4.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</span>`]),
             loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`,[50])}</span>`])

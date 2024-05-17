@@ -1943,17 +1943,19 @@ function fastLoop(){
             }
         }
         if(global.race['fasting']){
-            const foodBuildings = ["city:tourist_center", "space:spaceport", "space:starport", "space:starbase", "space:space_station", "space_barracks", "space_zoo"];
-            //embassy is excluded.
+            const foodBuildings = ["city:tourist_center", "space:spaceport", "int_:starport", "gxy_:starbase"/*, "space:space_station", "space:embassy"*/, "space:space_barracks", "int_:space_zoo"];
+            //some buildings are excluded to make progression not impossible.
             for(let i=0;i<foodBuildings.length;i++){
                 let parts = foodBuildings[i].split(":");
                 let space = convertSpaceSector(parts[0]);
                 let region = parts[0] === 'city' ? parts[0] : space;
                 if (global[region][parts[1]] && global[region][parts[1]]['on']){
+                    if(p_on[parts[1]]){
+                        p_on[parts[1]] = 0;
+                    }
                     $(`#${region}-${parts[1]} .on`).addClass('warn');
                     $(`#${region}-${parts[1]} .on`).prop('title',`ON 0`);
                 }else {
-                    p_on[parts[1]] = 0;
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
                     $(`#${region}-${parts[1]} .on`).prop('title',`ON`);
                 }
@@ -2157,7 +2159,7 @@ function fastLoop(){
         }
 
         // Space Marines
-        if (global.space['space_barracks']){
+        if (global.space['space_barracks'] && !global.race['fasting']){
             let oil_cost = +fuel_adjust(2,true);
             let sm_consume = global.space.space_barracks.on * oil_cost;
             breakdown.p.consume.Oil[loc('tech_space_marines_bd')] = -(sm_consume);
@@ -3371,20 +3373,22 @@ function fastLoop(){
                 food_consume_mod /= traits.high_pop.vars()[0];
             }
             let banquet = 1;
-            if(global.stats.achieve['endless_hunger'].l && global.city.banquet){
-                if(global.city.banquet.on){
-                    //banquet *= (global.city.banquet.count >= 5 ? 1.018 : 1.02)**global.city.banquet.strength)*100)
-                    banquet *= ((global.city.banquet.count >= 5 ? 1.018 : 1.02)**global.city.banquet.strength);
-                }
-                else{
-                    global.city.banquet.strength = 0;
-                }
+            if(global.city.banquet && global.city.banquet.on){
+                banquet *= ((global.city.banquet.count >= 5 ? 1.018 : 1.02)**global.city.banquet.strength);
             }
+            let tourism = 0;
+            let spaceport = 0;
+            let starport = 0;
+            let starbase = 0;
+            let space_station = 0;
+            let space_marines = 0;
+            let embassy = 0;
+            let zoo = 0;
             if(!global.race['fasting']){
                 consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + workerScale(global.civic.hunter.workers,'hunter')) * 0.5)) * food_consume_mod;
                 breakdown.p.consume.Food[flib('name')] = -(consume);
                 if(consume * banquet > global.resource.Food.amount){
-                    if(global.stats.achieve['endless_hunger'].l && global.city.banquet.count && banquet > 1){
+                    if(global.city.banquet && banquet > 1){
                         global.city.banquet.strength = 0;
                     }
                 }
@@ -3393,62 +3397,52 @@ function fastLoop(){
                         breakdown.p.consume.Food[`${loc('city_banquet')}`] = -(consume*(banquet-1));
                     }
                     consume *= banquet;
-                    food_consume_mod *= banquet;
                 }
-                //failsafe food check
+                if (global.city['tourist_center']){
+                    tourism = global.city['tourist_center'].on * 50;
+                    breakdown.p.consume.Food[loc('tech_tourism')] = -(tourism);
+                }
+
+                if (global.space['spaceport']){
+                    spaceport = p_on['spaceport'] * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 25);
+                    breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
+                }
+
+                if (global.interstellar['starport']){
+                    starport = p_on['starport'] * 100;
+                    breakdown.p.consume.Food[loc('interstellar_alpha_starport_title')] = -(starport);
+                }
+
+                if (global.galaxy['starbase']){
+                    starbase = p_on['s_gate'] * p_on['starbase'] * 250;
+                    breakdown.p.consume.Food[loc('galaxy_starbase')] = -(starbase);
+                }
+
+                if (global.space['space_station']){
+                    space_station = p_on['space_station'] * (global.race['cataclysm'] ? 1 : 10);
+                    breakdown.p.consume.Food[loc('space_belt_station_title')] = -(space_station);
+                }
+
+                if (global.space['space_barracks'] && !global.race['cataclysm']){
+                    space_marines = global.space.space_barracks.on * 10;
+                    breakdown.p.consume.Food[loc('tech_space_marines_bd')] = -(space_marines);
+                }
+
+                if (global.galaxy['embassy']){
+                    embassy = p_on['s_gate'] * p_on['embassy'] * 7500;
+                    breakdown.p.consume.Food[loc('galaxy_embassy')] = -(embassy);
+                }
+
+                if (global.interstellar['zoo']){
+                    zoo = int_on['zoo'] * 12000;
+                    breakdown.p.consume.Food[loc('tech_zoo')] = -(zoo);
+                }
+            }
+            else{
                 if(global.resource.Food.amount > 0){
                     debugger;
                 }
                 global.resource.Food.amount = 0;
-            }
-            
-
-            let tourism = 0;
-            if (global.city['tourist_center']){
-                tourism = global.city['tourist_center'].on * 50;
-                breakdown.p.consume.Food[loc('tech_tourism')] = -(tourism);
-            }
-
-            let spaceport = 0;
-            if (global.space['spaceport']){
-                spaceport = p_on['spaceport'] * (global.race['cataclysm'] || global.race['orbit_decayed'] ? 2 : 25);
-                breakdown.p.consume.Food[loc('space_red_spaceport_title')] = -(spaceport);
-            }
-
-            let starport = 0;
-            if (global.interstellar['starport']){
-                starport = p_on['starport'] * 100;
-                breakdown.p.consume.Food[loc('interstellar_alpha_starport_title')] = -(starport);
-            }
-
-            let starbase = 0;
-            if (global.galaxy['starbase']){
-                starbase = p_on['s_gate'] * p_on['starbase'] * 250;
-                breakdown.p.consume.Food[loc('galaxy_starbase')] = -(starbase);
-            }
-
-            let space_station = 0;
-            if (global.space['space_station']){
-                space_station = p_on['space_station'] * (global.race['cataclysm'] ? 1 : 10);
-                breakdown.p.consume.Food[loc('space_belt_station_title')] = -(space_station);
-            }
-
-            let space_marines = 0;
-            if (global.space['space_barracks'] && !global.race['cataclysm']){
-                space_marines = global.space.space_barracks.on * 10;
-                breakdown.p.consume.Food[loc('tech_space_marines_bd')] = -(space_marines);
-            }
-
-            let embassy = 0;
-            if (global.galaxy['embassy']){
-                embassy = p_on['s_gate'] * p_on['embassy'] * 7500;
-                breakdown.p.consume.Food[loc('galaxy_embassy')] = -(embassy);
-            }
-
-            let zoo = 0;
-            if (global.interstellar['zoo']){
-                zoo = int_on['zoo'] * 12000;
-                breakdown.p.consume.Food[loc('tech_zoo')] = -(zoo);
             }
 
             let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
@@ -3464,9 +3458,6 @@ function fastLoop(){
                 }
                 else{
                     fed = false;
-                    if(global.stats.achieve['endless_hunger'].l && global.city.banquet && global.city.banquet.on){
-                        global.city.banquet.strength = 0;
-                    }
                     if(global.resource[global.race.species].amount > 0){
                         let threshold = 1.25;
                         if (global.race['slow_digestion']){
@@ -3479,30 +3470,33 @@ function fastLoop(){
                         if (global.race['humpback']){
                             threshold += traits.humpback.vars()[0];
                         }
+                        if(global.race['fasting']){
+                            threshold += highPopAdjust(global.civic.meditator.workers) * 0.03;
+                        }
                         if (global.race['atrophy']){
                             threshold -= traits.atrophy.vars()[0];
                         }
-                        if(global.race['fasting']){
-                            threshold *= 1 + highPopAdjust(global.civic.meditator.workers) * 0.06;
-                        }
                         // threshold can be thought of as the inverse of nutrition ratio per unit of food.
                         // So if the generated food doesn't have enough nutrition for the consuming population, they starve.
-                        if(global.race['fasting']){
-                            let starved = (global.resource[global.race.species].amount**0.8) / 100 / threshold * food_consume_mod - 0.05;
-                            console.log(starved);
-                            if(starved < 0){
-                                starved = 0;
+                        if (Math.rand(0, 10) === 0){
+                            if(global.race['fasting']){
+                                let starved = (global.resource[global.race.species].amount) / 100 * food_consume_mod - threshold;
+                                console.log(starved);
+                                if(starved < 0){
+                                    starved = 0;
+                                }
+                                global.resource[global.race.species].amount -= Math.floor(starved);
+                                global.stats.starved += Math.floor(starved);
+                                if(starved%1 > Math.random()){
+                                    global.resource[global.race.species].amount--;
+                                    global.stats.starved++;
+                                }
+                                if(global.resource[global.race.species].amount < 0){
+                                    global.stats.starved += global.resource[global.race.species].amount;
+                                    global.resource[global.race.species].amount = 0;
+                                }
                             }
-                            global.resource[global.race.species].amount -= Math.floor(starved);
-                            if(starved%1 > Math.random()){
-                                global.resource[global.race.species].amount--;
-                            }
-                            if(global.resource[global.race.species].amount < 0){
-                                global.resource[global.race.species].amount = 0;
-                            }
-                        }
-                        else if (generated < consume / threshold){
-                            if (Math.rand(0, 10) === 0){
+                            else if (generated < consume / threshold){
                                 global['resource'][global.race.species].amount--;
                                 global.stats.starved++;
                             }
@@ -3582,9 +3576,9 @@ function fastLoop(){
                     lowerBound += traits.promiscuous.vars()[0] * global.race['promiscuous'];
                 }
                 if(global.race['fasting']){
-                    lowerBound +=  highPopAdjust(global.civic.meditator.workers) * 0.25;
+                    lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
                 }
-                if(global.stats.achieve['endless_hunger'].l && global.city.banquet && global.city.banquet.count >= 1 && global.city.banquet.strength){
+                if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 1){
                     lowerBound *= 1 + (global.city.banquet.strength ** 0.75);
                 }
                 if (astroSign === 'libra'){
@@ -4059,8 +4053,8 @@ function fastLoop(){
 
                 let delta = workDone * demand;
                 if (global.race['gravity_well']){ delta = teamster(delta); }
-                FactoryMoney = delta * hunger;
-
+                FactoryMoney = delta;
+                delta *= hunger;
                 if (global.race['discharge'] && global.race['discharge'] > 0){
                     delta *= 0.5;
                 }
@@ -6944,7 +6938,7 @@ function fastLoop(){
                 }
             }
             else {
-                income_base = income_base / 2;
+                income_base *= hunger;
             }
 
             income_base *= (global.civic.taxes.tax_rate / 20);
@@ -7146,6 +7140,7 @@ function fastLoop(){
             modRes('Money', +(revenue * time_multiplier * global_multiplier * hunger).toFixed(2));
             rawCash += revenue * global_multiplier * hunger;
         }
+        breakdown.p['Money'][loc('hunger')] = ((hunger - 1) * 100) + '%';
 
         {
             let racVal = govActive('racketeer',0);
@@ -7925,7 +7920,7 @@ function midLoop(){
                 lCaps['garrison'] -= global.city.garrison.on;
             }
         }
-        if (global.space['space_barracks']){
+        if (global.space['space_barracks'] && !global.race['fasting']){
             let soldiers = global.tech.marines >= 2 ? jobScale(4) : jobScale(2);
             lCaps['garrison'] += global.space.space_barracks.on * soldiers;
         }
@@ -10524,7 +10519,7 @@ function longLoop(){
             if (painVal){
                 hc *= 1 + (painVal / 100);
             }
-            if(global.stats.achieve['endless_hunger'].l && global.city.banquet && global.city.banquet.count >= 2 && global.city.banquet.strength){
+            if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 2){
                 hc *= 1 + (global.city.banquet.strength ** 0.65);
             }
             let fathom = fathomCheck('troll');
@@ -11553,8 +11548,11 @@ function longLoop(){
                 messageQueue(msg,false,false,['events','minor_events']);
             }
         }
-        if(global.stats.achieve['endless_hunger'].l && global.city.banquet && global.city.banquet.on){
+        if(global.stats.achieve['endless_hunger'] && global.city.banquet && global.city.banquet.on){
             global.city.banquet.strength++;
+        }
+        else if(global.city.banquet && !global.city.banquet.on){
+            global.city.banquet.strength = 0;
         }
     }
 

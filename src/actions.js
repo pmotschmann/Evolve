@@ -3321,28 +3321,28 @@ export const actions = {
             desc: loc(`city_banquet_desc`),
             category: 'commercial',
             reqs: { banquet:1 },
-            queue_complete(){ return 1},
+            queue_complete(){ return Math.min(1, global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0)},
             no_multi: true,
             condition(){
-                return global.stats.achieve['endless_hunger'].l ? true : false;
+                return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
             },
             cost: {
                 Money(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 0 ?
                         45000
                     : global.city['banquet'].count === 1 ?
                         180000
                     : global.city['banquet'].count === 2 ?
-                        5200000
+                        2400000
                     : global.city['banquet'].count === 3 ?
-                        14000000
+                        30000000
                     :
-                        40000000
+                        90000000
                 },
                 Food(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 0 ?
                         40000
@@ -3356,7 +3356,7 @@ export const actions = {
                         1200000
                 },
                 Brick(){ 
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 0 ?
                         16000
@@ -3368,7 +3368,7 @@ export const actions = {
                         0
                 },
                 Wrought_Iron(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 1 ?
                         46000
@@ -3382,7 +3382,7 @@ export const actions = {
                         0
                 },
                 Iridium(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 2 ?
                         80000
@@ -3394,17 +3394,17 @@ export const actions = {
                         0
                 },
                 Aerogel(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 3 ?
                         250000
                     : global.city['banquet'].count === 4 ?
-                        144000
+                        1440000
                     :
                         0
                 },
                 Bolognium(){
-                    return global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 4 ?
                         600000
@@ -3414,7 +3414,7 @@ export const actions = {
             },
             effect(){
                 let desc = `<div>Strength: <span class="has-text-caution">${global.city['banquet'].strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [(((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**global.city['banquet'].strength-1)*100).toFixed(2)])}</div>`;
+                desc += `<div>${loc(`city_banquet_effect1`, [((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**(global.city['banquet'].strength-1) * 100).toFixed(2)])}</div>`;
                 if(global.city['banquet'].count >= 1){
                     desc += `<div>${loc(`city_banquet_effect2`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
                 }
@@ -7871,12 +7871,8 @@ function sentience(){
             global.resource.Lumber.amount += rank * 100;
         }
     }
-
     if(global.race['fasting']){
         global.resource.Food.amount = 0;
-        if(global.race['athropy'] && global.race['angry']){
-            global.race['furious_enabled'] = true;
-        }
     }
     if (global.race['cataclysm']){
         cataclysm();
