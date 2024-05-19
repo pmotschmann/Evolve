@@ -808,15 +808,12 @@ export const events = {
     parade: basicEvent('parade','world_control'),
     crop_circle: basicEvent('crop_circle','agriculture'),
     llama: basicEvent('llama','primitive',function(){
-        if(global.resource.Food.amount){
-            return loc(`event_llama_type0`);
-        }
-        let food = Math.min(Math.rand(25,100), global.resource.Food.amount);
+        let food = Math.rand(25,100);
         global.resource.Food.amount -= food;
         if (global.resource.Food.amount < 0){
             global.resource.Food.amount = 0;
         }
-        return loc(`event_llama_type1`, food);
+        return food;
     },
     function(){
         if (global.race['carnivore'] || global.race['soul_eater'] || global.race['detritivore'] || global.race['artifical']){

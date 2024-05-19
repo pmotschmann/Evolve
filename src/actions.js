@@ -4243,9 +4243,6 @@ export function setChallengeScreen(){
     if (global.hasOwnProperty('beta') && !global['sim']){
         addAction('evolution','simulation');
     }
-    if (global.stats.achieve['corrupted'] || global['sim']){
-        addAction('evolution','sludge');
-    }
     scenarioActionHeader();
     addAction('evolution','junker');
     if (global.stats.achieve['shaken'] || global['sim']){
@@ -4395,17 +4392,6 @@ export function buildTemplate(key, region){
                         return true;
                     }
                     else if (global['resource'][global.race.species].max > global['resource'][global.race.species].amount && payCosts($(this)[0])){
-                        /*if(global.race['fasting']){
-                            let amount = global.civic.meditator.workers * 0.02;
-                            if(amount%1 > Math.random()){
-                                global['resource'][global.race.species].amount++;
-                            }
-                            global['resource'][global.race.species].amount += Math.floor(amount);
-                            if(global['resource'][global.race.species].amount > global['resource'][global.race.species].max){
-                                global['resource'][global.race.species].amount = global['resource'][global.race.species].max;
-                            }
-                            return true;
-                        }*/
                         global['resource'][global.race.species].amount++;
                         return true;
                     }
@@ -4686,7 +4672,6 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                     delete global.race['badgenes'];
                 }
                 ['junker','cataclysm','banana','truepath','lone_survivor','fasting'].forEach(function(s){
-                    console.log("!")
                     delete global.race[s];
                     $(`#evolution-${s}`).removeClass('hl');
                 });
@@ -5356,6 +5341,7 @@ export function drawCity(){
             addAction('city', city_name);
         }
     });
+
     let city_categories =  [
         'outskirts',
         'residential',
@@ -5706,15 +5692,15 @@ export function setAction(c_action,action,type,old,prediction){
                 }
             },
             power_off(){
-                    let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
-                        if (global[action][type].on > 0){
-                            global[action][type].on--;
-                        }
-                        else {
-                            break;
-                        }
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on > 0){
+                        global[action][type].on--;
                     }
+                    else {
+                        break;
+                    }
+                }
                 if (c_action['postPower']){
                     setTimeout(function(){
                         c_action.postPower(false);
@@ -7871,6 +7857,7 @@ function sentience(){
             global.resource.Lumber.amount += rank * 100;
         }
     }
+
     if(global.race['fasting']){
         global.resource.Food.amount = 0;
     }

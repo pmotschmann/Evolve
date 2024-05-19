@@ -4717,7 +4717,7 @@ export function racialTrait(workers,type){
         }
         if (global.race.hasOwnProperty('casting') && global.race.casting[type === 'hellArmy' ? 'army' : type]){
             let boost = global.race.casting[type === 'hellArmy' ? 'army' : type];
-            if (global.race['witch_hunter']){R
+            if (global.race['witch_hunter']){
                 modifier *= 1 + (boost / (boost + 75) * 2.5);
             }
             else {

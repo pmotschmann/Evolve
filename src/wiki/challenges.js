@@ -489,6 +489,7 @@ export function challengesPage(content){
             ]);
             subSideMenu('add',`challenges-gameplay`,'scenarios_cataclysm',loc('wiki_challenges_scenarios_cataclysm'));
         }
+        
         {   // Banana Republic
             let banana = infoBoxBuilder(scenarios,{ name: 'scenarios_banana', template: 'challenges', paragraphs: 18, break: [2,4,5,8,9,10,18], h_level: 2,
                 para_data: {
@@ -552,19 +553,15 @@ export function challengesPage(content){
 
         {   // Fasting
             let fasting = infoBoxBuilder(scenarios,{ name: 'scenarios_fasting', template: 'challenges', paragraphs: 5, break: [1,2,3,4,5], h_level: 2,
-            /*
-                "wiki_challenges_scenarios_fasting": "Fasting",
-                "wiki_challenges_scenarios_fasting_para4": "Combat rating is lowered by %0. And the starvation penalty is worse.",
-                */
                 para_data: {
                     1: [loc(`evo_challenge_fasting`),loc(`wiki_challenges_scenario`)],
                     2: [loc(`resource_Food_name`),0],
                     3: [loc(`job_meditator`)],
-                    5: [loc(`city_tourist_center`)],
-                    6: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
+                    4: [loc(`city_tourist_center`)],
+                    5: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
                 },
                 data_link: {
-                    6: [false, 'wiki.html#perks-prestige-endless_hunger']
+                    5: [false, 'wiki.html#perks-prestige-endless_hunger']
                 }
             });
             addAchievements(fasting,false,['endless_hunger']);
