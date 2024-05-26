@@ -3219,7 +3219,7 @@ function fastLoop(){
                             }
                             if (global.city.captive_housing.cattle > 0 && global.resource.Food.amount < global.resource.Food.max * 0.01){
                                 global.city.captive_housing.cattle--;
-                                modRes('Food', 1000);
+                                modRes('Food', 1000, true);
                                 global.stats.cattle++;
                             }
                         }
@@ -3381,7 +3381,6 @@ function fastLoop(){
             }
             if (global.race['ravenous']){
                 food_consume_mod *= 1 + (traits.ravenous.vars()[0] / 100);
-                consume += (global.resource.Food.amount / traits.ravenous.vars()[1]);
             }
             if (global.race['hibernator'] && global.city.calendar.season === 3){
                 food_consume_mod *= 1 - (traits.hibernator.vars()[0] / 100);
@@ -3390,9 +3389,15 @@ function fastLoop(){
                 food_consume_mod /= traits.high_pop.vars()[0];
             }
             let banquet = 1;
-            if(global.city.banquet && global.city.banquet.on){
-                banquet *= ((global.city.banquet.count >= 5 ? 1.018 : 1.02)**global.city.banquet.strength);
+            if(global.city.banquet){
+                if(global.city.banquet.on){
+                    banquet *= ((global.city.banquet.count >= 5 ? 1.02 : 1.022)**global.city.banquet.strength);
+                }
+                else{
+                    global.city.banquet.strength = 0;
+                }
             }
+            let ravenous = 0;
             let tourism = 0;
             let spaceport = 0;
             let starport = 0;
@@ -3403,8 +3408,11 @@ function fastLoop(){
             let zoo = 0;
             if(!global.race['fasting']){
                 consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + workerScale(global.civic.hunter.workers,'hunter')) * 0.5)) * food_consume_mod;
-                breakdown.p.consume.Food[flib('name')] = -(consume);
-                if(consume * banquet > global.resource.Food.amount){
+                if(global.race['ravenous']){
+                    ravenous = (global.resource.Food.amount / traits.ravenous.vars()[1]);
+                }
+                breakdown.p.consume.Food[flib('name')] = -(consume + ravenous);
+                if(consume * banquet + ravenous >= global.resource.Food.amount){
                     if(global.city.banquet && banquet > 1){
                         global.city.banquet.strength = 0;
                     }
@@ -3415,6 +3423,7 @@ function fastLoop(){
                     }
                     consume *= banquet;
                 }
+
                 if (global.city['tourist_center']){
                     tourism = global.city['tourist_center'].on * 50;
                     breakdown.p.consume.Food[loc('tech_tourism')] = -(tourism);
@@ -3456,9 +3465,9 @@ function fastLoop(){
                 }
             }
 
-            let delta = generated - consume - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
-            breakdown.p['Food'][loc('soldiers')] = hunting + 'v';
+            let delta = generated - consume - ravenous - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
 
+            breakdown.p['Food'][loc('soldiers')] = hunting + 'v';
             if (hunting > 0){
                 breakdown.p['Food'][`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
             }
@@ -3494,7 +3503,6 @@ function fastLoop(){
                         if (Math.rand(0, 10) === 0){
                             if(global.race['fasting']){
                                 let starved = (global.resource[global.race.species].amount) / 100 * food_consume_mod - threshold;
-                                console.log(starved);
                                 if(starved < 0){
                                     starved = 0;
                                 }
@@ -3594,7 +3602,7 @@ function fastLoop(){
                     lowerBound += highPopAdjust(global.civic.meditator.workers) * 0.15;
                 }
                 if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 1){
-                    lowerBound *= 1 + (global.city.banquet.strength ** 0.75);
+                    lowerBound *= 1 + (global.city.banquet.strength ** 0.75) / 100;
                 }
                 if (astroSign === 'libra'){
                     lowerBound *= 1 + (astroVal('libra')[0] / 100);
@@ -4299,6 +4307,7 @@ function fastLoop(){
                 if (global.race['gravity_well']){
                     breakdown.p['Polymer'][`ᄂ${loc('evo_challenge_gravity_well')}+0`] = -((1 - teamster(1)) * 100) + '%';
                 }
+
                 modRes('Polymer', delta * time_multiplier);
             }
 
@@ -10529,7 +10538,7 @@ function longLoop(){
                 hc *= 1 + (painVal / 100);
             }
             if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 2){
-                hc *= 1 + (global.city.banquet.strength ** 0.65);
+                hc *= 1 + (global.city.banquet.strength ** 0.65) / 100;
             }
             let fathom = fathomCheck('troll');
             if (fathom > 0){
@@ -11559,9 +11568,6 @@ function longLoop(){
         }
         if(global.stats.achieve['endless_hunger'] && global.city.banquet && global.city.banquet.on){
             global.city.banquet.strength++;
-        }
-        else if(global.city.banquet && !global.city.banquet.on){
-            global.city.banquet.strength = 0;
         }
     }
 

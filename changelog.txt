@@ -3,22 +3,22 @@ Fasting scenario details:
   * all food generation is 0
   * all methods of obtaining food are invalidated. Including trading, replicator, anthropophagite, cattle, etc.
   * Food tooltip has -100% penalty due to fasting
-  * Citizens can can grow as if there was food.
+  * Citizens can increase like normal as if there was food.
   * All buildings that cost food to run are disabled and won't function at all, though they are still able to be built.
-    * Space stations and embassy are exceptions to this as they are required to progress. The food upkeep was removed from their tooltip for the challenge.
-  * The first habitat costs no adamantite in order to be able to progress in alpha centauri without starports
+    * Space stations and embassy are exceptions to this as they are required to progress. The food cost of these is removed for the scenario.
+  * The first five habitats cost no adamantite to build, in order to be able to progress in alpha centauri without starports.
   * Ship docks grant +0.1 support per gateway station instead of +0.25 support per starbase to increase overall support available.
   * Starvation reworked: Instead of being dependent on food consumption compared to food production and starvation threshold
     * it is now based on citizen count, starvation threshold and food consumption modifiers
-    * The exact formula is x = (citizens) / 100 * (food consumption modifier) - (threshold)
+    * The exact formula is (citizens) / 100 * (food consumption modifier) - (threshold) = x
      where x is the amount of citizens that starve each fastLoop instance (250ms by default). For the remainder, a random chance of an extra citizen starving is made.
     * if x is below 0, nothing happens.
-    * starvation happens as often as it does outside of the challenge, which is 10% of the time.
+    * starvation happens as often as it does outside of the scenario, which is 10% of the time.
   * Added new basic job: Meditator. Each Meditator raises the starvation threshold and population growth value by +0.03 and +0.15 respectively. (affected by high population)
   * misc changes
     * changed "gather food" tooltip
 Added new achievement: endless hunger
-  * endless hunger progress happens during the fasting scenario. It works similar to banana republic, where you have multiple tasks that can each be done in any order.
+  * endless hunger progress happens during the fasting scenario. It works similar to banana republic, where there are multiple tasks that can each be done in any order.
   * The tasks are as follows:
     * Construct the Embassy
     * Reduce piracy to 0 in the Chtonian system
@@ -28,33 +28,37 @@ Added new achievement: endless hunger
   * Once all tasks are done, the scenario is considered completed, unlike banana republic, it does not exit after performing a certain action.
 Added new feat: Secret to Immortality
   * Obtained by performing a Demonic Infusion reset during the fasting scenario without letting anyone starve.
-Added new perk: Endless hunger
-  * This perk is linked to the endless hunger achievement.
+Endless hunger associated perk
   * This perk allows you to research a new tech. Banquet.
     * Banquet becomes available after researching electricity and costs 18500 science
   * Once researched, you gain access to a new building. The banquet hall.
   * You can build the banquet once for every rank of the perk you have.
-  * You can enable or disable the banquet hall to enable its effect.
+  * You can enable or disable the banquet hall to toggle its effect.
   * The effects of the banquet hall are as follows
     * Each in-game-day. (5s by default). Banquet strength raises by 1
     * Banquet strength raises food consumption and provides various bonuses.
     * Bonus count depends on the amount of banquet halls built.
-      * 1 banquet hall: food consumption increase x(1.022^strength)
+      * 1 banquet hall: citizen food consumption increase x(1.022^strength)
       * 1 banquet hall: citizen growth +(strength^0.75)%
       * 2 banquet halls: soldier healing +(strength^0.65)%
       * 3 banquet halls: soldier strength +(strength^0.65)%
-      * 4 banquet halls: luxury goods value +(strength^0.7)%
+      * 4 banquet halls: luxury goods value +(strength^0.75)%
       * 5 banquet halls: food consumption increase scales slower (^1.022 -> 1.02)
+    * The food consumption increase does not affect the extra stockpile consumption from ravenous but it is affected by the 20% extra food consumption from ravenous and other modifiers.
+    * Banquet strength does not raise faster with more banquet halls.
     * Banquet hall cost changes with each building built.
-      * The first banquet hall costs  45,000 money,     40,000 food and 16,000 brick
-      * The second banquet hall costs 180,000 money,    124,000 food,   42,000 brick and 46,000 wrought iron
-      * The third banquet hall costs  2,400,000 money,  300,000 food,   110,000 brick,   88,000 wrought iron and 80,000 iridium
-      * The fourth banquet hall costs 30,000,000 money, 720,000 food,   0 brick,         144,000 wrought iron,   220,000 iridium and 250,000 aerogel
-      * The fifth banquet hall costs  90,000,000 money, 1,200,000 food, 0 brick,         240,000 wrought iron,   500,000 iridium,    1,440,000 aerogel and 600,000 bolognium
+      * The first banquet hall costs  45,000 money,      40,000 food and 1600 brick
+      * The second banquet hall costs 180,000 money,     124,000 food,   18,000 brick and 26,000 wrought iron
+      * The third banquet hall costs  2,400,000 money,   300,000 food,   75,000 brick,    88,000 wrought iron and 50,000 iridium
+      * The fourth banquet hall costs 30,000,000 money,  720,000 food,   0 brick,         144,000 wrought iron,   270,000 iridium and 40,000 aerogel
+      * The fifth banquet hall costs  140,000,000 money, 1,200,000 food, 0 brick,         240,000 wrought iron,   700,000 iridium,    150,000 aerogel and 150,000 bolognium
+      * In True Path, the banquet hall costs quantium instead of aerogel.
+      * Food cost reduced by 75% if you are playing a synthetic race.
       * no more than five banquet halls can be built.
     * banquet hall strength is reset when
       * the banquet hall is disabled
       * or food is about to hit 0
+        * Banquet strength is reset before food hits 0, so no starvation happens as long as food production remains positive after losing strength
     * after resetting, banquet strength will continue to increase each day as long as the banquet hall is enabled
   * The banquet hall can only be built in your city and is unavailable during cataclysm, orbital decay or isolation.
 * general changes
@@ -63,7 +67,7 @@ Added new perk: Endless hunger
   * added hunger penalty to iridium from womling miners since the tooltip currently puts the hunger penalty below womling miners even though they weren't affected.
   * Moved the order of womling tribute and temple merch sales showing up in the tooltip so it appears below the hunger penalty since they aren't affected by it.
   * added correct hunger scaling to tax money so it doesn't always reduce income by 50% regardless of hunger modifiers like angry.
-  * added rounding to support display in galactic sectors to solve decimal issue caused by the rework of ship docks in the fasting scenario.
+  * added rounding to support display in intergalactic sectors to solve decimal issue caused by the rework of ship docks in the fasting scenario.
   * changed order of hunger penalty in the vitreloy and deuterium tooltip so it is placed after the corsair production tooltip, which is affected by hunger. (polymer and neutronium were already correct)
     ^ This also fixes vitreloy plants, where the hunger penalty showed up in-between the plant production and piracy penalty beforehand.
   * Added "requires embassy" tooltip to symposiums and (super) freighters.

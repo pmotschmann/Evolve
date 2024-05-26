@@ -1101,7 +1101,6 @@ const techs = {
         era: 'civilized',
         reqs: { agriculture: 1 },
         grant: ['agriculture',2],
-        not_trait: ['fasting'],
         cost: {
             Knowledge(){ return 55; }
         },

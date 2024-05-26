@@ -1409,7 +1409,7 @@ export const actions = {
                             global['resource'][global.race.species].amount--;
                             global.civic[global.civic.d_job].workers--;
                             global.stats.sac++;
-                            global['resource'].Food.amount += Math.rand(250,1000);
+                            modRes('Food', Math.rand(250,1000), true);
                             let low = 300;
                             let high = 600;
                             if (global.tech['sacrifice']){
@@ -3321,7 +3321,7 @@ export const actions = {
             desc: loc(`city_banquet_desc`),
             category: 'commercial',
             reqs: { banquet:1 },
-            queue_complete(){ return Math.min(1, global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0)},
+            queue_complete(){ return global.stats.achieve['endless_hunger'] ? global.stats.achieve['endless_hunger'].l - global.city['banquet'].count : 0},
             no_multi: true,
             condition(){
                 return global.stats.achieve['endless_hunger'] && global.stats.achieve['endless_hunger'].l >= 1 ? true : false;
@@ -3339,10 +3339,10 @@ export const actions = {
                     : global.city['banquet'].count === 3 ?
                         30000000
                     :
-                        90000000
+                        140000000
                 },
                 Food(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return (!global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 0 ?
                         40000
@@ -3353,17 +3353,17 @@ export const actions = {
                     : global.city['banquet'].count === 3 ?
                         720000
                     :
-                        1200000
+                        1200000) / (global.race['artifical'] ? 4 : 1)
                 },
                 Brick(){ 
                     return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     :global.city['banquet'].count === 0 ?
-                        16000
+                        1600
                     : global.city['banquet'].count === 1 ?
-                        42000
+                        18000
                     :global.city['banquet'].count === 2 ?
-                        110000
+                        75000
                     :
                         0
                 },
@@ -3371,7 +3371,7 @@ export const actions = {
                     return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 1 ?
-                        46000
+                        26000
                     :global.city['banquet'].count === 2 ?
                         88000
                     : global.city['banquet'].count === 3 ?
@@ -3385,36 +3385,46 @@ export const actions = {
                     return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 2 ?
-                        80000
+                        50000
                     : global.city['banquet'].count === 3 ?
-                        220000
+                        270000
                     : global.city['banquet'].count === 4 ?
-                        500000
+                        700000
                     :
                         0
                 },
                 Aerogel(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] || global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
-                    :global.city['banquet'].count === 3 ?
-                        250000
+                    : global.city['banquet'].count === 3 ?
+                        40000
                     : global.city['banquet'].count === 4 ?
-                        1440000
+                        150000
+                    :
+                        0
+                },
+                Quantium(){
+                    return !global.stats.achieve['endless_hunger'] || !global.race['truepath'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                        0
+                    : global.city['banquet'].count === 3 ?
+                        40000
+                    : global.city['banquet'].count === 4 ?
+                        150000
                     :
                         0
                 },
                 Bolognium(){
-                    return !global.stats.achieve['endless_hunger'] || global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
+                    return !global.stats.achieve['endless_hunger'] && global.city['banquet'].count >= global.stats.achieve['endless_hunger'].l ?
                         0
                     : global.city['banquet'].count === 4 ?
-                        600000
+                        150000
                     :
                         0
                 }
             },
             effect(){
                 let desc = `<div>Strength: <span class="has-text-caution">${global.city['banquet'].strength}</span></div>`;
-                desc += `<div>${loc(`city_banquet_effect1`, [((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**(global.city['banquet'].strength-1) * 100).toFixed(2)])}</div>`;
+                desc += `<div>${loc(`city_banquet_effect1`, [sizeApproximation(((global.city['banquet'].count >= 5 ? 1.02 : 1.022)**(global.city['banquet'].strength) - 1) * 100)])}</div>`;
                 if(global.city['banquet'].count >= 1){
                     desc += `<div>${loc(`city_banquet_effect2`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
                 }
@@ -3425,7 +3435,7 @@ export const actions = {
                     desc += `<div>${loc(`city_banquet_effect4`, [(global.city['banquet'].strength**0.65).toFixed(2)])}</div>`;
                 }
                 if(global.city['banquet'].count >= 4){
-                    desc += `<div>${loc(`city_banquet_effect5`, [(global.city['banquet'].strength**0.7).toFixed(2)])}</div>`;
+                    desc += `<div>${loc(`city_banquet_effect5`, [(global.city['banquet'].strength**0.75).toFixed(2)])}</div>`;
                 }
                 return desc;
             },

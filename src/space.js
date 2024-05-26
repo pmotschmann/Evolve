@@ -2379,7 +2379,7 @@ const interstellarProjects = {
             cost: {
                 Money(offset){ return spaceCostMultiplier('habitat', offset, 800000, 1.25, 'interstellar'); },
                 Furs(offset){ return spaceCostMultiplier('habitat', offset, 38000, 1.25, 'interstellar'); },
-                Adamantite(offset){ return (global.race['fasting'] && global.interstellar.habitat && global.interstellar.habitat.count === 0) ? 0 : spaceCostMultiplier('habitat', offset, 3200, 1.25, 'interstellar'); },
+                Adamantite(offset){ return (global.race['fasting'] && global.interstellar.habitat && global.interstellar.habitat.count < 5) ? 0 : spaceCostMultiplier('habitat', offset, 3200, 1.25, 'interstellar'); },
                 Plywood(offset){ return spaceCostMultiplier('habitat', offset, 10000, 1.25, 'interstellar'); },
                 Horseshoe(){ return global.race['hooved'] ? 1 : 0; }
             },
