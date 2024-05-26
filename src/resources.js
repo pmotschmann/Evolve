@@ -1279,7 +1279,7 @@ export function marketItem(mount,market_item,name,color,full){
         return;
     }
 
-    if (global.race['artifical'] && name === 'Food'){
+    if ((global.race['artifical'] || global.race['fasting']) && name === 'Food'){
         return;
     }
 

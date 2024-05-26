@@ -551,6 +551,36 @@ export function challengesPage(content){
             subSideMenu('add',`challenges-gameplay`,'scenarios_banana',loc('wiki_challenges_scenarios_banana'));
         }
 
+        {   // Fasting
+            let fasting = infoBoxBuilder(scenarios,{ name: 'scenarios_fasting', template: 'challenges', paragraphs: 5, break: [1,2,3,4,5], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_fasting`),loc(`wiki_challenges_scenario`)],
+                    2: [loc(`resource_Food_name`),0],
+                    3: [loc(`job_meditator`)],
+                    4: [loc(`city_tourist_center`)],
+                    5: [loc(`wiki_challenges_scenario`),loc(`achieve_endless_hunger_name`)]
+                },
+                data_link: {
+                    5: [false, 'wiki.html#perks-prestige-endless_hunger']
+                }
+            });
+            addAchievements(fasting,false,['endless_hunger']);
+            addRequirements(fasting,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: loc(`wiki_resets_infusion`),
+                            color: global.stats.achieve['descension'] ? true : false,
+                            link: 'wiki.html#resets-prestige-infusion'
+                        }
+                    ]
+                    
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'scenarios_fasting',loc('wiki_challenges_scenarios_fasting'));
+        }
+
         {   // True Path
             let truth = infoBoxBuilder(scenarios,{ name: 'scenarios_truepath', template: 'challenges', paragraphs: 5, break: [5], h_level: 2,
                 para_data: {
