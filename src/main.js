@@ -3337,7 +3337,7 @@ function fastLoop(){
 
             let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo);
             generated *= global_multiplier;
-            
+
             if(global.race['fasting']){
                 breakdown.p['Food'][`${loc('evo_challenge_fasting')}`] = '-100%';
                 generated *= 0;
@@ -3397,6 +3397,7 @@ function fastLoop(){
                     global.city.banquet.strength = 0;
                 }
             }
+
             let ravenous = 0;
             let tourism = 0;
             let spaceport = 0;
@@ -3408,6 +3409,9 @@ function fastLoop(){
             let zoo = 0;
             if(!global.race['fasting']){
                 consume = (global.resource[global.race.species].amount + soldiers - ((global.civic.unemployed.workers + workerScale(global.civic.hunter.workers,'hunter')) * 0.5)) * food_consume_mod;
+                if (global.race['forager']){
+                    consume -= workerScale(global.civic.forager.workers,'forager');
+                }
                 if(global.race['ravenous']){
                     ravenous = (global.resource.Food.amount / traits.ravenous.vars()[1]);
                 }
@@ -3561,7 +3565,7 @@ function fastLoop(){
             global.civic.homeless -= missing;
             global.resource[global.race.species].amount += missing;
         }
-        else if ((fed && global['resource']['Food'].amount > 0 || global.race['fasting']) && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
+        else if (((fed && global['resource']['Food'].amount > 0) || global.race['fasting']) && global['resource'][global.race.species].max > global['resource'][global.race.species].amount){
             if (global.race['artifical'] || (global.race['spongy'] && global.city.calendar.weather === 0)){
                 // Do Nothing
             }
@@ -3957,7 +3961,7 @@ function fastLoop(){
             breakdown.p['Knowledge'][loc('job_professor')] = professors_base + 'v';
             breakdown.p['Knowledge'][loc('job_scientist')] = scientist_base + 'v';
             breakdown.p['Knowledge'][loc('tau_red_womlings')] = womling + 'v';
-            breakdown.p['Knowledge'][`${loc('hunger')}`] = ((hunger - 1) * 100) + '%';
+            breakdown.p['Knowledge'][loc('hunger')] = ((hunger - 1) * 100) + '%';
             breakdown.p['Knowledge'][global.race['unfathomable'] ? loc('tech_moondial') : loc('tech_sundial')] = sundial_base + 'v';
             if (global.race['inspired']){
                 breakdown.p['Knowledge'][loc('event_inspiration_bd')] = '100%';
