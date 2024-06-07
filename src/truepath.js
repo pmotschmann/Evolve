@@ -4372,6 +4372,58 @@ function dragShipList(){
     });
 }
 
+const shipyardRanks = {
+    // Lower number -> higher in the auto-sorted list
+    location: {
+        spc_dwarf: 1,
+        spc_moon: 2,
+        spc_red: 3,
+        spc_belt: 4,
+        spc_gas: 5,
+        spc_gas_moon: 6,
+        spc_titan: 7,
+        spc_enceladus: 8,
+        spc_triton: 9,
+        spc_kuiper: 10,
+        spc_eris: 11,
+        tauceti: 12,
+    },
+    class: {
+        corvette: 1,
+        frigate: 2,
+        destroyer: 3,
+        cruiser: 4,
+        battlecruiser: 5,
+        dreadnought: 6,
+        explorer: 7,
+    },
+    engine: {
+        ion: 1,
+        tie: 3,
+        pulse: 2,
+        photon: 4,
+        vacuum: 5,
+        emdrive: 6,
+    },
+    power: {
+        solar: 1,
+        diesel: 2,
+        fission: 3,
+        fusion: 4,
+        elerium: 5,
+    }
+};
+
+function shipyardShipCompare(a,b){
+    return (
+        (shipyardRanks.location[a.location] ?? 0) - (shipyardRanks.location[b.location] ?? 0)
+        || a.transit - b.transit
+        || (shipyardRanks.class[a.class] ?? 0) - (shipyardRanks.class[b.class] ?? 0)
+        || (shipyardRanks.engine[a.engine] ?? 0) - (shipyardRanks.engine[b.engine] ?? 0)
+        || (shipyardRanks.power[a.power] ?? 0) - (shipyardRanks.power[b.power] ?? 0)
+    );
+}
+
 function drawShips(){
     clearShipDrag();
     clearElement($('#shipList'));
@@ -4383,8 +4435,7 @@ function drawShips(){
     let list = $('#shipList');
 
     if (global.space.shipyard.sort){
-        let rerank = {spc_dwarf: 'a'};
-        global.space.shipyard.ships = global.space.shipyard.ships.sort((a, b) => (rerank[a.location] ? rerank[a.location] : a.location).localeCompare((rerank[b.location] ? rerank[b.location] : b.location)));
+        global.space.shipyard.ships = global.space.shipyard.ships.sort(shipyardShipCompare);
     }
 
     const spaceRegions = spaceTech();
