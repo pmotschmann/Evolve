@@ -7563,7 +7563,7 @@
   "wiki_trait_effect_infiltrator": "Espiões são mais baratos e você ocasionalmente rouba avanços tecnológicos. Roubar é possível após atingir um limite de conhecimento acima de %0% do custo base da tecnologia. É necessária uma nave de reconhecimento a menos para determinar a ameaça em uma área.",
   "wiki_trait_effect_infiltrator_ex1": "Tecnologias roubadas não são aleatórias e geralmente são roubadas antes do que normalmente podem ser adquiridas.",
   "wiki_trait_effect_infiltrator_ex2": "Lista de tecnologias roubadas: %0.",
-  "wiki_trait_effect_cannibalize": "Ganhe Altar de Sacrifício. Sacrifique a população em troca de benefícios.",
+  "wiki_trait_effect_cannibalize": "Ganhe Altar de Sacrifício. Sacrifique a população em troca de %0 benefícios.",
   "wiki_trait_effect_frail": "Mais soldados morrem em combate.",
   "wiki_trait_effect_malnutrition": "-%0% penalidade de fome.",
   "wiki_trait_effect_claws": "A classificação de combate e a valor médio de combate aumentarão em %0%.",
