@@ -7551,7 +7551,7 @@
   "wiki_trait_effect_solitary": "-%0 aumento de custo da Moradia Básica, +%1 aumento de custo da Moradia Média.",
   "wiki_trait_effect_kindling_kindred": "Recursos Madeira & Compensado removidos, +%0% custo se a construção normalmente precisasse de madeira ou compensado.",
   "wiki_trait_effect_pyrophobia": "-%0% produção de Fundição.",
-  "wiki_trait_effect_hyper": "A velocidade do jogo aumenta em 5%.",
+  "wiki_trait_effect_hyper": "A velocidade do jogo aumenta em %0%.",
   "wiki_trait_effect_skittish": "Tempestades diminuem o moral em %0%.",
   "wiki_trait_effect_sticky": "As necessidades alimentares são reduzidas em %0% e a classificação de combate é aumentada em %1%.",
   "wiki_trait_effect_fragrant": "Caça produz %0% menos.",
