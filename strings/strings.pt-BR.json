@@ -7555,7 +7555,7 @@
   "wiki_trait_effect_skittish": "Tempestades diminuem o moral em %0%.",
   "wiki_trait_effect_sticky": "As necessidades alimentares são reduzidas em %0% e a classificação de combate é aumentada em %1%.",
   "wiki_trait_effect_fragrant": "Caça produz %0% menos.",
-  "wiki_trait_effect_infectious": "Atacar tem uma chance de aumentar sua população.",
+  "wiki_trait_effect_infectious": "Atacar tem uma chance de aumentar sua população. Até %0/%1/%2/%3/%4 inimigos serão infectados, dependendo do tipo de campanha.",
   "wiki_trait_effect_parasite": "O crescimento natural da população ocorre apenas quando está ventando. Comece com 2 soldados.",
   "wiki_trait_effect_toxic": "+%0 produção de Dinheiro/Liga/Polímeros da Fábrica. +%1% produção de Nanotubo/Estaneno. +%2% produção de Cimento.",
   "wiki_trait_effect_nyctophilia": "-%0% Moral quando Ensolarado. +%1% Moral quando Nublado.",
