@@ -3339,11 +3339,6 @@ function fastLoop(){
             let generated = food_base + (hunting * q_multiplier) + (biodome * red_synd * zigVal * virgo);
             generated *= global_multiplier;
 
-            if(global.race['fasting']){
-                breakdown.p['Food'][`${loc('evo_challenge_fasting')}`] = '-100%';
-                generated *= 0;
-            }
-
             let soldiers = global.civic.garrison.workers;
             if (global.race['parasite'] && !global.tech['isolation']){
                 soldiers -= 2;
@@ -3470,12 +3465,16 @@ function fastLoop(){
                 }
             }
 
-            let delta = generated - consume - ravenous - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
-
             breakdown.p['Food'][loc('soldiers')] = hunting + 'v';
             if (hunting > 0){
                 breakdown.p['Food'][`ᄂ${loc('quarantine')}+1`] = ((q_multiplier - 1) * 100) + '%';
             }
+            if(global.race['fasting']){
+                breakdown.p['Food'][`${loc('evo_challenge_fasting')}`] = '-100%';
+                generated *= 0;
+            }
+
+            let delta = generated - consume - ravenous - tourism - spaceport - starport - starbase - space_station - space_marines - embassy - zoo;
 
             if (!modRes('Food', delta * time_multiplier) || global.race['fasting']){
                 if (global.race['anthropophagite'] && global.resource[global.race.species].amount > 1 && !global.race['fasting']){
