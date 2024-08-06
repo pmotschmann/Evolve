@@ -4,10 +4,11 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.13`,
-        date: `8/5/2024`,
+        date: `8/6/2024`,
         changes: [
             `New Scenrio by CondoSlime: Fasting.`,
             `More queue config options.`,
+            `Wiki Search feature by sm3232`,
             `Language Updates.`,
             `Random bug fixes.`
         ]
