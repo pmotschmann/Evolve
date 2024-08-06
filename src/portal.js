@@ -613,6 +613,13 @@ const fortressModules = {
                         global.resource.Codex.display = true;
                         global.resource.Codex.amount = 1;
                         messageQueue(loc('portal_vault_result'),'info',false,['progress','hell']);
+                        if (global.race['fasting']){
+                            let affix = universeAffix();
+                            global.stats['endless_hunger'].b3[affix] = true;
+                            if (affix !== 'm' && affix !== 'l'){
+                                global.stats['endless_hunger'].b3.l = true;
+                            }
+                        }
                     }
                     return true;
                 }
@@ -2272,7 +2279,7 @@ function casualties(demons,pat_armor,ambush,report){
 export function bloodwar(){
     let day_report = {
         start: global.portal.fortress.threat,
-        foundGem: false,
+        foundGems: 0,
         stats: {
             wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
             kills: {
@@ -2779,7 +2786,7 @@ export function bloodwar(){
         if (['kills','gems'].includes(stat)){
             Object.keys(day_report.stats[stat]).forEach(function(subStat){
                 if (stat === 'gems' && day_report.stats[stat][subStat]){
-                    day_report.foundGem = true;
+                    day_report.foundGems += day_report.stats[stat][subStat];
                 }
                 global.portal.observe.stats.total[stat][subStat] += day_report.stats[stat][subStat];
                 global.portal.observe.stats.period[stat][subStat] += day_report.stats[stat][subStat];
@@ -3542,7 +3549,7 @@ export function drawMechLab(){
             sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
@@ -3554,7 +3561,7 @@ export function drawMechLab(){
             chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
@@ -3567,7 +3574,7 @@ export function drawMechLab(){
                 weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="vis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
                     <b-icon icon="menu-down"></b-icon>
@@ -3582,7 +3589,7 @@ export function drawMechLab(){
                 equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
                     <b-icon icon="menu-down"></b-icon>
@@ -5052,16 +5059,24 @@ function drawHellReports(){
         }
         for (startYear; startYear<global.city.calendar.year; startYear++){
             for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+                let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+                if (gemCount) {
+                    gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+                }
                 list = `
-                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? '<span class="has-text-advanced">&#9830</span>' : ''}</div>
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
                 ` + list;
             }
             startDay = 1;
         }
         //Remaining days in current year.
         for (startDay; startDay<global.city.calendar.day; startDay++){
+            let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+            if (gemCount) {
+                gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+            }
             list = `
-                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">&#9830</span>` : ''}</div>
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
             ` + list;
         }
         recentDay.year = startYear;

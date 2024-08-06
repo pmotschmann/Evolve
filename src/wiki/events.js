@@ -27,7 +27,7 @@ export function eventsPage(zone){
     }
 }
 
-function mainEventsPage(content){
+export function mainEventsPage(content){
     let mainContent = sideMenu('create',content);
     
     {   // Intro
@@ -448,7 +448,7 @@ function mainEventsPage(content){
     }
 }
 
-function minorEventsPage(content){
+export function minorEventsPage(content){
     let mainContent = sideMenu('create',content);
     
     {   // Intro
@@ -1196,7 +1196,7 @@ function minorEventsPage(content){
     }
 }
 
-function progressEventsPage(content){
+export function progressEventsPage(content){
     let mainContent = sideMenu('create',content);
     
     {   // Intro
@@ -1409,7 +1409,7 @@ function progressEventsPage(content){
     }
 }
 
-function specialEventsPage(content){
+export function specialEventsPage(content){
     let mainContent = sideMenu('create',content);
     
     {   // Intro
