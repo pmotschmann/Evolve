@@ -5,7 +5,7 @@ import { setJobName, jobScale, loadFoundry } from './jobs.js';
 import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
-import { govActive, removeTask } from './governor.js';
+import { govActive, removeTask, defineGovernor } from './governor.js';
 import { unlockAchieve } from './achieve.js';
 import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
@@ -3296,7 +3296,7 @@ export const races = {
         desc: loc('race_protoplasm_desc'),
         type: 'organism',
         home: loc('race_prehistoric'),
-        entity: 'ooze',
+        entity: loc('race_protoplasm_entity'),
         traits: {},
         solar: {
             red: loc('race_human_solar_red'),
@@ -3333,7 +3333,7 @@ export const races = {
         desc: loc(altRace('elven') ? 'race_xmas_elf_desc' : 'race_elven_desc'),
         type: 'humanoid',
         home: loc(altRace('elven') ? 'race_xmas_elf_home' : 'race_elven_home'),
-        entity: loc('race_elven_entity'),
+        entity: altRace('elven') ? loc('race_xmas_elf_entity') : loc('race_elven_entity'),
         traits: {
             studious: 1,
             arrogant: 1
@@ -3413,7 +3413,7 @@ export const races = {
         desc(){ return altRace('vulpine') ? loc('race_chocolate_rabbit_desc') : (loc('race_vulpine_desc',[loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'), foxColor()])); },
         type: 'carnivore',
         home: altRace('vulpine') ? loc('race_chocolate_rabbit_home') : loc('race_vulpine_home'),
-        entity: loc('race_vulpine_entity'),
+        entity: altRace('vulpine') ? loc('race_chocolate_rabbit_entity') : loc('race_vulpine_entity'),
         traits: {
             playful: 1,
             freespirit: 1
@@ -3730,7 +3730,7 @@ export const races = {
         desc: loc(altRace('arraak') ? 'race_turkey_desc' : 'race_arraak_desc'),
         type: 'avian',
         home: loc(altRace('arraak') ? 'race_turkey_home' : 'race_arraak_home'),
-        entity: loc('race_arraak_entity'),
+        entity: altRace('arraak') ? loc('race_turkey_entity') : loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
@@ -4728,6 +4728,9 @@ export function racialTrait(workers,type){
     if (global.race['living_tool'] && type === 'miner'){
         modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.12 : 0);
     }
+    if(global.city.banquet && global.city.banquet.on && global.city.banquet.count >= 3 && (type === 'army' || type === 'hellArmy')){
+        modifier *= 1 + (global.city.banquet.strength ** 0.65) / 100;
+    }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
     }
@@ -4822,6 +4825,7 @@ function purgeLumber(){
     setPurgatory('tech','saw');
     global.civic.lumberjack.display = false;
     global.civic.lumberjack.workers = 0;
+    global.civic.lumberjack.assigned = 0;
     if (global.civic.d_job === 'lumberjack') {
         global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
     }
@@ -5010,6 +5014,7 @@ function adjustFood() {
             }
             global.civic[jobEnabled[0]].workers += global.civic[job].workers;
             global.civic[job].workers = 0;
+            global.civic[job].assigned = 0;
             global.civic[job].display = false;
         }
     });
@@ -5079,6 +5084,7 @@ export function cleanAddTrait(trait){
             global.resource.Cement.display = false;
             global.civic.cement_worker.display = false;
             global.civic.cement_worker.workers = 0;
+            global.civic.cement_worker.assigned = 0;
             setPurgatory('tech','cement');
             setPurgatory('city','cement_plant');
             break;
@@ -5088,6 +5094,7 @@ export function cleanAddTrait(trait){
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
+            global.civic.quarry_worker.assigned = 0;
             setResourceName('Stone');
             setPurgatory('tech','hammer');
             setPurgatory('city','rock_quarry');
@@ -5123,6 +5130,9 @@ export function cleanAddTrait(trait){
                 if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
                     global.resource.Slave.display = true;
                 }
+                if (global.tech['slaves'] >= 2) {
+                    defineGovernor();
+                }
             }
             break;
         case 'cannibalize':
@@ -5136,6 +5146,7 @@ export function cleanAddTrait(trait){
                     mine: 0,
                     harvest: 0,
                 };
+                defineGovernor();
             }
             break;
         case 'magnificent':
@@ -5194,6 +5205,7 @@ export function cleanAddTrait(trait){
             if (!global.race.hasOwnProperty('shoecnt')){
                 global.race['shoecnt'] = 0;
             }
+            defineGovernor();
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
@@ -5371,6 +5383,7 @@ export function cleanRemoveTrait(trait,rank){
             global.resource.Slave.max = 0;
             global.resource.Slave.display = false;
             removeTask('slave');
+            defineGovernor();
             break;
         case 'cannibalize':
             removeFromQueue(['city-s_alter']);
@@ -5378,6 +5391,7 @@ export function cleanRemoveTrait(trait,rank){
             setPurgatory('tech','sacrifice');
             delete global.city['s_alter'];
             removeTask('sacrifice');
+            defineGovernor();
             break;
         case 'magnificent':
             removeFromQueue(['city-shrine']);
@@ -5392,6 +5406,7 @@ export function cleanRemoveTrait(trait,rank){
             removeFromQueue(['city-horseshoe', 'space-horseshoe']);
             global.resource.Horseshoe.display = false;
             removeTask('horseshoe');
+            defineGovernor();
             break;
         case 'slow':
             save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));

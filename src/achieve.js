@@ -43,7 +43,7 @@ const achieve_list = {
     ],
     challenge: [
         'joyless','steelen','dissipated','technophobe','wheelbarrow','iron_will','failed_history','banana','pathfinder',
-        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`
+        'ashanddust','exodus','obsolete','bluepill','retired','gross','lamentis','overlord',`adam_eve`,'endless_hunger'
     ],
 };
 
@@ -255,6 +255,11 @@ export const feats = {
         name: loc("feat_fool_name"),
         desc: loc("feat_fool_desc"),
         flair: loc("feat_fool_flair")
+    },
+    immortal:{
+        name: loc("feat_immortal_name"),
+        desc: loc("feat_immortal_desc"),
+        flair: loc("feat_immortal_flair")
     }
 }
 
@@ -562,8 +567,16 @@ export function checkAchievements(){
     }
 
     if (global.tech['piracy'] && global.tech['chthonian'] && global.tech['chthonian'] >= 2 && global.galaxy){
-        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && piracy('gxy_chthonian') === 1){
+        let chtonian = piracy('gxy_chthonian');
+        if (piracy('gxy_stargate') === 1 && piracy('gxy_gateway') === 1 && piracy('gxy_gorddon') === 1 && piracy('gxy_alien1') === 1 && piracy('gxy_alien2') === 1 && chtonian === 1){
             unlockAchieve('neutralized');
+        }
+        if(global.race['fasting'] && chtonian === 1){
+            let affix = universeAffix();
+            global.stats.endless_hunger.b2[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.endless_hunger.b2.l = true;
+            }
         }
     }
 
@@ -600,16 +613,14 @@ export function checkAchievements(){
     if (global.tech['pillars']){
         let genus = {};
         let rCnt = 0;
-        let equilRank = 5;
+        let equilProgress = Array(5+1).fill(0); // Add 1 extra element to fill the "rank 0" position
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
                 if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
                     genus[races[race].type] = global.pillars[race];
                 }
-                if (global.pillars[race] < equilRank){
-                    equilRank = global.pillars[race];
-                }
                 rCnt++;
+                equilProgress[global.pillars[race]]++;
             }
         });
         if (Object.keys(genus).length >= Object.keys(genus_traits).length){
@@ -621,11 +632,20 @@ export function checkAchievements(){
             });
             unlockAchieve('enlightenment',false,rank);
         }
+        // All races must be pillared for this to apply. The -1 is to remove protoplasm.
         if (rCnt >= Object.keys(races).length - 1){
             unlockAchieve('resonance');
         }
+        // Use the best 50 pillar ranks for equilibrium feat progress
         if (rCnt >= 50){
-            unlockFeat('equilibrium',false,equilRank);
+            let eligPillars = 0;
+            for (let equilRank = 5; equilRank > 0; equilRank--) {
+                eligPillars += equilProgress[equilRank];
+                if (eligPillars >= 50) {
+                    unlockFeat('equilibrium',false,equilRank);
+                    break;
+                }
+            }
         }
     }
 
@@ -701,6 +721,39 @@ export function checkAchievements(){
                 unlockAchieve('pathfinder',false,rank,affix);
             }
         });
+    }
+
+    if (global.race['fasting']){
+        let affix = universeAffix();
+        if (global.tech.hasOwnProperty('stock_exchange') && global.tech.stock_exchange >= 80){
+            global.stats.endless_hunger.b3[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.endless_hunger.b3.l = true;
+            }
+        }
+        if (global.resource[global.race.species].amount >= 1200){
+            global.stats.endless_hunger.b4[affix] = true;
+            if (affix !== 'm' && affix !== 'l'){
+                global.stats.endless_hunger.b4.l = true;
+            }
+        }
+
+        let slist = 0;
+        let ulist = 0;
+        ['b1','b2','b3','b4','b5'].forEach(function(b){
+            if (global.stats.endless_hunger[b].l){
+                slist++;
+            }
+            if (affix !== 'l' && global.stats.endless_hunger[b][affix]){
+                ulist++;
+            }
+        });
+        if (slist > 0){
+            unlockAchieve('endless_hunger',false,slist,'l');
+        }
+        if (ulist > 0 && affix !== 'l'){
+            unlockAchieve('endless_hunger',false,ulist,affix);
+        }
     }
 
     const date = new Date();
@@ -1612,6 +1665,60 @@ export const perkList = {
         notes: [
             loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`]),
             loc(`wiki_perks_achievement_note_scale`,[`<span class="has-text-caution">${loc(`achieve_escape_velocity_name`)}</span>`])
+        ]
+    },
+    endless_hunger: {
+        name: loc(`achieve_endless_hunger_name`),
+        group: [
+            {
+                desc(){
+                    return loc("achieve_perks_endless_hunger1");
+                },
+                active(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 1 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_endless_hunger2");
+                },
+                active(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 2 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_endless_hunger3");
+                },
+                active(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 3 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_endless_hunger4");
+                },
+                active(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 4 ? true : false;
+                }
+            },
+            {
+                desc(){
+                    return loc("achieve_perks_endless_hunger5");
+                },
+                active(){
+                    return global.stats.achieve['endless_hunger'] && global.stats.achieve.endless_hunger.l >= 5 ? true : false;
+                }
+            }
+        ],
+        notes: [
+            loc(`wiki_perks_achievement_note`,[`<span class="has-text-caution">${loc(`achieve_endless_hunger_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task`,[`<span class="has-text-caution">${loc(`achieve_endless_hunger_name`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[1,`<span class="has-text-${global.stats.endless_hunger.b1.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger1`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[2,`<span class="has-text-${global.stats.endless_hunger.b2.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger2`)}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[3,`<span class="has-text-${global.stats.endless_hunger.b3.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger3`,[80])}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[4,`<span class="has-text-${global.stats.endless_hunger.b4.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger4`,[1200])}</span>`]),
+            loc(`wiki_perks_achievement_note_task_num`,[5,`<span class="has-text-${global.stats.endless_hunger.b5.l ? `success` : `danger`}">${loc(`wiki_achieve_endless_hunger5`,[50])}</span>`])
         ]
     },
     gladiator: {
