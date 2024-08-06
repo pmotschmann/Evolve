@@ -613,16 +613,14 @@ export function checkAchievements(){
     if (global.tech['pillars']){
         let genus = {};
         let rCnt = 0;
-        let equilRank = 5;
+        let equilProgress = Array(5+1).fill(0); // Add 1 extra element to fill the "rank 0" position
         Object.keys(global.pillars).forEach(function(race){                
             if (races[race]){
                 if (!genus[races[race].type] || global.pillars[race] > genus[races[race].type]){
                     genus[races[race].type] = global.pillars[race];
                 }
-                if (global.pillars[race] < equilRank){
-                    equilRank = global.pillars[race];
-                }
                 rCnt++;
+                equilProgress[global.pillars[race]]++;
             }
         });
         if (Object.keys(genus).length >= Object.keys(genus_traits).length){
@@ -634,11 +632,20 @@ export function checkAchievements(){
             });
             unlockAchieve('enlightenment',false,rank);
         }
+        // All races must be pillared for this to apply. The -1 is to remove protoplasm.
         if (rCnt >= Object.keys(races).length - 1){
             unlockAchieve('resonance');
         }
+        // Use the best 50 pillar ranks for equilibrium feat progress
         if (rCnt >= 50){
-            unlockFeat('equilibrium',false,equilRank);
+            let eligPillars = 0;
+            for (let equilRank = 5; equilRank > 0; equilRank--) {
+                eligPillars += equilProgress[equilRank];
+                if (eligPillars >= 50) {
+                    unlockFeat('equilibrium',false,equilRank);
+                    break;
+                }
+            }
         }
     }
 
