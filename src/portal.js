@@ -2279,7 +2279,7 @@ function casualties(demons,pat_armor,ambush,report){
 export function bloodwar(){
     let day_report = {
         start: global.portal.fortress.threat,
-        foundGem: false,
+        foundGems: 0,
         stats: {
             wounded: 0, died: 0, revived: 0, surveyors: 0, sieges: 0,
             kills: {
@@ -2786,7 +2786,7 @@ export function bloodwar(){
         if (['kills','gems'].includes(stat)){
             Object.keys(day_report.stats[stat]).forEach(function(subStat){
                 if (stat === 'gems' && day_report.stats[stat][subStat]){
-                    day_report.foundGem = true;
+                    day_report.foundGems += day_report.stats[stat][subStat];
                 }
                 global.portal.observe.stats.total[stat][subStat] += day_report.stats[stat][subStat];
                 global.portal.observe.stats.period[stat][subStat] += day_report.stats[stat][subStat];
@@ -5059,16 +5059,24 @@ function drawHellReports(){
         }
         for (startYear; startYear<global.city.calendar.year; startYear++){
             for (startDay; startDay<=global.city.calendar.orbit; startDay++){
+                let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+                if (gemCount) {
+                    gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+                }
                 list = `
-                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? '<span class="has-text-advanced">&#9830</span>' : ''}</div>
+                    <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
                 ` + list;
             }
             startDay = 1;
         }
         //Remaining days in current year.
         for (startDay; startDay<global.city.calendar.day; startDay++){
+            let gemString = ""; let gemCount = hell_reports[`year-${startYear}`][`day-${startDay}`].foundGems;
+            if (gemCount) {
+                gemString = `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">${gemCount >= 5 ? `&#9830x${gemCount}` : "&#9830".repeat(gemCount)}</span>`;
+            }
             list = `
-                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${hell_reports[`year-${startYear}`][`day-${startDay}`].foundGem ? `<span class="has-text-advanced" aria-label="${loc(`hell_report_log_soul_gem_aria`)}">&#9830</span>` : ''}</div>
+                <div class="text-button"><span @click="reportLoad('${startYear}','${startDay}')">${loc('year') + " " + startYear + " | " + loc('day') + " " + startDay}</span>${gemString}</div>
             ` + list;
         }
         recentDay.year = startYear;
