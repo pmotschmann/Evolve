@@ -6,7 +6,10 @@ const changeList = [
         version: `1.3.13`,
         date: `8/5/2024`,
         changes: [
-            `New Scenrio by CondoSlime: Fasting.`
+            `New Scenrio by CondoSlime: Fasting.`,
+            `More queue config options.`,
+            `Language Updates.`,
+            `Random bug fixes.`
         ]
     },
     {
