@@ -10582,9 +10582,16 @@ function longLoop(){
             global.civic.garrison.protest--;
         }
 
-        let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
-        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,merc_bound) === 0){
-            global.civic.garrison.m_use--;
+        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0){
+            let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
+            let max_merc_roll = global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
+            let num_restore = 0;
+            for (let roll_num = 0; roll_num < max_merc_roll; roll_num++){
+                if (Math.rand(0, merc_bound) === 0){
+                    num_restore++;
+                }
+            }
+            global.civic.garrison.m_use = Math.max(0, global.civic.garrison.m_use - num_restore);
         }
 
         if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
