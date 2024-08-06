@@ -5,7 +5,7 @@ export const changeList = [
     {
         version: `1.3.13`,
         revision: `a`,
-        date: `8/6/2023`,
+        date: `8/6/2024`,
         changes: [
             `Fix a bug that prevented crafting in Cataclysm and Lone Survivor modes.`
         ]
