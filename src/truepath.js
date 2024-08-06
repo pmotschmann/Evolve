@@ -2180,6 +2180,7 @@ const tauCetiModules = {
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
+                    global.civic.craftsman.display = true; // Needed in Lone Survivor
                     global.tauceti.tau_factory.count++;
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -3068,6 +3069,7 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
+                    global.civic.craftsman.display = true; // Unlikely but possible to unlock this way in Lone Survivor
                     global.tauceti.womling_station.count++;
                     powerOnNewStruct($(this)[0]);
                     return true;
