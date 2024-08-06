@@ -12,14 +12,6 @@ export const changeList = [
     },
     {
         version: `1.3.13`,
-        revision: `a`,
-        date: `8/6/2023`,
-        changes: [
-            `Fix a bug that prevented crafting in Cataclysm and Lone Survivor modes.`
-        ]
-    },
-    {
-        version: `1.3.13`,
         date: `8/6/2024`,
         changes: [
             `New Scenario by CondoSlime: Fasting.`,
