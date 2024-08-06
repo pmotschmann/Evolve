@@ -8327,6 +8327,7 @@ function cataclysm(){
         global.civic.scientist.display = true;
         global.civic.colonist.display = true;
         global.civic.space_miner.display = true;
+        global.civic.craftsman.display = true;
 
         if (!global.race['flier']){
             global.tech['cement'] = 5;

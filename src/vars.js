@@ -1188,8 +1188,17 @@ if (convertVersion(global['version']) < 103011){
     }
 }
 
+if (convertVersion(global['version']) < 103014){
+    if (global.race['cataclysm']){
+        global.civic.craftsman.display = true;
+    }
+    if (global.race['lone_survivor'] && ((global.tauceti['tau_factory'] && global.tauceti.tau_factory.count > 0) || (global.tauceti['womling_station'] && global.tauceti.womling_station.count > 0))){
+        global.civic.craftsman.display = true;
+    }
+}
+
 global['version'] = '1.3.13';
-delete global['revision'];
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
