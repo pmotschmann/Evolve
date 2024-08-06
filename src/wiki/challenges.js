@@ -571,7 +571,7 @@ export function challengesPage(content){
                     subreqs: [
                         {
                             text: loc(`wiki_resets_infusion`),
-                            color: global.stats.achieve['descension'] ? true : false,
+                            color: global.stats.achieve['corrupted'] ? true : false,
                             link: 'wiki.html#resets-prestige-infusion'
                         }
                     ]

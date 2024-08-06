@@ -2124,9 +2124,10 @@ function fastLoop(){
                         let id = actions[sup.a][sup.r2][area_structs[i]].id;
                         let supportSize = actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support') ? actions[sup.a][sup.r2][area_structs[i]].support() * -1 : 1;
                         let operating = global[sup.a][area_structs[i]].on;
+                        let remaining_support = global[sup.a][sup.s].s_max - used_support;
 
-                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
-                            operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
+                        if ((operating * supportSize > remaining_support) && !sup.oc){
+                            operating = Math.floor(remaining_support / supportSize);
                             $(`#${id} .on`).addClass('warn');
                             $(`#${id} .on`).prop('title',`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
                         }
@@ -2748,7 +2749,7 @@ function fastLoop(){
                     if (total > global.resource[global.race.species].amount){
                         global.civic[job].workers -= total - global.resource[global.race.species].amount;
                     }
-                    if (global.civic[job].workers < 0){
+                    if (!global.civic[job].display || global.civic[job].workers < 0){
                         global.civic[job].workers = 0;
                     }
                 }
@@ -2787,7 +2788,7 @@ function fastLoop(){
         }
 
         Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
+            if (job !== 'craftsman' && global.civic[job] && global.civic[job].display && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic[global.civic.d_job].workers--;
             }
@@ -9354,7 +9355,7 @@ function midLoop(){
             if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
                 global.civic[job].workers = global.civic[job].max;
             }
-            else if (global.civic[job].workers < 0){
+            else if (!global.civic[job].display || global.civic[job].workers < 0){
                 global.civic[job].workers = 0;
             }
 
@@ -9810,6 +9811,7 @@ function midLoop(){
 
         if (global.race['kindling_kindred'] || global.race['smoldering']){
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             global.resource.Lumber.crates = 0;
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
@@ -10305,19 +10307,23 @@ function midLoop(){
         let min = rem * 5;
         let max = totHeight - (5 * rem);
 
-        const buildQueueElement = $(`#buildQueue`).get(0);
-        if (buildQueueElement.scrollHeight > buildQueueElement.clientHeight) {
-            // The build queue has a scroll-bar.
-            buildHeight++;
-        } else {
-            let minHeight = rem;
-            buildQueueElement.childNodes.forEach(function (e) {
-                minHeight += e.clientHeight || 0;
-            });
+        if (global.settings.q_resize !== 'manual') {
+            const buildQueueElement = $(`#buildQueue`).get(0);
+            if (['auto', 'grow'].includes(global.settings.q_resize) &&
+                buildQueueElement.scrollHeight > buildQueueElement.clientHeight
+            ) {
+                // The build queue has a scroll-bar.
+                buildHeight++;
+            } else if (['auto', 'shrink'].includes(global.settings.q_resize)) {
+                let minHeight = rem;
+                buildQueueElement.childNodes.forEach(function (e) {
+                    minHeight += e.clientHeight || 0;
+                });
 
-            if (buildQueueElement.clientHeight > minHeight) {
-                // The build queue is larger than it needs to be.
-                buildHeight = Math.min(buildHeight, minHeight);
+                if (buildQueueElement.clientHeight > minHeight) {
+                    // The build queue is larger than it needs to be.
+                    buildHeight = Math.min(buildHeight, minHeight);
+                }
             }
         }
 
@@ -10576,9 +10582,16 @@ function longLoop(){
             global.civic.garrison.protest--;
         }
 
-        let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
-        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0 && Math.rand(0,merc_bound) === 0){
-            global.civic.garrison.m_use--;
+        if (global.civic.garrison['m_use'] && global.civic.garrison.m_use > 0){
+            let merc_bound = global.tech['mercs'] && global.tech['mercs'] >= 2 ? 3 : 4;
+            let max_merc_roll = global.race['high_pop'] ? traits.high_pop.vars()[0] : 1;
+            let num_restore = 0;
+            for (let roll_num = 0; roll_num < max_merc_roll; roll_num++){
+                if (Math.rand(0, merc_bound) === 0){
+                    num_restore++;
+                }
+            }
+            global.civic.garrison.m_use = Math.max(0, global.civic.garrison.m_use - num_restore);
         }
 
         if (global.race['rainbow_active'] && global.race['rainbow_active'] > 1){
