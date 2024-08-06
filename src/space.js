@@ -476,13 +476,6 @@ const spaceProjects = {
                         global.race.orbit_decay = global.stats.days + 1000;
                         messageQueue(loc('evo_challenge_orbit_decayed_accelerated',[global.race.orbit_decay - global.stats.days]),'info',false,['progress']);
                     }
-                    if (global.race['fasting']){
-                        let affix = universeAffix();
-                        global.stats['endless_hunger'].b1[affix] = true;
-                        if (affix !== 'm' && affix !== 'l'){
-                            global.stats['endless_hunger'].b1.l = true;
-                        }
-                    }
                     return true;
                 }
                 return false;

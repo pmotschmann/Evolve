@@ -565,6 +565,7 @@ export function challengesPage(content){
                 }
             });
             addAchievements(fasting,false,['endless_hunger']);
+            addAchievements(fasting,true,['immortal']);
             addRequirements(fasting,[
                 {
                     text: `wiki_challenges_reqs_reset`,
