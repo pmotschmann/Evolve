@@ -524,7 +524,7 @@ const spaceProjects = {
             title: loc('space_terraformer'),
             desc(wiki){
                 if (!global.space.hasOwnProperty('terraformer') || global.space.terraformer.count < 100 || wiki){
-                    return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.space.hasOwnProperty('terraformer') && global.space.terraformer.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                    return `<div>${loc('space_terraformer')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.space.hasOwnProperty('terraformer') && global.space.terraformer.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('space_terraformer')}</div>`;
@@ -1515,7 +1515,7 @@ const spaceProjects = {
             title: loc('tau_jump_gate'),
             desc(wiki){
                 if (!global.space.hasOwnProperty('jump_gate') || global.space.jump_gate.count < 100 || wiki){
-                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('tau_jump_gate')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('tau_jump_gate')}</div>`;
@@ -2226,7 +2226,7 @@ const spaceProjects = {
             title: loc('space_dwarf_mass_relay_title'),
             desc(wiki){
                 if (!global.space.hasOwnProperty('mass_relay') || global.space.mass_relay.count < 100 || wiki){
-                    return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('space_dwarf_mass_relay_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
             },
             reqs: { outer: 5 },
@@ -2961,7 +2961,7 @@ const interstellarProjects = {
             title: loc('interstellar_dyson_title'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('dyson') || global.interstellar.dyson.count < 100 || wiki){
-                    return `<div>${loc('interstellar_dyson_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_dyson_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_dyson_title')}</div>`;
@@ -3008,7 +3008,7 @@ const interstellarProjects = {
             title: loc('interstellar_dyson_sphere_title'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('dyson_sphere') || global.interstellar.dyson_sphere.count < 100 || wiki){
-                    return `<div>${loc('interstellar_dyson_sphere_title')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_dyson_sphere_title')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_dyson_sphere_title')}</div>`;
@@ -3055,7 +3055,7 @@ const interstellarProjects = {
             title: loc('interstellar_dyson_sphere_title'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('orichalcum_sphere') || global.interstellar.orichalcum_sphere.count < 100 || wiki){
-                    return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_orichalcum_sphere_desc')}</div>`;
@@ -3451,7 +3451,7 @@ const interstellarProjects = {
             title: loc('interstellar_stellar_engine'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('stellar_engine') || global.interstellar.stellar_engine.count < 100 || wiki){
-                    return `<div>${loc('interstellar_stellar_engine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_stellar_engine')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_stellar_engine')}</div>`;
@@ -3601,7 +3601,7 @@ const interstellarProjects = {
             title: loc('interstellar_stargate'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('stargate') || global.interstellar.stargate.count < 200 || wiki){
-                    return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segmemts',[200])}</div>` + (global.interstellar.hasOwnProperty('stargate') && global.interstellar.stargate.count >= 200 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                    return `<div>${loc('interstellar_stargate')}</div><div class="has-text-special">${loc('requires_segments',[200])}</div>` + (global.interstellar.hasOwnProperty('stargate') && global.interstellar.stargate.count >= 200 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('interstellar_stargate')}</div>`;
@@ -3723,7 +3723,7 @@ const interstellarProjects = {
             title: loc('interstellar_space_elevator'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('space_elevator') || global.interstellar.space_elevator.count < 100 || wiki){
-                    return `<div>${loc('interstellar_space_elevator')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_space_elevator')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_space_elevator')}</div>`;
@@ -3771,7 +3771,7 @@ const interstellarProjects = {
             title: loc('interstellar_gravity_dome'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('gravity_dome') || global.interstellar.gravity_dome.count < 100 || wiki){
-                    return `<div>${loc('interstellar_gravity_dome')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>`;
+                    return `<div>${loc('interstellar_gravity_dome')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>`;
                 }
                 else {
                     return `<div>${loc('interstellar_gravity_dome')}</div>`;
@@ -3820,7 +3820,7 @@ const interstellarProjects = {
             title: loc('interstellar_ascension_machine'),
             desc(wiki){
                 if (!global.interstellar.hasOwnProperty('ascension_machine') || global.interstellar.ascension_machine.count < 100 || wiki){
-                    return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segmemts',[100])}</div>` + (global.interstellar.hasOwnProperty('ascension_machine') && global.interstellar.ascension_machine.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
+                    return `<div>${loc('interstellar_ascension_machine')}</div><div class="has-text-special">${loc('requires_segments',[100])}</div>` + (global.interstellar.hasOwnProperty('ascension_machine') && global.interstellar.ascension_machine.count >= 100 ? `<div class="has-text-special">${loc('requires_power')}</div>` : ``);
                 }
                 else {
                     return `<div>${loc('interstellar_ascension_machine')}</div>`;

@@ -57,7 +57,7 @@
   "requires_power_support": "Precisa Suportar %0 e Potência",
   "requires_power_support_combo": "Precisa Suportar %0 e %1",
   "requires_res": "Precisa de %0",
-  "requires_segmemts": "Precisa de %0 segmentos",
+  "requires_segments": "Precisa de %0 segmentos",
   "requires_soldiers": "Precisa de Soldados",
   "requires_security": "Precisa de Segurança",
   "locale": "Idioma",

@@ -57,7 +57,7 @@
   "requires_power_support": "需要%0支持和電力",
   "requires_power_support_combo": "需要%0支持和%1",
   "requires_res": "需要%0",
-  "requires_segmemts": "需完成 %0 段分項工程",
+  "requires_segments": "需完成 %0 段分項工程",
   "requires_soldiers": "需要士兵",
   "requires_security": "需要戰力評級",
   "locale": "語言",
