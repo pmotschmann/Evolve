@@ -10306,19 +10306,23 @@ function midLoop(){
         let min = rem * 5;
         let max = totHeight - (5 * rem);
 
-        const buildQueueElement = $(`#buildQueue`).get(0);
-        if (buildQueueElement.scrollHeight > buildQueueElement.clientHeight) {
-            // The build queue has a scroll-bar.
-            buildHeight++;
-        } else {
-            let minHeight = rem;
-            buildQueueElement.childNodes.forEach(function (e) {
-                minHeight += e.clientHeight || 0;
-            });
+        if (global.settings.q_resize !== 'manual') {
+            const buildQueueElement = $(`#buildQueue`).get(0);
+            if (['auto', 'grow'].includes(global.settings.q_resize) &&
+                buildQueueElement.scrollHeight > buildQueueElement.clientHeight
+            ) {
+                // The build queue has a scroll-bar.
+                buildHeight++;
+            } else if (['auto', 'shrink'].includes(global.settings.q_resize)) {
+                let minHeight = rem;
+                buildQueueElement.childNodes.forEach(function (e) {
+                    minHeight += e.clientHeight || 0;
+                });
 
-            if (buildQueueElement.clientHeight > minHeight) {
-                // The build queue is larger than it needs to be.
-                buildHeight = Math.min(buildHeight, minHeight);
+                if (buildQueueElement.clientHeight > minHeight) {
+                    // The build queue is larger than it needs to be.
+                    buildHeight = Math.min(buildHeight, minHeight);
+                }
             }
         }
 
