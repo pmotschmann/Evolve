@@ -3,6 +3,13 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.13`,
+        date: `8/5/2024`,
+        changes: [
+            `New Scenrio by CondoSlime: Fasting.`
+        ]
+    },
+    {
         version: `1.3.12`,
         date: `3/30/2024`,
         changes: [
