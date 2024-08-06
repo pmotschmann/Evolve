@@ -3549,7 +3549,7 @@ export function drawMechLab(){
             sizes += `<b-dropdown-item aria-role="listitem" v-on:click="setSize('${size}')" class="size r0 a${idx}" data-val="${size}">${loc(`portal_mech_size_${size}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_size`)}: {{ b.size | slabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
@@ -3561,7 +3561,7 @@ export function drawMechLab(){
             chassis += `<b-dropdown-item aria-role="listitem" v-on:click="setType('${val}')" class="chassis r0 a${idx}" data-val="${val}">${loc(`portal_mech_chassis_${val}`)}</b-dropdown-item>`;
         });
 
-        options.append(`<b-dropdown :triggers="['hover']" aria-role="list">
+        options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list">
             <button class="button is-info" slot="trigger">
                 <span>${loc(`portal_mech_type`)}: {{ b.chassis | clabel }}</span>
                 <b-icon icon="menu-down"></b-icon>
@@ -3574,7 +3574,7 @@ export function drawMechLab(){
                 weapons += `<b-dropdown-item aria-role="listitem" v-on:click="setWep('${val}',${i})" class="weapon r${i} a${idx}" data-val="${val}">${loc(`portal_mech_weapon_${val}`)}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="vis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="vis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_weapon`)}: {{ b.hardpoint[${i}] || 'laser' | wlabel }}</span>
                     <b-icon icon="menu-down"></b-icon>
@@ -3589,7 +3589,7 @@ export function drawMechLab(){
                 equip += `<b-dropdown-item aria-role="listitem" v-on:click="setEquip('${val}',${i})" class="equip r${i} a${idx}" data-val="${val}">{{ '${val}' | equipment }}</b-dropdown-item>`;
             });
 
-            options.append(`<b-dropdown :triggers="['hover']" aria-role="list" v-show="eVis(${i})">
+            options.append(`<b-dropdown :triggers="['hover', 'click']" aria-role="list" v-show="eVis(${i})">
                 <button class="button is-info" slot="trigger">
                     <span>${loc(`portal_mech_equipment`)}: {{ b.equip[${i}] || 'shields' | equipment }}</span>
                     <b-icon icon="menu-down"></b-icon>
