@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix, checkAdept } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
+import { defineResources, unlockCrates, unlockContainers, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources, gridDefs } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -2237,15 +2237,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Crates.display === false){
-                        messageQueue(loc('city_storage_yard_msg'),'info',false,['progress']);
-                    }
                     global.city['storage_yard'].count++;
-                    global.settings.showResources = true;
-                    global.settings.showStorage = true;
-                    if (!global.settings.showMarket) {
-                        global.settings.marketTabs = 1;
-                    }
                     let cap = global.tech.container >= 3 ? 20 : 10;
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 1){
                         cap += 10;
@@ -2257,14 +2249,10 @@ export const actions = {
                         cap *= 2;
                     }
                     global.resource.Crates.max += cap;
+                    // A freight yard is always required, so this is the only struct that can unlock crates
+                    // Any scenario where a freight yard is unnecessary will begin with crates unlocked
                     if (!global.resource.Crates.display){
-                        global.resource.Crates.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                        if (global.settings.tabLoad){
-                            drawResourceTab('storage');
-                            defineGovernor();
-                        }
+                        unlockCrates();
                     }
                     return true;
                 }
@@ -2298,12 +2286,7 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
-                    }
                     global.city['warehouse'].count++;
-                    global.settings.showResources = true;
-                    global.settings.showStorage = true;
                     let cap = global.tech['steel_container'] >= 2 ? 20 : 10;
                     if (global.stats.achieve['pathfinder'] && global.stats.achieve.pathfinder.l >= 2){
                         cap += 10;
@@ -2316,12 +2299,7 @@ export const actions = {
                     }
                     global.resource.Containers.max += cap;
                     if (!global.resource.Containers.display){
-                        global.resource.Containers.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                        if (global.settings.tabLoad){
-                            drawResourceTab('storage');
-                        }
+                        unlockContainers();
                     }
                     return true;
                 }
@@ -3048,20 +3026,17 @@ export const actions = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    if (global.resource.Containers.display === false){
-                        messageQueue(loc('city_warehouse_msg'),'info',false,['progress']);
-                        global.resource.Containers.display = true;
-                        clearElement($('#resources'));
-                        defineResources();
-                    }
                     global.city['wharf'].count++;
                     global.city.market.mtrade += 2;
-                    let vol = global.tech['world_control'] ? 15 : 10
+                    let vol = global.tech['world_control'] ? 15 : 10;
                     if (global.tech['particles'] && global.tech['particles'] >= 2){
                         vol *= 2;
                     }
                     global.resource.Crates.max += vol;
                     global.resource.Containers.max += vol;
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
+                    }
                     return true;
                 }
                 return false;
@@ -7626,6 +7601,7 @@ function sentience(){
             global.settings.msgFilters.research_queue.unlocked = true;
             global.settings.msgFilters.research_queue.vis = true;
         }
+        // No need to check for civTab setting because it was set to another tab above
         if (global.settings.tabLoad){
             $(`#resQueue`).removeAttr('style');
         }

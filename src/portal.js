@@ -2,13 +2,13 @@ import { global, seededRandom, keyMultiplier, p_on, gal_on, spire_on, quantum_le
 import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost, calcPrestige } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
-import { defineResources, spatialReasoning } from './resources.js';
+import { spatialReasoning, unlockContainers } from './resources.js';
 import { loadFoundry, jobScale, limitCraftsmen } from './jobs.js';
 import { armyRating, govCivics, garrisonSize, mercCost } from './civics.js';
 import { payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc } from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
 import { production } from './prod.js';
-import { govActive } from './governor.js';
+import { govActive, defineGovernor } from './governor.js';
 import { descension } from './resets.js';
 import { loadTab } from './index.js';
 import { loc } from './locale.js';
@@ -693,8 +693,12 @@ const fortressModules = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('arcology','portal');
+
                     if (powerOnNewStruct($(this)[0])){
                         global['resource'][global.race.species].max += 8;
+                    }
+                    if (!global.resource.Containers.display){
+                        unlockContainers();
                     }
                     return true;
                 }
@@ -1293,8 +1297,6 @@ const fortressModules = {
                     if (!global.settings.portal.spire){
                         global.settings.portal.spire = true;
                         global.settings.showCargo = true;
-                        clearElement($('#resources'));
-                        defineResources();
                         global.tech['hell_spire'] = 1;
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0, on: 0 };
@@ -1627,6 +1629,7 @@ const fortressModules = {
                     if (global.portal.mechbay.count === 1){
                         messageQueue(loc('portal_mechbay_unlocked'),'info',false,['progress','hell']);
                         drawMechLab();
+                        defineGovernor();
                     }
                     return true;
                 }
