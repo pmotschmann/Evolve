@@ -2124,9 +2124,10 @@ function fastLoop(){
                         let id = actions[sup.a][sup.r2][area_structs[i]].id;
                         let supportSize = actions[sup.a][sup.r2][area_structs[i]].hasOwnProperty('support') ? actions[sup.a][sup.r2][area_structs[i]].support() * -1 : 1;
                         let operating = global[sup.a][area_structs[i]].on;
+                        let remaining_support = global[sup.a][sup.s].s_max - used_support;
 
-                        if (used_support + (operating * supportSize) > global[sup.a][sup.s].s_max && !sup.oc){
-                            operating -= (used_support + operating) - global[sup.a][sup.s].s_max;
+                        if ((operating * supportSize > remaining_support) && !sup.oc){
+                            operating = Math.floor(remaining_support / supportSize);
                             $(`#${id} .on`).addClass('warn');
                             $(`#${id} .on`).prop('title',`ON ${operating}/${global[sup.a][area_structs[i]].on}`);
                         }
