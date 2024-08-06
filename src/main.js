@@ -2748,7 +2748,7 @@ function fastLoop(){
                     if (total > global.resource[global.race.species].amount){
                         global.civic[job].workers -= total - global.resource[global.race.species].amount;
                     }
-                    if (global.civic[job].workers < 0){
+                    if (!global.civic[job].display || global.civic[job].workers < 0){
                         global.civic[job].workers = 0;
                     }
                 }
@@ -2787,7 +2787,7 @@ function fastLoop(){
         }
 
         Object.keys(job_desc).forEach(function (job){
-            if (job !== 'craftsman' && global.civic[job] && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
+            if (job !== 'craftsman' && global.civic[job] && global.civic[job].display && global.civic[job].workers < global.civic[job].assigned && global.civic[global.civic.d_job].workers > 0 && global.civic[job].workers < global.civic[job].max){
                 global.civic[job].workers++;
                 global.civic[global.civic.d_job].workers--;
             }
@@ -9354,7 +9354,7 @@ function midLoop(){
             if (global.civic[job].workers > global.civic[job].max && global.civic[job].max !== -1){
                 global.civic[job].workers = global.civic[job].max;
             }
-            else if (global.civic[job].workers < 0){
+            else if (!global.civic[job].display || global.civic[job].workers < 0){
                 global.civic[job].workers = 0;
             }
 
@@ -9810,6 +9810,7 @@ function midLoop(){
 
         if (global.race['kindling_kindred'] || global.race['smoldering']){
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             global.resource.Lumber.crates = 0;
             global.resource.Lumber.containers = 0;
             global.resource.Lumber.trade = 0;
