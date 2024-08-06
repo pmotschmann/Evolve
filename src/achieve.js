@@ -191,6 +191,11 @@ export const feats = {
         desc: loc("feat_annihilation_desc"),
         flair: loc("feat_annihilation_flair")
     },
+    immortal:{
+        name: loc("feat_immortal_name"),
+        desc: loc("feat_immortal_desc"),
+        flair: loc("feat_immortal_flair")
+    },
     friday: {
         name: loc("feat_friday_name"),
         desc: loc("feat_friday_desc"),
@@ -255,11 +260,6 @@ export const feats = {
         name: loc("feat_fool_name"),
         desc: loc("feat_fool_desc"),
         flair: loc("feat_fool_flair")
-    },
-    immortal:{
-        name: loc("feat_immortal_name"),
-        desc: loc("feat_immortal_desc"),
-        flair: loc("feat_immortal_flair")
     }
 }
 
