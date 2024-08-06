@@ -7289,6 +7289,7 @@
   "wiki_menu_feats": "Feats",
   "wiki_menu_tracker": "Tracker",
   "wiki_menu_changelog": "Changelog",
+  "wiki_menu_search": "Search",
   "wiki_main_title": "Evolve Incremental",
   "wiki_main_author": "Created by %0",
   "wiki_main_spoiler": "The contents contained in this wiki will spoil the game. Proceed only if you do not wish to discover everything for yourself.",
@@ -10213,5 +10214,7 @@
   "wiki_achievements_missing": "Missing",
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
-  "wiki_achievements_completed": "Completed"
+  "wiki_achievements_completed": "Completed",
+  "wiki_search_placeholder": "No results found.",
+  "wiki_search_regex_support": "RegEx Supported"
 }
