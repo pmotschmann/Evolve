@@ -3296,7 +3296,7 @@ export const races = {
         desc: loc('race_protoplasm_desc'),
         type: 'organism',
         home: loc('race_prehistoric'),
-        entity: 'ooze',
+        entity: loc('race_protoplasm_entity'),
         traits: {},
         solar: {
             red: loc('race_human_solar_red'),
@@ -3333,7 +3333,7 @@ export const races = {
         desc: loc(altRace('elven') ? 'race_xmas_elf_desc' : 'race_elven_desc'),
         type: 'humanoid',
         home: loc(altRace('elven') ? 'race_xmas_elf_home' : 'race_elven_home'),
-        entity: loc('race_elven_entity'),
+        entity: altRace('elven') ? loc('race_xmas_elf_entity') : loc('race_elven_entity'),
         traits: {
             studious: 1,
             arrogant: 1
@@ -3413,7 +3413,7 @@ export const races = {
         desc(){ return altRace('vulpine') ? loc('race_chocolate_rabbit_desc') : (loc('race_vulpine_desc',[loc(global.race.universe === 'magic' ? 'race_kitsune' : 'race_vulpine'), foxColor()])); },
         type: 'carnivore',
         home: altRace('vulpine') ? loc('race_chocolate_rabbit_home') : loc('race_vulpine_home'),
-        entity: loc('race_vulpine_entity'),
+        entity: altRace('vulpine') ? loc('race_chocolate_rabbit_entity') : loc('race_vulpine_entity'),
         traits: {
             playful: 1,
             freespirit: 1
@@ -3730,7 +3730,7 @@ export const races = {
         desc: loc(altRace('arraak') ? 'race_turkey_desc' : 'race_arraak_desc'),
         type: 'avian',
         home: loc(altRace('arraak') ? 'race_turkey_home' : 'race_arraak_home'),
-        entity: loc('race_arraak_entity'),
+        entity: altRace('arraak') ? loc('race_turkey_entity') : loc('race_arraak_entity'),
         traits: {
             resourceful: 1,
             selenophobia: 1
