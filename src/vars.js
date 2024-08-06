@@ -678,6 +678,7 @@ if (convertVersion(global['version']) < 100023){
             delete global.tech['axe']; delete global.tech['reclaimer']; delete global.tech['saw'];
             global.civic.lumberjack.display = false;
             global.civic.lumberjack.workers = 0;
+            global.civic.lumberjack.assigned = 0;
             if (global.civic.d_job === 'lumberjack') { global.civic.d_job = 'unemployed'; }
             if (global.race['casting']){
                 global.race.casting.total -= global.race.casting.lumberjack;
@@ -1187,7 +1188,7 @@ if (convertVersion(global['version']) < 103011){
     }
 }
 
-global['version'] = '1.3.12';
+global['version'] = '1.3.13';
 delete global['revision'];
 delete global['beta'];
 
@@ -1491,6 +1492,15 @@ export function setupStats(){
             b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
         };
     }
+    if (!global.stats.hasOwnProperty('endless_hunger')){
+        global.stats['endless_hunger'] = {
+            b1: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b2: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b3: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b4: { l: false, h: false, a: false, e: false, m: false, mg: false }, 
+            b5: { l: false, h: false, a: false, e: false, m: false, mg: false }
+        };
+    }
 }
 
 setupStats();
@@ -1683,6 +1693,10 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
 
 if (!global.settings['queuestyle']){
     global.settings['queuestyle'] = 'standardqueuestyle';
+}
+
+if (!global.settings['q_resize']){
+    global.settings.q_resize = 'auto';
 }
 
 $('html').addClass(global.settings.theme);
