@@ -1112,29 +1112,40 @@ export function timeFormat(time){
     }
     else {
         time = +(time.toFixed(0));
-        if (time > 60){
-            let secs = time % 60;
-            let mins = (time - secs) / 60;
-            if (mins >= 60){
-                let r = mins % 60;
-                let hours = (mins - r) / 60;
-                if (hours > 24){
-                    r = hours % 24;
-                    let days = (hours - r) / 24;
-                    formatted = `${days}d ${r}h`;
-                }
-                else {
-                    r = ('0' + r).slice(-2);
-                    formatted = `${hours}h ${r}m`;
-                }
-            }
-            else {
-                secs = ('0' + secs).slice(-2);
-                formatted = `${mins}m ${secs}s`;
-            }
+        const secs_per_min = 60;
+
+        if (time < secs_per_min){
+            formatted = `${time}s`;
         }
         else {
-            formatted = `${time}s`;
+            const mins_per_hour = 60;
+            const secs_per_hour = secs_per_min*mins_per_hour;
+            const secs = time % secs_per_min;
+            const mins = Math.floor(time / secs_per_min) % mins_per_hour;
+
+            if (time < secs_per_hour){
+                if (secs > 0){ formatted = `${mins}m ${secs}s`; }
+                else { formatted = `${mins}m`; }
+            }
+            else {
+                const hours_per_day = 24;
+                const secs_per_day = secs_per_hour*hours_per_day;
+                const hours = Math.floor(time / secs_per_hour) % hours_per_day;
+
+                if (time < secs_per_day){
+                    if (mins > 0){ formatted = `${hours}h ${mins}m`; }
+                    else if (secs > 0){ formatted = `${hours}h ${secs}s`; }
+                    else { formatted = `${hours}h`; }
+                }
+                else {
+                    const days = Math.floor(time / secs_per_day);
+
+                    if (hours > 0){ formatted = `${days}d ${hours}h`; }
+                    else if (mins > 0){ formatted = `${days}d ${mins}m`; }
+                    else if (secs > 0){ formatted = `${days}d ${secs}s`; }
+                    else { formatted = `${days}d`; }
+                }
+            }
         }
     }
     return formatted;
