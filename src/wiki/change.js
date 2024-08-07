@@ -4,6 +4,16 @@ import { clearElement } from './../functions.js';
 export const changeList = [
     {
         version: `1.3.13`,
+        revision: `b`,
+        date: `8/6/2024`,
+        changes: [
+            `Fixed issue with starting Cataclysm Scenerio.`,
+            `Fixed some issues with Fasting Scenario.`,
+            `Fixed an issue with Replicator scheduler and supplies.`
+        ]
+    },
+    {
+        version: `1.3.13`,
         revision: `a`,
         date: `8/6/2024`,
         changes: [
