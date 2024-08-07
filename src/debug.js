@@ -17,7 +17,8 @@ export function enableDebug(){
             races: deepClone(races),
             traits: deepClone(traits),
             tradeRatio: deepClone(tradeRatio),
-            craftCost: deepClone(craftCost()),
+            craftCost: deepClone(craftCost(false)),
+            craftCostManual: deepClone(craftCost(true)),
             atomic_mass: deepClone(atomic_mass),
             f_rate: deepClone(f_rate),
             checkAffordable: deepClone(checkAffordable),
@@ -41,7 +42,8 @@ export function enableDebug(){
 export function updateDebugData(){
     if (global.settings.expose){
         window.evolve.global = deepClone(global);
-        window.evolve.craftCost = deepClone(craftCost()),
+        window.evolve.craftCost = deepClone(craftCost(false)),
+        window.evolve.craftCostManual = deepClone(craftCost(true)),
         window.evolve.breakdown = deepClone(breakdown);
     }
 }

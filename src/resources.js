@@ -168,7 +168,7 @@ export const supplyValue = {
     Scarletite: { in: 35, out: 250 }
 };
 
-export function craftCost(){
+export function craftCost(manual=false){
     let costs = {
         Plywood: [{ r: 'Lumber', a: 100 }],
         Brick: global.race['flier'] ? [{ r: 'Stone', a: 60 }] : [{ r: 'Cement', a: 40 }],
@@ -189,7 +189,7 @@ export function craftCost(){
             }
         });
     }
-    if (global.race['high_pop']){
+    if (global.race['high_pop'] && !manual){
         let rate = 1 / traits.high_pop.vars()[0];
         Object.keys(costs).forEach(function(res){
             for (let i=0; i<costs[res].length; i++){
@@ -873,7 +873,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
             craft(res,vol){
                 if (!global.race['no_craft']){
                     let craft_bonus = craftingRatio(res,'manual').multiplier;
-                    let craft_costs = craftCost();
+                    let craft_costs = craftCost(true);
                     let volume = Math.floor(global.resource[craft_costs[res][0].r].amount / craft_costs[res][0].a);
                     for (let i=1; i<craft_costs[res].length; i++){
                         let temp = Math.floor(global.resource[craft_costs[res][i].r].amount / craft_costs[res][i].a);
@@ -896,7 +896,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
             },
             craftCost(res,vol){
                 let costs = '';
-                let craft_costs = craftCost();
+                let craft_costs = craftCost(true);
                 for (let i=0; i<craft_costs[res].length; i++){
                     let num = vol * craft_costs[res][i].a * keyMultiplier();
                     costs = costs + `<div>${global.resource[craft_costs[res][i].r].name} ${num}</div>`;
@@ -918,7 +918,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                 let bonus = +(craftingRatio(res,'manual').multiplier * 100).toFixed(0);
                 popper.append($(`<div class="has-text-info">${loc('manual_crafting_hover_bonus',[bonus.toLocaleString(),global.resource[res].name])}</div>`));
                 
-                let craft_costs = craftCost();
+                let craft_costs = craftCost(true);
                 let crafts = $(`<div><span class="has-text-success">${loc('manual_crafting_hover_craft')} </span></div>`);
                 let num_crafted = 0;
                 if (typeof vol !== 'number'){
