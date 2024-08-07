@@ -2643,9 +2643,12 @@ export const actions = {
                     let stone = BHStorageMulti(spatialReasoning(100));
                     global['resource']['Stone'].max += stone;
                     if (global.race['smoldering'] && global.resource.Chrysotile.display){
-                        global.settings.showCivic = true;
-                        global.settings.showIndustry = true;
                         global['resource']['Chrysotile'].max += stone;
+                        if (global.city.rock_quarry.count === 1){
+                            global.settings.showCivic = true;
+                            global.settings.showIndustry = true;
+                            defineIndustry();
+                        }
                     }
                     powerOnNewStruct($(this)[0]);
                     return true;
@@ -2807,15 +2810,17 @@ export const actions = {
             action(){
                 if (payCosts($(this)[0])){
                     incrementStruct('factory','city');
-                    global.resource.Alloy.display = true;
-                    if (global.tech['polymer']){
-                        global.resource.Polymer.display = true;
+                    if (global.city.factory.count === 1){
+                        global.resource.Alloy.display = true;
+                        if (global.tech['polymer']){
+                            global.resource.Polymer.display = true;
+                        }
+                        global.settings.showIndustry = true;
+                        defineIndustry();
                     }
                     if (powerOnNewStruct($(this)[0])){
                         global.city.factory.Alloy++;
                     }
-                    global.settings.showIndustry = true;
-                    defineIndustry();
                     return true;
                 }
                 return false;
@@ -2875,8 +2880,10 @@ export const actions = {
                         fuel = 'Coal';
                     }
                     addSmelter($(this)[0].smelting(), 'Iron', fuel);
-                    global.settings.showIndustry = true;
-                    defineIndustry();
+                    if (global.city.smelter.count === 1){
+                        global.settings.showIndustry = true;
+                        defineIndustry();
+                    }
                     return true;
                 }
                 return false;
@@ -4708,8 +4715,10 @@ export function buildTemplate(key, region){
                 action(){
                     if (payCosts($(this)[0])){
                         incrementStruct('nanite_factory','city');
-                        global.settings.showIndustry = true;
-                        defineIndustry();
+                        if (global.city.nanite_factory.count === 1){
+                            global.settings.showIndustry = true;
+                            defineIndustry();
+                        }
                         return true;
                     }
                     return false;
@@ -6917,9 +6926,9 @@ export function getStructNumActive(c_action,wiki){
     // Electricity: production is negative, consumption is positive
     if (c_action.hasOwnProperty('powered') && c_action.powered() > 0) {
         if (global.city.hasOwnProperty('powered') && checkPowerRequirements(c_action)){
-            // The p_on struct is empty in the wiki view
-            if (!wiki){
-                num_on = p_on[parts[1]];
+            // The p_on struct is empty in the wiki view and right when the page has been reloaded
+            if (p_on.hasOwnProperty(parts[1])){
+                num_on = Math.min(num_on, p_on[parts[1]]);
             }
         }
         else {
@@ -6929,9 +6938,27 @@ export function getStructNumActive(c_action,wiki){
 
     // Support: production is positive, consumption is negative
     if (c_action.hasOwnProperty('s_type') && c_action.hasOwnProperty('support') && c_action.support() < 0){
-        if (wiki) {
-            // The support_on and similarly-named structs are empty in the wiki view
-            // This means that the wiki can be wrong, but we can at least check "max" support
+        let found_support = false;
+        if (support_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, support_on[parts[1]]);
+        }
+        if (int_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, int_on[parts[1]]);
+        }
+        if (gal_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
+        }
+        if (spire_on.hasOwnProperty(parts[1])){
+            found_support = true;
+            num_on = Math.min(num_on, spire_on[parts[1]]);
+        }
+
+        // The support_on structs are empty in the wiki view and right when the page has been reloaded
+        // This means that the wiki can be wrong, but we can at least check "max" support
+        if (!found_support) {
             let grids = gridDefs();
             let s_r = grids[c_action.s_type].r;
             if (s_r === 'galaxy' && !isStargateOn(wiki)){
@@ -6941,29 +6968,6 @@ export function getStructNumActive(c_action,wiki){
                 let s_rs = grids[c_action.s_type].rs;
                 let max_s = Math.floor(global[s_r][s_rs].s_max / -c_action.support());
                 num_on = Math.min(num_on, max_s);
-            }
-        }
-        else {
-            let found_support = false;
-            if (support_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, support_on[parts[1]]);
-            }
-            if (int_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, int_on[parts[1]]);
-            }
-            if (gal_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = isStargateOn(wiki) ? Math.min(num_on, gal_on[parts[1]]) : 0;
-            }
-            if (spire_on.hasOwnProperty(parts[1])){
-                found_support = true;
-                num_on = Math.min(num_on, spire_on[parts[1]]);
-            }
-            // Error case, hope never to hit this.
-            if (!found_support){
-                num_on = 0;
             }
         }
     }
@@ -8777,44 +8781,37 @@ function sentience(){
 
     if (global.settings.tabLoad){
         drawCity();
+        clearElement($(`#r_civics`));
+        defineGovernment();
         defineGarrison();
         buildGarrison($('#c_garrison'),false);
         foreignGov();
+        defineIndustry();
+        initResourceTabs('market');
+        initResourceTabs('storage');
 
-        if (global.race['cataclysm'] || global.race['lone_survivor']){
-            clearElement($(`#r_civics`));
-            defineGovernment();
-            defineIndustry();
-            initResourceTabs('market');
-            initResourceTabs('storage');
-
-            if (tmp_vars.hasOwnProperty('resource')){
-                Object.keys(tmp_vars.resource).forEach(function(name){
-                    let color = tmp_vars.resource[name].color;
-                    let tradable = tmp_vars.resource[name].tradable;
-                    let stackable = tmp_vars.resource[name].stackable;
-                    if (stackable){
-                        var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
-                        $('#resStorage').append(market_item);
-                        containerItem(`#stack-${name}`,market_item,name,color,true);
-                    }
-                    if (tradable){
-                        var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
-                        $('#market').append(market_item);
-                        marketItem(`#market-${name}`,market_item,name,color,true);
-                    }
-                });
-            }
-            tradeSummery();
-
-            arpa('Genetics');
-            arpa('Crispr');
-            arpa('Blood');
+        if (tmp_vars.hasOwnProperty('resource')){
+            Object.keys(tmp_vars.resource).forEach(function(name){
+                let color = tmp_vars.resource[name].color;
+                let tradable = tmp_vars.resource[name].tradable;
+                let stackable = tmp_vars.resource[name].stackable;
+                if (stackable){
+                    var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
+                    $('#resStorage').append(market_item);
+                    containerItem(`#stack-${name}`,market_item,name,color,true);
+                }
+                if (tradable){
+                    var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
+                    $('#market').append(market_item);
+                    marketItem(`#market-${name}`,market_item,name,color,true);
+                }
+            });
         }
-        else if (global['sim']){
-            arpa('Crispr');
-            arpa('Blood');
-        }
+        tradeSummery();
+
+        arpa('Genetics');
+        arpa('Crispr');
+        arpa('Blood');
     }
     else {
         loadTab('mTabCivil');
@@ -8927,16 +8924,13 @@ function aiStart(){
             global.tech['broadcast'] = 1;
         }
 
-        global.settings.showIndustry = true;
         global.settings.showPowerGrid = true;
         global.settings.showResearch = true;
         global.settings.showCivic = true;
-        global.settings.showMil = true;
         global.settings.showResources = true;
         global.settings.showMarket = true;
         global.settings.showStorage = true;
 
-        //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;
@@ -9051,20 +9045,8 @@ function aiStart(){
         }
 
         global.civic.govern.type = 'technocracy';
-        global.civic['garrison'] = {
-            display: true,
-            disabled: false,
-            progress: 0,
-            tactic: 0,
-            workers: 0,
-            wounded: 0,
-            raid: 0,
-            max: 0
-        };
-
         drawCity();
         drawTech();
-        loadFoundry();
     }
 }
 
@@ -9149,7 +9131,6 @@ function cataclysm(){
         global.settings.showGenetics = true;
         global.settings.arpa.physics = true;
 
-        //global.civic.garrison.display = true;
         global.resource[global.race.species].display = true;
         global.resource.Knowledge.display = true;
         global.resource.Money.display = true;

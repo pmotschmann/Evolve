@@ -7,7 +7,7 @@ import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, addSmelter } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, initStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, templeCount, casinoEffect, wardenLabel, buildTemplate, structName } from './actions.js';
-import { outerTruthTech, syndicate } from './truepath.js';
+import { outerTruthTech, syndicate, drawShipYard } from './truepath.js';
 import { production, highPopAdjust } from './prod.js';
 import { defineGovernor, govActive } from './governor.js';
 import { ascend, terraform, apotheosis } from './resets.js';
@@ -2583,6 +2583,7 @@ const spaceProjects = {
                     global.tech['syard_engine'] = 2;
                     global.tech['syard_power'] = 3;
                     global.tech['syard_sensor'] = 3;
+                    drawShipYard();
                     return true;
                 }
                 return false;
@@ -2633,6 +2634,7 @@ const spaceProjects = {
                     if (global.space.mass_relay.count >= 100){
                         global.tech['outer'] = 6;
                         initStruct(spaceProjects.spc_dwarf.m_relay);
+                        incrementStruct('m_relay','space');
                         powerOnNewStruct(spaceProjects.spc_dwarf.m_relay);
                         drawTech();
                         renderSpace();
@@ -5565,6 +5567,7 @@ const galaxyProjects = {
                         global.tech['xeno'] = 5;
                         initStruct(galaxyProjects.gxy_gorddon.freighter);
                         global.galaxy['trade'] = { max: 0, cur: 0, f0: 0, f1: 0, f2: 0, f3: 0, f4: 0, f5: 0, f6: 0, f7: 0, f8: 0 };
+                        drawResourceTab('market');
                         messageQueue(loc('galaxy_embassy_complete',[races[global.galaxy.alien1.id].name,races[global.galaxy.alien2.id].name]),'info',false,['progress']);
                     }
                     if (global.race['fasting']){

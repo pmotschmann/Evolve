@@ -8,7 +8,7 @@ import { craftingRatio, craftCost, craftingPopover } from './resources.js';
 import { planetName } from './space.js';
 import { hellSupression } from './portal.js';
 import { asphodelResist } from './edenic.js';
-import { actions, templeCount } from './actions.js';
+import { actions, getStructNumActive, templeCount } from './actions.js';
 
 export const job_desc = {
     unemployed: function(servant){
@@ -393,6 +393,9 @@ export function defineJobs(define){
     loadJob('pit_miner',define,1,4.5,'advanced');
     loadJob('crew',define,1,4,'alert');
     if (!define && !global.race['start_cataclysm']){
+        ['Scarletite','Quantium'].forEach(function (res){
+            limitCraftsmen(res, false);
+        });
         loadFoundry();
         if (global.race['servants']){
             loadServants();
@@ -723,7 +726,7 @@ export function craftsmanCap(res){
     switch (res){
         case 'Scarletite':
             if (global.portal.hasOwnProperty('hell_forge')){
-                let cap = Math.min(global.portal.hell_forge.on, p_on['hell_forge']);
+                let cap = getStructNumActive(actions.portal.prtl_ruins.hell_forge);
                 return jobScale(cap);
             }
             return 0;
@@ -732,11 +735,11 @@ export function craftsmanCap(res){
             let cap = 0;
             if (global.tech['isolation']){
                 if (global.tauceti.hasOwnProperty('infectious_disease_lab')){
-                    cap = Math.min(global.tauceti.infectious_disease_lab.on, support_on['infectious_disease_lab'], p_on['infectious_disease_lab']);
+                    cap = getStructNumActive(actions.tauceti.tau_home.infectious_disease_lab);
                 }
             }
             else if (global.space.hasOwnProperty('zero_g_lab')){
-                cap = Math.min(global.space.zero_g_lab.on, support_on['zero_g_lab'], p_on['zero_g_lab']);
+                cap = getStructNumActive(actions.space.spc_enceladus.zero_g_lab);
             }
             return jobScale(cap || 0);
 
@@ -746,7 +749,12 @@ export function craftsmanCap(res){
     }
 }
 
-export function limitCraftsmen(res){
+export function limitCraftsmen(res, allow_redraw = true){
+    // Ignore undiscovered materials
+    if (!global.resource[res].display){
+        return;
+    }
+
     // Remember previous crafter limits and refresh UI later on if they change
     if (!tmp_vars.hasOwnProperty('craftsman_cap')){
         tmp_vars.craftsman_cap = {};
@@ -761,13 +769,16 @@ export function limitCraftsmen(res){
         global.city.foundry[res] -= diff;
         refresh = true;
     }
-    else if (tmp_vars['craftsman_cap'].hasOwnProperty(res) && cap != tmp_vars['craftsman_cap'][res]){
+    else if (!tmp_vars['craftsman_cap'].hasOwnProperty(res)){
+        refresh = true;
+    }
+    else if (cap != tmp_vars['craftsman_cap'][res]){
         refresh = true;
     }
     tmp_vars['craftsman_cap'][res] = cap;
 
     // Refresh UI when the cap changes due to power balancing
-    if (refresh){
+    if (allow_redraw && refresh){
         loadFoundry();
     }
 }

@@ -5,11 +5,11 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, structName, updateQueueNames, drawTech, fanaticism, checkAffordable, actions, initStruct } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers, renderSupernatural, traitCostMod } from './races.js';
 import { drawResourceTab, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale, jobName } from './jobs.js';
+import { loadFoundry, jobScale, jobName, limitCraftsmen } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { renderSpace, planetName, int_fuel_adjust } from './space.js';
 import { drawHellObservations } from './portal.js';
-import { setOrbits, jumpGateShutdown } from './truepath.js';
+import { setOrbits, drawShipYard, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry, addSmelter } from './industry.js';
 import { defineGovernor, removeTask } from './governor.js';
@@ -129,6 +129,11 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            if (global.race['banana'] && !global.race['terrifying']){
+                drawResourceTab('market');
+            }
         }
     },
     wheel: {
@@ -2195,6 +2200,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     rotary_kiln: {
@@ -3320,6 +3328,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('market');
         }
     },
     tax_rates: {
@@ -3432,6 +3443,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('market');
         }
     },
     diplomacy: {
@@ -4823,6 +4837,7 @@ const techs = {
             return false;
         },
         post(){
+            defineIndustry();
             defineGovernor();
         }
     },
@@ -11444,6 +11459,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawResourceTab('alchemy');
         }
     },
     secret_society: {
@@ -12099,6 +12117,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Quantium.display = true;
+                limitCraftsmen('Quantium');
                 return true;
             }
             return false;
@@ -12585,6 +12604,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     adamantite_crates: {
@@ -13159,6 +13181,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            drawShipYard();
         }
     },
     alien_outpost: {
@@ -13640,6 +13665,9 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
         }
     },
     space_whaling: {
@@ -14289,6 +14317,10 @@ const techs = {
                 return true;
             }
             return false;
+        },
+        post(){
+            defineIndustry();
+            defineGovernor();
         }
     },
     womling_unlock: {
